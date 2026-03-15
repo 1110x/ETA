@@ -1,0 +1,213 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:lottie="using:Avalonia.Labs.Lottie"
+        x:Class="ETA.Views.Page1"
+        Width="1600"
+        Height="900"
+        Title="ETA Water Analysis Center">
+
+    <Grid ColumnDefinitions="200,*">
+
+        <!-- Board1 + Board2 -->
+        <Border Grid.Column="0"
+                Background="#eaeef6"
+                Padding="10">
+
+            <Grid RowDefinitions="*,220">
+
+                <!-- Board1 : 메뉴 -->
+                <StackPanel Grid.Row="0" Spacing="6">
+
+                    <StackPanel.Styles>
+
+                        <Style Selector="Button">
+                            <Setter Property="FontSize" Value="19"/>
+                            <Setter Property="FontFamily"
+                                    Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 H"/>
+                            <Setter Property="Height" Value="40"/>
+                            <Setter Property="CornerRadius" Value="10"/>
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Foreground" Value="#152d66"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                            <Setter Property="VerticalContentAlignment" Value="Center"/>
+                            <Setter Property="Padding" Value="4"/>
+                        </Style>
+
+                        <Style Selector="Button StackPanel">
+                            <Setter Property="Orientation" Value="Horizontal"/>
+                            <Setter Property="Spacing" Value="7"/>
+                        </Style>
+
+                        <Style Selector="Button Image">
+                            <Setter Property="Width" Value="26"/>
+                            <Setter Property="Height" Value="26"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                        </Style>
+
+                        <!-- Hover -->
+                        <Style Selector="Button:pointerover">
+                            <Setter Property="Background" Value="#147ac4"/>
+                        </Style>
+
+                        <Style Selector="Button:pointerover TextBlock">
+                            <Setter Property="Foreground" Value="#5f4872"/>
+                        </Style>
+
+                    </StackPanel.Styles>
+
+
+                    <Button>
+                        <StackPanel>
+                            <Image Source="/Assets/icons/A1.png"/>
+                            <TextBlock Text="업체등록"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button>
+                        <StackPanel>
+                            <Image Source="/Assets/icons/A2.png"/>
+                            <TextBlock Text="견적관리"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button>
+                        <StackPanel>
+                            <Image Source="/Assets/icons/A3.png"/>
+                            <TextBlock Text="의뢰등록"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Click="Analysis_Click">
+                        <StackPanel>
+                            <Image Source="/Assets/icons/A4.png"/>
+                            <TextBlock Text="분석관리"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Click="Analysis_Click">
+                        <StackPanel>
+                            <Image Source="/Assets/icons/A5.png"/>
+                            <TextBlock Text="측정인"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Click="Analysis_Click">
+                        <StackPanel>
+                            <Image Source="/Assets/icons/A6.png"/>
+                            <TextBlock Text="채수"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Click="Analysis_Click">
+                        <StackPanel>
+                            <Image Source="/Assets/icons/A7.png"/>
+                            <TextBlock Text="거래명세서"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Click="Analysis_Click">
+                        <StackPanel>
+                            <Image Source="/Assets/icons/A8.png"/>
+                            <TextBlock Text="사업소 의뢰"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Click="Analysis_Click">
+                        <StackPanel>
+                            <Image Source="/Assets/icons/A9.png"/>
+                            <TextBlock Text="분석담당자"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Click="Analysis_Click">
+                        <StackPanel>
+                            <Image Source="/Assets/icons/A10.png"/>
+                            <TextBlock Text="시험기록부"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Click="Analysis_Click">
+                        <StackPanel>
+                            <Image Source="/Assets/icons/A11.png"/>
+                            <TextBlock Text="차량운행일지"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Click="Admin_Click">
+                        <StackPanel>
+                            <lottie:Lottie x:Name="lottieRabbit2"
+                                           Width="24" Height="24"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Path="avares://ETA/Assets/Admin.json"
+                                           AutoPlay="True"
+                                           RepeatCount="-1"
+                                           Stretch="UniformToFill" />
+                            <TextBlock Text="관리자"/>
+                        </StackPanel>
+                    </Button>
+
+                </StackPanel>
+
+
+                <!-- Board2 : 로키 그림 -->
+                <Border Grid.Row="1"
+                        Margin="5"
+                        Background="#eaeef6"
+                        CornerRadius="12">
+
+
+                    <lottie:Lottie x:Name="lottieRabbit"
+                                   Width="160" Height="160"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Path="avares://ETA/Assets/Dancecat.json"
+                                   AutoPlay="True"
+                                   RepeatCount="-1"
+                                   Stretch="UniformToFill" />
+
+
+                </Border>
+
+            </Grid>
+
+        </Border>
+
+
+        <!-- Board3 : 메인 화면 -->
+        <Grid Grid.Column="1"
+              Background="#ffffff">
+            <StackPanel HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Spacing="10">
+
+                <!-- 기본 화면 -->
+                <lottie:Lottie x:Name="lottieRabbit3"
+                               Width="300" Height="300"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Path="avares://ETA/Assets/Dog.json"
+                               AutoPlay="True"
+                               RepeatCount="-1"
+                               Stretch="Uniform"/>
+
+                <TextBlock x:Name="MainText"
+                           Grid.Row="1"
+                           FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 H"
+                           Text="Poodig Poodig Poo Poo Poo Poooding~"
+                           FontSize="36"
+                           Foreground="#5a3405"
+                           HorizontalAlignment="Center"/>
+            </StackPanel>
+            <!-- 관리자 리스트 -->
+            <ListBox x:Name="MainList"
+
+                     Margin="20"
+                     FontSize="18"
+                     IsVisible="False"/>
+
+        </Grid>
+
+    </Grid>
+
+</Window>
