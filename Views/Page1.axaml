@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:lottie="using:Avalonia.Labs.Lottie"
+        xmlns:models="using:ETA.Models"
         x:Class="ETA.Views.Page1"
         Width="1600"
         Height="900"
@@ -8,22 +9,19 @@
 
     <Grid ColumnDefinitions="200,*">
 
-        <!-- Board1 + Board2 -->
+        <!-- 왼쪽 사이드바 -->
         <Border Grid.Column="0"
                 Background="#eaeef6"
                 Padding="10">
 
             <Grid RowDefinitions="*,220">
 
-                <!-- Board1 : 메뉴 -->
+                <!-- 메뉴 버튼들 -->
                 <StackPanel Grid.Row="0" Spacing="6">
-
                     <StackPanel.Styles>
-
                         <Style Selector="Button">
                             <Setter Property="FontSize" Value="19"/>
-                            <Setter Property="FontFamily"
-                                    Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 H"/>
+                            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 H"/>
                             <Setter Property="Height" Value="40"/>
                             <Setter Property="CornerRadius" Value="10"/>
                             <Setter Property="Background" Value="Transparent"/>
@@ -44,7 +42,6 @@
                             <Setter Property="VerticalAlignment" Value="Center"/>
                         </Style>
 
-                        <!-- Hover -->
                         <Style Selector="Button:pointerover">
                             <Setter Property="Background" Value="#147ac4"/>
                         </Style>
@@ -52,9 +49,7 @@
                         <Style Selector="Button:pointerover TextBlock">
                             <Setter Property="Foreground" Value="#5f4872"/>
                         </Style>
-
                     </StackPanel.Styles>
-
 
                     <Button>
                         <StackPanel>
@@ -146,17 +141,13 @@
                             <TextBlock Text="관리자"/>
                         </StackPanel>
                     </Button>
-
                 </StackPanel>
 
-
-                <!-- Board2 : 로키 그림 -->
+                <!-- 로키 그림 -->
                 <Border Grid.Row="1"
                         Margin="5"
                         Background="#eaeef6"
                         CornerRadius="12">
-
-
                     <lottie:Lottie x:Name="lottieRabbit"
                                    Width="160" Height="160"
                                    HorizontalAlignment="Center"
@@ -165,46 +156,75 @@
                                    AutoPlay="True"
                                    RepeatCount="-1"
                                    Stretch="UniformToFill" />
-
-
                 </Border>
 
             </Grid>
-
         </Border>
 
+        <!-- 메인 영역 -->
+        <Grid Grid.Column="1" Background="#ffffff">
 
-        <!-- Board3 : 메인 화면 -->
-        <Grid Grid.Column="1"
-              Background="#ffffff">
-            <StackPanel HorizontalAlignment="Center"
+            <!-- 기본 화면 -->
+            <StackPanel x:Name="MainPanel"
+                        HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         Spacing="10">
-
-                <!-- 기본 화면 -->
-                <lottie:Lottie x:Name="lottieRabbit3"
-                               Width="300" Height="300"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center"
+                <lottie:Lottie Width="300"
+                               Height="300"
                                Path="avares://ETA/Assets/Dog.json"
                                AutoPlay="True"
                                RepeatCount="-1"
                                Stretch="Uniform"/>
-
-                <TextBlock x:Name="MainText"
-                           Grid.Row="1"
-                           FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 H"
-                           Text="Poodig Poodig Poo Poo Poo Poooding~"
+                <TextBlock Text="Poodig Poodig Poo Poo Poo Poooding~"
                            FontSize="36"
-                           Foreground="#5a3405"
                            HorizontalAlignment="Center"/>
             </StackPanel>
+
             <!-- 관리자 리스트 -->
             <ListBox x:Name="MainList"
-
                      Margin="20"
                      FontSize="18"
                      IsVisible="False"/>
+
+            <!-- 분석관리 테이블 -->
+            <DataGrid x:Name="AnalysisGrid"
+                      Margin="20"
+                      IsVisible="False"
+                      AutoGenerateColumns="False"
+                      Background="White"
+                      BorderBrush="#CCCCCC"
+                      BorderThickness="1"
+                      x:CompileBindings="False">  <!-- 경고 제거 -->
+
+                <!-- 헤더 스타일 강화 -->
+                <DataGrid.Styles>
+                    <Style Selector="DataGridColumnHeader">
+                        <Setter Property="Background" Value="#E8ECEF"/>  <!-- 연한 회색 헤더 -->
+                        <Setter Property="Foreground" Value="Black"/>
+                        <Setter Property="FontWeight" Value="SemiBold"/>
+                        <Setter Property="Padding" Value="8,4"/>
+                        <Setter Property="BorderThickness" Value="0,0,1,1"/>
+                        <Setter Property="BorderBrush" Value="#CCCCCC"/>
+                    </Style>
+
+                    <!-- 셀 텍스트 색상 강제 (흰 배경에서도 보이게) -->
+                    <Style Selector="DataGridCell TextBlock">
+                        <Setter Property="Foreground" Value="Black"/>
+                    </Style>
+                </DataGrid.Styles>
+
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="분류"       Binding="{Binding Category}"      Width="150"/>
+                    <DataGridTextColumn Header="분석항목"   Binding="{Binding Analyte}"       Width="200"/>
+                    <DataGridTextColumn Header="규제"       Binding="{Binding Parts}"         Width="120"/>
+                    <DataGridTextColumn Header="소수점자리" Binding="{Binding DecimalPlaces}" Width="100"/>
+                    <DataGridTextColumn Header="단위"       Binding="{Binding unit}"          Width="80"/>
+                    <DataGridTextColumn Header="시험법"     Binding="{Binding ES}"            Width="120"/>
+                    <DataGridTextColumn Header="시험방법"   Binding="{Binding Method}"        Width="300"/>
+                    <DataGridTextColumn Header="기기"       Binding="{Binding instrument}"    Width="150"/>
+                </DataGrid.Columns>
+
+            </DataGrid>
 
         </Grid>
 

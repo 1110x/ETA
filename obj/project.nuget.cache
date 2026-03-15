@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "rh3JUJvE8Fw=",
+  "dgSpecHash": "mgMbP2pcBiM=",
   "success": true,
   "projectFilePath": "/Users/azrael/Documents/ETA/ETA.csproj",
   "expectedPackageFiles": [
@@ -8,6 +8,7 @@
     "/Users/azrael/.nuget/packages/avalonia.angle.windows.natives/2.1.25547.20250602/avalonia.angle.windows.natives.2.1.25547.20250602.nupkg.sha512",
     "/Users/azrael/.nuget/packages/avalonia.buildservices/11.3.2/avalonia.buildservices.11.3.2.nupkg.sha512",
     "/Users/azrael/.nuget/packages/avalonia.controls.colorpicker/11.3.12/avalonia.controls.colorpicker.11.3.12.nupkg.sha512",
+    "/Users/azrael/.nuget/packages/avalonia.controls.datagrid/11.3.12/avalonia.controls.datagrid.11.3.12.nupkg.sha512",
     "/Users/azrael/.nuget/packages/avalonia.desktop/11.3.12/avalonia.desktop.11.3.12.nupkg.sha512",
     "/Users/azrael/.nuget/packages/avalonia.diagnostics/11.3.12/avalonia.diagnostics.11.3.12.nupkg.sha512",
     "/Users/azrael/.nuget/packages/avalonia.fonts.inter/11.3.12/avalonia.fonts.inter.11.3.12.nupkg.sha512",
@@ -130,9 +131,9 @@
     "/Users/azrael/.nuget/packages/system.valuetuple/4.5.0/system.valuetuple.4.5.0.nupkg.sha512",
     "/Users/azrael/.nuget/packages/system.windows.extensions/10.0.5/system.windows.extensions.10.0.5.nupkg.sha512",
     "/Users/azrael/.nuget/packages/tmds.dbus.protocol/0.21.2/tmds.dbus.protocol.0.21.2.nupkg.sha512",
+    "/Users/azrael/.nuget/packages/microsoft.netcore.app.ref/8.0.24/microsoft.netcore.app.ref.8.0.24.nupkg.sha512",
     "/Users/azrael/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.24/microsoft.aspnetcore.app.ref.8.0.24.nupkg.sha512",
-    "/Users/azrael/.nuget/packages/microsoft.netcore.app.host.osx-arm64/8.0.24/microsoft.netcore.app.host.osx-arm64.8.0.24.nupkg.sha512",
-    "/Users/azrael/.nuget/packages/microsoft.netcore.app.ref/8.0.24/microsoft.netcore.app.ref.8.0.24.nupkg.sha512"
+    "/Users/azrael/.nuget/packages/microsoft.netcore.app.host.osx-arm64/8.0.24/microsoft.netcore.app.host.osx-arm64.8.0.24.nupkg.sha512"
   ],
   "logs": []
 }

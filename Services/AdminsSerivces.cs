@@ -1,10 +1,8 @@
-using Avalonia.Controls;
-
 namespace ETA.Services;
 
-public static class AdminServices
+public static class AdminService
 {
-    public static string[] GetAdminMenu()
+    public static string[] GetAdminItems()
     {
         return new string[]
         {
