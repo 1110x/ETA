@@ -191,6 +191,9 @@
                       Margin="20"
                       IsVisible="False"
                       AutoGenerateColumns="False"
+                      CanUserResizeColumns="True"
+                      SelectionMode="Extended"
+                      
                       Background="White"
                       BorderBrush="#CCCCCC"
                       BorderThickness="1"
