@@ -1,25 +1,27 @@
 {
   "format": 1,
   "restore": {
-    "/Users/azrael/Documents/ETA/ETA.csproj": {}
+    "C:\\Users\\ironu\\Documents\\ETA\\ETA\\ETA.csproj": {}
   },
   "projects": {
-    "/Users/azrael/Documents/ETA/ETA.csproj": {
+    "C:\\Users\\ironu\\Documents\\ETA\\ETA\\ETA.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/azrael/Documents/ETA/ETA.csproj",
+        "projectUniqueName": "C:\\Users\\ironu\\Documents\\ETA\\ETA\\ETA.csproj",
         "projectName": "ETA",
-        "projectPath": "/Users/azrael/Documents/ETA/ETA.csproj",
-        "packagesPath": "/Users/azrael/.nuget/packages/",
-        "outputPath": "/Users/azrael/Documents/ETA/obj/",
+        "projectPath": "C:\\Users\\ironu\\Documents\\ETA\\ETA\\ETA.csproj",
+        "packagesPath": "C:\\Users\\ironu\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\ironu\\Documents\\ETA\\ETA\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/azrael/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\ironu\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -130,11 +132,15 @@
               "version": "[8.0.24, 8.0.24]"
             },
             {
-              "name": "Microsoft.NETCore.App.Host.osx-arm64",
+              "name": "Microsoft.NETCore.App.Host.win-x64",
               "version": "[8.0.24, 8.0.24]"
             },
             {
               "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.24, 8.0.24]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
               "version": "[8.0.24, 8.0.24]"
             }
           ],
@@ -143,7 +149,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.103/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.103/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

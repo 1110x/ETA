@@ -44,9 +44,9 @@ public partial class Page1 : Window
 }
     private void Analysis_Click(object sender, RoutedEventArgs e)
     {
-        MainPanel.IsVisible = false;
-        MainList.IsVisible = false;
-        AnalysisGrid.IsVisible = true;
+        MainPanel.IsVisible = false;    //<메인 패널 숨김
+        MainList.IsVisible = false;     //<메인 리스트 패널 숨김
+        AnalysisGrid.IsVisible = true;  //<메인 그리드 패널 보임 
 
         LoadAnalysisData();  // 매번 새로 불러오기
     }

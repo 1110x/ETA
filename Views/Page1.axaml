@@ -11,21 +11,21 @@
 
         <!-- 왼쪽 사이드바 -->
         <Border Grid.Column="0"
-                Background="#eaeef6"
+                Background="#252527"
                 Padding="10">
 
             <Grid RowDefinitions="*,220">
 
                 <!-- 메뉴 버튼들 -->
-                <StackPanel Grid.Row="0" Spacing="6">
+                <StackPanel Grid.Row="0" Spacing="0">
                     <StackPanel.Styles>
                         <Style Selector="Button">
-                            <Setter Property="FontSize" Value="19"/>
-                            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 H"/>
+                            <Setter Property="FontSize" Value="14"/>
+                            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"/>
                             <Setter Property="Height" Value="40"/>
-                            <Setter Property="CornerRadius" Value="10"/>
-                            <Setter Property="Background" Value="Transparent"/>
-                            <Setter Property="Foreground" Value="#152d66"/>
+                            <Setter Property="CornerRadius" Value="0"/>
+                            <Setter Property="Background" Value="#252527"/>
+                            <Setter Property="Foreground" Value="#bbb5b5"/>
                             <Setter Property="HorizontalContentAlignment" Value="Left"/>
                             <Setter Property="VerticalContentAlignment" Value="Center"/>
                             <Setter Property="Padding" Value="4"/>
@@ -33,7 +33,7 @@
 
                         <Style Selector="Button StackPanel">
                             <Setter Property="Orientation" Value="Horizontal"/>
-                            <Setter Property="Spacing" Value="7"/>
+                            <Setter Property="Spacing" Value="0"/>
                         </Style>
 
                         <Style Selector="Button Image">
@@ -43,11 +43,13 @@
                         </Style>
 
                         <Style Selector="Button:pointerover">
-                            <Setter Property="Background" Value="#147ac4"/>
+                            <Setter Property="Background" Value="#444444"/>
+                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                            <Setter Property="Width" Value="300"/>
                         </Style>
 
                         <Style Selector="Button:pointerover TextBlock">
-                            <Setter Property="Foreground" Value="#5f4872"/>
+                            <Setter Property="Foreground" Value="#40e248"/>
                         </Style>
                     </StackPanel.Styles>
 
@@ -131,6 +133,7 @@
                     <Button Click="Admin_Click">
                         <StackPanel>
                             <lottie:Lottie x:Name="lottieRabbit2"
+                                        
                                            Width="24" Height="24"
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Center"
@@ -146,7 +149,7 @@
                 <!-- 로키 그림 -->
                 <Border Grid.Row="1"
                         Margin="5"
-                        Background="#eaeef6"
+                        Background="#252527"
                         CornerRadius="12">
                     <lottie:Lottie x:Name="lottieRabbit"
                                    Width="160" Height="160"
@@ -162,9 +165,9 @@
         </Border>
 
         <!-- 메인 영역 -->
-        <Grid Grid.Column="1" Background="#ffffff">
+        <Grid Grid.Column="1" Background="#444444">
 
-            <!-- 기본 화면 -->
+            <!--★★★★★★★★★★★★★★★★★★★★★★★★★★★★ 기본 화면★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★ -->
             <StackPanel x:Name="MainPanel"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
@@ -192,39 +195,42 @@
                       IsVisible="False"
                       AutoGenerateColumns="False"
                       CanUserResizeColumns="True"
-                      SelectionMode="Extended"
-                      
-                      Background="White"
-                      BorderBrush="#CCCCCC"
+                      SelectionMode="Extended"                      
+                      Background="#5f5a5a"
+                      BorderBrush="#5f5a5a"
                       BorderThickness="1"
                       x:CompileBindings="False">  <!-- 경고 제거 -->
 
                 <!-- 헤더 스타일 강화 -->
                 <DataGrid.Styles>
                     <Style Selector="DataGridColumnHeader">
-                        <Setter Property="Background" Value="#E8ECEF"/>  <!-- 연한 회색 헤더 -->
-                        <Setter Property="Foreground" Value="Black"/>
-                        <Setter Property="FontWeight" Value="SemiBold"/>
+                        <Setter Property="Background" Value="#5e5e5e"/>  <!-- 연한 회색 헤더 -->
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+                        <Setter Property="FontSize" Value="16"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
                         <Setter Property="Padding" Value="8,4"/>
                         <Setter Property="BorderThickness" Value="0,0,1,1"/>
-                        <Setter Property="BorderBrush" Value="#CCCCCC"/>
+                        <Setter Property="BorderBrush" Value="#424242"/>
                     </Style>
 
                     <!-- 셀 텍스트 색상 강제 (흰 배경에서도 보이게) -->
                     <Style Selector="DataGridCell TextBlock">
                         <Setter Property="Foreground" Value="Black"/>
+                        <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"/>
+                        <Setter Property="FontSize" Value="14"/>                   
                     </Style>
                 </DataGrid.Styles>
 
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="분류"       Binding="{Binding Category}"      Width="150"/>
-                    <DataGridTextColumn Header="분석항목"   Binding="{Binding Analyte}"       Width="200"/>
-                    <DataGridTextColumn Header="규제"       Binding="{Binding Parts}"         Width="120"/>
-                    <DataGridTextColumn Header="소수점자리" Binding="{Binding DecimalPlaces}" Width="100"/>
-                    <DataGridTextColumn Header="단위"       Binding="{Binding unit}"          Width="80"/>
-                    <DataGridTextColumn Header="시험법"     Binding="{Binding ES}"            Width="120"/>
-                    <DataGridTextColumn Header="시험방법"   Binding="{Binding Method}"        Width="300"/>
-                    <DataGridTextColumn Header="기기"       Binding="{Binding instrument}"    Width="150"/>
+                <DataGrid.Columns>                   
+                    <DataGridTextColumn Header="분류"   Foreground="white"  Binding="{Binding Category}"      Width="150"/>
+                    <DataGridTextColumn Header="분석항목"    Foreground="white" Binding="{Binding Analyte}"       Width="200"/>
+                    <DataGridTextColumn Header="특정/수질"        Foreground="white" Binding="{Binding Parts}"         Width="120"/>
+                    <DataGridTextColumn Header="소수점"  Foreground="white" Binding="{Binding DecimalPlaces}" Width="100"/>
+                    <DataGridTextColumn Header="단위"        Foreground="white" Binding="{Binding unit}"          Width="80"/>
+                    <DataGridTextColumn Header="시험법"     Foreground="white" Binding="{Binding ES}"            Width="120"/>
+                    <DataGridTextColumn Header="ES.No"    Foreground="white" Binding="{Binding Method}"        Width="300"/>
+                    <DataGridTextColumn Header="분석장비"       Foreground="white" Binding="{Binding instrument}"    Width="150"/>
                 </DataGrid.Columns>
 
             </DataGrid>
