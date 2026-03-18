@@ -1,27 +1,56 @@
 ﻿using Avalonia;
 using System;
+using System.Runtime.InteropServices;
 
 namespace ETA;
 
-class Program
+internal class Program
 {
+    [DllImport("kernel32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool AllocConsole();
+
+    static Program()
+    {
+        AllocConsole();  // 콘솔 무조건 띄우기
+        Console.Title = "ETA 디버그 콘솔 - 오류 추적 모드";
+        Console.BackgroundColor = ConsoleColor.Black;
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine("=== ETA 프로그램 시작 - 디버그 모드 활성화 ===");
+        Console.WriteLine("분석단가 버튼 누를 때까지 기다려주세요...");
+        Console.ResetColor();
+    }
+
+    [STAThread]
     public static void Main(string[] args)
     {
-        try
+        // 전역 예외 핸들러 등록 (이게 핵심!)
+        AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
         {
-            BuildAvaloniaApp()
-                .StartWithClassicDesktopLifetime(args);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("🔥 프로그램 오류:");
-            Console.WriteLine(ex.ToString());
-            Console.ReadLine();
-        }
+            var ex = (Exception)e.ExceptionObject;
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("★ 치명적 크래시 발생 ★");
+            Console.WriteLine($"오류 메시지: {ex.Message}");
+            Console.WriteLine($"스택 트레이스:\n{ex.StackTrace}");
+            if (ex.InnerException != null)
+            {
+                Console.WriteLine("\n내부 오류:");
+                Console.WriteLine(ex.InnerException.Message);
+                Console.WriteLine(ex.InnerException.StackTrace);
+            }
+            Console.ResetColor();
+            Console.WriteLine("\n프로그램이 종료됩니다. 엔터를 눌러 종료...");
+            Console.ReadLine();  // 콘솔이 바로 안 꺼지게
+        };
+
+        Console.WriteLine("[Main] Avalonia 앱 시작");
+        BuildAvaloniaApp()
+            .StartWithClassicDesktopLifetime(args);
     }
 
     public static AppBuilder BuildAvaloniaApp()
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()
+            .WithInterFont()
             .LogToTrace();
 }

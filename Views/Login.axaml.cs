@@ -25,9 +25,9 @@ public partial class Login : Window
     {
         string email = txtEmail?.Text?.Trim() ?? "";
         string password = txtPassword?.Text ?? "";
-            var main = new Page1();
-            main.Show();
-            Close();
+        var main = new Page1();
+        main.Show();
+        Close();
         if (email == "admin" && password == "1234")
         {
             //var main = new Page1();
@@ -37,19 +37,19 @@ public partial class Login : Window
         // else { // 실패 시 메시지 추가 가능 }
     }
 
-    private void OnShowPasswordChanged(object? sender, RoutedEventArgs e)
+    private void OnShowPasswordChanged(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        if (sender is ToggleSwitch toggle && txtPassword != null)
+        if (txtPassword != null && tglShowPassword != null)
         {
-            txtPassword.PasswordChar = toggle.IsChecked == true ? '\0' : '*';
+            txtPassword.PasswordChar = tglShowPassword.IsChecked == true ? '\0' : '*';
         }
     }
-     static void PlayClickSound()
-        {
-            var uri = new Uri("avares://ETA/Assets/POP.wav");
-            using var stream = AssetLoader.Open(uri);
+    static void PlayClickSound()
+    {
+        var uri = new Uri("avares://ETA/Assets/POP.wav");
+        using var stream = AssetLoader.Open(uri);
 
-           // var player = new SoundPlayer(stream);
-           // player.Play();
-        }
+        // var player = new SoundPlayer(stream);
+        // player.Play();
+    }
 }

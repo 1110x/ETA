@@ -1,14 +1,14 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="ETA.App"
-             RequestedThemeVariant="Default">
+             RequestedThemeVariant="Light">  <!-- 여기서 Light 지정 (Default면 시스템 따라감) -->
 
-    <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
     <Application.Resources>
         <FontFamily x:Key="KBIZFont">avares://ETA/Assets/Fonts#KBIZ Hanmaum Gothic</FontFamily>
     </Application.Resources>
+
     <Application.Styles>
-        <FluentTheme/>
-        <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
+        <!-- Mode 속성 완전 삭제! -->
+        <FluentTheme />   <!-- 빈 태그로만 씀 -->
     </Application.Styles>
 </Application>

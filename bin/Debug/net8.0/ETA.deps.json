@@ -14,6 +14,7 @@
           "Avalonia.Diagnostics": "11.3.12",
           "Avalonia.Fonts.Inter": "11.3.12",
           "Avalonia.Labs.Lottie": "11.3.1",
+          "Avalonia.ReactiveUI": "11.1.1",
           "Avalonia.Themes.Fluent": "11.3.12",
           "Azure.Identity": "1.19.0",
           "LibVLCSharp": "3.9.6",
@@ -207,6 +208,19 @@
           }
         }
       },
+      "Avalonia.ReactiveUI/11.1.1": {
+        "dependencies": {
+          "Avalonia": "11.3.12",
+          "ReactiveUI": "18.3.1",
+          "System.Reactive": "5.0.0"
+        },
+        "runtime": {
+          "lib/net8.0/Avalonia.ReactiveUI.dll": {
+            "assemblyVersion": "11.1.1.0",
+            "fileVersion": "11.1.1.0"
+          }
+        }
+      },
       "Avalonia.Remote.Protocol/11.3.12": {
         "runtime": {
           "lib/net8.0/Avalonia.Remote.Protocol.dll": {
@@ -317,6 +331,17 @@
           "lib/netstandard2.0/DialogHost.Avalonia.dll": {
             "assemblyVersion": "0.8.1.0",
             "fileVersion": "0.8.1.0"
+          }
+        }
+      },
+      "DynamicData/7.9.5": {
+        "dependencies": {
+          "System.Reactive": "5.0.0"
+        },
+        "runtime": {
+          "lib/net6.0/DynamicData.dll": {
+            "assemblyVersion": "7.9.0.0",
+            "fileVersion": "7.9.5.54039"
           }
         }
       },
@@ -692,6 +717,18 @@
           }
         }
       },
+      "ReactiveUI/18.3.1": {
+        "dependencies": {
+          "DynamicData": "7.9.5",
+          "Splat": "14.4.1"
+        },
+        "runtime": {
+          "lib/net6.0/ReactiveUI.dll": {
+            "assemblyVersion": "18.3.0.0",
+            "fileVersion": "18.3.1.49589"
+          }
+        }
+      },
       "SkiaSharp/3.119.2": {
         "dependencies": {
           "SkiaSharp.NativeAssets.Win32": "3.119.2",
@@ -806,6 +843,14 @@
           "lib/net8.0/SkiaSharp.Skottie.dll": {
             "assemblyVersion": "3.119.0.0",
             "fileVersion": "3.119.2.0"
+          }
+        }
+      },
+      "Splat/14.4.1": {
+        "runtime": {
+          "lib/net6.0/Splat.dll": {
+            "assemblyVersion": "14.4.0.0",
+            "fileVersion": "14.4.1.53869"
           }
         }
       },
@@ -1012,6 +1057,14 @@
           }
         }
       },
+      "System.Reactive/5.0.0": {
+        "runtime": {
+          "lib/net5.0/System.Reactive.dll": {
+            "assemblyVersion": "5.0.0.0",
+            "fileVersion": "5.0.0.1"
+          }
+        }
+      },
       "System.Security.Cryptography.ProtectedData/4.5.0": {
         "runtime": {
           "lib/netstandard2.0/System.Security.Cryptography.ProtectedData.dll": {
@@ -1161,6 +1214,13 @@
       "path": "avalonia.native/11.3.12",
       "hashPath": "avalonia.native.11.3.12.nupkg.sha512"
     },
+    "Avalonia.ReactiveUI/11.1.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-/X+g+3V8JB9P0xyLBLNSj3X0CQ0q7Nlq/xWtcChMa8FvDdPC4TwRv+p/rjSt6iPxRJoXh9SBVaQe6Uk4IKXe6Q==",
+      "path": "avalonia.reactiveui/11.1.1",
+      "hashPath": "avalonia.reactiveui.11.1.1.nupkg.sha512"
+    },
     "Avalonia.Remote.Protocol/11.3.12": {
       "type": "package",
       "serviceable": true,
@@ -1223,6 +1283,13 @@
       "sha512": "sha512-RLBOMqjJPgSmwe0i1pzX3Q7Pn0i4xE/E1b774krd4VyEkaorz1AYMdYQHyIfuhtQv5NntZyS0MuQbxJl/PhzBg==",
       "path": "dialoghost.avalonia/0.8.1",
       "hashPath": "dialoghost.avalonia.0.8.1.nupkg.sha512"
+    },
+    "DynamicData/7.9.5": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-xFwVha7o3qUtVYxco5p+7Urcztc/m1gmaEUxOG0i7LNe+vfCfyb0ECAsT2FLm3zOPHb0g8s9qVu5LfPKfRNVng==",
+      "path": "dynamicdata/7.9.5",
+      "hashPath": "dynamicdata.7.9.5.nupkg.sha512"
     },
     "HarfBuzzSharp/8.3.1.1": {
       "type": "package",
@@ -1427,6 +1494,13 @@
       "path": "microsoft.identitymodel.tokens/6.26.1",
       "hashPath": "microsoft.identitymodel.tokens.6.26.1.nupkg.sha512"
     },
+    "ReactiveUI/18.3.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-0tclGtjrRPfA2gbjiM7O3DeNmo6/TpDn7CMN6jgzDrbgrnysM7oEzjGEeXbtXaOxH6kEf6RiMKWobZoSgbBXhQ==",
+      "path": "reactiveui/18.3.1",
+      "hashPath": "reactiveui.18.3.1.nupkg.sha512"
+    },
     "SkiaSharp/3.119.2": {
       "type": "package",
       "serviceable": true,
@@ -1475,6 +1549,13 @@
       "sha512": "sha512-fcI/yU302GxTrkgaqI914fp8wvrasHMEfYir6kU7ATr6RQx0Cf1vTaTZDuV18OeaqLPQJ75Y/HsMktnMY2N+lg==",
       "path": "skiasharp.skottie/3.119.2",
       "hashPath": "skiasharp.skottie.3.119.2.nupkg.sha512"
+    },
+    "Splat/14.4.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Z1Mncnzm9pNIaIbZ/EWH6x5ESnKsmAvu8HP4StBRw+yhz0lzE7LCbt22TNTPaFrYLYbYCbGQIc/61yuSnpLidg==",
+      "path": "splat/14.4.1",
+      "hashPath": "splat.14.4.1.nupkg.sha512"
     },
     "SQLitePCLRaw.bundle_e_sqlite3/2.1.11": {
       "type": "package",
@@ -1538,6 +1619,13 @@
       "sha512": "sha512-BZC4mhdL569AXV56ep9YO6ShjhxFXGP7SwVX0Bc/e0dJPWnS6aBEXZJXqh64RVx8HquqWHkJUINBydLRQ1yq0g==",
       "path": "system.memory.data/10.0.1",
       "hashPath": "system.memory.data.10.0.1.nupkg.sha512"
+    },
+    "System.Reactive/5.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-erBZjkQHWL9jpasCE/0qKAryzVBJFxGHVBAvgRN1bzM0q2s1S4oYREEEL0Vb+1kA/6BKb5FjUZMp5VXmy+gzkQ==",
+      "path": "system.reactive/5.0.0",
+      "hashPath": "system.reactive.5.0.0.nupkg.sha512"
     },
     "System.Security.Cryptography.ProtectedData/4.5.0": {
       "type": "package",

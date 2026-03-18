@@ -16,6 +16,7 @@ C:\Users\ironu\.nuget\packages\avalonia\11.3.12\ref\net8.0\Avalonia.Metal.dll
 C:\Users\ironu\.nuget\packages\avalonia\11.3.12\ref\net8.0\Avalonia.MicroCom.dll
 C:\Users\ironu\.nuget\packages\avalonia.native\11.3.12\lib\net8.0\Avalonia.Native.dll
 C:\Users\ironu\.nuget\packages\avalonia\11.3.12\ref\net8.0\Avalonia.OpenGL.dll
+C:\Users\ironu\.nuget\packages\avalonia.reactiveui\11.1.1\lib\net8.0\Avalonia.ReactiveUI.dll
 C:\Users\ironu\.nuget\packages\avalonia.remote.protocol\11.3.12\lib\net8.0\Avalonia.Remote.Protocol.dll
 C:\Users\ironu\.nuget\packages\avalonia.skia\11.3.12\lib\net8.0\Avalonia.Skia.dll
 C:\Users\ironu\.nuget\packages\avalonia.themes.fluent\11.3.12\lib\net8.0\Avalonia.Themes.Fluent.dll
@@ -27,6 +28,7 @@ C:\Users\ironu\.nuget\packages\avalonia.x11\11.3.12\lib\net8.0\Avalonia.X11.dll
 C:\Users\ironu\.nuget\packages\azure.core\1.51.1\lib\net8.0\Azure.Core.dll
 C:\Users\ironu\.nuget\packages\azure.identity\1.19.0\lib\net8.0\Azure.Identity.dll
 C:\Users\ironu\.nuget\packages\dialoghost.avalonia\0.8.1\lib\netstandard2.0\DialogHost.Avalonia.dll
+C:\Users\ironu\.nuget\packages\dynamicdata\7.9.5\lib\net6.0\DynamicData.dll
 C:\Users\ironu\.nuget\packages\harfbuzzsharp\8.3.1.1\lib\net8.0\HarfBuzzSharp.dll
 C:\Users\ironu\.nuget\packages\libvlcsharp.avalonia\3.9.6\lib\netstandard2.0\LibVLCSharp.Avalonia.dll
 C:\Users\ironu\.nuget\packages\libvlcsharp\3.9.6\lib\net8.0\LibVLCSharp.dll
@@ -59,10 +61,12 @@ C:\Users\ironu\.nuget\packages\microsoft.netcore.app.ref\8.0.24\ref\net8.0\Micro
 C:\Users\ironu\.nuget\packages\messagebox.avalonia\3.3.1.1\lib\netstandard2.0\MsBox.Avalonia.dll
 C:\Users\ironu\.nuget\packages\microsoft.netcore.app.ref\8.0.24\ref\net8.0\mscorlib.dll
 C:\Users\ironu\.nuget\packages\microsoft.netcore.app.ref\8.0.24\ref\net8.0\netstandard.dll
+C:\Users\ironu\.nuget\packages\reactiveui\18.3.1\lib\net6.0\ReactiveUI.dll
 C:\Users\ironu\.nuget\packages\skiasharp\3.119.2\ref\net8.0\SkiaSharp.dll
 C:\Users\ironu\.nuget\packages\skiasharp.resources\3.119.2\lib\net8.0\SkiaSharp.Resources.dll
 C:\Users\ironu\.nuget\packages\skiasharp.scenegraph\3.119.2\lib\net8.0\SkiaSharp.SceneGraph.dll
 C:\Users\ironu\.nuget\packages\skiasharp.skottie\3.119.2\lib\net8.0\SkiaSharp.Skottie.dll
+C:\Users\ironu\.nuget\packages\splat\14.4.1\lib\net6.0\Splat.dll
 C:\Users\ironu\.nuget\packages\sqlitepclraw.bundle_e_sqlite3\2.1.11\lib\netstandard2.0\SQLitePCLRaw.batteries_v2.dll
 C:\Users\ironu\.nuget\packages\sqlitepclraw.core\2.1.11\lib\netstandard2.0\SQLitePCLRaw.core.dll
 C:\Users\ironu\.nuget\packages\sqlitepclraw.provider.e_sqlite3\2.1.11\lib\net6.0\SQLitePCLRaw.provider.e_sqlite3.dll
@@ -150,6 +154,7 @@ C:\Users\ironu\.nuget\packages\microsoft.netcore.app.ref\8.0.24\ref\net8.0\Syste
 C:\Users\ironu\.nuget\packages\microsoft.netcore.app.ref\8.0.24\ref\net8.0\System.Numerics.dll
 C:\Users\ironu\.nuget\packages\microsoft.netcore.app.ref\8.0.24\ref\net8.0\System.Numerics.Vectors.dll
 C:\Users\ironu\.nuget\packages\microsoft.netcore.app.ref\8.0.24\ref\net8.0\System.ObjectModel.dll
+C:\Users\ironu\.nuget\packages\system.reactive\5.0.0\lib\net5.0\System.Reactive.dll
 C:\Users\ironu\.nuget\packages\microsoft.netcore.app.ref\8.0.24\ref\net8.0\System.Reflection.DispatchProxy.dll
 C:\Users\ironu\.nuget\packages\microsoft.netcore.app.ref\8.0.24\ref\net8.0\System.Reflection.dll
 C:\Users\ironu\.nuget\packages\microsoft.netcore.app.ref\8.0.24\ref\net8.0\System.Reflection.Emit.dll

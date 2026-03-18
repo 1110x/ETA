@@ -1,121 +1,51 @@
 <Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:lottie="using:Avalonia.Labs.Lottie"
-        d:DesignWidth="1400" d:DesignHeight="900"
-        x:Class="ETA.Views.Login"
-        Title="RENEWUS TEAM Water Analysis Center Design.by 1110x"
-        Width="1400" Height="900"
-        WindowStartupLocation="CenterScreen"
-        Background="#F8FAFC">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:controls="using:Avalonia.Controls"
+    xmlns:lottie="using:Avalonia.Labs.Lottie"
+    RequestedThemeVariant="Light"
+    d:DesignWidth="1400" d:DesignHeight="900"
+    x:Class="ETA.Views.Login"
+    Title="RENEWUS TEAM Water Analysis Center Design.by 1110x"
+    Width="1400" Height="900" WindowStartupLocation="CenterScreen" Background="#F8FAFC">
 
     <Grid ColumnDefinitions="*,1.2*">
-
-        <!-- 좌측 토끼 영역 -->
-        <Border Grid.Column="0"
-                CornerRadius="0,24,0,0"
-                Margin="0,0,20,0"
-                Padding="40">
-
+        <Border Grid.Column="0" CornerRadius="0,24,0,0" Margin="0,0,20,0" Padding="40">
             <Border.Background>
                 <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
                     <GradientStop Color="#F8FAFC" Offset="0" />
                     <GradientStop Color="#F8FAFC" Offset="1" />
                 </LinearGradientBrush>
             </Border.Background>
-
-            <StackPanel VerticalAlignment="Center"
-                        HorizontalAlignment="Center"
-                        Spacing="20">
-
-                <lottie:Lottie x:Name="lottieRabbit"
-                               Width="500" Height="500"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center"
-                               Path="avares://ETA/Assets/rabbit.json"
-                               AutoPlay="True"
-                               RepeatCount="-1"
-                               Stretch="UniformToFill" />
-
-                <TextBlock Text="Hi there! Welcome to ETA."
-                           FontSize="28"
-                           FontWeight="SemiBold"
-                           HorizontalAlignment="Center"
-                           Foreground="#1E40AF"
-                           TextWrapping="Wrap"
-                           TextAlignment="Center"/>
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="20">
+                <lottie:Lottie x:Name="lottieRabbit" Width="500" Height="500"
+                    HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Path="avares://ETA/Assets/rabbit.json" AutoPlay="True" RepeatCount="-1"
+                    Stretch="UniformToFill" />
+                <TextBlock Text="Hi there! Welcome to ETA." FontSize="28" FontWeight="SemiBold"
+                    HorizontalAlignment="Center" Foreground="#1E40AF" TextWrapping="Wrap"
+                    TextAlignment="Center" />
             </StackPanel>
         </Border>
-
-        <!-- 우측 로그인 폼 -->
-        <Border Grid.Column="1"
-                Margin="40"
-                Padding="60,40"
-                Background="White"
-                CornerRadius="16"
-                BorderBrush="#E2E8F0"
-                BorderThickness="1"
-                BoxShadow="0 10 30 0 #00000020">
-
+        <Border Grid.Column="1" Margin="40" Padding="60,40" Background="White" CornerRadius="16"
+            BorderBrush="#E2E8F0" BorderThickness="1" BoxShadow="0 10 30 0 #00000020">
             <StackPanel Spacing="24" VerticalAlignment="Center">
-
-                <TextBlock Text="로그인"
-                           FontSize="36"
-                           FontWeight="Bold"
-                           HorizontalAlignment="Center"
-                           Foreground="#1E293B"/>
-
-                <TextBlock Text="사번"
-                           FontSize="14"
-                           Foreground="#64748B"
-                           Margin="0,0,0,2"/>
-
-                <TextBox x:Name="txtEmail"
-                         Watermark="202912345"
-                         FontSize="16"
-                         Padding="12"
-                         CornerRadius="8"
-                         BorderBrush="#CBD5E1"
-                         BorderThickness="1"/>
-
-                <TextBlock Text="비밀번호"
-                           FontSize="14"
-                           Foreground="#64748B"
-                           Margin="0,12,0,2"/>
-
-                <TextBox x:Name="txtPassword"
-                         Watermark="••••••••"
-                         PasswordChar="*"
-                         FontSize="16"
-                         Padding="12"
-                         CornerRadius="8"
-                         BorderBrush="#CBD5E1"
-                         BorderThickness="1"/>
-
-                <ToggleSwitch x:Name="tglShowPassword"
-                              Content="비밀번호 표시"
-                              Margin="0,8,0,0"
-                              IsCheckedChanged="OnShowPasswordChanged"/>
-
-                <!-- 여기서부터 버튼에 hover 효과 추가 -->
-                <Button Content="로그인"
-                        Click="Login_Click"
-                        FontFamily="/Fonts/KBIZ한마음고딕 R.ttf"
-                        Foreground="White"
-                        FontSize="18"
-                        Padding="0,16"
-                        Margin="0,32,0,0"
-                        Background="#4207d6"
-                        CornerRadius="8"
-                        BorderThickness="0"
-                        HorizontalAlignment="Stretch"
-                        HorizontalContentAlignment="Center"
-                        VerticalContentAlignment="Center"
-                        FontWeight="SemiBold">
-
-                    <!-- Hover & Pressed 효과 -->
+                <TextBlock Text="로그인" FontSize="36" FontWeight="Bold" HorizontalAlignment="Center"
+                    Foreground="#1E293B" />
+                <TextBlock Text="사번" FontSize="14" Foreground="#64748B" Margin="0,0,0,2" />
+                <TextBox x:Name="txtEmail" Watermark="202912345" FontSize="16" Padding="12"
+                    CornerRadius="8" BorderBrush="#CBD5E1" BorderThickness="1" />
+                <TextBlock Text="비밀번호" FontSize="14" Foreground="#64748B" Margin="0,12,0,2" />
+                <TextBox x:Name="txtPassword" Watermark="••••••••" PasswordChar="*" FontSize="16"
+                    Padding="12" CornerRadius="8" BorderBrush="#CBD5E1" BorderThickness="1" />
+                <ToggleSwitch x:Name="tglShowPassword" Content="비밀번호 표시" Margin="0,8,0,0"
+                    HorizontalAlignment="Left" IsCheckedChanged="OnShowPasswordChanged" />
+                <Button Content="로그인" Click="Login_Click" FontFamily="/Fonts/KBIZ한마음고딕 R.ttf"
+                    Foreground="White" FontSize="18" Padding="0,16" Margin="0,32,0,0"
+                    Background="#4207d6" CornerRadius="8" BorderThickness="0"
+                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center" FontWeight="SemiBold">
                     <Button.Styles>
-                        <!-- 부드러운 색상 변화 전환 -->
                         <Style Selector="Button /template/ ContentPresenter#PART_ContentPresenter">
                             <Setter Property="Transitions">
                                 <Transitions>
@@ -123,34 +53,22 @@
                                 </Transitions>
                             </Setter>
                         </Style>
-
-                        <!-- 마우스 오버(hover) 시 배경색 -->
-                        <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-                            <Setter Property="Background" Value="#5A1AFF" />  <!-- 더 밝은 파랑 -->
+                        <Style
+                            Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                            <Setter Property="Background" Value="#5A1AFF" />
                         </Style>
-
-                        <!-- 눌렀을 때(pressed) 배경색 -->
-                        <Style Selector="Button:pressed /template/ ContentPresenter#PART_ContentPresenter">
-                            <Setter Property="Background" Value="#2E0499" />  <!-- 더 어두운 파랑 -->
+                        <Style
+                            Selector="Button:pressed /template/ ContentPresenter#PART_ContentPresenter">
+                            <Setter Property="Background" Value="#2E0499" />
                         </Style>
                     </Button.Styles>
                 </Button>
-
-                <StackPanel Orientation="Horizontal"
-                            HorizontalAlignment="Center"
-                            Margin="0,24,0,0"
-                            Spacing="16">
-
-                    <TextBlock Text="비밀번호 찾기"
-                               Foreground="#3B82F6"
-                               FontSize="14"/>
-
-                    <TextBlock Text="회원가입"
-                               Foreground="#3B82F6"
-                               FontSize="14"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,24,0,0"
+                    Spacing="16">
+                    <TextBlock Text="비밀번호 찾기" Foreground="#3B82F6" FontSize="14" />
+                    <TextBlock Text="회원가입" Foreground="#3B82F6" FontSize="14" />
                 </StackPanel>
             </StackPanel>
         </Border>
-
     </Grid>
 </Window>
