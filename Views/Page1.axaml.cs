@@ -4,7 +4,8 @@ using ETA.Models;
 using ETA.Services;
 using System;
 using System.Collections.ObjectModel;
-
+using ETA.ViewModels;
+using System.Linq;
 namespace ETA.Views;
 
 public partial class Page1 : Window
@@ -21,10 +22,31 @@ public partial class Page1 : Window
         AnalysisGrid.ItemsSource = _analysisItems;
         ContractGrid.ItemsSource = _contracts;
         QuotationGrid.ItemsSource = _quotationItems;
-
+       // DataContext = new AnalysisViewModel();  // ← new 뒤에 AnalysisViewModel (단수!)
         // 처음에는 메인 패널만 보이게
         HideAllPanels();
         MainPanel.IsVisible = true;
+        var items = AnalysisService.GetAllItems();
+    Console.WriteLine("=== ComboBox 데이터 로드 로그 ===");
+    Console.WriteLine($"DB 경로: {AnalysisService.GetDatabasePath()}");
+    Console.WriteLine($"가져온 AnalysisItem 개수: {items.Count}");
+
+    if (items.Count > 0)
+    {
+        Console.WriteLine("첫 번째 항목 예시:");
+        Console.WriteLine($"Category: {items[0].Category}");
+        Console.WriteLine($"Analyte: {items[0].Analyte}");
+    }
+    else
+    {
+        Console.WriteLine("→ 0개 이유 후보");
+        Console.WriteLine("1. eta.db 파일이 실제로 없음");
+        Console.WriteLine("2. Data 폴더 안에 eta.db가 없거나 복사 안 됨");
+        Console.WriteLine("3. 테이블 '분석정보'가 비어있음");
+        Console.WriteLine("4. 쿼리 컬럼 이름 오타 (대소문자 확인)");
+    }
+
+        
     }
 
     private void LoadAnalysisData()
@@ -34,6 +56,16 @@ public partial class Page1 : Window
         Console.WriteLine($"[Analysis] 항목 수: {items.Count}");
         _analysisItems.Clear();
         foreach (var item in items) _analysisItems.Add(item);
+        var categories = _analysisItems
+    .Select(item => item.Category)
+    .Where(c => !string.IsNullOrEmpty(c))
+    .Distinct()
+    .OrderBy(c => c)
+    .ToList();
+
+cmbCategory.ItemsSource = categories;
+
+Console.WriteLine($"ComboBox에 넣은 고유 Category 개수: {categories.Count}");
     }
 
     private void LoadContractData()
@@ -98,8 +130,8 @@ public partial class Page1 : Window
 
     private void Admin_Click(object? sender, RoutedEventArgs e)
     {
-        Console.WriteLine("[클릭] 관리자");
-        HideAllPanels();
+        var main = new MainWindow();
+        main.Show();
         // 관리자 전용 화면이 있다면 여기서 켜기
         // 예: AdminPanel.IsVisible = true;
         // 지금은 아무것도 안 열리고 로그만 남김
@@ -127,4 +159,22 @@ public partial class Page1 : Window
             Console.WriteLine($"오류: {ex.Message}\n{ex.StackTrace}");
         }
     }
+        private void OnShowPasswordChanged(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        
+    }
+    private void CmbCategory_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+    if (sender is ComboBox comboBox && comboBox.SelectedItem is string selectedCategory)
+    {
+        Console.WriteLine($"선택된 카테고리: {selectedCategory}");
+
+        // 여기서 선택된 카테고리에 따라 DataGrid 필터링하거나 다른 작업
+        // 예: AnalysisGrid.ItemsSource를 필터링
+        var filtered = _analysisItems.Where(item => item.Category == selectedCategory).ToList();
+        AnalysisGrid.ItemsSource = filtered;
+    }
+    }
+    
+
 }

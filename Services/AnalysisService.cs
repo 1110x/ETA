@@ -8,7 +8,7 @@ namespace ETA.Services;
 
 public static class AnalysisService
 {
-    private static string GetDatabasePath()
+    public static string GetDatabasePath()
     {
         return Path.Combine(AppContext.BaseDirectory, "Data", "eta.db");
     }
@@ -18,7 +18,7 @@ public static class AnalysisService
         var items = new List<AnalysisItem>();
 
         string dbPath = GetDatabasePath();
-
+        Console.WriteLine($"DB 경로 확인: {dbPath}");  // 여기서 로그
         if (!File.Exists(dbPath))
         {
             Console.WriteLine($"Database not found: {dbPath}");
@@ -30,8 +30,16 @@ public static class AnalysisService
 
         using var command = connection.CreateCommand();
         command.CommandText = @"
-            SELECT Category, Analyte, Parts, DecimalPlaces, unit, ES, Method, instrument
-            FROM analysis_items";
+            SELECT Category, 
+            Analyte, 
+            Parts, 
+            DecimalPlaces, 
+            unit, 
+            ES, 
+            Method, 
+            instrument
+            FROM ""분석정보""
+            ORDER BY ES ASC";
 
         using var reader = command.ExecuteReader();
 

@@ -4,30 +4,26 @@
     xmlns:controls="using:Avalonia.Controls"
     xmlns:lottie="using:Avalonia.Labs.Lottie"
     RequestedThemeVariant="Light"
+    TransparencyLevelHint="AcrylicBlur"
+    Background="Transparent"
     d:DesignWidth="1400" d:DesignHeight="900"
     x:Class="ETA.Views.Login"
     Title="RENEWUS TEAM Water Analysis Center Design.by 1110x"
-    Width="1400" Height="900" WindowStartupLocation="CenterScreen" Background="#F8FAFC">
+    Width="1400" Height="900" WindowStartupLocation="CenterScreen" >
 
     <Grid ColumnDefinitions="*,1.2*">
-        <Border Grid.Column="0" CornerRadius="0,24,0,0" Margin="0,0,20,0" Padding="40">
-            <Border.Background>
-                <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
-                    <GradientStop Color="#F8FAFC" Offset="0" />
-                    <GradientStop Color="#F8FAFC" Offset="1" />
-                </LinearGradientBrush>
-            </Border.Background>
-            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="20">
+        <Border Grid.Column="0" CornerRadius="0,24,0,0" Margin="0,0,20,0" Padding="40" Background="Transparent">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="20" Background="Transparent">
                 <lottie:Lottie x:Name="lottieRabbit" Width="500" Height="500"
                     HorizontalAlignment="Center" VerticalAlignment="Center"
                     Path="avares://ETA/Assets/rabbit.json" AutoPlay="True" RepeatCount="-1"
-                    Stretch="UniformToFill" />
+                    Stretch="UniformToFill"/>
                 <TextBlock Text="Hi there! Welcome to ETA." FontSize="28" FontWeight="SemiBold"
-                    HorizontalAlignment="Center" Foreground="#1E40AF" TextWrapping="Wrap"
-                    TextAlignment="Center" />
+                    HorizontalAlignment="Center" Foreground="#9d0a0a" TextWrapping="Wrap"
+                    TextAlignment="Center" Background="Transparent"/>
             </StackPanel>
         </Border>
-        <Border Grid.Column="1" Margin="40" Padding="60,40" Background="White" CornerRadius="16"
+        <Border Grid.Column="1" Margin="40" Padding="60,40" Background="Transparent" CornerRadius="16"
             BorderBrush="#E2E8F0" BorderThickness="1" BoxShadow="0 10 30 0 #00000020">
             <StackPanel Spacing="24" VerticalAlignment="Center">
                 <TextBlock Text="로그인" FontSize="36" FontWeight="Bold" HorizontalAlignment="Center"
@@ -40,9 +36,9 @@
                     Padding="12" CornerRadius="8" BorderBrush="#CBD5E1" BorderThickness="1" />
                 <ToggleSwitch x:Name="tglShowPassword" Content="비밀번호 표시" Margin="0,8,0,0"
                     HorizontalAlignment="Left" IsCheckedChanged="OnShowPasswordChanged" />
-                <Button Content="로그인" Click="Login_Click" FontFamily="/Fonts/KBIZ한마음고딕 R.ttf"
+                <Button Content="INTO THE ETA" Click="Login_Click" FontFamily="/Fonts/KBIZ한마음고딕 R.ttf"
                     Foreground="White" FontSize="18" Padding="0,16" Margin="0,32,0,0"
-                    Background="#4207d6" CornerRadius="8" BorderThickness="0"
+                    Background="#19ab708f" CornerRadius="8" BorderThickness="0"
                     HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
                     VerticalContentAlignment="Center" FontWeight="SemiBold">
                     <Button.Styles>

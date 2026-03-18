@@ -115,7 +115,7 @@ public partial class MainWindow : Window
         if (!string.IsNullOrEmpty(_etaListId)) return _etaListId!;
 
         var listsPage = await _graphClient!.Me.Todo.Lists.Request().GetAsync();
-        var etaList = listsPage?.CurrentPage?.FirstOrDefault(l => string.Equals(l.DisplayName, "ETA", StringComparison.OrdinalIgnoreCase));
+        var etaList = listsPage?.CurrentPage?.FirstOrDefault(l => string.Equals(l.DisplayName, "기타업무", StringComparison.OrdinalIgnoreCase));
 
         if (etaList?.Id != null)
         {
@@ -123,7 +123,7 @@ public partial class MainWindow : Window
             return _etaListId;
         }
 
-        var newList = new TodoTaskList { DisplayName = "ETA" };
+        var newList = new TodoTaskList { DisplayName = "기타업무" };
         var created = await _graphClient.Me.Todo.Lists.Request().AddAsync(newList);
         _etaListId = created?.Id ?? throw new Exception("ETA 리스트 생성 실패");
         return _etaListId;
@@ -189,7 +189,8 @@ public partial class MainWindow : Window
             var text = item?.ToString();
             if (string.IsNullOrEmpty(text)) continue;
 
-            string stepTitle = $"{text} 분석";
+                string today = DateTime.Now.ToString("(MM/dd)");
+                string stepTitle = $"{today} {text}";
             await AddAnalysisStepAsync(stepTitle, taskId);
         }
     }
@@ -221,7 +222,7 @@ public partial class MainWindow : Window
         using var conn = new SqliteConnection("Data Source=Data/eta.db");
         conn.Open();
         var cmd = conn.CreateCommand();
-        cmd.CommandText = "SELECT Category, Analyte FROM AnalyteInfo ORDER BY Category";
+        cmd.CommandText = "SELECT Category, Analyte FROM 분석정보 ORDER BY Category";
 
         using var reader = cmd.ExecuteReader();
         while (reader.Read())

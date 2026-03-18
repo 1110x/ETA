@@ -1,19 +1,23 @@
 <Window xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:lottie="using:Avalonia.Labs.Lottie"
-    xmlns:models="using:ETA.Models"
-    x:Class="ETA.Views.Page1"
-    Width="1600"
-    Height="900"
-    Icon="avares://ETA/Assets/ETA.ico"
-    Title="ETA Water Analysis Center">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:lottie="using:Avalonia.Labs.Lottie"
+        xmlns:models="using:ETA.Models"
+        xmlns:vm="using:ETA.ViewModels"
+        x:DataType="vm:AnalysisViewModel"
+        x:Class="ETA.Views.Page1"
+        TransparencyLevelHint="AcrylicBlur"
+        Background="Transparent"
+        Width="1600"
+        Height="900"
+        Icon="avares://ETA/Assets/ETA.ico"
+        Title="ETA Water Analysis Center">
 
-    <Grid ColumnDefinitions="200,*">
+    <Grid ColumnDefinitions="180,*">
 
         <!-- 왼쪽 사이드바 (변경 없음) -->
         <Border Grid.Column="0"
-            Background="#252527"
-            Padding="10">
+                Background="Transparent"
+                Padding="0">
 
             <Grid RowDefinitions="*,220">
 
@@ -22,15 +26,15 @@
                     <StackPanel.Styles>
                         <Style Selector="Button">
                             <Setter Property="FontSize" Value="14" />
-                          <!--Setter Property="FontFamily"
-                                Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R" /-->
+                            <Setter Property="FontFamily"
+                                    Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R" />
                             <Setter Property="Height" Value="40" />
                             <Setter Property="CornerRadius" Value="0" />
-                            <Setter Property="Background" Value="#252527" />
-                            <Setter Property="Foreground" Value="#bbb5b5" />
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="Foreground" Value="#08251b" />
                             <Setter Property="HorizontalContentAlignment" Value="Left" />
                             <Setter Property="VerticalContentAlignment" Value="Center" />
-                            <Setter Property="Padding" Value="4" />
+                            <Setter Property="Padding" Value="5" />
                         </Style>
 
                         <Style Selector="Button StackPanel">
@@ -45,13 +49,14 @@
                         </Style>
 
                         <Style Selector="Button:pointerover">
-                            <Setter Property="Background" Value="#444444" />
+                            <Setter Property="Background" Value="#c200007a" />
                             <Setter Property="HorizontalAlignment" Value="Left" />
-                            <Setter Property="Width" Value="300" />
+                            <Setter Property="Width" Value="180" />
                         </Style>
 
                         <Style Selector="Button:pointerover TextBlock">
                             <Setter Property="Foreground" Value="#40e248" />
+
                         </Style>
                     </StackPanel.Styles>
 
@@ -135,72 +140,78 @@
                     <Button Click="Admin_Click">
                         <StackPanel>
                             <lottie:Lottie x:Name="lottieRabbit2"
-                                Width="24" Height="24"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Path="avares://ETA/Assets/Admin.json"
-                                AutoPlay="True"
-                                RepeatCount="-1"
-                                Stretch="UniformToFill" />
+                                           Width="24" Height="24"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Path="avares://ETA/Assets/Admin.json"
+                                           AutoPlay="True"
+                                           RepeatCount="-1"
+                                           Stretch="UniformToFill" />
                             <TextBlock Text="관리자" />
                         </StackPanel>
                     </Button>
+                   
                 </StackPanel>
 
                 <!-- 로키 그림 -->
-                <Border Grid.Row="1" Margin="5" Background="#252527" CornerRadius="12">
+                <Border Grid.Row="1" Margin="5" Background="Transparent" CornerRadius="12">
                     <lottie:Lottie x:Name="lottieRabbit"
-                        Width="160" Height="160"
-                        Path="avares://ETA/Assets/Dancecat.json"
-                        AutoPlay="True" RepeatCount="-1" Stretch="UniformToFill" />
+                                   Width="160" Height="160"
+                                   Path="avares://ETA/Assets/Dancecat.json"
+                                   AutoPlay="True" RepeatCount="-1" Stretch="UniformToFill" />
                 </Border>
             </Grid>
         </Border>
 
         <!-- 메인 영역 -->
-        <Grid Grid.Column="1" Background="#444444">
+        <Grid Grid.Column="1" Background="#44444451">
+            <ToggleSwitch x:Name="tglShowPassword"
+                          Margin="100,10,10,10" HorizontalAlignment="Right" IsCheckedChanged="OnShowPasswordChanged"  VerticalAlignment="Top" />
+
+            <ComboBox x:Name="cmbCategory" Width="200" Background="Transparent" FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"
+                              FontSize="14" Foreground="#44444451" ItemsSource="{Binding Categories}"
+                              PlaceholderText="항목 선택" />
 
             <!-- 기본 화면 -->
             <StackPanel x:Name="MainPanel"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Spacing="10"
-                IsVisible="True">
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Spacing="10"
+                        IsVisible="True">
                 <lottie:Lottie Width="300" Height="300"
-                    Path="avares://ETA/Assets/Dog.json"
-                    AutoPlay="True" RepeatCount="-1" Stretch="Uniform" />
-                <TextBlock Text="Poodig Poodig Poo Poo Poo Poooding~"
-                    FontSize="36"
-                    HorizontalAlignment="Center" />
+                               Path="avares://ETA/Assets/Dog.json"
+                               AutoPlay="True" RepeatCount="-1" Stretch="Uniform" />
+
+                <TextBlock Text="푸딩 푸딩 푸푸푸딩 🎶 " FontSize="36" Foreground="#aceaa0" HorizontalAlignment="Center" />
             </StackPanel>
 
             <!-- 분석관리 그리드 -->
-             
+
             <DataGrid x:Name="AnalysisGrid"
-                Margin="20"
-                IsVisible="False"
-                AutoGenerateColumns="False"
-                CanUserResizeColumns="True"
-                SelectionMode="Extended"
-                Background="#5f5a5a"
-                BorderBrush="#5f5a5a"
-                BorderThickness="1"
-                x:CompileBindings="False">
+                      Margin="10,50,10,10"
+                      IsVisible="False"
+                      AutoGenerateColumns="False"
+                      CanUserResizeColumns="True"
+                      SelectionMode="Extended"
+                      Background="#3d3939b1"
+                      BorderBrush="#3c3939c3"
+                      BorderThickness="1"
+                      x:CompileBindings="False">   <!-- ← 이 한 줄만 추가하면 에러 사라짐 -->
 
                 <DataGrid.Styles>
                     <!-- 기존 스타일 그대로 -->
                     <Style Selector="DataGridColumnHeader">
-                        <Setter Property="Background" Value="#5e5e5e" />
+                        <Setter Property="Background" Value="#17151592" />
                         <Setter Property="Foreground" Value="White" />
                         <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
                         <Setter Property="FontSize" Value="16" />
                         <Setter Property="HorizontalContentAlignment" Value="Center" />
                         <Setter Property="Padding" Value="8,4" />
                         <Setter Property="BorderThickness" Value="0,0,1,1" />
-                        <Setter Property="BorderBrush" Value="#424242" />
+                        <Setter Property="BorderBrush" Value="#4242428d" />
                     </Style>
                     <Style Selector="DataGridCell TextBlock">
-                        <Setter Property="Foreground" Value="Black" />
+                        <Setter Property="Foreground" Value="#212621" />
                         <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R" />
                         <Setter Property="FontSize" Value="14" />
                     </Style>
@@ -220,30 +231,30 @@
 
             <!-- 업체관리 그리드 (AnalysisGrid와 같은 레벨로 이동) -->
             <DataGrid x:Name="ContractGrid"
-                Margin="20"
-                IsVisible="False"
-                AutoGenerateColumns="False"
-                CanUserResizeColumns="True"
-                SelectionMode="Extended"
-                Background="#5f5a5a"
-                BorderBrush="#5f5a5a"
-                BorderThickness="1"
-                x:CompileBindings="False">
+                      Margin="10,50,10,10"
+                      IsVisible="False"
+                      AutoGenerateColumns="False"
+                      CanUserResizeColumns="True"
+                      SelectionMode="Extended"
+                      Background="#3d3939b1"
+                      BorderBrush="#3c3939c3"
+                      BorderThickness="1"
+                      x:CompileBindings="False">   <!-- ← 이 한 줄만 추가하면 에러 사라짐 -->
 
                 <DataGrid.Styles>
                     <!-- 동일한 스타일 복사 -->
                     <Style Selector="DataGridColumnHeader">
-                        <Setter Property="Background" Value="#5e5e5e" />
+                        <Setter Property="Background" Value="#17151592" />
                         <Setter Property="Foreground" Value="White" />
                         <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
                         <Setter Property="FontSize" Value="16" />
                         <Setter Property="HorizontalContentAlignment" Value="Center" />
                         <Setter Property="Padding" Value="8,4" />
                         <Setter Property="BorderThickness" Value="0,0,1,1" />
-                        <Setter Property="BorderBrush" Value="#424242" />
+                        <Setter Property="BorderBrush" Value="#4242428d" />
                     </Style>
                     <Style Selector="DataGridCell TextBlock">
-                        <Setter Property="Foreground" Value="Black" />
+                        <Setter Property="Foreground" Value="#212621" />
                         <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R" />
                         <Setter Property="FontSize" Value="14" />
                     </Style>
@@ -270,30 +281,30 @@
 
             <!-- 견적정보 그리드 (분석단가) -->
             <DataGrid x:Name="QuotationGrid"
-                Margin="20"
-                IsVisible="False"
-                AutoGenerateColumns="False"
-                CanUserResizeColumns="True"
-                SelectionMode="Extended"
-                Background="#5f5a5a"
-                BorderBrush="#5f5a5a"
-                BorderThickness="1"
-                x:CompileBindings="False">
+                      Margin="10,50,10,10"
+                      IsVisible="False"
+                      AutoGenerateColumns="False"
+                      CanUserResizeColumns="True"
+                      SelectionMode="Extended"
+                      Background="#3d3939b1"
+                      BorderBrush="#3c3939c3"
+                      BorderThickness="1"
+                      x:CompileBindings="False">   <!-- ← 이 한 줄만 추가하면 에러 사라짐 -->
 
                 <DataGrid.Styles>
                     <!-- AnalysisGrid와 동일한 스타일 복사 -->
                     <Style Selector="DataGridColumnHeader">
-                        <Setter Property="Background" Value="#5e5e5e" />
+                        <Setter Property="Background" Value="#17151592" />
                         <Setter Property="Foreground" Value="White" />
                         <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
                         <Setter Property="FontSize" Value="16" />
                         <Setter Property="HorizontalContentAlignment" Value="Center" />
                         <Setter Property="Padding" Value="8,4" />
                         <Setter Property="BorderThickness" Value="0,0,1,1" />
-                        <Setter Property="BorderBrush" Value="#424242" />
+                        <Setter Property="BorderBrush" Value="#4242428d" />
                     </Style>
                     <Style Selector="DataGridCell TextBlock">
-                        <Setter Property="Foreground" Value="Black" />
+                        <Setter Property="Foreground" Value="#212621" />
                         <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R" />
                         <Setter Property="FontSize" Value="14" />
                     </Style>

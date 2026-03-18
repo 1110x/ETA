@@ -15,7 +15,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     
-
+    
     <PackageReference Include="Avalonia" Version="11.3.12" />
 
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.12" />
@@ -26,8 +26,8 @@
     <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.12" />
     
     <PackageReference Include="Avalonia.Diagnostics" Version="11.3.12">
-      <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
-      <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+    <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+    <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
     <AvaloniaResource Include="Assets\Fonts\KBIZ한마음고딕 B.ttf" />
     <AvaloniaResource Include="Assets\Fonts\KBIZ한마음고딕 H.ttf" />
@@ -35,6 +35,7 @@
     <AvaloniaResource Include="Assets\Fonts\KBIZ한마음고딕 M.ttf" />
     <AvaloniaResource Include="Assets\Fonts\KBIZ한마음고딕 R.ttf" />
     <PackageReference Include="Azure.Identity" Version="1.19.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="LibVLCSharp" Version="3.9.6" />
     <PackageReference Include="LibVLCSharp.Avalonia" Version="3.9.6" />
     <PackageReference Include="MessageBox.Avalonia" Version="3.3.1.1" />
