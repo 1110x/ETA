@@ -3,12 +3,10 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:controls="using:Avalonia.Controls"
     xmlns:lottie="using:Avalonia.Labs.Lottie"
-    RequestedThemeVariant="Light"
-    TransparencyLevelHint="AcrylicBlur"
-    Background="Transparent"
     d:DesignWidth="1400" d:DesignHeight="900"
     x:Class="ETA.Views.Login"
     Title="RENEWUS TEAM Water Analysis Center Design.by 1110x"
+    Icon="avares://ETA/Assets/icons/FF.ico"
     Width="1400" Height="900" WindowStartupLocation="CenterScreen" >
 
     <Grid ColumnDefinitions="*,1.2*">

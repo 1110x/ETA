@@ -1,0 +1,34 @@
+<!-- Styles/DataGridCommonStyles.axaml -->
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- 컬럼 헤더 공통 스타일 -->
+    <Style Selector="DataGridColumnHeader">
+        <Setter Property="Background" Value="#002e12" />
+        <Setter Property="Foreground" Value="#c4c3fc" />
+        <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="Padding" Value="1,1" />
+        <Setter Property="BorderThickness" Value="0,0,1,1" />
+        <Setter Property="BorderBrush" Value="#4242428d" />
+    </Style>
+
+    <!-- 셀 안 TextBlock 공통 스타일 -->
+    <Style Selector="DataGridCell TextBlock">
+        <Setter Property="Foreground" Value="#ffffff" />
+        <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R" />
+        <Setter Property="FontSize" Value="12" />
+    </Style>
+
+    <Style Selector="DataGrid.common-grid">
+        <Setter Property="Margin" Value="10,10,10,10" />
+        <Setter Property="IsVisible" Value="False" />
+        <Setter Property="AutoGenerateColumns" Value="False" />
+        <Setter Property="CanUserResizeColumns" Value="True" />
+        <Setter Property="SelectionMode" Value="Extended" />
+        <Setter Property="BorderBrush" Value="#3c3939c3" />
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+</Styles>

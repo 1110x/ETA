@@ -17,7 +17,7 @@
           "Avalonia.ReactiveUI": "11.1.1",
           "Avalonia.Themes.Fluent": "11.3.12",
           "Azure.Identity": "1.19.0",
-          "CommunityToolkit.Mvvm": "8.4.0",
+          "CommunityToolkit.Mvvm": "8.3.0",
           "LibVLCSharp": "3.9.6",
           "LibVLCSharp.Avalonia": "3.9.6",
           "MessageBox.Avalonia": "3.3.1.1",
@@ -26,7 +26,8 @@
           "Microsoft.Identity.Client": "4.83.1",
           "SkiaSharp": "3.119.2",
           "SkiaSharp.Skottie": "3.119.2",
-          "System.Windows.Extensions": "10.0.5"
+          "System.Windows.Extensions": "10.0.5",
+          "TreeDataGrid.Avalonia": "11.3.1"
         },
         "runtime": {
           "ETA.dll": {}
@@ -89,17 +90,17 @@
           "runtimes/win-arm64/native/av_libglesv2.dll": {
             "rid": "win-arm64",
             "assetType": "native",
-            "fileVersion": "0.0.0.0"
+            "fileVersion": "2.1.25606.0"
           },
           "runtimes/win-x64/native/av_libglesv2.dll": {
             "rid": "win-x64",
             "assetType": "native",
-            "fileVersion": "0.0.0.0"
+            "fileVersion": "2.1.25606.0"
           },
           "runtimes/win-x86/native/av_libglesv2.dll": {
             "rid": "win-x86",
             "assetType": "native",
-            "fileVersion": "0.0.0.0"
+            "fileVersion": "2.1.25606.0"
           }
         }
       },
@@ -324,11 +325,11 @@
           }
         }
       },
-      "CommunityToolkit.Mvvm/8.4.0": {
+      "CommunityToolkit.Mvvm/8.3.0": {
         "runtime": {
           "lib/net8.0/CommunityToolkit.Mvvm.dll": {
-            "assemblyVersion": "8.4.0.0",
-            "fileVersion": "8.4.0.1"
+            "assemblyVersion": "8.3.0.0",
+            "fileVersion": "8.3.0.1"
           }
         }
       },
@@ -1144,6 +1145,17 @@
             "fileVersion": "0.21.2.0"
           }
         }
+      },
+      "TreeDataGrid.Avalonia/11.3.1": {
+        "dependencies": {
+          "Avalonia": "11.3.12"
+        },
+        "runtime": {
+          "lib/net8.0/Avalonia.Controls.TreeDataGrid.dll": {
+            "assemblyVersion": "11.3.1.0",
+            "fileVersion": "11.3.1.0"
+          }
+        }
       }
     }
   },
@@ -1286,12 +1298,12 @@
       "path": "azure.identity/1.19.0",
       "hashPath": "azure.identity.1.19.0.nupkg.sha512"
     },
-    "CommunityToolkit.Mvvm/8.4.0": {
+    "CommunityToolkit.Mvvm/8.3.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-tqVU8yc/ADO9oiTRyTnwhFN68hCwvkliMierptWOudIAvWY1mWCh5VFh+guwHJmpMwfg0J0rY+yyd5Oy7ty9Uw==",
-      "path": "communitytoolkit.mvvm/8.4.0",
-      "hashPath": "communitytoolkit.mvvm.8.4.0.nupkg.sha512"
+      "sha512": "sha512-APWb6lZI3l8WVf5Ijp3WHHe471anU9pJ04aNJNCNJQ3kKy/mUW6irvDwyXeYTLaaNNGBAyo4/musnA/oQRKS/Q==",
+      "path": "communitytoolkit.mvvm/8.3.0",
+      "hashPath": "communitytoolkit.mvvm.8.3.0.nupkg.sha512"
     },
     "DialogHost.Avalonia/0.8.1": {
       "type": "package",
@@ -1677,6 +1689,13 @@
       "sha512": "sha512-ScSMrUrrw8px4kK1Glh0fZv/HQUlg1078bNXNPfRPKQ3WbRzV9HpsydYEOgSoMK5LWICMf2bMwIFH0pGjxjcMA==",
       "path": "tmds.dbus.protocol/0.21.2",
       "hashPath": "tmds.dbus.protocol.0.21.2.nupkg.sha512"
+    },
+    "TreeDataGrid.Avalonia/11.3.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-5dh4oHn4Z98rtZWM+VtbLgC558M90lm2n+dQJs3tkux35W92HesDBZmkhD3DxuXNSYPATAkEUey6PJJb8qyEDQ==",
+      "path": "treedatagrid.avalonia/11.3.1",
+      "hashPath": "treedatagrid.avalonia.11.3.1.nupkg.sha512"
     }
   }
 }

@@ -1,37 +1,25 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:ETA.ViewModels"
+        xmlns:controls="clr-namespace:Avalonia.Controls;assembly=Avalonia.Controls.TreeDataGrid"
         x:Class="ETA.Views.MainWindow"
-        Title="ETA" Width="1500" Height="900">
+        Width="1200" Height="700"
+        x:CompileBindings="False"
+        Title="ETA">
 
-    <Grid ColumnDefinitions="230,*,200"
-          RowDefinitions="*,40,20">
-        <TreeView x:Name="Tree"
-                  Grid.Column="0"
-                  Margin="5"/>
+    <Design.DataContext>
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+    <Grid ColumnDefinitions="400,*">
         
-        <ListBox x:Name="SelectedList"
-                 Grid.Column="1"
-                 Margin="10"/>
-        
-        <ListBox x:Name="PriceList"
-                 Grid.Column="2"
-                 Margin="10"/>
-        
-        <Button Grid.Column="2"
-                Grid.Row="1"
-                Content="To Do 생성"
-                Width="120"
-                Height="35"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Click="BtnCreateTodo_Click"/>
-        
-        <TextBlock x:Name="TotalPriceText"
-                   Grid.Row="2"
-                   Grid.ColumnSpan="3"
-                   FontSize="24"
-                   HorizontalAlignment="Right"
-                   Margin="20"
-                   Text="Total : 0"/>
+        <!-- 좌측 TreeDataGrid -->
+        <controls:TreeDataGrid x:Name="treeGrid"/>
+
+        <!-- 우측 결과 DataGrid -->
+        <DataGrid Grid.Column="1"
+                  ItemsSource="{Binding Results}"
+                  AutoGenerateColumns="True"/>
+
     </Grid>
 </Window>

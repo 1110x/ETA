@@ -1,0 +1,8 @@
+C:\Users\ironu\Documents\ETA\obj\packages\win-x64\l5dJkyjZ1ad\ETA.pdb
+C:\Users\ironu\Documents\ETA\obj\packages\win-x64\l5dJkyjZ1ad\Data/eta.db
+C:\Users\ironu\Documents\ETA\obj\packages\win-x64\l5dJkyjZ1ad\av_libglesv2.dll
+C:\Users\ironu\Documents\ETA\obj\packages\win-x64\l5dJkyjZ1ad\libHarfBuzzSharp.dll
+C:\Users\ironu\Documents\ETA\obj\packages\win-x64\l5dJkyjZ1ad\libSkiaSharp.dll
+C:\Users\ironu\Documents\ETA\obj\packages\win-x64\l5dJkyjZ1ad\libSkiaSharp.pdb
+C:\Users\ironu\Documents\ETA\obj\packages\win-x64\l5dJkyjZ1ad\e_sqlite3.dll
+C:\Users\ironu\Documents\ETA\obj\packages\win-x64\l5dJkyjZ1ad\ETA.exe

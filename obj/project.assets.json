@@ -416,7 +416,7 @@
           }
         }
       },
-      "CommunityToolkit.Mvvm/8.4.0": {
+      "CommunityToolkit.Mvvm/8.3.0": {
         "type": "package",
         "compile": {
           "lib/net8.0/CommunityToolkit.Mvvm.dll": {
@@ -2412,6 +2412,22 @@
         "runtime": {
           "lib/net8.0/Tmds.DBus.Protocol.dll": {}
         }
+      },
+      "TreeDataGrid.Avalonia/11.3.1": {
+        "type": "package",
+        "dependencies": {
+          "Avalonia": "11.0.0"
+        },
+        "compile": {
+          "lib/net8.0/Avalonia.Controls.TreeDataGrid.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Avalonia.Controls.TreeDataGrid.dll": {
+            "related": ".xml"
+          }
+        }
       }
     }
   },
@@ -2940,10 +2956,10 @@
         "lib/netstandard2.0/Azure.Identity.xml"
       ]
     },
-    "CommunityToolkit.Mvvm/8.4.0": {
-      "sha512": "tqVU8yc/ADO9oiTRyTnwhFN68hCwvkliMierptWOudIAvWY1mWCh5VFh+guwHJmpMwfg0J0rY+yyd5Oy7ty9Uw==",
+    "CommunityToolkit.Mvvm/8.3.0": {
+      "sha512": "APWb6lZI3l8WVf5Ijp3WHHe471anU9pJ04aNJNCNJQ3kKy/mUW6irvDwyXeYTLaaNNGBAyo4/musnA/oQRKS/Q==",
       "type": "package",
-      "path": "communitytoolkit.mvvm/8.4.0",
+      "path": "communitytoolkit.mvvm/8.3.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -2952,22 +2968,19 @@
         "ThirdPartyNotices.txt",
         "analyzers/dotnet/roslyn4.0/cs/CommunityToolkit.Mvvm.CodeFixers.dll",
         "analyzers/dotnet/roslyn4.0/cs/CommunityToolkit.Mvvm.SourceGenerators.dll",
-        "analyzers/dotnet/roslyn4.12/cs/CommunityToolkit.Mvvm.CodeFixers.dll",
-        "analyzers/dotnet/roslyn4.12/cs/CommunityToolkit.Mvvm.SourceGenerators.dll",
         "analyzers/dotnet/roslyn4.3/cs/CommunityToolkit.Mvvm.CodeFixers.dll",
         "analyzers/dotnet/roslyn4.3/cs/CommunityToolkit.Mvvm.SourceGenerators.dll",
         "build/CommunityToolkit.Mvvm.FeatureSwitches.targets",
         "build/CommunityToolkit.Mvvm.SourceGenerators.targets",
-        "build/CommunityToolkit.Mvvm.Windows.targets",
-        "build/CommunityToolkit.Mvvm.WindowsSdk.targets",
         "build/CommunityToolkit.Mvvm.targets",
         "buildTransitive/CommunityToolkit.Mvvm.FeatureSwitches.targets",
         "buildTransitive/CommunityToolkit.Mvvm.SourceGenerators.targets",
-        "buildTransitive/CommunityToolkit.Mvvm.Windows.targets",
-        "buildTransitive/CommunityToolkit.Mvvm.WindowsSdk.targets",
         "buildTransitive/CommunityToolkit.Mvvm.targets",
-        "communitytoolkit.mvvm.8.4.0.nupkg.sha512",
+        "communitytoolkit.mvvm.8.3.0.nupkg.sha512",
         "communitytoolkit.mvvm.nuspec",
+        "lib/net6.0/CommunityToolkit.Mvvm.dll",
+        "lib/net6.0/CommunityToolkit.Mvvm.pdb",
+        "lib/net6.0/CommunityToolkit.Mvvm.xml",
         "lib/net8.0-windows10.0.17763/CommunityToolkit.Mvvm.dll",
         "lib/net8.0-windows10.0.17763/CommunityToolkit.Mvvm.pdb",
         "lib/net8.0-windows10.0.17763/CommunityToolkit.Mvvm.xml",
@@ -7021,6 +7034,27 @@
         "tmds.dbus.protocol.0.21.2.nupkg.sha512",
         "tmds.dbus.protocol.nuspec"
       ]
+    },
+    "TreeDataGrid.Avalonia/11.3.1": {
+      "sha512": "5dh4oHn4Z98rtZWM+VtbLgC558M90lm2n+dQJs3tkux35W92HesDBZmkhD3DxuXNSYPATAkEUey6PJJb8qyEDQ==",
+      "type": "package",
+      "path": "treedatagrid.avalonia/11.3.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "icon.png",
+        "lib/net10.0/Avalonia.Controls.TreeDataGrid.dll",
+        "lib/net10.0/Avalonia.Controls.TreeDataGrid.xml",
+        "lib/net48/Avalonia.Controls.TreeDataGrid.dll",
+        "lib/net48/Avalonia.Controls.TreeDataGrid.xml",
+        "lib/net8.0/Avalonia.Controls.TreeDataGrid.dll",
+        "lib/net8.0/Avalonia.Controls.TreeDataGrid.xml",
+        "lib/netstandard2.0/Avalonia.Controls.TreeDataGrid.dll",
+        "lib/netstandard2.0/Avalonia.Controls.TreeDataGrid.xml",
+        "readme.md",
+        "treedatagrid.avalonia.11.3.1.nupkg.sha512",
+        "treedatagrid.avalonia.nuspec"
+      ]
     }
   },
   "projectFileDependencyGroups": {
@@ -7034,7 +7068,7 @@
       "Avalonia.ReactiveUI >= 11.1.1",
       "Avalonia.Themes.Fluent >= 11.3.12",
       "Azure.Identity >= 1.19.0",
-      "CommunityToolkit.Mvvm >= 8.4.0",
+      "CommunityToolkit.Mvvm >= 8.3.0",
       "LibVLCSharp >= 3.9.6",
       "LibVLCSharp.Avalonia >= 3.9.6",
       "MessageBox.Avalonia >= 3.3.1.1",
@@ -7043,28 +7077,32 @@
       "Microsoft.Identity.Client >= 4.83.1",
       "SkiaSharp >= 3.119.2",
       "SkiaSharp.Skottie >= 3.119.2",
-      "System.Windows.Extensions >= 10.0.5"
+      "System.Windows.Extensions >= 10.0.5",
+      "TreeDataGrid.Avalonia >= 11.3.1"
     ]
   },
   "packageFolders": {
-    "/Users/azrael/.nuget/packages/": {}
+    "C:\\Users\\ironu\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/azrael/Documents/ETA/ETA/ETA.csproj",
+      "projectUniqueName": "C:\\Users\\ironu\\Documents\\ETA\\ETA.csproj",
       "projectName": "ETA",
-      "projectPath": "/Users/azrael/Documents/ETA/ETA/ETA.csproj",
-      "packagesPath": "/Users/azrael/.nuget/packages/",
-      "outputPath": "/Users/azrael/Documents/ETA/ETA/obj/",
+      "projectPath": "C:\\Users\\ironu\\Documents\\ETA\\ETA.csproj",
+      "packagesPath": "C:\\Users\\ironu\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\ironu\\Documents\\ETA\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/Users/azrael/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\ironu\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
       ],
       "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -7127,7 +7165,7 @@
           },
           "CommunityToolkit.Mvvm": {
             "target": "Package",
-            "version": "[8.4.0, )"
+            "version": "[8.3.0, )"
           },
           "LibVLCSharp": {
             "target": "Package",
@@ -7164,6 +7202,10 @@
           "System.Windows.Extensions": {
             "target": "Package",
             "version": "[10.0.5, )"
+          },
+          "TreeDataGrid.Avalonia": {
+            "target": "Package",
+            "version": "[11.3.1, )"
           }
         },
         "imports": [
@@ -7183,11 +7225,15 @@
             "version": "[8.0.24, 8.0.24]"
           },
           {
-            "name": "Microsoft.NETCore.App.Host.osx-arm64",
+            "name": "Microsoft.NETCore.App.Host.win-x64",
             "version": "[8.0.24, 8.0.24]"
           },
           {
             "name": "Microsoft.NETCore.App.Ref",
+            "version": "[8.0.24, 8.0.24]"
+          },
+          {
+            "name": "Microsoft.WindowsDesktop.App.Ref",
             "version": "[8.0.24, 8.0.24]"
           }
         ],
@@ -7196,7 +7242,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.103/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.103/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
