@@ -9,91 +9,133 @@
         Title="ETA Water Analysis Center">
 
     <Grid RowDefinitions="30,*">
-
         <!-- 상단 메인 메뉴 바 -->
-        <Border Grid.Row="0" Background="#110a0a" Padding="1">
-            <StackPanel x:Name="MenuPanel" Orientation="Horizontal" Spacing="5">
+        <Border Grid.Row="0" Background="#444444" Padding="1">
+            <Grid ColumnDefinitions="Auto,*">
 
-                <!-- 버튼 스타일 + 아이콘 크기 조정 -->
+                <!-- 왼쪽 메뉴 (MenuItem) -->
+                <Menu Grid.Column="0" HorizontalAlignment="Left" Background="Transparent" VerticalAlignment="Center">
+                    <Menu.Styles>
+                        <!-- 메인 메뉴 스타일 -->
+                        <Style Selector="MenuItem">
+                            <Setter Property="FontSize" Value="13" />
+                            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+                            <Setter Property="Height" Value="25" />
+                            <Setter Property="Padding" Value="18,0" />
+                            <Setter Property="Background" Value="#444444" />
+                            <Setter Property="Foreground" Value="#ffffff" />
+                        </Style>
+                        <Style Selector="MenuItem:pointerover">
+                            <Setter Property="Background" Value="#021621" />
+                            <!--Setter Property="Foreground" Value="#694e8c" /-->
+                        </Style>
+
+                        <!-- 서브메뉴 창 전체 -->
+                        <Style Selector="MenuFlyoutPresenter">
+                            <Setter Property="Background" Value="#2f3034" />
+                            <Setter Property="CornerRadius" Value="8" />
+                            <Setter Property="Padding" Value="5,5" />           <!-- 창 전체 여백 증가 -->
+                            <Setter Property="BorderThickness" Value="0" />
+                            <Setter Property="Foreground" Value="#ffffff" />
+                        </Style>
+
+                        <!-- 서브메뉴 항목 (글자 위아래 간격 크게 증가!) -->
+                        <Style Selector="MenuItem MenuItem">
+                            <Setter Property="Background" Value="#444444" />
+                            <Setter Property="Padding" Value="5,5" />          <!-- ← 여기서 위아래 간격 크게! -->
+                            <Setter Property="MinHeight" Value="36" />
+                        </Style>
+
+                        <!-- 글자 색 강제 적용 -->
+                        <Style Selector="MenuFlyoutPresenter TextBlock">
+                            <Setter Property="Foreground" Value="#ffffff" />
+                        </Style>
+                        <Style Selector="MenuItem MenuItem TextBlock">
+                            <Setter Property="Foreground" Value="#ffffff" />
+                        </Style>
+                        <Style Selector="MenuItem MenuItem:pointerover TextBlock">
+                            <Setter Property="Foreground" Value="#fd0f0f" />
+                        </Style>
+                    </Menu.Styles>
+                    <MenuItem Header="업체등록" Click="Contract_Click">
+                        <MenuItem Header="새 업체 등록" />
+                        <MenuItem Header="업체 목록 보기" />
+                        <MenuItem Header="업체 수정" />
+                    </MenuItem>
+
+                    <MenuItem Header="분석단가" Click="Quotation_Click">
+                        <MenuItem Header="단가표 보기" />
+                        <MenuItem Header="새 단가 등록" />
+                        <MenuItem Header="단가 수정" />
+                    </MenuItem>
+
+                    <MenuItem Header="분석팀원" Click="Agent_Click">
+                        <MenuItem Header="팀원 등록" />
+                        <MenuItem Header="팀원 목록" />
+                    </MenuItem>
+
+                    <MenuItem Header="관리자" Click="Admin_Click">
+                        <MenuItem Header="권한 설정" />
+                        <MenuItem Header="로그 보기" />
+                    </MenuItem>
+                </Menu>
+
+                <!-- 오른쪽 ToggleSwitch -->
+                <ToggleSwitch Grid.Column="1"
+                              x:Name="tglShowPassword"
+                              HorizontalAlignment="Right"
+                              Margin="0,-5,20,0"
+                              IsCheckedChanged="OnShowPasswordChanged"
+                              VerticalAlignment="Center"
+                              OnContent="🌙 다크 템플러"
+                              OffContent="☀️ 하이 템플러"
+                              IsChecked="True"/>
+            </Grid>
+        </Border>
+
+        <!-- Inner Grid (기존 그대로) -->
+        <Grid Grid.Row="1" Background="{DynamicResource SystemControlBackgroundAltMediumBrush}" RowDefinitions="Auto, *">
+            <!-- SubMenu -->
+            <StackPanel x:Name="SubMenu" HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Horizontal" Spacing="8" Margin="12,10,0,0">
                 <StackPanel.Styles>
                     <Style Selector="Button">
                         <Setter Property="FontSize" Value="13" />
                         <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
-                        <Setter Property="Height" Value="40" />
-                        <Setter Property="CornerRadius" Value="0" />
-                        <Setter Property="Background" Value="Transparent" />
-                        <Setter Property="Foreground" Value="White" />
+                        <Setter Property="Height" Value="25" />
+                        <Setter Property="CornerRadius" Value="4" />
+                        <Setter Property="Background" Value="#342f2f" />
+                        <Setter Property="Foreground" Value="#ffffff" />
                         <Setter Property="HorizontalContentAlignment" Value="Center" />
                         <Setter Property="VerticalContentAlignment" Value="Center" />
-                        <Setter Property="Padding" Value="8,0" />
+                        <Setter Property="Padding" Value="18,0" />
+                        <Setter Property="BorderThickness" Value="0" />
                     </Style>
-
-                    <!-- ★★★ 아이콘 크기 조정 핵심 ★★★ -->
-                    <Style Selector="Button Image">
-                        <Setter Property="Width" Value="16" />
-                        <Setter Property="Height" Value="16" />
-                        <Setter Property="VerticalAlignment" Value="Center" />
-                    </Style>
-
                     <Style Selector="Button:pointerover">
-                        <Setter Property="Background" Value="#c200007a" />
+                        <Setter Property="Background" Value="#021621" />
                     </Style>
-
                     <Style Selector="Button:pointerover TextBlock">
-                        <Setter Property="Foreground" Value="#ffeb3c" />
+                        <Setter Property="Foreground" Value="#fd0f0f" />
                     </Style>
                 </StackPanel.Styles>
-
-                <!-- 메뉴 버튼들 -->
-                <Button Click="Contract_Click" x:Name="Btn1" Tag="0">
-                    <StackPanel>
-                        <Image Source="/Assets/icons/A1.png" />
-                        <TextBlock Text="업체등록" Margin="4,0,0,0"/>
-                    </StackPanel>
-                </Button>
-
-                <Button Click="Quotation_Click" x:Name="Btn2" Tag="1">
-                    <StackPanel>
-                        <Image Source="/Assets/icons/A2.png" />
-                        <TextBlock Text="분석단가" Margin="4,0,0,0"/>
-                    </StackPanel>
-                </Button>
-
-                <!-- ... 나머지 버튼들 (기존 그대로 유지) ... -->
-
-                <Button Click="Agent_Click" x:Name="Btn12" Tag="10">
-                    <StackPanel>
-                        <Image Source="/Assets/icons/A11.png" />
-                        <TextBlock Text="분석팀원" Margin="4,0,0,0"/>
-                    </StackPanel>
-                </Button>
-
-                <Button Click="Admin_Click" x:Name="Btn99" Tag="11">
-                    <StackPanel>
-                        <TextBlock Text="관리자" />
-                    </StackPanel>
-                </Button>
-
-                <ToggleSwitch x:Name="tglShowPassword" 
-                              Foreground="#ffffff"
-                              FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R" 
-                              FontSize="13"
-                              Margin="20,0,0,0"
-                              IsCheckedChanged="OnShowPasswordChanged"
-                              VerticalAlignment="Center"/>
-            </StackPanel>
-        </Border>
-
-        <!-- 나머지 내용 (ContentControl 등) 그대로 -->
-        <Grid Grid.Row="1" Background="#242020" RowDefinitions="Auto, *">
-            <StackPanel x:Name="SubMenu" HorizontalAlignment="Left" VerticalAlignment="Top" Orientation="Horizontal" Spacing="10" IsVisible="True">
-                <ComboBox x:Name="cmbCategory" Width="200" Background="#2f961ab9" FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R" FontSize="11" Foreground="#ffffffb9" PlaceholderText="항목 선택" Height="30" IsVisible="False"/>
-                <Button x:Name="Btn13" Tag="12" IsVisible="False" Click="TEST_Click">
-                    <StackPanel><TextBlock Text="TEST" /></StackPanel>
-                </Button>
+                <Button Content="항목1" />
+                <Button Content="항목2" />
+                <ComboBox x:Name="cmbCategory" />
+                <Button x:Name="Btn13"/>
             </StackPanel>
 
-            <ContentControl x:Name="ActivePageContent" Grid.Row="1" Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+            <!-- 좌우 분할 영역 -->
+            <Grid Grid.Row="1" Margin="10,55,10,10" ColumnDefinitions="200,8,*">
+                <Border Grid.Column="0" Background="{DynamicResource SystemControlBackgroundAltHighBrush}" CornerRadius="6" Padding="16" Margin="0,0,8,0">
+                    <ContentControl x:Name="ActivePageContent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+                </Border>
+                <GridSplitter Grid.Column="1" Width="8" Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Columns" Cursor="SizeWestEast" />
+                <Border Grid.Column="1" Width="1" Background="#6144cb" HorizontalAlignment="Center" VerticalAlignment="Stretch" Opacity="0.9" />
+                <Border Grid.Column="2" Background="{DynamicResource SystemControlBackgroundAltHighBrush}" CornerRadius="6" Padding="12" Margin="8,0,0,0">
+                    <StackPanel>
+                        <TextBlock Text="분석 항목" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" Margin="0,0,0,15"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
         </Grid>
     </Grid>
 </Window>

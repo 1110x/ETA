@@ -48,8 +48,9 @@ public partial class AgentTreePage : UserControl
                 personItem.Header = new TextBlock
                 {
                     Text = agent.성명 ?? "이름 없음",
-                    FontSize = 18,
-                    FontWeight = FontWeight.Bold,
+                    FontSize = 12,
+                    FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R",
+                    
                     Foreground = Brushes.WhiteSmoke,
                     Margin = new Thickness(8, 8, 0, 12)
                 };
@@ -91,11 +92,13 @@ public partial class AgentTreePage : UserControl
         var textBox = new TextBox
         {
             Text = value ?? "",
-            FontSize = 14,
+            FontSize = 10,
+            FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R",
             Background = Brushes.Transparent,
+            
             BorderThickness = new Thickness(0),
             Padding = new Thickness(6, 3),
-            Width = 320,
+            Width = 220,
             IsReadOnly = isReadOnly
         };
 
@@ -201,6 +204,6 @@ public partial class AgentTreePage : UserControl
 
     private void UpdateStatus(string text)
     {
-        if (StatusText != null) StatusText.Text = text;
+        //if (StatusText != null) StatusText.Text = text;
     }
 }
