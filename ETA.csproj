@@ -14,20 +14,20 @@
     <None Include="Data/eta.db">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    
-    
-    <PackageReference Include="Avalonia" Version="11.3.12" />
 
+
+    <PackageReference Include="Avalonia" Version="11.3.12" />
+    <!--PackageReference Include="Avalonia.Controls.TreeDataGrid" Version="11.1.2" /-->
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.12" />
     <PackageReference Include="Avalonia.Desktop" Version="11.3.12" />
     <PackageReference Include="Avalonia.Labs.Lottie" Version="11.3.1" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.1.1" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.12" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.12" />
-    
+
     <PackageReference Include="Avalonia.Diagnostics" Version="11.3.12">
-    <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
-    <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+      <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+      <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
     <AvaloniaResource Include="Assets\Fonts\KBIZ한마음고딕 B.ttf" />
     <AvaloniaResource Include="Assets\Fonts\KBIZ한마음고딕 H.ttf" />
@@ -46,6 +46,8 @@
     <PackageReference Include="SkiaSharp.Skottie" Version="3.119.2" />
     <PackageReference Include="System.Windows.Extensions" Version="10.0.5" />
     <PackageReference Include="TreeDataGrid.Avalonia" Version="11.3.1" />
+    <!--PackageReference
+    Include="TreeDataGrid.Avalonia" Version="11.3.1" /-->
   </ItemGroup>
 
 </Project>

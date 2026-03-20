@@ -33,8 +33,17 @@ build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 [C:/Users/ironu/Documents/ETA/Views/Login.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Users/ironu/Documents/ETA/Views/MainWindow.axaml]
+[C:/Users/ironu/Documents/ETA/Views/MainPage.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Users/ironu/Documents/ETA/Views/Page1.axaml]
+[C:/Users/ironu/Documents/ETA/Views/Pages/AgentTreePage.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[C:/Users/ironu/Documents/ETA/Views/Pages/AnalysisPage.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[C:/Users/ironu/Documents/ETA/Views/Pages/ContractPage.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[C:/Users/ironu/Documents/ETA/Views/Pages/QuotationPage.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml

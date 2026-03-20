@@ -1,0 +1,32 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:ETA.ViewModels"
+             x:Class="ETA.Views.Pages.ContractPage"
+             x:DataType="vm:ContractViewModel">
+
+    <Grid>
+        <DataGrid x:Name="ContractGrid"
+                  Classes="common-grid"
+                  ItemsSource="{Binding Contracts}"
+                  AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="업체명" Binding="{Binding C_CompanyName}" Width="220" />
+                <DataGridTextColumn Header="약칭" Binding="{Binding C_Abbreviation}" Width="120" />
+                <DataGridTextColumn Header="계약구분" Binding="{Binding C_ContractType}" Width="130" />
+                <DataGridTextColumn Header="계약시작" Binding="{Binding C_ContractStart, StringFormat={}{0:yyyy-MM-dd}}" Width="110" />
+                <DataGridTextColumn Header="계약종료" Binding="{Binding C_ContractEnd, StringFormat={}{0:yyyy-MM-dd}}" Width="110" />
+                <DataGridTextColumn Header="계약일수" Binding="{Binding C_ContractDays}" Width="90" />
+                <DataGridTextColumn Header="계약금액(VAT별도)" Binding="{Binding C_ContractAmountVATExcluded, StringFormat={}{0:N0}}" Width="140" />
+                <DataGridTextColumn Header="주소" Binding="{Binding C_Address}" Width="250" />
+                <DataGridTextColumn Header="대표자" Binding="{Binding C_Representative}" Width="120" />
+                <DataGridTextColumn Header="시설별" Binding="{Binding C_FacilityType}" Width="100" />
+                <DataGridTextColumn Header="종류별" Binding="{Binding C_CategoryType}" Width="100" />
+                <DataGridTextColumn Header="주생산품" Binding="{Binding C_MainProduct}" Width="180" />
+                <DataGridTextColumn Header="담당자" Binding="{Binding C_ContactPerson}" Width="110" />
+                <DataGridTextColumn Header="연락처" Binding="{Binding C_PhoneNumber}" Width="130" />
+                <DataGridTextColumn Header="이메일" Binding="{Binding C_Email}" Width="200" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+
+</UserControl>

@@ -1,0 +1,99 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:lottie="using:Avalonia.Labs.Lottie"
+        x:Class="ETA.Views.MainPage"
+        TransparencyLevelHint="AcrylicBlur"
+        Width="1600"
+        Height="900"
+        Icon="avares://ETA/Assets/icons/FF.ico"
+        Title="ETA Water Analysis Center">
+
+    <Grid RowDefinitions="30,*">
+
+        <!-- 상단 메인 메뉴 바 -->
+        <Border Grid.Row="0" Background="#110a0a" Padding="1">
+            <StackPanel x:Name="MenuPanel" Orientation="Horizontal" Spacing="5">
+
+                <!-- 버튼 스타일 + 아이콘 크기 조정 -->
+                <StackPanel.Styles>
+                    <Style Selector="Button">
+                        <Setter Property="FontSize" Value="13" />
+                        <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+                        <Setter Property="Height" Value="40" />
+                        <Setter Property="CornerRadius" Value="0" />
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="Foreground" Value="White" />
+                        <Setter Property="HorizontalContentAlignment" Value="Center" />
+                        <Setter Property="VerticalContentAlignment" Value="Center" />
+                        <Setter Property="Padding" Value="8,0" />
+                    </Style>
+
+                    <!-- ★★★ 아이콘 크기 조정 핵심 ★★★ -->
+                    <Style Selector="Button Image">
+                        <Setter Property="Width" Value="16" />
+                        <Setter Property="Height" Value="16" />
+                        <Setter Property="VerticalAlignment" Value="Center" />
+                    </Style>
+
+                    <Style Selector="Button:pointerover">
+                        <Setter Property="Background" Value="#c200007a" />
+                    </Style>
+
+                    <Style Selector="Button:pointerover TextBlock">
+                        <Setter Property="Foreground" Value="#ffeb3c" />
+                    </Style>
+                </StackPanel.Styles>
+
+                <!-- 메뉴 버튼들 -->
+                <Button Click="Contract_Click" x:Name="Btn1" Tag="0">
+                    <StackPanel>
+                        <Image Source="/Assets/icons/A1.png" />
+                        <TextBlock Text="업체등록" Margin="4,0,0,0"/>
+                    </StackPanel>
+                </Button>
+
+                <Button Click="Quotation_Click" x:Name="Btn2" Tag="1">
+                    <StackPanel>
+                        <Image Source="/Assets/icons/A2.png" />
+                        <TextBlock Text="분석단가" Margin="4,0,0,0"/>
+                    </StackPanel>
+                </Button>
+
+                <!-- ... 나머지 버튼들 (기존 그대로 유지) ... -->
+
+                <Button Click="Agent_Click" x:Name="Btn12" Tag="10">
+                    <StackPanel>
+                        <Image Source="/Assets/icons/A11.png" />
+                        <TextBlock Text="분석팀원" Margin="4,0,0,0"/>
+                    </StackPanel>
+                </Button>
+
+                <Button Click="Admin_Click" x:Name="Btn99" Tag="11">
+                    <StackPanel>
+                        <TextBlock Text="관리자" />
+                    </StackPanel>
+                </Button>
+
+                <ToggleSwitch x:Name="tglShowPassword" 
+                              Foreground="#ffffff"
+                              FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R" 
+                              FontSize="13"
+                              Margin="20,0,0,0"
+                              IsCheckedChanged="OnShowPasswordChanged"
+                              VerticalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <!-- 나머지 내용 (ContentControl 등) 그대로 -->
+        <Grid Grid.Row="1" Background="#242020" RowDefinitions="Auto, *">
+            <StackPanel x:Name="SubMenu" HorizontalAlignment="Left" VerticalAlignment="Top" Orientation="Horizontal" Spacing="10" IsVisible="True">
+                <ComboBox x:Name="cmbCategory" Width="200" Background="#2f961ab9" FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R" FontSize="11" Foreground="#ffffffb9" PlaceholderText="항목 선택" Height="30" IsVisible="False"/>
+                <Button x:Name="Btn13" Tag="12" IsVisible="False" Click="TEST_Click">
+                    <StackPanel><TextBlock Text="TEST" /></StackPanel>
+                </Button>
+            </StackPanel>
+
+            <ContentControl x:Name="ActivePageContent" Grid.Row="1" Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+        </Grid>
+    </Grid>
+</Window>

@@ -25,7 +25,7 @@ public partial class Login : Window
     {
         string email = txtEmail?.Text?.Trim() ?? "";
         string password = txtPassword?.Text ?? "";
-        var main = new Page1();
+        var main = new MainPage();
         main.Show();
         Close();
         if (email == "admin" && password == "1234")

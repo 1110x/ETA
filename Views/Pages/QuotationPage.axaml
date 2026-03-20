@@ -1,0 +1,32 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:ETA.ViewModels"           
+             x:Class="ETA.Views.Pages.QuotationPage"
+             x:DataType="vm:QuotationViewModel">
+
+    <Grid>
+        <DataGrid x:Name="QuotationGrid"
+                  Classes="common-grid"
+                  ItemsSource="{Binding QuotationItems}"
+                  AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="항목구분" Binding="{Binding Category}" Width="120" />
+                <DataGridTextColumn Header="항목명" Binding="{Binding Analyte}" Width="180" />
+                <DataGridTextColumn Header="100% FS" Binding="{Binding FS100, StringFormat=N0}" Width="100" />
+                <DataGridTextColumn Header="100% FS+" Binding="{Binding FS100Plus, StringFormat=N0}" Width="100" />
+                <DataGridTextColumn Header="56% FS" Binding="{Binding FS56, StringFormat=N0}" Width="100" />
+                <DataGridTextColumn Header="56% NFS" Binding="{Binding NFS56, StringFormat=N0}" Width="100" />
+                <DataGridTextColumn Header="55% FS" Binding="{Binding FS55, StringFormat=N0}" Width="100" />
+                <DataGridTextColumn Header="52% FS" Binding="{Binding FS52, StringFormat=N0}" Width="100" />
+                <DataGridTextColumn Header="52% FS-HN" Binding="{Binding FSHN52, StringFormat=N0}" Width="110" />
+                <DataGridTextColumn Header="50% NFS" Binding="{Binding NFS50, StringFormat=N0}" Width="100" />
+                <DataGridTextColumn Header="45% NFS" Binding="{Binding NFS45, StringFormat=N0}" Width="100" />
+                <DataGridTextColumn Header="39% NFS" Binding="{Binding NFS39, StringFormat=N0}" Width="100" />
+                <DataGridTextColumn Header="36% NFS" Binding="{Binding NFS36, StringFormat=N0}" Width="100" />
+                <DataGridTextColumn Header="36% NFS RE" Binding="{Binding NFS36RE, StringFormat=N0}" Width="110" />
+                <DataGridTextColumn Header="25% FS" Binding="{Binding FS25, StringFormat=N0}" Width="100" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+
+</UserControl>

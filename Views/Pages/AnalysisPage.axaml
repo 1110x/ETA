@@ -1,0 +1,25 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"             
+             xmlns:vm="using:ETA.ViewModels"
+             x:Class="ETA.Views.Pages.AnalysisPage"
+             x:DataType="vm:AnalysisViewModel">
+
+    <Grid>
+        <DataGrid x:Name="AnalysisGrid"
+                  Classes="common-grid"
+                  ItemsSource="{Binding AnalysisItems}"
+                  AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="분류" Binding="{Binding Category}" Width="150" />
+                <DataGridTextColumn Header="분석항목" Binding="{Binding Analyte}" Width="200" />
+                <DataGridTextColumn Header="특정/수질" Binding="{Binding Parts}" Width="120" />
+                <DataGridTextColumn Header="소수점" Binding="{Binding DecimalPlaces}" Width="100" />
+                <DataGridTextColumn Header="단위" Binding="{Binding unit}" Width="80" />
+                <DataGridTextColumn Header="시험법" Binding="{Binding ES}" Width="120" />
+                <DataGridTextColumn Header="ES.No" Binding="{Binding Method}" Width="300" />
+                <DataGridTextColumn Header="분석장비" Binding="{Binding instrument}" Width="150" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+
+</UserControl>
