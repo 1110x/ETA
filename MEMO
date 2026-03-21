@@ -1,7 +1,1 @@
-git add .
-
-git commit -m "New Layout+treeview+SQL upload success"
-
-git tag v3.0.0
-
-git push origin main --tags
+git add . && git commit -m "New Layout+treeview+SQL upload success" && git tag v4.1.1 && git push origin main --tags
