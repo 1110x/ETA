@@ -3528,3 +3528,67 @@
 [10:55:26] ★ 크래시 ★ SQLite Error 1: 'near "FROM": syntax error'.
 [10:55:41] LoadData() 시작
 [10:55:41] ★ 크래시 ★ SQLite Error 1: 'near "FROM": syntax error'.
+[15:07:27] LoadData() 시작
+[15:07:27] DB 로드 완료 → 15명
+[15:07:27] LoadData() 시작
+[15:07:27] ★ 크래시 ★ SQLite Error 1: 'near "FROM": syntax error'.
+[15:07:50] LoadData() 시작
+[15:07:50] ★ 크래시 ★ SQLite Error 1: 'near "FROM": syntax error'.
+[15:08:01] LoadData() 시작
+[15:08:01] DB 로드 완료 → 15명
+[15:09:11] LoadData() 시작
+[15:09:11] DB 로드 완료 → 15명
+[15:09:11] LoadData() 시작
+[15:09:11] ★ 크래시 ★ SQLite Error 1: 'near "FROM": syntax error'.
+[15:09:15] LoadData() 시작
+[15:09:15] ★ 크래시 ★ SQLite Error 1: 'near "FROM": syntax error'.
+[15:12:58] LoadData() 시작
+[15:12:58] DB 로드 완료 → 15명
+[15:12:58] LoadData() 시작
+[15:12:58] ★ 크래시 ★ SQLite Error 1: 'near "FROM": syntax error'.
+[15:13:17] LoadData() 시작
+[15:13:17] DB 로드 완료 → 15명
+[15:13:20] LoadData() 시작
+[15:13:20] ★ 크래시 ★ SQLite Error 1: 'near "FROM": syntax error'.
+[15:14:28] LoadData() 시작
+[15:14:28] DB 로드 완료 → 15명
+[15:14:28] LoadData() 시작
+[15:14:35] LoadData() 시작
+[15:14:35] DB 로드 완료 → 15명
+[15:14:39] LoadData() 시작
+[15:21:20] LoadData() 시작
+[15:21:20] DB 로드 완료 → 15명
+[15:21:20] LoadData() 시작
+[15:21:23] LoadData() 시작
+[15:23:36] LoadData() 시작
+[15:23:37] DB 로드 완료 → 15명
+[15:23:37] LoadData() 시작
+[15:23:41] LoadData() 시작
+[15:27:53] LoadData() 시작
+[15:27:53] DB 로드 완료 → 15명
+[15:27:53] LoadData() 시작
+[15:27:57] LoadData() 시작
+[15:30:02] LoadData() 시작
+[15:30:03] DB 로드 완료 → 15명
+[15:30:03] LoadData() 시작
+[15:30:09] LoadData() 시작
+[15:33:20] LoadData() 시작
+[15:33:21] DB 로드 완료 → 15명
+[15:33:21] LoadData() 시작
+[15:33:25] LoadData() 시작
+[15:35:46] LoadData() 시작
+[15:35:46] DB 로드 완료 → 15명
+[15:35:46] LoadData() 시작
+[15:35:49] LoadData() 시작
+[15:36:35] LoadData() 시작
+[15:36:35] DB 로드 완료 → 15명
+[15:36:35] LoadData() 시작
+[15:36:40] LoadData() 시작
+[15:38:15] LoadData() 시작
+[15:38:16] DB 로드 완료 → 15명
+[15:38:16] LoadData() 시작
+[15:38:19] LoadData() 시작
+[15:41:03] LoadData() 시작
+[15:41:04] DB 로드 완료 → 15명
+[15:41:04] LoadData() 시작
+[15:41:12] LoadData() 시작

@@ -40,20 +40,23 @@ public partial class WasteCompanyPage : UserControl
                 UpdateStatus("❌ DB에 데이터가 없습니다.");
                 return;
             }
-
             foreach (var WasteCompany in wastecompanys)
             {
-                var CompanyItem = new TreeViewItem { IsExpanded = false };
-                CompanyItem.Tag = WasteCompany;
+                var CompanyItem = new TreeViewItem
+                {
+                    IsExpanded = false,
+                    Tag = WasteCompany,
+                    Classes = { "no-expander" }   // ←←← 이 한 줄이 핵심!
+                };
 
                 CompanyItem.Header = new TextBlock
                 {
                     Text = WasteCompany.업체명 ?? "이름 없음",
-                    FontSize = 12,
+                    FontSize = 13,
                     FontFamily = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R",
-
                     Foreground = Brushes.WhiteSmoke,
-                    Margin = new Thickness(8, 8, 0, 12)
+                    Margin = new Thickness(12, 8, 0, 8),
+                    VerticalAlignment = VerticalAlignment.Center
                 };
 
                 CompanyItem.Items.Add(CreateLabeledBox("프로젝트", WasteCompany.프로젝트));
@@ -61,10 +64,8 @@ public partial class WasteCompanyPage : UserControl
                 CompanyItem.Items.Add(CreateLabeledBox("관리번호", WasteCompany.관리번호));
                 CompanyItem.Items.Add(CreateLabeledBox("사업자번호", WasteCompany.사업자번호));
 
-
                 WasteCompanyTreeView.Items.Add(CompanyItem);
             }
-
             //UpdateStatus($"✅ {agents.Count}명 표시 완료 → [전체 저장] 버튼 누르세요");
         }
         catch (Exception ex)
