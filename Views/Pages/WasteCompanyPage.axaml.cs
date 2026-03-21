@@ -11,11 +11,14 @@ using System.IO;
 using Microsoft.Data.Sqlite;
 using ETA.Models;
 using ETA.Services;
+using System.Linq;
 
 namespace ETA.Views.Pages;
 
 public partial class WasteCompanyPage : UserControl
 {
+    private const string TableName = "폐수배출업소";  // SQL TABLE 이름
+    private const string KeyColumn = "업체명";   // 나중에 키가 바뀌어도 여기만 수정
     public WasteCompanyPage()
     {
         InitializeComponent();
@@ -26,56 +29,42 @@ public partial class WasteCompanyPage : UserControl
     {
         UpdateStatus("트리 로드 중...");
         Log("LoadData() 시작");
-
         WasteCompanyTreeView.Items.Clear();
-
-        try
+        var items = WasteCompanyService.GetAllItems() ?? new List<WasteCompany>();
+        if (items.Count == 0)
         {
-            //var Wastecompanys = WasteCompanyService.GetAllItems() ?? new List<WasteCompany>();
-            var wastecompanys = WasteCompanyService.GetAllItems() ?? new List<WasteCompany>();
-            //Log($"DB 로드 완료 → {agents.Count}명");
-
-            if (wastecompanys.Count == 0)
-            {
-                UpdateStatus("❌ DB에 데이터가 없습니다.");
-                return;
-            }
-            foreach (var WasteCompany in wastecompanys)
-            {
-                var CompanyItem = new TreeViewItem
-                {
-                    IsExpanded = false,
-                    Tag = WasteCompany,
-                    Classes = { "no-expander" }   // ←←← 이 한 줄이 핵심!
-                };
-
-                CompanyItem.Header = new TextBlock
-                {
-                    Text = WasteCompany.업체명 ?? "이름 없음",
-                    FontSize = 13,
-                    FontFamily = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R",
-                    Foreground = Brushes.WhiteSmoke,
-                    Margin = new Thickness(12, 8, 0, 8),
-                    VerticalAlignment = VerticalAlignment.Center
-                };
-
-                CompanyItem.Items.Add(CreateLabeledBox("프로젝트", WasteCompany.프로젝트));
-                CompanyItem.Items.Add(CreateLabeledBox("프로젝트명", WasteCompany.프로젝트명));
-                CompanyItem.Items.Add(CreateLabeledBox("관리번호", WasteCompany.관리번호));
-                CompanyItem.Items.Add(CreateLabeledBox("사업자번호", WasteCompany.사업자번호));
-
-                WasteCompanyTreeView.Items.Add(CompanyItem);
-            }
-            //UpdateStatus($"✅ {agents.Count}명 표시 완료 → [전체 저장] 버튼 누르세요");
+            UpdateStatus("❌ 데이터 없음");
+            return;
         }
-        catch (Exception ex)
+        foreach (var entity in items)
         {
-            Log("★ 크래시 ★ " + ex.Message);
-            UpdateStatus($"❌ 오류: {ex.Message}");
+            var node = new TreeViewItem
+            {
+                IsExpanded = false,
+                Tag = entity,
+                Classes = { "no-expander" }
+            };
+            node.Header = new TextBlock
+            {
+                Text = entity.업체명 ?? "이름 없음",
+                FontSize = 13,
+                FontFamily = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R",
+                Foreground = Brushes.WhiteSmoke,
+                Margin = new Thickness(12, 8, 0, 8),
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            node.Items.Add(CreateFieldRow("프로젝트",     entity.프로젝트));
+            node.Items.Add(CreateFieldRow("프로젝트명",   entity.프로젝트명));
+            node.Items.Add(CreateFieldRow("관리번호",     entity.관리번호));
+            node.Items.Add(CreateFieldRow("사업자번호",   entity.사업자번호));
+            WasteCompanyTreeView.Items.Add(node);
         }
+
+        UpdateStatus($"✅ {items.Count}건 로드 완료");
     }
 
-    private StackPanel CreateLabeledBox(string label, string value, bool isReadOnly = false)
+    // 이름도 좀 더 일반적으로 → CreateFieldRow
+    private StackPanel CreateFieldRow(string label, string? value, bool readOnly = false)
     {
         var panel = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 10 };
 
@@ -84,82 +73,75 @@ public partial class WasteCompanyPage : UserControl
             Text = label + ": ",
             Width = 110,
             Foreground = Brushes.LightGray,
-            FontSize = 13,
+            FontSize = 12,
+            FontFamily = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R",
             VerticalAlignment = VerticalAlignment.Center
         });
 
-        var textBox = new TextBox
+        var tb = new TextBox
         {
             Text = value ?? "",
-            FontSize = 10,
+            FontSize = 11,
             FontFamily = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R",
             Background = Brushes.Transparent,
-
             BorderThickness = new Thickness(0),
             Padding = new Thickness(6, 3),
             Width = 220,
-            IsReadOnly = isReadOnly
+            IsReadOnly = readOnly
         };
 
-        panel.Children.Add(textBox);
+        panel.Children.Add(tb);
         return panel;
     }
 
     private void SaveAllButton_Click(object? sender, RoutedEventArgs e)
     {
-        int success = 0;
-        Log("=== 전체 저장 시작 (키 = 성명) ===");
+        int successCount = 0;
+        Log("=== 전체 저장 시작 ===");
 
-        foreach (var item in WasteCompanyTreeView.Items)
+        foreach (var node in WasteCompanyTreeView.Items.OfType<TreeViewItem>())
         {
-            if (item is TreeViewItem CompanyItem && CompanyItem.Tag is WasteCompany wastecompany)
+            if (node.Tag is not WasteCompany item) continue;
+
+            // UI → 모델 동기화
+            foreach (var child in node.Items.OfType<StackPanel>())
             {
-                foreach (var child in CompanyItem.Items)
+                if (child.Children.Count < 2) continue;
+
+                var labelTb = child.Children[0] as TextBlock;
+                var textBox = child.Children[1] as TextBox;
+
+                if (labelTb is null || textBox is null) continue;
+
+                string label = labelTb.Text.Replace(": ", "").Trim();
+
+                switch (label)
                 {
-                    if (child is StackPanel panel && panel.Children.Count == 2)
-                    {
-
-
-                        var labelText = (panel.Children[0] as TextBlock)?.Text.Replace(": ", "").Trim() ?? "";
-                        var tb = panel.Children[1] as TextBox;
-                        if (tb == null) continue;
-
-                        switch (labelText)
-                        {
-                            case "프로젝트": wastecompany.프로젝트 = tb.Text ?? ""; break;
-                            case "프로젝트명": wastecompany.프로젝트명 = tb.Text ?? ""; break;
-                            case "관리번호": wastecompany.관리번호 = tb.Text ?? ""; break;
-                            case "사업자번호": wastecompany.사업자번호 = tb.Text ?? ""; break;
-
-                        }
-                    }
+                    case "프로젝트":     item.프로젝트   = textBox.Text ?? ""; break;
+                    case "프로젝트명":   item.프로젝트명 = textBox.Text ?? ""; break;
+                    case "관리번호":     item.관리번호   = textBox.Text ?? ""; break;
+                    case "사업자번호":   item.사업자번호 = textBox.Text ?? ""; break;
                 }
-
-                if (ExecuteDirectUpdate(wastecompany)) success++;
             }
+
+            if (SaveItem(item))
+                successCount++;
         }
 
-        UpdateStatus($"✅ 저장 완료! 성공 {success}명");
-        Log($"=== 저장 종료 → {success}명 성공 ===");
+        UpdateStatus($"저장 완료 : {successCount} / {WasteCompanyTreeView.Items.Count}");
+        Log($"=== 저장 완료 → 성공 {successCount}건 ===");
     }
 
-    private bool ExecuteDirectUpdate(WasteCompany wastecompany)
+    private bool SaveItem(WasteCompany item)
     {
-        string dbPath = WasteCompanyService.GetDatabasePath();           // ← 이게 실제 사용하는 파일 경로
-        string fullAbsolutePath = Path.GetFullPath(dbPath);       // ← 절대경로 (C:\Users\... 형태)
+        string dbPath = WasteCompanyService.GetDatabasePath();
 
-        Log($"[DB 위치 확인] 상대경로: {dbPath}");
-        Log($"[DB 위치 확인] 절대경로: {fullAbsolutePath}");
-        Log($"[DB 위치 확인] 파일 존재? {File.Exists(dbPath)}");
-        Log($"[DB 위치 확인] 현재 파일 수정 시간: {File.GetLastWriteTime(dbPath):yyyy-MM-dd HH:mm:ss}");
+        Log($"DB 경로 : {Path.GetFullPath(dbPath)}");
 
-        string sql = @"
-        UPDATE ""폐수배출업소"" SET 
-            프로젝트=@프로젝트, 프로젝트명=@프로젝트명, 관리번호=@관리번호, 사업자번호=@사업자번호
-        WHERE 업체명 = @OriginalKey";
-
-        Log($"[SQL] 실행 → {sql.Replace("\r\n", " ")}");
-        Log($"[파라미터] Original업체명 = '{wastecompany.Original업체명}' | 새 업체 = '{wastecompany.업체명}'");
+        string sql = $@"
+            UPDATE ""{TableName}""
+            SET 프로젝트=@p, 프로젝트명=@pn, 관리번호=@m, 사업자번호=@b
+            WHERE {KeyColumn} = @key";
 
         using var conn = new SqliteConnection($"Data Source={dbPath}");
         conn.Open();
@@ -167,23 +149,24 @@ public partial class WasteCompanyPage : UserControl
         using var cmd = conn.CreateCommand();
         cmd.CommandText = sql;
 
-        cmd.Parameters.AddWithValue("@프로젝트", wastecompany.프로젝트 ?? "");
-        cmd.Parameters.AddWithValue("@프로젝트명", wastecompany.프로젝트명 ?? "");
-        cmd.Parameters.AddWithValue("@관리번호", wastecompany.관리번호 ?? "");
-        cmd.Parameters.AddWithValue("@사업자번호", wastecompany.사업자번호 ?? "");
-        int rows = cmd.ExecuteNonQuery();
+        cmd.Parameters.AddWithValue("@p",   item.프로젝트   ?? "");
+        cmd.Parameters.AddWithValue("@pn",  item.프로젝트명 ?? "");
+        cmd.Parameters.AddWithValue("@m",   item.관리번호   ?? "");
+        cmd.Parameters.AddWithValue("@b",   item.사업자번호 ?? "");
+        cmd.Parameters.AddWithValue("@key", item.Original업체명 ?? item.업체명 ?? "");
 
-        string afterTime = File.GetLastWriteTime(dbPath).ToString("yyyy-MM-dd HH:mm:ss");
-        Log($"[SQL 결과] {rows}행 업데이트");
-        Log($"[DB 위치 확인] 업데이트 후 파일 수정 시간: {afterTime}");
+        int affected = cmd.ExecuteNonQuery();
 
-        if (rows > 0)
+        if (affected > 0)
         {
-            wastecompany.Original업체명 = wastecompany.업체명;
+            item.Original업체명 = item.업체명;  // 키 갱신
             return true;
         }
+
         return false;
     }
+
+    // Log, UpdateStatus는 그대로 유지
 
     private void Log(string message)
     {

@@ -26,13 +26,13 @@
                             <Setter Property="Foreground" Value="#ffffff" />
                         </Style>
                         <Style Selector="MenuItem:pointerover">
-                            <Setter Property="Background" Value="#021621" />
+                            <Setter Property="Background" Value="#012800" />
                             <!--Setter Property="Foreground" Value="#694e8c" /-->
                         </Style>
 
                         <!-- 서브메뉴 창 전체 -->
                         <Style Selector="MenuFlyoutPresenter">
-                            <Setter Property="Background" Value="#2f3034" />
+                            <Setter Property="Background" Value="#012800" />
                             <Setter Property="CornerRadius" Value="8" />
                             <Setter Property="Padding" Value="5,5" />           <!-- 창 전체 여백 증가 -->
                             <Setter Property="BorderThickness" Value="0" />
@@ -122,31 +122,100 @@
                         <Setter Property="BorderThickness" Value="0" />
                     </Style>
                     <Style Selector="Button:pointerover">
-                        <Setter Property="Background" Value="#021621" />
+                        <Setter Property="Background" Value="#012800" />
                     </Style>
                     <Style Selector="Button:pointerover TextBlock">
                         <Setter Property="Foreground" Value="#fd0f0f" />
                     </Style>
                 </StackPanel.Styles>
-                <Button Content="항목1" />
-                <Button Content="항목2" />
                 <ComboBox x:Name="cmbCategory" />
-                <Button x:Name="Btn13"/>
+                <Button x:Name="BT1" Content="항목1" />
+                <Button x:Name="BT2" Content="항목2" />
+                <Button x:Name="BT3" Content="항목3" />
+                <Button x:Name="BT4" Content="항목4" />
+                <Button x:Name="BT5" Content="항목5" />
+                <Button x:Name="BT6" Content="항목6" />
+                <Button x:Name="BT7" Content="항목7" />
+                <Button x:Name="BT1110"/>
             </StackPanel>
 
-            <!-- 좌우 분할 영역 -->
-            <Grid Grid.Row="1" Margin="10,55,10,10" ColumnDefinitions="200,8,*">
-                <Border Grid.Column="0" Background="{DynamicResource SystemControlBackgroundAltHighBrush}" CornerRadius="6" Padding="16" Margin="0,0,8,0">
-                    <ContentControl x:Name="ActivePageContent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+            <!-- 좌우 분할 + 오른쪽 상하 분할 -->
+            <Grid Grid.Row="1" Margin="10,10,10,10" ColumnDefinitions="200,8,*">
+
+                <!-- 왼쪽 사이드바 -->
+                <Border Grid.Column="0" Background="#39383f" CornerRadius="6" Padding="16" Margin="0,0,1,0">
+                    <ContentControl x:Name="ActivePageContent1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+
+
+
+
                 </Border>
+
+                <!-- splitter (좌우) -->
                 <GridSplitter Grid.Column="1" Width="8" Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Columns" Cursor="SizeWestEast" />
-                <Border Grid.Column="1" Width="1" Background="#6144cb" HorizontalAlignment="Center" VerticalAlignment="Stretch" Opacity="0.9" />
-                <Border Grid.Column="2" Background="{DynamicResource SystemControlBackgroundAltHighBrush}" CornerRadius="6" Padding="12" Margin="8,0,0,0">
-                    <StackPanel>
-                        <TextBlock Text="분석 항목" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" Margin="0,0,0,15"/>
-                    </StackPanel>
-                </Border>
+
+                <!-- 세로 구분선 -->
+                <Border Grid.Column="1" Width="1" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Stretch" Opacity="0.9" />
+
+                <!-- 오른쪽 영역 (상하 분할) -->
+                <Grid Grid.Column="2" Margin="1,0,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="808*" />    <!-- ≈80.8% -->
+                        <RowDefinition Height="8" />       <!-- splitter -->
+                        <RowDefinition Height="192*" />    <!-- ≈19.2% -->
+                    </Grid.RowDefinitions>
+
+                    <!-- 상단 영역 -->
+                    <Border Grid.Row="0" Background="#39383f" CornerRadius="6" Padding="12">
+                        <ContentControl x:Name="ActivePageContent2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+
+                        <!--StackPanel Margin="0,0,0,12"-->
+                        <!--TextBlock Text="분석 항목"
+                        FontSize="15"
+                        FontWeight="SemiBold"
+                        Foreground="White"
+                        Margin="0,0,0,12"/-->
+
+                        <!--StackPanel Orientation="Horizontal" Spacing="12"-->
+                        <!-- 필요시 추가: ComboBox, TextBox 등 -->
+
+
+
+
+                        <!--/StackPanel-->
+                        <!--/StackPanel-->
+                    </Border>
+
+                    <!-- 상하 splitter -->
+                    <GridSplitter Grid.Row="1"
+                                  Height="8"
+                                  Background="Transparent"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Stretch"
+                                  ResizeDirection="Rows"
+                                  Cursor="SizeNorthSouth" />
+
+                    <!-- splitter 구분선 (일관된 색상으로) -->
+                    <Border Grid.Row="1"
+                            Height="1"
+                            Background="#020202"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Center"
+                            Opacity="0.9" />
+
+                    <!-- 하단 메인 콘텐츠 영역 -->
+                    <Border Grid.Row="2" Background="#39383f" CornerRadius="6" Padding="12">
+                        <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                                      VerticalScrollBarVisibility="Auto">
+                            <ContentControl x:Name="RightMainContent"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Stretch"/>
+                        </ScrollViewer>
+                    </Border>
+                </Grid>
             </Grid>
         </Grid>
     </Grid>
+
+
 </Window>

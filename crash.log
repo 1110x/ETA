@@ -1,12 +1,10 @@
-System.ArgumentException: An item with the same key has already been added. Key: /Assets/Fonts/KBIZ한마음고딕 B.ttf
-   at System.Collections.Generic.Dictionary`2.TryInsert(TKey key, TValue value, InsertionBehavior behavior)
-   at System.Collections.Generic.Dictionary`2.Add(TKey key, TValue value)
-   at System.Linq.Enumerable.ToDictionary[TSource,TKey,TElement](List`1 source, Func`2 keySelector, Func`2 elementSelector, IEqualityComparer`1 comparer)
-   at Avalonia.Platform.Internal.AssemblyDescriptor..ctor(Assembly assembly)
-   at Avalonia.Platform.StandardAssetLoader..ctor(IAssemblyDescriptorResolver resolver, Assembly assembly)
-   at Avalonia.Platform.StandardAssetLoader..ctor(Assembly assembly)
-   at Avalonia.Platform.StandardRuntimePlatformServices.Register(Assembly assembly)
-   at Avalonia.AppBuilder.<UseStandardRuntimePlatformSubsystem>b__68_0()
+System.ArgumentException: Control with the name 'BT8' already registered.
+   at Avalonia.Controls.NameScope.Register(String name, Object element)
+   at ETA.Views.MainPage.!XamlIlPopulate(IServiceProvider, MainPage) in /Users/azrael/Documents/ETA/Views/MainPage.axaml:line 140
+   at ETA.Views.MainPage.!XamlIlPopulateTrampoline(MainPage)
+   at ETA.Views.MainPage.InitializeComponent(Boolean loadXaml, Boolean attachDevTools) in /Users/azrael/Documents/ETA/obj/Debug/net8.0/Avalonia.Generators/Avalonia.Generators.NameGenerator.AvaloniaNameSourceGenerator/ETA.Views.MainPage.g.cs:line 54
+   at ETA.Views.MainPage..ctor() in /Users/azrael/Documents/ETA/Views/MainPage.axaml.cs:line 25
+   at ETA.App.OnFrameworkInitializationCompleted() in /Users/azrael/Documents/ETA/App.axaml.cs:line 21
    at Avalonia.AppBuilder.SetupUnsafe()
    at Avalonia.AppBuilder.Setup()
    at Avalonia.AppBuilder.SetupWithLifetime(IApplicationLifetime lifetime)
