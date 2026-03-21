@@ -57,26 +57,37 @@
                             <Setter Property="Foreground" Value="#fd0f0f" />
                         </Style>
                     </Menu.Styles>
-                    <MenuItem Header="업체등록" Click="Contract_Click">
-                        <MenuItem Header="새 업체 등록" />
-                        <MenuItem Header="업체 목록 보기" />
-                        <MenuItem Header="업체 수정" />
+                    <MenuItem Header="수질분석센터">
+                        <MenuItem Header="직원정보" Click="Agent_Click"/>
+                        <MenuItem Header="계약업체" />
+                        <MenuItem Header="견적/의뢰서" />
+                        <MenuItem Header="시험성적서" />
+                        <MenuItem Header="측정인" />
+                        <MenuItem Header="보수요청" />
+                        <MenuItem Header="물품구매" />
+                        <MenuItem Header="테스트" />
                     </MenuItem>
 
-                    <MenuItem Header="분석단가" Click="Quotation_Click">
-                        <MenuItem Header="단가표 보기" />
-                        <MenuItem Header="새 단가 등록" />
-                        <MenuItem Header="단가 수정" />
+                    <MenuItem Header="비용부담금 관리" >
+                        <MenuItem Header="폐수배출업소" Click="WasteCompany_Click" />
+                        <MenuItem Header="분석의뢰리스트" />
+                        <MenuItem Header="분석결과입력" />
+                        <MenuItem Header="Uipath ERP" />
+                        <MenuItem Header="시험기록부" />
+                        <MenuItem Header="자료검토" />
+                        <MenuItem Header="테스트" />
                     </MenuItem>
 
-                    <MenuItem Header="분석팀원" Click="Agent_Click">
-                        <MenuItem Header="팀원 등록" />
-                        <MenuItem Header="팀원 목록" />
+                    <MenuItem Header="처리시설" >
+                        <MenuItem Header="시험기록부" Click="Agent_Click" />
+                        <MenuItem Header="RDP for Zero4"/>
                     </MenuItem>
 
-                    <MenuItem Header="관리자" Click="Admin_Click">
-                        <MenuItem Header="권한 설정" />
-                        <MenuItem Header="로그 보기" />
+                    <MenuItem Header="일반업무관리" Click="Admin_Click">
+                        <MenuItem Header="계약업체 채수" />
+                        <MenuItem Header="출장관리" />
+                        <MenuItem Header="휴일근무" />
+                        <MenuItem Header="휴일근무" />
                     </MenuItem>
                 </Menu>
 

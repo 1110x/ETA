@@ -42,7 +42,7 @@ public partial class AgentTreePage : UserControl
 
             foreach (var agent in agents)
             {
-                var personItem = new TreeViewItem { IsExpanded = true };
+                var personItem = new TreeViewItem { IsExpanded = false };
                 personItem.Tag = agent;
 
                 personItem.Header = new TextBlock

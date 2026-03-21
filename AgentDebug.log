@@ -3510,3 +3510,21 @@
 [01:08:48] DB 로드 완료 → 15명
 [01:10:09] LoadData() 시작
 [01:10:09] DB 로드 완료 → 15명
+[01:28:30] LoadData() 시작
+[01:28:30] DB 로드 완료 → 15명
+[08:57:39] LoadData() 시작
+[08:57:39] DB 로드 완료 → 15명
+[10:54:55] LoadData() 시작
+[10:54:56] DB 로드 완료 → 15명
+[10:54:56] LoadData() 시작
+[10:54:56] ★ 크래시 ★ SQLite Error 1: 'near "FROM": syntax error'.
+[10:55:01] LoadData() 시작
+[10:55:01] ★ 크래시 ★ SQLite Error 1: 'near "FROM": syntax error'.
+[10:55:05] LoadData() 시작
+[10:55:05] DB 로드 완료 → 15명
+[10:55:21] LoadData() 시작
+[10:55:21] ★ 크래시 ★ SQLite Error 1: 'near "FROM": syntax error'.
+[10:55:26] LoadData() 시작
+[10:55:26] ★ 크래시 ★ SQLite Error 1: 'near "FROM": syntax error'.
+[10:55:41] LoadData() 시작
+[10:55:41] ★ 크래시 ★ SQLite Error 1: 'near "FROM": syntax error'.
