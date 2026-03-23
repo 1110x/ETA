@@ -1,0 +1,127 @@
+[17:49:39] [TestReport] LoadData() 시작
+[17:49:39] [TestReport] 업체 28개
+[17:49:40] [TestReport] [고흥나로우주] 20건 시료 로드
+[17:49:45] [TestReport] 선택: 고흥나로우주 / 시험설비앞-4 (32항목)
+[17:49:50] [TestReport] ✅ PDF 저장: C:\Users\ironu\Documents\ETA\Data\Reports\성적서_고흥나로우주_20250716_174947.xlsx
+[17:49:50] [TestReport] [Toast] ✅ 저장 완료
+성적서_고흥나로우주_20250716_174947.xlsx
+[17:56:46] [TestReport] LoadData() 시작
+[17:56:46] [TestReport] 업체 28개
+
+[18:06:09] [TestReport] LoadData() 시작
+[18:06:09] [TestReport] 업체 28개
+[18:06:10] [TestReport] [GS] 377건 시료 로드
+[18:06:12] [TestReport] 선택: GS / 20D-341 (1항목)
+[18:06:19] [TestReport] ✅ 엑셀 저장: C:\Users\ironu\Documents\ETA\Data\Reports\성적서_GS_20260121_180616.xlsx
+[18:06:19] [TestReport] [Toast] ✅ 저장 완료
+성적서_GS_20260121_180616.xlsx
+[18:08:57] [TestReport] LoadData() 시작
+[18:08:57] [TestReport] 업체 28개
+[18:08:59] [TestReport] [LG생명과학] 12건 시료 로드
+[18:09:01] [TestReport] 선택: LG생명과학 / 합성의약 일반 폐수 (15항목)
+[18:09:02] [Print] 계약정보 조회 오류: SQLite Error 1: 'no such column: 약칭'.
+[18:09:02] [Print] 방류기준 0개 조회
+[18:09:05] [Print] 저장: C:\Users\ironu\Documents\ETA\Data\Reports\성적서_LG생명과학_20251223_180902.xlsx
+[18:09:05] [TestReport] ✅ 엑셀 저장: C:\Users\ironu\Documents\ETA\Data\Reports\성적서_LG생명과학_20251223_180902.xlsx
+[18:09:05] [TestReport] [Toast] ✅ 저장 완료
+성적서_LG생명과학_20251223_180902.xlsx
+[18:13:23] [TestReport] LoadData() 시작
+[18:13:23] [TestReport] 업체 28개
+[18:13:24] [TestReport] [국도화학] 6건 시료 로드
+[18:13:25] [TestReport] 선택: 국도화학 / 원폐수 (56항목)
+[18:13:27] [Print] 계약DB 컬럼: C_CompanyName, C_ContractStart, C_ContractEnd, C_ContractDays, C_ContractAmountVATExcluded, C_Abbreviation, C_ContractType, C_Address, C_Representative, C_FacilityType, C_CategoryType, C_MainProduct, C_ContactPerson, C_PhoneNumber, C_Email
+[18:13:27] [Print] 계약DB 샘플: C_CompanyName=㈜LG화학 여수-용성 | C_ContractStart=2026-03-01 | C_ContractEnd=2027-12-31 | C_ContractDays=670 | C_ContractAmountVATExcluded=350000000 | C_Abbreviation=용성 | C_ContractType=LG화학(주) | C_Address=전남 여수시 여수산단4로 58 (중흥동) | C_Representative=여수 LG화학 공장장 | C_FacilityType=제조시설 | C_CategoryType=폐수처리시설 | C_MainProduct=석유화학제품 | C_ContactPerson=홍길동 01 | C_PhoneNumber=010-1111-1111 | C_Email=1@1.com
+[18:13:27] [Print] 계약DB 샘플: C_CompanyName=㈜LG화학 여수-화치 | C_ContractStart=2026-03-01 | C_ContractEnd=2027-12-31 | C_ContractDays=670 | C_ContractAmountVATExcluded=350000000 | C_Abbreviation=화치 | C_ContractType=LG화학(주) | C_Address=전남 여수시 여수산단2로 55 (화치동) | C_Representative=여수 LG화학 공장장 | C_FacilityType=제조시설 | C_CategoryType=폐수처리시설 | C_MainProduct=석유화학제품 | C_ContactPerson=홍길동 02 | C_PhoneNumber=010-1111-1112 | C_Email=1@2.com
+[18:13:27] [Print] 계약DB 샘플: C_CompanyName=㈜LG화학 여수-확장 | C_ContractStart=2026-03-01 | C_ContractEnd=2027-12-31 | C_ContractDays=670 | C_ContractAmountVATExcluded=350000000 | C_Abbreviation=확장 | C_ContractType=LG화학(주) | C_Address=전남 여수시 여수산단로 1121 | C_Representative=여수 LG화학 공장장 | C_FacilityType=제조시설 | C_CategoryType=폐수처리시설 | C_MainProduct=석유화학제품 | C_ContactPerson=홍길동 03 | C_PhoneNumber=010-1111-1113 | C_Email=1@3.com
+[18:13:27] [Print] 계약정보 조회 오류: SQLite Error 1: 'no such column: 업체명'.
+[18:13:27] [Print] 방류기준 0개 조회
+[18:13:31] [Print] 저장: C:\Users\ironu\Documents\ETA\Data\Reports\성적서_국도화학_20260204_181327.xlsx
+[18:13:31] [TestReport] ✅ 엑셀 저장: C:\Users\ironu\Documents\ETA\Data\Reports\성적서_국도화학_20260204_181327.xlsx
+[18:13:31] [TestReport] [Toast] ✅ 저장 완료
+성적서_국도화학_20260204_181327.xlsx
+[18:16:29] [TestReport] LoadData() 시작
+[18:16:29] [TestReport] 업체 28개
+[18:16:30] [TestReport] [GS] 377건 시료 로드
+[18:16:32] [TestReport] 선택: GS / #W22. PE생산팀 C/W (716-E-302, I-8WTS035) (28항목)
+[18:16:34] [Print] 계약DB 컬럼: C_CompanyName, C_ContractStart, C_ContractEnd, C_ContractDays, C_ContractAmountVATExcluded, C_Abbreviation, C_ContractType, C_Address, C_Representative, C_FacilityType, C_CategoryType, C_MainProduct, C_ContactPerson, C_PhoneNumber, C_Email
+[18:16:34] [Print] 계약DB 샘플: C_CompanyName=㈜LG화학 여수-용성 | C_ContractStart=2026-03-01 | C_ContractEnd=2027-12-31 | C_ContractDays=670 | C_ContractAmountVATExcluded=350000000 | C_Abbreviation=용성 | C_ContractType=LG화학(주) | C_Address=전남 여수시 여수산단4로 58 (중흥동) | C_Representative=여수 LG화학 공장장 | C_FacilityType=제조시설 | C_CategoryType=폐수처리시설 | C_MainProduct=석유화학제품 | C_ContactPerson=홍길동 01 | C_PhoneNumber=010-1111-1111 | C_Email=1@1.com
+[18:16:34] [Print] 계약DB 샘플: C_CompanyName=㈜LG화학 여수-화치 | C_ContractStart=2026-03-01 | C_ContractEnd=2027-12-31 | C_ContractDays=670 | C_ContractAmountVATExcluded=350000000 | C_Abbreviation=화치 | C_ContractType=LG화학(주) | C_Address=전남 여수시 여수산단2로 55 (화치동) | C_Representative=여수 LG화학 공장장 | C_FacilityType=제조시설 | C_CategoryType=폐수처리시설 | C_MainProduct=석유화학제품 | C_ContactPerson=홍길동 02 | C_PhoneNumber=010-1111-1112 | C_Email=1@2.com
+[18:16:34] [Print] 계약DB 샘플: C_CompanyName=㈜LG화학 여수-확장 | C_ContractStart=2026-03-01 | C_ContractEnd=2027-12-31 | C_ContractDays=670 | C_ContractAmountVATExcluded=350000000 | C_Abbreviation=확장 | C_ContractType=LG화학(주) | C_Address=전남 여수시 여수산단로 1121 | C_Representative=여수 LG화학 공장장 | C_FacilityType=제조시설 | C_CategoryType=폐수처리시설 | C_MainProduct=석유화학제품 | C_ContactPerson=홍길동 03 | C_PhoneNumber=010-1111-1113 | C_Email=1@3.com
+[18:16:34] [Print] 계약정보: 'GS' → 회사=지에스칼텍스㈜여수공장, 대표자=GS칼텍스 여수 공장장
+[18:16:34] [Print] 방류기준 27개 조회
+[18:16:37] [Print] 저장: C:\Users\ironu\Documents\ETA\Data\Reports\성적서_GS_20260210_181634.xlsx
+[18:16:37] [TestReport] ✅ 엑셀 저장: C:\Users\ironu\Documents\ETA\Data\Reports\성적서_GS_20260210_181634.xlsx
+[18:16:37] [TestReport] [Toast] ✅ 저장 완료
+성적서_GS_20260210_181634.xlsx
+[18:17:00] [TestReport] 선택: GS / #W20. HOU SRU팀 C/W (616-E-301B, I-7WTS033) (28항목)
+[18:17:01] [TestReport] 선택: GS / #W18. VDU팀 C/W (516-E-301, I-6WTS030) (28항목)
+[18:17:01] [TestReport] 선택: GS / #W16. 정유탈황2팀 C/W (85-E-901, I-4WTS023) (28항목)
+[18:17:02] [TestReport] 선택: GS / #W10. 동력팀 C/W (116-E-231, I-3WTS029) (28항목)
+[18:17:03] [TestReport] 선택: GS / #W3.(VDU폐수처리장/처리수) (54항목)
+[18:17:05] [TestReport] 선택: GS / 20D-341 (1항목)
+[18:17:07] [TestReport] 선택: GS / #W22. PE생산팀 C/W (716-E-302, I-8WTS035) (53항목)
+[18:17:34] [TestReport] 선택: GS / #W1.(제1폐수처리장/처리수) (55항목)
+[18:17:34] [TestReport] 선택: GS / #W2.(제2폐수처리장/유입수) (33항목)
+[18:17:35] [TestReport] 선택: GS / #W2.(제2폐수처리장/처리수) (57항목)
+[18:17:35] [TestReport] 선택: GS / #W3.(VDU폐수처리장/처리수) (54항목)
+[18:17:36] [TestReport] 선택: GS / #W5.(PE폐수처리장/처리수) (54항목)
+[18:17:37] [TestReport] 선택: GS / #W4.(HOU SRU 폐수처리장/처리수) (54항목)
+[18:19:28] [TestReport] 선택: GS / #W23. PE생산팀 C/W (716-E-303, I-8WTS036) (29항목)
+[18:19:28] [TestReport] 선택: GS / #W22. PE생산팀 C/W (716-E-302, I-8WTS035) (53항목)
+[18:19:29] [TestReport] 선택: GS / #W21. PE생산팀 C/W (716-E-301, I-8WTS034) (29항목)
+[18:19:29] [TestReport] 선택: GS / #W20. HOU SRU팀 C/W (616-E-301B, I-7WTS033) (29항목)
+[18:19:29] [TestReport] 선택: GS / #W20. HOU SRU팀 C/W (616-E-301B, I-7WTS033) (29항목)
+[18:19:30] [TestReport] 선택: GS / #W19. HOU SRU팀 C/W (616-E-301A, I-7WTS032) (29항목)
+[18:27:26] [TestReport] LoadData() 시작
+[18:27:26] [TestReport] 업체 28개
+[18:27:29] [TestReport] [LG생명과학] 12건 시료 로드
+[18:27:37] [Print] 계약DB 컬럼: C_CompanyName, C_ContractStart, C_ContractEnd, C_ContractDays, C_ContractAmountVATExcluded, C_Abbreviation, C_ContractType, C_Address, C_Representative, C_FacilityType, C_CategoryType, C_MainProduct, C_ContactPerson, C_PhoneNumber, C_Email
+[18:27:37] [Print] 계약DB 샘플: C_CompanyName=㈜LG화학 여수-용성 | C_ContractStart=2026-03-01 | C_ContractEnd=2027-12-31 | C_ContractDays=670 | C_ContractAmountVATExcluded=350000000 | C_Abbreviation=용성 | C_ContractType=LG화학(주) | C_Address=전남 여수시 여수산단4로 58 (중흥동) | C_Representative=여수 LG화학 공장장 | C_FacilityType=제조시설 | C_CategoryType=폐수처리시설 | C_MainProduct=석유화학제품 | C_ContactPerson=홍길동 01 | C_PhoneNumber=010-1111-1111 | C_Email=1@1.com
+[18:27:37] [Print] 계약DB 샘플: C_CompanyName=㈜LG화학 여수-화치 | C_ContractStart=2026-03-01 | C_ContractEnd=2027-12-31 | C_ContractDays=670 | C_ContractAmountVATExcluded=350000000 | C_Abbreviation=화치 | C_ContractType=LG화학(주) | C_Address=전남 여수시 여수산단2로 55 (화치동) | C_Representative=여수 LG화학 공장장 | C_FacilityType=제조시설 | C_CategoryType=폐수처리시설 | C_MainProduct=석유화학제품 | C_ContactPerson=홍길동 02 | C_PhoneNumber=010-1111-1112 | C_Email=1@2.com
+[18:27:37] [Print] 계약DB 샘플: C_CompanyName=㈜LG화학 여수-확장 | C_ContractStart=2026-03-01 | C_ContractEnd=2027-12-31 | C_ContractDays=670 | C_ContractAmountVATExcluded=350000000 | C_Abbreviation=확장 | C_ContractType=LG화학(주) | C_Address=전남 여수시 여수산단로 1121 | C_Representative=여수 LG화학 공장장 | C_FacilityType=제조시설 | C_CategoryType=폐수처리시설 | C_MainProduct=석유화학제품 | C_ContactPerson=홍길동 03 | C_PhoneNumber=010-1111-1113 | C_Email=1@3.com
+[18:27:37] [Print] 계약정보: 'LG생명과학' → 회사=㈜LG화학 생명과학 익산공장, 대표자=대표이사
+[18:27:37] [Print] 방류기준 0개 조회
+[18:27:40] [Print] 저장: C:\Users\ironu\Documents\ETA\Data\Reports\성적서_LG생명과학_20251223_182737.xlsx
+[18:27:40] [TestReport] [일괄] ✅ 합성의약 일반 폐수
+[18:27:40] [Print] 계약DB 컬럼: C_CompanyName, C_ContractStart, C_ContractEnd, C_ContractDays, C_ContractAmountVATExcluded, C_Abbreviation, C_ContractType, C_Address, C_Representative, C_FacilityType, C_CategoryType, C_MainProduct, C_ContactPerson, C_PhoneNumber, C_Email
+[18:27:40] [Print] 계약DB 샘플: C_CompanyName=㈜LG화학 여수-용성 | C_ContractStart=2026-03-01 | C_ContractEnd=2027-12-31 | C_ContractDays=670 | C_ContractAmountVATExcluded=350000000 | C_Abbreviation=용성 | C_ContractType=LG화학(주) | C_Address=전남 여수시 여수산단4로 58 (중흥동) | C_Representative=여수 LG화학 공장장 | C_FacilityType=제조시설 | C_CategoryType=폐수처리시설 | C_MainProduct=석유화학제품 | C_ContactPerson=홍길동 01 | C_PhoneNumber=010-1111-1111 | C_Email=1@1.com
+[18:27:40] [Print] 계약DB 샘플: C_CompanyName=㈜LG화학 여수-화치 | C_ContractStart=2026-03-01 | C_ContractEnd=2027-12-31 | C_ContractDays=670 | C_ContractAmountVATExcluded=350000000 | C_Abbreviation=화치 | C_ContractType=LG화학(주) | C_Address=전남 여수시 여수산단2로 55 (화치동) | C_Representative=여수 LG화학 공장장 | C_FacilityType=제조시설 | C_CategoryType=폐수처리시설 | C_MainProduct=석유화학제품 | C_ContactPerson=홍길동 02 | C_PhoneNumber=010-1111-1112 | C_Email=1@2.com
+[18:27:40] [Print] 계약DB 샘플: C_CompanyName=㈜LG화학 여수-확장 | C_ContractStart=2026-03-01 | C_ContractEnd=2027-12-31 | C_ContractDays=670 | C_ContractAmountVATExcluded=350000000 | C_Abbreviation=확장 | C_ContractType=LG화학(주) | C_Address=전남 여수시 여수산단로 1121 | C_Representative=여수 LG화학 공장장 | C_FacilityType=제조시설 | C_CategoryType=폐수처리시설 | C_MainProduct=석유화학제품 | C_ContactPerson=홍길동 03 | C_PhoneNumber=010-1111-1113 | C_Email=1@3.com
+[18:27:40] [Print] 계약정보: 'LG생명과학' → 회사=㈜LG화학 생명과학 익산공장, 대표자=대표이사
+[18:27:40] [Print] 방류기준 0개 조회
+[18:27:40] [Print] 저장: C:\Users\ironu\Documents\ETA\Data\Reports\성적서_LG생명과학_20251223_182740.xlsx
+[18:27:40] [TestReport] [일괄] ✅ 의약 고농도 폐수
+[18:27:40] [Print] 계약DB 컬럼: C_CompanyName, C_ContractStart, C_ContractEnd, C_ContractDays, C_ContractAmountVATExcluded, C_Abbreviation, C_ContractType, C_Address, C_Representative, C_FacilityType, C_CategoryType, C_MainProduct, C_ContactPerson, C_PhoneNumber, C_Email
+[18:27:40] [Print] 계약DB 샘플: C_CompanyName=㈜LG화학 여수-용성 | C_ContractStart=2026-03-01 | C_ContractEnd=2027-12-31 | C_ContractDays=670 | C_ContractAmountVATExcluded=350000000 | C_Abbreviation=용성 | C_ContractType=LG화학(주) | C_Address=전남 여수시 여수산단4로 58 (중흥동) | C_Representative=여수 LG화학 공장장 | C_FacilityType=제조시설 | C_CategoryType=폐수처리시설 | C_MainProduct=석유화학제품 | C_ContactPerson=홍길동 01 | C_PhoneNumber=010-1111-1111 | C_Email=1@1.com
+[18:27:40] [Print] 계약DB 샘플: C_CompanyName=㈜LG화학 여수-화치 | C_ContractStart=2026-03-01 | C_ContractEnd=2027-12-31 | C_ContractDays=670 | C_ContractAmountVATExcluded=350000000 | C_Abbreviation=화치 | C_ContractType=LG화학(주) | C_Address=전남 여수시 여수산단2로 55 (화치동) | C_Representative=여수 LG화학 공장장 | C_FacilityType=제조시설 | C_CategoryType=폐수처리시설 | C_MainProduct=석유화학제품 | C_ContactPerson=홍길동 02 | C_PhoneNumber=010-1111-1112 | C_Email=1@2.com
+[18:27:40] [Print] 계약DB 샘플: C_CompanyName=㈜LG화학 여수-확장 | C_ContractStart=2026-03-01 | C_ContractEnd=2027-12-31 | C_ContractDays=670 | C_ContractAmountVATExcluded=350000000 | C_Abbreviation=확장 | C_ContractType=LG화학(주) | C_Address=전남 여수시 여수산단로 1121 | C_Representative=여수 LG화학 공장장 | C_FacilityType=제조시설 | C_CategoryType=폐수처리시설 | C_MainProduct=석유화학제품 | C_ContactPerson=홍길동 03 | C_PhoneNumber=010-1111-1113 | C_Email=1@3.com
+[18:27:40] [Print] 계약정보: 'LG생명과학' → 회사=㈜LG화학 생명과학 익산공장, 대표자=대표이사
+[18:27:40] [Print] 방류기준 0개 조회
+[18:27:40] [Print] 저장: C:\Users\ironu\Documents\ETA\Data\Reports\성적서_LG생명과학_20251223_182740.xlsx
+[18:27:40] [TestReport] [일괄] ✅ 부스틴 일반
+[18:27:40] [Print] 계약DB 컬럼: C_CompanyName, C_ContractStart, C_ContractEnd, C_ContractDays, C_ContractAmountVATExcluded, C_Abbreviation, C_ContractType, C_Address, C_Representative, C_FacilityType, C_CategoryType, C_MainProduct, C_ContactPerson, C_PhoneNumber, C_Email
+[18:27:40] [Print] 계약DB 샘플: C_CompanyName=㈜LG화학 여수-용성 | C_ContractStart=2026-03-01 | C_ContractEnd=2027-12-31 | C_ContractDays=670 | C_ContractAmountVATExcluded=350000000 | C_Abbreviation=용성 | C_ContractType=LG화학(주) | C_Address=전남 여수시 여수산단4로 58 (중흥동) | C_Representative=여수 LG화학 공장장 | C_FacilityType=제조시설 | C_CategoryType=폐수처리시설 | C_MainProduct=석유화학제품 | C_ContactPerson=홍길동 01 | C_PhoneNumber=010-1111-1111 | C_Email=1@1.com
+[18:27:40] [Print] 계약DB 샘플: C_CompanyName=㈜LG화학 여수-화치 | C_ContractStart=2026-03-01 | C_ContractEnd=2027-12-31 | C_ContractDays=670 | C_ContractAmountVATExcluded=350000000 | C_Abbreviation=화치 | C_ContractType=LG화학(주) | C_Address=전남 여수시 여수산단2로 55 (화치동) | C_Representative=여수 LG화학 공장장 | C_FacilityType=제조시설 | C_CategoryType=폐수처리시설 | C_MainProduct=석유화학제품 | C_ContactPerson=홍길동 02 | C_PhoneNumber=010-1111-1112 | C_Email=1@2.com
+[18:27:40] [Print] 계약DB 샘플: C_CompanyName=㈜LG화학 여수-확장 | C_ContractStart=2026-03-01 | C_ContractEnd=2027-12-31 | C_ContractDays=670 | C_ContractAmountVATExcluded=350000000 | C_Abbreviation=확장 | C_ContractType=LG화학(주) | C_Address=전남 여수시 여수산단로 1121 | C_Representative=여수 LG화학 공장장 | C_FacilityType=제조시설 | C_CategoryType=폐수처리시설 | C_MainProduct=석유화학제품 | C_ContactPerson=홍길동 03 | C_PhoneNumber=010-1111-1113 | C_Email=1@3.com
+[18:27:40] [Print] 계약정보: 'LG생명과학' → 회사=㈜LG화학 생명과학 익산공장, 대표자=대표이사
+[18:27:40] [Print] 방류기준 0개 조회
+[18:27:40] [Print] 저장: C:\Users\ironu\Documents\ETA\Data\Reports\성적서_LG생명과학_20251223_182740.xlsx
+[18:27:40] [TestReport] [일괄] ✅ QC실험폐수
+[18:27:40] [Print] 계약DB 컬럼: C_CompanyName, C_ContractStart, C_ContractEnd, C_ContractDays, C_ContractAmountVATExcluded, C_Abbreviation, C_ContractType, C_Address, C_Representative, C_FacilityType, C_CategoryType, C_MainProduct, C_ContactPerson, C_PhoneNumber, C_Email
+[18:27:40] [Print] 계약DB 샘플: C_CompanyName=㈜LG화학 여수-용성 | C_ContractStart=2026-03-01 | C_ContractEnd=2027-12-31 | C_ContractDays=670 | C_ContractAmountVATExcluded=350000000 | C_Abbreviation=용성 | C_ContractType=LG화학(주) | C_Address=전남 여수시 여수산단4로 58 (중흥동) | C_Representative=여수 LG화학 공장장 | C_FacilityType=제조시설 | C_CategoryType=폐수처리시설 | C_MainProduct=석유화학제품 | C_ContactPerson=홍길동 01 | C_PhoneNumber=010-1111-1111 | C_Email=1@1.com
+[18:27:40] [Print] 계약DB 샘플: C_CompanyName=㈜LG화학 여수-화치 | C_ContractStart=2026-03-01 | C_ContractEnd=2027-12-31 | C_ContractDays=670 | C_ContractAmountVATExcluded=350000000 | C_Abbreviation=화치 | C_ContractType=LG화학(주) | C_Address=전남 여수시 여수산단2로 55 (화치동) | C_Representative=여수 LG화학 공장장 | C_FacilityType=제조시설 | C_CategoryType=폐수처리시설 | C_MainProduct=석유화학제품 | C_ContactPerson=홍길동 02 | C_PhoneNumber=010-1111-1112 | C_Email=1@2.com
+[18:27:40] [Print] 계약DB 샘플: C_CompanyName=㈜LG화학 여수-확장 | C_ContractStart=2026-03-01 | C_ContractEnd=2027-12-31 | C_ContractDays=670 | C_ContractAmountVATExcluded=350000000 | C_Abbreviation=확장 | C_ContractType=LG화학(주) | C_Address=전남 여수시 여수산단로 1121 | C_Representative=여수 LG화학 공장장 | C_FacilityType=제조시설 | C_CategoryType=폐수처리시설 | C_MainProduct=석유화학제품 | C_ContactPerson=홍길동 03 | C_PhoneNumber=010-1111-1113 | C_Email=1@3.com
+[18:27:40] [Print] 계약정보: 'LG생명과학' → 회사=㈜LG화학 생명과학 익산공장, 대표자=대표이사
+[18:27:40] [Print] 방류기준 56개 조회
+[18:27:41] [Print] 저장: C:\Users\ironu\Documents\ETA\Data\Reports\성적서_LG생명과학_20251223_182740.xlsx
+[18:27:41] [TestReport] [일괄] ✅ 최종방류수
+[18:27:41] [Print] 계약DB 컬럼: C_CompanyName, C_ContractStart, C_ContractEnd, C_ContractDays, C_ContractAmountVATExcluded, C_Abbreviation, C_ContractType, C_Address, C_Representative, C_FacilityType, C_CategoryType, C_MainProduct, C_ContactPerson, C_PhoneNumber, C_Email
+[18:27:41] [Print] 계약DB 샘플: C_CompanyName=㈜LG화학 여수-용성 | C_ContractStart=2026-03-01 | C_ContractEnd=2027-12-31 | C_ContractDays=670 | C_ContractAmountVATExcluded=350000000 | C_Abbreviation=용성 | C_ContractType=LG화학(주) | C_Address=전남 여수시 여수산단4로 58 (중흥동) | C_Representative=여수 LG화학 공장장 | C_FacilityType=제조시설 | C_CategoryType=폐수처리시설 | C_MainProduct=석유화학제품 | C_ContactPerson=홍길동 01 | C_PhoneNumber=010-1111-1111 | C_Email=1@1.com
+[18:27:41] [Print] 계약DB 샘플: C_CompanyName=㈜LG화학 여수-화치 | C_ContractStart=2026-03-01 | C_ContractEnd=2027-12-31 | C_ContractDays=670 | C_ContractAmountVATExcluded=350000000 | C_Abbreviation=화치 | C_ContractType=LG화학(주) | C_Address=전남 여수시 여수산단2로 55 (화치동) | C_Representative=여수 LG화학 공장장 | C_FacilityType=제조시설 | C_CategoryType=폐수처리시설 | C_MainProduct=석유화학제품 | C_ContactPerson=홍길동 02 | C_PhoneNumber=010-1111-1112 | C_Email=1@2.com
+[18:27:41] [Print] 계약DB 샘플: C_CompanyName=㈜LG화학 여수-확장 | C_ContractStart=2026-03-01 | C_ContractEnd=2027-12-31 | C_ContractDays=670 | C_ContractAmountVATExcluded=350000000 | C_Abbreviation=확장 | C_ContractType=LG화학(주) | C_Address=전남 여수시 여수산단로 1121 | C_Representative=여수 LG화학 공장장 | C_FacilityType=제조시설 | C_CategoryType=폐수처리시설 | C_MainProduct=석유화학제품 | C_ContactPerson=홍길동 03 | C_PhoneNumber=010-1111-1113 | C_Email=1@3.com
+[18:27:41] [Print] 계약정보: 'LG생명과학' → 회사=㈜LG화학 생명과학 익산공장, 대표자=대표이사
+[18:27:41] [Print] 방류기준 0개 조회
+[18:27:41] [Print] 저장: C:\Users\ironu\Documents\ETA\Data\Reports\성적서_LG생명과학_20251223_182741.xlsx
+[18:27:41] [TestReport] [일괄] ✅ 원폐수
+[18:27:41] [TestReport] [Toast] ✅ 일괄 엑셀 완료
+성공: 6개  실패: 0개

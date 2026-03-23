@@ -3,125 +3,190 @@ using System.Collections.Generic;
 using System.IO;
 using Microsoft.Data.Sqlite;
 using ETA.Models;
+using System.Diagnostics;
 
 namespace ETA.Services;
 
 public static class ContractService
 {
-    private static string GetDatabasePath()
+    // ── DB 경로 (AgentService 와 동일 방식) ──────────────────────────────────
+    public static string GetDatabasePath()
     {
-        return Path.Combine(AppContext.BaseDirectory, "Data", "eta.db");
+        var root = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", ".."));
+        var dir  = Path.Combine(root, "Data");
+        Directory.CreateDirectory(dir);
+        return Path.Combine(dir, "eta.db");
     }
 
+    // ── 전체 조회 ─────────────────────────────────────────────────────────────
     public static List<Contract> GetAllContracts()
     {
-        var contracts = new List<Contract>();
+        var list   = new List<Contract>();
+        var dbPath = GetDatabasePath();
+        if (!File.Exists(dbPath)) { Debug.WriteLine("❌ DB 없음"); return list; }
 
-        string dbPath = GetDatabasePath();
+        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        conn.Open();
 
-        if (!File.Exists(dbPath))
-        {
-            Console.WriteLine($"Database not found: {dbPath}");
-            return contracts;
-        }
-
-        using var connection = new SqliteConnection($"Data Source={dbPath}");
-        connection.Open();
-
-        using var command = connection.CreateCommand();
-        command.CommandText = @"
-            SELECT 
-                C_CompanyName,
-                C_ContractStart,
-                C_ContractEnd,
-                C_ContractDays,
-                C_ContractAmountVATExcluded,
-                C_Abbreviation,
-                C_ContractType,
-                C_Address,
-                C_Representative,
-                C_FacilityType,
-                C_CategoryType,
-                C_MainProduct,
-                C_ContactPerson,
-                C_PhoneNumber,
-                C_Email
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+            SELECT C_CompanyName, C_ContractStart, C_ContractEnd, C_ContractDays,
+                   C_ContractAmountVATExcluded, C_Abbreviation, C_ContractType,
+                   C_Address, C_Representative, C_FacilityType, C_CategoryType,
+                   C_MainProduct, C_ContactPerson, C_PhoneNumber, C_Email
             FROM ""계약 DB""
             ORDER BY C_CompanyName ASC";
 
-        using var reader = command.ExecuteReader();
-
-        while (reader.Read())
+        using var r = cmd.ExecuteReader();
+        while (r.Read())
         {
-            contracts.Add(new Contract
+            var c = new Contract
             {
-                C_CompanyName               = reader.GetStringOrEmpty("C_CompanyName"),
+                C_CompanyName    = S(r, "C_CompanyName"),
+                OriginalCompanyName = S(r, "C_CompanyName"),
+                C_Abbreviation   = S(r, "C_Abbreviation"),
+                C_ContractType   = S(r, "C_ContractType"),
+                C_Address        = S(r, "C_Address"),
+                C_Representative = S(r, "C_Representative"),
+                C_FacilityType   = S(r, "C_FacilityType"),
+                C_CategoryType   = S(r, "C_CategoryType"),
+                C_MainProduct    = S(r, "C_MainProduct"),
+                C_ContactPerson  = S(r, "C_ContactPerson"),
+                C_PhoneNumber    = S(r, "C_PhoneNumber"),
+                C_Email          = S(r, "C_Email"),
+                C_ContractDays   = NullInt(r, "C_ContractDays"),
+                C_ContractAmountVATExcluded = NullDecimal(r, "C_ContractAmountVATExcluded"),
+            };
 
-                C_ContractStart = reader.IsDBNull(reader.GetOrdinal("C_ContractStart"))
-                    ? null
-                    : reader.GetDateTime(reader.GetOrdinal("C_ContractStart")),
+            var startStr = S(r, "C_ContractStart");
+            if (DateTime.TryParse(startStr, out var start)) c.C_ContractStart = start;
 
-                C_ContractEnd = reader.IsDBNull(reader.GetOrdinal("C_ContractEnd"))
-                    ? null
-                    : reader.GetDateTime(reader.GetOrdinal("C_ContractEnd")),
+            var endStr = S(r, "C_ContractEnd");
+            if (DateTime.TryParse(endStr, out var end)) c.C_ContractEnd = end;
 
-                C_ContractDays              = reader.SafeGetInt32("C_ContractDays"),
-                C_ContractAmountVATExcluded = reader.SafeGetDecimal("C_ContractAmountVATExcluded"),
-                C_Abbreviation              = reader.GetStringOrEmpty("C_Abbreviation"),
-                C_ContractType              = reader.GetStringOrEmpty("C_ContractType"),
-                C_Address                   = reader.GetStringOrEmpty("C_Address"),
-                C_Representative            = reader.GetStringOrEmpty("C_Representative"),
-                C_FacilityType              = reader.GetStringOrEmpty("C_FacilityType"),
-                C_CategoryType              = reader.GetStringOrEmpty("C_CategoryType"),
-                C_MainProduct               = reader.GetStringOrEmpty("C_MainProduct"),
-                C_ContactPerson             = reader.GetStringOrEmpty("C_ContactPerson"),
-                C_PhoneNumber               = reader.GetStringOrEmpty("C_PhoneNumber"),
-                C_Email                     = reader.GetStringOrEmpty("C_Email")
-            });
+            list.Add(c);
         }
-//C_ContractAmountVATExcluded
-        return contracts;
+
+        Debug.WriteLine($"[Contract] 로드 {list.Count}건");
+        return list;
     }
 
-    // 확장 메서드들
-    private static string GetStringOrEmpty(this SqliteDataReader reader, string columnName)
+    // ── 수정 ─────────────────────────────────────────────────────────────────
+    public static bool Update(Contract contract)
     {
-        try
+        if (string.IsNullOrEmpty(contract.OriginalCompanyName))
         {
-            int ordinal = reader.GetOrdinal(columnName);
-            return !reader.IsDBNull(ordinal) ? reader.GetString(ordinal) : string.Empty;
+            Debug.WriteLine("❌ OriginalCompanyName 없음"); return false;
         }
-        catch
-        {
-            return string.Empty;
-        }
+
+        var dbPath = GetDatabasePath();
+        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        conn.Open();
+
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+            UPDATE ""계약 DB"" SET
+                C_CompanyName=@name, C_ContractStart=@start, C_ContractEnd=@end,
+                C_ContractDays=@days, C_ContractAmountVATExcluded=@amount,
+                C_Abbreviation=@abbr, C_ContractType=@type, C_Address=@addr,
+                C_Representative=@rep, C_FacilityType=@ftype, C_CategoryType=@ctype,
+                C_MainProduct=@prod, C_ContactPerson=@contact,
+                C_PhoneNumber=@phone, C_Email=@email
+            WHERE C_CompanyName=@original";
+
+        SetParams(cmd, contract);
+        cmd.Parameters.AddWithValue("@original", contract.OriginalCompanyName);
+
+        int rows = cmd.ExecuteNonQuery();
+        Debug.WriteLine($"[Contract UPDATE] {rows}행 → {contract.C_CompanyName}");
+        if (rows > 0) { contract.OriginalCompanyName = contract.C_CompanyName; return true; }
+        return false;
     }
 
-    private static int? SafeGetInt32(this SqliteDataReader reader, string columnName)
+    // ── 추가 ─────────────────────────────────────────────────────────────────
+    public static bool Insert(Contract contract)
     {
-        try
-        {
-            int ordinal = reader.GetOrdinal(columnName);
-            return reader.IsDBNull(ordinal) ? null : reader.GetInt32(ordinal);
-        }
-        catch
-        {
-            return null;
-        }
+        var dbPath = GetDatabasePath();
+        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        conn.Open();
+
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+            INSERT INTO ""계약 DB""
+                (C_CompanyName, C_ContractStart, C_ContractEnd, C_ContractDays,
+                 C_ContractAmountVATExcluded, C_Abbreviation, C_ContractType,
+                 C_Address, C_Representative, C_FacilityType, C_CategoryType,
+                 C_MainProduct, C_ContactPerson, C_PhoneNumber, C_Email)
+            VALUES
+                (@name, @start, @end, @days, @amount, @abbr, @type, @addr,
+                 @rep, @ftype, @ctype, @prod, @contact, @phone, @email)";
+
+        SetParams(cmd, contract);
+        int rows = cmd.ExecuteNonQuery();
+        Debug.WriteLine($"[Contract INSERT] {rows}행 → {contract.C_CompanyName}");
+        return rows > 0;
     }
 
-private static decimal? SafeGetDecimal(this SqliteDataReader reader, string columnName)
-{
-    try
+    // ── 삭제 ─────────────────────────────────────────────────────────────────
+    public static bool Delete(Contract contract)
     {
-        int ordinal = reader.GetOrdinal(columnName);
-        Console.WriteLine($"[SafeGetDecimal] {columnName} 컬럼 찾음 (ordinal: {ordinal})");
-        return reader.IsDBNull(ordinal) ? null : reader.GetDecimal(ordinal);
+        if (string.IsNullOrEmpty(contract.C_CompanyName)) return false;
+
+        var dbPath = GetDatabasePath();
+        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        conn.Open();
+
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"DELETE FROM ""계약 DB"" WHERE C_CompanyName=@name";
+        cmd.Parameters.AddWithValue("@name", contract.C_CompanyName);
+
+        int rows = cmd.ExecuteNonQuery();
+        Debug.WriteLine($"[Contract DELETE] {rows}행 → {contract.C_CompanyName}");
+        return rows > 0;
     }
-    catch (Exception ex)
+
+    // ── 공통 파라미터 ─────────────────────────────────────────────────────────
+    private static void SetParams(SqliteCommand cmd, Contract c)
     {
-        Console.WriteLine($"[SafeGetDecimal] 컬럼 '{columnName}' 읽기 실패: {ex.Message}");
-        return null;
+        cmd.Parameters.AddWithValue("@name",    c.C_CompanyName    ?? "");
+        cmd.Parameters.AddWithValue("@start",   c.C_ContractStart.HasValue
+                                                    ? c.C_ContractStart.Value.ToString("yyyy-MM-dd")
+                                                    : (object)DBNull.Value);
+        cmd.Parameters.AddWithValue("@end",     c.C_ContractEnd.HasValue
+                                                    ? c.C_ContractEnd.Value.ToString("yyyy-MM-dd")
+                                                    : (object)DBNull.Value);
+        cmd.Parameters.AddWithValue("@days",    c.C_ContractDays.HasValue
+                                                    ? c.C_ContractDays.Value
+                                                    : (object)DBNull.Value);
+        cmd.Parameters.AddWithValue("@amount",  c.C_ContractAmountVATExcluded.HasValue
+                                                    ? c.C_ContractAmountVATExcluded.Value
+                                                    : (object)DBNull.Value);
+        cmd.Parameters.AddWithValue("@abbr",    c.C_Abbreviation   ?? "");
+        cmd.Parameters.AddWithValue("@type",    c.C_ContractType   ?? "");
+        cmd.Parameters.AddWithValue("@addr",    c.C_Address        ?? "");
+        cmd.Parameters.AddWithValue("@rep",     c.C_Representative ?? "");
+        cmd.Parameters.AddWithValue("@ftype",   c.C_FacilityType   ?? "");
+        cmd.Parameters.AddWithValue("@ctype",   c.C_CategoryType   ?? "");
+        cmd.Parameters.AddWithValue("@prod",    c.C_MainProduct    ?? "");
+        cmd.Parameters.AddWithValue("@contact", c.C_ContactPerson  ?? "");
+        cmd.Parameters.AddWithValue("@phone",   c.C_PhoneNumber    ?? "");
+        cmd.Parameters.AddWithValue("@email",   c.C_Email          ?? "");
     }
-}
+
+    // ── 헬퍼 ─────────────────────────────────────────────────────────────────
+    private static string S(SqliteDataReader r, string col)
+    {
+        try { int i = r.GetOrdinal(col); return !r.IsDBNull(i) ? r.GetString(i) ?? "" : ""; }
+        catch { return ""; }
+    }
+    private static int? NullInt(SqliteDataReader r, string col)
+    {
+        try { int i = r.GetOrdinal(col); return r.IsDBNull(i) ? null : r.GetInt32(i); }
+        catch { return null; }
+    }
+    private static decimal? NullDecimal(SqliteDataReader r, string col)
+    {
+        try { int i = r.GetOrdinal(col); return r.IsDBNull(i) ? null : r.GetDecimal(i); }
+        catch { return null; }
+    }
 }

@@ -1,0 +1,28 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ETA.Views.Pages.TestReportPage">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- 정렬 토글 -->
+        <Border Grid.Row="0" Background="#2a2a3a" Padding="6,2">
+            <ToggleSwitch x:Name="tglSortMode"
+                          IsChecked="False"
+                          IsCheckedChanged="SortToggle_Changed"
+                          HorizontalAlignment="Left"
+                          VerticalAlignment="Center"
+                          OnContent="📅 날짜별 보기"
+                          OffContent="🏭 업체별 보기" />
+        </Border>
+
+        <!-- 트리뷰 -->
+        <TreeView Grid.Row="1"
+                  x:Name="ReportTreeView"
+                  Margin="0,2,0,0"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch"
+                  SelectionChanged="ReportTreeView_SelectionChanged" />
+
+    </Grid>
+
+</UserControl>

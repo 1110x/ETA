@@ -3,13 +3,14 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
-using Avalonia.Markup.Xaml;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform.Storage;
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using Microsoft.Data.Sqlite;
+using System.Threading.Tasks;
 using ETA.Models;
 using ETA.Services;
 
@@ -17,218 +18,556 @@ namespace ETA.Views.Pages;
 
 public partial class AgentTreePage : UserControl
 {
-    // ====================== ★★★ 여기 4곳만 바꾸세요 ★★★ ======================
-    // WasteCompanyPage로 복사할 때 이 4줄만 수정하면 끝!
-    private readonly Func<List<Agent>> GetData = AgentService.GetAllItems;   // 1. 서비스
-    private readonly string DefaultIcon = "👨‍💼";                            // 2. 기본 아이콘
-    private readonly string ItemNameProperty = "성명";                       // 3. 이름 표시할 필드
-    private readonly string TreeViewName = "AgentTreeView";                  // 4. XAML에 있는 TreeView x:Name
-    // =========================================================================
+    // ── 외부(MainPage) 연결 ──────────────────────────────────────────────────
+    public event Action<Control?>? DetailPanelChanged;
+
+    // ── 상태 ────────────────────────────────────────────────────────────────
+    private Agent?      _selectedAgent;
+    private StackPanel? _detailPanel;
+    private bool        _isAddMode  = false;
+
+    // 사진 미리보기 Image 컨트롤 (저장 시 PhotoPath 접근용)
+    private Image?      _photoImage;
+    private string      _pendingPhotoPath = "";   // 선택했지만 아직 저장 안 된 경로
 
     public AgentTreePage()
     {
         InitializeComponent();
-        LoadData();
     }
 
+    // =========================================================================
+    // 데이터 로드
+    // =========================================================================
     public void LoadData()
     {
-        UpdateStatus("트리 로드 중...");
         Log("LoadData() 시작");
-
-        var tree = this.FindControl<TreeView>(TreeViewName);
-        if (tree == null) return;
-        tree.Items.Clear();
+        AgentTreeView.Items.Clear();
+        _selectedAgent    = null;
+        _isAddMode        = false;
+        _pendingPhotoPath = "";
+        DetailPanelChanged?.Invoke(null);
 
         try
         {
-            var items = GetData() ?? new List<Agent>();           // ← 설정한 GetData 사용
-            items = items.OrderBy(a => a.입사일).ToList();
-
-            Log($"DB 로드 완료 → {items.Count}명");
-
-            if (items.Count == 0)
-            {
-                UpdateStatus("❌ DB에 데이터가 없습니다.");
-                return;
-            }
-
+            var items = AgentService.GetAllItems().OrderBy(a => a.입사일).ToList();
             foreach (var item in items)
-            {
-                var personItem = CreateTreeItem(item);
-                tree.Items.Add(personItem);
-            }
-
-            UpdateStatus($"✅ {items.Count}명 표시 완료 → [전체 저장] 버튼 누르세요");
+                AgentTreeView.Items.Add(CreateTreeItem(item));
+            Log($"로드 완료 → {items.Count}명");
         }
-        catch (Exception ex)
-        {
-            Log("★ 크래시 ★ " + ex.Message);
-            UpdateStatus($"❌ 오류: {ex.Message}");
-        }
+        catch (Exception ex) { Log("★ 크래시 ★ " + ex.Message); }
     }
 
-    // ★★★ TreeItem 생성 (설정값 자동 적용) ★★★
-    private TreeViewItem CreateTreeItem(Agent item)
+    // =========================================================================
+    // TreeViewItem 생성
+    // =========================================================================
+    private TreeViewItem CreateTreeItem(Agent agent)
     {
-        var personItem = new TreeViewItem { IsExpanded = false };
-        personItem.Tag = item;
-
-        // 아이콘 + 이름 (설정값 자동 적용)
-        string icon = item.기타 switch
+        string icon = agent.기타 switch
         {
-            "0" => "🥷",
-            "1" => "👨‍💼",
-            "2" => "👩‍⚖️"
-            
+            "0" => "🥷", "1" => "👨‍💼", "2" => "👩‍⚖️", _ => "👤"
         };
 
-        personItem.Header = new StackPanel
+        return new TreeViewItem
         {
-            Orientation = Orientation.Horizontal,
-            Spacing = 10,
-            VerticalAlignment = VerticalAlignment.Center,
-            Children =
+            Tag    = agent,
+            Header = new StackPanel
             {
-                new TextBlock { Text = icon, FontSize = 24, VerticalAlignment = VerticalAlignment.Center },
-                new TextBlock
+                Orientation       = Orientation.Horizontal,
+                Spacing           = 8,
+                VerticalAlignment = VerticalAlignment.Center,
+                Children =
                 {
-                    Text = GetProperty(item, ItemNameProperty) ?? "이름 없음",
-                    FontSize = 13,
-                    FontFamily = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R",
-                    Foreground = Brushes.WhiteSmoke,
-                    VerticalAlignment = VerticalAlignment.Center
-                }
-            }
-        };
-
-        // 필드 목록 (여기만 필요시 수정)
-        personItem.Items.Add(CreateLabeledBox("직급", item.직급));
-        personItem.Items.Add(CreateLabeledBox("직무", item.직무));
-        personItem.Items.Add(CreateLabeledBox("입사일", item.입사일표시, true));
-        personItem.Items.Add(CreateLabeledBox("사번", item.사번));
-        personItem.Items.Add(CreateLabeledBox("자격사항", item.자격사항));
-        personItem.Items.Add(CreateLabeledBox("Email", item.Email));
-        personItem.Items.Add(CreateLabeledBox("측정인고유번호", item.측정인고유번호));
-
-        return personItem;
-    }
-
-    // 도우미 (건드릴 필요 없음)
-    private string GetProperty(object obj, string propName)
-    {
-        var prop = obj.GetType().GetProperty(propName);
-        return prop?.GetValue(obj)?.ToString() ?? "";
-    }
-
-    // CreateLabeledBox, SaveAllButton_Click, ExecuteDirectUpdate, Log, UpdateStatus는 기존 그대로 사용
-    private StackPanel CreateLabeledBox(string label, string value, bool isReadOnly = false)
-    {
-        // (기존 코드 그대로)
-        var panel = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 10 };
-        panel.Children.Add(new TextBlock { Text = label + ": ", Width = 110, Foreground = Brushes.LightGray, FontSize = 12, FontFamily = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R", VerticalAlignment = VerticalAlignment.Center });
-        var textBox = new TextBox { Text = value ?? "", FontSize = 11, FontFamily = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R", Background = Brushes.Transparent, BorderThickness = new Thickness(0), Padding = new Thickness(6, 3), Width = 220, IsReadOnly = isReadOnly };
-        panel.Children.Add(textBox);
-        return panel;
-    }
-    private void SaveAllButton_Click(object? sender, RoutedEventArgs e)
-    {
-        int success = 0;
-        Log("=== 전체 저장 시작 (키 = 성명) ===");
-
-        foreach (var item in AgentTreeView.Items)
-        {
-            if (item is TreeViewItem personItem && personItem.Tag is Agent agent)
-            {
-                foreach (var child in personItem.Items)
-                {
-                    if (child is StackPanel panel && panel.Children.Count == 2)
+                    new TextBlock { Text = icon, FontSize = 20, VerticalAlignment = VerticalAlignment.Center },
+                    new TextBlock
                     {
-                        var labelText = (panel.Children[0] as TextBlock)?.Text.Replace(": ", "").Trim() ?? "";
-                        var tb = panel.Children[1] as TextBox;
-                        if (tb == null) continue;
-
-                        switch (labelText)
-                        {
-                            case "직급": agent.직급 = tb.Text ?? ""; break;
-                            case "직무": agent.직무 = tb.Text ?? ""; break;
-                            case "사번": agent.사번 = tb.Text ?? ""; break;
-                            case "자격사항": agent.자격사항 = tb.Text ?? ""; break;
-                            case "Email": agent.Email = tb.Text ?? ""; break;
-                            case "측정인고유번호": agent.측정인고유번호 = tb.Text ?? ""; break;
-                            case "기타": agent.기타 = tb.Text ?? ""; break;
-                        }
+                        Text              = agent.성명,
+                        FontSize          = 13,
+                        FontFamily        = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R",
+                        Foreground        = Brushes.WhiteSmoke,
+                        VerticalAlignment = VerticalAlignment.Center
                     }
                 }
+            }
+        };
+    }
 
-                if (ExecuteDirectUpdate(agent)) success++;
+    // =========================================================================
+    // 트리 선택 → 수정 모드
+    // =========================================================================
+    public void AgentTreeView_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        Agent? agent = null;
+        if (e.AddedItems.Count > 0)
+        {
+            if (e.AddedItems[0] is TreeViewItem tvi && tvi.Tag is Agent a1) agent = a1;
+            else if (e.AddedItems[0] is Agent a2) agent = a2;
+        }
+        if (agent == null) return;
+
+        _selectedAgent    = agent;
+        _isAddMode        = false;
+        _pendingPhotoPath = "";
+        _detailPanel      = BuildEditPanel(agent);
+        DetailPanelChanged?.Invoke(_detailPanel);
+        Log($"선택: {agent.성명}");
+    }
+
+    // =========================================================================
+    // 직원 추가 패널  (MainPage BT3)
+    // =========================================================================
+    public void ShowAddPanel()
+    {
+        _selectedAgent           = null;
+        _isAddMode               = true;
+        _pendingPhotoPath        = "";
+        AgentTreeView.SelectedItem = null;
+        _detailPanel             = BuildAddPanel();
+        DetailPanelChanged?.Invoke(_detailPanel);
+        Log("추가 모드");
+    }
+
+    // =========================================================================
+    // 저장  (MainPage BT1)
+    // =========================================================================
+    public void SaveSelected()
+    {
+        if (_isAddMode) SaveAdd();
+        else            SaveEdit();
+    }
+
+    // =========================================================================
+    // 삭제  (MainPage BT4)
+    // =========================================================================
+    public async Task DeleteSelectedAsync()
+    {
+        if (_selectedAgent == null)
+        {
+            Log("삭제 스킵: 선택 없음");
+            return;
+        }
+
+        // 확인 다이얼로그
+        var dlg = new Window
+        {
+            Title           = "삭제 확인",
+            Width           = 320,
+            Height          = 150,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            CanResize       = false,
+            Background      = new SolidColorBrush(Color.Parse("#2d2d2d")),
+        };
+
+        bool confirmed = false;
+
+        var yesBtn = new Button
+        {
+            Content    = "삭제",
+            Width      = 80,
+            Background = new SolidColorBrush(Color.Parse("#c0392b")),
+            Foreground = Brushes.White,
+        };
+        var noBtn = new Button
+        {
+            Content    = "취소",
+            Width      = 80,
+            Background = new SolidColorBrush(Color.Parse("#444")),
+            Foreground = Brushes.White,
+        };
+
+        yesBtn.Click += (_, _) => { confirmed = true;  dlg.Close(); };
+        noBtn.Click  += (_, _) => { confirmed = false; dlg.Close(); };
+
+        dlg.Content = new StackPanel
+        {
+            Margin  = new Thickness(20),
+            Spacing = 16,
+            Children =
+            {
+                new TextBlock
+                {
+                    Text       = $"'{_selectedAgent.성명}' 직원을 삭제하시겠습니까?",
+                    Foreground = Brushes.WhiteSmoke,
+                    FontSize   = 13,
+                    TextWrapping = Avalonia.Media.TextWrapping.Wrap
+                },
+                new StackPanel
+                {
+                    Orientation = Orientation.Horizontal,
+                    Spacing     = 12,
+                    HorizontalAlignment = HorizontalAlignment.Right,
+                    Children    = { yesBtn, noBtn }
+                }
+            }
+        };
+
+        // 부모 Window 찾기
+        var owner = TopLevel.GetTopLevel(this) as Window;
+        if (owner != null)
+            await dlg.ShowDialog(owner);
+        else
+            dlg.Show();
+
+        if (!confirmed) return;
+
+        bool ok = AgentService.Delete(_selectedAgent);
+        Log(ok ? $"✅ 삭제 성공: {_selectedAgent.성명}" : $"❌ 삭제 실패: {_selectedAgent.성명}");
+
+        if (ok)
+        {
+            // 트리에서 해당 항목 제거
+            var toRemove = AgentTreeView.Items
+                .OfType<TreeViewItem>()
+                .FirstOrDefault(i => i.Tag == _selectedAgent);
+            if (toRemove != null) AgentTreeView.Items.Remove(toRemove);
+
+            _selectedAgent    = null;
+            _detailPanel      = null;
+            _pendingPhotoPath = "";
+            DetailPanelChanged?.Invoke(null);
+        }
+    }
+
+    // =========================================================================
+    // 패널 — 수정 모드
+    // =========================================================================
+    private StackPanel BuildEditPanel(Agent agent)
+    {
+        var root = MakeRootPanel($"✏️  {agent.성명} — 정보 수정");
+
+        // 사진 영역
+        root.Children.Add(BuildPhotoArea(agent.PhotoPath));
+
+        root.Children.Add(BuildFieldRow("성명",           agent.성명,           isReadOnly: true, isLocked: true));
+        root.Children.Add(BuildFieldRow("직급",           agent.직급));
+        root.Children.Add(BuildFieldRow("직무",           agent.직무));
+        root.Children.Add(BuildFieldRow("사번",           agent.사번));
+        root.Children.Add(BuildFieldRow("입사일",         agent.입사일표시,     isReadOnly: true));
+        root.Children.Add(BuildFieldRow("자격사항",       agent.자격사항));
+        root.Children.Add(BuildFieldRow("Email",          agent.Email));
+        root.Children.Add(BuildFieldRow("측정인고유번호", agent.측정인고유번호));
+
+        return root;
+    }
+
+    // =========================================================================
+    // 패널 — 추가 모드
+    // =========================================================================
+    private StackPanel BuildAddPanel()
+    {
+        var root = MakeRootPanel("➕  신규 직원 추가");
+
+        root.Children.Add(BuildPhotoArea(""));
+
+        root.Children.Add(BuildFieldRow("성명",           "", hint: "이름 입력 (필수)"));
+        root.Children.Add(BuildFieldRow("직급",           ""));
+        root.Children.Add(BuildFieldRow("직무",           ""));
+        root.Children.Add(BuildFieldRow("사번",           ""));
+        root.Children.Add(BuildFieldRow("입사일",         "", hint: "예) 2024-01-01"));
+        root.Children.Add(BuildFieldRow("자격사항",       ""));
+        root.Children.Add(BuildFieldRow("Email",          ""));
+        root.Children.Add(BuildFieldRow("측정인고유번호", ""));
+
+        return root;
+    }
+
+    // =========================================================================
+    // 사진 영역 빌드
+    // =========================================================================
+    private StackPanel BuildPhotoArea(string photoPath)
+    {
+        var panel = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            Spacing     = 12,
+            Margin      = new Thickness(0, 0, 0, 4)
+        };
+
+        // 사진 미리보기
+        _photoImage = new Image
+        {
+            Width   = 80,
+            Height  = 100,
+            Stretch = Stretch.UniformToFill,
+        };
+
+        // 사진 테두리
+        var photoBorder = new Border
+        {
+            Width           = 80,
+            Height          = 100,
+            CornerRadius    = new CornerRadius(6),
+            BorderThickness = new Thickness(1),
+            BorderBrush     = new SolidColorBrush(Color.Parse("#555577")),
+            Background      = new SolidColorBrush(Color.Parse("#252525")),
+            ClipToBounds    = true,
+            Child           = _photoImage
+        };
+
+        // 초기 사진 로드
+        LoadPhotoToImage(_photoImage, photoPath);
+
+        // 버튼들
+        var btnPanel = new StackPanel { Spacing = 6, VerticalAlignment = VerticalAlignment.Center };
+
+        var uploadBtn = new Button
+        {
+            Content         = "📷 사진 업로드",
+            FontSize        = 11,
+            FontFamily      = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R",
+            Background      = new SolidColorBrush(Color.Parse("#3a4a6a")),
+            Foreground      = Brushes.WhiteSmoke,
+            BorderThickness = new Thickness(0),
+            CornerRadius    = new CornerRadius(4),
+            Padding         = new Thickness(10, 4),
+        };
+
+        var removeBtn = new Button
+        {
+            Content         = "🗑 사진 제거",
+            FontSize        = 11,
+            FontFamily      = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R",
+            Background      = new SolidColorBrush(Color.Parse("#4a3a3a")),
+            Foreground      = Brushes.WhiteSmoke,
+            BorderThickness = new Thickness(0),
+            CornerRadius    = new CornerRadius(4),
+            Padding         = new Thickness(10, 4),
+        };
+
+        uploadBtn.Click += async (_, _) => await PickPhotoAsync();
+        removeBtn.Click += (_, _) =>
+        {
+            _pendingPhotoPath = "";
+            _photoImage!.Source = null;
+        };
+
+        btnPanel.Children.Add(uploadBtn);
+        btnPanel.Children.Add(removeBtn);
+        btnPanel.Children.Add(new TextBlock
+        {
+            Text       = "jpg / png / bmp",
+            FontSize   = 10,
+            Foreground = new SolidColorBrush(Color.Parse("#666666"))
+        });
+
+        panel.Children.Add(photoBorder);
+        panel.Children.Add(btnPanel);
+        return panel;
+    }
+
+    // ── 사진 파일 선택 ────────────────────────────────────────────────────────
+    private async Task PickPhotoAsync()
+    {
+        var topLevel = TopLevel.GetTopLevel(this);
+        if (topLevel == null) return;
+
+        var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title          = "사진 선택",
+            AllowMultiple  = false,
+            FileTypeFilter = new[]
+            {
+                new FilePickerFileType("이미지")
+                {
+                    Patterns = new[] { "*.jpg", "*.jpeg", "*.png", "*.bmp" }
+                }
+            }
+        });
+
+        if (files.Count == 0) return;
+
+        var srcPath = files[0].Path.LocalPath;
+
+        // Data/Photos/ 폴더로 복사 (파일명: 성명_timestamp.ext)
+        var ext      = Path.GetExtension(srcPath);
+        var name     = _isAddMode
+                           ? $"new_{DateTime.Now:yyyyMMddHHmmss}{ext}"
+                           : $"{(_selectedAgent?.성명 ?? "unknown")}_{DateTime.Now:yyyyMMddHHmmss}{ext}";
+        var destPath = Path.Combine(AgentService.GetPhotoDirectory(), name);
+
+        File.Copy(srcPath, destPath, overwrite: true);
+        _pendingPhotoPath = destPath;
+
+        // 미리보기 갱신
+        if (_photoImage != null)
+            LoadPhotoToImage(_photoImage, destPath);
+
+        Log($"사진 선택: {destPath}");
+    }
+
+    // ── 이미지 로드 헬퍼 ─────────────────────────────────────────────────────
+    private static void LoadPhotoToImage(Image img, string path)
+    {
+        if (string.IsNullOrEmpty(path) || !File.Exists(path))
+        {
+            img.Source = null;
+            return;
+        }
+        try
+        {
+            using var stream = File.OpenRead(path);
+            img.Source = new Bitmap(stream);
+        }
+        catch { img.Source = null; }
+    }
+
+    // =========================================================================
+    // 수정 저장
+    // =========================================================================
+    private void SaveEdit()
+    {
+        if (_selectedAgent == null || _detailPanel == null)
+        {
+            Log("저장 스킵: 선택 없음");
+            return;
+        }
+
+        SyncPanelToAgent(_detailPanel, _selectedAgent, includeReadOnly: false);
+
+        // 사진 경로 반영
+        if (!string.IsNullOrEmpty(_pendingPhotoPath))
+            _selectedAgent.PhotoPath = _pendingPhotoPath;
+
+        bool ok = AgentService.Update(_selectedAgent);
+        Log(ok ? $"✅ 수정 저장: {_selectedAgent.성명}" : $"❌ 수정 실패: {_selectedAgent.성명}");
+
+        if (ok) _pendingPhotoPath = "";
+    }
+
+    // =========================================================================
+    // 추가 저장
+    // =========================================================================
+    private void SaveAdd()
+    {
+        if (_detailPanel == null) return;
+
+        var newAgent = new Agent();
+        SyncPanelToAgent(_detailPanel, newAgent, includeReadOnly: true);
+
+        if (string.IsNullOrWhiteSpace(newAgent.성명))
+        {
+            Log("❌ 성명 없음 → 추가 취소");
+            return;
+        }
+
+        newAgent.Original성명 = newAgent.성명;
+        if (!string.IsNullOrEmpty(_pendingPhotoPath))
+            newAgent.PhotoPath = _pendingPhotoPath;
+
+        bool ok = AgentService.Insert(newAgent);
+        Log(ok ? $"✅ 추가 성공: {newAgent.성명}" : $"❌ 추가 실패: {newAgent.성명}");
+
+        if (ok)
+        {
+            AgentTreeView.Items.Add(CreateTreeItem(newAgent));
+            _isAddMode        = false;
+            _pendingPhotoPath = "";
+            _detailPanel      = null;
+            DetailPanelChanged?.Invoke(null);
+        }
+    }
+
+    // =========================================================================
+    // UI → Agent 동기화
+    // =========================================================================
+    private static void SyncPanelToAgent(StackPanel panel, Agent agent, bool includeReadOnly)
+    {
+        foreach (var child in panel.Children.OfType<StackPanel>())
+        {
+            if (child.Children.Count < 2) continue;
+            var tb = child.Children[1] as TextBox;
+            if (tb == null) continue;
+            if (tb.IsReadOnly && !includeReadOnly) continue;
+
+            var label = (child.Children[0] as TextBlock)?.Text ?? "";
+            label = label.Replace("🔒 ", "").Replace("    ", "").Replace(" :", "").Trim();
+
+            switch (label)
+            {
+                case "성명":           agent.성명           = tb.Text ?? ""; break;
+                case "직급":           agent.직급           = tb.Text ?? ""; break;
+                case "직무":           agent.직무           = tb.Text ?? ""; break;
+                case "사번":           agent.사번           = tb.Text ?? ""; break;
+                case "자격사항":       agent.자격사항       = tb.Text ?? ""; break;
+                case "Email":          agent.Email          = tb.Text ?? ""; break;
+                case "측정인고유번호": agent.측정인고유번호 = tb.Text ?? ""; break;
+                case "입사일":
+                    if (DateOnly.TryParse(tb.Text, out var d)) agent.입사일 = d;
+                    break;
             }
         }
-
-        UpdateStatus($"✅ 저장 완료! 성공 {success}명");
-        Log($"=== 저장 종료 → {success}명 성공 ===");
     }
 
-    private bool ExecuteDirectUpdate(Agent agent)
+    // =========================================================================
+    // UI 헬퍼
+    // =========================================================================
+    private static StackPanel MakeRootPanel(string title)
     {
-        string dbPath = AgentService.GetDatabasePath();           // ← 이게 실제 사용하는 파일 경로
-        string fullAbsolutePath = Path.GetFullPath(dbPath);       // ← 절대경로 (C:\Users\... 형태)
-
-        Log($"[DB 위치 확인] 상대경로: {dbPath}");
-        Log($"[DB 위치 확인] 절대경로: {fullAbsolutePath}");
-        Log($"[DB 위치 확인] 파일 존재? {File.Exists(dbPath)}");
-        Log($"[DB 위치 확인] 현재 파일 수정 시간: {File.GetLastWriteTime(dbPath):yyyy-MM-dd HH:mm:ss}");
-
-        string sql = @"
-        UPDATE ""Agent"" SET 
-            성명=@성명, 직급=@직급, 직무=@직무, 입사일=@입사일,
-            사번=@사번, 자격사항=@자격사항, Email=@Email,
-            기타=@기타, 측정인고유번호=@측정인고유번호
-        WHERE 성명 = @OriginalKey";
-
-        Log($"[SQL] 실행 → {sql.Replace("\r\n", " ")}");
-        Log($"[파라미터] Original성명 = '{agent.Original성명}' | 새 성명 = '{agent.성명}'");
-
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
-        conn.Open();
-
-        using var cmd = conn.CreateCommand();
-        cmd.CommandText = sql;
-
-        cmd.Parameters.AddWithValue("@성명", agent.성명 ?? "");
-        cmd.Parameters.AddWithValue("@직급", agent.직급 ?? "");
-        cmd.Parameters.AddWithValue("@직무", agent.직무 ?? "");
-        cmd.Parameters.AddWithValue("@입사일", agent.입사일 == DateOnly.MinValue ? DBNull.Value : agent.입사일.ToString("yyyy-MM-dd"));
-        cmd.Parameters.AddWithValue("@사번", agent.사번 ?? "");
-        cmd.Parameters.AddWithValue("@자격사항", agent.자격사항 ?? "");
-        cmd.Parameters.AddWithValue("@Email", agent.Email ?? "");
-        cmd.Parameters.AddWithValue("@기타", agent.기타 ?? "");
-        cmd.Parameters.AddWithValue("@측정인고유번호", agent.측정인고유번호 ?? "");
-        cmd.Parameters.AddWithValue("@OriginalKey", agent.Original성명);
-
-        int rows = cmd.ExecuteNonQuery();
-
-        string afterTime = File.GetLastWriteTime(dbPath).ToString("yyyy-MM-dd HH:mm:ss");
-        Log($"[SQL 결과] {rows}행 업데이트");
-        Log($"[DB 위치 확인] 업데이트 후 파일 수정 시간: {afterTime}");
-
-        if (rows > 0)
+        var root = new StackPanel { Spacing = 10, Margin = new Thickness(4) };
+        root.Children.Add(new TextBlock
         {
-            agent.Original성명 = agent.성명;
-            return true;
-        }
-        return false;
+            Text       = title,
+            FontSize   = 15,
+            FontFamily = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 M",
+            Foreground = Brushes.WhiteSmoke,
+            Margin     = new Thickness(0, 0, 0, 4)
+        });
+        root.Children.Add(new Border
+        {
+            Height     = 1,
+            Background = new SolidColorBrush(Color.Parse("#555555")),
+            Margin     = new Thickness(0, 0, 0, 4)
+        });
+        return root;
     }
 
-    private void Log(string message)
+    private static StackPanel BuildFieldRow(string label, string value,
+                                            bool isReadOnly = false,
+                                            bool isLocked   = false,
+                                            string hint     = "")
     {
-        string log = $"[{DateTime.Now:HH:mm:ss}] {message}";
-        Debug.WriteLine(log);
-        try { File.AppendAllText("AgentDebug.log", log + Environment.NewLine); } catch { }
+        var panel = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+
+        panel.Children.Add(new TextBlock
+        {
+            Text              = (isLocked ? "🔒 " : "    ") + label + " :",
+            Width             = 140,
+            FontSize          = 12,
+            FontFamily        = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R",
+            Foreground        = isLocked
+                                    ? new SolidColorBrush(Color.Parse("#888888"))
+                                    : Brushes.LightGray,
+            VerticalAlignment = VerticalAlignment.Center
+        });
+
+        panel.Children.Add(new TextBox
+        {
+            Text            = value ?? "",
+            Width           = 260,
+            FontSize        = 12,
+            FontFamily      = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R",
+            IsReadOnly      = isReadOnly,
+            Watermark       = hint,
+            Background      = isReadOnly
+                                  ? new SolidColorBrush(Color.Parse("#252525"))
+                                  : new SolidColorBrush(Color.Parse("#3a3a4a")),
+            Foreground      = isReadOnly
+                                  ? new SolidColorBrush(Color.Parse("#666666"))
+                                  : Brushes.WhiteSmoke,
+            BorderThickness = new Thickness(1),
+            BorderBrush     = isReadOnly
+                                  ? new SolidColorBrush(Color.Parse("#333333"))
+                                  : new SolidColorBrush(Color.Parse("#555577")),
+            CornerRadius    = new CornerRadius(4),
+            Padding         = new Thickness(8, 4)
+        });
+
+        return panel;
     }
 
-    private void UpdateStatus(string text)
+    private void Log(string msg)
     {
-        //if (StatusText != null) StatusText.Text = text;
+        var line = $"[{DateTime.Now:HH:mm:ss}] [AgentTree] {msg}";
+        Debug.WriteLine(line);
+        try { File.AppendAllText("AgentDebug.log", line + Environment.NewLine); } catch { }
     }
 }

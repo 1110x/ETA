@@ -5,7 +5,7 @@
         TransparencyLevelHint="AcrylicBlur"
         Width="1600"
         Height="900"
-        Icon="avares://ETA/Assets/icons/FF.ico"
+        Icon="avares://ETA/Assets/icons/ETA.ico"
         Title="ETA Water Analysis Center">
 
     <Grid RowDefinitions="30,*">
@@ -59,12 +59,12 @@
                     </Menu.Styles>
                     <MenuItem Header="수질분석센터">
                         <MenuItem Header="직원정보" Click="Agent_Click"/>
-                        <MenuItem Header="계약업체" />
+                        <MenuItem Header="계약업체" Click="Contract_Click" />
                         <MenuItem Header="견적/의뢰서" />
-                        <MenuItem Header="시험성적서" />
+                        <MenuItem Header="시험성적서" Click="TestReport_Click" />
                         <MenuItem Header="측정인" />
                         <MenuItem Header="보수요청" />
-                        <MenuItem Header="물품구매" />
+                        <MenuItem Header="물품구매" Click="Purchase_Click" />
                         <MenuItem Header="테스트" />
                     </MenuItem>
 
@@ -129,13 +129,13 @@
                     </Style>
                 </StackPanel.Styles>
                 <ComboBox x:Name="cmbCategory" />
-                <Button x:Name="BT1" Content="항목1" />
-                <Button x:Name="BT2" Content="항목2" />
-                <Button x:Name="BT3" Content="항목3" />
-                <Button x:Name="BT4" Content="항목4" />
-                <Button x:Name="BT5" Content="항목5" />
-                <Button x:Name="BT6" Content="항목6" />
-                <Button x:Name="BT7" Content="항목7" />
+                <Button x:Name="BT1" Content="항목1" Click="BT1_Click" />
+                <Button x:Name="BT2" Content="항목2" Click="BT2_Click" />
+                <Button x:Name="BT3" Content="항목3" Click="BT3_Click" />
+                <Button x:Name="BT4" Content="항목4" Click="BT4_Click" />
+                <Button x:Name="BT5" Content="항목5" Click="BT5_Click" />
+                <Button x:Name="BT6" Content="항목6" Click="BT6_Click" />
+                <Button x:Name="BT7" Content="항목7" Click="BT7_Click" />
                 <Button x:Name="BT1110"/>
             </StackPanel>
 
@@ -207,7 +207,7 @@
                     <Border Grid.Row="2" Background="#39383f" CornerRadius="6" Padding="12">
                         <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                                       VerticalScrollBarVisibility="Auto">
-                            <ContentControl x:Name="RightMainContent"
+                            <ContentControl x:Name="ActivePageContent3"
                                             HorizontalAlignment="Stretch"
                                             VerticalAlignment="Stretch"/>
                         </ScrollViewer>

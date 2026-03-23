@@ -1,7 +1,7 @@
 namespace ETA.Models;
 using System;
 
-public class Contract
+public class Contract2
 {
     public string C_CompanyName              { get; set; } = string.Empty;
     public DateTime? C_ContractStart         { get; set; }

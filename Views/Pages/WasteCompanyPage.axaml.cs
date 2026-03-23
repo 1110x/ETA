@@ -113,7 +113,7 @@ public partial class WasteCompanyPage : UserControl
 
                 if (labelTb is null || textBox is null) continue;
 
-                string label = labelTb.Text.Replace(": ", "").Trim();
+                string label = (labelTb.Text ?? "").Replace(": ", "").Trim();
 
                 switch (label)
                 {
@@ -159,7 +159,7 @@ public partial class WasteCompanyPage : UserControl
 
         if (affected > 0)
         {
-            item.Original업체명 = item.업체명;  // 키 갱신
+            item.Original업체명 = item.업체명 ?? "";  // 키 갱신
             return true;
         }
 
