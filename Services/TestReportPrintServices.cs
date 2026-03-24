@@ -43,9 +43,19 @@ public static class TestReportPrintService
 
         Directory.CreateDirectory(OutputDir);
 
-        var safe = sample.채취일자.Replace("-", "").Replace("/", "");
+        // 파일명: 채취일자_시료명  (파일시스템 금지 문자 제거)
+        var dateStr  = sample.채취일자.Replace("-", "").Replace("/", "");
+        var safeName = string.IsNullOrWhiteSpace(sample.시료명)
+            ? sample.약칭
+            : sample.시료명;
+        // 파일명에 사용 불가한 문자 제거: \ / : * ? " < > |
+        foreach (var c in Path.GetInvalidFileNameChars())
+            safeName = safeName.Replace(c.ToString(), "");
+        safeName = safeName.Trim();
+        if (safeName.Length > 60) safeName = safeName[..60];   // 너무 긴 경우 자르기
+
         var outPath = Path.Combine(OutputDir,
-            $"성적서_{sample.약칭}_{safe}_{DateTime.Now:HHmmss}.xlsx");
+            $"{dateStr}_{safeName}.xlsx");
 
         var no = string.IsNullOrEmpty(reportNo)
             ? $"WAC-{DateTime.Now:yyyyMMdd}-{sample.약칭}"
@@ -123,6 +133,15 @@ public static class TestReportPrintService
         if (toPdf)
         {
             var pdfPath = ConvertToPdf(outPath);
+
+            // ★ PDF 변환 완료 후 중간 xlsx 파일 삭제 (PDF만 남김)
+            try
+            {
+                if (System.IO.File.Exists(outPath) && pdfPath != outPath)
+                    System.IO.File.Delete(outPath);
+            }
+            catch { /* 삭제 실패해도 무시 */ }
+
             if (openAfter) OpenFile(pdfPath);
             return pdfPath;
         }
@@ -330,29 +349,176 @@ public static class TestReportPrintService
         return val;
     }
 
-    public static string ConvertToPdf(string xlsxPath)
+ public static string ConvertToPdf(string xlsxPath)
     {
-        var dir = Path.GetDirectoryName(xlsxPath)!;
-        string[] candidates = {
+        var soffice = FindLibreOffice();
+
+        // ── LibreOffice 없으면 자동 설치 시도 ────────────────────────────
+        if (soffice == null)
+        {
+            Log("[PDF] LibreOffice 없음 → 설치 시도");
+            bool installed = TryInstallLibreOffice();
+
+            if (installed)
+                soffice = FindLibreOffice();  // 설치 후 재탐색
+
+            if (soffice == null)
+            {
+                Log("[PDF] LibreOffice 설치 실패 → xlsx 반환");
+                return xlsxPath;  // 실패 시 엑셀 파일 그대로 반환
+            }
+        }
+
+        // ── LibreOffice 로 PDF 변환 ───────────────────────────────────────
+        var dir = System.IO.Path.GetDirectoryName(xlsxPath)!;
+        try
+        {
+            // ★ 프린터 연결 대기 제거:
+            //   --norestore  : 이전 세션 복구 안 함
+            //   --nofirststartwizard : 초기 설정 마법사 스킵
+            //   SAL_USE_VCLPLUGIN=svp : 화면/프린터 드라이버 없는 순수 소프트웨어 렌더러 사용
+            var psi = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName               = soffice,
+                // --printer-name "": 가상 프린터 지정으로 대기 제거
+                // -env:UserInstallation: 독립 프로필로 충돌 방지
+                Arguments = $"--headless --norestore --nofirststartwizard " +
+                             $"-env:UserInstallation=file:///tmp/libreoffice_eta " +
+                             $"--convert-to pdf:writer_pdf_Export " +
+                             $"--outdir \"{dir}\" \"{xlsxPath}\"",
+                UseShellExecute        = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError  = true,
+                CreateNoWindow         = true,
+            };
+
+            // 프린터 스풀러 연결 차단 — 핵심 설정
+            psi.EnvironmentVariables["SAL_USE_VCLPLUGIN"]   = "svp";
+            psi.EnvironmentVariables["PGPASSWORD"]          = "";       // DB 연결 타임아웃 방지
+            psi.EnvironmentVariables["LIBO_HEADLESS"]       = "1";
+
+            using var proc = System.Diagnostics.Process.Start(psi)!;
+            proc.WaitForExit(60_000);
+
+            Log($"[PDF] 변환 종료코드={proc.ExitCode}");
+        }
+        catch (Exception ex)
+        {
+            Log($"[PDF] 변환 오류: {ex.Message}");
+            return xlsxPath;
+        }
+
+        var pdf = System.IO.Path.ChangeExtension(xlsxPath, ".pdf");
+        Log(System.IO.File.Exists(pdf) ? $"[PDF] 완료: {pdf}" : "[PDF] 변환 실패");
+        return System.IO.File.Exists(pdf) ? pdf : xlsxPath;
+    }
+
+    // ── LibreOffice 경로 탐색 ─────────────────────────────────────────────
+    private static string? FindLibreOffice()
+    {
+        string[] candidates =
+        {
             @"C:\Program Files\LibreOffice\program\soffice.exe",
             @"C:\Program Files (x86)\LibreOffice\program\soffice.exe",
+            // winget 설치 후 환경변수 PATH 에서 탐색
+            FindInPath("soffice.exe") ?? "",
             "/usr/bin/libreoffice",
+            "/usr/bin/soffice",
             "/Applications/LibreOffice.app/Contents/MacOS/soffice",
         };
-        var soffice = candidates.FirstOrDefault(File.Exists);
-        if (soffice == null) { Debug.WriteLine("[Print] LibreOffice 없음"); return xlsxPath; }
-        using var proc = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-        {
-            FileName = soffice,
-            Arguments = $"--headless --convert-to pdf --outdir \"{dir}\" \"{xlsxPath}\"",
-            UseShellExecute = false, RedirectStandardOutput = true,
-            RedirectStandardError = true, CreateNoWindow = true,
-        })!;
-        proc.WaitForExit(60_000);
-        var pdf = Path.ChangeExtension(xlsxPath, ".pdf");
-        Debug.WriteLine(File.Exists(pdf) ? $"[Print] PDF: {pdf}" : "[Print] PDF 변환 실패");
-        return File.Exists(pdf) ? pdf : xlsxPath;
+        return candidates.FirstOrDefault(System.IO.File.Exists);
     }
+
+    // PATH 환경변수에서 실행파일 탐색
+    private static string? FindInPath(string fileName)
+    {
+        var pathEnv = Environment.GetEnvironmentVariable("PATH") ?? "";
+        foreach (var dir in pathEnv.Split(System.IO.Path.PathSeparator))
+        {
+            var full = System.IO.Path.Combine(dir, fileName);
+            if (System.IO.File.Exists(full)) return full;
+        }
+        return null;
+    }
+
+    // ── LibreOffice 자동 설치 (winget) ────────────────────────────────────
+    private static bool TryInstallLibreOffice()
+    {
+        // winget 사용 가능 여부 확인
+        if (!IsWingetAvailable())
+        {
+            Log("[설치] winget 없음 → 브라우저로 다운로드 페이지 열기");
+            OpenDownloadPage();
+            return false;
+        }
+
+        Log("[설치] winget 으로 LibreOffice 설치 시작...");
+
+        try
+        {
+            // 사용자에게 설치 진행 안내 다이얼로그 (UI 스레드에서 호출된 경우)
+            // 여기선 콘솔 로그만 — 실제 UI 알림은 TestReportPage.ShowToast() 에서 처리
+            using var proc = System.Diagnostics.Process.Start(
+                new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName               = "winget",
+                    Arguments              = "install --id TheDocumentFoundation.LibreOffice -e --silent --accept-package-agreements --accept-source-agreements",
+                    UseShellExecute        = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError  = true,
+                    CreateNoWindow         = true,
+                })!;
+
+            // 최대 5분 대기
+            bool finished = proc.WaitForExit(300_000);
+            int  exitCode = finished ? proc.ExitCode : -1;
+
+            Log($"[설치] winget 종료코드={exitCode}  finished={finished}");
+            return exitCode == 0;
+        }
+        catch (Exception ex)
+        {
+            Log($"[설치] winget 실행 오류: {ex.Message}");
+            OpenDownloadPage();
+            return false;
+        }
+    }
+
+    // winget 사용 가능 여부
+    private static bool IsWingetAvailable()
+    {
+        try
+        {
+            using var proc = System.Diagnostics.Process.Start(
+                new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName               = "winget",
+                    Arguments              = "--version",
+                    UseShellExecute        = false,
+                    RedirectStandardOutput = true,
+                    CreateNoWindow         = true,
+                })!;
+            proc.WaitForExit(5_000);
+            return proc.ExitCode == 0;
+        }
+        catch { return false; }
+    }
+
+    // winget 도 없을 때 브라우저로 다운로드 페이지 열기
+    private static void OpenDownloadPage()
+    {
+        try
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName        = "https://www.libreoffice.org/download/libreoffice-fresh/",
+                UseShellExecute = true,
+            });
+            Log("[설치] 브라우저에서 LibreOffice 다운로드 페이지를 열었습니다.");
+        }
+        catch { }
+    }
+
 
     public static void OpenFile(string path)
     {

@@ -178,6 +178,33 @@ public static class PurchaseService
     }
 
     // ── 상태 변경 ─────────────────────────────────────────────────────────────
+    // ── 수정 ─────────────────────────────────────────────────────────────────
+    public static bool Update(int id, string 구분, string 품목, int 수량,
+                              string 요청자, string 비고)
+    {
+        var dbPath = GetDatabasePath();
+        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        conn.Open();
+
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+            UPDATE ""물품구매"" SET
+                구분=@구분, 품목=@품목, 수량=@수량,
+                요청자=@요청자, 비고=@비고
+            WHERE Id=@id";
+
+        cmd.Parameters.AddWithValue("@구분",   구분   ?? "");
+        cmd.Parameters.AddWithValue("@품목",   품목   ?? "");
+        cmd.Parameters.AddWithValue("@수량",   수량);
+        cmd.Parameters.AddWithValue("@요청자", 요청자 ?? "");
+        cmd.Parameters.AddWithValue("@비고",   비고   ?? "");
+        cmd.Parameters.AddWithValue("@id",     id);
+
+        int rows = cmd.ExecuteNonQuery();
+        Debug.WriteLine($"[Purchase UPDATE] id={id} → {rows}행");
+        return rows > 0;
+    }
+
     public static bool UpdateStatus(int id, string status)
     {
         var dbPath = GetDatabasePath();

@@ -17,8 +17,15 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            //desktop.MainWindow = new Login();
-            desktop.MainWindow = new MainPage();
+            var mainPage = new MainPage();
+            desktop.MainWindow = mainPage;
+            mainPage.Show();
+
+            // ↓ 이 4줄만 추가
+            Avalonia.Threading.Dispatcher.UIThread.Post(async () =>
+            {
+                await InstallCheckDialog.CheckAndShowAsync(owner: mainPage);
+            }, Avalonia.Threading.DispatcherPriority.Loaded);
         }
 
         base.OnFrameworkInitializationCompleted();

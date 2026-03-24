@@ -38,6 +38,9 @@ public class PurchasePage
     private PurchaseItem? _selectedItem;
     private Border?       _selectedRowBorder;
 
+    // 저장 버튼 (신규/수정 모드 전환용)
+    private Button _saveBtn = null!;
+
     // 폼 입력 컨트롤
     private readonly ComboBox _cbCategory;
     private readonly TextBox  _tbItem;
@@ -112,7 +115,7 @@ public class PurchasePage
         _tbRemark    = MakeTextBox("비고 (선택)",  180);
         _tbRequester = MakeTextBox("요청자 이름",  120);
 
-        var saveBtn = new Button
+        _saveBtn = new Button
         {
             Content         = "➕  요청 추가",
             FontFamily      = Font,
@@ -124,7 +127,7 @@ public class PurchasePage
             Padding         = new Thickness(14, 6),
             VerticalAlignment = VerticalAlignment.Bottom,
         };
-        saveBtn.Click += SaveBtn_Click;
+        _saveBtn.Click += SaveBtn_Click;
 
         FormControl = new Border
         {
@@ -160,7 +163,7 @@ public class PurchasePage
                                 Spacing       = 4,
                                 Margin        = new Thickness(0, 0, 0, 0),
                                 VerticalAlignment = VerticalAlignment.Bottom,
-                                Children      = { new TextBlock { Text = " ", FontSize = 11 }, saveBtn }
+                                Children      = { new TextBlock { Text = " ", FontSize = 11 }, _saveBtn }
                             }
                         }
                     }
@@ -501,8 +504,6 @@ public class PurchasePage
         // 이전 선택 해제
         if (_selectedRowBorder != null)
         {
-            // 원래 배경으로 — normalBg 는 각 행이 자기 색을 가짐
-            // Tag 에 원래 색을 저장해뒀다가 복원
             if (_selectedRowBorder.Tag is SolidColorBrush prev)
                 _selectedRowBorder.Background = prev;
         }
@@ -513,6 +514,43 @@ public class PurchasePage
         _selectedRowBorder = row;
         _selectedItem      = item;
         Debug.WriteLine($"[Purchase] ✅ 행 선택: {item.품목} (Id={item.Id})");
+
+        // ── 폼에 선택된 항목 데이터 로드 (수정 모드) ──────────────────────
+        LoadToForm(item);
+    }
+
+    /// <summary>선택된 항목을 폼에 채운다 (수정 모드)</summary>
+    private void LoadToForm(PurchaseItem item)
+    {
+        // 구분 콤보박스 선택
+        var items = _cbCategory.ItemsSource as string[];
+        if (items != null)
+        {
+            int idx = Array.IndexOf(items, item.구분);
+            _cbCategory.SelectedIndex = idx >= 0 ? idx : 0;
+        }
+
+        _tbItem.Text      = item.품목;
+        _tbQty.Text       = item.수량.ToString();
+        _tbRequester.Text = item.요청자;
+        _tbRemark.Text    = item.비고;
+
+        // 저장버튼 텍스트 → 수정 모드 표시
+        _saveBtn.Content = "✏️  수정 저장";
+        _saveBtn.Background = new SolidColorBrush(Color.Parse("#2a4a5a"));
+
+        Debug.WriteLine($"[Purchase] 폼 로드: {item.품목} (Id={item.Id})");
+    }
+
+    /// <summary>폼 초기화 (신규 모드로 전환)</summary>
+    private void ClearForm()
+    {
+        _selectedItem      = null;
+        _selectedRowBorder = null;
+        _cbCategory.SelectedIndex = 0;
+        _tbItem.Text = _tbQty.Text = _tbRequester.Text = _tbRemark.Text = "";
+        _saveBtn.Content = "➕  요청 추가";
+        _saveBtn.Background = new SolidColorBrush(Color.Parse("#2a5a2a"));
     }
 
     // =========================================================================
@@ -623,6 +661,25 @@ public class PurchasePage
 
         if (!int.TryParse(_tbQty.Text?.Trim(), out int qty) || qty <= 0) qty = 1;
 
+        // ── 수정 모드 ─────────────────────────────────────────────────────
+        if (_selectedItem != null)
+        {
+            _selectedItem.구분   = _cbCategory.SelectedItem?.ToString() ?? "기타";
+            _selectedItem.품목   = 품목;
+            _selectedItem.수량   = qty;
+            _selectedItem.비고   = _tbRemark.Text?.Trim()    ?? "";
+            _selectedItem.요청자 = _tbRequester.Text?.Trim() ?? "";
+
+            bool ok = PurchaseService.Update(_selectedItem.Id,
+                _selectedItem.구분, _selectedItem.품목, _selectedItem.수량,
+                _selectedItem.요청자, _selectedItem.비고);
+
+            Debug.WriteLine(ok ? $"[Purchase] ✅ 수정: {_selectedItem.품목}" : "[Purchase] ❌ 수정 실패");
+            if (ok) { ClearForm(); RefreshTree(); LoadListByMonth(_filterYear, _filterMonth); }
+            return;
+        }
+
+        // ── 신규 모드 ─────────────────────────────────────────────────────
         var item = new PurchaseItem
         {
             구분   = _cbCategory.SelectedItem?.ToString() ?? "기타",
@@ -636,11 +693,7 @@ public class PurchasePage
 
         if (!PurchaseService.Insert(item)) return;
 
-        // 폼 초기화
-        _cbCategory.SelectedIndex = 0;
-        _tbItem.Text = _tbQty.Text = _tbRemark.Text = _tbRequester.Text = "";
-
-        // 이번 달이면 리스트에 즉시 반영, 아니면 트리 갱신 후 해당 달로 이동
+        ClearForm();
         RefreshTree();
         LoadListByMonth(item.요청일.Year, item.요청일.Month);
     }

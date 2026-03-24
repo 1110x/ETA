@@ -34,15 +34,15 @@
                         <Style Selector="MenuFlyoutPresenter">
                             <Setter Property="Background" Value="#012800" />
                             <Setter Property="CornerRadius" Value="8" />
-                            <Setter Property="Padding" Value="5,5" />
+                            <Setter Property="Padding" Value="5,5" />           <!-- 창 전체 여백 증가 -->
                             <Setter Property="BorderThickness" Value="0" />
                             <Setter Property="Foreground" Value="#ffffff" />
                         </Style>
 
-                        <!-- 서브메뉴 항목 -->
+                        <!-- 서브메뉴 항목 (글자 위아래 간격 크게 증가!) -->
                         <Style Selector="MenuItem MenuItem">
                             <Setter Property="Background" Value="#444444" />
-                            <Setter Property="Padding" Value="5,5" />
+                            <Setter Property="Padding" Value="5,5" />          <!-- ← 여기서 위아래 간격 크게! -->
                             <Setter Property="MinHeight" Value="36" />
                         </Style>
 
@@ -63,7 +63,7 @@
                         <MenuItem Header="견적/의뢰서" Click="Quotation_Click"/>
                         <MenuItem Header="시험성적서" Click="TestReport_Click" />
                         <MenuItem Header="측정인" />
-                        <MenuItem Header="보수요청" />
+                        <MenuItem Header="보수요청" Click="Repair_Click" />
                         <MenuItem Header="물품구매" Click="Purchase_Click" />
                         <MenuItem Header="테스트" />
                     </MenuItem>
@@ -104,7 +104,7 @@
             </Grid>
         </Border>
 
-        <!-- Inner Grid -->
+        <!-- Inner Grid (기존 그대로) -->
         <Grid Grid.Row="1" Background="{DynamicResource SystemControlBackgroundAltMediumBrush}" RowDefinitions="Auto, *">
             <!-- SubMenu -->
             <StackPanel x:Name="SubMenu" HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Horizontal" Spacing="8" Margin="12,10,0,0">
@@ -139,85 +139,111 @@
                 <Button x:Name="BT1110"/>
             </StackPanel>
 
-            <!-- 좌우 분할 -->
+            <!-- 좌우 분할 + 오른쪽 상하 분할 -->
             <Grid Grid.Row="1" Margin="10,10,10,10" x:Name="MainSplitGrid" ColumnDefinitions="200,8,*">
 
                 <!-- 왼쪽 사이드바 -->
                 <Border Grid.Column="0" Background="#39383f" CornerRadius="6" Padding="16" Margin="0,0,1,0">
-                    <ContentControl x:Name="ActivePageContent1"
-                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                    HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+                    <ContentControl x:Name="ActivePageContent1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+
+
+
+
                 </Border>
 
-                <!-- 좌우 splitter -->
-                <GridSplitter Grid.Column="1" Width="8" Background="Transparent"
-                              HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                              ResizeDirection="Columns" Cursor="SizeWestEast" />
-                <Border Grid.Column="1" Width="1" Background="Transparent"
-                        HorizontalAlignment="Center" VerticalAlignment="Stretch" Opacity="0.9" />
+                <!-- splitter (좌우) -->
+                <GridSplitter Grid.Column="1" Width="8" Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Columns" Cursor="SizeWestEast" />
 
-                <!-- 오른쪽 영역 (상하 분할) — x:Name 추가 -->
-                <Grid Grid.Column="2" Margin="1,0,0,0" x:Name="RightSplitGrid">
+                <!-- 세로 구분선 -->
+                <Border Grid.Column="1" Width="1" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Stretch" Opacity="0.9" />
+
+                <!-- 오른쪽 영역 (상하 분할) -->
+                <Grid Grid.Column="2" Margin="1,0,0,0">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="808*" />   <!-- 상단 (~80%) -->
-                        <RowDefinition Height="8" />      <!-- splitter -->
-                        <RowDefinition Height="192*" />   <!-- 하단 (~20%) -->
+                        <RowDefinition Height="808*" />    <!-- ≈80.8% -->
+                        <RowDefinition Height="8" />       <!-- splitter -->
+                        <RowDefinition Height="192*" />    <!-- ≈19.2% -->
                     </Grid.RowDefinitions>
 
-                    <!-- 상단 영역 (Content2 + Content4 좌우 분할) — x:Name 추가 -->
+                    <!-- 상단 영역 (Content2 + Content4 좌우 분할) -->
                     <Border Grid.Row="0" Background="#39383f" CornerRadius="6" Padding="12">
-                        <Grid x:Name="UpperContentGrid" ColumnDefinitions="*, 8, *">
+                        <Grid ColumnDefinitions="*, 8, *">
 
-                            <!-- Content2 -->
+                            <!-- 왼쪽: ActivePageContent2 -->
                             <Border Grid.Column="0"
-                                    Background="#2d2d35" CornerRadius="4" Padding="8" Margin="0,0,4,0">
+                                    Background="#2d2d35"
+                                    CornerRadius="4"
+                                    Padding="8"
+                                    Margin="0,0,4,0">
                                 <ContentControl x:Name="ActivePageContent2"
-                                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                                HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+                                                HorizontalAlignment="Stretch"
+                                                VerticalAlignment="Stretch"
+                                                HorizontalContentAlignment="Stretch"
+                                                VerticalContentAlignment="Stretch" />
                             </Border>
 
-                            <!-- 좌우 splitter (Content2 ↔ Content4) — x:Name 추가 -->
-                            <GridSplitter Grid.Column="1" x:Name="HorizontalSplitter"
-                                          Width="8" Background="Transparent"
-                                          HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                          ResizeDirection="Columns" Cursor="SizeWestEast" />
+                            <!-- splitter + 구분선 (con1과 동일 구조) -->
+                            <GridSplitter Grid.Column="1"
+                                          Width="8"
+                                          Background="Transparent"
+                                          HorizontalAlignment="Stretch"
+                                          VerticalAlignment="Stretch"
+                                          ResizeDirection="Columns"
+                                          Cursor="SizeWestEast" />
+
                             <Border Grid.Column="1"
-                                    Width="3" Background="#020202"
-                                    HorizontalAlignment="Center" VerticalAlignment="Stretch"
+                                    Width="3"
+                                    Background="#020202"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Stretch"
                                     Margin="0,8,0,8" />
 
-                            <!-- Content4 — Border에 x:Name 추가 -->
-                            <Border Grid.Column="2" x:Name="Content4Border"
-                                    Background="#2d2d35" CornerRadius="4" Padding="8" Margin="4,0,0,0">
+                            <!-- 오른쪽: ActivePageContent4 -->
+                            <Border Grid.Column="2"
+                                    Background="#2d2d35"
+                                    CornerRadius="4"
+                                    Padding="8"
+                                    Margin="4,0,0,0">
                                 <ContentControl x:Name="ActivePageContent4"
-                                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                                HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+                                                HorizontalAlignment="Stretch"
+                                                VerticalAlignment="Stretch"
+                                                HorizontalContentAlignment="Stretch"
+                                                VerticalContentAlignment="Stretch" />
                             </Border>
 
                         </Grid>
                     </Border>
 
-                    <!-- 상하 splitter — x:Name 추가 -->
-                    <GridSplitter Grid.Row="1" x:Name="VerticalSplitter"
-                                  Height="8" Background="Transparent"
-                                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                  ResizeDirection="Rows" Cursor="SizeNorthSouth" />
-                    <Border Grid.Row="1"
-                            Height="1" Background="#020202"
-                            HorizontalAlignment="Stretch" VerticalAlignment="Center" Opacity="0.9" />
+                    <!-- 상하 splitter -->
+                    <GridSplitter Grid.Row="1"
+                                  Height="8"
+                                  Background="Transparent"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Stretch"
+                                  ResizeDirection="Rows"
+                                  Cursor="SizeNorthSouth" />
 
-                    <!-- 하단 Content3 — Border에 x:Name 추가 -->
-                    <Border Grid.Row="2" x:Name="LowerBorder"
-                            Background="#39383f" CornerRadius="6" Padding="12">
+                    <!-- splitter 구분선 (일관된 색상으로) -->
+                    <Border Grid.Row="1"
+                            Height="1"
+                            Background="#020202"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Center"
+                            Opacity="0.9" />
+
+                    <!-- 하단 메인 콘텐츠 영역 -->
+                    <Border Grid.Row="2" Background="#39383f" CornerRadius="6" Padding="12">
                         <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                                       VerticalScrollBarVisibility="Auto">
                             <ContentControl x:Name="ActivePageContent3"
-                                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Stretch"/>
                         </ScrollViewer>
                     </Border>
                 </Grid>
             </Grid>
         </Grid>
     </Grid>
+
 
 </Window>

@@ -18,14 +18,15 @@ public partial class MainPage : Window
     private AgentTreePage?     _agentTreePage;
     private WasteCompanyPage?  _wasteCompanyPage;
     private PurchasePage?      _purchasePage;
+    private RepairPage?       _repairPage;
     private TestReportPage?    _testReportPage;
+    private ReportsPanel?      _reportsPanel;           // Content4: 출력 보관함
 
     // ── 견적/의뢰서 전용 4-패널 ──────────────────────────────────────────
     // Content1: 발행내역 트리  Content2: 신규작성 폼
     // Content3: 분석항목 체크  Content4: 계약업체 목록
     private QuotationHistoryPanel? _quotationHistoryPanel;
     private QuotationDetailPanel?  _quotationDetailPanel;   // Content2: 세부내역
-    private QuotationNewPanel?     _quotationNewPanel;      // 신규작성 (서브메뉴 BT)
     private QuotationCheckPanel?   _quotationCheckPanel;
     private QuotationPage?         _quotationPage;
 
@@ -172,6 +173,27 @@ public partial class MainPage : Window
             Avalonia.Threading.DispatcherPriority.Render);
     }
 
+    // ── 보수요청 ──────────────────────────────────────────────────────────────
+    private void Repair_Click(object? sender, RoutedEventArgs e)
+    {
+        _currentMode = "Repair";
+        _repairPage ??= new RepairPage();
+
+        ActivePageContent1.Content = _repairPage.TreeControl;
+        ActivePageContent2.Content = _repairPage.ListControl;
+        ActivePageContent3.Content = _repairPage.FormControl;
+        ActivePageContent4.Content = null;
+        _bt1SaveAction = null;
+
+        SetSubMenu("새로고침", "승인", "반려", "완료", "삭제", "", "설정");
+        SetLeftPanelWidth(220);
+        SetContentLayout(content2Star: 5, content4Star: 0, upperStar: 1, lowerStar: 0);
+
+        Avalonia.Threading.Dispatcher.UIThread.Post(
+            () => _repairPage.Refresh(),
+            Avalonia.Threading.DispatcherPriority.Render);
+    }
+
     // ── 견적/의뢰서 ───────────────────────────────────────────────────────
     private void Quotation_Click(object? sender, RoutedEventArgs e)
     {
@@ -200,7 +222,7 @@ public partial class MainPage : Window
         {
             _quotationCheckPanel = new QuotationCheckPanel();
             _quotationCheckPanel.SelectionChanged += items =>
-                _quotationNewPanel?.SetSelectedAnalytes(items);
+                { /* 분석항목 선택 변경 — 필요 시 연동 추가 */ };
         }
 
         // Content4: 계약업체 목록
@@ -208,7 +230,7 @@ public partial class MainPage : Window
         {
             _quotationPage = new QuotationPage();
             _quotationPage.CompanySelected += company =>
-                _quotationNewPanel?.SetCompany(company);
+                { /* 업체 선택 — 필요 시 연동 추가 */ };
         }
 
         ActivePageContent1.Content = _quotationHistoryPanel;
@@ -244,6 +266,7 @@ public partial class MainPage : Window
         SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 4, lowerStar: 1);
     }
 
+
     private void TestReport_Click(object? sender, RoutedEventArgs e)
     {
         _currentMode = "TestReport";
@@ -260,14 +283,16 @@ public partial class MainPage : Window
         ActivePageContent1.Content = _testReportPage;
         ActivePageContent2.Content = null;
         ActivePageContent3.Content = null;
-        ActivePageContent4.Content = null;
+
+        // Content4: 출력 보관함 (Reports 폴더)
+        _reportsPanel ??= new ReportsPanel();
+        _reportsPanel.LoadFiles();
+        ActivePageContent4.Content = _reportsPanel;
         _bt1SaveAction = null;
 
-        SetSubMenu("새로고침", "CSV 저장", "삭제", "", "", "", "");
-        BT4.IsVisible = false; BT5.IsVisible = false;
-        BT6.IsVisible = false; BT7.IsVisible = false;
+        SetSubMenu("새로고침", "CSV 저장", "삭제", "엑셀 출력", "PDF 출력", "일괄 엑셀", "일괄 PDF");
 
-        SetContentLayout(content2Star: 6, content4Star: 4, upperStar: 7, lowerStar: 3);
+        SetContentLayout(content2Star: 7, content4Star: 3, upperStar: 7, lowerStar: 3);
 
         Avalonia.Threading.Dispatcher.UIThread.Post(
             () => _testReportPage.LoadData(),
@@ -294,12 +319,15 @@ public partial class MainPage : Window
     private void SetSubMenu(string bt1, string bt2, string bt3,
                             string bt4, string bt5, string bt6, string bt7)
     {
-        BT1.IsVisible = true; BT2.IsVisible = true; BT3.IsVisible = true;
-        BT4.IsVisible = true; BT5.IsVisible = true;
-        BT6.IsVisible = true; BT7.IsVisible = true;
-        BT1.Content = bt1; BT2.Content = bt2; BT3.Content = bt3;
-        BT4.Content = bt4; BT5.Content = bt5;
-        BT6.Content = bt6; BT7.Content = bt7;
+        SetBtn(BT1, bt1); SetBtn(BT2, bt2); SetBtn(BT3, bt3);
+        SetBtn(BT4, bt4); SetBtn(BT5, bt5);
+        SetBtn(BT6, bt6); SetBtn(BT7, bt7);
+    }
+
+    private static void SetBtn(Avalonia.Controls.Button btn, string label)
+    {
+        btn.IsVisible = !string.IsNullOrWhiteSpace(label);
+        btn.Content   = label;
     }
 
     private void BT1_Click(object? sender, RoutedEventArgs e)
@@ -308,10 +336,8 @@ public partial class MainPage : Window
         {
             case "Purchase":   _purchasePage?.Refresh();    break;
             case "TestReport": _testReportPage?.LoadData(); break;
-            case "Quotation": _quotationHistoryPanel?.LoadData(); break; // 새로고침
-            default:
-                _bt1SaveAction?.Invoke();
-                break;
+            case "Repair":     _repairPage?.Refresh();      break;
+            default: _bt1SaveAction?.Invoke();               break;
         }
     }
 
@@ -319,13 +345,14 @@ public partial class MainPage : Window
     {
         switch (_currentMode)
         {
-            case "Agent":        _agentTreePage?.LoadData();    break;
-            case "WasteCompany": _wasteCompanyPage?.LoadData(); break;
-            case "Contract":     _contractPage?.LoadData();     break;
-            case "Purchase":     _purchasePage?.ExportCsv();    break;
-            case "TestReport":   _testReportPage?.SaveCsv();    break;
-            case "Quotation": break;
-            default: Debug.WriteLine($"[{_currentMode}] BT2"); break;
+            case "Agent":        _agentTreePage?.LoadData();      break;
+            case "WasteCompany": _wasteCompanyPage?.LoadData();   break;
+            case "Contract":     _contractPage?.LoadData();       break;
+            case "Purchase":     _purchasePage?.ExportCsv();      break;
+            case "TestReport":   _testReportPage?.SaveCsv();      break;
+            case "Quotation":    _quotationHistoryPanel?.LoadData(); break;
+            case "Repair":       _repairPage?.ApproveSelected();  break;
+            default: Debug.WriteLine($"[{_currentMode}] BT2");   break;
         }
     }
 
@@ -338,6 +365,7 @@ public partial class MainPage : Window
             case "Purchase":   _purchasePage?.ApproveSelected();         break;
             case "Quotation":  _quotationPage?.LoadData(); _quotationHistoryPanel?.LoadData(); break;
             case "TestReport": _ = _testReportPage?.DeleteSampleAsync(); break;
+            case "Repair":     _repairPage?.RejectSelected();            break;
             default: Debug.WriteLine($"[{_currentMode}] BT3");          break;
         }
     }
@@ -348,7 +376,9 @@ public partial class MainPage : Window
         {
             case "Agent":    if (_agentTreePage  != null) await _agentTreePage.DeleteSelectedAsync();  break;
             case "Contract": if (_contractPage   != null) await _contractPage.DeleteSelectedAsync();   break;
-            case "Purchase": _purchasePage?.RejectSelected(); break;
+            case "Purchase": _purchasePage?.RejectSelected();   break;
+            case "TestReport": _testReportPage?.PrintExcel();   break;
+            case "Repair":   _repairPage?.CompleteSelected();   break;
             default: Debug.WriteLine($"[{_currentMode}] BT4"); break;
         }
     }
@@ -357,8 +387,10 @@ public partial class MainPage : Window
     {
         switch (_currentMode)
         {
-            case "Purchase": _purchasePage?.CompleteSelected(); break;
-            default: Debug.WriteLine($"[{_currentMode}] BT5"); break;
+            case "Purchase":   _purchasePage?.CompleteSelected();  break;
+            case "TestReport": _testReportPage?.PrintPdf();        break;
+            case "Repair":     _repairPage?.DeleteSelected();      break;
+            default: Debug.WriteLine($"[{_currentMode}] BT5");    break;
         }
     }
 
@@ -366,8 +398,9 @@ public partial class MainPage : Window
     {
         switch (_currentMode)
         {
-            case "Purchase": _purchasePage?.DeleteSelected(); break;
-            default: Debug.WriteLine($"[{_currentMode}] BT6"); break;
+            case "Purchase":   _purchasePage?.DeleteSelected();        break;
+            case "TestReport": _testReportPage?.BatchPrintExcel();     break;
+            default: Debug.WriteLine($"[{_currentMode}] BT6");        break;
         }
     }
 
@@ -375,13 +408,13 @@ public partial class MainPage : Window
     {
         switch (_currentMode)
         {
-            case "Purchase": _purchasePage?.ShowSettings(this); break;
-            default: Debug.WriteLine($"[{_currentMode}] BT7"); break;
+            case "Purchase":   _purchasePage?.ShowSettings(this);  break;
+            case "TestReport": _testReportPage?.BatchPrintPdf();   break;
+            default: Debug.WriteLine($"[{_currentMode}] BT7");    break;
         }
     }
 
-
-    // ══════════════════════════════════════════════════════════════════════
+        // ══════════════════════════════════════════════════════════════════════
     //  테마
     // ══════════════════════════════════════════════════════════════════════
 

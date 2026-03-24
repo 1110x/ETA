@@ -374,3 +374,104 @@
 [16:20:30] [Contract] 로드 완료 → 32건
 [16:20:30] [Contract] LoadData() 시작
 [16:20:30] [Contract] 로드 완료 → 32건
+[16:55:28] [Contract] LoadData() 시작
+[16:55:28] [Contract] 로드 완료 → 32건
+[16:55:28] [Contract] LoadData() 시작
+[16:55:28] [Contract] 로드 완료 → 32건
+[16:55:32] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[16:55:33] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[16:55:33] [Contract] 선택: ㈜에어레인
+[16:55:34] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[16:55:34] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[16:55:34] [Contract] 선택: ㈜LG화학 여수-확장
+[16:55:34] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[16:55:35] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[16:55:35] [Contract] 선택: 금호석유화학
+[16:55:35] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[16:55:35] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[16:55:35] [Contract] 선택: 디엘케미칼㈜ 여수
+[16:55:36] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[16:55:36] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[16:55:36] [Contract] 선택: 롯데엠시시㈜ 여수공장
+[16:55:36] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[16:55:37] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[16:55:37] [Contract] 선택: 심텍
+[16:55:37] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[16:55:37] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[16:55:37] [Contract] 선택: 심텍(오창3지점)
+[16:55:38] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[16:55:38] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[16:55:38] [Contract] 선택: 에코원에너지㈜
+[16:55:38] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[16:55:39] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[16:55:39] [Contract] 선택: 포스코리튬솔루션㈜
+[16:55:39] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[16:55:40] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[16:55:40] [Contract] 선택: 포스코리튬솔루션㈜
+[16:55:40] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[16:55:40] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[16:55:40] [Contract] 선택: 한국항공우주연구원
+[16:55:40] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[16:55:41] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[16:55:41] [Contract] 선택: 심텍
+[17:22:54] [Contract] LoadData() 시작
+[17:22:54] [Contract] 로드 완료 → 32건
+[17:22:54] [Contract] LoadData() 시작
+[17:22:54] [Contract] 로드 완료 → 32건
+[19:55:54] [Contract] LoadData() 시작
+[19:55:54] [Contract] 로드 완료 → 32건
+[19:55:55] [Contract] LoadData() 시작
+[19:55:55] [Contract] 로드 완료 → 32건
+[19:55:57] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[19:55:58] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[19:55:58] [Contract] 선택: ㈜LG화학 여수-적량
+[19:55:58] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[19:55:59] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[19:55:59] [Contract] 선택: ㈜LG화학 여수-적량
+[19:56:00] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[19:56:01] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[19:56:01] [Contract] 선택: ㈜LG화학 여수-적량
+[19:56:01] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[19:56:02] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[19:56:02] [Contract] 선택: ㈜LG화학 여수-적량
+[19:56:03] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[19:56:04] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[19:56:04] [Contract] 선택: ㈜LG화학 여수-적량
+[19:56:04] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[19:56:05] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[19:56:05] [Contract] 선택: 디엘케미칼㈜ 여수
+[19:56:06] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[19:56:07] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[19:56:07] [Contract] 선택: 디엘케미칼㈜ 여수
+[19:56:07] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[19:56:08] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[19:56:08] [Contract] 선택: 동서식품㈜
+[19:56:44] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[19:56:45] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[19:56:45] [Contract] 선택: 롯데엠시시㈜ 여수공장
+[19:56:45] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[19:56:46] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[19:56:46] [Contract] 선택: 롯데에너지머티리얼즈㈜
+[19:56:52] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[19:56:53] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[19:56:53] [Contract] 선택: 동서식품㈜
+[19:57:02] [Contract] ✅ 수정 저장: 동서식품㈜
+[19:57:03] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[19:57:03] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[19:57:03] [Contract] 선택: 금호석유화학
+[19:57:04] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[19:57:05] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[19:57:05] [Contract] 선택: 금호석유화학
+[19:57:06] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[19:57:06] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[19:57:06] [Contract] 선택: 동서식품㈜
+[20:13:07] [Contract] LoadData() 시작
+[20:13:07] [Contract] 로드 완료 → 32건
+[20:13:07] [Contract] LoadData() 시작
+[20:13:07] [Contract] 로드 완료 → 32건
+[20:13:12] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[20:13:13] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[20:13:13] [Contract] 선택: ㈜LG화학 여수-확장
+[20:13:14] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[20:13:14] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[20:13:14] [Contract] 선택: 금호미쓰이화학㈜ 여수
