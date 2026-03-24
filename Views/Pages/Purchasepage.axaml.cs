@@ -391,9 +391,10 @@ public class PurchasePage
         }
 
         bool odd = false;
+        int seq = _items.Count;          // 최신(맨 위)이 가장 큰 번호
         foreach (var item in _items)
         {
-            _listPanel.Children.Add(BuildDataRow(item, odd));
+            _listPanel.Children.Add(BuildDataRow(item, odd, seq--));
             odd = !odd;
         }
     }
@@ -421,7 +422,7 @@ public class PurchasePage
     // =========================================================================
     // 데이터 행
     // =========================================================================
-    private Border BuildDataRow(PurchaseItem item, bool odd)
+    private Border BuildDataRow(PurchaseItem item, bool odd, int seq)
     {
         var bgColor = odd ? Color.Parse("#2e2e3a") : Color.Parse("#252530");
         var bg      = new SolidColorBrush(bgColor);
@@ -443,7 +444,7 @@ public class PurchasePage
                 ColumnDefinitions = ColDefs,
                 Children =
                 {
-                    DataCell($"{item.Id}",                  0, Brushes.Gray),
+                    DataCell($"{seq}",                      0, Brushes.Gray),
                     DataCell(item.구분,                     1),
                     DataCell(item.품목,                     2, Brushes.WhiteSmoke, bold: true),
                     DataCell($"{item.수량}",                3),

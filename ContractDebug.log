@@ -479,3 +479,57 @@
 [22:13:54] [Contract] 로드 완료 → 32건
 [22:13:54] [Contract] LoadData() 시작
 [22:13:54] [Contract] 로드 완료 → 32건
+[22:59:49] [Contract] LoadData() 시작
+[22:59:49] [Contract] 로드 완료 → 32건
+[22:59:49] [Contract] LoadData() 시작
+[22:59:49] [Contract] 로드 완료 → 32건
+[22:59:50] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[22:59:50] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[22:59:50] [Contract] 선택: ㈜LG화학 여수-용성
+[22:59:52] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[22:59:52] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[22:59:52] [Contract] 선택: ㈜LG화학 여수-확장
+[22:59:52] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[22:59:52] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[22:59:52] [Contract] 선택: 롯데에너지머티리얼즈㈜
+[23:02:56] [Contract] LoadData() 시작
+[23:02:56] [Contract] 로드 완료 → 32건
+[23:02:56] [Contract] LoadData() 시작
+[23:02:56] [Contract] 로드 완료 → 32건
+[23:03:00] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[23:03:00] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[23:03:00] [Contract] 선택: ㈜LG화학 여수-화치
+[23:03:00] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[23:03:01] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[23:03:01] [Contract] 선택: ㈜LG화학 여수-화치
+[23:03:01] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[23:03:02] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[23:03:02] [Contract] 선택: 금호석유화학
+[23:03:02] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[23:03:02] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[23:03:02] [Contract] 선택: 롯데케미칼㈜ 첨단소재 여수공장
+[23:03:02] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[23:03:02] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[23:03:02] [Contract] 선택: 산하종합기술㈜
+[23:03:03] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[23:03:03] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[23:03:03] [Contract] 선택: 에코원에너지㈜
+[23:03:04] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[23:03:04] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[23:03:04] [Contract] 선택: 포스코리튬솔루션㈜
+[23:03:04] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[23:03:04] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[23:03:04] [Contract] 선택: 포스코필바라리튬솔루션㈜
+[00:10:31] [Contract] LoadData() 시작
+[00:10:31] [Contract] 로드 완료 → 32건
+[00:10:31] [Contract] LoadData() 시작
+[00:10:31] [Contract] 로드 완료 → 32건
+[00:10:32] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[00:10:32] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[00:10:32] [Contract] 선택: ㈜LG화학 여수-용성
+[00:10:32] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[00:10:33] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[00:10:33] [Contract] 선택: ㈜LG화학 여수-확장
+[00:10:33] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[00:10:33] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[00:10:33] [Contract] 선택: 디엘케미칼㈜ 여수

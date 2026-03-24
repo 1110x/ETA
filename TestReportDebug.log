@@ -1452,3 +1452,44 @@
 [20:13:03] [TestReport] 업체 28개
 [22:13:51] [TestReport] LoadData() 시작
 [22:13:51] [TestReport] 업체 28개
+[23:00:01] [TestReport] LoadData() 시작
+[23:00:02] [TestReport] 업체 28개
+[23:00:03] [TestReport] [GS] 377건 시료 로드
+[23:00:05] [TestReport] 선택: GS / #W23. PE생산팀 C/W (716-E-303, I-8WTS036) (28항목)
+[23:00:05] [TestReport] 선택: GS / #W21. PE생산팀 C/W (716-E-301, I-8WTS034) (28항목)
+[23:00:06] [TestReport] 선택: GS / #W18. VDU팀 C/W (516-E-301, I-6WTS030) (28항목)
+[23:00:06] [TestReport] 선택: GS / #W15. 동력팀 C/W (216-E-501, I-4WTS022) (28항목)
+[23:00:07] [TestReport] 선택: GS / #W14. 동력팀 C/W (216-E-201, I-4WTS021) (52항목)
+[23:00:07] [TestReport] 선택: GS / #W14. 동력팀 C/W (216-E-201, I-4WTS021) (52항목)
+[23:00:14] [TestReport] 선택: GS / #W21. PE생산팀 C/W (716-E-301, I-8WTS034) (28항목)
+[23:00:15] [TestReport] 선택: GS / #W18. VDU팀 C/W (516-E-301, I-6WTS030) (28항목)
+[23:00:15] [TestReport] 선택: GS / #W14. 동력팀 C/W (216-E-201, I-4WTS021) (52항목)
+[23:00:16] [TestReport] 선택: GS / #W12. 방향족생산2팀 C/W (116-E-222/A, I-3WTS031/032) (28항목)
+[23:00:16] [TestReport] 선택: GS / #W11. 동력팀 C/W (116-E-241, I-3WTS030) (28항목)
+[23:00:17] [TestReport] 선택: GS / #W7. 정유3팀 C/W (76-E-030, I-2WTS001) (28항목)
+[23:00:18] [TestReport] 선택: GS / #W3.(VDU폐수처리장/처리수) (54항목)
+[23:00:19] [TestReport] 선택: GS / #W2.(제2폐수처리장/유입수) (33항목)
+[23:00:20] [TestReport] 선택: GS / #W2.(제2폐수처리장/처리수) (57항목)
+[23:00:20] [TestReport] 선택: GS / #W2.(제2폐수처리장/유입수) (33항목)
+[23:00:21] [TestReport] 선택: GS / #W1.(제1폐수처리장/처리수) (55항목)
+[23:00:21] [TestReport] 선택: GS / #W12. 방향족생산2팀 C/W (116-E-222/A, I-3WTS031/032) (28항목)
+[23:00:23] [TestReport] 선택: GS / #W23. PE생산팀 C/W (716-E-303, I-8WTS036) (28항목)
+[23:00:23] [TestReport] 선택: GS / #W21. PE생산팀 C/W (716-E-301, I-8WTS034) (28항목)
+[23:00:23] [TestReport] 선택: GS / #W21. PE생산팀 C/W (716-E-301, I-8WTS034) (28항목)
+[23:00:24] [TestReport] 선택: GS / #W20. HOU SRU팀 C/W (616-E-301B, I-7WTS033) (28항목)
+[23:00:24] [TestReport] 선택: GS / #W18. VDU팀 C/W (516-E-301, I-6WTS030) (28항목)
+[23:00:25] [TestReport] 선택: GS / #W17. RFCC팀 C/W (176-E-201, I-5WTS001) (28항목)
+[23:00:25] [TestReport] 선택: GS / #W15. 동력팀 C/W (216-E-501, I-4WTS022) (28항목)
+[23:00:26] [TestReport] 선택: GS / #W12. 방향족생산2팀 C/W (116-E-222/A, I-3WTS031/032) (28항목)
+[23:00:26] [TestReport] 선택: GS / #W10. 동력팀 C/W (116-E-231, I-3WTS029) (28항목)
+[23:00:26] [TestReport] 선택: GS / #W8. 정유3팀 C/W (76-E-030A, I-2WTS002) (28항목)
+[23:00:29] [TestReport] LoadData() 시작
+[23:00:29] [TestReport] 업체 28개
+[23:03:16] [TestReport] LoadData() 시작
+[23:03:16] [TestReport] 업체 28개
+[23:03:19] [TestReport] [LG생명과학] 12건 시료 로드
+[23:03:20] [TestReport] 선택: LG생명과학 / 합성의약 일반 폐수 (15항목)
+[23:03:20] [TestReport] 선택: LG생명과학 / 의약 고농도 폐수 (15항목)
+[23:03:21] [TestReport] 선택: LG생명과학 / 부스틴 일반 (42항목)
+[23:03:21] [TestReport] 선택: LG생명과학 / QC실험폐수 (42항목)
+[23:03:21] [TestReport] 선택: LG생명과학 / 원폐수 (63항목)

@@ -5,6 +5,7 @@ namespace ETA.Models;
 public class PurchaseItem
 {
     public int    Id       { get; set; }           // 번호 (DB auto)
+    public int    번호     { get; set; }   // ← 추가: DB Id 와 무관한 표시용 순번
     public string 구분     { get; set; } = "";     // 소모품 / 장비 / 기타
     public string 품목     { get; set; } = "";
     public int    수량     { get; set; } = 1;
