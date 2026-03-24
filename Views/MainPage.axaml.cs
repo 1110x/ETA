@@ -27,6 +27,7 @@ public partial class MainPage : Window
     // Content3: 분석항목 체크  Content4: 계약업체 목록
     private QuotationHistoryPanel? _quotationHistoryPanel;
     private QuotationDetailPanel?  _quotationDetailPanel;   // Content2: 세부내역
+    private QuotationNewPanel?     _quotationNewPanel;      // Content2: 신규작성
     private QuotationCheckPanel?   _quotationCheckPanel;
     private QuotationPage?         _quotationPage;
 
@@ -187,7 +188,8 @@ public partial class MainPage : Window
 
         SetSubMenu("새로고침", "승인", "반려", "완료", "삭제", "", "설정");
         SetLeftPanelWidth(220);
-        SetContentLayout(content2Star: 5, content4Star: 0, upperStar: 1, lowerStar: 0);
+        // Content2(목록) 위, Content3(폼) 아래 30% 표시
+        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 7, lowerStar: 3);
 
         Avalonia.Threading.Dispatcher.UIThread.Post(
             () => _repairPage.Refresh(),
@@ -199,38 +201,49 @@ public partial class MainPage : Window
     {
         _currentMode = "Quotation";
 
+        // ── 초기화 순서 중요: CheckPanel → Page → NewPanel → DetailPanel → HistoryPanel
+
+        // Content3: 분석항목 체크박스 (먼저 생성)
+        _quotationCheckPanel ??= new QuotationCheckPanel();
+
+        // Content4: 계약업체 목록
+        _quotationPage ??= new QuotationPage();
+
+        // Content2-A: 신규작성 폼
+        if (_quotationNewPanel == null)
+        {
+            _quotationNewPanel = new QuotationNewPanel();
+        }
+        // CheckPanel → NewPanel 연동
+        _quotationCheckPanel.SelectionChanged -= OnCheckSelectionChanged;
+        _quotationCheckPanel.SelectionChanged += OnCheckSelectionChanged;
+        // 업체 → NewPanel 연동
+        _quotationPage.CompanySelected -= OnCompanySelected;
+        _quotationPage.CompanySelected += OnCompanySelected;
+
+        // Content2-B: 세부내역 패널
+        if (_quotationDetailPanel == null)
+        {
+            _quotationDetailPanel = new QuotationDetailPanel();
+            _quotationDetailPanel.CheckPanel = _quotationCheckPanel;
+            // "이 건 수정" 클릭 → NewPanel 로 전환
+            _quotationDetailPanel.EditRequested += issue =>
+            {
+                _quotationNewPanel!.LoadFromIssue(issue);
+                ActivePageContent2.Content = _quotationNewPanel;
+            };
+        }
+        _quotationDetailPanel.CheckPanel = _quotationCheckPanel;
+
         // Content1: 발행내역 트리
         if (_quotationHistoryPanel == null)
         {
             _quotationHistoryPanel = new QuotationHistoryPanel();
-            // 트리 항목 선택 → Content2 세부내역 갱신
             _quotationHistoryPanel.IssueSelected += issue =>
             {
-                _quotationDetailPanel ??= new QuotationDetailPanel();
-                _quotationDetailPanel.ShowIssue(issue);
+                _quotationDetailPanel!.ShowIssue(issue);
                 ActivePageContent2.Content = _quotationDetailPanel;
             };
-        }
-
-        // Content2: 초기 상태 (발행건 선택 전 빈 세부내역 패널)
-        _quotationDetailPanel ??= new QuotationDetailPanel();
-        // CheckPanel 참조 주입 (체크 동기화용)
-        _quotationDetailPanel.CheckPanel = _quotationCheckPanel;
-
-        // Content3: 분석항목 체크박스
-        if (_quotationCheckPanel == null)
-        {
-            _quotationCheckPanel = new QuotationCheckPanel();
-            _quotationCheckPanel.SelectionChanged += items =>
-                { /* 분석항목 선택 변경 — 필요 시 연동 추가 */ };
-        }
-
-        // Content4: 계약업체 목록
-        if (_quotationPage == null)
-        {
-            _quotationPage = new QuotationPage();
-            _quotationPage.CompanySelected += company =>
-                { /* 업체 선택 — 필요 시 연동 추가 */ };
         }
 
         ActivePageContent1.Content = _quotationHistoryPanel;
@@ -263,7 +276,7 @@ public partial class MainPage : Window
 
         SetSubMenu("새로고침", "엑셀 내보내기", "승인", "반려", "완료", "삭제", "설정");
         SetLeftPanelWidth(250);
-        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 4, lowerStar: 1);
+        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 7, lowerStar: 3);
     }
 
 
@@ -350,7 +363,11 @@ public partial class MainPage : Window
             case "Contract":     _contractPage?.LoadData();       break;
             case "Purchase":     _purchasePage?.ExportCsv();      break;
             case "TestReport":   _testReportPage?.SaveCsv();      break;
-            case "Quotation":    _quotationHistoryPanel?.LoadData(); break;
+            case "Quotation":
+                // BT2 = 신규 작성 → Content2 를 NewPanel 로 교체
+                _quotationNewPanel?.Clear();
+                ActivePageContent2.Content = _quotationNewPanel;
+                break;
             case "Repair":       _repairPage?.ApproveSelected();  break;
             default: Debug.WriteLine($"[{_currentMode}] BT2");   break;
         }
@@ -431,6 +448,13 @@ public partial class MainPage : Window
         app.RequestedThemeVariant = theme;
         this.RequestedThemeVariant = theme;
     }
+
+    // ── Quotation 이벤트 핸들러 (중복 구독 방지용 named handler) ─────────
+    private void OnCheckSelectionChanged(System.Collections.Generic.List<ETA.Models.AnalysisItem> items)
+        => _quotationNewPanel?.SetSelectedAnalytes(items);
+
+    private void OnCompanySelected(ETA.Models.Contract company)
+        => _quotationNewPanel?.SetCompany(company);
 
     private void TEST_Click(object? sender, RoutedEventArgs e) { }
 }

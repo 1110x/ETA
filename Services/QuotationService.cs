@@ -147,6 +147,64 @@ public static class QuotationService
         return dict;
     }
 
+    // ── 계약 DB C_ContractType 고유값 조회 ───────────────────────────────────
+    public static List<string> GetContractTypes()
+    {
+        var list   = new List<string>();
+        var dbPath = GetDatabasePath();
+        if (!File.Exists(dbPath)) return list;
+        try
+        {
+            using var conn = new SqliteConnection($"Data Source={dbPath}");
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"SELECT DISTINCT C_ContractType FROM ""계약 DB"" WHERE C_ContractType IS NOT NULL AND C_ContractType <> '' ORDER BY C_ContractType ASC";
+            using var r = cmd.ExecuteReader();
+            while (r.Read()) list.Add(r.GetString(0));
+        }
+        catch (Exception ex) { Debug.WriteLine($"[GetContractTypes] {ex.Message}"); }
+        return list;
+    }
+
+    // ── 분석단가 테이블에서 적용구분 컬럼 단가 조회 ──────────────────────────
+    public static Dictionary<string, decimal> GetPricesByColumn(string columnName)
+    {
+        var dict   = new Dictionary<string, decimal>(StringComparer.OrdinalIgnoreCase);
+        var dbPath = GetDatabasePath();
+        if (!File.Exists(dbPath)) return dict;
+        try
+        {
+            using var conn = new SqliteConnection($"Data Source={dbPath}");
+            conn.Open();
+            using var pragma = conn.CreateCommand();
+            pragma.CommandText = @"PRAGMA table_info(""분석단가"")";
+            var cols = new List<string>();
+            using (var pr = pragma.ExecuteReader())
+                while (pr.Read()) cols.Add(pr.GetString(1));
+
+            var match = cols.FirstOrDefault(c =>
+                string.Equals(c.Trim(), columnName.Trim(), StringComparison.OrdinalIgnoreCase));
+            if (match == null) { Debug.WriteLine($"[Prices] '{columnName}' 컬럼 없음"); return dict; }
+
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = $@"SELECT ""Analyte"", ""{match}"" FROM ""분석단가""";
+            using var dr = cmd.ExecuteReader();
+            while (dr.Read())
+            {
+                var analyte = dr.IsDBNull(0) ? "" : dr.GetValue(0)?.ToString() ?? "";
+                if (string.IsNullOrEmpty(analyte)) continue;
+                if (!dr.IsDBNull(1) && decimal.TryParse(
+                    dr.GetValue(1)?.ToString(),
+                    System.Globalization.NumberStyles.Any,
+                    System.Globalization.CultureInfo.InvariantCulture, out var p))
+                    dict[analyte] = p;
+            }
+            Debug.WriteLine($"[Prices] {columnName} → {dict.Count}개");
+        }
+        catch (Exception ex) { Debug.WriteLine($"[Prices] {ex.Message}"); }
+        return dict;
+    }
+
     // ── INSERT ────────────────────────────────────────────────────────────
     public static bool Insert(QuotationIssue issue)
     {

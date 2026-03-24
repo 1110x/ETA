@@ -475,3 +475,7 @@
 [20:13:14] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
 [20:13:14] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
 [20:13:14] [Contract] 선택: 금호미쓰이화학㈜ 여수
+[22:13:54] [Contract] LoadData() 시작
+[22:13:54] [Contract] 로드 완료 → 32건
+[22:13:54] [Contract] LoadData() 시작
+[22:13:54] [Contract] 로드 완료 → 32건

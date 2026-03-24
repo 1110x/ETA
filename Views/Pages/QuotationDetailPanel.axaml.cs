@@ -15,7 +15,9 @@ namespace ETA.Views.Pages;
 public partial class QuotationDetailPanel : UserControl
 {
     private QuotationIssue?      _current;
-    public  QuotationCheckPanel? CheckPanel { get; set; }
+    public  QuotationCheckPanel?  CheckPanel    { get; set; }
+    /// <summary>"이 건 수정" 클릭 시 발생 — MainPage 가 NewPanel 로 전환</summary>
+    public event Action<QuotationIssue>? EditRequested;
 
     private static readonly FontFamily Font =
         new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
@@ -228,6 +230,12 @@ public partial class QuotationDetailPanel : UserControl
     }
 
     // ── 버튼 ─────────────────────────────────────────────────────────────
+    private void BtnEdit_Click(object? sender, RoutedEventArgs e)
+    {
+        if (_current == null) return;
+        EditRequested?.Invoke(_current);
+    }
+
     private void BtnPrint_Click(object? sender, RoutedEventArgs e)
         => Log($"인쇄 → {_current?.견적번호}");
 
