@@ -520,7 +520,7 @@ public partial class TestReportPage : UserControl
         var statusTb = new TextBlock { FontFamily = Font, FontSize = 11,
             Foreground = new SolidColorBrush(Color.Parse("#888888")), VerticalAlignment = VerticalAlignment.Center };
         var saveBtn   = MakeBtn("💾 저장", "#2a5a2a");
-        var cancelBtn = MakeBtn("✖ 취소", "#444444");
+        var cancelBtn = MakeBtn("✖ 취소", "#e00000");
 
         saveBtn.Click += (_, _) =>
         {

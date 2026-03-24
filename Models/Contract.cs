@@ -24,6 +24,7 @@ public class Contract
     public string    C_Email                    { get; set; } = string.Empty;
 
     // ── 표시용 헬퍼 ──────────────────────────────────────────────────────────
+    public bool HasAbbr => !string.IsNullOrWhiteSpace(C_Abbreviation);
     public string C_ContractStartStr =>
         C_ContractStart.HasValue ? C_ContractStart.Value.ToString("yyyy-MM-dd") : "";
     public string C_ContractEndStr =>

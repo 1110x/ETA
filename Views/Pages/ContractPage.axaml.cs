@@ -11,8 +11,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using ETA.Models;
 using ETA.Services;
+using Avalonia.VisualTree;
 
 namespace ETA.Views.Pages;
+
+/// <summary>약칭이 있을 때만 뱃지 표시용</summary>
+
+
 
 public partial class ContractPage : UserControl
 {
@@ -23,6 +28,10 @@ public partial class ContractPage : UserControl
     private Contract?   _selectedContract;
     private StackPanel? _detailPanel;
     private bool        _isAddMode = false;
+    public MainPage? ParentMainPage { get; set; }
+
+    // 계약구분 ComboBox 참조 (저장 시 값 읽기용)
+    private ComboBox? _contractTypeComboBox;
 
     public ContractPage()
     {
@@ -59,7 +68,6 @@ public partial class ContractPage : UserControl
     // =========================================================================
     private static TreeViewItem CreateTreeItem(Contract contract)
     {
-        // 계약 타입별 아이콘
         string icon = contract.C_ContractType switch
         {
             "위탁" => "🤝",
@@ -192,13 +200,14 @@ public partial class ContractPage : UserControl
     private StackPanel BuildEditPanel(Contract c)
     {
         var root = MakeRootPanel($"🏢  {c.C_CompanyName} — 계약 정보");
-
-        // 2열 그리드 레이아웃
         var grid = MakeTwoColumnGrid();
 
-        AddGridRow(grid, 0, "업체명",           c.C_CompanyName,    isReadOnly: true,  isLocked: true);
+        AddGridRow(grid, 0, "업체명",           c.C_CompanyName,      isReadOnly: true, isLocked: true);
         AddGridRow(grid, 1, "약칭",             c.C_Abbreviation);
-        AddGridRow(grid, 2, "계약구분",         c.C_ContractType);
+
+        // ★ 계약구분 → ComboBox (row 2)
+        AddGridRowComboBox(grid, 2, "계약구분", c.C_ContractType);
+
         AddGridRow(grid, 3, "계약시작",         c.C_ContractStartStr, isReadOnly: true);
         AddGridRow(grid, 4, "계약종료",         c.C_ContractEndStr,   isReadOnly: true);
         AddGridRow(grid, 5, "계약일수",         c.C_ContractDays?.ToString() ?? "");
@@ -226,7 +235,10 @@ public partial class ContractPage : UserControl
 
         AddGridRow(grid, 0, "업체명",           "", hint: "업체명 입력 (필수)");
         AddGridRow(grid, 1, "약칭",             "");
-        AddGridRow(grid, 2, "계약구분",         "");
+
+        // ★ 계약구분 → ComboBox (row 2)
+        AddGridRowComboBox(grid, 2, "계약구분", "");
+
         AddGridRow(grid, 3, "계약시작",         "", hint: "예) 2024-01-01");
         AddGridRow(grid, 4, "계약종료",         "", hint: "예) 2024-12-31");
         AddGridRow(grid, 5, "계약일수",         "");
@@ -294,27 +306,36 @@ public partial class ContractPage : UserControl
     // =========================================================================
     // UI → Contract 동기화
     // =========================================================================
-    private static void SyncPanelToContract(StackPanel panel, Contract c, bool includeReadOnly)
+    private void SyncPanelToContract(StackPanel panel, Contract c, bool includeReadOnly)
     {
-        // 패널 안의 Grid 찾기
         var grid = panel.Children.OfType<Grid>().FirstOrDefault();
         if (grid == null) return;
 
         foreach (var child in grid.Children.OfType<StackPanel>())
         {
             if (child.Children.Count < 2) continue;
+
+            var labelBlock = child.Children[0] as TextBlock;
+            var label = labelBlock?.Text ?? "";
+            label = label.Replace("🔒 ", "").Replace("    ", "").Replace(" :", "").Trim();
+
+            // ★ ComboBox 처리 (계약구분)
+            if (child.Children[1] is ComboBox cb)
+            {
+                if (label == "계약구분")
+                    c.C_ContractType = cb.SelectedItem?.ToString() ?? "";
+                continue;
+            }
+
+            // TextBox 처리
             var tb = child.Children[1] as TextBox;
             if (tb == null) continue;
             if (tb.IsReadOnly && !includeReadOnly) continue;
-
-            var label = (child.Children[0] as TextBlock)?.Text ?? "";
-            label = label.Replace("🔒 ", "").Replace("    ", "").Replace(" :", "").Trim();
 
             switch (label)
             {
                 case "업체명":           c.C_CompanyName    = tb.Text ?? ""; break;
                 case "약칭":             c.C_Abbreviation   = tb.Text ?? ""; break;
-                case "계약구분":         c.C_ContractType   = tb.Text ?? ""; break;
                 case "주소":             c.C_Address        = tb.Text ?? ""; break;
                 case "대표자":           c.C_Representative = tb.Text ?? ""; break;
                 case "시설별":           c.C_FacilityType   = tb.Text ?? ""; break;
@@ -368,7 +389,6 @@ public partial class ContractPage : UserControl
         return root;
     }
 
-    // 2열 Grid (필드가 많아서 2열로 배치)
     private static Grid MakeTwoColumnGrid()
     {
         var grid = new Grid
@@ -377,7 +397,6 @@ public partial class ContractPage : UserControl
             ColumnSpacing     = 16,
             RowSpacing        = 8,
         };
-        // 15행 추가
         for (int i = 0; i < 15; i++)
             grid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
         return grid;
@@ -423,15 +442,240 @@ public partial class ContractPage : UserControl
             Padding         = new Thickness(8, 4),
         });
 
-        // 홀수 행은 왼쪽, 짝수 행은 오른쪽 열
-        int col = row % 2;
+        int col     = row % 2;
         int gridRow = row / 2;
         Grid.SetColumn(panel, col);
         Grid.SetRow(panel, gridRow);
         grid.Children.Add(panel);
     }
 
+    // =========================================================================
+    // ★ 계약구분 ComboBox 행 추가
+    //   - 분석단가 테이블의 FS100 이후 컬럼을 항목으로 채움
+    //   - 기본 선택값 : FS25 (없으면 첫 번째 항목)
+    //   - 선택 변경 시 : ActivePageContent3 에 해당 컬럼 데이터 테이블 표시
+    // =========================================================================
+    private void AddGridRowComboBox(Grid grid, int row, string label, string currentValue)
+    {
+        var panel = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
+
+        panel.Children.Add(new TextBlock
+        {
+            Text              = "    " + label + " :",
+            Width             = 130,
+            FontSize          = 12,
+            FontFamily        = Font,
+            Foreground        = Brushes.LightGray,
+            VerticalAlignment = VerticalAlignment.Center,
+        });
+
+        // ── 분석단가 테이블에서 FS100 이후 컬럼명 목록 가져오기 ──────────────
+        List<string> columns;
+        try
+
+        {
+            // ★★★ 여기서만 수정 ★★★
+            // ContractService.GetUnitPriceColumns()가 테이블 전체 컬럼을 반환한다고 가정
+            var allColumns = ContractService.GetUnitPriceColumns();
+            
+            columns = allColumns
+                        .Skip(3)                                      // 컬럼 1,2,3 제외 (4번째부터)
+                        .Where(c => !string.IsNullOrWhiteSpace(c))    // 빈 컬럼 방어
+                        .ToList();
+
+            Log($"✅ GetUnitPriceColumns → {columns.Count}개 (컬럼 4부터 FS100~)");
+        }
+        catch (Exception ex)
+        {
+            Log($"★ GetUnitPriceColumns 오류: {ex.Message}");
+            columns = new List<string>();
+        }
+
+        var comboBox = new ComboBox
+        {
+            Width           = 200,
+            FontSize        = 12,
+            FontFamily      = Font,
+            Background      = new SolidColorBrush(Color.Parse("#3a3a4a")),
+            Foreground      = Brushes.WhiteSmoke,
+            BorderThickness = new Thickness(1),
+            BorderBrush     = new SolidColorBrush(Color.Parse("#555577")),
+            Padding         = new Thickness(8, 4),
+        };
+
+        foreach (var col in columns)
+            comboBox.Items.Add(col);
+
+        // 기본 선택값 결정: currentValue 우선, 없으면 FS25, 그것도 없으면 첫 번째
+        if (!string.IsNullOrEmpty(currentValue) && columns.Contains(currentValue))
+            comboBox.SelectedItem = currentValue;
+        else if (columns.Contains("FS25"))
+            comboBox.SelectedItem = "FS25";
+        else if (columns.Count > 0)
+            comboBox.SelectedIndex = 0;
+
+        // ── 선택 변경 → ActivePageContent3 에 테이블 표시 ────────────────────
+        comboBox.SelectionChanged += (_, _) =>
+        {
+            var selected = comboBox.SelectedItem?.ToString();
+            if (!string.IsNullOrEmpty(selected))
+                LoadUnitPriceTable(selected);
+        };
+
+        // 필드 저장용 참조 보관
+        _contractTypeComboBox = comboBox;
+
+        panel.Children.Add(comboBox);
+
+        int col2    = row % 2;
+        int gridRow = row / 2;
+        Grid.SetColumn(panel, col2);
+        Grid.SetRow(panel, gridRow);
+        grid.Children.Add(panel);
+
+        // 초기 로드 (패널 빌드 시점에도 테이블 표시)
+        var initialCol = comboBox.SelectedItem?.ToString();
+        if (!string.IsNullOrEmpty(initialCol))
+            LoadUnitPriceTable(initialCol);
+    }
+
+   // =========================================================================
+// ★ ActivePageContent3 에 전체 단가 테이블 표시 + 선택 컬럼 강조
+// =========================================================================
+private void LoadUnitPriceTable(string selectedColumn)
+{
+    try
+    {
+        // ActivePageContent3 안전하게 찾기 (TopLevel 방식 - 에러 zero)
+        var mainPage = TopLevel.GetTopLevel(this) as MainPage;
+        var target = mainPage?.ActivePageContent3;
+        if (target == null)
+        {
+            Log($"★ ActivePageContent3 를 찾을 수 없음");
+            return;
+        }
+
+        // 전체 컬럼 목록 (3번째부터)
+        var allColumns = ContractService.GetUnitPriceColumns()
+                            .Skip(2)
+                            .Where(c => !string.IsNullOrWhiteSpace(c))
+                            .ToList();
+
+        if (allColumns.Count == 0)
+        {
+            Log("컬럼이 없습니다.");
+            return;
+        }
+
+        // 행 키는 첫 번째 컬럼(ES) 기준으로 가져옴
+        var rowKeys = ContractService.GetUnitPriceColumnData(allColumns[0])
+                        .Select(r => r.Key)
+                        .ToList();
+
+        // 전체 행 데이터 구성 (Dictionary로 동적 바인딩)
+        var fullRows = new List<Dictionary<string, string>>();
+        for (int i = 0; i < rowKeys.Count; i++)
+        {
+            var row = new Dictionary<string, string> { ["항목"] = rowKeys[i] };
+
+            foreach (var col in allColumns)
+            {
+                var colData = ContractService.GetUnitPriceColumnData(col);
+                var match = colData.FirstOrDefault(r => r.Key == rowKeys[i]);
+                var value = (match.Key == rowKeys[i] ? match.Value : "");
+
+                row[col] = value;
+            }
+            fullRows.Add(row);
+        }
+
+        // DataGrid 생성
+        var dataGrid = new DataGrid
+        {
+            IsReadOnly = true,
+            CanUserResizeColumns = true,
+            Background = new SolidColorBrush(Color.Parse("#1e1e2e")),
+            Foreground = Brushes.WhiteSmoke,
+            GridLinesVisibility = DataGridGridLinesVisibility.All,
+            HorizontalGridLinesBrush = new SolidColorBrush(Color.Parse("#444444")),
+            VerticalGridLinesBrush = new SolidColorBrush(Color.Parse("#444444")),
+            FontFamily = Font,
+            FontSize = 12,
+            Margin = new Thickness(4),
+        };
+
+        // 1) 항목 컬럼
+        dataGrid.Columns.Add(new DataGridTextColumn
+        {
+            Header = "항목",
+            Binding = new Avalonia.Data.Binding("항목"),
+            Width = DataGridLength.Auto,
+        });
+
+        // 2) 모든 FS 컬럼 + 선택된 컬럼 강조
+        foreach (var col in allColumns)
+        {
+            var isSelected = col == selectedColumn;
+
+            var headerText = new TextBlock
+            {
+                Text = col,
+                FontWeight = isSelected ? FontWeight.Bold : FontWeight.Normal,
+                Foreground = isSelected 
+                    ? new SolidColorBrush(Color.Parse("#ffaa00"))   // 주황색 강조
+                    : Brushes.WhiteSmoke,
+                Padding = new Thickness(8, 4),
+            };
+
+            var column = new DataGridTextColumn
+            {
+                Header = headerText,
+                Binding = new Avalonia.Data.Binding(col),
+                Width = new DataGridLength(1, DataGridLengthUnitType.Star),
+            };
+
+            // 선택된 컬럼에 테두리 효과 (헤더 배경)
+            if (isSelected)
+            {
+                headerText.Background = new SolidColorBrush(Color.Parse("#3a2a1f")); // 약간 어두운 주황 배경
+            }
+
+            dataGrid.Columns.Add(column);
+        }
+
+        dataGrid.ItemsSource = fullRows;
+
+        // 래퍼 (타이틀 + 구분선)
+        var wrapper = new StackPanel { Spacing = 6, Margin = new Thickness(4) };
+        wrapper.Children.Add(new TextBlock
+        {
+            Text = $"📊 전체 분석단가 테이블 ({allColumns.Count}개 컬럼)",
+            FontSize = 13,
+            FontFamily = Font,
+            FontWeight = FontWeight.SemiBold,
+            Foreground = Brushes.WhiteSmoke,
+            Margin = new Thickness(0, 0, 0, 4),
+        });
+        wrapper.Children.Add(new Border
+        {
+            Height = 1,
+            Background = new SolidColorBrush(Color.Parse("#555555")),
+            Margin = new Thickness(0, 0, 0, 4),
+        });
+        wrapper.Children.Add(dataGrid);
+
+        target.Content = wrapper;
+        Log($"✅ 전체 단가 테이블 표시 완료 ({allColumns.Count}개 컬럼, 선택: {selectedColumn})");
+    }
+    catch (Exception ex)
+    {
+        Log($"★ LoadUnitPriceTable 오류: {ex.Message}");
+    }
+}
+
+    // =========================================================================
     // 확인 다이얼로그
+    // =========================================================================
     private async Task<bool> ShowConfirmDialog(string message)
     {
         var dlg = new Window

@@ -1,0 +1,67 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ETA.Views.Pages.QuotationCheckPanel">
+
+    <UserControl.Styles>
+        <Style Selector="Button.ghost-btn">
+            <Setter Property="Height"          Value="24" />
+            <Setter Property="CornerRadius"    Value="3" />
+            <Setter Property="Background"      Value="#2a2a3a" />
+            <Setter Property="Foreground"      Value="#aaa" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding"         Value="10,0" />
+            <Setter Property="FontSize"        Value="11" />
+            <Setter Property="FontFamily"      Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+        </Style>
+        <Style Selector="Button.ghost-btn:pointerover">
+            <Setter Property="Background" Value="#3a3a4a" />
+        </Style>
+        <Style Selector="CheckBox">
+            <Setter Property="FontSize"   Value="12" />
+            <Setter Property="Foreground" Value="#ddd" />
+            <Setter Property="Padding"    Value="4,2" />
+            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto,Auto,Auto,*">
+
+        <!-- 헤더 -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,6">
+            <TextBlock Grid.Column="0"
+                       Text="분석 항목"
+                       FontSize="14" FontWeight="Bold"
+                       Foreground="#e0e0e0"
+                       VerticalAlignment="Center"
+                       FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+            <Button Grid.Column="1"
+                    Classes="ghost-btn"
+                    Content="전체 선택"
+                    Click="BtnSelectAll_Click"
+                    Margin="0,0,4,0" />
+            <Button Grid.Column="2"
+                    Classes="ghost-btn"
+                    Content="전체 해제"
+                    Click="BtnClearAll_Click" />
+        </Grid>
+
+        <!-- 구분선 -->
+        <Border Grid.Row="1" Height="1" Background="#333" Margin="0,0,0,6" />
+
+        <!-- 선택 카운트 -->
+        <TextBlock Grid.Row="2"
+                   x:Name="txbCount"
+                   Text="선택 0개 / 전체 0개"
+                   FontSize="11" Foreground="#777"
+                   Margin="2,0,0,6"
+                   FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+
+        <!-- 체크박스 목록 (ScrollViewer 안에 WrapPanel) -->
+        <ScrollViewer Grid.Row="3"
+                      HorizontalScrollBarVisibility="Disabled"
+                      VerticalScrollBarVisibility="Auto">
+            <StackPanel x:Name="spItems" Spacing="0" />
+        </ScrollViewer>
+
+    </Grid>
+</UserControl>

@@ -1,32 +1,89 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="using:ETA.ViewModels"           
-             x:Class="ETA.Views.Pages.QuotationPage"
-             x:DataType="vm:QuotationViewModel">
+             xmlns:models="using:ETA.Models"
+             x:Class="ETA.Views.Pages.QuotationPage">
 
-    <Grid>
-        <DataGrid x:Name="QuotationGrid"
-                  Classes="common-grid"
-                  ItemsSource="{Binding QuotationItems}"
-                  AutoGenerateColumns="False">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="항목구분" Binding="{Binding Category}" Width="120" />
-                <DataGridTextColumn Header="항목명" Binding="{Binding Analyte}" Width="180" />
-                <DataGridTextColumn Header="100% FS" Binding="{Binding FS100, StringFormat=N0}" Width="100" />
-                <DataGridTextColumn Header="100% FS+" Binding="{Binding FS100Plus, StringFormat=N0}" Width="100" />
-                <DataGridTextColumn Header="56% FS" Binding="{Binding FS56, StringFormat=N0}" Width="100" />
-                <DataGridTextColumn Header="56% NFS" Binding="{Binding NFS56, StringFormat=N0}" Width="100" />
-                <DataGridTextColumn Header="55% FS" Binding="{Binding FS55, StringFormat=N0}" Width="100" />
-                <DataGridTextColumn Header="52% FS" Binding="{Binding FS52, StringFormat=N0}" Width="100" />
-                <DataGridTextColumn Header="52% FS-HN" Binding="{Binding FSHN52, StringFormat=N0}" Width="110" />
-                <DataGridTextColumn Header="50% NFS" Binding="{Binding NFS50, StringFormat=N0}" Width="100" />
-                <DataGridTextColumn Header="45% NFS" Binding="{Binding NFS45, StringFormat=N0}" Width="100" />
-                <DataGridTextColumn Header="39% NFS" Binding="{Binding NFS39, StringFormat=N0}" Width="100" />
-                <DataGridTextColumn Header="36% NFS" Binding="{Binding NFS36, StringFormat=N0}" Width="100" />
-                <DataGridTextColumn Header="36% NFS RE" Binding="{Binding NFS36RE, StringFormat=N0}" Width="110" />
-                <DataGridTextColumn Header="25% FS" Binding="{Binding FS25, StringFormat=N0}" Width="100" />
-            </DataGrid.Columns>
-        </DataGrid>
+    <UserControl.Styles>
+        <Style Selector="ListBoxItem">
+            <Setter Property="Padding"      Value="8,4" />
+            <Setter Property="Background"   Value="Transparent" />
+            <Setter Property="Foreground"   Value="#ddd" />
+            <Setter Property="FontSize"     Value="12" />
+            <Setter Property="CornerRadius" Value="3" />
+            <Setter Property="FontFamily"   Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+        </Style>
+        <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+            <Setter Property="Background" Value="#1a4a1a" />
+        </Style>
+        <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#2a2a3a" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto,Auto,Auto,*">
+
+        <!-- 헤더 -->
+        <TextBlock Grid.Row="0"
+                   Text="계약업체"
+                   FontSize="13" FontWeight="Bold"
+                   Foreground="#e0e0e0"
+                   FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                   Margin="0,0,0,6"/>
+
+        <!-- ToggleSwitch (계약유효 / 전체) -->
+        <ToggleSwitch Grid.Row="1"
+                      x:Name="tglActiveOnly"
+                      IsChecked="True"
+                      OnContent="📋 계약유효만"
+                      OffContent="📋 전체 보기"
+                      FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                      FontSize="11"
+                      HorizontalAlignment="Left"
+                      Margin="8,2,0,6"
+                      IsCheckedChanged="TglActiveOnly_Changed" />
+
+        <!-- 검색 + 건수 -->
+        <StackPanel Grid.Row="2" Spacing="4" Margin="0,0,0,6">
+            <TextBox x:Name="txbSearch"
+                     Watermark="업체명 검색..."
+                     Height="26" FontSize="12"
+                     Background="#2a2a35" Foreground="#ddd"
+                     BorderBrush="#444" Padding="8,0" CornerRadius="4"
+                     FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                     TextChanged="TxbSearch_TextChanged" />
+            <TextBlock x:Name="txbCompanyCount"
+                       Text="0개 업체"
+                       FontSize="11" Foreground="#666"
+                       Margin="2,0,0,0"
+                       FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+        </StackPanel>
+
+        <!-- 업체 목록 -->
+        <ListBox Grid.Row="3"
+                 x:Name="lbxCompanies"
+                 Background="Transparent"
+                 BorderThickness="0"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                 SelectionChanged="LbxCompanies_SelectionChanged">
+            <ListBox.ItemTemplate>
+                <DataTemplate DataType="models:Contract">
+                    <Grid ColumnDefinitions="*,Auto"
+                          ToolTip.Tip="{Binding C_ContractType}">
+                        <TextBlock Grid.Column="0"
+                                   Text="{Binding C_CompanyName}"
+                                   TextTrimming="CharacterEllipsis"
+                                   VerticalAlignment="Center" />
+                        <Border Grid.Column="1"
+                                Background="#1a3a1a" CornerRadius="3"
+                                Padding="4,1" Margin="4,0,0,0"
+                                IsVisible="{Binding HasAbbr}">
+                            <TextBlock Text="{Binding C_Abbreviation}"
+                                       FontSize="10" Foreground="#8c8" />
+                        </Border>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
     </Grid>
-
 </UserControl>

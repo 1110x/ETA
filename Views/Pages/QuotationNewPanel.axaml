@@ -1,0 +1,144 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ETA.Views.Pages.QuotationNewPanel">
+
+    <UserControl.Styles>
+        <Style Selector="Button.action-btn">
+            <Setter Property="Height"          Value="28" />
+            <Setter Property="CornerRadius"    Value="4" />
+            <Setter Property="Background"      Value="#2a4a2a" />
+            <Setter Property="Foreground"      Value="#aef0ae" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding"         Value="14,0" />
+            <Setter Property="FontSize"        Value="12" />
+            <Setter Property="FontFamily"      Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+        </Style>
+        <Style Selector="Button.action-btn:pointerover">
+            <Setter Property="Background" Value="#3a6a3a" />
+        </Style>
+        <Style Selector="TextBox">
+            <Setter Property="Height"       Value="28" />
+            <Setter Property="FontSize"     Value="12" />
+            <Setter Property="Background"   Value="#2a2a35" />
+            <Setter Property="Foreground"   Value="#ddd" />
+            <Setter Property="BorderBrush"  Value="#444" />
+            <Setter Property="Padding"      Value="8,0" />
+            <Setter Property="CornerRadius" Value="4" />
+        </Style>
+        <Style Selector="ComboBox">
+            <Setter Property="Height"       Value="28" />
+            <Setter Property="FontSize"     Value="12" />
+            <Setter Property="Background"   Value="#2a2a35" />
+            <Setter Property="Foreground"   Value="#ddd" />
+            <Setter Property="BorderBrush"  Value="#444" />
+            <Setter Property="Padding"      Value="8,0" />
+            <Setter Property="CornerRadius" Value="4" />
+        </Style>
+        <Style Selector="TextBlock.lbl">
+            <Setter Property="FontSize"          Value="11" />
+            <Setter Property="Foreground"        Value="#888" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontFamily"        Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+        </Style>
+    </UserControl.Styles>
+
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                  VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="8" Margin="0,4,0,0">
+
+            <!-- 헤더 -->
+            <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,2">
+                <TextBlock Grid.Column="0"
+                           Text="신규 견적 작성"
+                           FontSize="14" FontWeight="Bold"
+                           Foreground="#e0e0e0"
+                           FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+            </Grid>
+            <Border Height="1" Background="#333" Margin="0,0,0,4" />
+
+            <!-- 선택 업체 표시 -->
+            <Border Background="#1a2a1a" CornerRadius="4" Padding="10,6">
+                <Grid ColumnDefinitions="Auto,*">
+                    <TextBlock Grid.Column="0" Classes="lbl" Text="업체 : " />
+                    <TextBlock Grid.Column="1"
+                               x:Name="txbCompany"
+                               Text="— 오른쪽에서 업체를 선택하세요 —"
+                               FontSize="13" FontWeight="SemiBold"
+                               Foreground="#7cd87c"
+                               VerticalAlignment="Center"
+                               FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+                </Grid>
+            </Border>
+
+            <!-- 견적번호 -->
+            <Grid ColumnDefinitions="76,*">
+                <TextBlock Classes="lbl" Text="견적번호" />
+                <TextBox Grid.Column="1" x:Name="txbQuotationNo"
+                         Watermark="자동 생성 또는 직접 입력" />
+            </Grid>
+
+            <!-- 발행일 -->
+            <Grid ColumnDefinitions="76,*">
+                <TextBlock Classes="lbl" Text="발행일" />
+                <TextBox Grid.Column="1" x:Name="txbIssueDate" />
+            </Grid>
+
+            <!-- 시료명 -->
+            <Grid ColumnDefinitions="76,*">
+                <TextBlock Classes="lbl" Text="시료명" />
+                <TextBox Grid.Column="1" x:Name="txbSampleName"
+                         Watermark="시료명 입력" />
+            </Grid>
+
+            <!-- 적용구분 -->
+            <Grid ColumnDefinitions="76,*">
+                <TextBlock Classes="lbl" Text="적용구분" />
+                <ComboBox Grid.Column="1" x:Name="cmbQuotationType"
+                          HorizontalAlignment="Stretch">
+                    <ComboBoxItem Content="FS100"   />
+                    <ComboBoxItem Content="FS100+"  />
+                    <ComboBoxItem Content="FS56"    />
+                    <ComboBoxItem Content="NFS56"   />
+                    <ComboBoxItem Content="FS55"    />
+                    <ComboBoxItem Content="FS52"    />
+                    <ComboBoxItem Content="FSHN52"  />
+                    <ComboBoxItem Content="NFS50"   />
+                    <ComboBoxItem Content="NFS45"   />
+                    <ComboBoxItem Content="NFS39"   />
+                    <ComboBoxItem Content="NFS36"   />
+                    <ComboBoxItem Content="NFS36RE" />
+                    <ComboBoxItem Content="FS25"    />
+                </ComboBox>
+            </Grid>
+
+            <!-- 선택 항목 요약 -->
+            <Border Background="#1e2530" CornerRadius="4" Padding="10,8" Margin="0,4,0,0">
+                <StackPanel Spacing="4">
+                    <TextBlock Classes="lbl" Text="선택된 분석 항목" />
+                    <TextBlock x:Name="txbAnalytesSummary"
+                               Text="아래 패널에서 분석 항목을 선택하세요."
+                               FontSize="12" Foreground="#bbb"
+                               TextWrapping="Wrap"
+                               FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+                    <TextBlock x:Name="txbTotalAmount"
+                               Text="선택 0개 항목"
+                               FontSize="12" FontWeight="SemiBold"
+                               Foreground="#7cd87c"
+                               Margin="0,2,0,0"
+                               FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+                </StackPanel>
+            </Border>
+
+            <!-- 저장 / 미리보기 -->
+            <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4,0,0">
+                <Button Classes="action-btn"
+                        Content="💾  견적 저장"
+                        Click="BtnSave_Click" />
+                <Button Classes="action-btn"
+                        Content="🖨  미리보기"
+                        Click="BtnPreview_Click" />
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

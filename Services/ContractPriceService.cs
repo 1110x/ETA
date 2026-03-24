@@ -10,9 +10,8 @@ public static class ContractPriceService
 {
     private static string GetDatabasePath()
     {
-        var path = Path.Combine(AppContext.BaseDirectory, "Data", "eta.db");
-        Console.WriteLine($"[ContractPriceService] DB 경로: {path}"); // ← 경로 출력 필수!
-        return path;
+        var root = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", ".."));
+        return Path.Combine(root, "Data", "eta.db");
     }
 
     public static List<ContractPrice> GetAllContractPrices()

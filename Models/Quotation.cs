@@ -15,9 +15,10 @@ public class Qu
 
     public string NFS50       { get; set; } = string.Empty;
     public string NFS45        { get; set; } = string.Empty;
-     public string NFS39        { get; set; } = string.Empty;
-     public string NFS36      { get; set; } = string.Empty;
-     public string NFS36RE     { get; set; } = string.Empty;
+    public string NFS39        { get; set; } = string.Empty;
+    public string NFS36      { get; set; } = string.Empty;
+    public string NFS36RE     { get; set; } = string.Empty;
+    public string FS25      { get; set; } = string.Empty;   // ← 여기 추가!
 
 
 
