@@ -9,16 +9,7 @@ namespace ETA.Services;
 
 public static class WasteCompanyService
 {
-    public static string GetDatabasePath()
-    {
-        // ★★★ 프로젝트 루트(Data 폴더)로 영구 고정 ★★★
-        var projectRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", ".."));
-        var dataDir = Path.Combine(projectRoot, "Data");
-        Directory.CreateDirectory(dataDir);
-        var dbPath = Path.Combine(dataDir, "eta.db");
-        Debug.WriteLine($"[DB 위치] 프로젝트 루트 사용 → {dbPath}");
-        return dbPath;
-    }
+    public static string GetDatabasePath() => DbPathHelper.DbPath;
 
     public static List<WasteCompany> GetAllItems()
     {

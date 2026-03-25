@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.Data.Sqlite;
 using ETA.Models;
 using System.Diagnostics;
-using System.Linq;
 
 namespace ETA.Services;
 
@@ -147,20 +148,46 @@ public static class QuotationService
         return dict;
     }
 
-    // ── 계약 DB C_ContractType 고유값 조회 ───────────────────────────────────
+    // ── 분석단가 테이블 컬럼헤더에서 적용구분 목록 조회 ─────────────────────
+    /// <summary>
+    /// 분석단가 테이블의 컬럼 중 Analyte, Category, ES 등 고정 컬럼을 제외한
+    /// 나머지 컬럼헤더 (FS100, FS100+, FS56 ...) 를 반환
+    /// </summary>
     public static List<string> GetContractTypes()
     {
         var list   = new List<string>();
         var dbPath = GetDatabasePath();
         if (!File.Exists(dbPath)) return list;
+
+        // 분석단가 테이블에서 제외할 고정 컬럼
+        var fixedCols = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "Analyte", "Category", "ES", "unit", "Unit", "Method", "방법",
+            "비고", "Note", "단위", "분류",
+        };
+
         try
         {
             using var conn = new SqliteConnection($"Data Source={dbPath}");
             conn.Open();
-            using var cmd = conn.CreateCommand();
-            cmd.CommandText = @"SELECT DISTINCT C_ContractType FROM ""계약 DB"" WHERE C_ContractType IS NOT NULL AND C_ContractType <> '' ORDER BY C_ContractType ASC";
-            using var r = cmd.ExecuteReader();
-            while (r.Read()) list.Add(r.GetString(0));
+
+            if (!TableExists(conn, "분석단가"))
+            {
+                Debug.WriteLine("[GetContractTypes] 분석단가 테이블 없음");
+                return list;
+            }
+
+            using var pragma = conn.CreateCommand();
+            pragma.CommandText = @"PRAGMA table_info(""분석단가"")";
+            using var r = pragma.ExecuteReader();
+            while (r.Read())
+            {
+                var col = r.GetString(1).Trim();  // 컬럼명
+                if (!fixedCols.Contains(col))
+                    list.Add(col);
+            }
+
+            Debug.WriteLine($"[GetContractTypes] 분석단가 컬럼 → {list.Count}개: {string.Join(", ", list)}");
         }
         catch (Exception ex) { Debug.WriteLine($"[GetContractTypes] {ex.Message}"); }
         return list;
@@ -205,20 +232,59 @@ public static class QuotationService
         return dict;
     }
 
-    // ── INSERT ────────────────────────────────────────────────────────────
-    public static bool Insert(QuotationIssue issue)
+    // ── INSERT (분석항목 포함) ────────────────────────────────────────────
+    public static bool Insert(QuotationIssue issue,
+        Dictionary<string, (int Qty, decimal Price)>? itemData = null)
     {
         var dbPath = GetDatabasePath();
         using var conn = new SqliteConnection($"Data Source={dbPath}");
         conn.Open();
         if (!TableExists(conn, "견적발행내역")) return false;
 
+        // ── 테이블 실제 컬럼 목록 조회 (항목 컬럼 검증용) ──────────────
+        var tableCols = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        using (var pragma = conn.CreateCommand())
+        {
+            pragma.CommandText = @"PRAGMA table_info(""견적발행내역"")";
+            using var pr = pragma.ExecuteReader();
+            while (pr.Read()) tableCols.Add(pr.GetString(1).Trim());
+        }
+
+        // ── 저장할 항목 필터링 (테이블에 존재하는 컬럼만) ───────────────
+        var validItems = itemData?
+            .Where(kv => tableCols.Contains(kv.Key) && kv.Value.Qty > 0)
+            .ToList() ?? new();
+
+        // ── INSERT 쿼리 동적 생성 ────────────────────────────────────────
+        var colList = new List<string>
+        {
+            "\"견적발행일자\"", "\"업체명\"", "\"약칭\"", "\"시료명\"",
+            "\"견적번호\"", "\"적용구분\"", "\"합계 금액\""
+        };
+        var paramList = new List<string>
+        {
+            "@date", "@company", "@abbr", "@sample",
+            "@no", "@type", "@amount"
+        };
+
+        foreach (var kv in validItems)
+        {
+            var name = kv.Key;
+            colList.Add($"\"{name}\"");
+            colList.Add($"\"{name}단가\"");
+            colList.Add($"\"{name}소계\"");
+            paramList.Add($"@qty_{ToParamName(name)}");
+            paramList.Add($"@price_{ToParamName(name)}");
+            paramList.Add($"@sub_{ToParamName(name)}");
+        }
+
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"
+        cmd.CommandText = $@"
             INSERT INTO ""견적발행내역""
-                (""견적발행일자"", ""업체명"", ""약칭"", ""시료명"",
-                 ""견적번호"",   ""적용구분"", ""합계 금액"")
-            VALUES (@date,@company,@abbr,@sample,@no,@type,@amount)";
+                ({string.Join(", ", colList)})
+            VALUES
+                ({string.Join(", ", paramList)})";
+
         cmd.Parameters.AddWithValue("@date",    issue.발행일   ?? DateTime.Today.ToString("yyyy-MM-dd"));
         cmd.Parameters.AddWithValue("@company", issue.업체명   ?? "");
         cmd.Parameters.AddWithValue("@abbr",    issue.약칭     ?? "");
@@ -227,6 +293,15 @@ public static class QuotationService
         cmd.Parameters.AddWithValue("@type",    issue.견적구분 ?? "");
         cmd.Parameters.AddWithValue("@amount",  issue.총금액);
 
+        foreach (var kv in validItems)
+        {
+            var p = ToParamName(kv.Key);
+            var sub = kv.Value.Qty * kv.Value.Price;
+            cmd.Parameters.AddWithValue($"@qty_{p}",   kv.Value.Qty);
+            cmd.Parameters.AddWithValue($"@price_{p}", kv.Value.Price);
+            cmd.Parameters.AddWithValue($"@sub_{p}",   sub);
+        }
+
         int rows = cmd.ExecuteNonQuery();
         if (rows > 0)
         {
@@ -234,8 +309,13 @@ public static class QuotationService
             idCmd.CommandText = "SELECT last_insert_rowid()";
             issue.Id = Convert.ToInt32(idCmd.ExecuteScalar());
         }
+        Debug.WriteLine($"[Insert] {rows}행 → {issue.견적번호}  항목{validItems.Count}개");
         return rows > 0;
     }
+
+    // 파라미터명용 안전 문자열 변환 (특수문자 제거)
+    private static string ToParamName(string name)
+        => System.Text.RegularExpressions.Regex.Replace(name, @"[^a-zA-Z0-9가-힣]", "_");
 
     // ── DELETE ────────────────────────────────────────────────────────────
     public static bool Delete(int rowid)

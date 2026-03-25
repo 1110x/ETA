@@ -1493,3 +1493,34 @@
 [23:03:21] [TestReport] 선택: LG생명과학 / 부스틴 일반 (42항목)
 [23:03:21] [TestReport] 선택: LG생명과학 / QC실험폐수 (42항목)
 [23:03:21] [TestReport] 선택: LG생명과학 / 원폐수 (63항목)
+[15:20:59] [TestReport] LoadData() 시작
+[15:20:59] [TestReport] 업체 28개
+[15:22:35] [TestReport] [DL] 23건 시료 로드
+[15:22:37] [TestReport] 선택: DL / HDPE 냉각탑 (17항목)
+[15:22:37] [TestReport] 선택: DL / HDPE 원폐수 (50항목)
+[15:36:35] [TestReport] LoadData() 시작
+[15:36:35] [TestReport] 업체 28개
+[15:36:37] [TestReport] [국도화학] 6건 시료 로드
+[15:36:41] [TestReport] [금호] 54건 시료 로드
+[15:36:44] [TestReport] 선택: 금호 / 일반원폐수 (54항목)
+[15:40:00] [TestReport] LoadData() 시작
+[15:40:00] [TestReport] 업체 28개
+[15:40:03] [TestReport] [금호] 54건 시료 로드
+[15:40:05] [TestReport] 선택: 금호 / 일반원폐수 (54항목)
+[16:24:56] [TestReport] LoadData() 시작
+[16:24:56] [TestReport] 업체 28개
+[16:25:00] [TestReport] [LG생명과학] 12건 시료 로드
+[16:25:04] [TestReport] 선택: LG생명과학 / 합성의약 일반 폐수 (15항목)
+[16:25:05] [TestReport] 선택: LG생명과학 / 의약 고농도 폐수 (15항목)
+[16:25:05] [TestReport] 선택: LG생명과학 / 부스틴 일반 (42항목)
+[16:26:16] [TestReport] LoadData() 시작
+[16:26:16] [TestReport] 업체 28개
+[16:26:20] [TestReport] [고흥나로우주] 20건 시료 로드
+[16:26:22] [TestReport] 선택: 고흥나로우주 / 시험설비앞-4 (32항목)
+[17:29:35] [TestReport] LoadData() 시작
+[17:29:35] [TestReport] 업체 28개
+[17:31:38] [TestReport] [DL] 23건 시료 로드
+[17:31:42] [TestReport] 선택: DL / HDPE 냉각탑 (17항목)
+[17:31:42] [TestReport] 선택: DL / HDPE 원폐수 (50항목)
+[19:30:02] [TestReport] LoadData() 시작
+[19:30:02] [TestReport] 업체 28개

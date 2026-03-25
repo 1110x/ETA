@@ -3,236 +3,384 @@
         xmlns:lottie="using:Avalonia.Labs.Lottie"
         x:Class="ETA.Views.MainPage"
         TransparencyLevelHint="AcrylicBlur"
-        Width="1600"
-        Height="900"
+        Width="1600" Height="900"
         Icon="avares://ETA/Assets/icons/ETA.ico"
         Title="ETA Water Analysis Center">
 
-    <Grid RowDefinitions="30,*">
-        <!-- 상단 메인 메뉴 바 -->
-        <Border Grid.Row="0" Background="#444444" Padding="1">
+    <!-- ═══════════════════════════════════════════════════════════════════
+         전역 테마 리소스
+         isDark=True  → Dark  팔레트
+         isDark=False → Light 팔레트
+         모든 색상은 DynamicResource 로 참조 → ApplyTheme() 한 번으로 전체 적용
+    ════════════════════════════════════════════════════════════════════ -->
+    <Window.Resources>
+        <!-- ── 다크 기본값 (코드에서 Light로 교체) ── -->
+        <SolidColorBrush x:Key="AppBg"            Color="#1e1e26"/>
+        <SolidColorBrush x:Key="PanelBg"          Color="#39383f"/>
+        <SolidColorBrush x:Key="PanelInnerBg"     Color="#2d2d35"/>
+        <SolidColorBrush x:Key="MenuBarBg"        Color="#444444"/>
+        <SolidColorBrush x:Key="MenuItemBg"       Color="#444444"/>
+        <SolidColorBrush x:Key="MenuItemHover"    Color="#012800"/>
+        <SolidColorBrush x:Key="SubMenuBg"        Color="#012800"/>
+        <SolidColorBrush x:Key="SubMenuItemBg"    Color="#444444"/>  <!-- ★ 통일 -->
+        <SolidColorBrush x:Key="SubMenuItemHover" Color="#023d00"/>
+        <SolidColorBrush x:Key="SubBtnBg"         Color="#342f2f"/>
+        <SolidColorBrush x:Key="SubBtnHover"      Color="#012800"/>
+        <SolidColorBrush x:Key="SplitterColor"    Color="#020202"/>
+        <SolidColorBrush x:Key="AppFg"            Color="#ffffff"/>
+        <SolidColorBrush x:Key="FgMuted"          Color="#aaaaaa"/>
+        <SolidColorBrush x:Key="FgHover"          Color="#fd0f0f"/>
+        <SolidColorBrush x:Key="TreeFg"           Color="#e0e0e0"/>
+        <SolidColorBrush x:Key="TreeSelBg"        Color="#014a00"/>
+        <SolidColorBrush x:Key="TreeSelFg"        Color="#ffffff"/>
+        <SolidColorBrush x:Key="GridHeaderBg"     Color="#2a2a32"/>
+        <SolidColorBrush x:Key="GridRowBg"        Color="#35343c"/>
+        <SolidColorBrush x:Key="GridRowAltBg"     Color="#2d2d35"/>
+        <SolidColorBrush x:Key="InputBg"          Color="#2d2d35"/>
+        <SolidColorBrush x:Key="InputBorder"      Color="#555566"/>
+        <SolidColorBrush x:Key="InputFg"          Color="#e8e8e8"/>
+    </Window.Resources>
+
+    <!-- ── 전역 스타일 (모든 하위 컨트롤에 적용) ── -->
+    <Window.Styles>
+        <!-- TextBlock -->
+        <Style Selector="TextBlock">
+            <Setter Property="Foreground"  Value="{DynamicResource AppFg}"/>
+            <Setter Property="FontFamily"  Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+            <Setter Property="FontSize"    Value="13"/>
+        </Style>
+
+        <!-- TextBox -->
+        <Style Selector="TextBox">
+            <Setter Property="Background"   Value="{DynamicResource InputBg}"/>
+            <Setter Property="Foreground"   Value="{DynamicResource InputFg}"/>
+            <Setter Property="BorderBrush"  Value="{DynamicResource InputBorder}"/>
+            <Setter Property="FontFamily"   Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+            <Setter Property="FontSize"     Value="13"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Padding"      Value="6,4"/>
+        </Style>
+
+        <!-- ComboBox -->
+        <Style Selector="ComboBox">
+            <Setter Property="Background"  Value="{DynamicResource InputBg}"/>
+            <Setter Property="Foreground"  Value="{DynamicResource InputFg}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource InputBorder}"/>
+            <Setter Property="FontFamily"  Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+            <Setter Property="FontSize"    Value="13"/>
+        </Style>
+
+        <!-- DataGrid -->
+        <Style Selector="DataGrid">
+            <Setter Property="Background"      Value="{DynamicResource GridRowBg}"/>
+            <Setter Property="RowBackground"   Value="{DynamicResource GridRowBg}"/>
+            <Setter Property="Foreground"      Value="{DynamicResource AppFg}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontFamily"      Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+            <Setter Property="FontSize"        Value="12"/>
+        </Style>
+        <!-- 짝수 행 교대 색상 (Avalonia는 AlternatingRowBackground 없음) -->
+        <Style Selector="DataGridRow:nth-child(even)">
+            <Setter Property="Background" Value="{DynamicResource GridRowAltBg}"/>
+        </Style>
+        <Style Selector="DataGridColumnHeader">
+            <Setter Property="Background" Value="{DynamicResource GridHeaderBg}"/>
+            <Setter Property="Foreground" Value="{DynamicResource AppFg}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding"    Value="8,4"/>
+        </Style>
+
+        <!-- TreeView -->
+        <Style Selector="TreeView">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{DynamicResource TreeFg}"/>
+            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+            <Setter Property="FontSize"   Value="13"/>
+        </Style>
+        <Style Selector="TreeViewItem">
+            <Setter Property="Foreground" Value="{DynamicResource TreeFg}"/>
+            <Setter Property="Padding"    Value="4,2"/>
+        </Style>
+        <Style Selector="TreeViewItem:selected /template/ Border#SelectionIndicator">
+            <Setter Property="Background" Value="{DynamicResource TreeSelBg}"/>
+        </Style>
+
+        <!-- CheckBox / RadioButton -->
+        <Style Selector="CheckBox">
+            <Setter Property="Foreground" Value="{DynamicResource AppFg}"/>
+            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+            <Setter Property="FontSize"   Value="13"/>
+        </Style>
+        <Style Selector="RadioButton">
+            <Setter Property="Foreground" Value="{DynamicResource AppFg}"/>
+            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+            <Setter Property="FontSize"   Value="13"/>
+        </Style>
+
+        <!-- Label -->
+        <Style Selector="Label">
+            <Setter Property="Foreground" Value="{DynamicResource AppFg}"/>
+            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+        </Style>
+
+        <!-- ══ 상단 메인 메뉴바 버튼(MenuItem) ══ -->
+        <Style Selector="MenuItem">
+            <Setter Property="FontSize"    Value="13"/>
+            <Setter Property="FontFamily"  Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+            <Setter Property="Height"      Value="25"/>
+            <Setter Property="Padding"     Value="18,0"/>
+            <Setter Property="Background"  Value="{DynamicResource MenuItemBg}"/>
+            <Setter Property="Foreground"  Value="{DynamicResource AppFg}"/>
+        </Style>
+        <Style Selector="MenuItem:pointerover">
+            <Setter Property="Background"  Value="{DynamicResource MenuItemHover}"/>
+        </Style>
+        <Style Selector="MenuItem:pointerover > TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource AppFg}"/>
+        </Style>
+
+        <!-- ★ 서브메뉴 팝업 배경 -->
+        <Style Selector="MenuFlyoutPresenter">
+            <Setter Property="Background"       Value="{DynamicResource SubMenuBg}"/>
+            <Setter Property="CornerRadius"     Value="8"/>
+            <Setter Property="Padding"          Value="5,5"/>
+            <Setter Property="BorderThickness"  Value="0"/>
+            <Setter Property="Foreground"       Value="{DynamicResource AppFg}"/>
+        </Style>
+
+        <!-- ★ 서브메뉴 항목: SubMenuItemBg 로 통일 (위아래 색상 차이 해소) -->
+        <Style Selector="MenuItem MenuItem">
+            <Setter Property="Background"  Value="{DynamicResource SubMenuItemBg}"/>
+            <Setter Property="Foreground"  Value="{DynamicResource AppFg}"/>
+            <Setter Property="Padding"     Value="5,5"/>
+            <Setter Property="MinHeight"   Value="36"/>
+        </Style>
+        <Style Selector="MenuItem MenuItem:pointerover">
+            <Setter Property="Background"  Value="{DynamicResource SubMenuItemHover}"/>
+        </Style>
+        <Style Selector="MenuItem MenuItem TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource AppFg}"/>
+        </Style>
+        <Style Selector="MenuItem MenuItem:pointerover TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource FgHover}"/>
+        </Style>
+        <Style Selector="MenuFlyoutPresenter TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource AppFg}"/>
+        </Style>
+
+        <!-- ══ 서브메뉴 버튼 (SubMenu 툴바) ══ -->
+        <Style Selector="StackPanel#SubMenu > Button">
+            <Setter Property="FontSize"                   Value="13"/>
+            <Setter Property="FontFamily"                 Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+            <Setter Property="Height"                     Value="25"/>
+            <Setter Property="CornerRadius"               Value="4"/>
+            <Setter Property="Background"                 Value="{DynamicResource SubBtnBg}"/>
+            <Setter Property="Foreground"                 Value="{DynamicResource AppFg}"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment"   Value="Center"/>
+            <Setter Property="Padding"                    Value="18,0"/>
+            <Setter Property="BorderThickness"            Value="0"/>
+        </Style>
+        <Style Selector="StackPanel#SubMenu > Button:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SubBtnHover}"/>
+            <Setter Property="TextElement.Foreground" Value="{DynamicResource FgHover}"/>
+        </Style>
+
+        <!-- ToggleSwitch -->
+        <Style Selector="ToggleSwitch">
+            <Setter Property="Foreground" Value="{DynamicResource AppFg}"/>
+            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+            <Setter Property="FontSize"   Value="12"/>
+        </Style>
+
+        <!-- ScrollBar -->
+        <Style Selector="ScrollBar">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+    </Window.Styles>
+
+    <Grid RowDefinitions="30,*" Background="{DynamicResource AppBg}">
+
+        <!-- ═══ 상단 메뉴바 ═══ -->
+        <Border Grid.Row="0" Background="{DynamicResource MenuBarBg}" Padding="1">
             <Grid ColumnDefinitions="Auto,*">
 
-                <!-- 왼쪽 메뉴 (MenuItem) -->
-                <Menu Grid.Column="0" HorizontalAlignment="Left" Background="Transparent" VerticalAlignment="Center">
-                    <Menu.Styles>
-                        <!-- 메인 메뉴 스타일 -->
-                        <Style Selector="MenuItem">
-                            <Setter Property="FontSize" Value="13" />
-                            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
-                            <Setter Property="Height" Value="25" />
-                            <Setter Property="Padding" Value="18,0" />
-                            <Setter Property="Background" Value="#444444" />
-                            <Setter Property="Foreground" Value="#ffffff" />
-                        </Style>
-                        <Style Selector="MenuItem:pointerover">
-                            <Setter Property="Background" Value="#012800" />
-                            <!--Setter Property="Foreground" Value="#694e8c" /-->
-                        </Style>
+                <!-- 왼쪽 메뉴 -->
+                <Menu Grid.Column="0" HorizontalAlignment="Left"
+                      Background="Transparent" VerticalAlignment="Center">
 
-                        <!-- 서브메뉴 창 전체 -->
-                        <Style Selector="MenuFlyoutPresenter">
-                            <Setter Property="Background" Value="#012800" />
-                            <Setter Property="CornerRadius" Value="8" />
-                            <Setter Property="Padding" Value="5,5" />           <!-- 창 전체 여백 증가 -->
-                            <Setter Property="BorderThickness" Value="0" />
-                            <Setter Property="Foreground" Value="#ffffff" />
-                        </Style>
-
-                        <!-- 서브메뉴 항목 (글자 위아래 간격 크게 증가!) -->
-                        <Style Selector="MenuItem MenuItem">
-                            <Setter Property="Background" Value="#444444" />
-                            <Setter Property="Padding" Value="5,5" />          <!-- ← 여기서 위아래 간격 크게! -->
-                            <Setter Property="MinHeight" Value="36" />
-                        </Style>
-
-                        <!-- 글자 색 강제 적용 -->
-                        <Style Selector="MenuFlyoutPresenter TextBlock">
-                            <Setter Property="Foreground" Value="#ffffff" />
-                        </Style>
-                        <Style Selector="MenuItem MenuItem TextBlock">
-                            <Setter Property="Foreground" Value="#ffffff" />
-                        </Style>
-                        <Style Selector="MenuItem MenuItem:pointerover TextBlock">
-                            <Setter Property="Foreground" Value="#fd0f0f" />
-                        </Style>
-                    </Menu.Styles>
                     <MenuItem Header="수질분석센터">
-                        <MenuItem Header="직원정보" Click="Agent_Click"/>
-                        <MenuItem Header="계약업체" Click="Contract_Click" />
+                        <MenuItem Header="직원정보"    Click="Agent_Click"/>
+                        <MenuItem Header="계약업체"    Click="Contract_Click"/>
                         <MenuItem Header="견적/의뢰서" Click="Quotation_Click"/>
-                        <MenuItem Header="시험성적서" Click="TestReport_Click" />
-                        <MenuItem Header="측정인" />
-                        <MenuItem Header="보수요청" Click="Repair_Click" />
-                        <MenuItem Header="물품구매" Click="Purchase_Click" />
-                        <MenuItem Header="테스트" />
+                        <MenuItem Header="시험성적서"  Click="TestReport_Click"/>
+                        <MenuItem Header="측정인"/>
+                        <MenuItem Header="보수요청"    Click="Repair_Click"/>
+                        <MenuItem Header="물품구매"    Click="Purchase_Click"/>
+                        <MenuItem Header="테스트"/>
                     </MenuItem>
 
-                    <MenuItem Header="비용부담금 관리" >
-                        <MenuItem Header="폐수배출업소" Click="WasteCompany_Click" />
-                        <MenuItem Header="분석의뢰리스트" />
-                        <MenuItem Header="분석결과입력" />
-                        <MenuItem Header="Uipath ERP" />
-                        <MenuItem Header="시험기록부" />
-                        <MenuItem Header="자료검토" />
-                        <MenuItem Header="테스트" />
+                    <MenuItem Header="비용부담금 관리">
+                        <MenuItem Header="폐수배출업소"  Click="WasteCompany_Click"/>
+                        <MenuItem Header="분석의뢰리스트"/>
+                        <MenuItem Header="분석결과입력"/>
+                        <MenuItem Header="Uipath ERP"/>
+                        <MenuItem Header="시험기록부"/>
+                        <MenuItem Header="자료검토"/>
+                        <MenuItem Header="테스트"/>
                     </MenuItem>
 
-                    <MenuItem Header="처리시설" >
-                        <MenuItem Header="시험기록부" Click="Agent_Click" />
+                    <MenuItem Header="처리시설">
+                        <MenuItem Header="시험기록부" Click="Agent_Click"/>
                         <MenuItem Header="RDP for Zero4"/>
                     </MenuItem>
 
                     <MenuItem Header="일반업무관리" Click="Admin_Click">
-                        <MenuItem Header="계약업체 채수" />
-                        <MenuItem Header="출장관리" />
-                        <MenuItem Header="휴일근무" />
-                        <MenuItem Header="휴일근무" />
+                        <MenuItem Header="계약업체 채수"/>
+                        <MenuItem Header="출장관리"/>
+                        <MenuItem Header="휴일근무"/>
                     </MenuItem>
                 </Menu>
 
-                <!-- 오른쪽 ToggleSwitch -->
+                <!-- 오른쪽 테마 토글 -->
                 <ToggleSwitch Grid.Column="1"
                               x:Name="tglShowPassword"
                               HorizontalAlignment="Right"
                               Margin="0,-5,20,0"
-                              IsCheckedChanged="OnShowPasswordChanged"
                               VerticalAlignment="Center"
                               OnContent="🌙 다크 템플러"
                               OffContent="☀️ 하이 템플러"
-                              IsChecked="True"/>
+                              IsChecked="True"
+                              IsCheckedChanged="OnShowPasswordChanged"/>
             </Grid>
         </Border>
 
-        <!-- Inner Grid (기존 그대로) -->
-        <Grid Grid.Row="1" Background="{DynamicResource SystemControlBackgroundAltMediumBrush}" RowDefinitions="Auto, *">
-            <!-- SubMenu -->
-            <StackPanel x:Name="SubMenu" HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Horizontal" Spacing="8" Margin="12,10,0,0">
-                <StackPanel.Styles>
-                    <Style Selector="Button">
-                        <Setter Property="FontSize" Value="13" />
-                        <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
-                        <Setter Property="Height" Value="25" />
-                        <Setter Property="CornerRadius" Value="4" />
-                        <Setter Property="Background" Value="#342f2f" />
-                        <Setter Property="Foreground" Value="#ffffff" />
-                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                        <Setter Property="VerticalContentAlignment" Value="Center" />
-                        <Setter Property="Padding" Value="18,0" />
-                        <Setter Property="BorderThickness" Value="0" />
-                    </Style>
-                    <Style Selector="Button:pointerover">
-                        <Setter Property="Background" Value="#012800" />
-                    </Style>
-                    <Style Selector="Button:pointerover TextBlock">
-                        <Setter Property="Foreground" Value="#fd0f0f" />
-                    </Style>
-                </StackPanel.Styles>
-                <ComboBox x:Name="cmbCategory" />
-                <Button x:Name="BT1" Content="항목1" Click="BT1_Click" />
-                <Button x:Name="BT2" Content="항목2" Click="BT2_Click" />
-                <Button x:Name="BT3" Content="항목3" Click="BT3_Click" />
-                <Button x:Name="BT4" Content="항목4" Click="BT4_Click" />
-                <Button x:Name="BT5" Content="항목5" Click="BT5_Click" />
-                <Button x:Name="BT6" Content="항목6" Click="BT6_Click" />
-                <Button x:Name="BT7" Content="항목7" Click="BT7_Click" />
+        <!-- ═══ 본문 영역 ═══ -->
+        <Grid Grid.Row="1" RowDefinitions="Auto,*">
+
+            <!-- 서브메뉴 툴바 -->
+            <StackPanel x:Name="SubMenu"
+                        Grid.Row="0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="8" Margin="12,10,0,0">
+                <ComboBox x:Name="cmbCategory"/>
+                <Button x:Name="BT1" Content="항목1" Click="BT1_Click"/>
+                <Button x:Name="BT2" Content="항목2" Click="BT2_Click"/>
+                <Button x:Name="BT3" Content="항목3" Click="BT3_Click"/>
+                <Button x:Name="BT4" Content="항목4" Click="BT4_Click"/>
+                <Button x:Name="BT5" Content="항목5" Click="BT5_Click"/>
+                <Button x:Name="BT6" Content="항목6" Click="BT6_Click"/>
+                <Button x:Name="BT7" Content="항목7" Click="BT7_Click"/>
                 <Button x:Name="BT1110"/>
             </StackPanel>
 
-            <!-- 좌우 분할 + 오른쪽 상하 분할 -->
-            <Grid Grid.Row="1" Margin="10,10,10,10" x:Name="MainSplitGrid" ColumnDefinitions="200,8,*">
+            <!-- ── 4분할 레이아웃 ── -->
+            <!--
+            ┌──────────┬──────────────────────────────────────┐
+            │          │   Content2          │   Content4     │
+            │ Content1 ├─────────────────────┴────────────────┤
+            │          │            Content3                  │
+            └──────────┴──────────────────────────────────────┘
+            각 패널의 너비/높이는 코드에서 SetContentLayout() 호출로 조정
+            -->
+            <Grid Grid.Row="1" x:Name="MainSplitGrid"
+                  Margin="10,10,10,10"
+                  ColumnDefinitions="200,8,*">
 
-                <!-- 왼쪽 사이드바 -->
-                <Border Grid.Column="0" Background="#39383f" CornerRadius="6" Padding="16" Margin="0,0,1,0">
-                    <ContentControl x:Name="ActivePageContent1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
-
-
-
-
+                <!-- ── Content1: 왼쪽 사이드바 ── -->
+                <Border Grid.Column="0"
+                        Background="{DynamicResource PanelBg}"
+                        CornerRadius="6" Padding="16" Margin="0,0,1,0">
+                    <ContentControl x:Name="ActivePageContent1"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    HorizontalContentAlignment="Stretch"
+                                    VerticalContentAlignment="Stretch"/>
                 </Border>
 
-                <!-- splitter (좌우) -->
-                <GridSplitter Grid.Column="1" Width="8" Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Columns" Cursor="SizeWestEast" />
+                <!-- 좌우 스플리터 -->
+                <GridSplitter Grid.Column="1" Width="8"
+                              Background="Transparent"
+                              HorizontalAlignment="Stretch"
+                              VerticalAlignment="Stretch"
+                              ResizeDirection="Columns"
+                              Cursor="SizeWestEast"/>
+                <Border Grid.Column="1" Width="1"
+                        Background="{DynamicResource SplitterColor}"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Stretch" Opacity="0.9"/>
 
-                <!-- 세로 구분선 -->
-                <Border Grid.Column="1" Width="1" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Stretch" Opacity="0.9" />
+                <!-- ── 오른쪽 (상하 분할) ── -->
+                <Grid Grid.Column="2" x:Name="RightSplitGrid"
+                      Margin="1,0,0,0"
+                      RowDefinitions="808*,8,192*">
 
-                <!-- 오른쪽 영역 (상하 분할) -->
-                <Grid Grid.Column="2" Margin="1,0,0,0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="808*" />    <!-- ≈80.8% -->
-                        <RowDefinition Height="8" />       <!-- splitter -->
-                        <RowDefinition Height="192*" />    <!-- ≈19.2% -->
-                    </Grid.RowDefinitions>
+                    <!-- 상단: Content2 + Content4 (좌우 분할) -->
+                    <Border Grid.Row="0"
+                            Background="{DynamicResource PanelBg}"
+                            CornerRadius="6" Padding="12">
+                        <Grid x:Name="UpperContentGrid"
+                              ColumnDefinitions="*,8,*">
 
-                    <!-- 상단 영역 (Content2 + Content4 좌우 분할) -->
-                    <Border Grid.Row="0" Background="#39383f" CornerRadius="6" Padding="12">
-                        <Grid ColumnDefinitions="*, 8, *">
-
-                            <!-- 왼쪽: ActivePageContent2 -->
+                            <!-- Content2 -->
                             <Border Grid.Column="0"
-                                    Background="#2d2d35"
-                                    CornerRadius="4"
-                                    Padding="8"
-                                    Margin="0,0,4,0">
+                                    Background="{DynamicResource PanelInnerBg}"
+                                    CornerRadius="4" Padding="8" Margin="0,0,4,0">
                                 <ContentControl x:Name="ActivePageContent2"
                                                 HorizontalAlignment="Stretch"
                                                 VerticalAlignment="Stretch"
                                                 HorizontalContentAlignment="Stretch"
-                                                VerticalContentAlignment="Stretch" />
+                                                VerticalContentAlignment="Stretch"/>
                             </Border>
 
-                            <!-- splitter + 구분선 (con1과 동일 구조) -->
-                            <GridSplitter Grid.Column="1"
-                                          Width="8"
+                            <!-- Content2↔4 스플리터 -->
+                            <GridSplitter x:Name="HorizontalSplitter"
+                                          Grid.Column="1" Width="8"
                                           Background="Transparent"
                                           HorizontalAlignment="Stretch"
                                           VerticalAlignment="Stretch"
                                           ResizeDirection="Columns"
-                                          Cursor="SizeWestEast" />
-
-                            <Border Grid.Column="1"
-                                    Width="3"
-                                    Background="#020202"
+                                          Cursor="SizeWestEast"/>
+                            <Border Grid.Column="1" Width="3"
+                                    Background="{DynamicResource SplitterColor}"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Stretch"
-                                    Margin="0,8,0,8" />
+                                    Margin="0,8,0,8"/>
 
-                            <!-- 오른쪽: ActivePageContent4 -->
-                            <Border Grid.Column="2"
-                                    Background="#2d2d35"
-                                    CornerRadius="4"
-                                    Padding="8"
-                                    Margin="4,0,0,0">
+                            <!-- Content4 -->
+                            <Border x:Name="Content4Border"
+                                    Grid.Column="2"
+                                    Background="{DynamicResource PanelInnerBg}"
+                                    CornerRadius="4" Padding="8" Margin="4,0,0,0">
                                 <ContentControl x:Name="ActivePageContent4"
                                                 HorizontalAlignment="Stretch"
                                                 VerticalAlignment="Stretch"
                                                 HorizontalContentAlignment="Stretch"
-                                                VerticalContentAlignment="Stretch" />
+                                                VerticalContentAlignment="Stretch"/>
                             </Border>
-
                         </Grid>
                     </Border>
 
-                    <!-- 상하 splitter -->
-                    <GridSplitter Grid.Row="1"
-                                  Height="8"
+                    <!-- 상하 스플리터 -->
+                    <GridSplitter x:Name="VerticalSplitter"
+                                  Grid.Row="1" Height="8"
                                   Background="Transparent"
                                   HorizontalAlignment="Stretch"
                                   VerticalAlignment="Stretch"
                                   ResizeDirection="Rows"
-                                  Cursor="SizeNorthSouth" />
-
-                    <!-- splitter 구분선 (일관된 색상으로) -->
-                    <Border Grid.Row="1"
-                            Height="1"
-                            Background="#020202"
+                                  Cursor="SizeNorthSouth"/>
+                    <Border Grid.Row="1" Height="1"
+                            Background="{DynamicResource SplitterColor}"
                             HorizontalAlignment="Stretch"
-                            VerticalAlignment="Center"
-                            Opacity="0.9" />
+                            VerticalAlignment="Center" Opacity="0.9"/>
 
-                    <!-- 하단 메인 콘텐츠 영역 -->
-                    <Border Grid.Row="2" Background="#39383f" CornerRadius="6" Padding="12">
+                    <!-- 하단: Content3 -->
+                    <Border x:Name="LowerBorder"
+                            Grid.Row="2"
+                            Background="{DynamicResource PanelBg}"
+                            CornerRadius="6" Padding="12">
                         <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                                       VerticalScrollBarVisibility="Auto">
                             <ContentControl x:Name="ActivePageContent3"
@@ -240,10 +388,9 @@
                                             VerticalAlignment="Stretch"/>
                         </ScrollViewer>
                     </Border>
+
                 </Grid>
             </Grid>
         </Grid>
     </Grid>
-
-
 </Window>

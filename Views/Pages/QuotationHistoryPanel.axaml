@@ -4,12 +4,12 @@
 
     <UserControl.Styles>
         <Style Selector="Button.ghost-btn">
-            <Setter Property="Height"          Value="26" />
+            <Setter Property="Height"          Value="22" />
             <Setter Property="CornerRadius"    Value="3" />
             <Setter Property="Background"      Value="#2a2a3a" />
             <Setter Property="Foreground"      Value="#aaa" />
             <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="Padding"         Value="10,0" />
+            <Setter Property="Padding"         Value="8,0" />
             <Setter Property="FontSize"        Value="11" />
             <Setter Property="FontFamily"      Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
         </Style>
@@ -17,49 +17,60 @@
             <Setter Property="Background" Value="#3a3a4a" />
         </Style>
         <Style Selector="Button.danger-btn">
-            <Setter Property="Height"          Value="26" />
+            <Setter Property="Height"          Value="22" />
             <Setter Property="CornerRadius"    Value="3" />
             <Setter Property="Background"      Value="#4a2a2a" />
             <Setter Property="Foreground"      Value="#f0aeae" />
             <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="Padding"         Value="10,0" />
+            <Setter Property="Padding"         Value="8,0" />
             <Setter Property="FontSize"        Value="11" />
             <Setter Property="FontFamily"      Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
         </Style>
+
+        <!-- TreeViewItem 간격 최소화 -->
         <Style Selector="TreeViewItem">
-            <Setter Property="Padding"    Value="3,4" />
-            <Setter Property="FontSize"   Value="12" />
+            <Setter Property="Padding"    Value="1,0" />
+            <Setter Property="Margin"     Value="0" />
+            <Setter Property="MinHeight"  Value="0" />
+            <Setter Property="FontSize"   Value="11" />
             <Setter Property="Foreground" Value="#cccccc" />
             <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
         </Style>
-        <Style Selector="TreeViewItem:selected /template/ ContentPresenter#PART_HeaderPresenter">
-            <Setter Property="Background"   Value="#1a3a1a" />
-            <Setter Property="CornerRadius" Value="3" />
+        <!-- 헤더 영역 내부 패딩 제거 -->
+        <Style Selector="TreeViewItem /template/ ContentPresenter#PART_HeaderPresenter">
+            <Setter Property="Padding" Value="2,1" />
         </Style>
+        <!-- hover -->
         <Style Selector="TreeViewItem:pointerover /template/ ContentPresenter#PART_HeaderPresenter">
             <Setter Property="Background"   Value="#252535" />
             <Setter Property="CornerRadius" Value="3" />
+            <Setter Property="Padding"      Value="2,1" />
         </Style>
     </UserControl.Styles>
 
     <Grid RowDefinitions="Auto,Auto,*,Auto">
 
         <!-- 헤더 -->
-        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,6">
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,4">
             <TextBlock Grid.Column="0"
                        Text="발행 내역"
-                       FontSize="14" FontWeight="Bold"
+                       FontSize="13" FontWeight="Bold"
                        Foreground="#e0e0e0"
                        VerticalAlignment="Center"
                        FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
             <Button Grid.Column="1"
+                    Classes="danger-btn"
+                    Content="🗑 선택삭제"
+                    Margin="0,0,5,0"
+                    Click="BtnDelete_Click" />
+            <Button Grid.Column="2"
                     Classes="ghost-btn"
                     Content="🔄 새로고침"
                     Click="BtnRefresh_Click" />
         </Grid>
 
         <!-- 구분선 -->
-        <Border Grid.Row="1" Height="1" Background="#333" Margin="0,0,0,8" />
+        <Border Grid.Row="1" Height="1" Background="#333" Margin="0,0,0,3" />
 
         <!-- 트리뷰: 년 → 월 → 시료명 -->
         <TreeView Grid.Row="2"
@@ -69,19 +80,13 @@
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                   SelectionChanged="TvHistory_SelectionChanged" />
 
-        <!-- 하단 툴바 -->
-        <StackPanel Grid.Row="3"
-                    Orientation="Horizontal"
-                    Spacing="6"
-                    Margin="0,8,0,0">
-            <Button Classes="danger-btn"
-                    Content="🗑 선택 삭제"
-                    Click="BtnDelete_Click" />
-            <TextBlock x:Name="txbInfo"
-                       Text=""
-                       FontSize="11" Foreground="#666"
-                       VerticalAlignment="Center" />
-        </StackPanel>
+        <!-- 하단: 선택 정보 -->
+        <TextBlock Grid.Row="3"
+                   x:Name="txbInfo"
+                   Text=""
+                   FontSize="10" Foreground="#555"
+                   Margin="0,3,0,0"
+                   TextTrimming="CharacterEllipsis" />
 
     </Grid>
 </UserControl>

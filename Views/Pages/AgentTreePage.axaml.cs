@@ -376,38 +376,63 @@ public partial class AgentTreePage : UserControl
         if (files.Count == 0) return;
 
         var srcPath = files[0].Path.LocalPath;
+        var ext     = Path.GetExtension(srcPath).ToLower();
 
-        // Data/Photos/ 폴더로 복사 (파일명: 성명_timestamp.ext)
-        var ext      = Path.GetExtension(srcPath);
-        var name     = _isAddMode
-                           ? $"new_{DateTime.Now:yyyyMMddHHmmss}{ext}"
-                           : $"{(_selectedAgent?.성명 ?? "unknown")}_{DateTime.Now:yyyyMMddHHmmss}{ext}";
-        var destPath = Path.Combine(AgentService.GetPhotoDirectory(), name);
+        // 파일명: 사번.확장자 (추가 모드는 패널에서 사번 읽기, 없으면 임시명)
+        string 사번 = "";
+        if (!_isAddMode)
+            사번 = _selectedAgent?.사번 ?? "";
+        else if (_detailPanel != null)
+            사번 = ReadFieldFromPanel(_detailPanel, "사번");
 
+        var fileName = string.IsNullOrEmpty(사번)
+            ? $"temp_{DateTime.Now:yyyyMMddHHmmss}{ext}"
+            : $"{사번}{ext}";
+
+        var destPath = Path.Combine(AgentService.GetPhotoDirectory(), fileName);
         File.Copy(srcPath, destPath, overwrite: true);
-        _pendingPhotoPath = destPath;
 
-        // 미리보기 갱신
+        // DB에는 파일명만 저장 (절대경로 X)
+        _pendingPhotoPath = fileName;
+
+        // 미리보기 갱신 (절대경로로 표시)
         if (_photoImage != null)
             LoadPhotoToImage(_photoImage, destPath);
 
-        Log($"사진 선택: {destPath}");
+        Log($"사진 선택: 파일명={fileName}");
     }
 
-    // ── 이미지 로드 헬퍼 ─────────────────────────────────────────────────────
-    private static void LoadPhotoToImage(Image img, string path)
+    // ── 이미지 로드 헬퍼 (파일명 또는 절대경로 모두 처리) ────────────────────
+    private static void LoadPhotoToImage(Image img, string pathOrFileName)
     {
-        if (string.IsNullOrEmpty(path) || !File.Exists(path))
-        {
-            img.Source = null;
-            return;
-        }
+        if (string.IsNullOrEmpty(pathOrFileName)) { img.Source = null; return; }
+
+        // 절대경로가 아니면 PhotoDirectory와 조합
+        var fullPath = Path.IsPathRooted(pathOrFileName)
+            ? pathOrFileName
+            : Path.Combine(AgentService.GetPhotoDirectory(), pathOrFileName);
+
+        if (!File.Exists(fullPath)) { img.Source = null; return; }
         try
         {
-            using var stream = File.OpenRead(path);
+            using var stream = File.OpenRead(fullPath);
             img.Source = new Bitmap(stream);
         }
         catch { img.Source = null; }
+    }
+
+    // ── 패널에서 특정 필드 값 읽기 ───────────────────────────────────────────
+    private static string ReadFieldFromPanel(StackPanel panel, string fieldLabel)
+    {
+        foreach (var child in panel.Children.OfType<StackPanel>())
+        {
+            if (child.Children.Count < 2) continue;
+            var label = (child.Children[0] as TextBlock)?.Text ?? "";
+            label = label.Replace("🔒 ", "").Replace("    ", "").Replace(" :", "").Trim();
+            if (label == fieldLabel && child.Children[1] is TextBox tb)
+                return tb.Text ?? "";
+        }
+        return "";
     }
 
     // =========================================================================

@@ -1,72 +1,133 @@
 <Window xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:controls="using:Avalonia.Controls"
-    xmlns:lottie="using:Avalonia.Labs.Lottie"
-    d:DesignWidth="1400" d:DesignHeight="900"
-    x:Class="ETA.Views.Login"
-    Title="RENEWUS TEAM Water Analysis Center Design.by 1110x"
-    Icon="avares://ETA/Assets/icons/FF.ico"
-    Width="1400" Height="900" WindowStartupLocation="CenterScreen" >
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:lottie="using:Avalonia.Labs.Lottie"
+        d:DesignWidth="920" d:DesignHeight="580"
+        x:Class="ETA.Views.Login"
+        Title="RENEWUS TEAM Water Analysis Center"
+        Icon="avares://ETA/Assets/icons/ETA.ico"
+        Width="450" Height="650"
+        WindowStartupLocation="CenterScreen"
+        Background="#F8FAFC">
 
-    <Grid ColumnDefinitions="*,1.2*">
-        <Border Grid.Column="0" CornerRadius="0,24,0,0" Margin="0,0,20,0" Padding="40" Background="Transparent">
-            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="20" Background="Transparent">
-                <lottie:Lottie x:Name="lottieRabbit" Width="500" Height="500"
-                    HorizontalAlignment="Center" VerticalAlignment="Center"
-                    Path="avares://ETA/Assets/rabbit.json" AutoPlay="True" RepeatCount="-1"
-                    Stretch="UniformToFill"/>
-                <TextBlock Text="Hi there! Welcome to ETA." FontSize="28" FontWeight="SemiBold"
-                    HorizontalAlignment="Center" Foreground="#9d0a0a" TextWrapping="Wrap"
-                    TextAlignment="Center" Background="Transparent"/>
-            </StackPanel>
-        </Border>
-        <Border Grid.Column="1" Margin="40" Padding="60,40" Background="Transparent" CornerRadius="16"
-            BorderBrush="#E2E8F0" BorderThickness="1" BoxShadow="0 10 30 0 #00000020">
-            <StackPanel Spacing="24" VerticalAlignment="Center">
-                <TextBlock Text="로그인" FontSize="36" FontWeight="Bold" HorizontalAlignment="Center"
-                    Foreground="#1E293B" />
-                <TextBlock Text="사번" FontSize="14" Foreground="#64748B" Margin="0,0,0,2" />
-                <TextBox x:Name="txtEmail" Watermark="202912345" FontSize="16" Padding="12"
-                    CornerRadius="8" BorderBrush="#CBD5E1" BorderThickness="1" />
-                <TextBlock Text="비밀번호" FontSize="14" Foreground="#64748B" Margin="0,12,0,2" />
-                <TextBox x:Name="txtPassword" Watermark="••••••••" PasswordChar="*" FontSize="16"
-                    Padding="12" CornerRadius="8" BorderBrush="#CBD5E1" BorderThickness="1" />
-                <ToggleSwitch x:Name="tglShowPassword" Content="비밀번호 표시" Margin="0,8,0,0"
-                    HorizontalAlignment="Left" IsCheckedChanged="OnShowPasswordChanged" />
+    <Grid ColumnDefinitions="Auto,*">
+
+        <Border Grid.Column="1" Margin="0" Padding="50,45"
+                Background="White" CornerRadius="24"
+                BorderBrush="#E2E8F0" BorderThickness="1"
+                BoxShadow="0 18 38 0 #00000018"
+                HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                MaxWidth="380">
+
+            <StackPanel Spacing="22" VerticalAlignment="Center">
+
+                <lottie:Lottie x:Name="lottieRabbit" Width="100" Height="100"
+                               HorizontalAlignment="Center"
+                               Path="avares://ETA/Assets/rabbit.json"
+                               AutoPlay="True" RepeatCount="-1"
+                               Stretch="UniformToFill" Opacity="0.95"/>
+
+                <TextBlock Text="Deep dive ETA"
+                           FontSize="30" FontWeight="Bold"
+                           HorizontalAlignment="Center" Foreground="#c9158d"/>
+
+                <StackPanel Spacing="16">
+
+                    <!-- 사번 -->
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="사번" FontSize="13" Foreground="#64748B"
+                                   HorizontalAlignment="Center"/>
+                        <TextBox x:Name="txtEmail" Watermark="202912345" FontSize="14.5"
+                                 Padding="12,11" CornerRadius="9"
+                                 BorderBrush="#CBD5E1" BorderThickness="1"/>
+                    </StackPanel>
+
+                    <!-- 비밀번호 -->
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="비밀번호" FontSize="13" Foreground="#64748B"
+                                   HorizontalAlignment="Center"/>
+                        <TextBox x:Name="txtPassword"
+                                 Watermark="초기 비밀번호: 123456"
+                                 PasswordChar="*"
+                                 FontSize="14.5" Padding="12,11" CornerRadius="9"
+                                 BorderBrush="#CBD5E1" BorderThickness="1"/>
+                        <Border Background="#FFF7ED" CornerRadius="6"
+                                BorderBrush="#FED7AA" BorderThickness="1"
+                                Padding="10,7">
+                            <TextBlock Text="💡 최초 로그인 시 비밀번호는 123456 입니다."
+                                       FontSize="11.5" Foreground="#92400E"
+                                       TextWrapping="Wrap"/>
+                        </Border>
+                    </StackPanel>
+
+                    <ToggleSwitch x:Name="tglShowPassword" Content="비밀번호 표시"
+                                  Margin="0,4,0,0" HorizontalAlignment="Center"
+                                  IsCheckedChanged="OnShowPasswordChanged"/>
+                </StackPanel>
 
                 <!-- 오류 메시지 -->
-                <TextBlock x:Name="txtError" Text="" FontSize="13" Foreground="#e53e3e"
-                    IsVisible="False" TextWrapping="Wrap" HorizontalAlignment="Center"/>
+                <TextBlock x:Name="txtError" Text="" FontSize="13"
+                           Foreground="#EF4444"
+                           IsVisible="False" TextWrapping="Wrap"
+                           HorizontalAlignment="Center"/>
 
-                <Button Content="INTO THE ETA" Click="Login_Click" FontFamily="/Fonts/KBIZ한마음고딕 R.ttf"
-                    Foreground="White" FontSize="18" Padding="0,16" Margin="0,8,0,0"
-                    Background="#19ab708f" CornerRadius="8" BorderThickness="0"
-                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
-                    VerticalContentAlignment="Center" FontWeight="SemiBold">
+                <!-- 로그인 버튼 -->
+                <Button Content="INTO THE ETA" Click="Login_Click"
+                        FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"
+                        Foreground="White" FontSize="16.5" FontWeight="SemiBold"
+                        Padding="0,16" CornerRadius="11" BorderThickness="0"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        Background="#0F766E">
                     <Button.Styles>
                         <Style Selector="Button /template/ ContentPresenter#PART_ContentPresenter">
                             <Setter Property="Transitions">
                                 <Transitions>
-                                    <BrushTransition Property="Background" Duration="0:0:0.2" />
+                                    <BrushTransition Property="Background" Duration="0:0:0.2"/>
                                 </Transitions>
                             </Setter>
                         </Style>
                         <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-                            <Setter Property="Background" Value="#5A1AFF" />
+                            <Setter Property="Background" Value="#14A38E"/>
                         </Style>
                         <Style Selector="Button:pressed /template/ ContentPresenter#PART_ContentPresenter">
-                            <Setter Property="Background" Value="#2E0499" />
+                            <Setter Property="Background" Value="#0C5F58"/>
                         </Style>
                     </Button.Styles>
                 </Button>
 
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,0" Spacing="16">
-                    <TextBlock Text="비밀번호 찾기" Foreground="#3B82F6" FontSize="14" />
-                    <!-- 회원가입 클릭 이벤트 추가 -->
-                    <TextBlock x:Name="lnkSignUp" Text="회원가입" Foreground="#3B82F6" FontSize="14"
-                        Cursor="Hand" PointerPressed="SignUp_Click" />
-                </StackPanel>
+                <!-- 구분선 -->
+                <Border Height="1" Background="#F1F5F9" Margin="0,2,0,2"/>
+
+                <!-- 하단 버튼 -->
+                <Grid ColumnDefinitions="*,*,*">
+                    <Button Grid.Column="0"
+                            Content="🔐 비밀번호 변경"
+                            Click="ChangePassword_Click"
+                            FontSize="12" Padding="8,8"
+                            CornerRadius="8" BorderThickness="1"
+                            BorderBrush="#E2E8F0"
+                            Background="#F8FAFC" Foreground="#475569"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Center">
+                        <Button.Styles>
+                            <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                                <Setter Property="Background" Value="#E2E8F0"/>
+                            </Style>
+                        </Button.Styles>
+                    </Button>
+
+                    <Border Grid.Column="1"/>
+
+                    <TextBlock Grid.Column="2"
+                               x:Name="lnkSignUp" Text="회원가입"
+                               Foreground="#3B82F6" FontSize="13"
+                               Cursor="Hand"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center"
+                               PointerPressed="SignUp_Click"/>
+                </Grid>
+
             </StackPanel>
         </Border>
     </Grid>

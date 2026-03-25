@@ -533,3 +533,50 @@
 [00:10:33] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
 [00:10:33] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
 [00:10:33] [Contract] 선택: 디엘케미칼㈜ 여수
+[15:17:44] [Contract] LoadData() 시작
+[15:17:44] [Contract] 로드 완료 → 32건
+[15:17:44] [Contract] LoadData() 시작
+[15:17:44] [Contract] 로드 완료 → 32건
+[15:17:46] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[15:17:46] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[15:17:46] [Contract] 선택: 동서식품㈜
+[15:17:46] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[15:17:47] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[15:17:47] [Contract] 선택: 동서식품㈜
+[15:28:03] [Contract] LoadData() 시작
+[15:28:03] [Contract] 로드 완료 → 32건
+[15:28:03] [Contract] LoadData() 시작
+[15:28:03] [Contract] 로드 완료 → 32건
+[15:28:23] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[15:28:24] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[15:28:24] [Contract] 선택: ㈜LG화학 여수-확장
+[15:30:14] [Contract] LoadData() 시작
+[15:30:14] [Contract] 로드 완료 → 32건
+[15:30:14] [Contract] LoadData() 시작
+[15:30:14] [Contract] 로드 완료 → 32건
+[15:32:50] [Contract] LoadData() 시작
+[15:32:50] [Contract] 로드 완료 → 32건
+[15:32:50] [Contract] LoadData() 시작
+[15:32:50] [Contract] 로드 완료 → 32건
+[15:33:10] [Contract] LoadData() 시작
+[15:33:10] [Contract] 로드 완료 → 32건
+[15:33:10] [Contract] LoadData() 시작
+[15:33:10] [Contract] 로드 완료 → 32건
+[15:35:08] [Contract] LoadData() 시작
+[15:35:08] [Contract] 로드 완료 → 32건
+[15:35:08] [Contract] LoadData() 시작
+[15:35:08] [Contract] 로드 완료 → 32건
+[15:35:09] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[15:35:09] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[15:35:09] [Contract] 선택: ㈜LG화학 여수-적량
+[15:35:09] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[15:35:10] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[15:35:10] [Contract] 선택: ㈜LG화학 여수-확장
+[16:25:26] [Contract] LoadData() 시작
+[16:25:26] [Contract] 로드 완료 → 32건
+[16:25:26] [Contract] LoadData() 시작
+[16:25:26] [Contract] 로드 완료 → 32건
+[17:29:33] [Contract] LoadData() 시작
+[17:29:33] [Contract] 로드 완료 → 32건
+[17:29:33] [Contract] LoadData() 시작
+[17:29:33] [Contract] 로드 완료 → 32건

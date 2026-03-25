@@ -16,8 +16,10 @@ public partial class QuotationDetailPanel : UserControl
 {
     private QuotationIssue?      _current;
     public  QuotationCheckPanel?  CheckPanel    { get; set; }
-    /// <summary>"이 건 수정" 클릭 시 발생 — MainPage 가 NewPanel 로 전환</summary>
-    public event Action<QuotationIssue>? EditRequested;
+    /// <summary>🥕 당근 — 이 건을 재활용해서 신규 작성 (항목 복사, 번호·날짜 신규)</summary>
+    public event Action<QuotationIssue>? CarrotRequested;
+    /// <summary>✏️ 오작성 수정 — 시료명·견적번호·발행일·적용구분·업체명 등 메타 수정</summary>
+    public event Action<QuotationIssue>? CorrectRequested;
 
     private static readonly FontFamily Font =
         new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
@@ -230,10 +232,54 @@ public partial class QuotationDetailPanel : UserControl
     }
 
     // ── 버튼 ─────────────────────────────────────────────────────────────
-    private void BtnEdit_Click(object? sender, RoutedEventArgs e)
+    // 🥕 당근: 이 건 재활용 (항목 복사, 번호·날짜는 신규 생성)
+    private void BtnCarrot_Click(object? sender, RoutedEventArgs e)
     {
         if (_current == null) return;
-        EditRequested?.Invoke(_current);
+        CarrotRequested?.Invoke(_current);
+    }
+
+    // ✏️ 오작성 수정: 시료명·견적번호·발행일·적용구분·업체명 수정
+    private void BtnCorrect_Click(object? sender, RoutedEventArgs e)
+    {
+        if (_current == null) return;
+        CorrectRequested?.Invoke(_current);
+    }
+
+    /// <summary>의뢰서 편집 패널 전환 요청 — MainPage가 구독</summary>
+    public event Action<QuotationIssue, List<string>, HashSet<string>>? OrderRequestEditRequested;
+
+    // 📋 의뢰서 작성
+    private async void BtnOrderRequest_Click(object? sender, RoutedEventArgs e)
+    {
+        if (_current == null) return;
+
+        // 견적서 분析항목 추출
+        var quotedItems = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        try
+        {
+            var row = QuotationService.GetIssueRow(_current.Id);
+            foreach (var kv in row)
+            {
+                var col = kv.Key;
+                if (col.EndsWith("단가") || col.EndsWith("소계")) continue;
+                if (FixedCols.Contains(col)) continue;
+                if (HasNonZeroStr(kv.Value)) quotedItems.Add(col);
+            }
+            Log($"[의뢰서] 견적항목 {quotedItems.Count}개");
+        }
+        catch (Exception ex) { Log($"[의뢰서] 항목 조회 오류: {ex.Message}"); }
+
+        // 시료명 선택 팝업 (이동 가능, 최소/최대/닫기)
+        var owner = TopLevel.GetTopLevel(this) as Window;
+        var popup = new ETA.Views.OrderRequestWindow(_current, quotedItems);
+        if (owner != null) await popup.ShowDialog(owner);
+        else popup.Show();
+
+        if (!popup.Confirmed || popup.SelectedSamples.Count == 0) return;
+
+        // MainPage에 편집 패널 전환 요청
+        OrderRequestEditRequested?.Invoke(_current, popup.SelectedSamples, quotedItems);
     }
 
     private void BtnPrint_Click(object? sender, RoutedEventArgs e)

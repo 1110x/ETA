@@ -10,13 +10,7 @@ namespace ETA.Services;
 public static class ContractService
 {
     // ── DB 경로 (AgentService 와 동일 방식) ──────────────────────────────────
-    public static string GetDatabasePath()
-    {
-        var root = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", ".."));
-        var dir  = Path.Combine(root, "Data");
-        Directory.CreateDirectory(dir);
-        return Path.Combine(dir, "eta.db");
-    }
+    public static string GetDatabasePath() => DbPathHelper.DbPath;
 
     // ── 전체 조회 ─────────────────────────────────────────────────────────────
     public static List<Contract> GetAllContracts()

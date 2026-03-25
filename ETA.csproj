@@ -14,7 +14,10 @@
     <None Include="Data/eta.db">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-
+    
+    <Content Include="Assets\Videos\login_bg.mp4">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
 
     <PackageReference Include="Avalonia" Version="11.3.12" />
     <!--PackageReference
@@ -31,7 +34,7 @@
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
     <!--  <AvaloniaResource Include="Assets\Fonts\KBIZ한마음고딕 B.ttf" /> -->
-
+    <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.21"/>
     <AvaloniaResource Include="Assets\Fonts\KBIZ한마음고딕 H.ttf" />
     <AvaloniaResource Include="Assets\Fonts\KBIZ한마음고딕 L.ttf" />
     <AvaloniaResource Include="Assets\Fonts\KBIZ한마음고딕 M.ttf" />

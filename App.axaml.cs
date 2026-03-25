@@ -15,9 +15,15 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
+        LibVLCSharp.Shared.Core.Initialize();
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            var mainPage = new Login();
+#if DEBUG
+            // ── 테스트용: 로그인 스킵 ──────────────────
+            var mainPage = new MainPage();
+#else
+    var mainPage = new Mainpage();  // 로그인 창
+#endif
             desktop.MainWindow = mainPage;
             mainPage.Show();
 

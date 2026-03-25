@@ -22,6 +22,10 @@ public partial class QuotationNewPanel : UserControl
     private QuotationIssue? _editingIssue;
     private string?         _editingAnalyte;
 
+    // 당근(재활용) 모드에서 업체 정보 보존용
+    private string _carrotCompanyName = "";
+    private string _carrotAbbr        = "";
+
     // 항목명 → { qty, unitPrice }
     private readonly Dictionary<string, (int Qty, decimal Price)> _itemData = new();
     private readonly Dictionary<string, AnalysisItem>             _analyteMap = new();
@@ -77,10 +81,20 @@ public partial class QuotationNewPanel : UserControl
     public void SetCompany(Contract company)
     {
         _company = company;
-        txbCompany.Text =
-            $"{company.C_CompanyName}  [{company.C_Abbreviation}]";
+        txbCompany.Text = $"{company.C_CompanyName}  [{company.C_Abbreviation}]";
 
-        // 해당 업체의 최근 발행건 확인해서 적용구분 경고 체크
+        // 해당 업체의 최근 발행건 적용구분을 콤보박스에 자동 선택
+        var latest = _allIssues
+            .Where(i => i.업체명 == company.C_CompanyName)
+            .OrderByDescending(i => i.발행일)
+            .FirstOrDefault();
+
+        if (latest != null && !string.IsNullOrEmpty(latest.견적구분))
+        {
+            SelectCombo(cmbType, latest.견적구분);
+            Log($"업체 최근 적용구분 자동선택: {latest.견적구분} ({latest.발행일})");
+        }
+
         CheckTypeWarning();
     }
 
@@ -107,22 +121,23 @@ public partial class QuotationNewPanel : UserControl
         RebuildItemList();
     }
 
+    // 🥕 당근: 이 건 재활용 — 항목 복사, 번호·날짜는 신규
     public void LoadFromIssue(QuotationIssue issue)
     {
-        _editingIssue = issue;
-        _company      = null;
+        _editingIssue      = null;   // 재활용은 신규 저장
+        _company           = null;
+        _carrotCompanyName = issue.업체명;
+        _carrotAbbr        = issue.약칭;
 
-        txbTitle.Text       = "✏️  발행건 수정";
-        txbMode.Text        = "수정 모드";
+        txbTitle.Text       = "🥕  당근 (재활용)";
+        txbMode.Text        = "재활용 모드";
         txbCompany.Text     = $"{issue.업체명}  [{issue.약칭}]";
-        txbQuotationNo.Text = GenerateNo();   // 신규 번호 자동 생성
+        txbQuotationNo.Text = GenerateNo();
         txbIssueDate.Text   = DateTime.Today.ToString("yyyy-MM-dd");
-        txbSampleName.Text  = issue.시료명;
+        txbSampleName.Text  = "";   // 시료명은 새로 입력
 
-        // 적용구분 선택
         SelectCombo(cmbType, issue.견적구분);
 
-        // 기존 항목 로드
         var row = QuotationService.GetIssueRow(issue.Id);
         LoadItemsFromRow(row);
 
@@ -130,11 +145,41 @@ public partial class QuotationNewPanel : UserControl
         CheckTypeWarning();
     }
 
+    // ✏️ 오작성 수정: 같은 Id 덮어쓰기 — 시료명·번호·날짜·적용구분·업체명 수정 가능
+    public void LoadFromIssueCorrect(QuotationIssue issue)
+    {
+        _editingIssue      = issue;
+        _company           = null;
+        _carrotCompanyName = "";
+        _carrotAbbr        = "";
+
+        // _allIssues 갱신 후 자기 자신 제외하므로 중복 오류 안 남
+        _allIssues = QuotationService.GetAllIssues();
+
+        txbTitle.Text       = "✏️  오작성 수정";
+        txbMode.Text        = "수정 모드";
+        txbCompany.Text     = $"{issue.업체명}  [{issue.약칭}]";
+        txbQuotationNo.Text = issue.견적번호;   // 기존 번호 유지 (수정 가능)
+        txbIssueDate.Text   = issue.발행일;     // 기존 날짜 유지 (수정 가능)
+        txbSampleName.Text  = issue.시료명;     // 기존 시료명 유지 (수정 가능)
+
+        SelectCombo(cmbType, issue.견적구분);
+
+        var row = QuotationService.GetIssueRow(issue.Id);
+        LoadItemsFromRow(row);
+
+        // 오작성 수정 모드: 동일 시료명 중복 경고 제외 (자기 자신이므로)
+        CheckSampleDuplicate();
+        CheckTypeWarning();
+    }
+
     public void Clear()
     {
-        _editingIssue   = null;
-        _company        = null;
-        _editingAnalyte = null;
+        _editingIssue      = null;
+        _company           = null;
+        _editingAnalyte    = null;
+        _carrotCompanyName = "";
+        _carrotAbbr        = "";
         _itemData.Clear();
         _analyteMap.Clear();
         _priceMap.Clear();
@@ -324,7 +369,10 @@ public partial class QuotationNewPanel : UserControl
     {
         if (_company == null && _editingIssue == null) return;
 
-        var companyName = _company?.C_CompanyName ?? _editingIssue?.업체명 ?? "";
+        var companyName = _company?.C_CompanyName
+                       ?? _editingIssue?.업체명
+                       ?? (_carrotCompanyName.Length > 0 ? _carrotCompanyName : null)
+                       ?? "";
         var latest = _allIssues
             .Where(i => i.업체명 == companyName)
             .OrderByDescending(i => i.발행일)
@@ -340,8 +388,12 @@ public partial class QuotationNewPanel : UserControl
             ? Brush.Parse("#f0c040")
             : Brush.Parse("#444");
 
+        // 경고 메시지에 최근 적용구분 값 포함
+        _latestType = latest?.견적구분 ?? "";
         UpdateWarning();
     }
+
+    private string _latestType = "";
 
     private void UpdateWarning()
     {
@@ -349,7 +401,7 @@ public partial class QuotationNewPanel : UserControl
         if (_sampleDuplicated)
             msgs.Add("⚠️ 동일한 시료명의 발행내역이 이미 존재합니다.");
         if (_typeWarning)
-            msgs.Add("⚠️ 최근 발행건의 적용구분과 다릅니다.");
+            msgs.Add($"⚠️ 최근 발행건의 적용구분과 다릅니다. (최근: {_latestType})");
 
         if (msgs.Count > 0)
         {
@@ -436,13 +488,22 @@ public partial class QuotationNewPanel : UserControl
     // 초기화
     private void BtnClear_Click(object? sender, RoutedEventArgs e) => Clear();
 
+    /// <summary>저장 완료 시 발생 — HistoryPanel 자동 새로고침용</summary>
+    public event Action? SaveCompleted;
+
     // 저장
     private void BtnSave_Click(object? sender, RoutedEventArgs e)
     {
         if (_sampleDuplicated) return;
 
-        var companyName = _company?.C_CompanyName ?? _editingIssue?.업체명 ?? "";
-        var abbr        = _company?.C_Abbreviation ?? _editingIssue?.약칭 ?? "";
+        var companyName = _company?.C_CompanyName
+                       ?? _editingIssue?.업체명
+                       ?? (_carrotCompanyName.Length > 0 ? _carrotCompanyName : null)
+                       ?? "";
+        var abbr        = _company?.C_Abbreviation
+                       ?? _editingIssue?.약칭
+                       ?? (_carrotAbbr.Length > 0 ? _carrotAbbr : null)
+                       ?? "";
         if (string.IsNullOrEmpty(companyName)) { Log("업체 미선택"); return; }
 
         decimal total = _itemData.Values.Sum(d => d.Qty * d.Price);
@@ -461,16 +522,22 @@ public partial class QuotationNewPanel : UserControl
         if (_editingIssue != null)
             QuotationService.Delete(_editingIssue.Id);
 
-        bool ok = QuotationService.Insert(issue);
-        Log(ok ? $"저장 완료 → {issue.견적번호}" : "저장 실패");
+        // _itemData를 함께 전달해서 분석항목 저장
+        bool ok = QuotationService.Insert(issue, _itemData);
+        Log(ok ? $"저장 완료 → {issue.견적번호}  항목{_itemData.Count}개" : "저장 실패");
 
         if (ok)
         {
-            _editingIssue     = null;
-            txbMode.Text      = "";
-            txbTitle.Text     = "📝  신규 견적 작성";
+            _editingIssue       = null;
+            _carrotCompanyName  = "";
+            _carrotAbbr         = "";
+            txbMode.Text        = "";
+            txbTitle.Text       = "📝  신규 견적 작성";
             txbQuotationNo.Text = GenerateNo();
             _allIssues = QuotationService.GetAllIssues();
+
+            // HistoryPanel 자동 새로고침 트리거
+            SaveCompleted?.Invoke();
         }
     }
 

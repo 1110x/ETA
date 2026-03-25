@@ -1,0 +1,249 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Diagnostics;
+using System.Text.RegularExpressions;
+using Microsoft.Data.Sqlite;
+using ETA.Models;
+
+namespace ETA.Services;
+
+public static class OrderRequestService
+{
+    private static string DbPath => DbPathHelper.DbPath;
+
+    // ── 시료명칭 테이블 컬럼헤더(업체명) 전체 조회 ───────────────────────
+    public static List<string> GetSampleNameColumns()
+    {
+        var list = new List<string>();
+        if (!File.Exists(DbPath)) return list;
+        try
+        {
+            using var conn = new SqliteConnection($"Data Source={DbPath}");
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"PRAGMA table_info(""시료명칭"")";
+            using var r = cmd.ExecuteReader();
+            while (r.Read()) list.Add(r.GetString(1));
+        }
+        catch (Exception ex) { Debug.WriteLine($"[OrderRequest] 컬럼조회 오류: {ex.Message}"); }
+        return list;
+    }
+
+    // ── 업체명으로 시료명칭 컬럼 매칭 (정확→유사 순) ───────────────────────
+    public static string? FindColumnByCompany(string companyName)
+    {
+        var cols = GetSampleNameColumns();
+        if (cols.Count == 0) return null;
+
+        // 1순위: 정확히 일치
+        var exact = cols.FirstOrDefault(c =>
+            string.Equals(c.Trim(), companyName.Trim(), StringComparison.OrdinalIgnoreCase));
+        if (exact != null) return exact;
+
+        // 2순위: 정규화 후 유사매칭
+        static string Norm(string s) => s
+            .Replace("㈜", "").Replace("(주)", "").Replace("(㈜)", "")
+            .Replace(" ", "").Replace("　", "").ToLower().Trim();
+
+        var normTarget = Norm(companyName);
+        var best = cols
+            .Select(c => (col: c, score: LCS(Norm(c), normTarget)))
+            .Where(x => x.score > 2)
+            .OrderByDescending(x => x.score)
+            .FirstOrDefault();
+
+        return best.col;
+    }
+
+    // ── 시료명칭 컬럼에서 NULL 아닌 값 조회 ──────────────────────────────
+    public static List<string> GetSampleNames(string columnName)
+    {
+        var list = new List<string>();
+        if (!File.Exists(DbPath)) return list;
+        try
+        {
+            using var conn = new SqliteConnection($"Data Source={DbPath}");
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = $@"SELECT ""{columnName}"" FROM ""시료명칭"" WHERE ""{columnName}"" IS NOT NULL AND ""{columnName}"" <> ''";
+            using var r = cmd.ExecuteReader();
+            while (r.Read()) list.Add(r.GetString(0));
+        }
+        catch (Exception ex) { Debug.WriteLine($"[OrderRequest] 시료명조회 오류: {ex.Message}"); }
+        return list;
+    }
+
+    // ── 시료명칭 추가 ────────────────────────────────────────────────────
+    public static bool AddSampleName(string columnName, string sampleName)
+    {
+        if (!File.Exists(DbPath)) return false;
+        try
+        {
+            using var conn = new SqliteConnection($"Data Source={DbPath}");
+            conn.Open();
+            using var chk = conn.CreateCommand();
+            chk.CommandText = $@"SELECT rowid FROM ""시료명칭"" WHERE ""{columnName}"" IS NULL OR ""{columnName}"" = '' LIMIT 1";
+            var rowidObj = chk.ExecuteScalar();
+
+            if (rowidObj != null)
+            {
+                using var upd = conn.CreateCommand();
+                upd.CommandText = $@"UPDATE ""시료명칭"" SET ""{columnName}"" = @val WHERE rowid = @id";
+                upd.Parameters.AddWithValue("@val", sampleName);
+                upd.Parameters.AddWithValue("@id", Convert.ToInt32(rowidObj));
+                upd.ExecuteNonQuery();
+            }
+            else
+            {
+                using var ins = conn.CreateCommand();
+                ins.CommandText = $@"INSERT INTO ""시료명칭"" (""{columnName}"") VALUES (@val)";
+                ins.Parameters.AddWithValue("@val", sampleName);
+                ins.ExecuteNonQuery();
+            }
+            return true;
+        }
+        catch (Exception ex) { Debug.WriteLine($"[OrderRequest] 시료명추가 오류: {ex.Message}"); return false; }
+    }
+
+    // ── 분석의뢰및결과 테이블 분석항목 컬럼 목록 ─────────────────────────
+    public static List<string> GetAnalysisColumns()
+    {
+        var fixedCols = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "채취일자","채취시간","의뢰사업장","약칭","시료명","견적번호",
+            "입회자","시료채취자-1","시료채취자-2","방류허용기준 적용유무",
+            "정도보증유무","분석완료일자","견적구분"
+        };
+        var list = new List<string>();
+        if (!File.Exists(DbPath)) return list;
+        try
+        {
+            using var conn = new SqliteConnection($"Data Source={DbPath}");
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"PRAGMA table_info(""분석의뢰및결과"")";
+            using var r = cmd.ExecuteReader();
+            while (r.Read())
+            {
+                var col = r.GetString(1).Trim();
+                if (!fixedCols.Contains(col)) list.Add(col);
+            }
+        }
+        catch (Exception ex) { Debug.WriteLine($"[OrderRequest] 분석컬럼 오류: {ex.Message}"); }
+        return list;
+    }
+
+    // ── 중복 확인 (견적번호 + 시료명) ────────────────────────────────────
+    public static bool CheckDuplicate(string 견적번호, string 시료명)
+    {
+        if (!File.Exists(DbPath)) return false;
+        try
+        {
+            using var conn = new SqliteConnection($"Data Source={DbPath}");
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"SELECT COUNT(*) FROM ""분석의뢰및결과"" WHERE ""견적번호""=@no AND ""시료명""=@sample";
+            cmd.Parameters.AddWithValue("@no",     견적번호);
+            cmd.Parameters.AddWithValue("@sample", 시료명);
+            return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
+        }
+        catch { return false; }
+    }
+
+    // ── 기존 의뢰 삭제 (덮어쓰기용) ─────────────────────────────────────
+    public static void DeleteByKey(string 견적번호, string 시료명)
+    {
+        if (!File.Exists(DbPath)) return;
+        try
+        {
+            using var conn = new SqliteConnection($"Data Source={DbPath}");
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"DELETE FROM ""분석의뢰및결과"" WHERE ""견적번호""=@no AND ""시료명""=@sample";
+            cmd.Parameters.AddWithValue("@no",     견적번호);
+            cmd.Parameters.AddWithValue("@sample", 시료명);
+            cmd.ExecuteNonQuery();
+        }
+        catch (Exception ex) { Debug.WriteLine($"[OrderRequest] 삭제 오류: {ex.Message}"); }
+    }
+
+    // ── 분석의뢰및결과 테이블에 의뢰서 INSERT ────────────────────────────
+    public static bool InsertOrderRequest(
+        string sampleName,
+        QuotationIssue issue,
+        HashSet<string> checkedItems)
+    {
+        if (!File.Exists(DbPath)) return false;
+        try
+        {
+            using var conn = new SqliteConnection($"Data Source={DbPath}");
+            conn.Open();
+
+            var tableCols = new List<string>();
+            using (var pragma = conn.CreateCommand())
+            {
+                pragma.CommandText = @"PRAGMA table_info(""분석의뢰및결과"")";
+                using var pr = pragma.ExecuteReader();
+                while (pr.Read()) tableCols.Add(pr.GetString(1).Trim());
+            }
+
+            var fixedCols = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "채취일자","채취시간","의뢰사업장","약칭","시료명","견적번호",
+                "입회자","시료채취자-1","시료채취자-2","방류허용기준 적용유무",
+                "정도보증유무","분석완료일자","견적구분"
+            };
+
+            var analysisCols = tableCols.Where(c => !fixedCols.Contains(c)).ToList();
+
+            var colList   = new List<string> { "\"의뢰사업장\"","\"약칭\"","\"시료명\"","\"견적번호\"","\"견적구분\"","\"채취일자\"" };
+            var paramList = new List<string> { "@company","@abbr","@sample","@no","@type","@date" };
+
+            foreach (var col in analysisCols)
+            {
+                colList.Add($"\"{col}\"");
+                paramList.Add($"@a_{ToParam(col)}");
+            }
+
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = $@"INSERT INTO ""분석의뢰및결과"" ({string.Join(",", colList)}) VALUES ({string.Join(",", paramList)})";
+
+            cmd.Parameters.AddWithValue("@company", issue.업체명   ?? "");
+            cmd.Parameters.AddWithValue("@abbr",    issue.약칭     ?? "");
+            cmd.Parameters.AddWithValue("@sample",  sampleName);
+            cmd.Parameters.AddWithValue("@no",      issue.견적번호 ?? "");
+            cmd.Parameters.AddWithValue("@type",    issue.견적구분 ?? "");
+            cmd.Parameters.AddWithValue("@date",    DateTime.Today.ToString("yyyy-MM-dd"));
+
+            foreach (var col in analysisCols)
+            {
+                object val = checkedItems.Contains(col) ? (object)"O" : DBNull.Value;
+                cmd.Parameters.AddWithValue($"@a_{ToParam(col)}", val);
+            }
+
+            int rows = cmd.ExecuteNonQuery();
+            Debug.WriteLine($"[OrderRequest] INSERT {rows}행 → {sampleName}");
+            return rows > 0;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[OrderRequest] INSERT 오류: {ex.Message}\n{ex.StackTrace}");
+            return false;
+        }
+    }
+
+    // ── 헬퍼 ─────────────────────────────────────────────────────────────
+    private static string ToParam(string name)
+        => Regex.Replace(name, @"[^a-zA-Z0-9가-힣]", "_");
+
+    private static int LCS(string a, string b)
+    {
+        int max = 0;
+        for (int i = 0; i < a.Length; i++)
+            for (int j = i + 1; j <= a.Length; j++)
+                if (b.Contains(a[i..j])) max = Math.Max(max, j - i);
+        return max;
+    }
+}

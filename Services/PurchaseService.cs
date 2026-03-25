@@ -10,13 +10,7 @@ namespace ETA.Services;
 public static class PurchaseService
 {
     // ── DB 경로 (AgentService 와 동일한 eta.db) ───────────────────────────────
-    private static string GetDatabasePath()
-    {
-        var root = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", ".."));
-        var dir  = Path.Combine(root, "Data");
-        Directory.CreateDirectory(dir);
-        return Path.Combine(dir, "eta.db");
-    }
+    private static string GetDatabasePath() => DbPathHelper.DbPath;
 
     // ── 테이블 자동 생성 ──────────────────────────────────────────────────────
     private static void EnsureTable(SqliteConnection conn)

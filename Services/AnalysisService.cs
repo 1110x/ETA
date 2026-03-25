@@ -8,10 +8,7 @@ namespace ETA.Services;
 
 public static class AnalysisService
 {
-    public static string GetDatabasePath()
-    {
-        return Path.Combine(AppContext.BaseDirectory, "Data", "eta.db");
-    }
+    public static string GetDatabasePath() => DbPathHelper.DbPath;
 
     public static List<AnalysisItem> GetAllItems()
     {

@@ -1,16 +1,17 @@
 System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation.
- ---> Microsoft.Data.Sqlite.SqliteException (0x80004005): SQLite Error 1: 'no such table: 보수요청'.
+ ---> Microsoft.Data.Sqlite.SqliteException (0x80004005): SQLite Error 5: 'database is locked'.
    at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
    at Microsoft.Data.Sqlite.SqliteDataReader.NextResult()
    at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader(CommandBehavior behavior)
    at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader()
    at Microsoft.Data.Sqlite.SqliteCommand.ExecuteNonQuery()
-   at ETA.Services.RepairService.Delete(Int32 id) in C:\Users\ironu\Documents\ETA\Services\RepairService.cs:line 182
-   at ETA.Views.Pages.RepairPage.DeleteSelected() in C:\Users\ironu\Documents\ETA\Views\Pages\RepairPage.cs:line 336
-   at ETA.Views.MainPage.BT5_Click(Object sender, RoutedEventArgs e) in C:\Users\ironu\Documents\ETA\Views\MainPage.axaml.cs:line 392
-   at InvokeStub_EventHandler`1.Invoke(Object, Span`1)
-   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+   at ETA.Services.AgentService.ChangePassword(String employeeId, String currentPassword, String newPassword) in C:\Users\ironu\Documents\ETA\Services\AgentService.cs:line 358
+   at ETA.Views.ChangePasswordWindow.DoChange() in C:\Users\ironu\Documents\ETA\Services\ChangePasswordWindow.axaml.cs:line 90
+   at ETA.Views.ChangePasswordWindow.Confirm_Click(Object sender, RoutedEventArgs e) in C:\Users\ironu\Documents\ETA\Services\ChangePasswordWindow.axaml.cs:line 49
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
    --- End of inner exception stack trace ---
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
    at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
    at System.Delegate.DynamicInvokeImpl(Object[] args)
    at Avalonia.Interactivity.EventRoute.RaiseEventImpl(RoutedEventArgs e)
@@ -18,7 +19,6 @@ System.Reflection.TargetInvocationException: Exception has been thrown by the ta
    at Avalonia.Interactivity.Interactive.RaiseEvent(RoutedEventArgs e)
    at Avalonia.Controls.Button.OnClick()
    at Avalonia.Controls.Button.OnPointerReleased(PointerReleasedEventArgs e)
-   at Avalonia.Input.InputElement.<>c.<.cctor>b__33_9(InputElement x, PointerReleasedEventArgs e)
    at Avalonia.Reactive.LightweightObservableBase`1.PublishNext(T value)
    at Avalonia.Interactivity.EventRoute.RaiseEventImpl(RoutedEventArgs e)
    at Avalonia.Interactivity.EventRoute.RaiseEvent(Interactive source, RoutedEventArgs e)

@@ -8,11 +8,7 @@ namespace ETA.Services;
 
 public static class ContractPriceService
 {
-    private static string GetDatabasePath()
-    {
-        var root = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", ".."));
-        return Path.Combine(root, "Data", "eta.db");
-    }
+    private static string GetDatabasePath() => DbPathHelper.DbPath;
 
     public static List<ContractPrice> GetAllContractPrices()
     {

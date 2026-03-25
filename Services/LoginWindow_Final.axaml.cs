@@ -36,6 +36,8 @@ public partial class LoginWindow : Window
 
         // ── DB 마이그레이션 (앱 최초 실행 시 컬럼 추가) ───────────────────
         AgentService.MigrateAccountColumns();
+        // ★ 기존 직원 초기 비밀번호 일괄 설정 (비밀번호 없는 approved → 123456)
+        AgentService.MigrateInitialPasswords();
 
         _tbEmployeeId = MakeTb("사번 입력");
         _tbPassword   = MakeTb("비밀번호", isPassword: true);
@@ -283,11 +285,24 @@ public partial class LoginWindow : Window
         try { await TodoService.SyncApprovalStatusAsync(); }
         catch { /* 네트워크 없어도 로그인 계속 */ }
 
-        // DB 로그인 검증
-        var (success, message) = AgentService.ValidateLogin(empId, pw);
+        // DB 로그인 검증 (3-tuple: success, message, mustChangePw)
+        var (success, message, mustChangePw) = AgentService.ValidateLogin(empId, pw);
 
         if (success)
         {
+            // ★ 최초 비밀번호 강제 변경 (초기값 123456 사용자)
+            if (mustChangePw)
+            {
+                var dlg = new ChangePasswordWindow(empId, isForced: true);
+                await dlg.ShowDialog(this);
+
+                if (!dlg.IsChanged)
+                {
+                    ShowError("비밀번호를 변경해야 로그인할 수 있습니다.");
+                    return;
+                }
+            }
+
             StopVideo();
             var main = new MainPage();
             main.Show();

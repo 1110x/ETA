@@ -30,6 +30,7 @@ public partial class MainPage : Window
     private QuotationNewPanel?     _quotationNewPanel;      // Content2: 신규작성
     private QuotationCheckPanel?   _quotationCheckPanel;
     private QuotationPage?         _quotationPage;
+    private OrderRequestEditPanel? _orderRequestEditPanel;  // Content2: 의뢰서 편집
 
     private System.Action? _bt1SaveAction;
 
@@ -112,7 +113,7 @@ public partial class MainPage : Window
 
         SetSubMenu("저장", "새로고침", "직원 추가", "선택 삭제", "엑셀 내보내기", "인쇄", "설정");
         SetLeftPanelWidth(260);
-        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 1, lowerStar: 0);
+        SetContentLayout(content2Star: 1, content4Star: 1, upperStar: 1, lowerStar: 0);
     }
 
     private void WasteCompany_Click(object? sender, RoutedEventArgs e)
@@ -142,7 +143,7 @@ public partial class MainPage : Window
         _bt1SaveAction = null;
 
         SetSubMenu("분석 시작", "새로고침", "데이터 추가", "선택 삭제", "엑셀 내보내기", "인쇄", "설정");
-        SetLeftPanelWidth(260);
+        SetLeftPanelWidth(380);
         SetContentLayout(content2Star: 1, content4Star: 1, upperStar: 1, lowerStar: 0);
     }
 
@@ -166,8 +167,8 @@ public partial class MainPage : Window
         _bt1SaveAction = _contractPage.SaveSelected;
 
         SetSubMenu("저장", "새로고침", "업체 추가", "선택 삭제", "엑셀 내보내기", "인쇄", "설정");
-        SetLeftPanelWidth(330);
-        SetContentLayout(content2Star: 7, content4Star: 3, upperStar: 1, lowerStar: 0);
+        SetLeftPanelWidth(350);
+        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 8, lowerStar: 2);
 
         Avalonia.Threading.Dispatcher.UIThread.Post(
             () => _contractPage.LoadData(),
@@ -213,6 +214,12 @@ public partial class MainPage : Window
         if (_quotationNewPanel == null)
         {
             _quotationNewPanel = new QuotationNewPanel();
+            // 저장 완료 → 히스토리 자동 새로고침
+            _quotationNewPanel.SaveCompleted += () =>
+            {
+                _quotationHistoryPanel?.LoadData();
+                ActivePageContent2.Content = _quotationDetailPanel;
+            };
         }
         // CheckPanel → NewPanel 연동
         _quotationCheckPanel.SelectionChanged -= OnCheckSelectionChanged;
@@ -226,11 +233,36 @@ public partial class MainPage : Window
         {
             _quotationDetailPanel = new QuotationDetailPanel();
             _quotationDetailPanel.CheckPanel = _quotationCheckPanel;
-            // "이 건 수정" 클릭 → NewPanel 로 전환
-            _quotationDetailPanel.EditRequested += issue =>
+
+            // 🥕 당근: 재활용 → NewPanel 에서 신규 번호·날짜로 작성
+            _quotationDetailPanel.CarrotRequested += issue =>
             {
                 _quotationNewPanel!.LoadFromIssue(issue);
                 ActivePageContent2.Content = _quotationNewPanel;
+            };
+
+            // ✏️ 오작성 수정: 기존 Id 덮어쓰기 — 메타 수정
+            _quotationDetailPanel.CorrectRequested += issue =>
+            {
+                _quotationNewPanel!.LoadFromIssueCorrect(issue);
+                ActivePageContent2.Content = _quotationNewPanel;
+            };
+
+            // 📋 의뢰서 작성: 편집 패널로 전환
+            _quotationDetailPanel.OrderRequestEditRequested += (issue, samples, quotedItems) =>
+            {
+                _orderRequestEditPanel ??= new OrderRequestEditPanel();
+                _orderRequestEditPanel.SubmitCompleted += () =>
+                {
+                    // 제출 완료 후 세부내역으로 복귀
+                    ActivePageContent2.Content = _quotationDetailPanel;
+                };
+                _orderRequestEditPanel.Cancelled += () =>
+                {
+                    ActivePageContent2.Content = _quotationDetailPanel;
+                };
+                _orderRequestEditPanel.Load(issue, samples, quotedItems);
+                ActivePageContent2.Content = _orderRequestEditPanel;
             };
         }
         _quotationDetailPanel.CheckPanel = _quotationCheckPanel;
@@ -257,10 +289,10 @@ public partial class MainPage : Window
         _quotationPage.LoadData();
 
         SetSubMenu("새로고침", "신규 작성", "삭제", "엑셀 내보내기", "인쇄", "", "설정");
-        SetLeftPanelWidth(260);
+        SetLeftPanelWidth(430);
         // Content2(세부내역) 50% : Content4(업체목록) 50%
         // 하단(Content3 분석항목) ≈ 23%  (13 : 4 → 76% : 24%)
-        SetContentLayout(content2Star: 1, content4Star: 1, upperStar: 13, lowerStar: 4);
+        SetContentLayout(content2Star: 7, content4Star: 3, upperStar: 13, lowerStar: 4);
     }
 
     private void Purchase_Click(object? sender, RoutedEventArgs e)
@@ -276,7 +308,7 @@ public partial class MainPage : Window
 
         SetSubMenu("새로고침", "엑셀 내보내기", "승인", "반려", "완료", "삭제", "설정");
         SetLeftPanelWidth(250);
-        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 7, lowerStar: 3);
+        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 8, lowerStar: 2);
     }
 
 
@@ -305,7 +337,7 @@ public partial class MainPage : Window
 
         SetSubMenu("새로고침", "CSV 저장", "삭제", "엑셀 출력", "PDF 출력", "일괄 엑셀", "일괄 PDF");
 
-        SetContentLayout(content2Star: 7, content4Star: 3, upperStar: 7, lowerStar: 3);
+        SetContentLayout(content2Star: 8, content4Star: 2, upperStar: 8.5, lowerStar: 1.5);
 
         Avalonia.Threading.Dispatcher.UIThread.Post(
             () => _testReportPage.LoadData(),
@@ -431,8 +463,8 @@ public partial class MainPage : Window
         }
     }
 
-        // ══════════════════════════════════════════════════════════════════════
-    //  테마
+    // ══════════════════════════════════════════════════════════════════════
+    //  테마 (DynamicResource 전체 교체 방식)
     // ══════════════════════════════════════════════════════════════════════
 
     private void OnShowPasswordChanged(object? sender, RoutedEventArgs e)
@@ -441,13 +473,79 @@ public partial class MainPage : Window
         ApplyTheme(tglShowPassword.IsChecked == true);
     }
 
-    private void ApplyTheme(bool isDarkMode)
+    private void ApplyTheme(bool isDark)
     {
-        if (Application.Current is not Application app) return;
-        var theme = isDarkMode ? ThemeVariant.Dark : ThemeVariant.Light;
-        app.RequestedThemeVariant = theme;
-        this.RequestedThemeVariant = theme;
+        // ── Avalonia 기본 테마 변형도 함께 변경 ──────────────────────────
+        var variant = isDark ? ThemeVariant.Dark : ThemeVariant.Light;
+        if (Application.Current is Application app)
+            app.RequestedThemeVariant = variant;
+        this.RequestedThemeVariant = variant;
+
+        // ── Window.Resources의 DynamicResource 키 값 교체 ────────────────
+        // 다크/라이트 팔레트 정의
+        var palette = isDark ? DarkPalette() : LightPalette();
+        foreach (var (key, color) in palette)
+            this.Resources[key] = new Avalonia.Media.SolidColorBrush(
+                Avalonia.Media.Color.Parse(color));
     }
+
+    // ── 다크 팔레트 ──────────────────────────────────────────────────────
+    private static System.Collections.Generic.Dictionary<string, string> DarkPalette() => new()
+    {
+        ["AppBg"]            = "#1e1e26",
+        ["PanelBg"]          = "#39383f",
+        ["PanelInnerBg"]     = "#2d2d35",
+        ["MenuBarBg"]        = "#444444",
+        ["MenuItemBg"]       = "#444444",
+        ["MenuItemHover"]    = "#012800",
+        ["SubMenuBg"]        = "#012800",
+        ["SubMenuItemBg"]    = "#444444",   // ★ 서브메뉴 항목 통일
+        ["SubMenuItemHover"] = "#023d00",
+        ["SubBtnBg"]         = "#342f2f",
+        ["SubBtnHover"]      = "#012800",
+        ["SplitterColor"]    = "#020202",
+        ["AppFg"]            = "#ffffff",
+        ["FgMuted"]          = "#aaaaaa",
+        ["FgHover"]          = "#fd0f0f",
+        ["TreeFg"]           = "#e0e0e0",
+        ["TreeSelBg"]        = "#014a00",
+        ["TreeSelFg"]        = "#ffffff",
+        ["GridHeaderBg"]     = "#2a2a32",
+        ["GridRowBg"]        = "#35343c",
+        ["GridRowAltBg"]     = "#2d2d35",
+        ["InputBg"]          = "#2d2d35",
+        ["InputBorder"]      = "#555566",
+        ["InputFg"]          = "#e8e8e8",
+    };
+
+    // ── 라이트 팔레트 ─────────────────────────────────────────────────────
+    private static System.Collections.Generic.Dictionary<string, string> LightPalette() => new()
+    {
+        ["AppBg"]            = "#f0f2f5",
+        ["PanelBg"]          = "#ffffff",
+        ["PanelInnerBg"]     = "#f8f9fb",
+        ["MenuBarBg"]        = "#2d6a4f",
+        ["MenuItemBg"]       = "#2d6a4f",
+        ["MenuItemHover"]    = "#1b4332",
+        ["SubMenuBg"]        = "#1b4332",
+        ["SubMenuItemBg"]    = "#2d6a4f",   // ★ 라이트도 통일
+        ["SubMenuItemHover"] = "#145a32",
+        ["SubBtnBg"]         = "#e2e8f0",
+        ["SubBtnHover"]      = "#cbd5e1",
+        ["SplitterColor"]    = "#cbd5e1",
+        ["AppFg"]            = "#1a1a2e",
+        ["FgMuted"]          = "#64748b",
+        ["FgHover"]          = "#dc2626",
+        ["TreeFg"]           = "#1e293b",
+        ["TreeSelBg"]        = "#bbf7d0",
+        ["TreeSelFg"]        = "#14532d",
+        ["GridHeaderBg"]     = "#e2e8f0",
+        ["GridRowBg"]        = "#ffffff",
+        ["GridRowAltBg"]     = "#f8fafc",
+        ["InputBg"]          = "#ffffff",
+        ["InputBorder"]      = "#94a3b8",
+        ["InputFg"]          = "#1e293b",
+    };
 
     // ── Quotation 이벤트 핸들러 (중복 구독 방지용 named handler) ─────────
     private void OnCheckSelectionChanged(System.Collections.Generic.List<ETA.Models.AnalysisItem> items)

@@ -12,13 +12,7 @@ public static class TestReportService
 {
     private const string TableName = "분석의뢰및결과";
 
-    private static string GetDatabasePath()
-    {
-        var root = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", ".."));
-        var dir  = Path.Combine(root, "Data");
-        Directory.CreateDirectory(dir);
-        return Path.Combine(dir, "eta.db");
-    }
+    private static string GetDatabasePath() => DbPathHelper.DbPath;
 
     private static readonly HashSet<string> FixedColumns =
         new(StringComparer.OrdinalIgnoreCase)
