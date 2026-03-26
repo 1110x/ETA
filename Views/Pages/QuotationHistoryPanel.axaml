@@ -27,7 +27,14 @@
             <Setter Property="FontFamily"      Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
         </Style>
 
-        <!-- TreeViewItem 간격 최소화 -->
+        <!-- ToggleSwitch 글꼴 -->
+        <Style Selector="ToggleSwitch">
+            <Setter Property="FontSize"   Value="11" />
+            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+            <Setter Property="Foreground" Value="#cccccc" />
+        </Style>
+
+        <!-- TreeViewItem -->
         <Style Selector="TreeViewItem">
             <Setter Property="Padding"    Value="1,0" />
             <Setter Property="Margin"     Value="0" />
@@ -35,58 +42,88 @@
             <Setter Property="FontSize"   Value="11" />
             <Setter Property="Foreground" Value="#cccccc" />
             <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+            <Setter Property="Background" Value="Transparent" />
         </Style>
-        <!-- 헤더 영역 내부 패딩 제거 -->
         <Style Selector="TreeViewItem /template/ ContentPresenter#PART_HeaderPresenter">
-            <Setter Property="Padding" Value="2,1" />
+            <Setter Property="Padding"    Value="2,1" />
+            <Setter Property="Background" Value="Transparent" />
         </Style>
-        <!-- hover -->
+        <Style Selector="TreeViewItem:selected /template/ ContentPresenter#PART_HeaderPresenter">
+            <Setter Property="Background"   Value="#1a4a1a" />
+            <Setter Property="CornerRadius" Value="3" />
+        </Style>
         <Style Selector="TreeViewItem:pointerover /template/ ContentPresenter#PART_HeaderPresenter">
             <Setter Property="Background"   Value="#252535" />
             <Setter Property="CornerRadius" Value="3" />
-            <Setter Property="Padding"      Value="2,1" />
         </Style>
     </UserControl.Styles>
 
-    <Grid RowDefinitions="Auto,Auto,*,Auto">
+    <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
 
-        <!-- 헤더 -->
-        <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,4">
-            <TextBlock Grid.Column="0"
-                       Text="발행 내역"
-                       FontSize="13" FontWeight="Bold"
-                       Foreground="#e0e0e0"
-                       VerticalAlignment="Center"
-                       FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
-            <Button Grid.Column="1"
-                    Classes="danger-btn"
-                    Content="🗑 선택삭제"
-                    Margin="0,0,5,0"
-                    Click="BtnDelete_Click" />
-            <Button Grid.Column="2"
-                    Classes="ghost-btn"
-                    Content="🔄 새로고침"
-                    Click="BtnRefresh_Click" />
-        </Grid>
+        <!-- ① 헤더 영역: ToggleSwitch + 툴바 -->
+        <Border Grid.Row="0"
+                Background="#1a1a28"
+                CornerRadius="6,6,0,0"
+                Padding="8,4"
+                Margin="0,0,0,0">
+            <Grid ColumnDefinitions="*,Auto,Auto,Auto">
 
-        <!-- 구분선 -->
-        <Border Grid.Row="1" Height="1" Background="#333" Margin="0,0,0,3" />
+                <!-- 토글 스위치: Off=견적발행내역 / On=분석의뢰내역 -->
+                <ToggleSwitch Grid.Column="0"
+                              x:Name="tglTab"
+                              IsChecked="False"
+                              OffContent="견적발행내역"
+                              OnContent="분석의뢰내역"
+                              HorizontalAlignment="Left"
+                              VerticalAlignment="Center"
+                              IsCheckedChanged="TglTab_Changed" />
 
-        <!-- 트리뷰: 년 → 월 → 시료명 -->
+                <!-- 탭 레이블 (현재 탭 이름) -->
+                <TextBlock Grid.Column="1"
+                           x:Name="txbTabLabel"
+                           Text=""
+                           FontSize="10" Foreground="#556677"
+                           VerticalAlignment="Center"
+                           Margin="0,0,8,0"
+                           FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+
+                <Button Grid.Column="2"
+                        Classes="danger-btn"
+                        Content="🗑 삭제"
+                        Margin="0,0,4,0"
+                        Click="BtnDelete_Click" />
+                <Button Grid.Column="3"
+                        Classes="ghost-btn"
+                        Content="🔄"
+                        Width="26" Padding="0"
+                        Click="BtnRefresh_Click" />
+            </Grid>
+        </Border>
+
+        <!-- ② 구분선 -->
+        <Border Grid.Row="1" Height="1" Background="#333" Margin="0,0,0,2" />
+
+        <!-- ③ AXAML tvHistory (더미, 핸들러 연결용) -->
         <TreeView Grid.Row="2"
                   x:Name="tvHistory"
-                  Background="Transparent"
-                  BorderThickness="0"
-                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                  IsVisible="False"
                   SelectionChanged="TvHistory_SelectionChanged" />
 
-        <!-- 하단: 선택 정보 -->
-        <TextBlock Grid.Row="3"
+        <!-- ④ treeHost -->
+        <Border Grid.Row="3"
+                Background="#13131f"
+                CornerRadius="0,0,6,6"
+                Padding="2,2">
+            <Grid x:Name="treeHost" Background="Transparent" />
+        </Border>
+
+        <!-- ⑤ 하단 정보 -->
+        <TextBlock Grid.Row="4"
                    x:Name="txbInfo"
                    Text=""
-                   FontSize="10" Foreground="#555"
-                   Margin="0,3,0,0"
+                   FontSize="10" Foreground="#556677"
+                   Margin="2,3,0,0"
+                   FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
                    TextTrimming="CharacterEllipsis" />
-
     </Grid>
 </UserControl>

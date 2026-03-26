@@ -20,7 +20,7 @@ public partial class App : Application
         {
 #if DEBUG
             // ── 테스트용: 로그인 스킵 ──────────────────
-            var mainPage = new MainPage();
+            var mainPage = new Login();
 #else
     var mainPage = new Mainpage();  // 로그인 창
 #endif

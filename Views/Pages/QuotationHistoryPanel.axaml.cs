@@ -1,6 +1,5 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
@@ -8,319 +7,416 @@ using ETA.Models;
 using ETA.Services;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace ETA.Views.Pages;
 
-/// <summary>Content1 — 견적 발행 내역 트리뷰</summary>
+public class AnalysisRequestRecord
+{
+    public int    Id       { get; set; }
+    public string 약칭     { get; set; } = "";
+    public string 시료명   { get; set; } = "";
+    public string 접수번호 { get; set; } = "";
+    public string 의뢰일   { get; set; } = "";
+    public string 연도     { get; set; } = "";
+    public string 월       { get; set; } = "";
+}
+
 public partial class QuotationHistoryPanel : UserControl
 {
-    public event Action<QuotationIssue>? IssueSelected;
+    // ── 로그 ─────────────────────────────────────────────────────────────
+    private static readonly string LogPath = Path.GetFullPath(
+        Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "Treeview.log"));
+    private static void Log(string msg)
+    {
+        var line = $"[{DateTime.Now:HH:mm:ss}] {msg}";
+        System.Diagnostics.Debug.WriteLine(line);
+        try { File.AppendAllText(LogPath, line + Environment.NewLine); } catch { }
+    }
 
     private static readonly FontFamily Font =
         new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
 
-    private int           _selectedRowid = -1;
-    private TreeViewItem? _selectedNode  = null;
+    // ── 공개 이벤트 ───────────────────────────────────────────────────────
+    public event Action<QuotationIssue>?        IssueSelected;
+    public event Action<AnalysisRequestRecord>? AnalysisRequestSelected;
+    public event Action?                        AnalysisTabActivated;
+    public event Action?                        QuotationTabActivated;
+
+    private bool _isAnalysisTab = false;
+
+    // 분석의뢰 지연 로딩용 캐시
+    private Dictionary<string, List<AnalysisRequestRecord>> _analysisByMonth = new();
+    private readonly HashSet<string> _loadedMonths = new();
+
+    private readonly TreeView _treeQuotation;
+    private readonly TreeView _treeAnalysis;
 
     public QuotationHistoryPanel()
     {
         InitializeComponent();
+
+        _treeQuotation = new TreeView
+        {
+            Background = Brushes.Transparent,
+            BorderThickness = new Thickness(0),
+        };
+        _treeQuotation.SelectionChanged += OnQuotationNodeSelected;
+
+        _treeAnalysis = new TreeView
+        {
+            Background = Brushes.Transparent,
+            BorderThickness = new Thickness(0),
+            IsVisible = false,
+        };
+        _treeAnalysis.SelectionChanged += OnAnalysisNodeSelected;
+
+        treeHost.Children.Add(_treeQuotation);
+        treeHost.Children.Add(_treeAnalysis);
+
+        Log("QuotationHistoryPanel 초기화 완료");
     }
 
-    // ── 외부 호출 ─────────────────────────────────────────────────────────
+    // ══════════════════════════════════════════════════════════════════════
+    //  [1] 토글 스위치 이벤트
+    // ══════════════════════════════════════════════════════════════════════
+    private void TglTab_Changed(object? sender, RoutedEventArgs e)
+        => SwitchTab(tglTab.IsChecked == true);
+
+    private void SwitchTab(bool toAnalysis)
+    {
+        _isAnalysisTab           = toAnalysis;
+        _treeQuotation.IsVisible = !toAnalysis;
+        _treeAnalysis.IsVisible  =  toAnalysis;
+        txbTabLabel.Text         = "";   // ToggleSwitch 자체에 레이블 있으므로 빈값
+        txbInfo.Text             = "";
+
+        Log($"탭 전환 → {(toAnalysis ? "분석의뢰내역" : "견적발행내역")}");
+
+        if (toAnalysis) { AnalysisTabActivated?.Invoke(); _ = LoadAnalysisTreeAsync(); }
+        else            { QuotationTabActivated?.Invoke(); }
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  [2][3] 견적발행내역 로드 — 년/월/일 3단계, Expanded 규칙 적용
+    // ══════════════════════════════════════════════════════════════════════
     public void LoadData()
     {
-        try
+        _treeQuotation.Items.Clear();
+        Log("LoadData() 시작");
+
+        var issues = QuotationService.GetAllIssues();
+        Log($"견적 발행건수={issues.Count}");
+
+        var today      = DateTime.Today;
+        var thisYear   = today.Year.ToString();
+        var thisMonth  = today.Month.ToString("D2");
+        var cutoff7    = today.AddDays(-6).ToString("yyyy-MM-dd");   // 최근 7일 기준
+
+        // 년 그룹
+        var byYear = issues
+            .GroupBy(i => i.발행일.Length >= 4 ? i.발행일[..4] : "기타")
+            .OrderByDescending(g => g.Key);
+
+        foreach (var yearGroup in byYear)
         {
-            tvHistory.Items.Clear();
-            _selectedRowid = -1;
-            _selectedNode  = null;
-            txbInfo.Text   = "";
+            string year      = yearGroup.Key;
+            bool   isThisYear = year == thisYear;
 
-            var all = QuotationService.GetAllIssues();
-            if (all.Count == 0)
+            var yearNode = MakeParentNode($"📅  {year}년");
+            yearNode.IsExpanded = isThisYear;   // 올해만 펼침
+
+            // 월 그룹
+            var byMonth = yearGroup
+                .GroupBy(i => i.발행일.Length >= 7 ? i.발행일[5..7] : "??")
+                .OrderByDescending(g => g.Key);
+
+            foreach (var monthGroup in byMonth)
             {
-                tvHistory.Items.Add(new TreeViewItem
+                string month       = monthGroup.Key;
+                bool   isThisMonth = isThisYear && month == thisMonth;
+
+                var monthNode = MakeParentNode($"  {month}월  ({monthGroup.Count()}건)");
+                monthNode.IsExpanded = isThisMonth;  // 올해 이번 달만 펼침
+
+                // 일 그룹
+                var byDay = monthGroup
+                    .GroupBy(i => i.발행일.Length >= 10 ? i.발행일[8..10] : "??")
+                    .OrderByDescending(g => g.Key);
+
+                foreach (var dayGroup in byDay)
                 {
-                    Header = new TextBlock
-                    {
-                        Text = "발행 내역이 없습니다.", FontSize = 11,
-                        FontFamily = Font, Foreground = Brush.Parse("#555"),
-                    },
-                });
-                return;
-            }
+                    string day     = dayGroup.Key;
+                    string dateStr = $"{year}-{month}-{day}";
 
-            int thisYear  = DateTime.Today.Year;
-            int thisMonth = DateTime.Today.Month;
+                    // 최근 7일 이내 여부
+                    bool isRecent = string.Compare(dateStr, cutoff7,
+                                       StringComparison.Ordinal) >= 0;
 
-            foreach (var yg in all.GroupBy(i => ParseYear(i.발행일))
-                                   .OrderByDescending(g => g.Key))
-            {
-                var yearNode = new TreeViewItem
-                {
-                    Header     = MakeHeader($"📁  {yg.Key}년", 12, "#a0d4a0", bold: true),
-                    Tag        = yg.Key,
-                    IsExpanded = true,
-                };
+                    var dayNode = MakeParentNode($"    {day}일  ({dayGroup.Count()}건)");
+                    dayNode.IsExpanded = isRecent;   // 최근 7일만 펼침
 
-                foreach (var mg in yg.GroupBy(i => ParseMonth(i.발행일))
-                                      .OrderByDescending(g => g.Key))
-                {
-                    bool isCurrent = yg.Key == thisYear && mg.Key == thisMonth;
-                    var monthNode = new TreeViewItem
-                    {
-                        Header = MakeHeader(
-                            $"{(isCurrent ? "📂" : "📁")}  {yg.Key}-{mg.Key:D2}  ({mg.Count()}건)",
-                            11, isCurrent ? "#aaaacc" : "#666688"),
-                        Tag        = (yg.Key, mg.Key),
-                        IsExpanded = isCurrent,
-                    };
+                    foreach (var issue in dayGroup.OrderByDescending(i => i.발행일))
+                        dayNode.Items.Add(MakeIssueLeaf(issue));
 
-                    foreach (var issue in mg.OrderByDescending(i => i.발행일))
-                        monthNode.Items.Add(MakeIssueNode(issue));
-
-                    yearNode.Items.Add(monthNode);
+                    monthNode.Items.Add(dayNode);
                 }
 
-                tvHistory.Items.Add(yearNode);
+                yearNode.Items.Add(monthNode);
             }
+
+            _treeQuotation.Items.Add(yearNode);
+        }
+
+        txbInfo.Text = $"총 {issues.Count}건";
+        Log($"LoadData() 완료 — 루트노드={_treeQuotation.Items.Count}");
+    }
+
+    private void TvHistory_SelectionChanged(object? sender, SelectionChangedEventArgs e) { }
+
+    private void OnQuotationNodeSelected(object? sender, SelectionChangedEventArgs e)
+    {
+        if (_treeQuotation.SelectedItem is TreeViewItem item &&
+            item.Tag is QuotationIssue issue)
+        {
+            txbInfo.Text = $"{issue.약칭}  {issue.시료명}  |  {issue.견적번호}";
+            Log($"견적 선택: {issue.약칭} {issue.시료명} [{issue.견적번호}]");
+            IssueSelected?.Invoke(issue);
+        }
+    }
+
+    private void BtnDelete_Click(object? sender, RoutedEventArgs e)
+    {
+        if (_isAnalysisTab) return;
+        if (_treeQuotation.SelectedItem is TreeViewItem item &&
+            item.Tag is QuotationIssue issue)
+        {
+            Log($"삭제: {issue.견적번호}");
+            if (QuotationService.Delete(issue.Id)) LoadData();
+        }
+    }
+
+    private void BtnRefresh_Click(object? sender, RoutedEventArgs e)
+    {
+        Log("새로고침");
+        if (_isAnalysisTab) _ = LoadAnalysisTreeAsync();
+        else LoadData();
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  분석의뢰내역 — 지연 로딩 (년/월/일 구조)
+    // ══════════════════════════════════════════════════════════════════════
+    private async Task LoadAnalysisTreeAsync()
+    {
+        _treeAnalysis.Items.Clear();
+        _loadedMonths.Clear();
+        _analysisByMonth.Clear();
+        txbInfo.Text = "로딩 중...";
+        Log("LoadAnalysisTreeAsync() 시작");
+
+        List<AnalysisRequestRecord> records;
+        try
+        {
+            records = await Task.Run(() => AnalysisRequestService.GetAllRecords());
+            Log($"DB 조회 완료: {records.Count}건");
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[HistoryPanel] 오류: {ex.Message}");
-            tvHistory.Items.Clear();
-            tvHistory.Items.Add(new TreeViewItem
+            Log($"DB 오류: {ex.Message}"); txbInfo.Text = "로드 실패"; return;
+        }
+
+        if (records.Count == 0) { txbInfo.Text = "분석의뢰 데이터 없음"; return; }
+
+        var today     = DateTime.Today;
+        var thisYear  = today.Year.ToString();
+        var thisMonth = today.Month.ToString("D2");
+        var cutoff7   = today.AddDays(-6).ToString("yyyy-MM-dd");
+
+        _analysisByMonth = records
+            .GroupBy(r => $"{r.연도}-{r.월}")
+            .ToDictionary(g => g.Key, g => g.OrderByDescending(r => r.의뢰일).ToList());
+
+        var byYear = records.GroupBy(r => r.연도).OrderByDescending(g => g.Key).ToList();
+
+        bool isFirstMonth = true;
+
+        foreach (var yearGroup in byYear)
+        {
+            string year       = yearGroup.Key;
+            bool   isThisYear = year == thisYear;
+
+            var yearNode = MakeParentNode($"📅  {year}년");
+            yearNode.IsExpanded = isThisYear;
+
+            var byMonth = yearGroup.GroupBy(r => r.월).OrderByDescending(g => g.Key).ToList();
+
+            foreach (var monthGroup in byMonth)
             {
-                Header = new TextBlock
+                string monthKey    = $"{year}-{monthGroup.Key}";
+                int    count       = _analysisByMonth.TryGetValue(monthKey, out var ml)
+                                     ? ml.Count : monthGroup.Count();
+                bool   isThisMonth = isThisYear && monthGroup.Key == thisMonth;
+
+                var monthNode = MakeParentNode($"  {monthGroup.Key}월  ({count}건)");
+                monthNode.Tag         = monthKey;
+                monthNode.IsExpanded  = isThisMonth;
+
+                if (isFirstMonth)
                 {
-                    Text = $"로드 오류: {ex.Message}", FontSize = 11,
-                    FontFamily = Font, Foreground = Brush.Parse("#f88"),
-                },
-            });
+                    FillMonthNodeWithDays(monthNode, monthKey, cutoff7);
+                    isFirstMonth = false;
+                }
+                else
+                {
+                    // 플레이스홀더 + 지연 로딩
+                    monthNode.Items.Add(new TreeViewItem
+                    {
+                        Header = new TextBlock
+                        {
+                            Text = "...", FontSize = 9, FontFamily = Font,
+                            Foreground = Brush.Parse("#444455"),
+                        },
+                        Tag = "__placeholder__",
+                    });
+                    var capturedKey  = monthKey;
+                    var capturedNode = monthNode;
+                    IDisposable? sub = null;
+                    sub = monthNode.GetObservable(TreeViewItem.IsExpandedProperty)
+                        .Subscribe(expanded =>
+                        {
+                            if (!expanded) return;
+                            if (_loadedMonths.Contains(capturedKey)) return;
+                            FillMonthNodeWithDays(capturedNode, capturedKey, cutoff7);
+                            sub?.Dispose();
+                        });
+                }
+
+                yearNode.Items.Add(monthNode);
+            }
+
+            _treeAnalysis.Items.Add(yearNode);
+        }
+
+        txbInfo.Text = $"총 {records.Count}건";
+        Log($"트리 완료 — 년노드={_treeAnalysis.Items.Count}");
+    }
+
+    // 월 노드 안에 일 노드 + 리프 생성
+    private void FillMonthNodeWithDays(TreeViewItem monthNode, string monthKey, string cutoff7)
+    {
+        monthNode.Items.Clear();
+        _loadedMonths.Add(monthKey);
+
+        if (!_analysisByMonth.TryGetValue(monthKey, out var recs)) return;
+
+        var byDay = recs
+            .GroupBy(r => r.의뢰일.Length >= 10 ? r.의뢰일[8..10] : "??")
+            .OrderByDescending(g => g.Key);
+
+        // monthKey = "YYYY-MM"
+        string yearMonth = monthKey;   // e.g. "2026-03"
+
+        foreach (var dayGroup in byDay)
+        {
+            string day     = dayGroup.Key;
+            string dateStr = $"{yearMonth}-{day}";
+            bool   isRecent = string.Compare(dateStr, cutoff7,
+                                  StringComparison.Ordinal) >= 0;
+
+            var dayNode = MakeParentNode($"    {day}일  ({dayGroup.Count()}건)");
+            dayNode.IsExpanded = isRecent;
+
+            foreach (var rec in dayGroup)
+                dayNode.Items.Add(MakeAnalysisLeaf(rec));
+
+            monthNode.Items.Add(dayNode);
+        }
+
+        Log($"FillMonthNodeWithDays: {monthKey} → {recs.Count}건");
+    }
+
+    private void OnAnalysisNodeSelected(object? sender, SelectionChangedEventArgs e)
+    {
+        if (_treeAnalysis.SelectedItem is TreeViewItem item &&
+            item.Tag is AnalysisRequestRecord rec)
+        {
+            txbInfo.Text = $"{rec.약칭}  {rec.시료명}  |  {rec.접수번호}";
+            Log($"의뢰 선택: {rec.약칭} {rec.시료명} [{rec.접수번호}]");
+            AnalysisRequestSelected?.Invoke(rec);
         }
     }
 
     // ══════════════════════════════════════════════════════════════════════
-    //  노드 빌더
+    //  노드 헬퍼
     // ══════════════════════════════════════════════════════════════════════
-
-    private static TextBlock MakeHeader(string text, double size, string color,
-                                        bool bold = false) => new()
+    private TreeViewItem MakeParentNode(string header) => new()
     {
-        Text      = text,
-        FontSize  = size,
-        FontFamily = Font,
-        FontWeight = bold ? FontWeight.SemiBold : FontWeight.Normal,
-        Foreground = Brush.Parse(color),
-        VerticalAlignment = VerticalAlignment.Center,
+        Header = new TextBlock
+        {
+            Text = header, FontSize = 11, FontFamily = Font,
+            Foreground = Brush.Parse("#aaaacc"),
+            Margin = new Thickness(2, 1),
+        },
+        IsExpanded = false,
     };
 
-    private TreeViewItem MakeIssueNode(QuotationIssue issue)
+    private TreeViewItem MakeIssueLeaf(QuotationIssue issue)
     {
-        var sub = string.Join("  ·  ", new[]
+        var sp = new StackPanel { Spacing = 1, Margin = new Thickness(4, 2) };
+        var topRow = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*") };
+        topRow.Children.Add(new Border
         {
-            issue.업체명,
-            string.IsNullOrEmpty(issue.견적번호) ? null : issue.견적번호,
-            issue.총금액 > 0 ? $"{issue.총금액:#,0}원" : null,
-        }.Where(s => !string.IsNullOrEmpty(s)));
-
-        var header = new StackPanel
+            Background = Brush.Parse("#1a3a1a"), CornerRadius = new CornerRadius(3),
+            Padding = new Thickness(4, 1), Margin = new Thickness(0, 0, 5, 0),
+            [Grid.ColumnProperty] = 0,
+            Child = new TextBlock { Text = issue.약칭, FontSize = 9, FontFamily = Font,
+                                    Foreground = Brush.Parse("#88cc88") },
+        });
+        topRow.Children.Add(new TextBlock
         {
-            Orientation = Orientation.Vertical,
-            Spacing     = 0,
-            Children    =
-            {
-                new TextBlock
-                {
-                    Text       = $"🧪  {(string.IsNullOrEmpty(issue.시료명) ? "(시료명 없음)" : issue.시료명)}",
-                    FontSize   = 11,
-                    FontFamily = Font,
-                    Foreground = Brushes.WhiteSmoke,
-                },
-                new TextBlock
-                {
-                    Text       = "    " + sub,
-                    FontSize   = 9,
-                    FontFamily = Font,
-                    Foreground = Brush.Parse("#777799"),
-                },
-            },
-        };
-
-        var node = new TreeViewItem { Header = header, Tag = issue };
-
-        // handledEventsToo=true: Avalonia가 내부적으로 처리한 이벤트도 받음
-        node.AddHandler(
-            PointerReleasedEvent,
-            (_, _) => OnIssueNodeTapped(node, issue),
-            handledEventsToo: true);
-
-        return node;
+            Text = issue.시료명, FontSize = 11, FontFamily = Font,
+            Foreground = Brush.Parse("#dddddd"),
+            TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
+            VerticalAlignment = VerticalAlignment.Center,
+            [Grid.ColumnProperty] = 1,
+        });
+        sp.Children.Add(topRow);
+        sp.Children.Add(new TextBlock
+        {
+            Text = issue.견적번호, FontSize = 9, FontFamily = Font,
+            Foreground = Brush.Parse("#445566"), Margin = new Thickness(0, 0, 0, 1),
+        });
+        return new TreeViewItem { Header = sp, Tag = issue };
     }
 
-    // ══════════════════════════════════════════════════════════════════════
-    //  선택 처리
-    // ══════════════════════════════════════════════════════════════════════
-
-    // 발행건 탭 → 이전 노드 배경 해제 + 현재 노드 하이라이트
-    private void OnIssueNodeTapped(TreeViewItem node, QuotationIssue issue)
+    private TreeViewItem MakeAnalysisLeaf(AnalysisRequestRecord rec)
     {
-        if (_selectedNode != null && _selectedNode != node)
-            _selectedNode.Background = Brushes.Transparent;
-
-        node.Background = Brush.Parse("#1a3a1a");
-        _selectedNode   = node;
-        _selectedRowid  = issue.Id;
-        txbInfo.Text    = $"🧪 {issue.시료명}  ·  {issue.업체명}  ·  {issue.발행일}";
-
-        IssueSelected?.Invoke(issue);
+        var sp = new StackPanel { Spacing = 1, Margin = new Thickness(4, 2) };
+        var topRow = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*") };
+        topRow.Children.Add(new Border
+        {
+            Background = Brush.Parse("#3a1a1a"), CornerRadius = new CornerRadius(3),
+            Padding = new Thickness(4, 1), Margin = new Thickness(0, 0, 5, 0),
+            [Grid.ColumnProperty] = 0,
+            Child = new TextBlock { Text = rec.약칭, FontSize = 9, FontFamily = Font,
+                                    Foreground = Brush.Parse("#cc8888") },
+        });
+        topRow.Children.Add(new TextBlock
+        {
+            Text = rec.시료명, FontSize = 11, FontFamily = Font,
+            Foreground = Brush.Parse("#dddddd"),
+            TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
+            VerticalAlignment = VerticalAlignment.Center,
+            [Grid.ColumnProperty] = 1,
+        });
+        sp.Children.Add(topRow);
+        sp.Children.Add(new TextBlock
+        {
+            Text = rec.접수번호, FontSize = 9, FontFamily = Font,
+            Foreground = Brush.Parse("#445566"), Margin = new Thickness(0, 0, 0, 1),
+        });
+        return new TreeViewItem { Header = sp, Tag = rec };
     }
-
-    // TreeView SelectionChanged: 년/월 클릭 시 이전 발행건 선택 유지
-    private void TvHistory_SelectionChanged(object? sender, SelectionChangedEventArgs e)
-    {
-        if (tvHistory.SelectedItem is TreeViewItem item &&
-            item.Tag is QuotationIssue issue)
-        {
-            OnIssueNodeTapped(item, issue);
-        }
-    }
-
-    // ══════════════════════════════════════════════════════════════════════
-    //  버튼
-    // ══════════════════════════════════════════════════════════════════════
-
-    private void BtnRefresh_Click(object? sender, RoutedEventArgs e) => LoadData();
-
-    private async void BtnDelete_Click(object? sender, RoutedEventArgs e)
-    {
-        if (_selectedNode == null || _selectedNode.Tag is not QuotationIssue issue)
-        {
-            await ShowMsg("발행건(🧪 시료명)을 선택한 후 삭제해주세요.\n년/월 노드는 삭제할 수 없습니다.");
-            return;
-        }
-
-        bool confirmed = await ShowConfirm(
-            $"아래 발행건을 삭제하시겠습니까?\n\n" +
-            $"  시료명 : {issue.시료명}\n" +
-            $"  업체명 : {issue.업체명}\n" +
-            $"  발행일 : {issue.발행일}\n\n" +
-            "삭제 후 복구할 수 없습니다.");
-
-        if (!confirmed) return;
-
-        if (QuotationService.Delete(issue.Id))
-            LoadData();
-    }
-
-    // ── 확인 다이얼로그 ───────────────────────────────────────────────────
-    private async Task<bool> ShowConfirm(string message)
-    {
-        bool result = false;
-        var owner   = TopLevel.GetTopLevel(this) as Window;
-
-        var dlg = new Window
-        {
-            Title = "삭제 확인", Width = 340, Height = 190,
-            CanResize = false,
-            WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            Background = Brush.Parse("#1e1e2a"),
-            SystemDecorations = SystemDecorations.BorderOnly,
-        };
-
-        var yesBtn = new Button
-        {
-            Content = "삭제", Width = 80, Height = 28,
-            Background = Brush.Parse("#6a2a2a"), Foreground = Brush.Parse("#f0aeae"),
-            BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
-            FontFamily = Font, FontSize = 11,
-        };
-        var noBtn = new Button
-        {
-            Content = "취소", Width = 80, Height = 28,
-            Background = Brush.Parse("#2a2a3a"), Foreground = Brush.Parse("#aaa"),
-            BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
-            FontFamily = Font, FontSize = 11,
-        };
-
-        yesBtn.Click += (_, _) => { result = true;  dlg.Close(); };
-        noBtn.Click  += (_, _) => { result = false; dlg.Close(); };
-
-        dlg.Content = new StackPanel
-        {
-            Margin = new Thickness(20), Spacing = 16,
-            Children =
-            {
-                new TextBlock
-                {
-                    Text = message, FontFamily = Font, FontSize = 11,
-                    Foreground = Brush.Parse("#dddddd"),
-                    TextWrapping = Avalonia.Media.TextWrapping.Wrap,
-                    LineHeight = 18,
-                },
-                new StackPanel
-                {
-                    Orientation = Orientation.Horizontal, Spacing = 8,
-                    HorizontalAlignment = HorizontalAlignment.Right,
-                    Children = { yesBtn, noBtn },
-                }
-            }
-        };
-
-        if (owner != null) await dlg.ShowDialog(owner);
-        else dlg.Show();
-
-        return result;
-    }
-
-    private async Task ShowMsg(string message)
-    {
-        var owner = TopLevel.GetTopLevel(this) as Window;
-        var dlg   = new Window
-        {
-            Title = "안내", Width = 300, Height = 140,
-            CanResize = false,
-            WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            Background = Brush.Parse("#1e1e2a"),
-            SystemDecorations = SystemDecorations.BorderOnly,
-        };
-        var okBtn = new Button
-        {
-            Content = "확인", Width = 70, Height = 26,
-            Background = Brush.Parse("#2a2a3a"), Foreground = Brush.Parse("#aaa"),
-            BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
-            FontFamily = Font, FontSize = 11,
-            HorizontalAlignment = HorizontalAlignment.Right,
-        };
-        okBtn.Click += (_, _) => dlg.Close();
-        dlg.Content = new StackPanel
-        {
-            Margin = new Thickness(20), Spacing = 14,
-            Children =
-            {
-                new TextBlock
-                {
-                    Text = message, FontFamily = Font, FontSize = 11,
-                    Foreground = Brush.Parse("#dddddd"),
-                    TextWrapping = Avalonia.Media.TextWrapping.Wrap,
-                },
-                okBtn,
-            }
-        };
-        if (owner != null) await dlg.ShowDialog(owner);
-        else dlg.Show();
-    }
-
-    // ── 헬퍼 ─────────────────────────────────────────────────────────────
-    private static int ParseYear(string d)
-        => DateTime.TryParse(d, out var dt) ? dt.Year
-         : d.Length >= 4 && int.TryParse(d[..4], out int y) ? y : 0;
-
-    private static int ParseMonth(string d)
-        => DateTime.TryParse(d, out var dt) ? dt.Month
-         : d.Length >= 7 && int.TryParse(d.Substring(5, 2), out int m) ? m : 0;
 }

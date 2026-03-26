@@ -61,7 +61,7 @@
         </Style>
     </UserControl.Styles>
 
-    <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
+    <Grid RowDefinitions="Auto,Auto,Auto,*,Auto,Auto,Auto">
 
         <!-- 헤더 -->
         <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,4">
@@ -196,25 +196,6 @@
                     </StackPanel>
                 </Border>
 
-                <!-- 개별 수량 편집 패널 (항목 클릭 시) -->
-                <Border x:Name="pnlQtyEdit"
-                        Background="#1a2a2a" CornerRadius="5" Padding="10,7"
-                        IsVisible="False">
-                    <Grid ColumnDefinitions="*,Auto,Auto">
-                        <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="1">
-                            <TextBlock x:Name="txbEditingItem" FontSize="11"
-                                       FontWeight="SemiBold" Foreground="#8fd8d8"
-                                       FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
-                            <TextBlock Classes="lbl" Text="수량 (0 = 삭제)" />
-                        </StackPanel>
-                        <TextBox Grid.Column="1" x:Name="txbQty"
-                                 Width="70" Margin="8,0"
-                                 TextAlignment="Center" />
-                        <Button Grid.Column="2" Classes="action-btn"
-                                Content="적용" Click="BtnApplyQty_Click" />
-                    </Grid>
-                </Border>
-
                 <!-- 합계 -->
                 <Border Background="#1a2a1a" CornerRadius="5" Padding="10,7">
                     <Grid ColumnDefinitions="*,Auto">
@@ -229,8 +210,39 @@
             </StackPanel>
         </ScrollViewer>
 
+        <!-- 개별 수량 편집 패널 — 스크롤에 무관하게 고정 (Row=4) -->
+        <Border Grid.Row="4"
+                x:Name="pnlQtyEdit"
+                Background="#1a2a2a" CornerRadius="5" Padding="10,7"
+                Margin="0,4,0,0"
+                IsVisible="False">
+            <Grid ColumnDefinitions="*,Auto,Auto">
+                <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="1">
+                    <TextBlock x:Name="txbEditingItem" FontSize="11"
+                               FontWeight="SemiBold" Foreground="#8fd8d8"
+                               FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R" />
+                    <TextBlock Classes="lbl" Text="수량 (0 = 삭제)" />
+                </StackPanel>
+                <TextBox Grid.Column="1" x:Name="txbQty"
+                         Width="70" Margin="8,0"
+                         TextAlignment="Center" />
+                <Button Grid.Column="2" Classes="action-btn"
+                        Content="적용" Click="BtnApplyQty_Click" />
+            </Grid>
+        </Border>
+
+        <!-- 저장 프로그레스바 (Row=5) -->
+        <ProgressBar Grid.Row="5"
+                     x:Name="prgSave"
+                     IsVisible="False"
+                     IsIndeterminate="False"
+                     Height="4"
+                     Margin="0,4,0,0"
+                     Foreground="#7cd87c"
+                     Background="#1a2a1a" />
+
         <!-- 하단 버튼 -->
-        <StackPanel Grid.Row="4" Orientation="Horizontal"
+        <StackPanel Grid.Row="6" Orientation="Horizontal"
                     Spacing="8" Margin="0,6,0,0">
             <Button Classes="action-btn" x:Name="btnSave"
                     Content="💾  저장" Click="BtnSave_Click" />

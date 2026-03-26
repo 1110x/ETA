@@ -1,0 +1,941 @@
+[11:18:23] QuotationHistoryPanel 초기화 완료
+[11:18:23] LoadData() 시작
+[11:18:23] 견적 발행건수=936
+[11:18:23] LoadData() 완료 — 루트노드=6개
+[11:18:28] 견적 선택: 머티리얼즈 롯데에너지머티리얼즈(주) 2026년 견적서 [20260226-094135]
+[11:18:29] 견적 선택: 용성 LG화학(주) 용성단지 TOC 재분석 4EA 견적서 [20260225-092450]
+[11:18:30] 견적 선택: 포스코리튬 2/27 포스코리튬솔루션 1분기 (6EA) [20260225-141237]
+[11:18:36] 탭 전환 → 분석의뢰내역
+[11:18:37] LoadAnalysisTree() 시작
+[11:18:37] DB 조회 성공 — 레코드수=0
+[11:18:37] 레코드 없음 — 트리 비워둠
+[11:23:18] QuotationHistoryPanel 초기화 완료
+[11:23:18] LoadData() 시작
+[11:23:18] 견적 발행건수=936
+[11:23:19] LoadData() 완료 — 루트노드=6개
+[11:23:23] 견적 선택: 롯데첨단소재 TOC 의뢰시료(25.12.22, 26.01.13, 26.01.27 총 138EA) 견적서 [20260223-093731]
+[11:23:27] 탭 전환 → 분석의뢰내역
+[11:23:27] [Service] DB 경로: C:\Users\ironu\Documents\ETA\ETA.db  존재=True
+[11:23:27] [Service] 테이블 존재 여부: 0
+[11:23:27] LoadAnalysisTree() 시작
+[11:23:27] [Service] DB 경로: C:\Users\ironu\Documents\ETA\ETA.db  존재=True
+[11:23:27] [Service] 테이블 존재 여부: 0
+[11:23:27] DB 조회 성공 — 레코드수=0
+[11:23:27] 레코드 없음 — 트리 비워둠
+[11:23:36] 탭 전환 → 견적발행내역
+[11:23:36] 탭 전환 → 분석의뢰내역
+[11:23:36] LoadAnalysisTree() 시작
+[11:23:36] [Service] DB 경로: C:\Users\ironu\Documents\ETA\ETA.db  존재=True
+[11:23:36] [Service] 테이블 존재 여부: 0
+[11:23:36] DB 조회 성공 — 레코드수=0
+[11:23:36] 레코드 없음 — 트리 비워둠
+[11:23:39] 탭 전환 → 견적발행내역
+[11:23:39] 탭 전환 → 분석의뢰내역
+[11:23:39] LoadAnalysisTree() 시작
+[11:23:39] [Service] DB 경로: C:\Users\ironu\Documents\ETA\ETA.db  존재=True
+[11:23:39] [Service] 테이블 존재 여부: 0
+[11:23:39] DB 조회 성공 — 레코드수=0
+[11:23:39] 레코드 없음 — 트리 비워둠
+[11:26:42] QuotationHistoryPanel 초기화 완료
+[11:26:42] LoadData() 시작
+[11:26:42] 견적 발행건수=936
+[11:26:43] LoadData() 완료 — 루트노드=6개
+[11:26:46] 탭 전환 → 분석의뢰내역
+[11:26:46] [Service] DB 경로: C:\Users\ironu\Documents\ETA\ETA.db  존재=True
+[11:26:46] [Service] 테이블 존재 여부: 0
+[11:26:46] LoadAnalysisTree() 시작
+[11:26:46] [Service] DB 경로: C:\Users\ironu\Documents\ETA\ETA.db  존재=True
+[11:26:46] [Service] 테이블 존재 여부: 0
+[11:26:46] DB 조회 성공 — 레코드수=0
+[11:26:46] 레코드 없음 — 트리 비워둠
+[11:26:52] 탭 전환 → 견적발행내역
+[11:26:53] 탭 전환 → 분석의뢰내역
+[11:26:53] LoadAnalysisTree() 시작
+[11:26:53] [Service] DB 경로: C:\Users\ironu\Documents\ETA\ETA.db  존재=True
+[11:26:53] [Service] 테이블 존재 여부: 0
+[11:26:53] DB 조회 성공 — 레코드수=0
+[11:26:53] 레코드 없음 — 트리 비워둠
+[11:32:09] LoadData() 시작
+[11:32:09] 견적 발행건수=936
+[11:32:10] LoadData() 완료 — 루트노드=6개
+[11:32:13] LoadData() 시작
+[11:32:13] 견적 발행건수=936
+[11:32:13] LoadData() 완료 — 루트노드=6개
+[11:32:22] 탭 전환 → 견적발행내역
+[11:32:29] 탭 전환 → 분석의뢰내역
+[11:32:29] LoadAnalysisTree() 시작
+[11:32:29] [Service] DB 경로: C:\Users\ironu\Documents\ETA\ETA.db  존재=True
+[11:32:29] [Service] 테이블 존재 여부: 0
+[11:32:29] DB 조회 성공 — 레코드수=0
+[11:32:29] 레코드 없음 — 트리 비워둠
+[11:32:30] 탭 전환 → 견적발행내역
+[11:32:30] 탭 전환 → 분석의뢰내역
+[11:32:30] LoadAnalysisTree() 시작
+[11:32:30] [Service] DB 경로: C:\Users\ironu\Documents\ETA\ETA.db  존재=True
+[11:32:30] [Service] 테이블 존재 여부: 0
+[11:32:30] DB 조회 성공 — 레코드수=0
+[11:32:30] 레코드 없음 — 트리 비워둠
+[11:32:31] 탭 전환 → 견적발행내역
+[11:32:32] 탭 전환 → 분석의뢰내역
+[11:32:32] LoadAnalysisTree() 시작
+[11:32:32] [Service] DB 경로: C:\Users\ironu\Documents\ETA\ETA.db  존재=True
+[11:32:32] [Service] 테이블 존재 여부: 0
+[11:32:32] DB 조회 성공 — 레코드수=0
+[11:32:32] 레코드 없음 — 트리 비워둠
+[11:32:32] 탭 전환 → 견적발행내역
+[11:32:42] 견적 선택: 국도화학 3/4 국도화학(주) 익산지점 3EA 견적서 [20260303-155028]
+[11:32:44] 견적 선택: 머티리얼즈 롯데에너지머티리얼즈(주) 2026년 견적서 [20260226-094135]
+[11:33:07] 탭 전환 → 분석의뢰내역
+[11:33:07] LoadAnalysisTree() 시작
+[11:33:07] [Service] DB 경로: C:\Users\ironu\Documents\ETA\ETA.db  존재=True
+[11:33:07] [Service] 테이블 존재 여부: 0
+[11:33:07] DB 조회 성공 — 레코드수=0
+[11:33:07] 레코드 없음 — 트리 비워둠
+[11:37:19] LoadData() 시작
+[11:37:19] 견적 발행건수=936
+[11:37:19] LoadData() 완료 — 루트노드=6개
+[11:47:53] QuotationHistoryPanel 초기화 완료
+[11:47:53] LoadData() 시작
+[11:47:53] 견적 발행건수=936
+[11:47:53] LoadData() 완료 — 루트노드=6개
+[11:47:55] 견적 선택: 용성 LG화학(주) 용성단지 TOC 재분석 4EA 견적서 [20260225-092450]
+[11:47:57] 견적 선택: 한세 26년 2월 정기시료(1EA) 견적서(26.02.25) [20260223-170021]
+[11:47:58] 탭 전환 → 분석의뢰내역
+[11:47:58] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[11:47:58] [AnalysisRequestService] 테이블 존재 여부: 1
+[11:47:58] [AnalysisRequestService] 전체 행 수: 3673
+[11:47:58] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 유입수  견적번호=
+[11:47:58] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 배출수  견적번호=
+[11:47:58] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=비점-유역1 유입수조  견적번호=
+[11:47:58] [AnalysisRequestService] 완료: 3673건  (첫 번째 연도=2026)
+[11:47:58] LoadAnalysisTree() 시작
+[11:47:58] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[11:47:58] [AnalysisRequestService] 테이블 존재 여부: 1
+[11:47:58] [AnalysisRequestService] 전체 행 수: 3673
+[11:47:58] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 유입수  견적번호=
+[11:47:58] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 배출수  견적번호=
+[11:47:58] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=비점-유역1 유입수조  견적번호=
+[11:47:58] [AnalysisRequestService] 완료: 3673건  (첫 번째 연도=2026)
+[11:47:58] DB 조회 성공 — 레코드수=3673
+[11:47:58]   첫번째: id=3678 약칭=보임 시료명=폐수조#APond-폐수 의뢰일=2026-03-25 연도=2026 월=03
+[11:47:59] LoadAnalysisTree() 완료 — 루트노드=7 리프=3673
+[11:48:06] 의뢰 선택: 보임 폐수조PondA-유입수 [20260312-210229]
+[11:48:06] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[11:48:06] [AnalysisRequestService] 테이블 존재 여부: 1
+[11:48:06] [AnalysisRequestService] 전체 행 수: 3673
+[11:48:06] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 유입수  견적번호=
+[11:48:06] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 배출수  견적번호=
+[11:48:06] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=비점-유역1 유입수조  견적번호=
+[11:48:06] [AnalysisRequestService] 완료: 3673건  (첫 번째 연도=2026)
+[11:48:18] 의뢰 선택: 보임 폐수조PondA-방류수 [20260312-210229]
+[11:48:18] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[11:48:18] [AnalysisRequestService] 테이블 존재 여부: 1
+[11:48:18] [AnalysisRequestService] 전체 행 수: 3673
+[11:48:18] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 유입수  견적번호=
+[11:48:18] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 배출수  견적번호=
+[11:48:18] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=비점-유역1 유입수조  견적번호=
+[11:48:18] [AnalysisRequestService] 완료: 3673건  (첫 번째 연도=2026)
+[11:48:22] 의뢰 선택: 보임 폐수조PondB-유입수 [20260312-210229]
+[11:48:22] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[11:48:22] [AnalysisRequestService] 테이블 존재 여부: 1
+[11:48:22] [AnalysisRequestService] 전체 행 수: 3673
+[11:48:22] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 유입수  견적번호=
+[11:48:22] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 배출수  견적번호=
+[11:48:22] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=비점-유역1 유입수조  견적번호=
+[11:48:22] [AnalysisRequestService] 완료: 3673건  (첫 번째 연도=2026)
+[11:48:25] 의뢰 선택: 보임 폐수조PondB-방류수 [20260312-210229]
+[11:48:25] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[11:48:25] [AnalysisRequestService] 테이블 존재 여부: 1
+[11:48:25] [AnalysisRequestService] 전체 행 수: 3673
+[11:48:25] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 유입수  견적번호=
+[11:48:25] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 배출수  견적번호=
+[11:48:25] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=비점-유역1 유입수조  견적번호=
+[11:48:25] [AnalysisRequestService] 완료: 3673건  (첫 번째 연도=2026)
+[11:48:29] 의뢰 선택: 용성 TOC 4EA [20260225-092450]
+[11:48:29] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[11:48:29] [AnalysisRequestService] 테이블 존재 여부: 1
+[11:48:29] [AnalysisRequestService] 전체 행 수: 3673
+[11:48:29] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 유입수  견적번호=
+[11:48:29] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 배출수  견적번호=
+[11:48:29] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=비점-유역1 유입수조  견적번호=
+[11:48:29] [AnalysisRequestService] 완료: 3673건  (첫 번째 연도=2026)
+[11:48:36] 의뢰 선택: 포스코리튬 비점-유역2 처리수조 []
+[11:48:36] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[11:48:36] [AnalysisRequestService] 테이블 존재 여부: 1
+[11:48:36] [AnalysisRequestService] 전체 행 수: 3673
+[11:48:36] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 유입수  견적번호=
+[11:48:36] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 배출수  견적번호=
+[11:48:36] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=비점-유역1 유입수조  견적번호=
+[11:48:36] [AnalysisRequestService] 완료: 3673건  (첫 번째 연도=2026)
+[11:48:46] 의뢰 선택: 포스코리튬 비점-유역1 유입수조 []
+[11:48:46] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[11:48:46] [AnalysisRequestService] 테이블 존재 여부: 1
+[11:48:46] [AnalysisRequestService] 전체 행 수: 3673
+[11:48:46] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 유입수  견적번호=
+[11:48:46] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 배출수  견적번호=
+[11:48:46] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=비점-유역1 유입수조  견적번호=
+[11:48:46] [AnalysisRequestService] 완료: 3673건  (첫 번째 연도=2026)
+[11:49:05] 의뢰 선택: 보임 폐수조PondB-유입수 [20260312-210229]
+[11:49:05] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[11:49:05] [AnalysisRequestService] 테이블 존재 여부: 1
+[11:49:05] [AnalysisRequestService] 전체 행 수: 3673
+[11:49:05] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 유입수  견적번호=
+[11:49:05] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 배출수  견적번호=
+[11:49:05] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=비점-유역1 유입수조  견적번호=
+[11:49:05] [AnalysisRequestService] 완료: 3673건  (첫 번째 연도=2026)
+[11:49:37] 의뢰 선택: 보임 폐수조1 [20260312-210229]
+[11:49:37] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[11:49:37] [AnalysisRequestService] 테이블 존재 여부: 1
+[11:49:37] [AnalysisRequestService] 전체 행 수: 3673
+[11:49:37] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 유입수  견적번호=
+[11:49:37] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 배출수  견적번호=
+[11:49:37] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=비점-유역1 유입수조  견적번호=
+[11:49:37] [AnalysisRequestService] 완료: 3673건  (첫 번째 연도=2026)
+[11:49:42] 의뢰 선택: DL HDPE 냉각탑 [20260226-094137]
+[11:49:42] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[11:49:42] [AnalysisRequestService] 테이블 존재 여부: 1
+[11:49:42] [AnalysisRequestService] 전체 행 수: 3673
+[11:49:42] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 유입수  견적번호=
+[11:49:42] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 배출수  견적번호=
+[11:49:42] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=비점-유역1 유입수조  견적번호=
+[11:49:42] [AnalysisRequestService] 완료: 3673건  (첫 번째 연도=2026)
+[11:49:48] 의뢰 선택: 롯데첨단소재 g-ABS 원폐수 [20260219-161345]
+[11:49:48] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[11:49:48] [AnalysisRequestService] 테이블 존재 여부: 1
+[11:49:48] [AnalysisRequestService] 전체 행 수: 3673
+[11:49:48] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 유입수  견적번호=
+[11:49:48] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 배출수  견적번호=
+[11:49:48] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=비점-유역1 유입수조  견적번호=
+[11:49:48] [AnalysisRequestService] 완료: 3673건  (첫 번째 연도=2026)
+[11:49:53] 의뢰 선택: 적량 원폐수(sample) [20260220-151625]
+[11:49:53] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[11:49:53] [AnalysisRequestService] 테이블 존재 여부: 1
+[11:49:53] [AnalysisRequestService] 전체 행 수: 3673
+[11:49:53] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 유입수  견적번호=
+[11:49:53] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 배출수  견적번호=
+[11:49:53] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=비점-유역1 유입수조  견적번호=
+[11:49:53] [AnalysisRequestService] 완료: 3673건  (첫 번째 연도=2026)
+[11:49:57] 의뢰 선택: 롯데첨단소재 남수천 1번 [20260219-161345]
+[11:49:57] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[11:49:57] [AnalysisRequestService] 테이블 존재 여부: 1
+[11:49:57] [AnalysisRequestService] 전체 행 수: 3673
+[11:49:57] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 유입수  견적번호=
+[11:49:57] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 배출수  견적번호=
+[11:49:57] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=비점-유역1 유입수조  견적번호=
+[11:49:57] [AnalysisRequestService] 완료: 3673건  (첫 번째 연도=2026)
+[11:50:01] 의뢰 선택: 보임 폐수조#APond-폐수 [20260312-210229]
+[11:50:01] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[11:50:01] [AnalysisRequestService] 테이블 존재 여부: 1
+[11:50:01] [AnalysisRequestService] 전체 행 수: 3673
+[11:50:01] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 유입수  견적번호=
+[11:50:01] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 배출수  견적번호=
+[11:50:01] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=비점-유역1 유입수조  견적번호=
+[11:50:01] [AnalysisRequestService] 완료: 3673건  (첫 번째 연도=2026)
+[11:50:23] 의뢰 선택: 보임 폐수조#BPond-폐수 [20260312-210229]
+[11:50:23] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[11:50:23] [AnalysisRequestService] 테이블 존재 여부: 1
+[11:50:23] [AnalysisRequestService] 전체 행 수: 3673
+[11:50:23] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 유입수  견적번호=
+[11:50:23] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 배출수  견적번호=
+[11:50:23] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=비점-유역1 유입수조  견적번호=
+[11:50:23] [AnalysisRequestService] 완료: 3673건  (첫 번째 연도=2026)
+[11:50:26] 의뢰 선택: 보임 폐수조1 [20260312-210229]
+[11:50:26] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[11:50:26] [AnalysisRequestService] 테이블 존재 여부: 1
+[11:50:26] [AnalysisRequestService] 전체 행 수: 3673
+[11:50:26] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 유입수  견적번호=
+[11:50:26] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 배출수  견적번호=
+[11:50:26] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=비점-유역1 유입수조  견적번호=
+[11:50:26] [AnalysisRequestService] 완료: 3673건  (첫 번째 연도=2026)
+[11:55:38] QuotationHistoryPanel 초기화 완료
+[11:55:38] LoadData() 시작
+[11:55:38] 견적 발행건수=936
+[11:55:39] LoadData() 완료 — 루트노드=6개
+[11:55:41] 견적 선택: 국도화학 3/4 국도화학(주) 익산지점 3EA 견적서 [20260303-155028]
+[11:55:43] 탭 전환 → 분석의뢰내역
+[11:55:43] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[11:55:43] [AnalysisRequestService] 테이블 존재 여부: 1
+[11:55:43] LoadAnalysisTree() 시작
+[11:55:43] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[11:55:43] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 유입수  견적번호=
+[11:55:43] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 배출수  견적번호=
+[11:55:43] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=비점-유역1 유입수조  견적번호=
+[11:55:43] [AnalysisRequestService] 전체 행 수: 3673
+[11:55:43] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 유입수  견적번호=
+[11:55:43] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 배출수  견적번호=
+[11:55:44] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=비점-유역1 유입수조  견적번호=
+[11:55:44] [AnalysisRequestService] 완료: 3673건  (첫 번째 연도=2026)
+[11:55:44] [AnalysisRequestService] 완료: 3673건  (첫 번째 연도=2026)
+[11:55:44] DB 조회 성공 — 레코드수=3673
+[11:55:44]   첫번째: id=3678 약칭=보임 시료명=폐수조#APond-폐수 의뢰일=2026-03-25 연도=2026 월=03
+[11:55:44] LoadAnalysisTree() 완료 — 루트노드=7 리프=3673
+[11:55:52] 의뢰 선택: 보임 폐수조#APond-폐수 [20260312-210229]
+[11:55:53] 의뢰 선택: 보임 폐수조#BPond-폐수 [20260312-210229]
+[11:55:54] 의뢰 선택: 보임 폐수조2 [20260312-210229]
+[11:55:54] 의뢰 선택: 보임 폐수조PondB-유입수 [20260312-210229]
+[11:55:55] 의뢰 선택: 포스코리튬 비점-유역1 처리수조 []
+[11:55:56] 의뢰 선택: 포스코리튬 비점-유역2 처리수조 []
+[11:55:57] 의뢰 선택: 용성 TOC 4EA [20260225-092450]
+[11:55:58] 의뢰 선택: 롯데첨단소재 EP 범핑펀드 [20260219-161345]
+[11:55:59] 의뢰 선택: 용성 TOC 4EA [20260225-092450]
+[11:56:00] 의뢰 선택: 롯데첨단소재 방류수 [20260219-161345]
+[11:56:01] 의뢰 선택: 롯데첨단소재 Other 원폐수 [20260219-161345]
+[11:56:02] 의뢰 선택: 롯데첨단소재 g-ABS 원폐수 [20260219-161345]
+[11:56:03] 의뢰 선택: DL HDPE 냉각탑 [20260226-094137]
+[11:56:04] 의뢰 선택: 포스코리튬 비점-유역1 처리수조 []
+[11:56:05] 의뢰 선택: 보임 폐수조PondA-방류수 [20260312-210229]
+[11:56:07] 의뢰 선택: 보임 폐수조1 [20260312-210229]
+[11:56:08] 의뢰 선택: 보임 폐수조#BPond-폐수 [20260312-210229]
+[11:56:09] 의뢰 선택: 보임 폐수조PondB-유입수 [20260312-210229]
+[11:56:12] 의뢰 선택: 포스코리튬 #W1 유입수 []
+[11:56:12] 의뢰 선택: 포스코리튬 비점-유역1 유입수조 []
+[11:56:13] 의뢰 선택: 포스코리튬 비점-유역1 처리수조 []
+[11:56:13] 의뢰 선택: 포스코리튬 비점-유역2 처리수조 []
+[11:56:14] 의뢰 선택: 한세 폐수처리 방류수 [20260223-170021]
+[11:56:15] 의뢰 선택: 적량 원폐수(sample) [20260220-151625]
+[11:56:16] 의뢰 선택: GS #W2.(제2폐수처리장/처리수) [20260210-122314]
+[11:56:17] 의뢰 선택: GS #W3.(VDU폐수처리장/처리수) [20260210-122314]
+[11:56:18] 의뢰 선택: GS #W8. 정유3팀 C/W (76-E-030A, I-2WTS002) [20260210-122314]
+[11:56:19] 의뢰 선택: GS #W13. PP생산팀 C/W (90-E-001I-3WTS033) [20260210-122314]
+[11:56:20] 의뢰 선택: GS #W19. HOU SRU팀 C/W (616-E-301A, I-7WTS032) [20260210-122314]
+[11:56:21] 의뢰 선택: 화치 SBS생산팀폐수 [20260127-113306]
+[11:56:22] 의뢰 선택: GS #W22. PE생산팀 C/W (716-E-302, I-8WTS035) [20260210-122314]
+[11:56:23] 의뢰 선택: GS #W16. 정유탈황2팀 C/W (85-E-901, I-4WTS023) [20260210-122314]
+[11:56:24] 의뢰 선택: GS #W10. 동력팀 C/W (116-E-231, I-3WTS029) [20260210-122314]
+[11:56:24] 의뢰 선택: GS #W5.(PE폐수처리장/처리수) [20260210-122314]
+[11:56:25] 의뢰 선택: 롯데첨단소재 남수천 4번 [20260219-161345]
+[11:56:26] 의뢰 선택: 적량 원폐수(sample) [20260220-151625]
+[11:56:27] 의뢰 선택: 화치 수질관리p_ 탈기시설 후단 [20260223-083743]
+[11:56:27] 의뢰 선택: 롯데첨단소재 방류수 [20260219-161345]
+[11:56:27] 의뢰 선택: DL HDPE 냉각탑 [20260226-094137]
+[11:56:29] 의뢰 선택: 포스코리튬 비점-유역1 처리수조 []
+[11:56:30] 의뢰 선택: 보임 폐수조PondA-방류수 [20260312-210229]
+[11:56:32] 의뢰 선택: 보임 폐수조PondA-유입수 [20260312-210229]
+[11:56:33] 의뢰 선택: 보임 폐수조2 [20260312-210229]
+[11:56:33] 의뢰 선택: 보임 폐수조1 [20260312-210229]
+[11:56:34] 의뢰 선택: 보임 폐수조#BPond-폐수 [20260312-210229]
+[11:56:35] 의뢰 선택: 보임 폐수조#APond-폐수 [20260312-210229]
+[11:56:36] 의뢰 선택: 보임 유입수 [20260312-210229]
+[11:56:37] 의뢰 선택: 보임 방류수 [20260312-210229]
+[11:56:38] 의뢰 선택: 포스코리튬 #W1 유입수 []
+[11:56:38] 의뢰 선택: 포스코리튬 #W1 배출수 []
+[11:56:39] 의뢰 선택: 포스코리튬 #W1 유입수 []
+[11:56:40] 의뢰 선택: 보임 방류수 [20260312-210229]
+[11:56:41] 의뢰 선택: 포스코리튬 #W1 유입수 []
+[11:56:42] 의뢰 선택: 포스코리튬 비점-유역1 유입수조 []
+[11:56:42] 의뢰 선택: 포스코리튬 비점-유역1 처리수조 []
+[11:56:43] 의뢰 선택: 포스코리튬 비점-유역2 처리수조 []
+[11:56:44] 의뢰 선택: DL HDPE 원폐수 [20260226-094137]
+[11:56:44] 의뢰 선택: DL HDPE 냉각탑 [20260226-094137]
+[11:56:45] 의뢰 선택: 롯데첨단소재 g-ABS 원폐수 [20260219-161345]
+[11:56:46] 의뢰 선택: 롯데첨단소재 Other 원폐수 [20260219-161345]
+[12:19:14] QuotationHistoryPanel 초기화 완료
+[12:19:14] LoadData() 시작
+[12:19:14] 견적 발행건수=936
+[12:19:14] LoadData() 완료 — 루트노드=6
+[12:19:19] 탭 전환 → 분석의뢰내역
+[12:19:19] LoadAnalysisTreeAsync() 시작
+[12:19:19] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[12:19:19] [AnalysisRequestService] 테이블 존재 여부: 1
+[12:19:19] [AnalysisRequestService] 전체 행 수: 3673
+[12:19:19] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 유입수  견적번호=
+[12:19:19] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 배출수  견적번호=
+[12:19:19] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=비점-유역1 유입수조  견적번호=
+[12:19:19] [AnalysisRequestService] 완료: 3673건  (첫 번째 연도=2026)
+[12:19:19] DB 조회 완료: 3673건
+[12:19:19] FillMonthNode: 2026-03 → 10건
+[12:19:19] 트리 구성 완료 — 년노드=7
+[12:19:20] 의뢰 선택: 보임 폐수조#APond-폐수 [20260312-210229]
+[12:19:21] 의뢰 선택: 보임 폐수조1 [20260312-210229]
+[12:19:42] 의뢰 선택: 보임 폐수조#APond-폐수 [20260312-210229]
+[12:20:00] 의뢰 선택: 보임 폐수조#BPond-폐수 [20260312-210229]
+[12:20:00] 의뢰 선택: 보임 폐수조1 [20260312-210229]
+[12:20:26] FillMonthNode: 2026-02 → 70건
+[12:31:31] QuotationHistoryPanel 초기화 완료
+[12:31:31] LoadData() 시작
+[12:31:31] 견적 발행건수=936
+[12:31:31] LoadData() 완료 — 루트노드=6
+[12:31:42] 탭 전환 → 분석의뢰내역
+[12:31:42] LoadAnalysisTreeAsync() 시작
+[12:31:42] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[12:31:42] [AnalysisRequestService] 테이블 존재 여부: 1
+[12:31:42] [AnalysisRequestService] 전체 행 수: 3673
+[12:31:42] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 유입수  견적번호=
+[12:31:42] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 배출수  견적번호=
+[12:31:42] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=비점-유역1 유입수조  견적번호=
+[12:31:42] [AnalysisRequestService] 완료: 3673건  (첫 번째 연도=2026)
+[12:31:42] DB 조회 완료: 3673건
+[12:31:42] FillMonthNodeWithDays: 2026-03 → 10건
+[12:31:42] 트리 완료 — 년노드=7
+[12:31:43] 의뢰 선택: 보임 폐수조#APond-폐수 [20260312-210229]
+[12:31:45] 의뢰 선택: 보임 폐수조#BPond-폐수 [20260312-210229]
+[12:31:45] 의뢰 선택: 보임 폐수조1 [20260312-210229]
+[12:31:46] 의뢰 선택: 보임 폐수조2 [20260312-210229]
+[12:31:47] 의뢰 선택: 보임 폐수조PondA-유입수 [20260312-210229]
+[12:31:47] 의뢰 선택: 보임 폐수조PondA-방류수 [20260312-210229]
+[12:31:48] 의뢰 선택: 보임 폐수조PondB-유입수 [20260312-210229]
+[12:31:48] 의뢰 선택: 보임 폐수조PondB-방류수 [20260312-210229]
+[12:31:48] 의뢰 선택: 보임 유입수 [20260312-210229]
+[12:31:49] 의뢰 선택: 보임 방류수 [20260312-210229]
+[12:31:59] 의뢰 선택: 보임 폐수조PondB-유입수 [20260312-210229]
+[12:32:00] 의뢰 선택: 보임 유입수 [20260312-210229]
+[12:32:48] FillMonthNodeWithDays: 2025-12 → 62건
+[12:32:56] 의뢰 선택: 용성 #W2 3AA 처리수 []
+[12:33:05] FillMonthNodeWithDays: 2026-02 → 70건
+[12:33:07] 의뢰 선택: 포스코리튬 #W1 유입수 []
+[12:33:10] 의뢰 선택: 포스코리튬 #W1 배출수 []
+[12:33:11] 의뢰 선택: 포스코리튬 비점-유역1 유입수조 []
+[12:33:12] 의뢰 선택: 포스코리튬 #W1 배출수 []
+[12:33:13] 의뢰 선택: 포스코리튬 비점-유역1 유입수조 []
+[12:33:14] 의뢰 선택: 포스코리튬 #W1 배출수 []
+[12:33:15] 의뢰 선택: 포스코리튬 비점-유역1 유입수조 []
+[12:33:17] 의뢰 선택: 포스코리튬 비점-유역1 처리수조 []
+[12:33:18] 의뢰 선택: 포스코리튬 비점-유역2 유입수조 []
+[12:33:18] 의뢰 선택: 포스코리튬 비점-유역2 처리수조 []
+[12:46:50] 탭 전환 → 견적발행내역
+[12:46:51] 탭 전환 → 분석의뢰내역
+[12:46:51] LoadAnalysisTreeAsync() 시작
+[12:46:51] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[12:46:51] [AnalysisRequestService] 테이블 존재 여부: 1
+[12:46:51] [AnalysisRequestService] 전체 행 수: 3673
+[12:46:51] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 유입수  견적번호=
+[12:46:51] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 배출수  견적번호=
+[12:46:51] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=비점-유역1 유입수조  견적번호=
+[12:46:51] [AnalysisRequestService] 완료: 3673건  (첫 번째 연도=2026)
+[12:46:51] DB 조회 완료: 3673건
+[12:46:51] FillMonthNodeWithDays: 2026-03 → 10건
+[12:46:51] 트리 완료 — 년노드=7
+[12:46:52] 의뢰 선택: 보임 폐수조#APond-폐수 [20260312-210229]
+[12:48:28] QuotationHistoryPanel 초기화 완료
+[12:48:28] LoadData() 시작
+[12:48:28] 견적 발행건수=936
+[12:48:29] LoadData() 완료 — 루트노드=6
+[12:48:31] 탭 전환 → 분석의뢰내역
+[12:48:31] LoadAnalysisTreeAsync() 시작
+[12:48:31] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[12:48:31] [AnalysisRequestService] 테이블 존재 여부: 1
+[12:48:31] [AnalysisRequestService] 전체 행 수: 3673
+[12:48:31] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 유입수  견적번호=
+[12:48:31] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 배출수  견적번호=
+[12:48:31] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=비점-유역1 유입수조  견적번호=
+[12:48:31] [AnalysisRequestService] 완료: 3673건  (첫 번째 연도=2026)
+[12:48:31] DB 조회 완료: 3673건
+[12:48:31] FillMonthNodeWithDays: 2026-03 → 10건
+[12:48:31] 트리 완료 — 년노드=7
+[12:48:32] 의뢰 선택: 보임 폐수조#APond-폐수 [20260312-210229]
+[12:48:36] 의뢰 선택: 보임 폐수조#BPond-폐수 [20260312-210229]
+[12:48:37] 의뢰 선택: 보임 폐수조1 [20260312-210229]
+[12:48:37] 의뢰 선택: 보임 폐수조2 [20260312-210229]
+[12:48:38] 의뢰 선택: 보임 폐수조PondA-유입수 [20260312-210229]
+[12:48:39] 의뢰 선택: 보임 폐수조PondA-방류수 [20260312-210229]
+[12:48:39] 의뢰 선택: 보임 폐수조PondB-유입수 [20260312-210229]
+[12:48:40] 의뢰 선택: 보임 폐수조PondB-방류수 [20260312-210229]
+[12:48:40] 의뢰 선택: 보임 유입수 [20260312-210229]
+[12:48:40] 의뢰 선택: 보임 방류수 [20260312-210229]
+[13:06:42] 의뢰 선택: 보임 폐수조PondA-방류수 [20260312-210229]
+[13:06:43] 의뢰 선택: 보임 폐수조PondA-방류수 [20260312-210229]
+[13:06:43] 의뢰 선택: 보임 폐수조PondA-방류수 [20260312-210229]
+[13:06:44] 의뢰 선택: 보임 폐수조PondB-유입수 [20260312-210229]
+[13:06:44] 의뢰 선택: 보임 폐수조PondA-방류수 [20260312-210229]
+[13:06:45] 의뢰 선택: 보임 폐수조PondB-유입수 [20260312-210229]
+[13:06:45] 의뢰 선택: 보임 유입수 [20260312-210229]
+[13:06:46] 의뢰 선택: 보임 유입수 [20260312-210229]
+[13:06:47] 의뢰 선택: 보임 방류수 [20260312-210229]
+[13:06:47] 의뢰 선택: 보임 폐수조PondB-방류수 [20260312-210229]
+[13:06:48] 의뢰 선택: 보임 폐수조PondA-방류수 [20260312-210229]
+[13:07:06] 의뢰 선택: 보임 폐수조PondA-유입수 [20260312-210229]
+[13:07:06] 의뢰 선택: 보임 폐수조PondA-방류수 [20260312-210229]
+[13:07:07] 의뢰 선택: 보임 폐수조PondB-유입수 [20260312-210229]
+[13:07:07] 의뢰 선택: 보임 폐수조PondB-방류수 [20260312-210229]
+[13:07:08] 의뢰 선택: 보임 유입수 [20260312-210229]
+[13:07:08] 의뢰 선택: 보임 방류수 [20260312-210229]
+[13:07:09] 의뢰 선택: 보임 폐수조#APond-폐수 [20260312-210229]
+[13:07:09] 의뢰 선택: 보임 폐수조#BPond-폐수 [20260312-210229]
+[13:07:10] 의뢰 선택: 보임 폐수조1 [20260312-210229]
+[13:07:10] 의뢰 선택: 보임 폐수조2 [20260312-210229]
+[13:07:10] 의뢰 선택: 보임 폐수조PondA-방류수 [20260312-210229]
+[13:07:11] 의뢰 선택: 보임 폐수조PondB-방류수 [20260312-210229]
+[13:07:11] 의뢰 선택: 보임 폐수조PondB-방류수 [20260312-210229]
+[13:07:11] 의뢰 선택: 보임 유입수 [20260312-210229]
+[13:07:12] 의뢰 선택: 보임 방류수 [20260312-210229]
+[13:07:12] 의뢰 선택: 보임 폐수조PondB-방류수 [20260312-210229]
+[13:07:12] 의뢰 선택: 보임 폐수조PondB-유입수 [20260312-210229]
+[13:07:13] 의뢰 선택: 보임 폐수조PondA-유입수 [20260312-210229]
+[13:07:13] 의뢰 선택: 보임 폐수조2 [20260312-210229]
+[13:07:13] 의뢰 선택: 보임 폐수조#BPond-폐수 [20260312-210229]
+[13:07:14] 의뢰 선택: 보임 폐수조#APond-폐수 [20260312-210229]
+[13:25:55] LoadData() 시작
+[13:25:55] 견적 발행건수=936
+[13:25:55] LoadData() 완료 — 루트노드=6
+[13:26:10] 탭 전환 → 견적발행내역
+[13:27:19] 탭 전환 → 분석의뢰내역
+[13:27:19] LoadAnalysisTreeAsync() 시작
+[13:27:19] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[13:27:19] [AnalysisRequestService] 테이블 존재 여부: 1
+[13:27:19] [AnalysisRequestService] 전체 행 수: 3673
+[13:27:19] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 유입수  견적번호=
+[13:27:19] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 배출수  견적번호=
+[13:27:19] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=비점-유역1 유입수조  견적번호=
+[13:27:19] [AnalysisRequestService] 완료: 3673건  (첫 번째 연도=2026)
+[13:27:19] DB 조회 완료: 3673건
+[13:27:19] FillMonthNodeWithDays: 2026-03 → 10건
+[13:27:19] 트리 완료 — 년노드=7
+[13:34:41] 의뢰 선택: 보임 폐수조PondA-유입수 [20260312-210229]
+[14:06:54] QuotationHistoryPanel 초기화 완료
+[14:06:54] LoadData() 시작
+[14:06:54] 견적 발행건수=936
+[14:06:55] LoadData() 완료 — 루트노드=6
+[14:06:58] 탭 전환 → 분석의뢰내역
+[14:06:58] LoadAnalysisTreeAsync() 시작
+[14:06:58] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[14:06:58] [AnalysisRequestService] 테이블 존재 여부: 1
+[14:06:58] [AnalysisRequestService] 전체 행 수: 3673
+[14:06:58] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 유입수  견적번호=
+[14:06:58] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 배출수  견적번호=
+[14:06:58] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=비점-유역1 유입수조  견적번호=
+[14:06:58] [AnalysisRequestService] 완료: 3673건  (첫 번째 연도=2026)
+[14:06:58] DB 조회 완료: 3673건
+[14:06:58] FillMonthNodeWithDays: 2026-03 → 10건
+[14:06:58] 트리 완료 — 년노드=7
+[14:07:00] 의뢰 선택: 보임 폐수조#APond-폐수 [20260312-210229]
+[14:07:02] 의뢰 선택: 보임 폐수조#BPond-폐수 [20260312-210229]
+[14:07:03] 의뢰 선택: 보임 폐수조1 [20260312-210229]
+[14:07:10] [AnalysisRequestService] GetStandardDays: 66개 항목 로드 완료
+[14:20:00] FillMonthNodeWithDays: 2026-01 → 85건
+[14:20:03] 의뢰 선택: 확장 #W1_운영2팀_통합 방류구(Y2C, 5AA, 운영2팀)_방류수 [20260128-134030]
+[14:26:20] QuotationHistoryPanel 초기화 완료
+[14:26:20] LoadData() 시작
+[14:26:21] 견적 발행건수=936
+[14:26:21] LoadData() 완료 — 루트노드=6
+[14:26:25] 탭 전환 → 분석의뢰내역
+[14:26:25] LoadAnalysisTreeAsync() 시작
+[14:26:25] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[14:26:25] [AnalysisRequestService] 테이블 존재 여부: 1
+[14:26:25] [AnalysisRequestService] 전체 행 수: 3673
+[14:26:25] DB 오류: SQLite Error 1: 'no such table: 분析의뢰및결과'.
+[14:26:30] 탭 전환 → 견적발행내역
+[14:26:30] 탭 전환 → 분석의뢰내역
+[14:26:30] LoadAnalysisTreeAsync() 시작
+[14:26:30] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[14:26:30] [AnalysisRequestService] 테이블 존재 여부: 1
+[14:26:30] [AnalysisRequestService] 전체 행 수: 3673
+[14:26:30] DB 오류: SQLite Error 1: 'no such table: 분析의뢰및결과'.
+[14:26:32] 탭 전환 → 견적발행내역
+[14:26:34] 탭 전환 → 분석의뢰내역
+[14:26:34] LoadAnalysisTreeAsync() 시작
+[14:26:34] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[14:26:34] [AnalysisRequestService] 테이블 존재 여부: 1
+[14:26:34] [AnalysisRequestService] 전체 행 수: 3673
+[14:26:34] DB 오류: SQLite Error 1: 'no such table: 분析의뢰및결과'.
+[14:26:39] 탭 전환 → 견적발행내역
+[14:26:40] 탭 전환 → 분석의뢰내역
+[14:26:40] LoadAnalysisTreeAsync() 시작
+[14:26:40] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[14:26:40] [AnalysisRequestService] 테이블 존재 여부: 1
+[14:26:40] [AnalysisRequestService] 전체 행 수: 3673
+[14:26:40] DB 오류: SQLite Error 1: 'no such table: 분析의뢰및결과'.
+[14:29:54] QuotationHistoryPanel 초기화 완료
+[14:29:54] LoadData() 시작
+[14:29:54] 견적 발행건수=936
+[14:29:55] LoadData() 완료 — 루트노드=6
+[14:29:57] 견적 선택: 센터 왔싸 뵹 [20260325-191213]
+[14:29:59] 탭 전환 → 분석의뢰내역
+[14:29:59] LoadAnalysisTreeAsync() 시작
+[14:29:59] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[14:29:59] [AnalysisRequestService] 테이블 존재 여부: 1
+[14:29:59] [AnalysisRequestService] 전체 행 수: 3673
+[14:29:59] DB 오류: SQLite Error 1: 'no such table: 분析의뢰및결과'.
+[14:30:07] 탭 전환 → 견적발행내역
+[14:30:08] 탭 전환 → 분석의뢰내역
+[14:30:08] LoadAnalysisTreeAsync() 시작
+[14:30:08] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[14:30:08] [AnalysisRequestService] 테이블 존재 여부: 1
+[14:30:08] [AnalysisRequestService] 전체 행 수: 3673
+[14:30:08] DB 오류: SQLite Error 1: 'no such table: 분析의뢰및결과'.
+[14:30:09] 탭 전환 → 견적발행내역
+[14:30:09] 탭 전환 → 분석의뢰내역
+[14:30:09] LoadAnalysisTreeAsync() 시작
+[14:30:09] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[14:30:09] [AnalysisRequestService] 테이블 존재 여부: 1
+[14:30:09] [AnalysisRequestService] 전체 행 수: 3673
+[14:30:09] DB 오류: SQLite Error 1: 'no such table: 분析의뢰및결과'.
+[14:30:10] 탭 전환 → 견적발행내역
+[14:30:11] 탭 전환 → 분석의뢰내역
+[14:30:11] LoadAnalysisTreeAsync() 시작
+[14:30:11] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[14:30:11] [AnalysisRequestService] 테이블 존재 여부: 1
+[14:30:11] [AnalysisRequestService] 전체 행 수: 3673
+[14:30:11] DB 오류: SQLite Error 1: 'no such table: 분析의뢰및결과'.
+[14:30:12] 탭 전환 → 견적발행내역
+[14:30:12] 탭 전환 → 분석의뢰내역
+[14:30:12] LoadAnalysisTreeAsync() 시작
+[14:30:12] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[14:30:12] [AnalysisRequestService] 테이블 존재 여부: 1
+[14:30:12] [AnalysisRequestService] 전체 행 수: 3673
+[14:30:12] DB 오류: SQLite Error 1: 'no such table: 분析의뢰및결과'.
+[14:33:10] QuotationHistoryPanel 초기화 완료
+[14:33:10] LoadData() 시작
+[14:33:10] 견적 발행건수=936
+[14:33:10] LoadData() 완료 — 루트노드=6
+[14:33:12] 탭 전환 → 분석의뢰내역
+[14:33:12] LoadAnalysisTreeAsync() 시작
+[14:33:12] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[14:33:12] [AnalysisRequestService] 테이블 존재 여부: 1
+[14:33:12] [AnalysisRequestService] 전체 행 수: 3673
+[14:33:12] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 유입수  견적번호=
+[14:33:12] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=#W1 배출수  견적번호=
+[14:33:12] [AnalysisRequestService]   샘플: 채취일자=2026-02-27  약칭=포스코리튬  시료명=비점-유역1 유입수조  견적번호=
+[14:33:12] [AnalysisRequestService] 완료: 3673건  (첫 번째 연도=2026)
+[14:33:12] DB 조회 완료: 3673건
+[14:33:12] FillMonthNodeWithDays: 2026-03 → 10건
+[14:33:12] 트리 완료 — 년노드=7
+[14:33:13] 의뢰 선택: 보임 폐수조#APond-폐수 [20260312-210229]
+[14:33:14] 의뢰 선택: 보임 폐수조#BPond-폐수 [20260312-210229]
+[14:33:15] 의뢰 선택: 보임 폐수조1 [20260312-210229]
+[14:33:16] 의뢰 선택: 보임 폐수조2 [20260312-210229]
+[14:33:16] 의뢰 선택: 보임 폐수조PondA-유입수 [20260312-210229]
+[14:33:20] [AnalysisRequestService] GetStandardDaysInfo: 67개 항목 로드 완료
+[14:43:44] QuotationHistoryPanel 초기화 완료
+[14:43:44] LoadData() 시작
+[14:43:44] 견적 발행건수=936
+[14:43:44] LoadData() 완료 — 루트노드=6
+[14:43:46] 탭 전환 → 분석의뢰내역
+[14:43:46] LoadAnalysisTreeAsync() 시작
+[14:43:46] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[14:43:46] [AnalysisRequestService] 테이블 존재: 1
+[14:43:46] [AnalysisRequestService] 전체 행 수: 3673
+[14:43:46] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[14:43:46] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[14:43:46] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[14:43:46] [AnalysisRequestService] 완료: 3673건
+[14:43:46] DB 조회 완료: 3673건
+[14:43:46] FillMonthNodeWithDays: 2026-03 → 10건
+[14:43:46] 트리 완료 — 년노드=7
+[14:43:47] 의뢰 선택: 보임 폐수조#APond-폐수 [20260312-210229]
+[14:43:51] [AnalysisRequestService] GetStandardDaysInfo: 67개 로드 (days=True, short=True)
+[14:43:51] [AnalysisRequestService] GetManagersByDate(2026-03-25): 67개 담당자 로드
+[14:49:00] QuotationHistoryPanel 초기화 완료
+[14:49:00] LoadData() 시작
+[14:49:00] 견적 발행건수=936
+[14:49:01] LoadData() 완료 — 루트노드=6
+[14:49:04] 탭 전환 → 분석의뢰내역
+[14:49:04] LoadAnalysisTreeAsync() 시작
+[14:49:04] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[14:49:04] [AnalysisRequestService] 테이블 존재: 1
+[14:49:04] [AnalysisRequestService] 전체 행 수: 3673
+[14:49:04] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[14:49:04] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[14:49:04] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[14:49:04] [AnalysisRequestService] 완료: 3673건
+[14:49:04] DB 조회 완료: 3673건
+[14:49:04] FillMonthNodeWithDays: 2026-03 → 10건
+[14:49:04] 트리 완료 — 년노드=7
+[14:49:06] 의뢰 선택: 보임 폐수조1 [20260312-210229]
+[14:49:11] [AnalysisRequestService] GetStandardDaysInfo: 67개 로드 (days=True, short=True)
+[14:49:12] [AnalysisRequestService] GetManagersByDate(2026-03-25): 67개 담당자 로드
+[14:58:25] QuotationHistoryPanel 초기화 완료
+[14:58:25] LoadData() 시작
+[14:58:25] 견적 발행건수=936
+[14:58:26] LoadData() 완료 — 루트노드=6
+[14:58:29] 견적 선택: 보임 테스트 입니다….. [20260312-210229]
+[14:58:33] 탭 전환 → 분석의뢰내역
+[14:58:33] LoadAnalysisTreeAsync() 시작
+[14:58:33] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[14:58:33] [AnalysisRequestService] 테이블 존재: 1
+[14:58:33] [AnalysisRequestService] 전체 행 수: 3673
+[14:58:33] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[14:58:33] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[14:58:33] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[14:58:33] [AnalysisRequestService] 완료: 3673건
+[14:58:33] DB 조회 완료: 3673건
+[14:58:33] FillMonthNodeWithDays: 2026-03 → 10건
+[14:58:33] 트리 완료 — 년노드=7
+[14:58:34] 의뢰 선택: 보임 폐수조#APond-폐수 [20260312-210229]
+[14:58:39] [AnalysisRequestService] GetStandardDaysInfo: 67개 로드 (days=True, short=True)
+[14:58:39] [AnalysisRequestService] GetManagersByDate(2026-03-25): 67개 담당자 로드
+[15:09:45] QuotationHistoryPanel 초기화 완료
+[15:09:45] LoadData() 시작
+[15:09:45] 견적 발행건수=936
+[15:09:45] LoadData() 완료 — 루트노드=6
+[15:09:51] 견적 선택: 보임 테스트 입니다….. [20260312-210229]
+[15:09:53] 탭 전환 → 분석의뢰내역
+[15:09:53] LoadAnalysisTreeAsync() 시작
+[15:09:53] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[15:09:53] [AnalysisRequestService] 테이블 존재: 1
+[15:09:53] [AnalysisRequestService] 전체 행 수: 3673
+[15:09:53] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[15:09:53] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[15:09:53] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[15:09:54] [AnalysisRequestService] 완료: 3673건
+[15:09:54] DB 조회 완료: 3673건
+[15:09:54] FillMonthNodeWithDays: 2026-03 → 10건
+[15:09:54] 트리 완료 — 년노드=7
+[15:09:57] FillMonthNodeWithDays: 2026-02 → 70건
+[15:10:05] 의뢰 선택: 포스코리튬 #W1 유입수 []
+[15:10:06] 의뢰 선택: 포스코리튬 #W1 배출수 []
+[15:10:07] 의뢰 선택: 포스코리튬 #W1 배출수 []
+[15:10:08] 의뢰 선택: 포스코리튬 비점-유역1 유입수조 []
+[15:10:09] 의뢰 선택: 포스코리튬 비점-유역1 유입수조 []
+[15:10:09] 의뢰 선택: 포스코리튬 비점-유역1 처리수조 []
+[15:10:10] 의뢰 선택: 포스코리튬 비점-유역2 유입수조 []
+[15:10:10] 의뢰 선택: 포스코리튬 비점-유역2 처리수조 []
+[15:10:14] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[15:10:14] [AnalysisRequestService] GetManagersByDate(2026-02-27): 113개 담당자 로드
+[15:10:38] [AnalysisRequestService] GetManagersByDate(2026-02-27): 113개 담당자 로드
+[15:11:02] [AnalysisRequestService] GetManagersByDate(2026-02-27): 113개 담당자 로드
+[15:11:03] [AnalysisRequestService] GetManagersByDate(2026-02-27): 113개 담당자 로드
+[15:11:04] [AnalysisRequestService] GetManagersByDate(2026-02-27): 113개 담당자 로드
+[15:11:05] [AnalysisRequestService] GetManagersByDate(2026-02-27): 113개 담당자 로드
+[15:17:42] QuotationHistoryPanel 초기화 완료
+[15:17:42] LoadData() 시작
+[15:17:42] 견적 발행건수=936
+[15:17:42] LoadData() 완료 — 루트노드=6
+[15:17:45] 탭 전환 → 분석의뢰내역
+[15:17:45] LoadAnalysisTreeAsync() 시작
+[15:17:45] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[15:17:45] [AnalysisRequestService] 테이블 존재: 1
+[15:17:45] [AnalysisRequestService] 전체 행 수: 3673
+[15:17:45] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[15:17:45] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[15:17:45] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[15:17:45] [AnalysisRequestService] 완료: 3673건
+[15:17:45] DB 조회 완료: 3673건
+[15:17:45] FillMonthNodeWithDays: 2026-03 → 10건
+[15:17:45] 트리 완료 — 년노드=7
+[15:17:46] 의뢰 선택: 보임 폐수조#BPond-폐수 [20260312-210229]
+[15:17:49] 의뢰 선택: 보임 폐수조1 [20260312-210229]
+[15:17:52] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[15:17:52] [AnalysisRequestService] GetManagersByDate(2026-03-25): 113개 담당자 로드
+[15:17:59] [AnalysisRequestService] GetManagersByDate(2026-03-25): 113개 담당자 로드
+[15:23:03] QuotationHistoryPanel 초기화 완료
+[15:23:03] LoadData() 시작
+[15:23:03] 견적 발행건수=936
+[15:23:03] LoadData() 완료 — 루트노드=6
+[15:23:05] 견적 선택: 센터 왔싸 뵹 [20260325-191213]
+[15:23:07] 탭 전환 → 분석의뢰내역
+[15:23:07] LoadAnalysisTreeAsync() 시작
+[15:23:07] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[15:23:07] [AnalysisRequestService] 테이블 존재: 1
+[15:23:07] [AnalysisRequestService] 전체 행 수: 3673
+[15:23:07] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[15:23:07] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[15:23:07] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[15:23:07] [AnalysisRequestService] 완료: 3673건
+[15:23:07] DB 조회 완료: 3673건
+[15:23:07] FillMonthNodeWithDays: 2026-03 → 10건
+[15:23:07] 트리 완료 — 년노드=7
+[15:23:09] 의뢰 선택: 보임 폐수조#APond-폐수 [20260312-210229]
+[15:23:09] 의뢰 선택: 보임 폐수조#BPond-폐수 [20260312-210229]
+[15:23:09] 의뢰 선택: 보임 폐수조1 [20260312-210229]
+[15:23:13] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[15:23:13] [AnalysisRequestService] GetManagersByDate(2026-03-25): 113개 담당자 로드
+[15:23:21] [AnalysisRequestService] GetManagersByDate(2026-03-25): 113개 담당자 로드
+[15:23:34] [AnalysisRequestService] GetManagersByDate(2026-03-25): 113개 담당자 로드
+[15:29:13] QuotationHistoryPanel 초기화 완료
+[15:29:13] LoadData() 시작
+[15:29:13] 견적 발행건수=936
+[15:29:13] LoadData() 완료 — 루트노드=6
+[15:30:01] LoadData() 시작
+[15:30:01] 견적 발행건수=937
+[15:30:02] LoadData() 완료 — 루트노드=6
+[15:30:07] 견적 선택: 화치  [20260326-152919]
+[15:30:08] 견적 선택: 화치  [20260326-152919]
+[15:30:08] 견적 선택: 화치  [20260326-152919]
+[15:30:25] LoadData() 시작
+[15:30:25] 견적 발행건수=937
+[15:30:26] LoadData() 완료 — 루트노드=6
+[15:30:44] 견적 선택: 화치 테스트 견적서 입니다. [20260326-152919]
+[15:31:45] 견적 선택: 화치 테스트 견적서 입니다. [20260326-152919]
+[15:31:54] 탭 전환 → 분석의뢰내역
+[15:31:54] LoadAnalysisTreeAsync() 시작
+[15:31:54] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[15:31:54] [AnalysisRequestService] 테이블 존재: 1
+[15:31:54] [AnalysisRequestService] 전체 행 수: 3673
+[15:31:54] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[15:31:54] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[15:31:54] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[15:31:54] [AnalysisRequestService] 완료: 3673건
+[15:31:54] DB 조회 완료: 3673건
+[15:31:54] FillMonthNodeWithDays: 2026-03 → 10건
+[15:31:54] 트리 완료 — 년노드=7
+[15:31:59] 새로고침
+[15:31:59] LoadAnalysisTreeAsync() 시작
+[15:31:59] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[15:31:59] [AnalysisRequestService] 테이블 존재: 1
+[15:31:59] [AnalysisRequestService] 전체 행 수: 3673
+[15:31:59] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[15:31:59] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[15:31:59] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[15:31:59] [AnalysisRequestService] 완료: 3673건
+[15:31:59] DB 조회 완료: 3673건
+[15:31:59] FillMonthNodeWithDays: 2026-03 → 10건
+[15:31:59] 트리 완료 — 년노드=7
+[15:32:06] 탭 전환 → 견적발행내역
+[15:32:07] 탭 전환 → 분석의뢰내역
+[15:32:07] LoadAnalysisTreeAsync() 시작
+[15:32:07] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[15:32:07] [AnalysisRequestService] 테이블 존재: 1
+[15:32:07] [AnalysisRequestService] 전체 행 수: 3673
+[15:32:07] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[15:32:07] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[15:32:07] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[15:32:07] [AnalysisRequestService] 완료: 3673건
+[15:32:07] DB 조회 완료: 3673건
+[15:32:07] FillMonthNodeWithDays: 2026-03 → 10건
+[15:32:07] 트리 완료 — 년노드=7
+[15:32:10] 새로고침
+[15:32:10] LoadAnalysisTreeAsync() 시작
+[15:32:10] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[15:32:10] [AnalysisRequestService] 테이블 존재: 1
+[15:32:10] [AnalysisRequestService] 전체 행 수: 3673
+[15:32:10] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[15:32:10] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[15:32:10] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[15:32:10] [AnalysisRequestService] 완료: 3673건
+[15:32:10] DB 조회 완료: 3673건
+[15:32:10] FillMonthNodeWithDays: 2026-03 → 10건
+[15:32:10] 트리 완료 — 년노드=7
+[15:32:11] 새로고침
+[15:32:11] LoadAnalysisTreeAsync() 시작
+[15:32:11] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[15:32:11] [AnalysisRequestService] 테이블 존재: 1
+[15:32:11] [AnalysisRequestService] 전체 행 수: 3673
+[15:32:11] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[15:32:11] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[15:32:11] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[15:32:11] [AnalysisRequestService] 완료: 3673건
+[15:32:11] DB 조회 완료: 3673건
+[15:32:11] FillMonthNodeWithDays: 2026-03 → 10건
+[15:32:11] 트리 완료 — 년노드=7
+[15:32:11] 새로고침
+[15:32:11] LoadAnalysisTreeAsync() 시작
+[15:32:11] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[15:32:11] [AnalysisRequestService] 테이블 존재: 1
+[15:32:11] [AnalysisRequestService] 전체 행 수: 3673
+[15:32:11] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[15:32:11] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[15:32:11] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[15:32:11] [AnalysisRequestService] 완료: 3673건
+[15:32:11] DB 조회 완료: 3673건
+[15:32:11] FillMonthNodeWithDays: 2026-03 → 10건
+[15:32:11] 트리 완료 — 년노드=7
+[15:32:12] 새로고침
+[15:32:12] LoadAnalysisTreeAsync() 시작
+[15:32:12] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[15:32:12] [AnalysisRequestService] 테이블 존재: 1
+[15:32:12] [AnalysisRequestService] 전체 행 수: 3673
+[15:32:12] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[15:32:12] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[15:32:12] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[15:32:12] [AnalysisRequestService] 완료: 3673건
+[15:32:12] DB 조회 완료: 3673건
+[15:32:12] FillMonthNodeWithDays: 2026-03 → 10건
+[15:32:12] 트리 완료 — 년노드=7
+[15:32:38] 의뢰 선택: 보임 폐수조#APond-폐수 [20260312-210229]
+[15:33:09] 의뢰 선택: 보임 폐수조#BPond-폐수 [20260312-210229]
+[15:33:10] 의뢰 선택: 보임 폐수조1 [20260312-210229]
+[15:33:11] 의뢰 선택: 보임 폐수조2 [20260312-210229]
+[15:34:02] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[15:34:02] [AnalysisRequestService] GetManagersByDate(2026-03-25): 113개 담당자 로드
+[15:34:10] [AnalysisRequestService] GetManagersByDate(2026-03-25): 113개 담당자 로드
+[15:34:20] [AnalysisRequestService] GetManagersByDate(2026-03-25): 113개 담당자 로드
+[15:34:28] [AnalysisRequestService] GetManagersByDate(2026-03-25): 113개 담당자 로드
+[15:37:31] LoadData() 시작
+[15:37:31] 견적 발행건수=937
+[15:37:31] LoadData() 완료 — 루트노드=6
+[15:37:47] 탭 전환 → 견적발행내역
+[15:37:49] 견적 선택: 화치 테스트 견적서 입니다. [20260326-152919]
+[15:37:51] 견적 선택: 화치 테스트 견적서 입니다. [20260326-152919]
+[15:37:51] 견적 선택: 화치 테스트 견적서 입니다. [20260326-152919]
+[15:40:04] 탭 전환 → 분석의뢰내역
+[15:40:04] LoadAnalysisTreeAsync() 시작
+[15:40:04] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[15:40:04] [AnalysisRequestService] 테이블 존재: 1
+[15:40:04] [AnalysisRequestService] 전체 행 수: 3677
+[15:40:04] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[15:40:04] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[15:40:04] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[15:40:04] [AnalysisRequestService] 완료: 3677건
+[15:40:04] DB 조회 완료: 3677건
+[15:40:04] FillMonthNodeWithDays: 2026-03 → 14건
+[15:40:04] 트리 완료 — 년노드=7
+[15:40:09] 의뢰 선택: 화치 PVC_침전조 [20260326-152919]
+[15:40:11] 의뢰 선택: 화치 특별의뢰 샘플 [20260326-152919]
+[15:40:13] 의뢰 선택: 화치 ABS2(SC-8710) [20260326-152919]
+[15:40:13] 의뢰 선택: 화치 ABS2(SC-8710) [20260326-152919]
+[15:40:13] 의뢰 선택: 화치 IPA생산팀폐수(TK-5737) [20260326-152919]
+[15:40:25] 의뢰 선택: 화치 PVC_침전조 [20260326-152919]
+[15:40:26] 의뢰 선택: 화치 IPA생산팀폐수(TK-5737) [20260326-152919]
+[15:40:26] 의뢰 선택: 화치 ABS2(SC-8710) [20260326-152919]
+[15:40:27] 의뢰 선택: 화치 특별의뢰 샘플 [20260326-152919]
+[15:40:34] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[15:40:34] [AnalysisRequestService] GetManagersByDate(2026-03-26): 113개 담당자 로드
+[15:40:45] [AnalysisRequestService] GetManagersByDate(2026-03-26): 113개 담당자 로드
+[15:40:56] [AnalysisRequestService] GetManagersByDate(2026-03-26): 113개 담당자 로드
+[15:41:07] [AnalysisRequestService] GetManagersByDate(2026-03-26): 113개 담당자 로드
+[15:55:08] QuotationHistoryPanel 초기화 완료
+[15:55:08] LoadData() 시작
+[15:55:08] 견적 발행건수=937
+[15:55:09] LoadData() 완료 — 루트노드=6
+[15:55:38] 탭 전환 → 분석의뢰내역
+[15:55:38] LoadAnalysisTreeAsync() 시작
+[15:55:38] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[15:55:38] [AnalysisRequestService] 테이블 존재: 1
+[15:55:38] [AnalysisRequestService] 전체 행 수: 3677
+[15:55:38] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[15:55:38] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[15:55:38] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[15:55:38] [AnalysisRequestService] 완료: 3677건
+[15:55:38] DB 조회 완료: 3677건
+[15:55:38] FillMonthNodeWithDays: 2026-03 → 14건
+[15:55:38] 트리 완료 — 년노드=7
+[15:55:39] 의뢰 선택: 화치 PVC_침전조 [20260326-152919]
+[15:55:44] 의뢰 선택: 화치 IPA생산팀폐수(TK-5737) [20260326-152919]
+[15:55:44] 의뢰 선택: 화치 ABS2(SC-8710) [20260326-152919]
+[15:55:45] 의뢰 선택: 화치 특별의뢰 샘플 [20260326-152919]
+[15:56:01] 의뢰 선택: 화치 PVC_침전조 [20260326-152919]
+[15:56:01] 의뢰 선택: 화치 IPA생산팀폐수(TK-5737) [20260326-152919]
+[15:56:02] 의뢰 선택: 화치 ABS2(SC-8710) [20260326-152919]
+[15:56:02] 의뢰 선택: 화치 특별의뢰 샘플 [20260326-152919]
+[15:56:03] 의뢰 선택: 보임 폐수조#APond-폐수 [20260312-210229]
+[15:56:04] 의뢰 선택: 보임 폐수조#BPond-폐수 [20260312-210229]
+[15:56:04] 의뢰 선택: 보임 폐수조1 [20260312-210229]
+[15:56:05] 의뢰 선택: 보임 폐수조2 [20260312-210229]
+[15:56:05] 의뢰 선택: 보임 폐수조PondA-유입수 [20260312-210229]
+[15:56:05] 의뢰 선택: 보임 폐수조PondA-방류수 [20260312-210229]
+[15:56:06] 의뢰 선택: 보임 폐수조PondB-유입수 [20260312-210229]
+[15:56:06] 의뢰 선택: 보임 폐수조PondB-방류수 [20260312-210229]
+[15:56:07] 의뢰 선택: 보임 유입수 [20260312-210229]
+[15:56:07] 의뢰 선택: 보임 방류수 [20260312-210229]
+[16:12:21] LoadData() 시작
+[16:12:21] 견적 발행건수=937
+[16:12:21] LoadData() 완료 — 루트노드=6
+[16:12:26] 의뢰 선택: 보임 폐수조#APond-폐수 [20260312-210229]
+[16:12:27] 의뢰 선택: 보임 폐수조2 [20260312-210229]
+[16:12:28] 의뢰 선택: 보임 폐수조PondA-방류수 [20260312-210229]
+[16:12:29] 의뢰 선택: 보임 폐수조#BPond-폐수 [20260312-210229]
+[16:12:32] LoadData() 시작
+[16:12:32] 견적 발행건수=937
+[16:12:32] LoadData() 완료 — 루트노드=6
+[16:12:35] 의뢰 선택: 화치 PVC_침전조 [20260326-152919]
+[16:12:40] 탭 전환 → 견적발행내역
+[16:12:41] 견적 선택: 화치 테스트 견적서 입니다. [20260326-152919]
+[16:17:47] QuotationHistoryPanel 초기화 완료
+[16:17:47] LoadData() 시작
+[16:17:47] 견적 발행건수=937
+[16:17:48] LoadData() 완료 — 루트노드=6
+[16:17:51] 탭 전환 → 분석의뢰내역
+[16:17:51] LoadAnalysisTreeAsync() 시작
+[16:17:51] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[16:17:51] [AnalysisRequestService] 테이블 존재: 1
+[16:17:51] [AnalysisRequestService] 전체 행 수: 3677
+[16:17:51] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[16:17:51] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[16:17:51] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[16:17:51] [AnalysisRequestService] 완료: 3677건
+[16:17:51] DB 조회 완료: 3677건
+[16:17:52] FillMonthNodeWithDays: 2026-03 → 14건
+[16:17:52] 트리 완료 — 년노드=7
+[16:17:53] 의뢰 선택: 화치 PVC_침전조 [20260326-152919]
+[16:17:59] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[16:17:59] [AnalysisRequestService] GetManagersByDate(2026-03-26): 113개 담당자 로드

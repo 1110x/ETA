@@ -254,7 +254,7 @@ public partial class QuotationDetailPanel : UserControl
     {
         if (_current == null) return;
 
-        // 견적서 분析항목 추출
+        // 견적서 분석항목 추출
         var quotedItems = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         try
         {

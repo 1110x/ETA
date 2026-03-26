@@ -580,3 +580,30 @@
 [17:29:33] [Contract] 로드 완료 → 32건
 [17:29:33] [Contract] LoadData() 시작
 [17:29:33] [Contract] 로드 완료 → 32건
+[10:52:59] [Contract] LoadData() 시작
+[10:52:59] [Contract] 로드 완료 → 32건
+[10:52:59] [Contract] LoadData() 시작
+[10:52:59] [Contract] 로드 완료 → 32건
+[11:47:49] [Contract] LoadData() 시작
+[11:47:50] [Contract] 로드 완료 → 32건
+[11:47:50] [Contract] LoadData() 시작
+[11:47:50] [Contract] 로드 완료 → 32건
+[15:28:56] [Contract] LoadData() 시작
+[15:28:56] [Contract] 로드 완료 → 32건
+[15:28:56] [Contract] LoadData() 시작
+[15:28:56] [Contract] 로드 완료 → 32건
+[15:28:57] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[15:28:57] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[15:28:57] [Contract] 선택: ㈜LG화학 여수-화치
+[15:29:05] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[15:29:06] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[15:29:06] [Contract] 선택: 금호석유화학
+[15:29:06] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[15:29:07] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[15:29:07] [Contract] 선택: 롯데에너지머티리얼즈㈜
+[15:29:07] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[15:29:08] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[15:29:08] [Contract] 선택: 보임열병합발전㈜
+[15:29:09] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[15:29:10] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[15:29:10] [Contract] 선택: 심텍(오창2지점)

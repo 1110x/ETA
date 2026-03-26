@@ -47,6 +47,17 @@ public partial class QuotationNewPanel : UserControl
         txbQuotationNo.Text = GenerateNo();
         LoadContractTypes();
         _allIssues = QuotationService.GetAllIssues();
+
+        // ESC 키 → 당근/오작성 수정 모드일 때 취소
+        KeyDown += (_, e) =>
+        {
+            if (e.Key == Avalonia.Input.Key.Escape &&
+                (_editingIssue != null || _carrotCompanyName.Length > 0))
+            {
+                Clear();
+                EscapeCancelled?.Invoke();
+            }
+        };
     }
 
     // ══════════════════════════════════════════════════════════════════════
@@ -273,7 +284,12 @@ public partial class QuotationNewPanel : UserControl
             [Grid.ColumnProperty] = 0,
         };
         Avalonia.Controls.ToolTip.SetTip(nameBlock,
-            $"클릭 → 수량 변경\nES: {meta.ES}  단위: {meta.unit}");
+            new TextBlock
+            {
+                Text = $"클릭 → 수량 변경\nES: {meta.ES}  단위: {meta.unit}",
+                FontSize = 11,
+                FontFamily = Font,
+            });
         nameBlock.PointerPressed += (_, _) => StartQtyEdit(name, qty);
         grid.Children.Add(nameBlock);
 
@@ -488,11 +504,14 @@ public partial class QuotationNewPanel : UserControl
     // 초기화
     private void BtnClear_Click(object? sender, RoutedEventArgs e) => Clear();
 
-    /// <summary>저장 완료 시 발생 — HistoryPanel 자동 새로고침용</summary>
-    public event Action? SaveCompleted;
+    /// <summary>저장 완료 시 발생 — HistoryPanel 자동 새로고침용 (저장된 issue 전달)</summary>
+    public event Action<ETA.Models.QuotationIssue>? SaveCompleted;
 
-    // 저장
-    private void BtnSave_Click(object? sender, RoutedEventArgs e)
+    /// <summary>ESC 취소 시 발생 — MainPage가 DetailPanel로 복귀하도록</summary>
+    public event Action? EscapeCancelled;
+
+    // 저장 (async — 프로그레스바 표시 후 DB 저장, 완료 후 목록 갱신)
+    private async void BtnSave_Click(object? sender, RoutedEventArgs e)
     {
         if (_sampleDuplicated) return;
 
@@ -519,11 +538,34 @@ public partial class QuotationNewPanel : UserControl
             총금액   = total,
         };
 
-        if (_editingIssue != null)
-            QuotationService.Delete(_editingIssue.Id);
+        // ── 프로그레스바 표시 ────────────────────────────────────────────
+        btnSave.IsEnabled       = false;
+        prgSave.IsVisible       = true;
+        prgSave.IsIndeterminate = true;
 
-        // _itemData를 함께 전달해서 분석항목 저장
-        bool ok = QuotationService.Insert(issue, _itemData);
+        // UI 갱신 프레임 양보
+        await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(
+            () => { }, Avalonia.Threading.DispatcherPriority.Render);
+
+        bool ok = false;
+        try
+        {
+            // DB 작업을 백그라운드 스레드에서 실행
+            ok = await System.Threading.Tasks.Task.Run(() =>
+            {
+                if (_editingIssue != null)
+                    QuotationService.Delete(_editingIssue.Id);
+                return QuotationService.Insert(issue, _itemData);
+            });
+        }
+        catch (Exception ex) { Log($"저장 예외: {ex.Message}"); }
+        finally
+        {
+            prgSave.IsIndeterminate = false;
+            prgSave.IsVisible       = false;
+            btnSave.IsEnabled       = !_sampleDuplicated;
+        }
+
         Log(ok ? $"저장 완료 → {issue.견적번호}  항목{_itemData.Count}개" : "저장 실패");
 
         if (ok)
@@ -534,10 +576,13 @@ public partial class QuotationNewPanel : UserControl
             txbMode.Text        = "";
             txbTitle.Text       = "📝  신규 견적 작성";
             txbQuotationNo.Text = GenerateNo();
-            _allIssues = QuotationService.GetAllIssues();
 
-            // HistoryPanel 자동 새로고침 트리거
-            SaveCompleted?.Invoke();
+            // 최신 발행 목록 갱신 (백그라운드에서 읽어와 UI 스레드에 반영)
+            _allIssues = await System.Threading.Tasks.Task.Run(
+                () => QuotationService.GetAllIssues());
+
+            // HistoryPanel 자동 새로고침 트리거 (저장된 issue 전달)
+            SaveCompleted?.Invoke(issue);
         }
     }
 
