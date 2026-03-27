@@ -191,6 +191,49 @@ public static class AnalysisRecordService
         }
     }
 
+    // ── Excel 결과 파일 읽기 ──────────────────────────────────────────────
+    /// <summary>
+    /// 분석기록부 Excel 파일을 읽어 결과 목록 반환.
+    /// 각 시트 = 분석항목, 행4부터: A=견적번호, B=약칭, C=시료명, D=결과값
+    /// </summary>
+    public static List<ExcelResultRow> ReadResultsFromFile(string filePath)
+    {
+        var list = new List<ExcelResultRow>();
+        if (!File.Exists(filePath)) return list;
+        try
+        {
+            using var wb = new XLWorkbook(filePath);
+            foreach (var ws in wb.Worksheets)
+            {
+                string analyteName = ws.Name.Trim();
+                int lastRow = ws.LastRowUsed()?.RowNumber() ?? 3;
+                for (int r = 4; r <= lastRow; r++)
+                {
+                    string 견적번호 = ws.Cell(r, 1).GetString().Trim();
+                    string 약칭     = ws.Cell(r, 2).GetString().Trim();
+                    string 시료명   = ws.Cell(r, 3).GetString().Trim();
+                    string 결과값   = ws.Cell(r, 4).GetString().Trim();
+                    string 방류기준 = ws.Cell(r, 6).GetString().Trim();
+
+                    if (string.IsNullOrEmpty(약칭) && string.IsNullOrEmpty(시료명)) continue;
+
+                    list.Add(new ExcelResultRow
+                    {
+                        AnalyteName = analyteName,
+                        견적번호    = 견적번호,
+                        약칭        = 약칭,
+                        시료명      = 시료명,
+                        결과값      = 결과값,
+                        방류기준    = 방류기준,
+                    });
+                }
+            }
+            Log($"ReadResultsFromFile: {list.Count}행 읽음 ({wb.Worksheets.Count}시트)");
+        }
+        catch (Exception ex) { Log($"ReadResultsFromFile 오류: {ex.Message}"); }
+        return list;
+    }
+
     // ── 내부 헬퍼 ────────────────────────────────────────────────────────
     private static List<Dictionary<string, string>> GetOrderRows(string 견적번호)
     {
@@ -257,4 +300,15 @@ public static class AnalysisRecordService
 
     private static void Log(string msg)
         => Debug.WriteLine($"[{DateTime.Now:HH:mm:ss}] [AnalysisRecord] {msg}");
+}
+
+/// <summary>분석기록부 Excel 파일에서 읽어온 결과 1행</summary>
+public sealed class ExcelResultRow
+{
+    public string AnalyteName { get; set; } = "";  // 시트명 = 분석항목명
+    public string 견적번호    { get; set; } = "";
+    public string 약칭        { get; set; } = "";
+    public string 시료명      { get; set; } = "";
+    public string 결과값      { get; set; } = "";
+    public string 방류기준    { get; set; } = "";
 }

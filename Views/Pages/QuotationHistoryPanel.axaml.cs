@@ -364,15 +364,16 @@ public partial class QuotationHistoryPanel : UserControl
 
     private TreeViewItem MakeIssueLeaf(QuotationIssue issue)
     {
+        var (ibg, ifg) = BadgeColorHelper.GetBadgeColor(issue.약칭);
         var sp = new StackPanel { Spacing = 1, Margin = new Thickness(4, 2) };
         var topRow = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*") };
         topRow.Children.Add(new Border
         {
-            Background = Brush.Parse("#1a3a1a"), CornerRadius = new CornerRadius(3),
+            Background = Brush.Parse(ibg), CornerRadius = new CornerRadius(3),
             Padding = new Thickness(4, 1), Margin = new Thickness(0, 0, 5, 0),
             [Grid.ColumnProperty] = 0,
             Child = new TextBlock { Text = issue.약칭, FontSize = 9, FontFamily = Font,
-                                    Foreground = Brush.Parse("#88cc88") },
+                                    Foreground = Brush.Parse(ifg) },
         });
         topRow.Children.Add(new TextBlock
         {
@@ -393,15 +394,16 @@ public partial class QuotationHistoryPanel : UserControl
 
     private TreeViewItem MakeAnalysisLeaf(AnalysisRequestRecord rec)
     {
+        var (rbg, rfg) = BadgeColorHelper.GetBadgeColor(rec.약칭);
         var sp = new StackPanel { Spacing = 1, Margin = new Thickness(4, 2) };
         var topRow = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*") };
         topRow.Children.Add(new Border
         {
-            Background = Brush.Parse("#3a1a1a"), CornerRadius = new CornerRadius(3),
+            Background = Brush.Parse(rbg), CornerRadius = new CornerRadius(3),
             Padding = new Thickness(4, 1), Margin = new Thickness(0, 0, 5, 0),
             [Grid.ColumnProperty] = 0,
             Child = new TextBlock { Text = rec.약칭, FontSize = 9, FontFamily = Font,
-                                    Foreground = Brush.Parse("#cc8888") },
+                                    Foreground = Brush.Parse(rfg) },
         });
         topRow.Children.Add(new TextBlock
         {

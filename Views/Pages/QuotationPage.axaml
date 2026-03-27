@@ -76,11 +76,11 @@
                                    TextTrimming="CharacterEllipsis"
                                    VerticalAlignment="Center" />
                         <Border Grid.Column="1"
-                                Background="#1a3a1a" CornerRadius="3"
+                                Background="{Binding BadgeBg}" CornerRadius="3"
                                 Padding="4,1" Margin="4,0,0,0"
                                 IsVisible="{Binding HasAbbr}">
                             <TextBlock Text="{Binding C_Abbreviation}"
-                                       FontSize="10" Foreground="#8c8" />
+                                       FontSize="10" Foreground="{Binding BadgeFg}" />
                         </Border>
                     </Grid>
                 </DataTemplate>

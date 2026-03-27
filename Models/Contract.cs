@@ -1,5 +1,6 @@
 namespace ETA.Models;
 using System;
+using ETA.Services;
 
 public class Contract
 {
@@ -24,7 +25,9 @@ public class Contract
     public string    C_Email                    { get; set; } = string.Empty;
 
     // ── 표시용 헬퍼 ──────────────────────────────────────────────────────────
-    public bool HasAbbr => !string.IsNullOrWhiteSpace(C_Abbreviation);
+    public bool   HasAbbr   => !string.IsNullOrWhiteSpace(C_Abbreviation);
+    public string BadgeBg   => BadgeColorHelper.GetBadgeColor(C_Abbreviation).Bg;
+    public string BadgeFg   => BadgeColorHelper.GetBadgeColor(C_Abbreviation).Fg;
     public string C_ContractStartStr =>
         C_ContractStart.HasValue ? C_ContractStart.Value.ToString("yyyy-MM-dd") : "";
     public string C_ContractEndStr =>

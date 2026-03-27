@@ -29,24 +29,31 @@
 
     <Grid RowDefinitions="Auto,*">
 
-        <!-- 정렬 토글 -->
-        <Border Grid.Row="0" Background="#2a2a3a" Padding="6,2">
+        <!-- 정렬 토글 헤더 -->
+        <Border Grid.Row="0"
+                Background="#1a1a28"
+                CornerRadius="6,6,0,0"
+                Padding="8,4">
             <ToggleSwitch x:Name="tglSortMode"
-                          IsChecked="False"
+                          IsChecked="True"
                           IsCheckedChanged="SortToggle_Changed"
                           HorizontalAlignment="Left"
                           VerticalAlignment="Center"
                           OnContent="📅 날짜별 보기"
-                          OffContent="🏭 업체별 보기" />
+                          OffContent="🏭 업체별 보기"/>
         </Border>
 
-        <!-- 트리뷰 -->
-        <TreeView Grid.Row="1"
-                  x:Name="ReportTreeView"
-                  Margin="0,2,0,0"
-                  HorizontalAlignment="Stretch"
-                  VerticalAlignment="Stretch"
-                  SelectionChanged="ReportTreeView_SelectionChanged" />
+        <!-- 트리뷰 영역 -->
+        <Border Grid.Row="1"
+                Background="#13131f"
+                CornerRadius="0,0,6,6"
+                Padding="2,2">
+            <TreeView x:Name="ReportTreeView"
+                      Background="Transparent"
+                      HorizontalAlignment="Stretch"
+                      VerticalAlignment="Stretch"
+                      SelectionChanged="ReportTreeView_SelectionChanged" />
+        </Border>
 
     </Grid>
 

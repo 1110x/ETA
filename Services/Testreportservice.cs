@@ -125,6 +125,33 @@ public static class TestReportService
         return rows > 0;
     }
 
+    /// <summary>여러 분析항목 결과값을 한 번에 업데이트. 반환값 = 성공한 항목 수</summary>
+    public static int BulkUpdateResults(int rowId, Dictionary<string, string> analyteValues)
+    {
+        if (analyteValues.Count == 0) return 0;
+        var dbPath = GetDatabasePath();
+        int count = 0;
+        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        conn.Open();
+        using var tx = conn.BeginTransaction();
+        try
+        {
+            foreach (var kv in analyteValues)
+            {
+                using var cmd = conn.CreateCommand();
+                cmd.Transaction = tx;
+                cmd.CommandText = $"UPDATE \"{TableName}\" SET \"{kv.Key.Trim()}\" = @val WHERE rowid = @id";
+                cmd.Parameters.AddWithValue("@val", string.IsNullOrEmpty(kv.Value) ? DBNull.Value : (object)kv.Value);
+                cmd.Parameters.AddWithValue("@id", rowId);
+                if (cmd.ExecuteNonQuery() > 0) count++;
+            }
+            tx.Commit();
+        }
+        catch { tx.Rollback(); throw; }
+        Debug.WriteLine($"[BulkUpdate] rowid={rowId} → {count}/{analyteValues.Count}항목 저장");
+        return count;
+    }
+
     public static bool DeleteSample(int rowId)
     {
         var dbPath = GetDatabasePath();
@@ -136,6 +163,52 @@ public static class TestReportService
         int rows = cmd.ExecuteNonQuery();
         Debug.WriteLine($"[DELETE] rowid={rowId} → {rows}행");
         return rows > 0;
+    }
+
+    /// <summary>특정 rowId의 단일 분析항목 결과값 조회. 없으면 null</summary>
+    public static string? GetAnalyteValue(int rowId, string columnName)
+    {
+        var dbPath = GetDatabasePath();
+        if (!File.Exists(dbPath)) return null;
+        try
+        {
+            using var conn = new SqliteConnection($"Data Source={dbPath}");
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = $"SELECT \"{columnName.Trim()}\" FROM \"{TableName}\" WHERE rowid = @id LIMIT 1";
+            cmd.Parameters.AddWithValue("@id", rowId);
+            var result = cmd.ExecuteScalar();
+            return result == null || result == DBNull.Value ? null : result.ToString();
+        }
+        catch (Exception ex) { Debug.WriteLine($"[GetAnalyteValue] 오류: {ex.Message}"); return null; }
+    }
+
+    /// <summary>견적번호+시료명 또는 약칭+시료명으로 rowid 조회. 없으면 null</summary>
+    public static int? FindRowId(string 견적번호, string 약칭, string 시료명)
+    {
+        var dbPath = GetDatabasePath();
+        if (!File.Exists(dbPath)) return null;
+        try
+        {
+            using var conn = new SqliteConnection($"Data Source={dbPath}");
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            if (!string.IsNullOrEmpty(견적번호))
+            {
+                cmd.CommandText = $"SELECT rowid FROM \"{TableName}\" WHERE \"견적번호\" = @q AND \"시료명\" = @s LIMIT 1";
+                cmd.Parameters.AddWithValue("@q", 견적번호);
+                cmd.Parameters.AddWithValue("@s", 시료명);
+            }
+            else
+            {
+                cmd.CommandText = $"SELECT rowid FROM \"{TableName}\" WHERE \"약칭\" = @y AND \"시료명\" = @s LIMIT 1";
+                cmd.Parameters.AddWithValue("@y", 약칭);
+                cmd.Parameters.AddWithValue("@s", 시료명);
+            }
+            var result = cmd.ExecuteScalar();
+            return result == null || result == DBNull.Value ? null : Convert.ToInt32(result);
+        }
+        catch (Exception ex) { Debug.WriteLine($"[FindRowId] 오류: {ex.Message}"); return null; }
     }
 
     public static Dictionary<string, AnalysisItem> GetAnalyteMeta()

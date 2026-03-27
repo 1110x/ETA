@@ -106,14 +106,34 @@ public partial class ContractPage : UserControl
                                 FontFamily = Font,
                                 Foreground = Brushes.WhiteSmoke,
                             },
-                            new TextBlock
+                            new StackPanel
                             {
-                                Text       = string.IsNullOrEmpty(contract.C_Abbreviation)
-                                                 ? contract.C_ContractType
-                                                 : $"{contract.C_Abbreviation} · {contract.C_ContractType}",
-                                FontSize   = 10,
-                                FontFamily = Font,
-                                Foreground = new SolidColorBrush(Color.Parse("#888888")),
+                                Orientation = Orientation.Horizontal, Spacing = 4,
+                                Children =
+                                {
+                                    string.IsNullOrEmpty(contract.C_Abbreviation)
+                                        ? (Control)new TextBlock()
+                                        : new Border
+                                        {
+                                            Background   = Brush.Parse(BadgeColorHelper.GetBadgeColor(contract.C_Abbreviation).Bg),
+                                            CornerRadius = new CornerRadius(3),
+                                            Padding      = new Thickness(4, 1),
+                                            VerticalAlignment = VerticalAlignment.Center,
+                                            Child = new TextBlock
+                                            {
+                                                Text       = contract.C_Abbreviation,
+                                                FontSize   = 9, FontFamily = Font,
+                                                Foreground = Brush.Parse(BadgeColorHelper.GetBadgeColor(contract.C_Abbreviation).Fg),
+                                            }
+                                        },
+                                    new TextBlock
+                                    {
+                                        Text       = contract.C_ContractType,
+                                        FontSize   = 10, FontFamily = Font,
+                                        Foreground = new SolidColorBrush(Color.Parse("#888888")),
+                                        VerticalAlignment = VerticalAlignment.Center,
+                                    }
+                                }
                             }
                         }
                     }

@@ -40,12 +40,23 @@ public partial class TestReportPage : UserControl
     };
 
     // 정렬 모드 / 방류기준 토글
-    private bool _sortByDate   = false;
+    private bool _sortByDate   = true;
     // 선택된 시료 (일괄 출력용)
     private readonly System.Collections.Generic.HashSet<SampleRequest> _checkedSamples = new();
-    private bool _showStandard = false;
+    private bool _showImportPanel = false;
+    private Control? _importActionPanel;
     private ToggleSwitch?   _stdToggle;
     private ContentControl? _stdToggleContainer;
+
+    // Excel 불러오기 공유 상태
+    private readonly List<(string A, string Q, string Y, string S, string Ex, string Nv, string Std, string Bg, string Fg)> _importRows = new();
+    private readonly Dictionary<int, Dictionary<string, string>> _pendingByRow = new();
+    private readonly List<(int RowId, string Analyte, string Existing, string NewVal)> _conflictRows = new();
+    private List<string> _importFileNames = new();
+    private string _importStatus      = "";
+    private string _importStatusHex   = "#888888";
+    private bool   _importHasPending  = false;
+    private bool   _importHasConflict = false;
 
     // 선택된 결과 행
     private AnalysisResultRow? _selectedRow;
@@ -64,7 +75,16 @@ public partial class TestReportPage : UserControl
     {
         Log("LoadData() 시작");
         ReportTreeView.Items.Clear();
-        _selectedSample = null;
+        _selectedSample    = null;
+                _importRows.Clear();
+        _pendingByRow.Clear();
+        _conflictRows.Clear();
+        _importFileNames.Clear();
+        _importStatus      = "";
+        _importStatusHex   = "#888888";
+        _importHasPending  = false;
+        _importHasConflict = false;
+        _importActionPanel = null;
         ResultListChanged?.Invoke(BuildListControl());
         EditPanelChanged?.Invoke(null);
 
@@ -113,12 +133,19 @@ public partial class TestReportPage : UserControl
 
     private void BuildTreeByDate(List<string> companies)
     {
+        var now          = DateTime.Today;
+        var curMonthKey  = now.ToString("yyyy-MM");
+        var prevMonthKey = now.AddMonths(-1).ToString("yyyy-MM");
+        var curYearKey   = now.Year.ToString();
+        var prevYearKey  = now.AddMonths(-1).Year.ToString();
+
         var all = companies.SelectMany(co => TestReportService.GetSamplesByCompany(co))
                            .OrderByDescending(s => s.채취일자).ToList();
         foreach (var yg in all.GroupBy(s => s.채취일자.Length >= 4 ? s.채취일자[..4] : s.채취일자)
                                .OrderByDescending(g => g.Key))
         {
-            var yn = new TreeViewItem { IsExpanded = false,
+            bool yearOpen = yg.Key == curYearKey || yg.Key == prevYearKey;
+            var yn = new TreeViewItem { IsExpanded = yearOpen,
                 Header = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6,
                     Children = {
                         new TextBlock { Text = "📆", FontSize = 15, VerticalAlignment = VerticalAlignment.Center },
@@ -130,7 +157,8 @@ public partial class TestReportPage : UserControl
             foreach (var mg in yg.GroupBy(s => s.채취일자.Length >= 7 ? s.채취일자[..7] : s.채취일자)
                                   .OrderByDescending(g => g.Key))
             {
-                var mn = new TreeViewItem { IsExpanded = false,
+                bool monthOpen = mg.Key == curMonthKey || mg.Key == prevMonthKey;
+                var mn = new TreeViewItem { IsExpanded = monthOpen,
                     Header = new TextBlock { Text = $"  📅 {mg.Key}  ({mg.Count()}건)",
                         FontSize = 12, FontFamily = Font, Foreground = new SolidColorBrush(Color.Parse("#aaaacc")) }
                 };
@@ -144,9 +172,9 @@ public partial class TestReportPage : UserControl
 
     private TreeViewItem MakeSampleNode(SampleRequest sample, bool showCompany = false)
     {
-        var sub = showCompany
-            ? $"{sample.약칭}  {sample.채취일자}  {sample.분석결과.Count}항목"
-            : $"{sample.채취일자}  {sample.분석결과.Count}항목";
+        bool incomplete = sample.분석결과.Values.Any(v =>
+            string.Equals(v, "O", StringComparison.OrdinalIgnoreCase));
+        string iconColor = incomplete ? "#ee4444" : "#44cc44";
 
         var chk = new CheckBox
         {
@@ -160,29 +188,49 @@ public partial class TestReportPage : UserControl
             else                       _checkedSamples.Remove(sample);
         };
 
-        return new TreeViewItem { Tag = sample,
-            Header = new StackPanel
-            {
-                Orientation = Orientation.Horizontal, Spacing = 4,
-                Margin = new Thickness(4, 0, 0, 0),
-                Children =
-                {
-                    chk,
-                    new TextBlock { Text = "🧪", FontSize = 13, VerticalAlignment = VerticalAlignment.Center },
-                    new StackPanel { Orientation = Orientation.Vertical, Spacing = 1,
-                        Children =
-                        {
-                            new TextBlock { Text = sample.시료명, FontSize = 12, FontFamily = Font,
-                                           Foreground = Brushes.WhiteSmoke },
-                            new TextBlock { Text = sub, FontSize = 10, FontFamily = Font,
-                                           Foreground = new SolidColorBrush(Color.Parse("#777799")) }
-                        }
-                    }
-                }
-            }
-        };
-    }
+        string mmdd = "";
+        if (sample.채취일자.Length >= 10)
+            mmdd = sample.채취일자.Substring(5, 5).Replace("-", "/");
+        else if (sample.채취일자.Length >= 7)
+            mmdd = sample.채취일자.Substring(5);
 
+        string icon = incomplete ? "🍶" : "🧪";
+        string labelText = string.IsNullOrEmpty(mmdd)
+            ? sample.시료명
+            : $"{sample.시료명}  ({mmdd})";
+
+        var (badgeBg, badgeFg) = BadgeColorHelper.GetBadgeColor(sample.약칭);
+
+        var row = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,Auto,Auto,*"), Margin = new Thickness(2, 2) };
+        row.Children.Add(new ContentControl { Content = chk, [Grid.ColumnProperty] = 0 });
+        row.Children.Add(new TextBlock
+        {
+            Text = icon, FontSize = 12,
+            Foreground = new SolidColorBrush(Color.Parse(iconColor)),
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin = new Thickness(2, 0, 4, 0),
+            [Grid.ColumnProperty] = 1,
+        });
+        row.Children.Add(new Border
+        {
+            Background = Brush.Parse(badgeBg), CornerRadius = new CornerRadius(3),
+            Padding = new Thickness(4, 1), Margin = new Thickness(0, 0, 5, 0),
+            VerticalAlignment = VerticalAlignment.Center,
+            [Grid.ColumnProperty] = 2,
+            Child = new TextBlock { Text = sample.약칭, FontSize = 9, FontFamily = Font,
+                                    Foreground = Brush.Parse(badgeFg) },
+        });
+        row.Children.Add(new TextBlock
+        {
+            Text = labelText, FontSize = 11, FontFamily = Font,
+            Foreground = Brush.Parse("#dddddd"),
+            TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
+            VerticalAlignment = VerticalAlignment.Center,
+            [Grid.ColumnProperty] = 3,
+        });
+
+        return new TreeViewItem { Tag = sample, Header = row };
+    }
 
     // 업체 노드 하위에 시료 노드 로드
     private void LoadSampleNodes(TreeViewItem parent, string company)
@@ -246,7 +294,6 @@ public partial class TestReportPage : UserControl
         // 결과 리스트 빌드
         BuildResultRows(sample);
         ResultListChanged?.Invoke(BuildListControl());
-        EditPanelChanged?.Invoke(null);
 
         Log($"선택: {sample.약칭} / {sample.시료명} ({_resultRows.Count}항목)");
     }
@@ -282,55 +329,104 @@ public partial class TestReportPage : UserControl
     // =========================================================================
     private Control BuildListControl()
     {
-        // 매번 새 StackPanel 생성 (visual parent 중복 방지)
-        var listPanel = new StackPanel { Spacing = 0 };
-        RefreshListPanel(listPanel);
-
-        var outer = new Grid { RowDefinitions = new RowDefinitions("Auto,Auto,Auto,*") };
-
-        var infoPanel = BuildSampleInfoHeader();
-        Grid.SetRow(infoPanel, 0);
-
-        // 방류기준 토글 (최초 1회 생성, ContentControl 래퍼로 visual parent 중복 방지)
         if (_stdToggle == null)
         {
             _stdToggle = new ToggleSwitch
             {
-                IsChecked = _showStandard,
-                OnContent = "📋 방류기준 숨기기",
-                OffContent = "📋 방류기준 표시",
+                IsChecked  = _showImportPanel,
+                OnContent  = "📎 Excel 불러오기",
+                OffContent = "📋 시험성적서",
                 FontFamily = Font, FontSize = 11,
                 HorizontalAlignment = HorizontalAlignment.Left,
                 Margin = new Thickness(8, 2),
             };
             _stdToggle.IsCheckedChanged += (_, _) =>
             {
-                _showStandard = _stdToggle.IsChecked == true;
-                Log($"[방류기준 토글] _showStandard={_showStandard}, 시료={_selectedSample?.시료명 ?? "null"}, 방류허용기준='{_selectedSample?.방류허용기준 ?? "null"}'");
-                if (_selectedRow != null) EditPanelChanged?.Invoke(BuildEditPanel(_selectedRow));
+                _showImportPanel = _stdToggle.IsChecked == true;
+                if (_showImportPanel)
+                {
+                    if (_importActionPanel == null) _importActionPanel = BuildImportActionPanel();
+                    EditPanelChanged?.Invoke(_importActionPanel);
+                }
+                else
+                {
+                    EditPanelChanged?.Invoke(null);
+                }
                 ResultListChanged?.Invoke(BuildListControl());
             };
         }
-        else { _stdToggle.IsChecked = _showStandard; }
+        else { _stdToggle.IsChecked = _showImportPanel; }
+
         if (_stdToggle.Parent is ContentControl oldC) oldC.Content = null;
         _stdToggleContainer = new ContentControl { Content = _stdToggle };
+
+        if (_showImportPanel)
+        {
+            // Content3 = 액션 패널 (파일 선택, 저장 등)
+            if (_importActionPanel == null) _importActionPanel = BuildImportActionPanel();
+            EditPanelChanged?.Invoke(_importActionPanel);
+
+            // Content2 = 토글 + 결과 테이블
+            var tablePanel = new StackPanel { Spacing = 1 };
+            if (_importRows.Count > 0)
+            {
+                tablePanel.Children.Add(MakeImportTableRow(
+                    "분석항목", "견적번호", "약칭", "시료명",
+                    "이전결과", "새결과값", "방류기준",
+                    true, "#2a2a3a", "#aaaacc"));
+                foreach (var row in _importRows)
+                    tablePanel.Children.Add(MakeImportTableRow(
+                        row.A, row.Q, row.Y, row.S, row.Ex, row.Nv, row.Std,
+                        false, row.Bg, row.Fg));
+            }
+            else
+            {
+                tablePanel.Children.Add(new TextBlock
+                {
+                    Text = "오른쪽에서 Excel 파일을 선택하면 결과가 여기에 표시됩니다.",
+                    FontFamily = Font, FontSize = 12,
+                    Foreground = new SolidColorBrush(Color.Parse("#555566")),
+                    Margin     = new Thickness(12, 20),
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+                });
+            }
+            var tableScroll = new ScrollViewer
+            {
+                Content = tablePanel,
+                VerticalScrollBarVisibility   = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+                HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
+            };
+            var importOuter = new Grid { RowDefinitions = new RowDefinitions("Auto,*") };
+            Grid.SetRow(_stdToggleContainer, 0);
+            Grid.SetRow(tableScroll, 1);
+            importOuter.Children.Add(_stdToggleContainer);
+            importOuter.Children.Add(tableScroll);
+            return importOuter;
+        }
+
+        // Content2 = 결과 리스트 모드
+        var listPanel = new StackPanel { Spacing = 0 };
+        RefreshListPanel(listPanel);
+
+        var outer = new Grid { RowDefinitions = new RowDefinitions("Auto,Auto,Auto,*") };
+        var infoPanel = BuildSampleInfoHeader();
+        Grid.SetRow(infoPanel, 0);
         Grid.SetRow(_stdToggleContainer, 1);
-
-        var header = BuildResultListHeader();
-        Grid.SetRow(header, 2);
-
-        var scroll = new ScrollViewer
+        var resultHeader = BuildResultListHeader();
+        Grid.SetRow(resultHeader, 2);
+        var resultScroll = new ScrollViewer
         {
             VerticalScrollBarVisibility   = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
             HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
             Content                       = listPanel
         };
-        Grid.SetRow(scroll, 3);
+        Grid.SetRow(resultScroll, 3);
 
         outer.Children.Add(infoPanel);
         outer.Children.Add(_stdToggleContainer);
-        outer.Children.Add(header);
-        outer.Children.Add(scroll);
+        outer.Children.Add(resultHeader);
+        outer.Children.Add(resultScroll);
         return outer;
     }
 
@@ -494,11 +590,370 @@ public partial class TestReportPage : UserControl
     }
 
     // =========================================================================
+    // Excel 결과 불러오기 패널 (ActivePageContent3 — 항상 활성)
+    // =========================================================================
+    // =========================================================================
+    // Excel 불러오기 액션 패널 (ActivePageContent3)
+    // =========================================================================
+    private Control BuildImportActionPanel()
+    {
+        var statusTb = new TextBlock
+        {
+            Text         = _importStatus,
+            Foreground   = new SolidColorBrush(Color.Parse(_importStatusHex)),
+            FontFamily   = Font, FontSize = 11,
+            TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+            Margin       = new Thickness(0, 4, 0, 0),
+        };
+
+        var fileListPanel = new StackPanel { Spacing = 3 };
+        foreach (var fn in _importFileNames)
+            fileListPanel.Children.Add(new StackPanel
+            {
+                Orientation = Orientation.Horizontal, Spacing = 5,
+                Children =
+                {
+                    new TextBlock { Text = "📅", FontSize = 13, VerticalAlignment = VerticalAlignment.Center },
+                    new TextBlock { Text = fn, FontFamily = Font, FontSize = 11,
+                        Foreground = new SolidColorBrush(Color.Parse("#88ccff")),
+                        VerticalAlignment = VerticalAlignment.Center },
+                }
+            });
+
+        var conflictPanel = new StackPanel { Spacing = 6, IsVisible = false };
+
+        var saveBtn = new Button
+        {
+            Content         = "💾 결과 일괄 저장",
+            FontFamily      = Font, FontSize = 11,
+            Background      = new SolidColorBrush(Color.Parse("#2a5a2a")),
+            Foreground      = Avalonia.Media.Brushes.WhiteSmoke,
+            BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
+            Padding         = new Thickness(12, 5),
+            IsEnabled       = _importHasPending,
+            IsVisible       = _importHasPending,
+        };
+
+        if (_importHasConflict && _conflictRows.Count > 0)
+            BuildConflictUI(conflictPanel, saveBtn);
+
+        saveBtn.Click += (_, _) =>
+        {
+            if (_pendingByRow.Count == 0) return;
+            int totalSaved = 0, totalFailed = 0;
+            foreach (var kv in _pendingByRow)
+            {
+                try   { totalSaved += TestReportService.BulkUpdateResults(kv.Key, kv.Value); }
+                catch { totalFailed++; }
+            }
+            _importStatus    = $"✅ {totalSaved}개 항목 저장 완료" + (totalFailed > 0 ? $" ({totalFailed}행 실패)" : "");
+            _importStatusHex = "#44aa44";
+            statusTb.Text       = _importStatus;
+            statusTb.Foreground = new SolidColorBrush(Color.Parse(_importStatusHex));
+            _importHasPending   = false;
+            _importHasConflict  = false;
+            _pendingByRow.Clear();
+            _conflictRows.Clear();
+            saveBtn.IsEnabled = false;
+            saveBtn.IsVisible = false;
+            LoadData();
+        };
+
+        var fileBtn = new Button
+        {
+            Content         = "📂  Excel 결과 파일 선택",
+            FontFamily      = Font, FontSize = 11,
+            Background      = new SolidColorBrush(Color.Parse("#1a3a5a")),
+            Foreground      = Avalonia.Media.Brushes.WhiteSmoke,
+            BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
+            Padding         = new Thickness(12, 6),
+        };
+
+        fileBtn.Click += async (_, _) =>
+        {
+            var dlg = new Avalonia.Platform.Storage.FilePickerOpenOptions
+            {
+                Title         = "분석기록부 Excel 파일 선택",
+                AllowMultiple = true,
+                FileTypeFilter = new[]
+                {
+                    new Avalonia.Platform.Storage.FilePickerFileType("Excel 파일")
+                    {
+                        Patterns = new[] { "*.xlsx" }
+                    }
+                },
+            };
+            var top = TopLevel.GetTopLevel(this);
+            if (top == null) return;
+            var files = await top.StorageProvider.OpenFilePickerAsync(dlg);
+            if (files.Count == 0) return;
+
+            _importFileNames = files.Select(f => System.IO.Path.GetFileName(f.Path.LocalPath)).ToList();
+            fileListPanel.Children.Clear();
+            foreach (var fn in _importFileNames)
+                fileListPanel.Children.Add(new StackPanel
+                {
+                    Orientation = Orientation.Horizontal, Spacing = 5,
+                    Children =
+                    {
+                        new TextBlock { Text = "📅", FontSize = 13, VerticalAlignment = VerticalAlignment.Center },
+                        new TextBlock { Text = fn, FontFamily = Font, FontSize = 11,
+                            Foreground = new SolidColorBrush(Color.Parse("#88ccff")),
+                            VerticalAlignment = VerticalAlignment.Center },
+                    }
+                });
+
+            _importStatus    = "파일 읽는 중...";
+            _importStatusHex = "#888888";
+            statusTb.Text       = _importStatus;
+            statusTb.Foreground = new SolidColorBrush(Color.Parse(_importStatusHex));
+            _importRows.Clear();
+            _pendingByRow.Clear();
+            _conflictRows.Clear();
+            _importHasPending   = false;
+            _importHasConflict  = false;
+            saveBtn.IsEnabled   = false;
+            saveBtn.IsVisible   = false;
+            conflictPanel.IsVisible = false;
+            conflictPanel.Children.Clear();
+
+            var rows = new List<ExcelResultRow>();
+            foreach (var f in files)
+            {
+                try
+                {
+                    var partial = await Task.Run(() => AnalysisRecordService.ReadResultsFromFile(f.Path.LocalPath));
+                    rows.AddRange(partial);
+                }
+                catch (Exception ex)
+                {
+                    _importStatus    = $"❌ 파일 읽기 실패: {ex.Message}";
+                    _importStatusHex = "#cc4444";
+                    statusTb.Text       = _importStatus;
+                    statusTb.Foreground = new SolidColorBrush(Color.Parse(_importStatusHex));
+                    return;
+                }
+            }
+
+            if (rows.Count == 0)
+            {
+                _importStatus    = $"⚠ 데이터 없음 ({files.Count}개 파일)";
+                _importStatusHex = "#cc8800";
+                statusTb.Text       = _importStatus;
+                statusTb.Foreground = new SolidColorBrush(Color.Parse(_importStatusHex));
+                ResultListChanged?.Invoke(BuildListControl());
+                return;
+            }
+
+            int matchedCnt = 0, notFoundCnt = 0;
+            bool odd = false;
+            foreach (var r in rows)
+            {
+                if (string.IsNullOrEmpty(r.결과값)) continue;
+                int? rowId = await Task.Run(() =>
+                    TestReportService.FindRowId(r.견적번호, r.약칭, r.시료명));
+
+                bool   found       = rowId.HasValue;
+                string existingVal = "";
+                bool   hasConflict = false;
+
+                if (found)
+                {
+                    existingVal = await Task.Run(() =>
+                        TestReportService.GetAnalyteValue(rowId!.Value, r.AnalyteName)) ?? "";
+                    hasConflict = !string.IsNullOrEmpty(existingVal)
+                        && !string.Equals(existingVal, "O", StringComparison.OrdinalIgnoreCase)
+                        && !string.Equals(existingVal, r.결과값, StringComparison.Ordinal);
+                    if (!_pendingByRow.ContainsKey(rowId!.Value))
+                        _pendingByRow[rowId!.Value] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                    _pendingByRow[rowId!.Value][r.AnalyteName] = r.결과값;
+                    if (hasConflict)
+                    {
+                        _conflictRows.Add((rowId!.Value, r.AnalyteName, existingVal, r.결과값));
+                        _importHasConflict = true;
+                    }
+                    matchedCnt++;
+                }
+                else notFoundCnt++;
+
+                string bg  = hasConflict ? "#3a2a10" : (odd ? "#1e1e2e" : "#252535");
+                string fgR = found ? (hasConflict ? "#ffaa44" : "#88ee88") : "#cc6644";
+                odd = !odd;
+                _importRows.Add((r.AnalyteName, r.견적번호, r.약칭, r.시료명,
+                    existingVal, r.결과값, r.방류기준, bg, fgR));
+            }
+
+            int withValue = rows.Count(x => !string.IsNullOrEmpty(x.결과값));
+            if (matchedCnt > 0)
+            {
+                string conflictNote = _conflictRows.Count > 0 ? $"  (⚠ {_conflictRows.Count}개 충돌)" : "";
+                _importStatus    = $"✅ {matchedCnt}개 매칭{conflictNote}"
+                    + (notFoundCnt > 0 ? $", {notFoundCnt}개 미매칭" : "")
+                    + $"  ← {files.Count}개 파일";
+                _importStatusHex  = _conflictRows.Count > 0 ? "#ffaa44" : "#44aa44";
+                _importHasPending = true;
+                saveBtn.IsEnabled = true;
+                saveBtn.IsVisible = true;
+                if (_importHasConflict)
+                {
+                    conflictPanel.Children.Clear();
+                    BuildConflictUI(conflictPanel, saveBtn);
+                    conflictPanel.IsVisible = true;
+                }
+            }
+            else
+            {
+                _importStatus    = $"⚠ 매칭된 시료 없음 ({withValue}행 읽음)";
+                _importStatusHex = "#cc8800";
+            }
+            statusTb.Text       = _importStatus;
+            statusTb.Foreground = new SolidColorBrush(Color.Parse(_importStatusHex));
+            ResultListChanged?.Invoke(BuildListControl());
+        };
+
+        return new Border
+        {
+            Padding = new Thickness(10),
+            Child   = new StackPanel
+            {
+                Spacing  = 8,
+                Children =
+                {
+                    new TextBlock
+                    {
+                        Text       = "📊  Excel 결과 불러오기",
+                        FontFamily = Font, FontSize = 13,
+                        FontWeight = FontWeight.SemiBold,
+                        Foreground = Avalonia.Media.Brushes.WhiteSmoke,
+                    },
+                    new Border { Height = 1, Background = new SolidColorBrush(Color.Parse("#444")) },
+                    fileBtn,
+                    fileListPanel,
+                    statusTb,
+                    conflictPanel,
+                    saveBtn,
+                }
+            }
+        };
+    }
+
+    private void BuildConflictUI(StackPanel conflictPanel, Button saveBtn)
+    {
+        conflictPanel.Children.Add(new TextBlock
+        {
+            Text         = $"⚠  {_conflictRows.Count}개 항목이 기존 결과와 다릅니다.",
+            FontFamily   = Font, FontSize = 11,
+            Foreground   = new SolidColorBrush(Color.Parse("#ffaa44")),
+            TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+        });
+        var btnRow       = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+        var skipBtn      = new Button
+        {
+            Content         = "🚫 충돌 항목 건너버림",
+            FontFamily      = Font, FontSize = 11,
+            Background      = new SolidColorBrush(Color.Parse("#4a2a10")),
+            Foreground      = Avalonia.Media.Brushes.WhiteSmoke,
+            BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
+            Padding         = new Thickness(10, 4),
+        };
+        var overwriteBtn = new Button
+        {
+            Content         = "✏ 덮어쓰기",
+            FontFamily      = Font, FontSize = 11,
+            Background      = new SolidColorBrush(Color.Parse("#2a3a5a")),
+            Foreground      = Avalonia.Media.Brushes.WhiteSmoke,
+            BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
+            Padding         = new Thickness(10, 4),
+        };
+        skipBtn.Click += (_, _) =>
+        {
+            foreach (var c in _conflictRows)
+                if (_pendingByRow.TryGetValue(c.RowId, out var d)) d.Remove(c.Analyte);
+            _importHasConflict      = false;
+            conflictPanel.IsVisible = false;
+            saveBtn.Content         = "💾 결과 저장 (충돌 제외)";
+        };
+        overwriteBtn.Click += (_, _) =>
+        {
+            _importHasConflict      = false;
+            conflictPanel.IsVisible = false;
+            saveBtn.Content         = "💾 결과 일괄 저장";
+        };
+        btnRow.Children.Add(skipBtn);
+        btnRow.Children.Add(overwriteBtn);
+        conflictPanel.Children.Add(btnRow);
+    }
+
+    private static Border MakeImportTableRow(
+        string c0, string c1, string c2, string c3, string c4, string c5, string c6,
+        bool isHeader, string bgHex, string fgValueHex)
+    {
+        Color fgH  = Color.Parse(fgValueHex);
+        Color fg0  = isHeader ? fgH : Color.Parse("#aaddff");
+        Color fg1  = isHeader ? fgH : Color.Parse("#888899");
+        Color fg4  = isHeader ? fgH : Color.Parse("#ffaa44");  // 이전결과
+        Color fg5  = Color.Parse(fgValueHex);                  // 새결과값
+        Color fg6  = isHeader ? fgH : Color.Parse("#ffaa44");  // 방류기준
+        return new Border
+        {
+            Background = new SolidColorBrush(Color.Parse(bgHex)),
+            Padding    = new Thickness(6, isHeader ? 4 : 3),
+            Margin     = new Thickness(0, 0, 0, isHeader ? 2 : 0),
+            Child = new Grid
+            {
+                ColumnDefinitions = new ColumnDefinitions("90,80,55,70,55,55,*"),
+                Children =
+                {
+                    MakeImportCell(c0, 0, fg0),
+                    MakeImportCell(c1, 1, fg1),
+                    MakeImportCell(c2, 2, fg1),
+                    MakeImportCell(c3, 3, fg1),
+                    MakeImportCell(c4, 4, fg4),
+                    MakeImportCell(c5, 5, fg5),
+                    MakeImportCell(c6, 6, fg6),
+                }
+            }
+        };
+    }
+
+    private static TextBlock MakeImportCell(string text, int col, Color fg) =>
+        new TextBlock
+        {
+            Text = text ?? "",
+            FontFamily = Font, FontSize = 11,
+            Foreground = new SolidColorBrush(fg),
+            TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
+            [Grid.ColumnProperty] = col,
+        };
+
+    private static TextBlock MakePreviewHeader(string text, int col)
+    {
+        var tb = new TextBlock
+        {
+            Text = text, FontFamily = Font, FontSize = 10,
+            Foreground = new SolidColorBrush(Color.Parse("#aaaacc")),
+            [Grid.ColumnProperty] = col,
+        };
+        return tb;
+    }
+
+    private static TextBlock MakePreviewCell(string text, int col, IBrush fg)
+    {
+        var tb = new TextBlock
+        {
+            Text = text, FontFamily = Font, FontSize = 11,
+            Foreground = fg,
+            TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
+            [Grid.ColumnProperty] = col,
+        };
+        return tb;
+    }
+
+    // =========================================================================
     // 수정 패널 (ActivePageContent3)
     // =========================================================================
     private string GetStdDisplay(AnalysisResultRow row)
     {
-        if (!_showStandard) return "";
         if (_selectedSample == null) { Log("[방류기준] _selectedSample null"); return ""; }
         var col = _selectedSample.방류허용기준;
         if (string.IsNullOrEmpty(col)) { Log($"[방류기준] 방류허용기준 비어있음 - 시료: {_selectedSample.시료명}"); return ""; }
