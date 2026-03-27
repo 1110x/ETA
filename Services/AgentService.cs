@@ -43,10 +43,12 @@ public static class AgentService
 
         var columns = new[]
         {
-            ("비밀번호",       "TEXT DEFAULT ''"),
-            ("상태",           "TEXT DEFAULT 'approved'"),   // 기존 직원은 바로 approved
-            ("todo_task_id",   "TEXT DEFAULT ''"),
-            ("must_change_pw", "INTEGER DEFAULT 0"),         // 1=최초 비밀번호 강제 변경 필요
+            ("비밀번호",        "TEXT DEFAULT ''"),
+            ("상태",            "TEXT DEFAULT 'approved'"),   // 기존 직원은 바로 approved
+            ("todo_task_id",    "TEXT DEFAULT ''"),
+            ("must_change_pw",  "INTEGER DEFAULT 0"),         // 1=최초 비밀번호 강제 변경 필요
+            ("측정인LoginId",   "TEXT DEFAULT ''"),           // 측정인.kr 로그인 아이디
+            ("측정인LoginPw",   "TEXT DEFAULT ''"),           // 측정인.kr 로그인 비밀번호
         };
 
         foreach (var (col, def) in columns)
@@ -678,6 +680,45 @@ public static class AgentService
         if (string.IsNullOrEmpty(path)) return "";
         // 이미 파일명만 있으면 그대로
         return Path.IsPathRooted(path) ? Path.GetFileName(path) : path;
+    }
+
+    // ── 측정인.kr 자격증명 조회 / 저장 ──────────────────────────────────────
+    /// <summary>사번으로 측정인 로그인 ID/PW 조회. 없으면 ("","") 반환.</summary>
+    public static (string Id, string Pw) GetMeasurerCredentials(string 사번)
+    {
+        var dbPath = GetDatabasePath();
+        if (!File.Exists(dbPath)) return ("", "");
+
+        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        conn.Open();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText =
+            "SELECT 측정인LoginId, 측정인LoginPw FROM \"Agent\" WHERE 사번=@사번 LIMIT 1";
+        cmd.Parameters.AddWithValue("@사번", 사번);
+
+        using var r = cmd.ExecuteReader();
+        if (!r.Read()) return ("", "");
+
+        string id = S(r, "측정인LoginId");
+        string pw = S(r, "측정인LoginPw");
+        return (id, pw);
+    }
+
+    /// <summary>사번에 해당하는 행에 측정인 로그인 ID/PW 저장.</summary>
+    public static void SaveMeasurerCredentials(string 사번, string id, string pw)
+    {
+        var dbPath = GetDatabasePath();
+        if (!File.Exists(dbPath)) return;
+
+        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        conn.Open();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText =
+            "UPDATE \"Agent\" SET 측정인LoginId=@id, 측정인LoginPw=@pw WHERE 사번=@사번";
+        cmd.Parameters.AddWithValue("@id",  id  ?? "");
+        cmd.Parameters.AddWithValue("@pw",  pw  ?? "");
+        cmd.Parameters.AddWithValue("@사번", 사번 ?? "");
+        cmd.ExecuteNonQuery();
     }
 
     // ── 관리자 권한 확인 ─────────────────────────────────────────────────────

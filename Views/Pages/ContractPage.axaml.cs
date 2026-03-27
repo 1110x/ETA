@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ETA.Models;
 using ETA.Services;
@@ -32,6 +33,13 @@ public partial class ContractPage : UserControl
 
     // 계약구분 ComboBox 참조 (저장 시 값 읽기용)
     private ComboBox? _contractTypeComboBox;
+
+    // 측정인 관리 패널 상태
+    private string?    _selectedMeasCompany;
+    private TextBox?   _txbMeasAlias;
+    private TextBox?   _txbMeasAmount;
+    private ComboBox?  _cmbMeasQuotType;
+    private StackPanel? _measEditForm;
 
     public ContractPage()
     {
@@ -736,6 +744,231 @@ private void LoadUnitPriceTable(string selectedColumn)
         else dlg.Show();
         return result;
     }
+
+    // =========================================================================
+    // 측정인 업체 관리 패널 (ActiveContentPage1 에 표시)
+    // =========================================================================
+    public void ShowMeasurerPanel()
+    {
+        _selectedContract = null;
+        _isAddMode        = false;
+        ContractTreeView.SelectedItem = null;
+        DetailPanelChanged?.Invoke(BuildMeasurerPanel());
+    }
+
+    private StackPanel BuildMeasurerPanel()
+    {
+        var root = MakeRootPanel("📍  측정인 업체 관리");
+
+        // 업체 목록
+        var companies = MeasurerService.GetCompanies();
+        if (companies.Count == 0)
+        {
+            root.Children.Add(new TextBlock
+            {
+                Text = "측정인 DB에 업체가 없습니다.\n먼저 로그인하여 데이터를 수집하세요.",
+                FontSize = 11, FontFamily = Font,
+                Foreground = Brush.Parse("#f0c040"),
+                TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+            });
+            return root;
+        }
+
+        root.Children.Add(new TextBlock
+        {
+            Text = $"업체 {companies.Count}개 — 선택하여 정보를 편집하세요.",
+            FontSize = 10, FontFamily = Font, Foreground = Brush.Parse("#888"),
+            Margin = new Thickness(0, 0, 0, 4),
+        });
+
+        var listBox = new ListBox
+        {
+            MaxHeight = 220,
+            Background = Brush.Parse("#13131f"),
+            BorderBrush = Brush.Parse("#333"), BorderThickness = new Thickness(1),
+        };
+        foreach (var c in companies)
+        {
+            var info = MeasurerService.GetCompanyInfo(c);
+            var item = new ListBoxItem
+            {
+                Tag = c,
+                Content = new StackPanel
+                {
+                    Orientation = Orientation.Horizontal, Spacing = 8,
+                    Children =
+                    {
+                        new TextBlock { Text = c, FontSize = 11, FontFamily = Font,
+                                        Foreground = Brush.Parse("#ddd") },
+                        string.IsNullOrEmpty(info.약칭)
+                            ? (Control)new TextBlock()
+                            : new Border
+                            {
+                                Background = Brush.Parse("#1a3a5a"), CornerRadius = new CornerRadius(3),
+                                Padding = new Thickness(4, 1),
+                                Child = new TextBlock { Text = info.약칭, FontSize = 9,
+                                                        FontFamily = Font, Foreground = Brush.Parse("#88aadd") }
+                            }
+                    }
+                }
+            };
+            listBox.Items.Add(item);
+        }
+
+        _measEditForm = new StackPanel { Spacing = 8, Margin = new Thickness(0, 10, 0, 0) };
+
+        listBox.SelectionChanged += (_, _) =>
+        {
+            if (listBox.SelectedItem is ListBoxItem li && li.Tag is string company)
+                RefreshMeasurerEditForm(company);
+        };
+
+        root.Children.Add(listBox);
+        root.Children.Add(_measEditForm);
+        return root;
+    }
+
+    private void RefreshMeasurerEditForm(string company)
+    {
+        _selectedMeasCompany = company;
+        _measEditForm!.Children.Clear();
+
+        var (alias, amount, quotType) = MeasurerService.GetCompanyInfo(company);
+
+        _measEditForm.Children.Add(new Border
+        {
+            Height = 1, Background = Brush.Parse("#444"), Margin = new Thickness(0, 0, 0, 4)
+        });
+        _measEditForm.Children.Add(new TextBlock
+        {
+            Text = company, FontSize = 12, FontFamily = Font,
+            Foreground = Brush.Parse("#aaccff"), FontWeight = FontWeight.SemiBold,
+        });
+
+        // 약칭
+        var aliasRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
+        aliasRow.Children.Add(MakeLabel("약칭"));
+        _txbMeasAlias = MakeTextBox(alias, "약칭 입력");
+        aliasRow.Children.Add(_txbMeasAlias);
+        _measEditForm.Children.Add(aliasRow);
+
+        // 추천 약칭 버튼
+        var suggestions = SuggestAliases(company);
+        if (suggestions.Count > 0)
+        {
+            var sugRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4 };
+            sugRow.Children.Add(new TextBlock
+            {
+                Text = "추천:", FontSize = 9, FontFamily = Font,
+                Foreground = Brush.Parse("#666"), VerticalAlignment = VerticalAlignment.Center,
+            });
+            foreach (var sug in suggestions)
+            {
+                var s = sug;
+                var btn = new Button
+                {
+                    Content = s, Height = 20, FontSize = 9, FontFamily = Font,
+                    Background = Brush.Parse("#2a2a4a"), Foreground = Brush.Parse("#99aacc"),
+                    BorderThickness = new Thickness(1), BorderBrush = Brush.Parse("#444"),
+                    CornerRadius = new CornerRadius(3), Padding = new Thickness(6, 0),
+                };
+                btn.Click += (_, _) => { if (_txbMeasAlias != null) _txbMeasAlias.Text = s; };
+                sugRow.Children.Add(btn);
+            }
+            _measEditForm.Children.Add(sugRow);
+        }
+
+        // 계약금액
+        var amtRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
+        amtRow.Children.Add(MakeLabel("계약금액(원)"));
+        _txbMeasAmount = MakeTextBox(amount, "예) 12000000");
+        amtRow.Children.Add(_txbMeasAmount);
+        _measEditForm.Children.Add(amtRow);
+
+        // 견적구분
+        var qtRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
+        qtRow.Children.Add(MakeLabel("견적구분"));
+        _cmbMeasQuotType = new ComboBox
+        {
+            Width = 200, FontSize = 12, FontFamily = Font,
+            Background = Brush.Parse("#3a3a4a"), Foreground = Brushes.WhiteSmoke,
+            BorderBrush = Brush.Parse("#555577"), BorderThickness = new Thickness(1),
+            Padding = new Thickness(8, 4),
+        };
+        try
+        {
+            foreach (var col in ContractService.GetUnitPriceColumns().Skip(3))
+                _cmbMeasQuotType.Items.Add(col);
+            if (!string.IsNullOrEmpty(quotType) && _cmbMeasQuotType.Items.Contains(quotType))
+                _cmbMeasQuotType.SelectedItem = quotType;
+            else if (_cmbMeasQuotType.Items.Contains("FS25"))
+                _cmbMeasQuotType.SelectedItem = "FS25";
+            else if (_cmbMeasQuotType.Items.Count > 0)
+                _cmbMeasQuotType.SelectedIndex = 0;
+        }
+        catch { }
+        qtRow.Children.Add(_cmbMeasQuotType);
+        _measEditForm.Children.Add(qtRow);
+
+        // 저장 버튼
+        var btnSave = new Button
+        {
+            Content = "💾  저장", Height = 30, FontSize = 12, FontFamily = Font,
+            Background = Brush.Parse("#1a3a2a"), Foreground = Brush.Parse("#88ee88"),
+            BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
+            Padding = new Thickness(16, 0), Margin = new Thickness(0, 6, 0, 0),
+        };
+        btnSave.Click += (_, _) =>
+        {
+            if (_selectedMeasCompany == null) return;
+            MeasurerService.UpdateCompanyInfo(
+                _selectedMeasCompany,
+                _txbMeasAlias?.Text?.Trim()   ?? "",
+                _txbMeasAmount?.Text?.Trim()   ?? "",
+                _cmbMeasQuotType?.SelectedItem?.ToString() ?? "");
+            Log($"측정인 업체 저장: {_selectedMeasCompany}");
+        };
+        _measEditForm.Children.Add(btnSave);
+    }
+
+    // 약칭 추천 생성
+    private static List<string> SuggestAliases(string companyName)
+    {
+        var name = Regex.Replace(companyName, @"\(주\)|\(유\)|주식회사|유한회사", "").Trim();
+        int parenIdx = name.IndexOf('(');
+        string main = parenIdx > 0 ? name[..parenIdx].Trim() : name.Trim();
+        string sub  = "";
+        if (parenIdx > 0)
+        {
+            int close = name.IndexOf(')', parenIdx);
+            if (close > parenIdx) sub = name[(parenIdx + 1)..close].Trim();
+        }
+        // 공백 뒤 지명 제거
+        int spaceIdx = main.IndexOf(' ');
+        string mainCore = spaceIdx > 0 ? main[..spaceIdx].Trim() : main;
+
+        var set = new List<string>();
+        if (mainCore.Length >= 2) set.Add(mainCore[..Math.Min(4, mainCore.Length)]);
+        if (mainCore.Length >= 3) set.Add(mainCore[..Math.Min(3, mainCore.Length)]);
+        if (!string.IsNullOrEmpty(sub) && mainCore.Length >= 2)
+            set.Add(mainCore[..Math.Min(2, mainCore.Length)] + sub[..Math.Min(2, sub.Length)]);
+
+        return set.Distinct().Where(s => s.Length >= 2).ToList();
+    }
+
+    private static TextBlock MakeLabel(string text) => new()
+    {
+        Text = text + " :", Width = 110, FontSize = 11, FontFamily = Font,
+        Foreground = Brushes.LightGray, VerticalAlignment = VerticalAlignment.Center,
+    };
+
+    private static TextBox MakeTextBox(string value, string hint = "") => new()
+    {
+        Text = value, Width = 200, FontSize = 12, FontFamily = Font, Watermark = hint,
+        Background = Brush.Parse("#3a3a4a"), Foreground = Brushes.WhiteSmoke,
+        BorderBrush = Brush.Parse("#555577"), BorderThickness = new Thickness(1),
+        CornerRadius = new CornerRadius(4), Padding = new Thickness(8, 4),
+    };
 
     private void Log(string msg)
     {

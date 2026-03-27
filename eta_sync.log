@@ -1,0 +1,386 @@
+[2026-03-26 16:56:46] ========== 로그인 창 시작 ==========
+[2026-03-26 16:56:46] [Init] MigrateAccountColumns 시작
+[2026-03-26 16:56:46] [Init] MigrateAccountColumns 완료
+[2026-03-26 16:56:46] [Init] MigrateInitialPasswords 시작
+[2026-03-26 16:56:46] [Init] MigrateInitialPasswords 완료
+[2026-03-26 16:57:08] ---------- 로그인 시도 ----------
+[2026-03-26 16:57:08] [DoLogin] 사번 입력값: '201000308'
+[2026-03-26 16:57:08] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-03-26 16:57:08] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-03-26 16:57:08] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-03-26 16:57:08.051] === SyncApprovalStatusAsync() 시작 ===
+[2026-03-26 16:57:09.629] To Do ETA Task: 14개  DB 계정: 14개
+[2026-03-26 16:57:09.630] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-03-26 16:57:09] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-03-26 16:57:09] [DoLogin] DB 계정 상태 확인 시작
+[2026-03-26 16:57:09] [DebugCheck] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db
+[2026-03-26 16:57:09] [DebugCheck] DB 존재: True
+[2026-03-26 16:57:09] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-03-26 16:57:09] [DebugCheck] 123456 해시=8d969eef...
+[2026-03-26 16:57:09] [DoLogin] ValidateLogin 호출
+[2026-03-26 16:57:09] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-03-26 16:57:09] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-03-26 16:57:09] [DoLogin] 로그인 성공 → MainPage 이동
+[2026-03-26 17:01:49] ========== 로그인 창 시작 ==========
+[2026-03-26 17:01:49] [Init] MigrateAccountColumns 시작
+[2026-03-26 17:01:49] [Init] MigrateAccountColumns 완료
+[2026-03-26 17:01:49] [Init] MigrateInitialPasswords 시작
+[2026-03-26 17:01:49] [Init] MigrateInitialPasswords 완료
+[2026-03-26 17:01:56] ---------- 로그인 시도 ----------
+[2026-03-26 17:01:56] [DoLogin] 사번 입력값: '201000308'
+[2026-03-26 17:01:56] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-03-26 17:01:56] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-03-26 17:01:56] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-03-26 17:01:56.784] === SyncApprovalStatusAsync() 시작 ===
+[2026-03-26 17:01:57] [DoLogin] 중복 호출 차단
+[2026-03-26 17:01:58.905] To Do ETA Task: 14개  DB 계정: 14개
+[2026-03-26 17:01:58.906] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-03-26 17:01:58] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-03-26 17:01:58] [DoLogin] DB 계정 상태 확인 시작
+[2026-03-26 17:01:58] [DebugCheck] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db
+[2026-03-26 17:01:58] [DebugCheck] DB 존재: True
+[2026-03-26 17:01:58] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-03-26 17:01:58] [DebugCheck] 123456 해시=8d969eef...
+[2026-03-26 17:01:58] [DoLogin] ValidateLogin 호출
+[2026-03-26 17:01:58] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-03-26 17:01:58] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-03-26 17:01:58] [DoLogin] 로그인 성공 → MainPage 이동
+[2026-03-26 17:05:07] ========== 로그인 창 시작 ==========
+[2026-03-26 17:05:07] [Init] MigrateAccountColumns 시작
+[2026-03-26 17:05:07] [Init] MigrateAccountColumns 완료
+[2026-03-26 17:05:07] [Init] MigrateInitialPasswords 시작
+[2026-03-26 17:05:07] [Init] MigrateInitialPasswords 완료
+[2026-03-26 17:05:16] ---------- 로그인 시도 ----------
+[2026-03-26 17:05:16] [DoLogin] 사번 입력값: '201000308'
+[2026-03-26 17:05:16] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-03-26 17:05:16] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-03-26 17:05:16] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-03-26 17:05:16.703] === SyncApprovalStatusAsync() 시작 ===
+[2026-03-26 17:05:18.336] To Do ETA Task: 14개  DB 계정: 14개
+[2026-03-26 17:05:18.337] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-03-26 17:05:18] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-03-26 17:05:18] [DoLogin] DB 계정 상태 확인 시작
+[2026-03-26 17:05:18] [DebugCheck] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db
+[2026-03-26 17:05:18] [DebugCheck] DB 존재: True
+[2026-03-26 17:05:18] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-03-26 17:05:18] [DebugCheck] 123456 해시=8d969eef...
+[2026-03-26 17:05:18] [DoLogin] ValidateLogin 호출
+[2026-03-26 17:05:18] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-03-26 17:05:18] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-03-26 17:05:18] [DoLogin] 로그인 성공 → MainPage 이동
+[2026-03-27 20:02:07] ========== 로그인 창 시작 ==========
+[2026-03-27 20:02:07] [Init] MigrateAccountColumns 시작
+[2026-03-27 20:02:07] [Init] MigrateAccountColumns 완료
+[2026-03-27 20:02:07] [Init] MigrateInitialPasswords 시작
+[2026-03-27 20:02:08] [Init] MigrateInitialPasswords 완료
+[2026-03-27 20:02:18] ---------- 로그인 시도 ----------
+[2026-03-27 20:02:18] [DoLogin] 사번 입력값: '201000308'
+[2026-03-27 20:02:18] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-03-27 20:02:18] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-03-27 20:02:18] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-03-27 20:02:18.988] === SyncApprovalStatusAsync() 시작 ===
+[2026-03-27 20:02:21.092] To Do ETA Task: 14개  DB 계정: 14개
+[2026-03-27 20:02:21.093] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-03-27 20:02:21] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-03-27 20:02:21] [DoLogin] DB 계정 상태 확인 시작
+[2026-03-27 20:02:21] [DebugCheck] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db
+[2026-03-27 20:02:21] [DebugCheck] DB 존재: True
+[2026-03-27 20:02:21] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-03-27 20:02:21] [DebugCheck] 123456 해시=8d969eef...
+[2026-03-27 20:02:21] [DoLogin] ValidateLogin 호출
+[2026-03-27 20:02:21] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-03-27 20:02:21] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-03-27 20:02:21] [DoLogin] 로그인 성공 → MainPage 이동
+[2026-03-27 21:25:49] ========== 로그인 창 시작 ==========
+[2026-03-27 21:25:49] [Init] MigrateAccountColumns 시작
+[2026-03-27 21:25:49] [Init] MigrateAccountColumns 완료
+[2026-03-27 21:25:49] [Init] MigrateInitialPasswords 시작
+[2026-03-27 21:25:49] [Init] MigrateInitialPasswords 완료
+[2026-03-27 21:25:59] ---------- 로그인 시도 ----------
+[2026-03-27 21:25:59] [DoLogin] 사번 입력값: '201000308'
+[2026-03-27 21:25:59] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-03-27 21:25:59] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-03-27 21:25:59] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-03-27 21:25:59.981] === SyncApprovalStatusAsync() 시작 ===
+[2026-03-27 21:26:01.807] To Do ETA Task: 14개  DB 계정: 14개
+[2026-03-27 21:26:01.808] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-03-27 21:26:01] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-03-27 21:26:01] [DoLogin] DB 계정 상태 확인 시작
+[2026-03-27 21:26:01] [DebugCheck] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db
+[2026-03-27 21:26:01] [DebugCheck] DB 존재: True
+[2026-03-27 21:26:01] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-03-27 21:26:01] [DebugCheck] 123456 해시=8d969eef...
+[2026-03-27 21:26:01] [DoLogin] ValidateLogin 호출
+[2026-03-27 21:26:01] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-03-27 21:26:01] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-03-27 21:26:01] [DoLogin] 로그인 성공 → MainPage 이동
+[2026-03-27 21:31:41] ========== 로그인 창 시작 ==========
+[2026-03-27 21:31:41] [Init] MigrateAccountColumns 시작
+[2026-03-27 21:31:41] [Init] MigrateAccountColumns 완료
+[2026-03-27 21:31:41] [Init] MigrateInitialPasswords 시작
+[2026-03-27 21:31:42] [Init] MigrateInitialPasswords 완료
+[2026-03-27 21:31:52] ---------- 로그인 시도 ----------
+[2026-03-27 21:31:52] [DoLogin] 사번 입력값: '201000308'
+[2026-03-27 21:31:52] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-03-27 21:31:52] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-03-27 21:31:52] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-03-27 21:31:52.885] === SyncApprovalStatusAsync() 시작 ===
+[2026-03-27 21:31:54.724] To Do ETA Task: 14개  DB 계정: 14개
+[2026-03-27 21:31:54.726] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-03-27 21:31:54] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-03-27 21:31:54] [DoLogin] DB 계정 상태 확인 시작
+[2026-03-27 21:31:54] [DebugCheck] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db
+[2026-03-27 21:31:54] [DebugCheck] DB 존재: True
+[2026-03-27 21:31:54] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-03-27 21:31:54] [DebugCheck] 123456 해시=8d969eef...
+[2026-03-27 21:31:54] [DoLogin] ValidateLogin 호출
+[2026-03-27 21:31:54] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-03-27 21:31:54] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-03-27 21:31:54] [DoLogin] 로그인 성공 → MainPage 이동
+[2026-03-27 21:36:52] ========== 로그인 창 시작 ==========
+[2026-03-27 21:36:52] [Init] MigrateAccountColumns 시작
+[2026-03-27 21:36:52] [Init] MigrateAccountColumns 완료
+[2026-03-27 21:36:52] [Init] MigrateInitialPasswords 시작
+[2026-03-27 21:36:53] [Init] MigrateInitialPasswords 완료
+[2026-03-27 21:37:04] ---------- 로그인 시도 ----------
+[2026-03-27 21:37:04] [DoLogin] 사번 입력값: '201000308'
+[2026-03-27 21:37:04] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-03-27 21:37:04] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-03-27 21:37:04] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-03-27 21:37:04.502] === SyncApprovalStatusAsync() 시작 ===
+[2026-03-27 21:37:05] [DoLogin] 중복 호출 차단
+[2026-03-27 21:37:06.227] To Do ETA Task: 14개  DB 계정: 14개
+[2026-03-27 21:37:06.228] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-03-27 21:37:06] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-03-27 21:37:06] [DoLogin] DB 계정 상태 확인 시작
+[2026-03-27 21:37:06] [DebugCheck] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db
+[2026-03-27 21:37:06] [DebugCheck] DB 존재: True
+[2026-03-27 21:37:06] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-03-27 21:37:06] [DebugCheck] 123456 해시=8d969eef...
+[2026-03-27 21:37:06] [DoLogin] ValidateLogin 호출
+[2026-03-27 21:37:06] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-03-27 21:37:06] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-03-27 21:37:06] [DoLogin] 로그인 성공 → MainPage 이동
+[2026-03-27 22:00:34] ========== 로그인 창 시작 ==========
+[2026-03-27 22:00:34] [Init] MigrateAccountColumns 시작
+[2026-03-27 22:00:34] [Init] MigrateAccountColumns 완료
+[2026-03-27 22:00:34] [Init] MigrateInitialPasswords 시작
+[2026-03-27 22:00:34] [Init] MigrateInitialPasswords 완료
+[2026-03-27 22:00:46] ---------- 로그인 시도 ----------
+[2026-03-27 22:00:46] [DoLogin] 사번 입력값: '201000308'
+[2026-03-27 22:00:46] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-03-27 22:00:46] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-03-27 22:00:46] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-03-27 22:00:46.152] === SyncApprovalStatusAsync() 시작 ===
+[2026-03-27 22:00:47] [DoLogin] 중복 호출 차단
+[2026-03-27 22:00:48.147] To Do ETA Task: 14개  DB 계정: 14개
+[2026-03-27 22:00:48.149] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-03-27 22:00:48] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-03-27 22:00:48] [DoLogin] DB 계정 상태 확인 시작
+[2026-03-27 22:00:48] [DebugCheck] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db
+[2026-03-27 22:00:48] [DebugCheck] DB 존재: True
+[2026-03-27 22:00:48] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-03-27 22:00:48] [DebugCheck] 123456 해시=8d969eef...
+[2026-03-27 22:00:48] [DoLogin] ValidateLogin 호출
+[2026-03-27 22:00:48] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-03-27 22:00:48] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-03-27 22:00:48] [DoLogin] 로그인 성공 → MainPage 이동
+[2026-03-27 22:04:35] ========== 로그인 창 시작 ==========
+[2026-03-27 22:04:35] [Init] MigrateAccountColumns 시작
+[2026-03-27 22:04:35] [Init] MigrateAccountColumns 완료
+[2026-03-27 22:04:35] [Init] MigrateInitialPasswords 시작
+[2026-03-27 22:04:35] [Init] MigrateInitialPasswords 완료
+[2026-03-27 22:04:42] ---------- 로그인 시도 ----------
+[2026-03-27 22:04:42] [DoLogin] 사번 입력값: '201000308'
+[2026-03-27 22:04:42] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-03-27 22:04:42] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-03-27 22:04:42] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-03-27 22:04:42.635] === SyncApprovalStatusAsync() 시작 ===
+[2026-03-27 22:04:44] [DoLogin] 중복 호출 차단
+[2026-03-27 22:04:44.750] To Do ETA Task: 14개  DB 계정: 14개
+[2026-03-27 22:04:44.781] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-03-27 22:04:44] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-03-27 22:04:44] [DoLogin] DB 계정 상태 확인 시작
+[2026-03-27 22:04:44] [DebugCheck] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db
+[2026-03-27 22:04:44] [DebugCheck] DB 존재: True
+[2026-03-27 22:04:44] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-03-27 22:04:44] [DebugCheck] 123456 해시=8d969eef...
+[2026-03-27 22:04:44] [DoLogin] ValidateLogin 호출
+[2026-03-27 22:04:44] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-03-27 22:04:44] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-03-27 22:04:44] [DoLogin] 로그인 성공 → MainPage 이동
+[2026-03-27 22:15:46] ========== 로그인 창 시작 ==========
+[2026-03-27 22:15:46] [Init] MigrateAccountColumns 시작
+[2026-03-27 22:15:46] [Init] MigrateAccountColumns 완료
+[2026-03-27 22:15:46] [Init] MigrateInitialPasswords 시작
+[2026-03-27 22:15:47] [Init] MigrateInitialPasswords 완료
+[2026-03-27 22:16:05] ---------- 로그인 시도 ----------
+[2026-03-27 22:16:05] [DoLogin] 사번 입력값: '201000308'
+[2026-03-27 22:16:05] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-03-27 22:16:05] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-03-27 22:16:05] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-03-27 22:16:05.782] === SyncApprovalStatusAsync() 시작 ===
+[2026-03-27 22:16:06] [DoLogin] 중복 호출 차단
+[2026-03-27 22:16:07.627] To Do ETA Task: 14개  DB 계정: 14개
+[2026-03-27 22:16:07.628] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-03-27 22:16:07] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-03-27 22:16:07] [DoLogin] DB 계정 상태 확인 시작
+[2026-03-27 22:16:07] [DebugCheck] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db
+[2026-03-27 22:16:07] [DebugCheck] DB 존재: True
+[2026-03-27 22:16:07] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-03-27 22:16:07] [DebugCheck] 123456 해시=8d969eef...
+[2026-03-27 22:16:07] [DoLogin] ValidateLogin 호출
+[2026-03-27 22:16:07] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-03-27 22:16:07] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-03-27 22:16:07] [DoLogin] 로그인 성공 → MainPage 이동
+[2026-03-27 22:21:20] ========== 로그인 창 시작 ==========
+[2026-03-27 22:21:20] [Init] MigrateAccountColumns 시작
+[2026-03-27 22:21:20] [Init] MigrateAccountColumns 완료
+[2026-03-27 22:21:20] [Init] MigrateInitialPasswords 시작
+[2026-03-27 22:21:21] [Init] MigrateInitialPasswords 완료
+[2026-03-27 22:21:29] ---------- 로그인 시도 ----------
+[2026-03-27 22:21:29] [DoLogin] 사번 입력값: '20100038'
+[2026-03-27 22:21:29] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-03-27 22:21:29] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-03-27 22:21:29] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-03-27 22:21:29.384] === SyncApprovalStatusAsync() 시작 ===
+[2026-03-27 22:21:30] [DoLogin] 중복 호출 차단
+[2026-03-27 22:21:31.148] To Do ETA Task: 14개  DB 계정: 14개
+[2026-03-27 22:21:31.149] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-03-27 22:21:31] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-03-27 22:21:31] [DoLogin] DB 계정 상태 확인 시작
+[2026-03-27 22:21:31] [DebugCheck] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db
+[2026-03-27 22:21:31] [DebugCheck] DB 존재: True
+[2026-03-27 22:21:31] [DebugCheck] 20100038 → DB에 레코드 없음!
+[2026-03-27 22:21:31] [DoLogin] ValidateLogin 호출
+[2026-03-27 22:21:31] [DoLogin] ValidateLogin 결과 → success=False, mustChangePw=False, message='등록되지 않은 사번입니다.'
+[2026-03-27 22:21:31] [DoLogin] 로그인 실패: 등록되지 않은 사번입니다.
+[2026-03-27 22:21:40] ---------- 로그인 시도 ----------
+[2026-03-27 22:21:40] [DoLogin] 사번 입력값: '201000308'
+[2026-03-27 22:21:40] [DoLogin] 비밀번호 길이: 8자 / 비어있음: False
+[2026-03-27 22:21:40] [DoLogin] 비밀번호 입력 해시: 9e1b4a96...
+[2026-03-27 22:21:40] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-03-27 22:21:40.612] === SyncApprovalStatusAsync() 시작 ===
+[2026-03-27 22:21:41.526] To Do ETA Task: 14개  DB 계정: 14개
+[2026-03-27 22:21:41.527] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-03-27 22:21:41] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-03-27 22:21:41] [DoLogin] DB 계정 상태 확인 시작
+[2026-03-27 22:21:41] [DebugCheck] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db
+[2026-03-27 22:21:41] [DebugCheck] DB 존재: True
+[2026-03-27 22:21:41] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-03-27 22:21:41] [DebugCheck] 123456 해시=8d969eef...
+[2026-03-27 22:21:41] [DoLogin] ValidateLogin 호출
+[2026-03-27 22:21:41] [ValidateLogin] DB해시=f3898fe2... / 입력해시=9e1b4a96... / 일치=False
+[2026-03-27 22:21:41] [DoLogin] ValidateLogin 결과 → success=False, mustChangePw=False, message='비밀번호가 올바르지 않습니다.'
+[2026-03-27 22:21:41] [DoLogin] 로그인 실패: 비밀번호가 올바르지 않습니다.
+[2026-03-27 22:21:50] ---------- 로그인 시도 ----------
+[2026-03-27 22:21:50] [DoLogin] 사번 입력값: '201000308'
+[2026-03-27 22:21:50] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-03-27 22:21:50] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-03-27 22:21:50] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-03-27 22:21:50.387] === SyncApprovalStatusAsync() 시작 ===
+[2026-03-27 22:21:51.157] To Do ETA Task: 14개  DB 계정: 14개
+[2026-03-27 22:21:51.175] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-03-27 22:21:51] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-03-27 22:21:51] [DoLogin] DB 계정 상태 확인 시작
+[2026-03-27 22:21:51] [DebugCheck] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db
+[2026-03-27 22:21:51] [DebugCheck] DB 존재: True
+[2026-03-27 22:21:51] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-03-27 22:21:51] [DebugCheck] 123456 해시=8d969eef...
+[2026-03-27 22:21:51] [DoLogin] ValidateLogin 호출
+[2026-03-27 22:21:51] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-03-27 22:21:51] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-03-27 22:21:51] [DoLogin] 로그인 성공 → MainPage 이동
+[2026-03-27 22:29:44] ========== 로그인 창 시작 ==========
+[2026-03-27 22:29:44] [Init] MigrateAccountColumns 시작
+[2026-03-27 22:29:44] [Init] MigrateAccountColumns 완료
+[2026-03-27 22:29:44] [Init] MigrateInitialPasswords 시작
+[2026-03-27 22:29:45] [Init] MigrateInitialPasswords 완료
+[2026-03-27 22:30:15] ---------- 로그인 시도 ----------
+[2026-03-27 22:30:15] [DoLogin] 사번 입력값: '201000308'
+[2026-03-27 22:30:15] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-03-27 22:30:15] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-03-27 22:30:15] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-03-27 22:30:15.245] === SyncApprovalStatusAsync() 시작 ===
+[2026-03-27 22:30:17.258] To Do ETA Task: 14개  DB 계정: 14개
+[2026-03-27 22:30:17.259] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-03-27 22:30:17] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-03-27 22:30:17] [DoLogin] DB 계정 상태 확인 시작
+[2026-03-27 22:30:17] [DebugCheck] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db
+[2026-03-27 22:30:17] [DebugCheck] DB 존재: True
+[2026-03-27 22:30:17] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-03-27 22:30:17] [DebugCheck] 123456 해시=8d969eef...
+[2026-03-27 22:30:17] [DoLogin] ValidateLogin 호출
+[2026-03-27 22:30:17] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-03-27 22:30:17] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-03-27 22:30:17] [DoLogin] 로그인 성공 → MainPage 이동
+[2026-03-27 22:35:50] ========== 로그인 창 시작 ==========
+[2026-03-27 22:35:50] [Init] MigrateAccountColumns 시작
+[2026-03-27 22:35:50] [Init] MigrateAccountColumns 완료
+[2026-03-27 22:35:50] [Init] MigrateInitialPasswords 시작
+[2026-03-27 22:35:50] [Init] MigrateInitialPasswords 완료
+[2026-03-27 22:35:59] ---------- 로그인 시도 ----------
+[2026-03-27 22:35:59] [DoLogin] 사번 입력값: '201000308'
+[2026-03-27 22:35:59] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-03-27 22:36:00] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-03-27 22:36:00] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-03-27 22:36:00.006] === SyncApprovalStatusAsync() 시작 ===
+[2026-03-27 22:36:02.212] To Do ETA Task: 14개  DB 계정: 14개
+[2026-03-27 22:36:02.213] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-03-27 22:36:02] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-03-27 22:36:02] [DoLogin] DB 계정 상태 확인 시작
+[2026-03-27 22:36:02] [DebugCheck] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db
+[2026-03-27 22:36:02] [DebugCheck] DB 존재: True
+[2026-03-27 22:36:02] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-03-27 22:36:02] [DebugCheck] 123456 해시=8d969eef...
+[2026-03-27 22:36:02] [DoLogin] ValidateLogin 호출
+[2026-03-27 22:36:02] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-03-27 22:36:02] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-03-27 22:36:02] [DoLogin] 로그인 성공 → MainPage 이동
+[2026-03-27 22:50:32] ========== 로그인 창 시작 ==========
+[2026-03-27 22:50:32] [Init] MigrateAccountColumns 시작
+[2026-03-27 22:50:32] [Init] MigrateAccountColumns 완료
+[2026-03-27 22:50:32] [Init] MigrateInitialPasswords 시작
+[2026-03-27 22:50:33] [Init] MigrateInitialPasswords 완료
+[2026-03-27 22:50:42] ---------- 로그인 시도 ----------
+[2026-03-27 22:50:42] [DoLogin] 사번 입력값: '201000308'
+[2026-03-27 22:50:42] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-03-27 22:50:42] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-03-27 22:50:42] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-03-27 22:50:42.925] === SyncApprovalStatusAsync() 시작 ===
+[2026-03-27 22:50:45.322] To Do ETA Task: 14개  DB 계정: 14개
+[2026-03-27 22:50:45.323] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-03-27 22:50:45] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-03-27 22:50:45] [DoLogin] DB 계정 상태 확인 시작
+[2026-03-27 22:50:45] [DebugCheck] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db
+[2026-03-27 22:50:45] [DebugCheck] DB 존재: True
+[2026-03-27 22:50:45] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-03-27 22:50:45] [DebugCheck] 123456 해시=8d969eef...
+[2026-03-27 22:50:45] [DoLogin] ValidateLogin 호출
+[2026-03-27 22:50:45] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-03-27 22:50:45] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-03-27 22:50:45] [DoLogin] 로그인 성공 → MainPage 이동
+[2026-03-27 23:00:31] ========== 로그인 창 시작 ==========
+[2026-03-27 23:00:31] [Init] MigrateAccountColumns 시작
+[2026-03-27 23:00:31] [Init] MigrateAccountColumns 완료
+[2026-03-27 23:00:31] [Init] MigrateInitialPasswords 시작
+[2026-03-27 23:00:32] [Init] MigrateInitialPasswords 완료
+[2026-03-27 23:00:46] ---------- 로그인 시도 ----------
+[2026-03-27 23:00:46] [DoLogin] 사번 입력값: '201000308'
+[2026-03-27 23:00:46] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-03-27 23:00:46] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-03-27 23:00:46] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-03-27 23:00:46.024] === SyncApprovalStatusAsync() 시작 ===
+[2026-03-27 23:00:47] [DoLogin] 중복 호출 차단
+[2026-03-27 23:00:47.993] To Do ETA Task: 14개  DB 계정: 14개
+[2026-03-27 23:00:47.994] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-03-27 23:00:47] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-03-27 23:00:47] [DoLogin] DB 계정 상태 확인 시작
+[2026-03-27 23:00:47] [DebugCheck] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db
+[2026-03-27 23:00:47] [DebugCheck] DB 존재: True
+[2026-03-27 23:00:48] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-03-27 23:00:48] [DebugCheck] 123456 해시=8d969eef...
+[2026-03-27 23:00:48] [DoLogin] ValidateLogin 호출
+[2026-03-27 23:00:48] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-03-27 23:00:48] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-03-27 23:00:48] [DoLogin] 로그인 성공 → MainPage 이동

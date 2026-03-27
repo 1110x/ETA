@@ -939,3 +939,1012 @@
 [16:17:53] 의뢰 선택: 화치 PVC_침전조 [20260326-152919]
 [16:17:59] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
 [16:17:59] [AnalysisRequestService] GetManagersByDate(2026-03-26): 113개 담당자 로드
+[16:57:19] QuotationHistoryPanel 초기화 완료
+[16:57:19] LoadData() 시작
+[16:57:19] 견적 발행건수=937
+[16:57:19] LoadData() 완료 — 루트노드=6
+[17:02:01] QuotationHistoryPanel 초기화 완료
+[17:02:01] LoadData() 시작
+[17:02:01] 견적 발행건수=937
+[17:02:01] LoadData() 완료 — 루트노드=6
+[17:05:21] QuotationHistoryPanel 초기화 완료
+[17:05:21] LoadData() 시작
+[17:05:21] 견적 발행건수=937
+[17:05:22] LoadData() 완료 — 루트노드=6
+[17:13:37] QuotationHistoryPanel 초기화 완료
+[17:13:37] LoadData() 시작
+[17:13:37] 견적 발행건수=937
+[17:13:37] LoadData() 완료 — 루트노드=6
+[17:14:49] LoadData() 시작
+[17:14:49] 견적 발행건수=937
+[17:14:50] LoadData() 완료 — 루트노드=6
+[17:16:16] LoadData() 시작
+[17:16:16] 견적 발행건수=937
+[17:16:17] LoadData() 완료 — 루트노드=6
+[17:25:20] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[17:28:35] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[17:28:36] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[17:28:36] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[17:28:37] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[17:28:37] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[17:28:37] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[17:28:38] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[17:28:39] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[17:28:40] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[17:28:40] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[17:28:40] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[17:28:41] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[17:28:41] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[17:28:42] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[17:28:43] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[17:28:44] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[17:30:57] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[17:30:58] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[17:30:59] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[17:30:59] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[17:31:00] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[17:32:13] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[17:32:55] QuotationHistoryPanel 초기화 완료
+[17:32:55] LoadData() 시작
+[17:32:55] 견적 발행건수=937
+[17:32:55] LoadData() 완료 — 루트노드=6
+[17:33:16] LoadData() 시작
+[17:33:16] 견적 발행건수=937
+[17:33:17] LoadData() 완료 — 루트노드=6
+[09:20:21] QuotationHistoryPanel 초기화 완료
+[09:20:21] LoadData() 시작
+[09:20:21] 견적 발행건수=937
+[09:20:21] LoadData() 완료 — 루트노드=6
+[09:20:24] 견적 선택: 화치 테스트 견적서 입니다. [20260326-152919]
+[09:21:08] 탭 전환 → 분석의뢰내역
+[09:21:08] LoadAnalysisTreeAsync() 시작
+[09:21:08] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[09:21:08] [AnalysisRequestService] 테이블 존재: 1
+[09:21:08] [AnalysisRequestService] 전체 행 수: 3677
+[09:21:08] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[09:21:08] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[09:21:08] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[09:21:08] [AnalysisRequestService] 완료: 3677건
+[09:21:08] DB 조회 완료: 3677건
+[09:21:08] FillMonthNodeWithDays: 2026-03 → 14건
+[09:21:08] 트리 완료 — 년노드=7
+[09:21:11] 의뢰 선택: 화치 PVC_침전조 [20260326-152919]
+[09:21:16] 의뢰 선택: 화치 IPA생산팀폐수(TK-5737) [20260326-152919]
+[09:21:16] 의뢰 선택: 화치 IPA생산팀폐수(TK-5737) [20260326-152919]
+[09:21:19] 의뢰 선택: 화치 ABS2(SC-8710) [20260326-152919]
+[09:21:20] 의뢰 선택: 화치 특별의뢰 샘플 [20260326-152919]
+[09:21:20] 의뢰 선택: 보임 폐수조#APond-폐수 [20260312-210229]
+[09:21:21] 의뢰 선택: 보임 폐수조#BPond-폐수 [20260312-210229]
+[09:21:21] 의뢰 선택: 보임 폐수조1 [20260312-210229]
+[09:21:22] 의뢰 선택: 보임 폐수조2 [20260312-210229]
+[09:21:30] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[09:21:30] [AnalysisRequestService] GetManagersByDate(2026-03-26): 113개 담당자 로드
+[09:21:41] [AnalysisRequestService] GetManagersByDate(2026-03-26): 113개 담당자 로드
+[09:21:59] [AnalysisRequestService] GetManagersByDate(2026-03-26): 113개 담당자 로드
+[09:22:09] [AnalysisRequestService] GetManagersByDate(2026-03-26): 113개 담당자 로드
+[09:22:20] [AnalysisRequestService] GetManagersByDate(2026-03-25): 113개 담당자 로드
+[09:22:27] [AnalysisRequestService] GetManagersByDate(2026-03-25): 113개 담당자 로드
+[09:22:34] [AnalysisRequestService] GetManagersByDate(2026-03-25): 113개 담당자 로드
+[09:22:41] [AnalysisRequestService] GetManagersByDate(2026-03-25): 113개 담당자 로드
+[10:10:04] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[10:10:04] [AnalysisRequestService] GetManagersByDate(2026-03-26): 113개 담당자 로드
+[10:10:15] [AnalysisRequestService] GetManagersByDate(2026-03-26): 113개 담당자 로드
+[10:10:25] [AnalysisRequestService] GetManagersByDate(2026-03-26): 113개 담당자 로드
+[10:10:36] [AnalysisRequestService] GetManagersByDate(2026-03-26): 113개 담당자 로드
+[10:10:48] [AnalysisRequestService] GetManagersByDate(2026-03-25): 113개 담당자 로드
+[10:10:55] [AnalysisRequestService] GetManagersByDate(2026-03-25): 113개 담당자 로드
+[10:11:02] [AnalysisRequestService] GetManagersByDate(2026-03-25): 113개 담당자 로드
+[10:11:09] [AnalysisRequestService] GetManagersByDate(2026-03-25): 113개 담당자 로드
+[10:15:38] QuotationHistoryPanel 초기화 완료
+[10:15:38] LoadData() 시작
+[10:15:38] 견적 발행건수=937
+[10:15:39] LoadData() 완료 — 루트노드=6
+[10:15:41] 탭 전환 → 분석의뢰내역
+[10:15:41] LoadAnalysisTreeAsync() 시작
+[10:15:41] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[10:15:41] [AnalysisRequestService] 테이블 존재: 1
+[10:15:41] [AnalysisRequestService] 전체 행 수: 3677
+[10:15:41] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[10:15:41] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[10:15:41] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[10:15:41] [AnalysisRequestService] 완료: 3677건
+[10:15:41] DB 조회 완료: 3677건
+[10:15:41] FillMonthNodeWithDays: 2026-03 → 14건
+[10:15:41] 트리 완료 — 년노드=7
+[10:15:42] 의뢰 선택: 화치 PVC_침전조 [20260326-152919]
+[10:15:44] 의뢰 선택: 화치 IPA생산팀폐수(TK-5737) [20260326-152919]
+[10:15:45] 의뢰 선택: 화치 ABS2(SC-8710) [20260326-152919]
+[10:15:52] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[10:15:52] [AnalysisRequestService] GetManagersByDate(2026-03-26): 113개 담당자 로드
+[10:16:03] [AnalysisRequestService] GetManagersByDate(2026-03-26): 113개 담당자 로드
+[10:16:13] [AnalysisRequestService] GetManagersByDate(2026-03-26): 113개 담당자 로드
+[10:18:36] 의뢰 선택: 화치 PVC_침전조 [20260326-152919]
+[10:18:37] 의뢰 선택: 화치 IPA생산팀폐수(TK-5737) [20260326-152919]
+[10:18:39] 의뢰 선택: 화치 ABS2(SC-8710) [20260326-152919]
+[10:18:40] 의뢰 선택: 보임 폐수조PondB-방류수 [20260312-210229]
+[10:18:41] 의뢰 선택: 보임 폐수조PondB-유입수 [20260312-210229]
+[10:29:36] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[10:29:37] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[10:29:37] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[10:29:38] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[10:29:38] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[10:29:40] QuotationHistoryPanel 초기화 완료
+[10:29:40] LoadData() 시작
+[10:29:40] 견적 발행건수=937
+[10:29:40] LoadData() 완료 — 루트노드=6
+[10:30:26] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[10:30:39] QuotationHistoryPanel 초기화 완료
+[10:30:39] LoadData() 시작
+[10:30:39] 견적 발행건수=937
+[10:30:39] LoadData() 완료 — 루트노드=6
+[10:33:20] 견적 선택: 화치 테스트 견적서 입니다. [20260326-152919]
+[10:34:09] 탭 전환 → 분석의뢰내역
+[10:34:09] LoadAnalysisTreeAsync() 시작
+[10:34:09] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[10:34:09] [AnalysisRequestService] 테이블 존재: 1
+[10:34:09] [AnalysisRequestService] 전체 행 수: 3677
+[10:34:09] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[10:34:09] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[10:34:09] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[10:34:09] [AnalysisRequestService] 완료: 3677건
+[10:34:09] DB 조회 완료: 3677건
+[10:34:09] FillMonthNodeWithDays: 2026-03 → 14건
+[10:34:09] 트리 완료 — 년노드=7
+[10:34:11] 의뢰 선택: 화치 PVC_침전조 [20260326-152919]
+[10:34:12] 의뢰 선택: 화치 IPA생산팀폐수(TK-5737) [20260326-152919]
+[10:34:12] 의뢰 선택: 화치 ABS2(SC-8710) [20260326-152919]
+[10:34:13] 의뢰 선택: 화치 특별의뢰 샘플 [20260326-152919]
+[10:34:13] 의뢰 선택: 보임 폐수조#APond-폐수 [20260312-210229]
+[10:34:15] 의뢰 선택: 보임 폐수조#BPond-폐수 [20260312-210229]
+[10:34:15] 의뢰 선택: 보임 폐수조1 [20260312-210229]
+[10:34:15] 의뢰 선택: 보임 폐수조2 [20260312-210229]
+[10:34:16] 의뢰 선택: 보임 폐수조PondA-유입수 [20260312-210229]
+[10:38:41] 의뢰 선택: 보임 폐수조PondA-방류수 [20260312-210229]
+[10:38:42] 의뢰 선택: 보임 폐수조PondB-유입수 [20260312-210229]
+[10:41:24] LoadData() 시작
+[10:41:24] 견적 발행건수=937
+[10:41:24] LoadData() 완료 — 루트노드=6
+[10:44:19] LoadData() 시작
+[10:44:19] 견적 발행건수=937
+[10:44:19] LoadData() 완료 — 루트노드=6
+[10:45:14] LoadData() 시작
+[10:45:14] 견적 발행건수=937
+[10:45:14] LoadData() 완료 — 루트노드=6
+[10:46:33] LoadData() 시작
+[10:46:33] 견적 발행건수=937
+[10:46:34] LoadData() 완료 — 루트노드=6
+[10:56:17] QuotationHistoryPanel 초기화 완료
+[10:56:17] LoadData() 시작
+[10:56:17] 견적 발행건수=937
+[10:56:18] LoadData() 완료 — 루트노드=6
+[11:04:36] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:06:23] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:06:24] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:06:24] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:06:25] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:06:25] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:06:26] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:06:26] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:06:27] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:06:28] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:06:28] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:06:29] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:06:29] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:06:29] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:06:30] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:06:30] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:11:31] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:11:32] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:11:41] QuotationHistoryPanel 초기화 완료
+[11:11:41] LoadData() 시작
+[11:11:41] 견적 발행건수=937
+[11:11:41] LoadData() 완료 — 루트노드=6
+[11:12:03] QuotationHistoryPanel 초기화 완료
+[11:12:03] LoadData() 시작
+[11:12:03] 견적 발행건수=937
+[11:12:04] LoadData() 완료 — 루트노드=6
+[11:12:18] 견적 선택: 센터 왔싸 뵹 [20260325-191213]
+[11:16:52] QuotationHistoryPanel 초기화 완료
+[11:16:52] LoadData() 시작
+[11:16:52] 견적 발행건수=937
+[11:16:52] LoadData() 완료 — 루트노드=6
+[11:17:01] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:20:45] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:20:46] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:20:46] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:20:47] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:20:47] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:20:48] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:20:49] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:20:50] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:20:51] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:20:51] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:20:52] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:20:52] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:20:53] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:20:53] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:20:54] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:20:54] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:20:54] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:20:55] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:20:56] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:20:57] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:20:57] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:20:57] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:20:58] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:20:58] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:20:59] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:20:59] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:21:00] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:21:01] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:21:02] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:21:02] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:21:03] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:21:03] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:21:04] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:21:04] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:21:05] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:21:06] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:21:06] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:21:07] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:21:08] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:21:08] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:21:09] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:21:09] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:21:10] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:21:16] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:21:21] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:21:21] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:21:22] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:21:22] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:21:22] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:21:23] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:22:19] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:30:42] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[11:40:30] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[12:07:42] QuotationHistoryPanel 초기화 완료
+[12:07:42] LoadData() 시작
+[12:07:42] 견적 발행건수=937
+[12:07:42] LoadData() 완료 — 루트노드=6
+[12:07:49] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[12:07:53] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[12:07:53] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[12:07:55] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[12:07:55] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[12:07:55] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[12:07:56] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[12:07:57] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[12:08:05] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[12:08:06] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[12:09:24] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[12:09:25] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[12:09:25] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[12:09:25] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[12:09:26] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[12:09:26] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[12:09:26] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[12:09:26] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[12:09:26] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[12:09:26] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[12:09:27] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[12:09:27] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[12:09:27] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[12:09:27] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[12:09:28] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[12:09:28] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[12:09:28] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[12:09:28] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[12:09:28] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[12:09:28] [AnalysisRequestService] GetAssignmentsForAgent 오류: SQLite Error 1: 'no such table: 직원정보'.
+[12:15:52] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[12:15:52] [AnalysisRequestService] GetAssignmentsForAgent(202204016/정대호, 2026-03-27): 3개 할당
+[12:15:54] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[12:15:54] [AnalysisRequestService] GetAssignmentsForAgent(202309008/윤민영, 2026-03-27): 14개 할당
+[12:15:55] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[12:15:55] [AnalysisRequestService] GetAssignmentsForAgent(202311039/정준하, 2026-03-27): 1개 할당
+[12:15:56] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[12:15:56] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-03-27): 0개 할당
+[12:15:57] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[12:15:57] [AnalysisRequestService] GetAssignmentsForAgent(202104002/방찬미, 2026-03-27): 4개 할당
+[12:15:57] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[12:15:57] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-03-27): 0개 할당
+[12:15:58] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[12:15:58] [AnalysisRequestService] GetAssignmentsForAgent(201101234/박은지, 2026-03-27): 5개 할당
+[12:15:58] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[12:15:58] [AnalysisRequestService] GetAssignmentsForAgent(202104002/방찬미, 2026-03-27): 4개 할당
+[12:15:58] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[12:15:58] [AnalysisRequestService] GetAssignmentsForAgent(202202011/이재휘, 2026-03-27): 4개 할당
+[12:15:59] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[12:15:59] [AnalysisRequestService] GetAssignmentsForAgent(202204016/정대호, 2026-03-27): 3개 할당
+[12:15:59] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[12:15:59] [AnalysisRequestService] GetAssignmentsForAgent(202303008/송준우, 2026-03-27): 12개 할당
+[12:17:53] QuotationHistoryPanel 초기화 완료
+[12:17:53] LoadData() 시작
+[12:17:53] 견적 발행건수=937
+[12:17:54] LoadData() 완료 — 루트노드=6
+[12:35:44] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[12:35:44] [AnalysisRequestService] GetAssignmentsForAgent(201101234/박은지, 2026-03-27): 5개 할당
+[12:43:59] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[12:43:59] [AnalysisRequestService] GetAssignmentsForAgent(202301126/유경지, 2026-03-27): 2개 할당
+[12:44:01] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[12:44:01] [AnalysisRequestService] GetAssignmentsForAgent(202311039/정준하, 2026-03-27): 1개 할당
+[12:44:02] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[12:44:02] [AnalysisRequestService] GetAssignmentsForAgent(12345/김청하, 2026-03-27): 0개 할당
+[12:44:03] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[12:44:03] [AnalysisRequestService] GetAssignmentsForAgent(202311039/정준하, 2026-03-27): 1개 할당
+[12:44:03] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[12:44:03] [AnalysisRequestService] GetAssignmentsForAgent(202303008/송준우, 2026-03-27): 12개 할당
+[12:44:12] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[12:44:12] [AnalysisRequestService] GetAssignmentsForAgent(202303008/송준우, 2026-02-27): 12개 할당
+[12:44:13] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[12:44:13] [AnalysisRequestService] GetAssignmentsForAgent(202303008/송준우, 2026-01-27): 14개 할당
+[12:44:16] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[12:44:16] [AnalysisRequestService] GetAssignmentsForAgent(202303008/송준우, 2026-02-27): 12개 할당
+[12:44:17] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[12:44:17] [AnalysisRequestService] GetAssignmentsForAgent(202303008/송준우, 2026-01-27): 14개 할당
+[12:44:19] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[12:44:19] [AnalysisRequestService] GetAssignmentsForAgent(202303008/송준우, 2026-03-27): 12개 할당
+[12:44:26] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[12:44:26] [AnalysisRequestService] AddAssignment: 202303008(송준우)에게 페놀류(페놀류) 분장 추가 (2026-03-27 ~ 2026-04-27)
+[12:44:26] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[12:44:26] [AnalysisRequestService] GetAssignmentsForAgent(202303008/송준우, 2026-03-27): 13개 할당
+[12:44:32] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[12:44:32] [AnalysisRequestService] AddAssignment: 202303008(송준우)에게 퍼클로레이트(퍼클로레이트) 분장 추가 (2026-03-27 ~ 2026-04-27)
+[12:44:32] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[12:44:32] [AnalysisRequestService] GetAssignmentsForAgent(202303008/송준우, 2026-03-27): 14개 할당
+[12:59:48] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[12:59:48] [AnalysisRequestService] GetAssignmentsForAgent(201101234/박은지, 2026-03-27): 4개 할당
+[13:00:01] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:00:01] [AnalysisRequestService] GetAssignmentsForAgent(201101234/박은지, 2025-09-01): 5개 할당
+[13:00:02] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:00:02] [AnalysisRequestService] GetAssignmentsForAgentRange(201101234, 2025-09-01~2025-09-26): 5개
+[13:00:03] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:00:03] [AnalysisRequestService] GetAssignmentsForAgent(201101234/박은지, 2025-09-01): 5개 할당
+[13:00:06] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:00:06] [AnalysisRequestService] GetAssignmentsForAgentRange(201101234, 2025-09-01~2025-09-17): 5개
+[13:00:10] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:00:10] [AnalysisRequestService] GetAssignmentsForAgent(201101234/박은지, 2025-08-01): 5개 할당
+[13:00:11] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:00:11] [AnalysisRequestService] GetAssignmentsForAgentRange(201101234, 2025-08-01~2025-08-23): 5개
+[13:00:14] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:00:14] [AnalysisRequestService] GetAssignmentsForAgent(201101234/박은지, 2025-09-19): 5개 할당
+[13:00:16] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:00:16] [AnalysisRequestService] GetAssignmentsForAgentRange(201101234, 2025-08-01~2025-09-19): 5개
+[13:00:19] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:00:19] [AnalysisRequestService] GetAssignmentsForAgent(201101234/박은지, 2025-11-15): 5개 할당
+[13:00:20] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:00:20] [AnalysisRequestService] GetAssignmentsForAgentRange(201101234, 2025-11-01~2025-11-15): 5개
+[13:02:52] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:02:52] [AnalysisRequestService] GetAssignmentsForAgent(201101234/박은지, 2025-11-22): 5개 할당
+[13:02:53] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:02:53] [AnalysisRequestService] GetAssignmentsForAgentRange(201101234, 2025-11-01~2025-11-22): 5개
+[13:02:55] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:02:55] [AnalysisRequestService] GetAssignmentsForAgent(201101234/박은지, 2026-04-11): 0개 할당
+[13:02:57] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:02:57] [AnalysisRequestService] GetAssignmentsForAgentRange(201101234, 2025-12-13~2026-04-11): 5개
+[13:03:00] [AnalysisRequestService] GetAssignmentsForAgent(201101234/박은지, 2026-05-01): 0개 할당
+[13:03:01] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:03:01] [AnalysisRequestService] GetAssignmentsForAgentRange(201101234, 2026-05-01~2026-10-16): 0개
+[13:03:14] [AnalysisRequestService] GetAssignmentsForAgent(201101234/박은지, 2026-05-01): 0개 할당
+[13:03:18] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:03:18] [AnalysisRequestService] GetAssignmentsForAgentRange(201101234, 2026-05-01~2026-08-15): 0개
+[13:03:49] [AnalysisRequestService] GetAssignmentsForAgent(201101234/박은지, 2026-05-15): 0개 할당
+[13:03:50] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:03:50] [AnalysisRequestService] GetAssignmentsForAgentRange(201101234, 2026-04-28~2026-05-15): 0개
+[13:03:52] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:03:52] [AnalysisRequestService] GetAssignmentsForAgent(201101234/박은지, 2026-04-16): 0개 할당
+[13:03:54] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:03:54] [AnalysisRequestService] GetAssignmentsForAgentRange(201101234, 2026-04-01~2026-04-16): 0개
+[13:03:56] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:03:56] [AnalysisRequestService] GetAssignmentsForAgent(201101234/박은지, 2026-02-03): 5개 할당
+[13:03:58] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:03:58] [AnalysisRequestService] GetAssignmentsForAgentRange(201101234, 2026-01-01~2026-02-03): 5개
+[13:04:01] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:04:01] [AnalysisRequestService] GetAssignmentsForAgent(201101234/박은지, 2026-01-13): 5개 할당
+[13:04:02] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:04:02] [AnalysisRequestService] GetAssignmentsForAgentRange(201101234, 2026-01-13~2026-03-12): 5개
+[13:05:42] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:05:42] [AnalysisRequestService] GetAssignmentsForAgent(201101234/박은지, 2026-04-01): 0개 할당
+[13:05:42] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:05:42] [AnalysisRequestService] GetAssignmentsForAgentRange(201101234, 2026-04-01~2026-04-16): 0개
+[13:07:43] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:07:43] [AnalysisRequestService] GetAssignmentsForAgent(202301126/유경지, 2026-03-27): 2개 할당
+[13:07:47] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:07:47] [AnalysisRequestService] GetAssignmentsForAgent(202301126/유경지, 2026-03-05): 2개 할당
+[13:07:49] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:07:49] [AnalysisRequestService] GetAssignmentsForAgentRange(202301126, 2026-03-05~2026-03-18): 2개
+[13:07:53] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:07:53] [AnalysisRequestService] GetAssignmentsForAgent(202301126/유경지, 2026-04-15): 0개 할당
+[13:07:54] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:07:54] [AnalysisRequestService] GetAssignmentsForAgentRange(202301126, 2026-04-15~2026-07-16): 0개
+[13:08:05] [AnalysisRequestService] GetAssignmentsForAgent(202301126/유경지, 2026-09-01): 0개 할당
+[13:08:06] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:08:06] [AnalysisRequestService] GetAssignmentsForAgentRange(202301126, 2026-09-01~2026-09-16): 0개
+[13:08:13] [AnalysisRequestService] GetAssignmentsForAgent(202301126/유경지, 2025-02-01): 0개 할당
+[13:08:15] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:08:15] [AnalysisRequestService] GetAssignmentsForAgentRange(202301126, 2025-02-01~2025-03-14): 0개
+[13:08:21] [AnalysisRequestService] GetAssignmentsForAgent(202301126/유경지, 2025-05-01): 0개 할당
+[13:08:22] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:08:22] [AnalysisRequestService] GetAssignmentsForAgentRange(202301126, 2025-04-29~2025-05-01): 0개
+[13:08:28] [AnalysisRequestService] GetAssignmentsForAgent(202301126/유경지, 2025-05-11): 0개 할당
+[13:08:30] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:08:30] [AnalysisRequestService] GetAssignmentsForAgentRange(202301126, 2025-05-11~2025-06-12): 0개
+[13:08:33] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:08:33] [AnalysisRequestService] GetAssignmentsForAgent(201101234/박은지, 2026-03-27): 4개 할당
+[13:08:37] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:08:37] [AnalysisRequestService] GetAssignmentsForAgent(201101234/박은지, 2026-03-06): 5개 할당
+[13:08:39] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:08:39] [AnalysisRequestService] GetAssignmentsForAgentRange(201101234, 2025-12-04~2026-03-06): 5개
+[13:08:42] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:08:42] [AnalysisRequestService] GetAssignmentsForAgent(201101234/박은지, 2025-12-11): 5개 할당
+[13:08:44] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:08:44] [AnalysisRequestService] GetAssignmentsForAgentRange(201101234, 2025-12-11~2025-12-21): 5개
+[13:08:54] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:08:54] [AnalysisRequestService] GetAssignmentsForAgent(201101234/박은지, 2026-02-05): 5개 할당
+[13:08:55] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:08:55] [AnalysisRequestService] GetAssignmentsForAgentRange(201101234, 2026-02-05~2026-02-17): 5개
+[13:09:00] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:09:00] [AnalysisRequestService] GetAssignmentsForAgent(201101234/박은지, 2025-10-03): 5개 할당
+[13:09:01] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:09:01] [AnalysisRequestService] GetAssignmentsForAgentRange(201101234, 2025-10-03~2025-10-15): 5개
+[13:09:03] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:09:03] [AnalysisRequestService] GetAssignmentsForAgent(202311039/정준하, 2026-03-27): 1개 할당
+[13:09:04] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:09:04] [AnalysisRequestService] GetAssignmentsForAgent(202309008/윤민영, 2026-03-27): 14개 할당
+[13:09:05] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:09:05] [AnalysisRequestService] GetAssignmentsForAgent(202303008/송준우, 2026-03-27): 14개 할당
+[13:09:06] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:09:06] [AnalysisRequestService] GetAssignmentsForAgent(202301126/유경지, 2026-03-27): 2개 할당
+[13:09:10] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:09:10] [AnalysisRequestService] GetAssignmentsForAgent(202202011/이재휘, 2026-03-27): 3개 할당
+[13:09:11] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:09:11] [AnalysisRequestService] GetAssignmentsForAgent(202202011/이재휘, 2026-03-27): 3개 할당
+[13:09:12] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:09:12] [AnalysisRequestService] GetAssignmentsForAgent(202202011/이재휘, 2026-03-27): 3개 할당
+[13:09:13] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:09:13] [AnalysisRequestService] GetAssignmentsForAgent(202106024/이예림, 2026-03-27): 7개 할당
+[13:09:21] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:09:21] [AnalysisRequestService] GetAssignmentsForAgent(202311039/정준하, 2026-03-27): 1개 할당
+[13:09:21] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:09:21] [AnalysisRequestService] GetAssignmentsForAgent(12345/김청하, 2026-03-27): 0개 할당
+[13:09:23] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:09:23] [AnalysisRequestService] GetAssignmentsForAgent(202500323/김가린, 2026-03-27): 3개 할당
+[13:09:25] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:09:25] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-03-27): 0개 할당
+[13:22:17] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:22:17] [AnalysisRequestService] GetAssignmentsForAgent(202106024/이예림, 2026-03-27): 7개 할당
+[13:22:27] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:22:27] [AnalysisRequestService] GetAssignmentsForAgent(202106024/이예림, 2026-03-06): 7개 할당
+[13:22:28] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:22:28] [AnalysisRequestService] GetAssignmentsForAgentRange(202106024, 2026-03-06~2026-07-23): 7개
+[13:23:21] [AnalysisRequestService] ClearAssignmentsForAgent: 202106024(이예림) 2026-03-06~2026-07-23
+[13:23:21] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:23:22] [AnalysisRequestService] AddAssignment: 202106024(이예림)에게 다이에틸헥실프탈레이트(다이에틸헥실프탈레이트) 분장 추가 (2026-03-06 ~ 2026-07-23)
+[13:23:22] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:23:22] [AnalysisRequestService] AddAssignment: 202106024(이예림)에게 다이에틸헥실아디페이트(다이에틸헥실아디페이트) 분장 추가 (2026-03-06 ~ 2026-07-23)
+[13:23:22] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:23:23] [AnalysisRequestService] AddAssignment: 202106024(이예림)에게 1,4-다이옥산(1,4-다이옥산) 분장 추가 (2026-03-06 ~ 2026-07-23)
+[13:23:23] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:23:24] [AnalysisRequestService] AddAssignment: 202106024(이예림)에게 폼알데하이드(폼알데하이드) 분장 추가 (2026-03-06 ~ 2026-07-23)
+[13:23:24] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:23:24] [AnalysisRequestService] AddAssignment: 202106024(이예림)에게 아크릴아미드(아크릴아미드) 분장 추가 (2026-03-06 ~ 2026-07-23)
+[13:23:24] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:23:25] [AnalysisRequestService] AddAssignment: 202106024(이예림)에게 페놀(페놀) 분장 추가 (2026-03-06 ~ 2026-07-23)
+[13:23:25] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:23:26] [AnalysisRequestService] AddAssignment: 202106024(이예림)에게 펜타클로로페놀(펜타클로로페놀) 분장 추가 (2026-03-06 ~ 2026-07-23)
+[13:27:20] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:27:20] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-03-27): 0개 할당
+[13:27:33] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:27:33] [AnalysisRequestService] AddAssignment: 201000308(정승욱)에게 온도(온도) 분장 추가 (2026-03-27 ~ 2026-04-27)
+[13:27:33] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:27:33] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-03-27): 1개 할당
+[13:27:41] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:27:41] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-03-01): 0개 할당
+[13:27:43] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:27:43] [AnalysisRequestService] GetAssignmentsForAgentRange(201000308, 2026-03-01~2026-07-22): 1개
+[13:27:45] [AnalysisRequestService] ClearAssignmentsForAgent: 201000308(정승욱) 2026-03-01~2026-07-22
+[13:27:45] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:27:46] [AnalysisRequestService] AddAssignment: 201000308(정승욱)에게 온도(온도) 분장 추가 (2026-03-01 ~ 2026-07-22)
+[13:28:52] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:28:52] [AnalysisRequestService] GetAssignmentsForAgent(201101234/박은지, 2026-03-27): 4개 할당
+[13:28:53] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:28:53] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-03-27): 0개 할당
+[13:29:02] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:29:02] [AnalysisRequestService] GetAssignmentsForAgent(12345/김청하, 2026-03-27): 0개 할당
+[13:41:14] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:41:14] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-03-27): 0개 할당
+[13:41:43] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:41:43] [AnalysisRequestService] AddAssignment: 201000308(정승욱)에게 아크릴로니트릴(아크릴로니트릴) 분장 추가 (2026-03-27 ~ 2026-04-27)
+[13:41:43] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[13:41:43] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-03-27): 1개 할당
+[13:42:22] QuotationHistoryPanel 초기화 완료
+[13:42:22] LoadData() 시작
+[13:42:22] 견적 발행건수=937
+[13:42:23] LoadData() 완료 — 루트노드=6
+[13:42:41] 탭 전환 → 분석의뢰내역
+[13:42:41] LoadAnalysisTreeAsync() 시작
+[13:42:41] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[13:42:41] [AnalysisRequestService] 테이블 존재: 1
+[13:42:41] [AnalysisRequestService] 전체 행 수: 3677
+[13:42:41] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[13:42:41] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[13:42:41] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[13:42:41] [AnalysisRequestService] 완료: 3677건
+[13:42:41] DB 조회 완료: 3677건
+[13:42:41] FillMonthNodeWithDays: 2026-03 → 14건
+[13:42:41] 트리 완료 — 년노드=7
+[13:42:43] 의뢰 선택: 화치 PVC_침전조 [20260326-152919]
+[13:42:44] 의뢰 선택: 보임 방류수 [20260312-210229]
+[13:42:47] 의뢰 선택: 화치 PVC_침전조 [20260326-152919]
+[13:42:47] 의뢰 선택: 보임 방류수 [20260312-210229]
+[13:47:49] FillMonthNodeWithDays: 2023-12 → 22건
+[13:47:51] 의뢰 선택: 화치 PVC1팀 유량조절시설 []
+[13:47:53] 의뢰 선택: 호남 호남환경에너지처리수 []
+[13:51:23] LoadData() 시작
+[13:51:23] 견적 발행건수=937
+[13:51:24] LoadData() 완료 — 루트노드=6
+[13:51:26] 의뢰 선택: 보임 폐수조#APond-폐수 [20260312-210229]
+[13:51:28] 의뢰 선택: 보임 유입수 [20260312-210229]
+[13:51:30] 의뢰 선택: 보임 폐수조#APond-폐수 [20260312-210229]
+[13:51:31] 의뢰 선택: 보임 폐수조#BPond-폐수 [20260312-210229]
+[13:51:32] 의뢰 선택: 보임 폐수조1 [20260312-210229]
+[13:51:32] 의뢰 선택: 보임 폐수조2 [20260312-210229]
+[13:51:32] 의뢰 선택: 보임 폐수조PondA-유입수 [20260312-210229]
+[13:51:33] 의뢰 선택: 보임 폐수조PondB-방류수 [20260312-210229]
+[13:51:33] 의뢰 선택: 보임 유입수 [20260312-210229]
+[13:51:33] 의뢰 선택: 보임 방류수 [20260312-210229]
+[14:06:23] LoadData() 시작
+[14:06:23] 견적 발행건수=937
+[14:06:23] LoadData() 완료 — 루트노드=6
+[14:06:34] 탭 전환 → 견적발행내역
+[14:06:36] 탭 전환 → 분석의뢰내역
+[14:06:36] LoadAnalysisTreeAsync() 시작
+[14:06:36] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[14:06:36] [AnalysisRequestService] 테이블 존재: 1
+[14:06:36] [AnalysisRequestService] 전체 행 수: 3677
+[14:06:36] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[14:06:36] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[14:06:36] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[14:06:36] [AnalysisRequestService] 완료: 3677건
+[14:06:36] DB 조회 완료: 3677건
+[14:06:36] FillMonthNodeWithDays: 2026-03 → 14건
+[14:06:36] 트리 완료 — 년노드=7
+[14:06:37] 탭 전환 → 견적발행내역
+[14:06:38] 탭 전환 → 분석의뢰내역
+[14:06:38] LoadAnalysisTreeAsync() 시작
+[14:06:38] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[14:06:38] [AnalysisRequestService] 테이블 존재: 1
+[14:06:38] [AnalysisRequestService] 전체 행 수: 3677
+[14:06:38] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[14:06:38] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[14:06:38] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[14:06:38] [AnalysisRequestService] 완료: 3677건
+[14:06:38] DB 조회 완료: 3677건
+[14:06:38] FillMonthNodeWithDays: 2026-03 → 14건
+[14:06:38] 트리 완료 — 년노드=7
+[14:06:51] 탭 전환 → 견적발행내역
+[14:06:56] 견적 선택: 센터 왔싸 뵹 [20260325-191213]
+[14:06:58] 견적 선택: 화치 테스트 견적서 입니다. [20260326-152919]
+[14:08:36] 탭 전환 → 분석의뢰내역
+[14:08:36] LoadAnalysisTreeAsync() 시작
+[14:08:36] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[14:08:36] [AnalysisRequestService] 테이블 존재: 1
+[14:08:36] [AnalysisRequestService] 전체 행 수: 3677
+[14:08:36] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[14:08:36] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[14:08:36] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[14:08:36] [AnalysisRequestService] 완료: 3677건
+[14:08:36] DB 조회 완료: 3677건
+[14:08:36] FillMonthNodeWithDays: 2026-03 → 14건
+[14:08:36] 트리 완료 — 년노드=7
+[14:08:37] 의뢰 선택: 보임 폐수조#BPond-폐수 [20260312-210229]
+[14:23:39] 탭 전환 → 견적발행내역
+[14:23:41] 탭 전환 → 분석의뢰내역
+[14:23:41] LoadAnalysisTreeAsync() 시작
+[14:23:41] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[14:23:41] [AnalysisRequestService] 테이블 존재: 1
+[14:23:41] [AnalysisRequestService] 전체 행 수: 3677
+[14:23:41] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[14:23:41] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[14:23:41] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[14:23:41] [AnalysisRequestService] 완료: 3677건
+[14:23:41] DB 조회 완료: 3677건
+[14:23:41] FillMonthNodeWithDays: 2026-03 → 14건
+[14:23:41] 트리 완료 — 년노드=7
+[14:23:44] 의뢰 선택: 화치 IPA생산팀폐수(TK-5737) [20260326-152919]
+[14:23:47] 탭 전환 → 견적발행내역
+[14:23:48] 견적 선택: 센터 왔싸 뵹 [20260325-191213]
+[14:36:06] QuotationHistoryPanel 초기화 완료
+[14:36:06] LoadData() 시작
+[14:36:06] 견적 발행건수=937
+[14:36:07] LoadData() 완료 — 루트노드=6
+[14:36:10] 견적 선택: 화치 테스트 견적서 입니다. [20260326-152919]
+[14:36:14] 탭 전환 → 분석의뢰내역
+[14:36:14] LoadAnalysisTreeAsync() 시작
+[14:36:14] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[14:36:14] [AnalysisRequestService] 테이블 존재: 1
+[14:36:14] [AnalysisRequestService] 전체 행 수: 3677
+[14:36:14] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[14:36:14] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[14:36:14] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[14:36:14] [AnalysisRequestService] 완료: 3677건
+[14:36:14] DB 조회 완료: 3677건
+[14:36:14] FillMonthNodeWithDays: 2026-03 → 14건
+[14:36:14] 트리 완료 — 년노드=7
+[14:36:16] 의뢰 선택: 화치 PVC_침전조 [20260326-152919]
+[14:36:17] 의뢰 선택: 화치 특별의뢰 샘플 [20260326-152919]
+[14:36:17] 의뢰 선택: 보임 폐수조#BPond-폐수 [20260312-210229]
+[14:36:18] 의뢰 선택: 보임 폐수조1 [20260312-210229]
+[14:36:18] 의뢰 선택: 보임 폐수조PondA-유입수 [20260312-210229]
+[14:36:18] 의뢰 선택: 보임 폐수조PondB-유입수 [20260312-210229]
+[14:36:19] 의뢰 선택: 보임 폐수조PondB-방류수 [20260312-210229]
+[14:36:19] 의뢰 선택: 보임 유입수 [20260312-210229]
+[14:36:20] 의뢰 선택: 보임 방류수 [20260312-210229]
+[14:36:21] FillMonthNodeWithDays: 2026-02 → 70건
+[14:36:24] 의뢰 선택: 포스코리튬 #W1 유입수 []
+[14:36:24] 의뢰 선택: 포스코리튬 #W1 배출수 []
+[14:36:24] 의뢰 선택: 포스코리튬 비점-유역1 유입수조 []
+[14:36:25] 의뢰 선택: 포스코리튬 비점-유역1 처리수조 []
+[14:36:25] 의뢰 선택: 포스코리튬 비점-유역2 유입수조 []
+[14:36:26] 의뢰 선택: 포스코리튬 비점-유역2 처리수조 []
+[14:48:18] QuotationHistoryPanel 초기화 완료
+[14:48:18] LoadData() 시작
+[14:48:18] 견적 발행건수=937
+[14:48:18] LoadData() 완료 — 루트노드=6
+[14:48:21] 탭 전환 → 분석의뢰내역
+[14:48:21] LoadAnalysisTreeAsync() 시작
+[14:48:21] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[14:48:21] [AnalysisRequestService] 테이블 존재: 1
+[14:48:21] [AnalysisRequestService] 전체 행 수: 3677
+[14:48:21] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[14:48:21] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[14:48:21] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[14:48:21] [AnalysisRequestService] 완료: 3677건
+[14:48:21] DB 조회 완료: 3677건
+[14:48:21] FillMonthNodeWithDays: 2026-03 → 14건
+[14:48:21] 트리 완료 — 년노드=7
+[14:48:23] 의뢰 선택: 화치 PVC_침전조 [20260326-152919]
+[14:48:23] 의뢰 선택: 화치 IPA생산팀폐수(TK-5737) [20260326-152919]
+[14:48:24] 의뢰 선택: 화치 특별의뢰 샘플 [20260326-152919]
+[14:48:25] 의뢰 선택: 보임 폐수조#APond-폐수 [20260312-210229]
+[14:48:25] 의뢰 선택: 보임 폐수조#BPond-폐수 [20260312-210229]
+[14:48:26] 의뢰 선택: 보임 폐수조1 [20260312-210229]
+[14:48:26] 의뢰 선택: 보임 폐수조2 [20260312-210229]
+[14:48:27] 의뢰 선택: 보임 폐수조PondA-유입수 [20260312-210229]
+[14:48:27] 의뢰 선택: 보임 폐수조PondA-방류수 [20260312-210229]
+[14:48:27] 의뢰 선택: 보임 폐수조PondB-유입수 [20260312-210229]
+[14:48:29] 의뢰 선택: 보임 폐수조PondB-방류수 [20260312-210229]
+[14:48:29] 의뢰 선택: 보임 유입수 [20260312-210229]
+[14:48:29] 의뢰 선택: 보임 방류수 [20260312-210229]
+[15:00:46] QuotationHistoryPanel 초기화 완료
+[15:00:46] LoadData() 시작
+[15:00:46] 견적 발행건수=937
+[15:00:47] LoadData() 완료 — 루트노드=6
+[15:00:49] 탭 전환 → 분석의뢰내역
+[15:00:49] LoadAnalysisTreeAsync() 시작
+[15:00:49] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[15:00:49] [AnalysisRequestService] 테이블 존재: 1
+[15:00:49] [AnalysisRequestService] 전체 행 수: 3677
+[15:00:49] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[15:00:49] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[15:00:49] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[15:00:49] [AnalysisRequestService] 완료: 3677건
+[15:00:49] DB 조회 완료: 3677건
+[15:00:49] FillMonthNodeWithDays: 2026-03 → 14건
+[15:00:49] 트리 완료 — 년노드=7
+[15:00:51] 의뢰 선택: 화치 IPA생산팀폐수(TK-5737) [20260326-152919]
+[15:00:51] 의뢰 선택: 화치 특별의뢰 샘플 [20260326-152919]
+[15:00:51] 의뢰 선택: 보임 폐수조#APond-폐수 [20260312-210229]
+[15:00:51] 의뢰 선택: 보임 폐수조1 [20260312-210229]
+[15:00:52] 의뢰 선택: 보임 폐수조PondA-유입수 [20260312-210229]
+[15:05:35] QuotationHistoryPanel 초기화 완료
+[15:05:35] LoadData() 시작
+[15:05:35] 견적 발행건수=937
+[15:05:36] LoadData() 완료 — 루트노드=6
+[15:05:42] 탭 전환 → 분석의뢰내역
+[15:05:42] LoadAnalysisTreeAsync() 시작
+[15:05:42] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[15:05:42] [AnalysisRequestService] 테이블 존재: 1
+[15:05:42] [AnalysisRequestService] 전체 행 수: 3677
+[15:05:42] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[15:05:42] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[15:05:42] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[15:05:42] [AnalysisRequestService] 완료: 3677건
+[15:05:42] DB 조회 완료: 3677건
+[15:05:42] FillMonthNodeWithDays: 2026-03 → 14건
+[15:05:42] 트리 완료 — 년노드=7
+[15:05:43] 의뢰 선택: 화치 PVC_침전조 [20260326-152919]
+[15:05:44] 의뢰 선택: 보임 폐수조PondB-방류수 [20260312-210229]
+[15:05:45] 의뢰 선택: 보임 폐수조#BPond-폐수 [20260312-210229]
+[15:05:46] 의뢰 선택: 보임 폐수조1 [20260312-210229]
+[15:05:46] 의뢰 선택: 보임 폐수조2 [20260312-210229]
+[15:05:46] 의뢰 선택: 보임 폐수조PondA-유입수 [20260312-210229]
+[15:05:47] 의뢰 선택: 보임 폐수조PondA-방류수 [20260312-210229]
+[15:05:47] 의뢰 선택: 보임 폐수조PondB-유입수 [20260312-210229]
+[15:05:48] 의뢰 선택: 보임 유입수 [20260312-210229]
+[15:05:48] 의뢰 선택: 보임 방류수 [20260312-210229]
+[15:20:47] QuotationHistoryPanel 초기화 완료
+[15:20:47] LoadData() 시작
+[15:20:47] 견적 발행건수=937
+[15:20:48] LoadData() 완료 — 루트노드=6
+[15:20:50] 탭 전환 → 분석의뢰내역
+[15:20:50] LoadAnalysisTreeAsync() 시작
+[15:20:50] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[15:20:50] [AnalysisRequestService] 테이블 존재: 1
+[15:20:50] [AnalysisRequestService] 전체 행 수: 3677
+[15:20:50] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[15:20:50] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[15:20:50] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[15:20:50] [AnalysisRequestService] 완료: 3677건
+[15:20:50] DB 조회 완료: 3677건
+[15:20:50] FillMonthNodeWithDays: 2026-03 → 14건
+[15:20:50] 트리 완료 — 년노드=7
+[15:20:51] 의뢰 선택: 화치 ABS2(SC-8710) [20260326-152919]
+[15:20:51] 의뢰 선택: 화치 PVC_침전조 [20260326-152919]
+[15:20:52] 의뢰 선택: 화치 특별의뢰 샘플 [20260326-152919]
+[15:20:52] 의뢰 선택: 보임 폐수조#BPond-폐수 [20260312-210229]
+[15:20:53] 의뢰 선택: 보임 폐수조1 [20260312-210229]
+[15:20:53] 의뢰 선택: 보임 폐수조PondA-유입수 [20260312-210229]
+[15:20:53] 의뢰 선택: 보임 폐수조PondB-방류수 [20260312-210229]
+[15:25:24] QuotationHistoryPanel 초기화 완료
+[15:25:24] LoadData() 시작
+[15:25:24] 견적 발행건수=937
+[15:25:24] LoadData() 완료 — 루트노드=6
+[15:25:26] 견적 선택: 화치 테스트 견적서 입니다. [20260326-152919]
+[15:25:28] 탭 전환 → 분석의뢰내역
+[15:25:28] LoadAnalysisTreeAsync() 시작
+[15:25:28] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[15:25:28] [AnalysisRequestService] 테이블 존재: 1
+[15:25:28] [AnalysisRequestService] 전체 행 수: 3677
+[15:25:28] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[15:25:28] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[15:25:28] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[15:25:28] [AnalysisRequestService] 완료: 3677건
+[15:25:28] DB 조회 완료: 3677건
+[15:25:28] FillMonthNodeWithDays: 2026-03 → 14건
+[15:25:28] 트리 완료 — 년노드=7
+[15:25:31] 의뢰 선택: 화치 PVC_침전조 [20260326-152919]
+[15:25:31] 의뢰 선택: 화치 IPA생산팀폐수(TK-5737) [20260326-152919]
+[15:25:32] 의뢰 선택: 화치 ABS2(SC-8710) [20260326-152919]
+[15:25:32] 의뢰 선택: 화치 특별의뢰 샘플 [20260326-152919]
+[15:25:33] 의뢰 선택: 보임 폐수조#APond-폐수 [20260312-210229]
+[15:25:33] 의뢰 선택: 보임 폐수조#BPond-폐수 [20260312-210229]
+[15:25:33] 의뢰 선택: 보임 폐수조1 [20260312-210229]
+[15:25:34] 의뢰 선택: 보임 폐수조2 [20260312-210229]
+[15:25:34] 의뢰 선택: 보임 폐수조PondA-유입수 [20260312-210229]
+[15:25:35] 의뢰 선택: 보임 폐수조PondA-방류수 [20260312-210229]
+[15:25:35] 의뢰 선택: 보임 폐수조PondB-유입수 [20260312-210229]
+[15:25:35] 의뢰 선택: 보임 폐수조PondB-방류수 [20260312-210229]
+[15:25:36] 의뢰 선택: 보임 유입수 [20260312-210229]
+[15:25:36] 의뢰 선택: 보임 방류수 [20260312-210229]
+[15:27:09] QuotationHistoryPanel 초기화 완료
+[15:27:09] LoadData() 시작
+[15:27:09] 견적 발행건수=937
+[15:27:10] LoadData() 완료 — 루트노드=6
+[15:27:14] 탭 전환 → 분석의뢰내역
+[15:27:14] LoadAnalysisTreeAsync() 시작
+[15:27:14] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[15:27:14] [AnalysisRequestService] 테이블 존재: 1
+[15:27:14] [AnalysisRequestService] 전체 행 수: 3677
+[15:27:14] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[15:27:14] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[15:27:14] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[15:27:14] [AnalysisRequestService] 완료: 3677건
+[15:27:14] DB 조회 완료: 3677건
+[15:27:15] FillMonthNodeWithDays: 2026-03 → 14건
+[15:27:15] 트리 완료 — 년노드=7
+[15:27:17] FillMonthNodeWithDays: 2026-02 → 70건
+[15:27:21] 의뢰 선택: GS #W1.(제1폐수처리장/처리수) [20260210-122314]
+[15:27:23] 의뢰 선택: GS #W21. PE생산팀 C/W (716-E-301, I-8WTS034) [20260210-122314]
+[15:27:24] 의뢰 선택: GS #W18. VDU팀 C/W (516-E-301, I-6WTS030) [20260210-122314]
+[15:27:24] 의뢰 선택: GS #W17. RFCC팀 C/W (176-E-201, I-5WTS001) [20260210-122314]
+[15:27:24] 의뢰 선택: GS #W15. 동력팀 C/W (216-E-501, I-4WTS022) [20260210-122314]
+[15:27:25] 의뢰 선택: GS #W13. PP생산팀 C/W (90-E-001I-3WTS033) [20260210-122314]
+[15:27:25] 의뢰 선택: GS #W10. 동력팀 C/W (116-E-231, I-3WTS029) [20260210-122314]
+[15:27:26] 의뢰 선택: GS #W9. 동력팀 C/W (116-E-221, I-3WTS028) [20260210-122314]
+[15:27:26] 의뢰 선택: GS #W8. 정유3팀 C/W (76-E-030A, I-2WTS002) [20260210-122314]
+[15:27:26] 의뢰 선택: GS #W6. 정유1팀 C/W (16-E-405, I-1WTS006) [20260210-122314]
+[15:27:27] 의뢰 선택: GS #W6. 정유1팀 C/W (16-E-405, I-1WTS006) [20260210-122314]
+[15:27:27] 의뢰 선택: GS #W5.(PE폐수처리장/처리수) [20260210-122314]
+[15:27:27] 의뢰 선택: GS #W4.(HOU SRU 폐수처리장/처리수) [20260210-122314]
+[15:27:28] 의뢰 선택: GS #W4.(HOU SRU 폐수처리장/처리수) [20260210-122314]
+[15:27:29] 의뢰 선택: GS #W2.(제2폐수처리장/처리수) [20260210-122314]
+[15:27:29] 의뢰 선택: GS #W2.(제2폐수처리장/처리수) [20260210-122314]
+[15:27:29] 의뢰 선택: GS #W2.(제2폐수처리장/유입수) [20260210-122314]
+[15:27:30] 의뢰 선택: GS #W1.(제1폐수처리장/처리수) [20260210-122314]
+[15:27:33] 의뢰 선택: GS #W18. VDU팀 C/W (516-E-301, I-6WTS030) [20260210-122314]
+[15:27:34] 의뢰 선택: GS #W22. PE생산팀 C/W (716-E-302, I-8WTS035) [20260210-122314]
+[15:27:36] 의뢰 선택: GS #W23. PE생산팀 C/W (716-E-303, I-8WTS036) [20260210-122314]
+[15:27:36] 의뢰 선택: 금호 일반원폐수 [20260210-154936]
+[15:38:56] QuotationHistoryPanel 초기화 완료
+[15:38:56] LoadData() 시작
+[15:38:56] 견적 발행건수=937
+[15:38:56] LoadData() 완료 — 루트노드=6
+[15:39:01] 탭 전환 → 분석의뢰내역
+[15:39:01] LoadAnalysisTreeAsync() 시작
+[15:39:01] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[15:39:01] [AnalysisRequestService] 테이블 존재: 1
+[15:39:01] [AnalysisRequestService] 전체 행 수: 3677
+[15:39:01] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[15:39:01] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[15:39:01] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[15:39:01] [AnalysisRequestService] 완료: 3677건
+[15:39:01] DB 조회 완료: 3677건
+[15:39:01] FillMonthNodeWithDays: 2026-03 → 14건
+[15:39:01] 트리 완료 — 년노드=7
+[15:39:02] 의뢰 선택: 화치 PVC_침전조 [20260326-152919]
+[15:39:03] 의뢰 선택: 화치 IPA생산팀폐수(TK-5737) [20260326-152919]
+[15:39:03] 의뢰 선택: 화치 ABS2(SC-8710) [20260326-152919]
+[15:39:03] 의뢰 선택: 화치 특별의뢰 샘플 [20260326-152919]
+[15:39:04] 의뢰 선택: 보임 폐수조#APond-폐수 [20260312-210229]
+[15:39:04] 의뢰 선택: 보임 폐수조#BPond-폐수 [20260312-210229]
+[15:39:05] 의뢰 선택: 보임 폐수조1 [20260312-210229]
+[15:39:05] 의뢰 선택: 보임 폐수조2 [20260312-210229]
+[15:39:06] 의뢰 선택: 보임 폐수조PondA-유입수 [20260312-210229]
+[15:39:06] 의뢰 선택: 보임 폐수조PondA-방류수 [20260312-210229]
+[15:39:06] 의뢰 선택: 보임 폐수조PondB-유입수 [20260312-210229]
+[15:39:07] 의뢰 선택: 보임 폐수조PondB-방류수 [20260312-210229]
+[15:39:08] 의뢰 선택: 보임 유입수 [20260312-210229]
+[15:39:08] 의뢰 선택: 보임 방류수 [20260312-210229]
+[15:39:10] FillMonthNodeWithDays: 2026-02 → 70건
+[15:39:12] 의뢰 선택: 포스코리튬 #W1 유입수 []
+[15:39:12] 의뢰 선택: 포스코리튬 #W1 배출수 []
+[15:39:12] 의뢰 선택: 포스코리튬 비점-유역1 유입수조 []
+[15:39:13] 의뢰 선택: 포스코리튬 비점-유역1 처리수조 []
+[15:39:13] 의뢰 선택: 포스코리튬 비점-유역2 유입수조 []
+[15:39:14] 의뢰 선택: 포스코리튬 비점-유역2 처리수조 []
+[16:00:22] QuotationHistoryPanel 초기화 완료
+[16:00:22] LoadData() 시작
+[16:00:22] 견적 발행건수=937
+[16:00:23] LoadData() 완료 — 루트노드=6
+[16:00:30] LoadData() 시작
+[16:00:30] 견적 발행건수=937
+[16:00:31] LoadData() 완료 — 루트노드=6
+[16:37:33] QuotationHistoryPanel 초기화 완료
+[16:37:33] LoadData() 시작
+[16:37:33] 견적 발행건수=937
+[16:37:33] LoadData() 완료 — 루트노드=6
+[16:37:49] LoadData() 시작
+[16:37:49] 견적 발행건수=937
+[16:37:49] LoadData() 완료 — 루트노드=6
+[17:24:36] QuotationHistoryPanel 초기화 완료
+[17:24:36] LoadData() 시작
+[17:24:36] 견적 발행건수=937
+[17:24:36] LoadData() 완료 — 루트노드=6
+[18:09:56] QuotationHistoryPanel 초기화 완료
+[18:09:56] LoadData() 시작
+[18:09:56] 견적 발행건수=937
+[18:09:56] LoadData() 완료 — 루트노드=6
+[18:11:05] LoadData() 시작
+[18:11:05] 견적 발행건수=937
+[18:11:06] LoadData() 완료 — 루트노드=6
+[18:11:08] 견적 선택: 화치 테스트 견적서 입니다. [20260326-152919]
+[18:11:10] 견적 선택: 센터 왔싸 뵹 [20260325-191213]
+[18:11:15] 탭 전환 → 분석의뢰내역
+[18:11:15] LoadAnalysisTreeAsync() 시작
+[18:11:15] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[18:11:15] [AnalysisRequestService] 테이블 존재: 1
+[18:11:15] [AnalysisRequestService] 전체 행 수: 3677
+[18:11:15] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[18:11:15] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[18:11:15] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[18:11:15] [AnalysisRequestService] 완료: 3677건
+[18:11:15] DB 조회 완료: 3677건
+[18:11:15] FillMonthNodeWithDays: 2026-03 → 14건
+[18:11:15] 트리 완료 — 년노드=7
+[18:11:17] 탭 전환 → 견적발행내역
+[18:25:04] QuotationHistoryPanel 초기화 완료
+[18:25:04] LoadData() 시작
+[18:25:04] 견적 발행건수=937
+[18:25:04] LoadData() 완료 — 루트노드=6
+[18:25:11] 탭 전환 → 분석의뢰내역
+[18:25:11] LoadAnalysisTreeAsync() 시작
+[18:25:11] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[18:25:11] [AnalysisRequestService] 테이블 존재: 1
+[18:25:11] [AnalysisRequestService] 전체 행 수: 3677
+[18:25:11] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[18:25:11] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[18:25:11] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[18:25:11] [AnalysisRequestService] 완료: 3677건
+[18:25:11] DB 조회 완료: 3677건
+[18:25:11] FillMonthNodeWithDays: 2026-03 → 14건
+[18:25:11] 트리 완료 — 년노드=7
+[18:25:13] 탭 전환 → 견적발행내역
+[18:25:21] LoadData() 시작
+[18:25:21] 견적 발행건수=937
+[18:25:21] LoadData() 완료 — 루트노드=6
+[18:27:05] QuotationHistoryPanel 초기화 완료
+[18:27:05] LoadData() 시작
+[18:27:05] 견적 발행건수=937
+[18:27:05] LoadData() 완료 — 루트노드=6
+[18:33:21] QuotationHistoryPanel 초기화 완료
+[18:33:21] LoadData() 시작
+[18:33:21] 견적 발행건수=937
+[18:33:21] LoadData() 완료 — 루트노드=6
+[18:36:32] QuotationHistoryPanel 초기화 완료
+[18:36:33] LoadData() 시작
+[18:36:33] 견적 발행건수=937
+[18:36:33] LoadData() 완료 — 루트노드=6
+[18:37:28] 견적 선택: 필바라 26년 포스코필바라리튬솔루션(주) 입찰 견적서(정기측정 합산) [20251230-092527]
+[18:37:28] 견적 선택: 필바라 26년 포스코필바라리튬솔루션(주) 입찰 견적서(회당 단가) [20251230-09612]
+[18:37:28] 견적 선택: 한화 26-28년 한화에너지(주) 여수공장 입찰 견적서(2년) [20251230-101520]
+[18:37:29] 견적 선택: 한화 26-28년 한화에너지(주) 여수공장 입찰 UNPRICE 견적서(2년) [20251230-101525]
+[18:37:30] 견적 선택: 한화 26-28년 한화에너지(주) 여수공장 입찰 UNPRICE 견적서(2년) [20251230-102905]
+[18:37:30] 견적 선택: 포스코리튬 정기시료(25.12.30, 6EA) 견적서 [20251230-140724]
+[18:37:30] 견적 선택: 롯데첨단소재 TOC 의뢰 접수시료(12.22, 106EA) 견적서 [20251230-145051]
+[18:37:35] LoadData() 시작
+[18:37:35] 견적 발행건수=937
+[18:37:35] LoadData() 완료 — 루트노드=6
+[18:37:39] 탭 전환 → 분석의뢰내역
+[18:37:39] LoadAnalysisTreeAsync() 시작
+[18:37:39] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[18:37:39] [AnalysisRequestService] 테이블 존재: 1
+[18:37:39] [AnalysisRequestService] 전체 행 수: 3677
+[18:37:39] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[18:37:39] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[18:37:39] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[18:37:39] [AnalysisRequestService] 완료: 3677건
+[18:37:39] DB 조회 완료: 3677건
+[18:37:39] FillMonthNodeWithDays: 2026-03 → 14건
+[18:37:39] 트리 완료 — 년노드=7
+[18:37:40] 의뢰 선택: 화치 PVC_침전조 [20260326-152919]
+[18:37:41] 의뢰 선택: 화치 IPA생산팀폐수(TK-5737) [20260326-152919]
+[18:37:42] 의뢰 선택: 화치 특별의뢰 샘플 [20260326-152919]
+[18:37:42] 의뢰 선택: 화치 특별의뢰 샘플 [20260326-152919]
+[18:37:43] 의뢰 선택: 보임 폐수조#BPond-폐수 [20260312-210229]
+[18:37:45] 의뢰 선택: 보임 폐수조2 [20260312-210229]
+[18:37:46] 의뢰 선택: 보임 폐수조PondA-유입수 [20260312-210229]
+[18:37:46] 의뢰 선택: 보임 폐수조PondA-방류수 [20260312-210229]
+[18:37:48] 의뢰 선택: 보임 폐수조PondB-방류수 [20260312-210229]
+[18:37:49] FillMonthNodeWithDays: 2026-02 → 70건
+[18:37:51] 의뢰 선택: 포스코리튬 #W1 유입수 []
+[18:37:52] 의뢰 선택: 포스코리튬 #W1 배출수 []
+[18:37:52] 의뢰 선택: 포스코리튬 비점-유역1 유입수조 []
+[18:37:53] 의뢰 선택: 포스코리튬 비점-유역1 처리수조 []
+[18:37:54] 의뢰 선택: 포스코리튬 비점-유역2 유입수조 []
+[18:37:54] 의뢰 선택: 포스코리튬 비점-유역2 처리수조 []
+[22:00:55] QuotationHistoryPanel 초기화 완료
+[22:00:55] LoadData() 시작
+[22:00:55] 견적 발행건수=937
+[22:00:56] LoadData() 완료 — 루트노드=6
+[22:38:41] QuotationHistoryPanel 초기화 완료
+[22:38:41] LoadData() 시작
+[22:38:41] 견적 발행건수=937
+[22:38:41] LoadData() 완료 — 루트노드=6
+[22:38:44] 견적 선택: 화치 테스트 견적서 입니다. [20260326-152919]
+[23:00:56] QuotationHistoryPanel 초기화 완료
+[23:00:56] LoadData() 시작
+[23:00:56] 견적 발행건수=937
+[23:00:57] LoadData() 완료 — 루트노드=6
+[23:03:05] LoadData() 시작
+[23:03:05] 견적 발행건수=937
+[23:03:05] LoadData() 완료 — 루트노드=6
+[23:03:12] 탭 전환 → 분석의뢰내역
+[23:03:12] LoadAnalysisTreeAsync() 시작
+[23:03:12] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[23:03:12] [AnalysisRequestService] 테이블 존재: 1
+[23:03:12] [AnalysisRequestService] 전체 행 수: 3677
+[23:03:12] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[23:03:12] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[23:03:12] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[23:03:12] [AnalysisRequestService] 완료: 3677건
+[23:03:12] DB 조회 완료: 3677건
+[23:03:12] FillMonthNodeWithDays: 2026-03 → 14건
+[23:03:12] 트리 완료 — 년노드=7
+[23:03:15] 의뢰 선택: 화치 PVC_침전조 [20260326-152919]
+[23:03:21] 탭 전환 → 견적발행내역
+[23:03:32] 탭 전환 → 분석의뢰내역
+[23:03:32] LoadAnalysisTreeAsync() 시작
+[23:03:32] [AnalysisRequestService] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db  존재=True
+[23:03:32] [AnalysisRequestService] 테이블 존재: 1
+[23:03:32] [AnalysisRequestService] 전체 행 수: 3677
+[23:03:32] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[23:03:32] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[23:03:32] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[23:03:32] [AnalysisRequestService] 완료: 3677건
+[23:03:32] DB 조회 완료: 3677건
+[23:03:32] FillMonthNodeWithDays: 2026-03 → 14건
+[23:03:32] 트리 완료 — 년노드=7
+[23:03:33] 탭 전환 → 견적발행내역
+[23:03:34] 견적 선택: 화치 테스트 견적서 입니다. [20260326-152919]
+[23:03:37] 견적 선택: 화치 테스트 견적서 입니다. [20260326-152919]

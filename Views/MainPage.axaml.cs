@@ -800,7 +800,7 @@ public partial class MainPage : Window
         LogContentChange("ActivePageContent4", _reportsPanel);
         _bt1SaveAction = null;
 
-        SetSubMenu("새로고침", "CSV 저장", "삭제", "엑셀 출력", "PDF 출력", "일괄 엑셀", "일괄 PDF");
+        SetSubMenu("새로고침", "CSV 저장", "삭제", "엑셀 출력", "PDF 출력", "일괄 엑셀", "측정인 LOGIN");
 
         SetContentLayout(content2Star: 8, content4Star: 2, upperStar: 8.5, lowerStar: 1.5);
         
@@ -938,9 +938,16 @@ public partial class MainPage : Window
     {
         switch (_currentMode)
         {
-            case "Purchase":   _purchasePage?.ShowSettings(this);  break;
-            case "TestReport": _testReportPage?.BatchPrintPdf();   break;
-            default: Debug.WriteLine($"[{_currentMode}] BT7");    break;
+            case "Purchase":
+                _purchasePage?.ShowSettings(this);
+                break;
+            case "TestReport":
+                var loginWin = new MeasurerLoginWindow();
+                loginWin.Show(this);
+                break;
+            default:
+                Debug.WriteLine($"[{_currentMode}] BT7");
+                break;
         }
     }
 

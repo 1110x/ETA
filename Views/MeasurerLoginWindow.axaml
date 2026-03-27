@@ -1,0 +1,119 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="ETA.Views.MeasurerLoginWindow"
+        Title="측정인 로그인"
+        Width="380" Height="360"
+        MinWidth="340" MinHeight="320"
+        WindowStartupLocation="CenterOwner"
+        Background="#1a1a2e"
+        CanResize="False"
+        ShowInTaskbar="False"
+        Icon="avares://ETA/Assets/icons/ETA.ico">
+
+    <Window.Styles>
+        <Style Selector="TextBox">
+            <Setter Property="CaretBrush" Value="#88aacc"/>
+            <Setter Property="SelectionBrush" Value="#2a4a6a"/>
+        </Style>
+        <Style Selector="Button:pointerover /template/ ContentPresenter">
+            <Setter Property="Opacity" Value="0.85"/>
+        </Style>
+        <Style Selector="Button:pressed /template/ ContentPresenter">
+            <Setter Property="Opacity" Value="0.65"/>
+        </Style>
+    </Window.Styles>
+
+    <Grid RowDefinitions="Auto,*,Auto" Margin="24,20,24,20">
+
+        <!-- 헤더 -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,18">
+            <TextBlock Text="측정인 LOGIN"
+                       FontSize="15" FontWeight="Bold"
+                       Foreground="#88aacc"
+                       FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                       HorizontalAlignment="Center"/>
+            <TextBlock Text="측정인.kr 로그인 지원"
+                       FontSize="11"
+                       Foreground="#555"
+                       FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"
+                       HorizontalAlignment="Center"
+                       Margin="0,3,0,0"/>
+        </StackPanel>
+
+        <!-- 폼 -->
+        <StackPanel Grid.Row="1" Spacing="10">
+
+            <!-- 아이디 -->
+            <StackPanel Spacing="4">
+                <TextBlock Text="아이디 (이메일)"
+                           FontSize="11" Foreground="#888"
+                           FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"/>
+                <TextBox x:Name="txbUserId"
+                         Watermark="아이디 입력..."
+                         Height="30" FontSize="12"
+                         Background="#22223a" Foreground="#ddd"
+                         BorderBrush="#3a3a55" Padding="8,4"
+                         CornerRadius="4"
+                         FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"/>
+            </StackPanel>
+
+            <!-- 비밀번호 -->
+            <StackPanel Spacing="4">
+                <TextBlock Text="비밀번호"
+                           FontSize="11" Foreground="#888"
+                           FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"/>
+                <TextBox x:Name="txbPassword"
+                         Watermark="비밀번호 입력..."
+                         PasswordChar="●"
+                         Height="30" FontSize="12"
+                         Background="#22223a" Foreground="#ddd"
+                         BorderBrush="#3a3a55" Padding="8,4"
+                         CornerRadius="4"
+                         FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"/>
+            </StackPanel>
+
+            <!-- 상태 -->
+            <Border Background="#1a1a1a" CornerRadius="4" Padding="8,6">
+                <TextBlock x:Name="txbStatus"
+                           Text="로그인을 실행하세요."
+                           FontSize="10" Foreground="#666"
+                           FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"
+                           TextWrapping="Wrap"/>
+            </Border>
+
+            <!-- 진행률 -->
+            <ProgressBar x:Name="pgbScrape"
+                         Minimum="0" Maximum="100" Value="0"
+                         Height="6" CornerRadius="3"
+                         Foreground="#1a6fc4"
+                         Background="#222233"
+                         IsVisible="False"/>
+        </StackPanel>
+
+        <!-- 버튼 -->
+        <Grid Grid.Row="2" ColumnDefinitions="*,10,*" Margin="0,18,0,0">
+            <Button Grid.Column="0"
+                    x:Name="btnLogin"
+                    Content="로그인 실행"
+                    Click="BtnLogin_Click"
+                    Height="34" FontSize="12"
+                    Background="#1a3a2a" Foreground="#88cc88"
+                    BorderBrush="#2a5a3a" BorderThickness="1"
+                    CornerRadius="4"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+            <Button Grid.Column="2"
+                    Content="닫기"
+                    Click="BtnClose_Click"
+                    Height="34" FontSize="12"
+                    Background="#222233" Foreground="#888"
+                    BorderBrush="#3a3a55" BorderThickness="1"
+                    CornerRadius="4"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"/>
+        </Grid>
+
+    </Grid>
+</Window>

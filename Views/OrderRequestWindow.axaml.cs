@@ -25,12 +25,14 @@ public class OrderRequestWindow : Window
     private readonly QuotationIssue  _issue;
     private readonly HashSet<string> _analysisItems;
 
-    private string?  _matchedColumn = null;
-    private StackPanel _cbPanel     = new();
-    private TextBox    _txbNew      = new();
-    private TextBlock  _txbInfo     = new();
-    private TextBlock  _txbStatus   = new();
-    private Button     _btnNext     = new();
+    private string?      _matchedColumn          = null;
+    private string?      _matchedMeasurerCompany = null;
+    private StackPanel   _cbPanel       = new();
+    private TextBox      _txbNew        = new();
+    private TextBlock    _txbInfo       = new();
+    private TextBlock    _txbStatus     = new();
+    private Button       _btnNext       = new();
+    private ToggleSwitch _tglMeasurer   = new();
 
     /// <summary>확인 후 넘길 선택된 시료명 목록</summary>
     public List<string> SelectedSamples { get; private set; } = new();
@@ -80,7 +82,19 @@ public class OrderRequestWindow : Window
             }
         };
 
-        // 매칭 컬럼 정보
+        // 측정인 토글
+        _tglMeasurer = new ToggleSwitch
+        {
+            IsChecked   = true,
+            OnContent   = "측정인 채취지점",
+            OffContent  = "기존 목록",
+            FontSize    = 10, FontFamily = Font,
+            Foreground  = Brush.Parse("#aaaacc"),
+            Margin      = new Thickness(0, 0, 0, 6),
+        };
+        _tglMeasurer.IsCheckedChanged += (_, _) => ReloadList();
+
+        // 매칭 정보
         _txbInfo = new TextBlock
         {
             FontSize = 10, FontFamily = Font,
@@ -183,6 +197,7 @@ public class OrderRequestWindow : Window
                 {
                     headerInfo,
                     new Border { Height = 1, Background = Brush.Parse("#333"), Margin = new Thickness(0,0,0,8) },
+                    _tglMeasurer,
                     _txbInfo,
                     selBtns,
                     scroll,
@@ -196,25 +211,81 @@ public class OrderRequestWindow : Window
     }
 
     // ── 시료명 로드 ───────────────────────────────────────────────────────
-    private void LoadSampleNames()
+    private void LoadSampleNames() => ReloadList();
+
+    private void ReloadList()
+    {
+        if (_tglMeasurer.IsChecked == true)
+            LoadMeasurerList();
+        else
+            LoadOrderRequestList();
+    }
+
+    private void LoadMeasurerList()
+    {
+        var points = FindMeasurerPoints(_issue.업체명);
+        if (points.Count > 0)
+        {
+            _txbInfo.Text       = $"✅ 측정인 채취지점 {points.Count}개  ({_matchedMeasurerCompany})";
+            _txbInfo.Foreground = Brush.Parse("#88cc88");
+            LoadCheckboxes(points);
+        }
+        else
+        {
+            _txbInfo.Text       = $"⚠️ 측정인 DB에서 '{_issue.업체명}' 현장을 찾지 못했습니다.";
+            _txbInfo.Foreground = Brush.Parse("#f0c040");
+            _cbPanel.Children.Clear();
+            UpdateNextButton();
+        }
+    }
+
+    private void LoadOrderRequestList()
     {
         _matchedColumn = OrderRequestService.FindColumnByCompany(_issue.업체명);
-
         if (_matchedColumn == null)
         {
             _txbInfo.Text       = $"⚠️ '{_issue.업체명}' 컬럼을 찾지 못했습니다.\n하단에서 직접 추가해주세요.";
             _txbInfo.Foreground = Brush.Parse("#f0c040");
+            _cbPanel.Children.Clear();
+            UpdateNextButton();
             return;
         }
 
         bool exact = string.Equals(_matchedColumn.Trim(), _issue.업체명.Trim(),
                                    StringComparison.OrdinalIgnoreCase);
-        _txbInfo.Text = exact
+        _txbInfo.Text       = exact
             ? $"✅ 매칭: {_matchedColumn}"
             : $"🔍 유사매칭: {_matchedColumn}  (입력: {_issue.업체명})";
         _txbInfo.Foreground = exact ? Brush.Parse("#88cc88") : Brush.Parse("#f0c040");
-
         RefreshCheckboxes();
+    }
+
+    // 측정인 DB에서 업체명 퍼지 매칭 후 채취지점 반환
+    private List<string> FindMeasurerPoints(string companyName)
+    {
+        var companies = MeasurerService.GetCompanies();
+
+        // 완전일치
+        var match = companies.FirstOrDefault(c =>
+            string.Equals(c.Trim(), companyName.Trim(), StringComparison.OrdinalIgnoreCase));
+
+        // 포함 관계
+        match ??= companies.FirstOrDefault(c =>
+            c.Contains(companyName, StringComparison.OrdinalIgnoreCase) ||
+            companyName.Contains(c, StringComparison.OrdinalIgnoreCase));
+
+        if (match == null) return new List<string>();
+        _matchedMeasurerCompany = match;
+        return MeasurerService.GetSamplingPoints(match);
+    }
+
+    private void LoadCheckboxes(List<string> names)
+    {
+        _cbPanel.Children.Clear();
+        bool odd = false;
+        foreach (var name in names)
+            _cbPanel.Children.Add(MakeCbRow(name, ref odd));
+        UpdateNextButton();
     }
 
     private void RefreshCheckboxes()
