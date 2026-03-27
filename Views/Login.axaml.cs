@@ -30,6 +30,7 @@ public partial class Login : Window
     public Login()
     {
         InitializeComponent();
+        Loaded += OnLoaded;
         Log("========== 로그인 창 시작 ==========");
 
         try
@@ -131,15 +132,6 @@ public partial class Login : Window
         finally { _isLoggingIn = false; }
     }
 
-    private void OnShowPasswordChanged(object? sender, RoutedEventArgs e)
-    {
-        if (txtPassword == null || tglShowPassword == null) return;
-
-        string current = txtPassword.Text ?? "";
-        txtPassword.PasswordChar = tglShowPassword.IsChecked == true ? '\0' : '*';
-        txtPassword.Text = current; // PasswordChar 변경 시 텍스트가 초기화되는 Avalonia 버그 방지
-    }
-
     private async void ChangePassword_Click(object? sender, RoutedEventArgs e)
     {
         string empId = txtEmail?.Text?.Trim() ?? "";
@@ -162,6 +154,11 @@ public partial class Login : Window
 
     private void SignUp_Click(object? sender, PointerPressedEventArgs e)
         => new SignUpWindow().ShowDialog(this);
+
+    private void OnLoaded(object? sender, RoutedEventArgs e)
+    {
+        // 비디오 배경 제거됨
+    }
 
     private void ShowError(string msg)
     {

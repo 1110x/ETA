@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
@@ -20,6 +21,7 @@ public partial class AgentTreePage : UserControl
 {
     // ── 외부(MainPage) 연결 ──────────────────────────────────────────────────
     public event Action<Control?>? DetailPanelChanged;
+    public ListBox? AnalysisItemsListBox { get; set; }
 
     // ── 상태 ────────────────────────────────────────────────────────────────
     private Agent?      _selectedAgent;
@@ -29,6 +31,11 @@ public partial class AgentTreePage : UserControl
     // 사진 미리보기 Image 컨트롤 (저장 시 PhotoPath 접근용)
     private Image?      _photoImage;
     private string      _pendingPhotoPath = "";   // 선택했지만 아직 저장 안 된 경로
+
+    // 업무 분장 저장 시 참조 (BuildAssignmentArea에서 설정)
+    private ListBox?    _assignmentListBox;
+    private DateTime    _assignmentRangeStart = DateTime.Today;
+    private DateTime    _assignmentRangeEnd   = DateTime.Today;
 
     public AgentTreePage()
     {
@@ -42,9 +49,12 @@ public partial class AgentTreePage : UserControl
     {
         Log("LoadData() 시작");
         AgentTreeView.Items.Clear();
-        _selectedAgent    = null;
-        _isAddMode        = false;
-        _pendingPhotoPath = "";
+        _selectedAgent        = null;
+        _isAddMode            = false;
+        _pendingPhotoPath     = "";
+        _assignmentListBox    = null;
+        _assignmentRangeStart = DateTime.Today;
+        _assignmentRangeEnd   = DateTime.Today;
         DetailPanelChanged?.Invoke(null);
 
         try
@@ -246,6 +256,9 @@ public partial class AgentTreePage : UserControl
         root.Children.Add(BuildFieldRow("Email",          agent.Email));
         root.Children.Add(BuildFieldRow("측정인고유번호", agent.측정인고유번호));
 
+        // 분장 영역
+        root.Children.Add(BuildAssignmentArea(agent));
+
         return root;
     }
 
@@ -271,8 +284,359 @@ public partial class AgentTreePage : UserControl
     }
 
     // =========================================================================
-    // 사진 영역 빌드
+    // 분장 영역 빌드 (드래그 앤 드랍 + 월 조회)
     // =========================================================================
+    private Control BuildAssignmentArea(Agent agent)
+    {
+        var border = new Border
+        {
+            Background   = new SolidColorBrush(Color.Parse("#1a2a1a")),
+            CornerRadius = new CornerRadius(6),
+            Padding      = new Thickness(10, 8),
+            Margin       = new Thickness(0, 8, 0, 0)
+        };
+
+        var stack = new StackPanel { Spacing = 4 };
+
+        // ── 제목 ──────────────────────────────────────────────────────────
+        stack.Children.Add(new TextBlock
+        {
+            Text       = "📋 업무 분장",
+            FontSize   = 12,
+            FontWeight = FontWeight.Bold,
+            Foreground = new SolidColorBrush(Color.Parse("#7cd87c")),
+            FontFamily = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"
+        });
+
+        // ── 날짜 범위 표시 + 달력 버튼 ──────────────────────────────────
+        var dateRow = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            Spacing     = 6,
+            Margin      = new Thickness(0, 4, 0, 0)
+        };
+
+        var txbDateRange = new TextBlock
+        {
+            Text              = DateTime.Today.ToString("yyyy-MM-dd"),
+            FontSize          = 11,
+            Foreground        = new SolidColorBrush(Color.Parse("#aaa")),
+            VerticalAlignment = VerticalAlignment.Center,
+            MinWidth          = 170,
+            FontFamily        = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"
+        };
+
+        var btnCal = new Button
+        {
+            Content         = "📅",
+            Width           = 30,
+            Height          = 24,
+            FontSize        = 12,
+            Padding         = new Thickness(0),
+            Background      = new SolidColorBrush(Color.Parse("#2a3a4a")),
+            Foreground      = new SolidColorBrush(Color.Parse("#aaa")),
+            BorderThickness = new Thickness(1),
+            BorderBrush     = new SolidColorBrush(Color.Parse("#555")),
+        };
+        ToolTip.SetTip(btnCal, "기간 선택 (드래그로 범위 설정)");
+
+        var btnToday = new Button
+        {
+            Content         = "오늘",
+            Width           = 44,
+            Height          = 24,
+            FontSize        = 10,
+            Padding         = new Thickness(4, 0),
+            Background      = new SolidColorBrush(Color.Parse("#3a5a3a")),
+            Foreground      = new SolidColorBrush(Color.Parse("#aaa")),
+            BorderThickness = new Thickness(1),
+            BorderBrush     = new SolidColorBrush(Color.Parse("#666"))
+        };
+
+        dateRow.Children.Add(txbDateRange);
+        dateRow.Children.Add(btnCal);
+        dateRow.Children.Add(btnToday);
+        stack.Children.Add(dateRow);
+
+        // ── 달력 (inline, 토글) ──────────────────────────────────────────
+        var calendar = new Avalonia.Controls.Calendar
+        {
+            SelectionMode = Avalonia.Controls.CalendarSelectionMode.SingleRange,
+            IsVisible     = false,
+            Margin        = new Thickness(0, 2, 0, 0),
+            DisplayDate   = DateTime.Today,
+        };
+        calendar.SelectedDates.Add(DateTime.Today);
+        stack.Children.Add(calendar);
+
+        // ── 드랍 영역 ────────────────────────────────────────────────────
+        var dropListBox = new ListBox
+        {
+            Background      = new SolidColorBrush(Color.Parse("#2a2a3a")),
+            BorderThickness = new Thickness(1),
+            BorderBrush     = new SolidColorBrush(Color.Parse("#555")),
+            Height          = 130,
+            Margin          = new Thickness(0, 4, 0, 0)
+        };
+
+        DragDrop.SetAllowDrop(dropListBox, true);
+        _assignmentListBox = dropListBox;
+
+        // 날짜 범위 상태 (클로저로 공유)
+        DateTime rangeStart = DateTime.Today;
+        DateTime rangeEnd   = DateTime.Today;
+
+        // 드래그 드랍 — 중복 체크 포함 async 핸들러
+        dropListBox.AddHandler(DragDrop.DropEvent, async (object? sender, DragEventArgs e) =>
+        {
+            if (sender is not ListBox lb) return;
+            if (!e.Data.Contains("analyte")) return;
+
+            var analyte = e.Data.Get("analyte") as string;
+            if (string.IsNullOrEmpty(analyte)) return;
+
+            // 전체 fullName 확인 (analyte는 item.Analyte = shortName일 수 있음)
+            var existing = AnalysisRequestService.GetAssigneesForAnalyteOnDate(analyte, rangeStart);
+
+            if (existing.Count > 0 && !existing.Contains(agent.성명))
+            {
+                // 중복 경고 다이얼로그
+                bool doUpdate = await ShowDuplicateWarningAsync(analyte, existing);
+                if (!doUpdate) { Log($"드랍 취소: {analyte} → 중복"); return; }
+            }
+
+            AnalysisRequestService.AddAssignment(
+                agent.사번, analyte, rangeStart, rangeStart.AddMonths(1));
+            LoadAssignments(lb, agent, rangeStart, rangeEnd);
+            Log($"분장 추가: {agent.성명} ← {analyte}");
+        });
+
+        dropListBox.Tag = agent;
+
+        LoadAssignments(dropListBox, agent, rangeStart, rangeEnd);
+        stack.Children.Add(dropListBox);
+
+        // ── 저장 프로그래스 바 (저장 중에만 표시) ───────────────────────
+        var saveProgress = new ProgressBar
+        {
+            IsIndeterminate = true,
+            IsVisible       = false,
+            Height          = 4,
+            Margin          = new Thickness(0, 6, 0, 0),
+            Foreground      = new SolidColorBrush(Color.Parse("#7cd87c")),
+            Background      = new SolidColorBrush(Color.Parse("#1a2a1a")),
+        };
+        stack.Children.Add(saveProgress);
+
+        // ── 분장 저장 버튼 ───────────────────────────────────────────────
+        var btnAssignSave = new Button
+        {
+            Content             = "💾 분장 저장",
+            Height              = 28,
+            FontSize            = 11,
+            FontFamily          = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R",
+            Background          = new SolidColorBrush(Color.Parse("#2a5a2a")),
+            Foreground          = Brushes.WhiteSmoke,
+            BorderThickness     = new Thickness(1),
+            BorderBrush         = new SolidColorBrush(Color.Parse("#4a8a4a")),
+            CornerRadius        = new CornerRadius(4),
+            Padding             = new Thickness(10, 0),
+            Margin              = new Thickness(0, 4, 0, 0),
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+        };
+        stack.Children.Add(btnAssignSave);
+
+        // ── 이벤트 ───────────────────────────────────────────────────────
+        btnCal.Click += (_, _) =>
+            calendar.IsVisible = !calendar.IsVisible;
+
+        btnToday.Click += (_, _) =>
+        {
+            rangeStart = rangeEnd = DateTime.Today;
+            _assignmentRangeStart = _assignmentRangeEnd = DateTime.Today;
+            txbDateRange.Text  = rangeStart.ToString("yyyy-MM-dd");
+            calendar.IsVisible = false;
+            LoadAssignments(dropListBox, agent, rangeStart, rangeEnd);
+            Log($"오늘 조회: {rangeStart:yyyy-MM-dd}");
+        };
+
+        calendar.SelectedDatesChanged += (_, _) =>
+        {
+            if (calendar.SelectedDates.Count == 0) return;
+            var dates = calendar.SelectedDates.Cast<DateTime>().ToList();
+            rangeStart = dates.Min();
+            rangeEnd   = dates.Max();
+            _assignmentRangeStart = rangeStart;
+            _assignmentRangeEnd   = rangeEnd;
+            txbDateRange.Text = rangeStart == rangeEnd
+                ? rangeStart.ToString("yyyy-MM-dd")
+                : $"{rangeStart:yyyy-MM-dd} ~ {rangeEnd:yyyy-MM-dd}";
+            LoadAssignments(dropListBox, agent, rangeStart, rangeEnd);
+            // 시작·종료 날짜가 다르면 범위 선택 완료 → 달력 자동 닫기
+            if (rangeStart != rangeEnd)
+                calendar.IsVisible = false;
+            Log($"기간 조회: {rangeStart:yyyy-MM-dd} ~ {rangeEnd:yyyy-MM-dd}");
+        };
+
+        btnAssignSave.Click += async (_, _) =>
+        {
+            var analytes = dropListBox.Items
+                .OfType<ListBoxItem>()
+                .Select(i => i.Tag as string)
+                .Where(t => !string.IsNullOrEmpty(t))
+                .ToList();
+
+            saveProgress.IsVisible  = true;
+            btnAssignSave.IsEnabled = false;
+
+            await Task.Run(() =>
+            {
+                AnalysisRequestService.ClearAssignmentsForAgent(
+                    agent.사번, rangeStart, rangeEnd);
+                foreach (var a in analytes)
+                    AnalysisRequestService.AddAssignment(
+                        agent.사번, a!, rangeStart, rangeEnd);
+            });
+
+            saveProgress.IsVisible  = false;
+            btnAssignSave.IsEnabled = true;
+            Log($"분장 저장 완료: {analytes.Count}개 ({rangeStart:yyyy-MM-dd} ~ {rangeEnd:yyyy-MM-dd})");
+        };
+
+        border.Child = stack;
+        return border;
+    }
+
+    // 중복 경고 다이얼로그
+    private async Task<bool> ShowDuplicateWarningAsync(string analyte, List<string> existingAssignees)
+    {
+        var names = string.Join(", ", existingAssignees);
+        var dlg = new Window
+        {
+            Title                 = "중복 할당 경고",
+            Width                 = 360,
+            Height                = 160,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            CanResize             = false,
+            Background            = new SolidColorBrush(Color.Parse("#2d2d2d")),
+        };
+
+        bool result = false;
+        var yesBtn = new Button
+        {
+            Content    = "업데이트",
+            Width      = 90,
+            Background = new SolidColorBrush(Color.Parse("#3a5a2a")),
+            Foreground = Brushes.White,
+        };
+        var noBtn = new Button
+        {
+            Content    = "취소",
+            Width      = 70,
+            Background = new SolidColorBrush(Color.Parse("#444")),
+            Foreground = Brushes.White,
+        };
+        yesBtn.Click += (_, _) => { result = true;  dlg.Close(); };
+        noBtn.Click  += (_, _) => { result = false; dlg.Close(); };
+
+        dlg.Content = new StackPanel
+        {
+            Margin  = new Thickness(20),
+            Spacing = 16,
+            Children =
+            {
+                new TextBlock
+                {
+                    Text         = $"⚠️ '{analyte}'은(는) 이미 {names}에게 할당되어 있습니다.\n업데이트 하시겠습니까?",
+                    Foreground   = Brushes.WhiteSmoke,
+                    FontSize     = 12,
+                    TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+                    FontFamily   = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R",
+                },
+                new StackPanel
+                {
+                    Orientation         = Orientation.Horizontal,
+                    Spacing             = 12,
+                    HorizontalAlignment = HorizontalAlignment.Right,
+                    Children            = { yesBtn, noBtn }
+                }
+            }
+        };
+
+        var owner = TopLevel.GetTopLevel(this) as Window;
+        if (owner != null) await dlg.ShowDialog(owner);
+        else dlg.Show();
+        return result;
+    }
+
+    private void LoadAssignments(ListBox listBox, Agent agent, DateTime start, DateTime end)
+    {
+        listBox.Items.Clear();
+        var assignments = start == end
+            ? AnalysisRequestService.GetAssignmentsForAgent(agent.사번, start)
+            : AnalysisRequestService.GetAssignmentsForAgentRange(agent.사번, start, end);
+        RenderAssignmentItems(listBox, assignments);
+    }
+
+    private void LoadAssignments(ListBox listBox, Agent agent, DateTime queryDate)
+    {
+        listBox.Items.Clear();
+        var assignments = AnalysisRequestService.GetAssignmentsForAgent(agent.사번, queryDate);
+        RenderAssignmentItems(listBox, assignments);
+    }
+
+    private void RenderAssignmentItems(ListBox listBox, List<(string FullName, string ShortName)> assignments)
+    {
+        listBox.Items.Clear();
+
+        if (assignments.Count == 0)
+        {
+            listBox.Items.Add(new ListBoxItem
+            {
+                Content   = "⏳ 할당된 항목 없음",
+                IsEnabled = false,
+                Foreground = new SolidColorBrush(Color.Parse("#666666"))
+            });
+            return;
+        }
+
+        foreach (var (fullName, shortName) in assignments)
+        {
+            var topRow = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*") };
+            topRow.Children.Add(new Border
+            {
+                Background    = new SolidColorBrush(Color.Parse("#1a2a3a")),
+                CornerRadius  = new CornerRadius(3),
+                Padding       = new Thickness(5, 1),
+                Margin        = new Thickness(0, 0, 6, 0),
+                [Grid.ColumnProperty] = 0,
+                Child = new TextBlock
+                {
+                    Text       = shortName,
+                    FontSize   = 9,
+                    Foreground = new SolidColorBrush(Color.Parse("#7ab4cc")),
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                },
+            });
+            topRow.Children.Add(new TextBlock
+            {
+                Text              = fullName,
+                FontSize          = 11,
+                FontFamily        = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                Foreground        = new SolidColorBrush(Color.Parse("#dddddd")),
+                TextTrimming      = Avalonia.Media.TextTrimming.CharacterEllipsis,
+                VerticalAlignment = VerticalAlignment.Center,
+                [Grid.ColumnProperty] = 1,
+            });
+
+            listBox.Items.Add(new ListBoxItem
+            {
+                Content = topRow,
+                Tag     = fullName,
+                Padding = new Thickness(4, 3),
+            });
+        }
+    }
     private StackPanel BuildPhotoArea(string photoPath)
     {
         var panel = new StackPanel
@@ -455,7 +819,29 @@ public partial class AgentTreePage : UserControl
         bool ok = AgentService.Update(_selectedAgent);
         Log(ok ? $"✅ 수정 저장: {_selectedAgent.성명}" : $"❌ 수정 실패: {_selectedAgent.성명}");
 
-        if (ok) _pendingPhotoPath = "";
+        if (ok)
+        {
+            _pendingPhotoPath = "";
+
+            // 업무 분장 동기화: 기간 내 기존 분장 초기화 후 현재 목록으로 재등록
+            if (_assignmentListBox != null)
+            {
+                var analytes = _assignmentListBox.Items
+                    .OfType<ListBoxItem>()
+                    .Select(i => i.Tag as string)
+                    .Where(t => !string.IsNullOrEmpty(t))
+                    .ToList();
+
+                AnalysisRequestService.ClearAssignmentsForAgent(
+                    _selectedAgent.사번, _assignmentRangeStart, _assignmentRangeEnd);
+
+                foreach (var a in analytes)
+                    AnalysisRequestService.AddAssignment(
+                        _selectedAgent.사번, a!, _assignmentRangeStart, _assignmentRangeEnd);
+
+                Log($"분장 저장: {analytes.Count}개 ({_assignmentRangeStart:yyyy-MM-dd} ~ {_assignmentRangeEnd:yyyy-MM-dd})");
+            }
+        }
     }
 
     // =========================================================================

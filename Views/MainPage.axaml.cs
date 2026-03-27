@@ -1,17 +1,30 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using Avalonia.Styling;
+using ETA.Services;
 using ETA.ViewModels;
 using ETA.Views.Pages;
+using Microsoft.Data.Sqlite;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 
 namespace ETA.Views;
 
 public partial class MainPage : Window
 {
+    public static string CurrentEmployeeId { get; set; } = "";
+
     private string _currentMode = "None";
+    
+    // ── 창 위치/레이아웃 관리 ──────────────────────────────────────────
+    private WindowPositionManager? _positionManager;
+    private const string LayoutStorageModePrefix = "Mode_";
 
     // 페이지는 처음 진입 시점에 Lazy 생성
     private AnalysisPage?      _analysisPage;
@@ -47,16 +60,323 @@ public partial class MainPage : Window
         InitializeComponent();
         DataContext = new MainWindowViewModel();
         ApplyTheme(true);
+        
+        // WindowPositionManager 초기화
+        _positionManager = new WindowPositionManager(CurrentUserManager.Instance.CurrentUserId);
+        
+        // 윈도우 이벤트 연결
+        this.Opened += MainPage_Opened;
+        this.Closing += MainPage_Closing;
+    }
+
+    private void MainPage_Opened(object? sender, EventArgs e)
+    {
+        System.Diagnostics.Debug.WriteLine("[MainPage] Opened 이벤트");
+    }
+
+    private void MainPage_Closing(object? sender, WindowClosingEventArgs e)
+    {
+        System.Diagnostics.Debug.WriteLine("[MainPage] Closing 이벤트 - 현재 모드 레이아웃 저장");
+        if (!string.IsNullOrEmpty(_currentMode) && _currentMode != "None")
+        {
+            SaveCurrentModeLayout();
+        }
     }
 
     // ══════════════════════════════════════════════════════════════════════
-    //  로그 기록 헬퍼
+    //  분석항목 리스트 (드래그 앤 드랍용)
     // ══════════════════════════════════════════════════════════════════════
 
-    private void LogContentChange(string contentName, object? content)
+    private ListBox?    _analysisItemsListBox;
+    private Control?    _content4Container;
+    private DateTime    _content4QueryStart = DateTime.Today;
+    private DateTime    _content4QueryEnd   = DateTime.Today;
+
+    private Control CreateAnalysisItemsListBox()
     {
-        string contentType = content?.GetType().Name ?? "null";
-        System.Diagnostics.Debug.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {contentName} changed to {contentType}");
+        if (_content4Container != null) return _content4Container;
+
+        // ── 리스트박스 ────────────────────────────────────────────────────
+        _analysisItemsListBox = new ListBox
+        {
+            Background      = new SolidColorBrush(Color.Parse("#1e1e2e")),
+            BorderThickness = new Thickness(0),
+            SelectionMode   = SelectionMode.Multiple,
+            Margin          = new Thickness(2, 0, 2, 2),
+        };
+        LoadAnalysisItems();
+        _analysisItemsListBox.PointerPressed += OnAnalysisItemPointerPressed;
+
+        // ── 날짜 범위 행 ──────────────────────────────────────────────────
+        var txbRange = new TextBlock
+        {
+            Text              = DateTime.Today.ToString("yyyy-MM-dd"),
+            FontSize          = 10,
+            Foreground        = new SolidColorBrush(Color.Parse("#aaaaaa")),
+            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+            MinWidth          = 160,
+            FontFamily        = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+        };
+
+        var btnCal = new Button
+        {
+            Content         = "📅",
+            Width           = 28,
+            Height          = 22,
+            FontSize        = 11,
+            Padding         = new Thickness(0),
+            Background      = new SolidColorBrush(Color.Parse("#2a3a4a")),
+            Foreground      = new SolidColorBrush(Color.Parse("#aaaaaa")),
+            BorderThickness = new Thickness(1),
+            BorderBrush     = new SolidColorBrush(Color.Parse("#555555")),
+        };
+        ToolTip.SetTip(btnCal, "기간 선택 (드래그로 범위 설정)");
+
+        var btnToday = new Button
+        {
+            Content         = "오늘",
+            Width           = 42,
+            Height          = 22,
+            FontSize        = 10,
+            Padding         = new Thickness(4, 0),
+            Background      = new SolidColorBrush(Color.Parse("#3a5a3a")),
+            Foreground      = new SolidColorBrush(Color.Parse("#aaaaaa")),
+            BorderThickness = new Thickness(1),
+            BorderBrush     = new SolidColorBrush(Color.Parse("#666666")),
+        };
+
+        var dateRow = new StackPanel
+        {
+            Orientation = Avalonia.Layout.Orientation.Horizontal,
+            Spacing     = 5,
+            Margin      = new Thickness(4, 4, 4, 2),
+        };
+        dateRow.Children.Add(txbRange);
+        dateRow.Children.Add(btnCal);
+        dateRow.Children.Add(btnToday);
+
+        // ── 인라인 달력 ───────────────────────────────────────────────────
+        var calendar = new Avalonia.Controls.Calendar
+        {
+            SelectionMode = Avalonia.Controls.CalendarSelectionMode.SingleRange,
+            IsVisible     = false,
+            Margin        = new Thickness(4, 0, 4, 2),
+            DisplayDate   = DateTime.Today,
+        };
+        calendar.SelectedDates.Add(DateTime.Today);
+
+        // ── 이벤트 연결 ───────────────────────────────────────────────────
+        btnCal.Click += (_, _) => calendar.IsVisible = !calendar.IsVisible;
+
+        btnToday.Click += (_, _) =>
+        {
+            _content4QueryStart = _content4QueryEnd = DateTime.Today;
+            txbRange.Text       = DateTime.Today.ToString("yyyy-MM-dd");
+            calendar.IsVisible  = false;
+            UpdateAssignmentInfo();
+        };
+
+        calendar.SelectedDatesChanged += (_, _) =>
+        {
+            if (calendar.SelectedDates.Count == 0) return;
+            var dates = calendar.SelectedDates.Cast<DateTime>().ToList();
+            _content4QueryStart = dates.Min();
+            _content4QueryEnd   = dates.Max();
+            txbRange.Text = _content4QueryStart == _content4QueryEnd
+                ? _content4QueryStart.ToString("yyyy-MM-dd")
+                : $"{_content4QueryStart:yyyy-MM-dd} ~ {_content4QueryEnd:yyyy-MM-dd}";
+            UpdateAssignmentInfo();
+            if (_content4QueryStart != _content4QueryEnd)
+                calendar.IsVisible = false;
+        };
+
+        // ── 컨테이너 조립 (DockPanel) ─────────────────────────────────────
+        var header = new StackPanel { Spacing = 0 };
+        header.Children.Add(dateRow);
+        header.Children.Add(calendar);
+
+        var dock = new DockPanel { LastChildFill = true };
+        DockPanel.SetDock(header, Dock.Top);
+        dock.Children.Add(header);
+        dock.Children.Add(_analysisItemsListBox);
+
+        _content4Container = dock;
+        return _content4Container;
+    }
+
+    private void LoadAnalysisItems()
+    {
+        if (_analysisItemsListBox == null) return;
+
+        _analysisItemsListBox.Items.Clear();
+        var items = AnalysisService.GetAllItems();
+        Debug.WriteLine($"[LoadAnalysisItems] 로드된 분석항목 수: {items.Count}");
+        
+        foreach (var item in items)
+        {
+            // 카드 UI: Border + Grid로 구성
+            var cardBorder = new Border
+            {
+                Background      = new SolidColorBrush(Color.Parse("#2a2a38")),
+                BorderThickness = new Thickness(1),
+                BorderBrush     = new SolidColorBrush(Color.Parse("#444455")),
+                CornerRadius    = new CornerRadius(3),
+                Padding         = new Thickness(6, 3),
+                Margin          = new Thickness(2, 1),
+                Cursor          = new Cursor(StandardCursorType.Hand),
+            };
+            ToolTip.SetTip(cardBorder, $"{item.Category} | ES: {item.ES}");
+
+            var cardGrid = new Grid
+            {
+                ColumnDefinitions = new ColumnDefinitions("*,Auto"),
+            };
+
+            // Col 0: 항목명
+            var nameBlock = new TextBlock
+            {
+                Text              = item.Analyte,
+                FontSize          = 11,
+                FontWeight        = FontWeight.SemiBold,
+                Foreground        = new SolidColorBrush(Color.Parse("#a0d060")),
+                FontFamily        = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                TextTrimming      = TextTrimming.CharacterEllipsis,
+                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+            };
+            Grid.SetColumn(nameBlock, 0);
+            cardGrid.Children.Add(nameBlock);
+
+            // Col 1: 할당 배지 (UpdateAssignmentInfo에서 갱신)
+            var assignBadge = new TextBlock
+            {
+                Text              = "·",
+                FontSize          = 9,
+                Foreground        = new SolidColorBrush(Color.Parse("#555566")),
+                FontFamily        = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                Margin            = new Thickness(4, 0, 0, 0),
+            };
+            Grid.SetColumn(assignBadge, 1);
+            cardGrid.Children.Add(assignBadge);
+
+            cardBorder.Tag = item.Analyte;
+            cardBorder.Child = cardGrid;
+
+            // ✅ 중요: Border에 직접 PointerPressed 이벤트 등록 (ListBox 이벤트와 상충 방지)
+            cardBorder.PointerPressed += (s, e) =>
+            {
+                if (e.GetCurrentPoint(cardBorder).Properties.IsLeftButtonPressed)
+                {
+                    var analyte = (cardBorder.Tag as string) ?? "";
+                    if (!string.IsNullOrEmpty(analyte))
+                    {
+                        var data = new DataObject();
+                        data.Set("analyte", analyte);
+                        DragDrop.DoDragDrop(e, data, DragDropEffects.Move);
+                        System.Diagnostics.Debug.WriteLine($"[DragStart] {analyte}");
+                    }
+                }
+            };
+
+            // ListBoxItem에 카드 넣기
+            var listBoxItem = new ListBoxItem
+            {
+                Content = cardBorder,
+                Tag = item.Analyte,
+                Padding = new Thickness(0),
+                Margin = new Thickness(0)
+            };
+            
+            _analysisItemsListBox.Items.Add(listBoxItem);
+        }
+
+        // 할당 정보 비동기로 업데이트
+        UpdateAssignmentInfo();
+    }
+
+    /// <summary>각 카드에 할당 정보를 표시 (현재 선택된 기간 기준)</summary>
+    private void UpdateAssignmentInfo()
+    {
+        if (_analysisItemsListBox == null) return;
+
+        foreach (var listBoxItem in _analysisItemsListBox.Items.OfType<ListBoxItem>())
+        {
+            if (listBoxItem.Content is Border border && border.Child is Grid grid)
+            {
+                var analyte = listBoxItem.Tag as string;
+                if (string.IsNullOrEmpty(analyte)) continue;
+
+                var assignees = _content4QueryStart == _content4QueryEnd
+                    ? AnalysisRequestService.GetAssigneesForAnalyteOnDate(analyte, _content4QueryStart)
+                    : AnalysisRequestService.GetAssigneesForAnalyteInRange(analyte, _content4QueryStart, _content4QueryEnd);
+
+                if (grid.Children.Count > 1 && grid.Children[1] is TextBlock assignBadge)
+                {
+                    var baseTip = ToolTip.GetTip(border)?.ToString()?.Split('\n')[0] ?? "";
+                    if (assignees.Count == 0)
+                    {
+                        assignBadge.Text       = "미할당";
+                        assignBadge.Foreground = new SolidColorBrush(Color.Parse("#555566"));
+                        ToolTip.SetTip(border, baseTip);
+                    }
+                    else
+                    {
+                        // 이름별 일수 집계 (중복 포함)
+                        var grouped = assignees
+                            .GroupBy(a => a)
+                            .OrderByDescending(g => g.Count())
+                            .ToList();
+                        int uniqueCount = grouped.Count;
+
+                        // 배지: 이름을 모두 나열
+                        assignBadge.Text       = string.Join(", ", grouped.Select(g => g.Key));
+                        assignBadge.Foreground = new SolidColorBrush(Color.Parse("#88cc88"));
+
+                        // 툴팁: 이름(N일) 형식으로 중복 표시
+                        bool isRange = _content4QueryStart != _content4QueryEnd;
+                        var detail = isRange
+                            ? string.Join(", ", grouped.Select(g =>
+                                g.Count() > 1 ? $"{g.Key}({g.Count()}일)" : g.Key))
+                            : string.Join(", ", grouped.Select(g => g.Key));
+                        ToolTip.SetTip(border, $"{baseTip}\n담당: {detail}");
+                    }
+                }
+            }
+        }
+    }
+
+    private void OnAnalysisItemPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+        {
+            // Content4의 카드에서 드래그 시작
+            var listBox = sender as ListBox;
+            if (listBox == null) return;
+
+            // 클릭된 control을 따라가서 ListBoxItem 찾기
+            var source = e.Source as Control;
+            ListBoxItem? targetItem = null;
+
+            // visual tree를 따라 올라가면서 ListBoxItem 찾기
+            var current = source;
+            while (current != null)
+            {
+                if (current is ListBoxItem lbi)
+                {
+                    targetItem = lbi;
+                    break;
+                }
+                current = current.Parent as Control;
+            }
+
+            if (targetItem != null && targetItem.Tag is string analyte)
+            {
+                // 드래그 데이터 설정
+                var data = new DataObject();
+                data.Set("analyte", analyte);
+                DragDrop.DoDragDrop(e, data, DragDropEffects.Move);
+            }
+        }
     }
 
 
@@ -131,14 +451,23 @@ public partial class MainPage : Window
         LogContentChange("ActivePageContent2", null);
         ActivePageContent3.Content = null;
         LogContentChange("ActivePageContent3", null);
-        ActivePageContent4.Content = null;
-        LogContentChange("ActivePageContent4", null);
+        
+        // ✅ Content4: 분석항목 카드 리스트 (드래그&드롭용)
+        ActivePageContent4.Content = CreateAnalysisItemsListBox();
+        LogContentChange("ActivePageContent4", _analysisItemsListBox);
+        
+        // AgentTreePage에 ListBox 참조 전달
+        _agentTreePage.AnalysisItemsListBox = _analysisItemsListBox;
+        
         _agentTreePage.LoadData();
         _bt1SaveAction = _agentTreePage.SaveSelected;
 
         SetSubMenu("저장", "새로고침", "직원 추가", "선택 삭제", "엑셀 내보내기", "인쇄", "설정");
         SetLeftPanelWidth(260);
         SetContentLayout(content2Star: 1, content4Star: 1, upperStar: 1, lowerStar: 0);
+        
+        // 저장된 레이아웃 복원
+        RestoreModeLayout("Agent");
     }
 
     private void WasteCompany_Click(object? sender, RoutedEventArgs e)
@@ -160,6 +489,9 @@ public partial class MainPage : Window
         SetSubMenu("저장", "새로고침", "업소 등록", "엑셀 업로드", "보고서 생성", "통계 보기", "설정");
         SetLeftPanelWidth(260);
         SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 1, lowerStar: 0);
+        
+        // 저장된 레이아웃 복원
+        RestoreModeLayout("WasteCompany");
     }
 
     private void Analysis_Click(object? sender, RoutedEventArgs e)
@@ -174,6 +506,9 @@ public partial class MainPage : Window
         SetSubMenu("분석 시작", "새로고침", "데이터 추가", "선택 삭제", "엑셀 내보내기", "인쇄", "설정");
         SetLeftPanelWidth(380);
         SetContentLayout(content2Star: 1, content4Star: 1, upperStar: 1, lowerStar: 0);
+        
+        // 저장된 레이아웃 복원
+        RestoreModeLayout("Analysis");
     }
 
     private void Contract_Click(object? sender, RoutedEventArgs e)
@@ -205,6 +540,9 @@ public partial class MainPage : Window
         SetSubMenu("저장", "새로고침", "업체 추가", "선택 삭제", "엑셀 내보내기", "인쇄", "설정");
         SetLeftPanelWidth(350);
         SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 8, lowerStar: 2);
+        
+        // 저장된 레이아웃 복원
+        RestoreModeLayout("Contract");
 
         Avalonia.Threading.Dispatcher.UIThread.Post(
             () => _contractPage.LoadData(),
@@ -231,6 +569,9 @@ public partial class MainPage : Window
         SetLeftPanelWidth(220);
         // Content2(목록) 위, Content3(폼) 아래 30% 표시
         SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 7, lowerStar: 3);
+        
+        // 저장된 레이아웃 복원
+        RestoreModeLayout("Repair");
 
         Avalonia.Threading.Dispatcher.UIThread.Post(
             () => _repairPage.Refresh(),
@@ -397,6 +738,9 @@ public partial class MainPage : Window
         // Content2(세부내역) 50% : Content4(업체목록) 50%
         // 하단(Content3 분석항목) ≈ 23%  (13 : 4 → 76% : 24%)
         SetContentLayout(content2Star: 7, content4Star: 3, upperStar: 13, lowerStar: 4);
+        
+        // 저장된 레이아웃 복원
+        RestoreModeLayout("Quotation");
     }
 
     private void Purchase_Click(object? sender, RoutedEventArgs e)
@@ -417,6 +761,9 @@ public partial class MainPage : Window
         SetSubMenu("새로고침", "엑셀 내보내기", "승인", "반려", "완료", "삭제", "설정");
         SetLeftPanelWidth(250);
         SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 8, lowerStar: 2);
+        
+        // 저장된 레이아웃 복원
+        RestoreModeLayout("Purchase");
     }
 
 
@@ -456,6 +803,9 @@ public partial class MainPage : Window
         SetSubMenu("새로고침", "CSV 저장", "삭제", "엑셀 출력", "PDF 출력", "일괄 엑셀", "일괄 PDF");
 
         SetContentLayout(content2Star: 8, content4Star: 2, upperStar: 8.5, lowerStar: 1.5);
+        
+        // 저장된 레이아웃 복원
+        RestoreModeLayout("TestReport");
 
         Avalonia.Threading.Dispatcher.UIThread.Post(
             () => _testReportPage.LoadData(),
@@ -471,6 +821,19 @@ public partial class MainPage : Window
         _bt1SaveAction = null;
 
         SetSubMenu("사용자 관리", "권한 설정", "로그 확인", "백업하기", "시스템 설정", "통계", "종료");
+        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 1, lowerStar: 0);
+    }
+
+    private void Permission_Click(object? sender, RoutedEventArgs e)
+    {
+        _currentMode = "Permission";
+        // TODO: 권한관리 페이지 구현
+        ActivePageContent1.Content = null;
+        ActivePageContent2.Content = null;
+        ActivePageContent4.Content = null;
+        _bt1SaveAction = null;
+
+        SetSubMenu("저장", "새로고침", "삭제", "설정", "통계", "종료", "도움말");
         SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 1, lowerStar: 0);
     }
 
@@ -671,6 +1034,129 @@ public partial class MainPage : Window
 
     private void OnCompanySelected(ETA.Models.Contract company)
         => _quotationNewPanel?.SetCompany(company);
+
+    private void LogContentChange(string contentName, object? content)
+    {
+        Debug.WriteLine($"[{DateTime.Now:HH:mm:ss}] ContentChange: {contentName} = {content?.GetType().Name ?? "null"}");
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  창 위치/레이아웃 저장 및 복원
+    // ══════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// 현재 모드의 레이아웃 정보 저장
+    /// </summary>
+    private void SaveCurrentModeLayout()
+    {
+        if (_positionManager == null || string.IsNullOrEmpty(_currentMode) || _currentMode == "None")
+            return;
+
+        try
+        {
+            string modeKey = LayoutStorageModePrefix + _currentMode;
+            var layout = new PageLayoutInfo();
+
+            // 윈도우 위치/크기
+            layout.WindowX = this.Position.X;
+            layout.WindowY = this.Position.Y;
+            layout.WindowWidth = this.Width;
+            layout.WindowHeight = this.Height;
+
+            // 왼쪽 패널 너비 조회
+            var mainGrid = this.FindControl<Grid>("MainSplitGrid");
+            if (mainGrid != null && mainGrid.ColumnDefinitions.Count > 0)
+            {
+                var colDef = mainGrid.ColumnDefinitions[0];
+                if (colDef.Width.IsAbsolute)
+                    layout.LeftPanelWidth = colDef.Width.Value;
+            }
+
+            // 오른쪽 상단/하단 분할 비율
+            var rightGrid = this.FindControl<Grid>("RightSplitGrid");
+            if (rightGrid != null && rightGrid.RowDefinitions.Count >= 3)
+            {
+                layout.UpperStar = rightGrid.RowDefinitions[0].Height.Value;
+                layout.LowerStar = rightGrid.RowDefinitions[2].Height.Value;
+            }
+
+            // Content2/Content4 분할 비율
+            var upperGrid = this.FindControl<Grid>("UpperContentGrid");
+            if (upperGrid != null && upperGrid.ColumnDefinitions.Count >= 3)
+            {
+                layout.Content2Star = upperGrid.ColumnDefinitions[0].Width.Value;
+                layout.Content4Star = upperGrid.ColumnDefinitions[2].Width.Value;
+            }
+
+            layout.SavedAt = DateTime.Now;
+            _positionManager.SavePageLayout(modeKey, layout);
+            System.Diagnostics.Debug.WriteLine($"[MainPage] 저장: {modeKey} - {layout}");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[MainPage] 레이아웃 저장 오류: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// 특정 모드의 저장된 레이아웃 정보 복원
+    /// </summary>
+    private void RestoreModeLayout(string modeName)
+    {
+        if (_positionManager == null)
+            return;
+
+        try
+        {
+            string modeKey = LayoutStorageModePrefix + modeName;
+            var layout = _positionManager.GetPageLayout(modeKey);
+            if (layout == null)
+            {
+                System.Diagnostics.Debug.WriteLine($"[MainPage] 복원할 레이아웃 없음: {modeKey}");
+                return;
+            }
+
+            // 왼쪽 패널 너비 복원
+            if (layout.LeftPanelWidth > 0)
+                SetLeftPanelWidth(layout.LeftPanelWidth);
+
+            // 레이아웃 비율 복원
+            SetContentLayout(
+                content2Star: layout.Content2Star,
+                content4Star: layout.Content4Star,
+                upperStar: layout.UpperStar,
+                lowerStar: layout.LowerStar);
+
+            System.Diagnostics.Debug.WriteLine($"[MainPage] 복원: {modeKey} - {layout}");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[MainPage] 레이아웃 복원 오류: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// 사용자 변경 시 WindowPositionManager 업데이트
+    /// (로그인 후 호출)
+    /// </summary>
+    public void UpdateCurrentUser(string newUserId)
+    {
+        if (!string.IsNullOrWhiteSpace(newUserId))
+        {
+            CurrentUserManager.Instance.SetCurrentUser(newUserId);
+            // 새 사용자로 WindowPositionManager 재초기화
+            _positionManager = new WindowPositionManager(newUserId);
+            System.Diagnostics.Debug.WriteLine($"[MainPage] 사용자 변경: {newUserId}");
+        }
+    }
+
+    /// <summary>
+    /// 로그 파일 경로 조회 (디버깅용)
+    /// </summary>
+    public string GetPositionLogFilePath()
+    {
+        return _positionManager?.GetLogFilePath() ?? "Unknown";
+    }
 
     private void TEST_Click(object? sender, RoutedEventArgs e) { }
 }

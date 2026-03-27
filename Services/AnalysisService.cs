@@ -42,7 +42,7 @@ public static class AnalysisService
 
         while (reader.Read())
         {
-            items.Add(new AnalysisItem
+            var item = new AnalysisItem
             {
                 Category      = reader.GetStringOrEmpty("Category"),
                 Analyte       = reader.GetStringOrEmpty("Analyte"),
@@ -52,9 +52,12 @@ public static class AnalysisService
                 ES            = reader.GetStringOrEmpty("ES"),
                 Method        = reader.GetStringOrEmpty("Method"),
                 instrument    = reader.GetStringOrEmpty("instrument")
-            });
+            };
+            items.Add(item);
+            Console.WriteLine($"[GetAllItems] 아이템: {item.Analyte} ({item.Category})");
         }
 
+        Console.WriteLine($"[GetAllItems] 총 아이템 수: {items.Count}");
         return items;
     }
 

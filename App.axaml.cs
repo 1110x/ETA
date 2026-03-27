@@ -20,9 +20,9 @@ public partial class App : Application
         {
 #if DEBUG
             // ── 테스트용: 로그인 스킵 ──────────────────
-            var mainPage = new Login();
+            var mainPage = new MainPage();
 #else
-    var mainPage = new Mainpage();  // 로그인 창
+    var mainPage = new Login();  // 로그인 창
 #endif
             desktop.MainWindow = mainPage;
             mainPage.Show();

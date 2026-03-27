@@ -679,4 +679,11 @@ public static class AgentService
         // 이미 파일명만 있으면 그대로
         return Path.IsPathRooted(path) ? Path.GetFileName(path) : path;
     }
+
+    // ── 관리자 권한 확인 ─────────────────────────────────────────────────────
+    public static bool IsAdmin(string employeeId)
+    {
+        // 간단히 사번이 "admin"이거나 특정 사번이면 관리자
+        return employeeId == "admin" || employeeId == "202912345"; // 예시
+    }
 }

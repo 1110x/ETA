@@ -89,6 +89,7 @@ public static class QuotationService
                    ""시료명"",
                    ""견적번호"",
                    ""적용구분"",
+                   ""담당자"",
                    ""합계 금액""
             FROM ""견적발행내역""
             ORDER BY ""견적발행일자"" DESC, rowid DESC";
@@ -105,10 +106,40 @@ public static class QuotationService
                 시료명   = S(r, 4),
                 견적번호 = S(r, 5),
                 견적구분 = S(r, 6),
-                총금액   = Dec(r, 7),
+                담당자   = S(r, 7),
+                총금액   = Dec(r, 8),
             });
         }
         return list;
+    }
+
+    // ── 업체명으로 최근 견적 담당자 조회 ───────────────────────────────
+    public static string GetLatestManagerForCompany(string companyName)
+    {
+        var dbPath = GetDatabasePath();
+        if (!File.Exists(dbPath)) return "";
+
+        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        conn.Open();
+        if (!TableExists(conn, "견적발행내역")) return "";
+
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+            SELECT ""담당자""
+            FROM ""견적발행내역""
+            WHERE ""업체명"" = @company
+              AND ""담당자"" IS NOT NULL
+              AND TRIM(""담당자"") != ''
+            ORDER BY ""견적발행일자"" DESC, rowid DESC
+            LIMIT 1";
+        cmd.Parameters.AddWithValue("@company", companyName);
+
+        using var r = cmd.ExecuteReader();
+        if (r.Read())
+        {
+            return S(r, 0);
+        }
+        return "";
     }
 
     // ── rowid 기준 단일 행 전체 컬럼 조회 ────────────────────────────────
@@ -259,12 +290,12 @@ public static class QuotationService
         var colList = new List<string>
         {
             "\"견적발행일자\"", "\"업체명\"", "\"약칭\"", "\"시료명\"",
-            "\"견적번호\"", "\"적용구분\"", "\"합계 금액\""
+            "\"견적번호\"", "\"적용구분\"", "\"담당자\"", "\"합계 금액\""
         };
         var paramList = new List<string>
         {
             "@date", "@company", "@abbr", "@sample",
-            "@no", "@type", "@amount"
+            "@no", "@type", "@manager", "@amount"
         };
 
         foreach (var kv in validItems)
@@ -291,6 +322,7 @@ public static class QuotationService
         cmd.Parameters.AddWithValue("@sample",  issue.시료명   ?? "");
         cmd.Parameters.AddWithValue("@no",      issue.견적번호 ?? "");
         cmd.Parameters.AddWithValue("@type",    issue.견적구분 ?? "");
+        cmd.Parameters.AddWithValue("@manager", issue.담당자   ?? "");
         cmd.Parameters.AddWithValue("@amount",  issue.총금액);
 
         foreach (var kv in validItems)

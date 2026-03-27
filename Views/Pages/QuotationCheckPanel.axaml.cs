@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Layout;
 using ETA.Models;
 using ETA.Services;
 using System;
@@ -36,56 +37,115 @@ public partial class QuotationCheckPanel : UserControl
         _cbMap       = new(StringComparer.OrdinalIgnoreCase);
         _catMap      = new(StringComparer.OrdinalIgnoreCase);
         _catChildren = new(StringComparer.OrdinalIgnoreCase);
-        spItems.Children.Clear();
         BuildList();
         UpdateCount();
     }
 
-    // ── 체크박스 빌드 ─────────────────────────────────────────────────────
+    // ── 7개 컬럼 독립 스크롤 레이아웃 빌드 ─────────────────────────────────
     private void BuildList()
     {
+        // 카테고리별 그룹화 (최대 7개)
         var groups = _allItems
             .GroupBy(a => string.IsNullOrEmpty(a.Category) ? "기타" : a.Category)
-            .OrderBy(g => g.Key);
+            .OrderBy(g => g.Key)
+            .ToList();
 
+        // ColumnsGrid 초기화
+        var columnsGrid = this.FindControl<Grid>("ColumnsGrid");
+        if (columnsGrid == null) return;
+        columnsGrid.Children.Clear();
+
+        int columnIndex = 0;
         foreach (var group in groups)
         {
+            if (columnIndex >= 7) break; // 최대 7개 컬럼만 표시
+
             var catKey = group.Key;
-
-            // 카테고리 헤더 체크박스 — 작게
-            var catChk = new CheckBox
-            {
-                Content    = $"{catKey}  ({group.Count()})",
-                IsChecked  = false,
-                FontSize   = 11,
-                FontWeight = FontWeight.SemiBold,
-                Foreground = Brush.Parse("#88bb88"),
-                Margin     = new Avalonia.Thickness(0, 6, 0, 1),
-                Padding    = new Avalonia.Thickness(4, 0),
-            };
-
             var children = new List<CheckBox>();
             _catChildren[catKey] = children;
 
-            // WrapPanel — 항목 체크박스
-            var wrap = new WrapPanel
+            // ═══════════════════════════════════════════════════════════════
+            // 컬럼 레이아웃 구조:
+            // Grid (RowDefinitions: Auto, *)
+            //   ├─ Row=0: TextBlock (Category Header)
+            //   └─ Row=1: Border
+            //        └─ ScrollViewer (독립 수직 스크롤)
+            //             └─ StackPanel (Items)
+            // ═══════════════════════════════════════════════════════════════
+
+            // 컬럼 컨테이너 그리드
+            var columnContainer = new Grid
             {
-                Orientation = Avalonia.Layout.Orientation.Horizontal,
-                Margin      = new Avalonia.Thickness(0, 0, 0, 2),
+                RowDefinitions = new RowDefinitions("Auto,*"),
+                Margin = new Avalonia.Thickness(0),
+                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Stretch,
+            };
+            Grid.SetColumn(columnContainer, columnIndex);
+
+            // 헤더: 카테고리명 + 항목수
+            var headerText = new TextBlock
+            {
+                Text = $"{catKey}",
+                FontSize = 12,
+                FontWeight = FontWeight.SemiBold,
+                Foreground = Brush.Parse("#a0d060"),
+                Margin = new Avalonia.Thickness(0, 0, 0, 6),
+                TextWrapping = TextWrapping.Wrap,
+                TextAlignment = TextAlignment.Center,
+            };
+            Grid.SetRow(headerText, 0);
+            columnContainer.Children.Add(headerText);
+
+            // Border: 컬럼 시각적 구분
+            var columnBorder = new Border
+            {
+                Background = Brush.Parse("#252530"),
+                CornerRadius = new Avalonia.CornerRadius(4),
+                BorderThickness = new Avalonia.Thickness(1),
+                BorderBrush = Brush.Parse("#3a3a45"),
+                Padding = new Avalonia.Thickness(8),
+                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Stretch,
+            };
+            Grid.SetRow(columnBorder, 1);
+
+            // ScrollViewer: 독립 수직 스크롤 (기본 동작: 필요할 때만 scrollbar 표시)
+            var scrollViewer = new ScrollViewer
+            {
+                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Stretch,
             };
 
+            // ItemsPanel: StackPanel (항목)
+            var itemsStack = new StackPanel
+            {
+                Spacing = 4,
+                Orientation = Avalonia.Layout.Orientation.Vertical,
+            };
+
+            // 카테고리 헤더 체크박스 (StackPanel 최상단)
+            var catChk = new CheckBox
+            {
+                Content = $"전체 ({group.Count()})",
+                IsChecked = false,
+                FontSize = 11,
+                FontWeight = FontWeight.SemiBold,
+                Foreground = Brush.Parse("#88bb88"),
+                Margin = new Avalonia.Thickness(0, 0, 0, 4),
+                Padding = new Avalonia.Thickness(2, 2),
+            };
+            itemsStack.Children.Add(catChk);
+
+            // 항목 체크박스들
             foreach (var item in group.OrderBy(a => a.ES))
             {
                 var cb = new CheckBox
                 {
-                    Content   = item.Analyte,
+                    Content = item.Analyte,
                     IsChecked = false,
-                    Tag       = item,
-                    FontSize  = 11,                          // ← 작게
-                    Foreground = Brush.Parse("#cccccc"),
-                    Margin    = new Avalonia.Thickness(0, 0, 6, 2),   // ← 간격 축소
-                    Padding   = new Avalonia.Thickness(2, 0),
-                    MinWidth  = 0,
+                    Tag = item,
+                    FontSize = 10,
+                    Foreground = Brush.Parse("#ddd"),
+                    Margin = new Avalonia.Thickness(0, 0, 0, 2),
+                    Padding = new Avalonia.Thickness(2, 1),
                 };
                 Avalonia.Controls.ToolTip.SetTip(cb,
                     $"ES: {item.ES}\n단위: {item.unit}\n방법: {item.Method}");
@@ -99,11 +159,12 @@ public partial class QuotationCheckPanel : UserControl
                 };
 
                 children.Add(cb);
-                _cbMap[item.Analyte]  = cb;
+                _cbMap[item.Analyte] = cb;
                 _catMap[item.Analyte] = catChk;
-                wrap.Children.Add(cb);
+                itemsStack.Children.Add(cb);
             }
 
+            // 카테고리 헤더 전체 선택/해제 로직
             catChk.IsCheckedChanged += (_, _) =>
             {
                 if (_suspendEvents || catChk.IsChecked == null) return;
@@ -115,8 +176,19 @@ public partial class QuotationCheckPanel : UserControl
                 SelectionChanged?.Invoke(GetSelected());
             };
 
-            spItems.Children.Add(catChk);
-            spItems.Children.Add(wrap);
+            // ScrollViewer 설정
+            scrollViewer.Content = itemsStack;
+
+            // Border 설정
+            columnBorder.Child = scrollViewer;
+
+            // 컬럼 컨테이너에 추가
+            columnContainer.Children.Add(columnBorder);
+
+            // 메인 ColumnsGrid에 추가
+            columnsGrid.Children.Add(columnContainer);
+
+            columnIndex++;
         }
     }
 

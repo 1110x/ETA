@@ -1,3 +1,4 @@
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
@@ -6,9 +7,11 @@ using ETA.Models;
 using ETA.Services;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ETA.Views.Pages;
 
@@ -284,6 +287,170 @@ public partial class QuotationDetailPanel : UserControl
 
     private void BtnPrint_Click(object? sender, RoutedEventArgs e)
         => Log($"인쇄 → {_current?.견적번호}");
+
+    // 📊 분석기록부 출력
+    private async void BtnAnalysisRecord_Click(object? sender, RoutedEventArgs e)
+    {
+        if (_current == null) return;
+        if (sender is Button btn) btn.IsEnabled = false;
+
+        try
+        {
+            Log($"분석기록부 출력 시작: {_current.견적번호}");
+
+            // 1. 항목 그룹 조회 (DB만 읽기, 빠름)
+            var groups = await Task.Run(
+                () => AnalysisRecordService.GetAnalysisGroups(_current.견적번호));
+
+            if (groups.Count == 0)
+            {
+                var dlg = new Window
+                {
+                    Title                 = "알림",
+                    Width                 = 320,
+                    Height                = 130,
+                    CanResize             = false,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                    Background            = new SolidColorBrush(Color.Parse("#2d2d2d")),
+                };
+                var okBtn2 = new Button
+                {
+                    Content             = "확인",
+                    Width               = 70,
+                    HorizontalAlignment = HorizontalAlignment.Right,
+                    Background          = new SolidColorBrush(Color.Parse("#3a3a4a")),
+                    Foreground          = Brushes.WhiteSmoke,
+                };
+                okBtn2.Click += (_, _) => dlg.Close();
+                dlg.Content = new StackPanel
+                {
+                    Margin = new Thickness(20), Spacing = 12,
+                    Children =
+                    {
+                        new TextBlock
+                        {
+                            Text         = "생성할 분석기록부가 없습니다.\n의뢰서를 먼저 작성해 주세요.",
+                            Foreground   = Brushes.WhiteSmoke, FontSize = 12,
+                            TextWrapping = Avalonia.Media.TextWrapping.Wrap, FontFamily = Font,
+                        },
+                        okBtn2
+                    }
+                };
+                var owner0 = TopLevel.GetTopLevel(this) as Window;
+                if (owner0 != null) await dlg.ShowDialog(owner0); else dlg.Show();
+                return;
+            }
+
+            // 2. 프로그래스 창 빌드
+            var progressBars  = new Dictionary<string, ProgressBar>(StringComparer.OrdinalIgnoreCase);
+            var statusBlocks  = new Dictionary<string, TextBlock>(StringComparer.OrdinalIgnoreCase);
+            var itemStack     = new StackPanel { Spacing = 8, Margin = new Thickness(16, 12, 16, 8) };
+
+            foreach (var colName in groups.Keys)
+            {
+                var pb = new ProgressBar
+                {
+                    Minimum         = 0,
+                    Maximum         = 100,
+                    Value           = 0,
+                    Height          = 14,
+                    Foreground      = new SolidColorBrush(Color.Parse("#4aaa4a")),
+                    Background      = new SolidColorBrush(Color.Parse("#2a2a3a")),
+                    BorderThickness = new Thickness(0),
+                };
+                var statusTb = new TextBlock
+                {
+                    Text              = "대기",
+                    FontSize          = 10,
+                    Width             = 36,
+                    Foreground        = new SolidColorBrush(Color.Parse("#666")),
+                    VerticalAlignment = VerticalAlignment.Center,
+                    FontFamily        = Font,
+                };
+                progressBars[colName] = pb;
+                statusBlocks[colName] = statusTb;
+
+                var row = new Grid { ColumnDefinitions = new ColumnDefinitions("110,*,40") };
+                row.Children.Add(new TextBlock
+                {
+                    Text              = colName,
+                    FontSize          = 11,
+                    Foreground        = Brushes.WhiteSmoke,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    FontFamily        = Font,
+                    TextTrimming      = Avalonia.Media.TextTrimming.CharacterEllipsis,
+                    [Grid.ColumnProperty] = 0,
+                });
+                pb[Grid.ColumnProperty] = 1;
+                row.Children.Add(pb);
+                statusTb[Grid.ColumnProperty] = 2;
+                row.Children.Add(statusTb);
+
+                itemStack.Children.Add(row);
+            }
+
+            var countTb = new TextBlock
+            {
+                Text       = $"0 / {groups.Count} 완료",
+                FontSize   = 10,
+                Foreground = new SolidColorBrush(Color.Parse("#888")),
+                FontFamily = Font,
+                Margin     = new Thickness(16, 0, 16, 12),
+            };
+
+            var progressWin = new Window
+            {
+                Title                 = "📊 분석기록부 생성 중...",
+                Width                 = 440,
+                SizeToContent         = SizeToContent.Height,
+                CanResize             = false,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                Background            = new SolidColorBrush(Color.Parse("#1e1e2e")),
+                Content               = new StackPanel
+                {
+                    Children = { itemStack, countTb }
+                }
+            };
+
+            var owner = TopLevel.GetTopLevel(this) as Window;
+            if (owner != null) progressWin.Show(owner); else progressWin.Show();
+
+            // 3. 파일 생성 (분析자별)
+            var outputDir  = AnalysisRecordService.GetOutputDir();
+            var 방류기준표 = await Task.Run(() => AnalysisRecordService.Load방류기준표());
+
+            // 모든 항목 진행 바를 indeterminate로 전환
+            foreach (var pb2 in progressBars.Values) pb2.IsIndeterminate = true;
+            foreach (var stb in statusBlocks.Values) { stb.Text = "생성"; stb.Foreground = new SolidColorBrush(Color.Parse("#aaa")); }
+
+            var results = await Task.Run(() =>
+                AnalysisRecordService.GenerateByAssignee(groups, 방류기준표, outputDir, DateTime.Today));
+
+            bool anySuccess = results.Count > 0;
+            foreach (var colName in groups.Keys)
+            {
+                if (progressBars.TryGetValue(colName, out var pb3)) { pb3.IsIndeterminate = false; pb3.Value = anySuccess ? 100 : 0; }
+                if (statusBlocks.TryGetValue(colName, out var stb2))
+                {
+                    stb2.Text = anySuccess ? "✅" : "❌";
+                    stb2.Foreground = new SolidColorBrush(Color.Parse(anySuccess ? "#4aaa4a" : "#cc4444"));
+                }
+            }
+            countTb.Text = anySuccess ? $"{results.Count}개 파일 생성 완료" : "생성 실패";
+
+            // 4. 완료 후 창 닫고 폴더 열기
+            await Task.Delay(800);
+            progressWin.Close();
+            if (anySuccess)
+                Process.Start(new ProcessStartInfo { FileName = outputDir, UseShellExecute = true });
+
+            Log($"분析기록부 {results.Count}개 생성 완료 → {outputDir}");
+        }
+        finally
+        {
+            if (sender is Button b) b.IsEnabled = true;
+        }
+    }
 
     private void BtnDelete_Click(object? sender, RoutedEventArgs e)
     {

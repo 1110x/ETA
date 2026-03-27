@@ -96,13 +96,30 @@
             <Setter Property="Foreground" Value="{DynamicResource TreeFg}"/>
             <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
             <Setter Property="FontSize"   Value="13"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#444455"/>
+            <Setter Property="CornerRadius" Value="4"/>
         </Style>
         <Style Selector="TreeViewItem">
-            <Setter Property="Foreground" Value="{DynamicResource TreeFg}"/>
-            <Setter Property="Padding"    Value="4,2"/>
+            <Setter Property="Padding"    Value="1,0" />
+            <Setter Property="Margin"     Value="0" />
+            <Setter Property="MinHeight"  Value="0" />
+            <Setter Property="FontSize"   Value="11" />
+            <Setter Property="Foreground" Value="#cccccc" />
+            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+            <Setter Property="Background" Value="Transparent" />
         </Style>
-        <Style Selector="TreeViewItem:selected /template/ Border#SelectionIndicator">
-            <Setter Property="Background" Value="{DynamicResource TreeSelBg}"/>
+        <Style Selector="TreeViewItem /template/ ContentPresenter#PART_HeaderPresenter">
+            <Setter Property="Padding"    Value="2,1" />
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="TreeViewItem:selected /template/ ContentPresenter#PART_HeaderPresenter">
+            <Setter Property="Background"   Value="#1a4a1a" />
+            <Setter Property="CornerRadius" Value="3" />
+        </Style>
+        <Style Selector="TreeViewItem:pointerover /template/ ContentPresenter#PART_HeaderPresenter">
+            <Setter Property="Background"   Value="#252535" />
+            <Setter Property="CornerRadius" Value="3" />
         </Style>
 
         <!-- CheckBox / RadioButton -->
@@ -240,6 +257,8 @@
                         <MenuItem Header="출장관리"/>
                         <MenuItem Header="휴일근무"/>
                     </MenuItem>
+
+                    <MenuItem Header="권한관리" x:Name="PermissionMenu" Click="Permission_Click"/>
                 </Menu>
 
                 <!-- 오른쪽 테마 토글 -->
@@ -376,7 +395,7 @@
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Center" Opacity="0.9"/>
 
-                    <!-- 하단: Content3 -->
+                    <!-- 하단: Content3 (카테고리별 독립 스크롤 섹션) -->
                     <Border x:Name="LowerBorder"
                             Grid.Row="2"
                             Background="{DynamicResource PanelBg}"
@@ -385,7 +404,7 @@
                                       VerticalScrollBarVisibility="Auto">
                             <ContentControl x:Name="ActivePageContent3"
                                             HorizontalAlignment="Stretch"
-                                            VerticalAlignment="Stretch"/>
+                                            VerticalAlignment="Top"/>
                         </ScrollViewer>
                     </Border>
 

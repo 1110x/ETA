@@ -6,13 +6,14 @@ using Avalonia.Media;
 using ETA.Services;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace ETA.Views.Pages;
 
 /// <summary>
-/// Content4 (분석의뢰 탭): 선택된 분석의뢰를 트리뷰로 관리
+/// Content4 (분析의뢰 탭): 선택된 분析의뢰를 트리뷰로 관리
 /// - 노드 추가: IsExpanded=false
 /// - 우클릭 → 컨텍스트 메뉴 → 삭제 확인
 /// - 📌 TODO 전송:
@@ -55,7 +56,7 @@ public class AnalysisRequestListPanel : UserControl
         };
         headerGrid.Children.Add(new TextBlock
         {
-            Text = "📋  분석의뢰 선택 목록",
+            Text = "📋  분析의뢰 선택 목록",
             FontSize = 12, FontWeight = FontWeight.Bold,
             FontFamily = Font, Foreground = Brush.Parse("#e0e0e0"),
             VerticalAlignment = VerticalAlignment.Center,
@@ -114,7 +115,7 @@ public class AnalysisRequestListPanel : UserControl
             _tree.Items.Clear();
             _addedKeys.Clear();
             _rowCache.Clear();
-            SetStatus("");
+            UpdateStatusCount();
         };
         headerGrid.Children.Add(btnClear);
 
@@ -124,6 +125,7 @@ public class AnalysisRequestListPanel : UserControl
             FontSize = 9, FontFamily = Font,
             Foreground = Brush.Parse("#88aa88"),
             Margin = new Avalonia.Thickness(0, 2, 0, 2),
+            [Grid.RowProperty] = 3,
         };
 
         _tree.Background      = Brushes.Transparent;
@@ -134,21 +136,21 @@ public class AnalysisRequestListPanel : UserControl
             Padding = new Avalonia.Thickness(8),
             Child   = new Grid
             {
-                RowDefinitions = new RowDefinitions("Auto,Auto,Auto,*"),
+                RowDefinitions = new RowDefinitions("Auto,Auto,*,Auto"),
                 Children =
                 {
                     headerGrid,
                     new Border { [Grid.RowProperty]=1, Height=1,
                                  Background=Brush.Parse("#333"),
                                  Margin=new Avalonia.Thickness(0,0,0,3) },
-                    _txbStatus,
                     new ScrollViewer
                     {
-                        [Grid.RowProperty] = 3,
+                        [Grid.RowProperty] = 2,
                         VerticalScrollBarVisibility =
                             Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
                         Content = _tree,
-                    }
+                    },
+                    _txbStatus,
                 }
             }
         };
@@ -187,7 +189,7 @@ public class AnalysisRequestListPanel : UserControl
         bool isAnalyzing(string v) =>
             v.Trim().Equals("O", StringComparison.OrdinalIgnoreCase);
 
-        // ── 자식 노드 (분석항목) ─────────────────────────────────────────
+        // ── 자식 노드 (분析항목) ─────────────────────────────────────────
         foreach (var kv in analyteItems)
         {
             string col     = kv.Key.Trim();
@@ -208,7 +210,7 @@ public class AnalysisRequestListPanel : UserControl
             });
             childGrid.Children.Add(new TextBlock
             {
-                Text = pending ? "🔴 분석중" : kv.Value,
+                Text = pending ? "🔴 분析중" : kv.Value,
                 FontSize = 9, FontFamily = Font,
                 Foreground = pending ? Brush.Parse("#ff6666") : Brush.Parse("#88cc88"),
                 HorizontalAlignment = HorizontalAlignment.Right,
@@ -217,7 +219,7 @@ public class AnalysisRequestListPanel : UserControl
                 [Grid.ColumnProperty] = 1,
             });
 
-            // 자식 Tag에 분석항목 전체명 저장
+            // 자식 Tag에 분析항목 전체명 저장
             var childNode = new TreeViewItem
             {
                 Header = childGrid,
@@ -229,6 +231,7 @@ public class AnalysisRequestListPanel : UserControl
 
         AttachContextMenu(parentNode, isParent: true);
         _tree.Items.Add(parentNode);
+        UpdateStatusCount();
     }
 
     // ══════════════════════════════════════════════════════════════════════
@@ -263,7 +266,7 @@ public class AnalysisRequestListPanel : UserControl
                 _rowCache[key] = row;
             }
 
-            // 자식 노드에서 분석항목 전체명 목록 수집
+            // 자식 노드에서 분析항목 전체명 목록 수집
             var analyteNames = node.Items
                 .OfType<TreeViewItem>()
                 .Where(c => c.Tag is ChildTag)
@@ -284,28 +287,27 @@ public class AnalysisRequestListPanel : UserControl
         {
             var msg = ex.Message.Length > 50 ? ex.Message[..50] + "…" : ex.Message;
             SetStatus($"❌ 전송 실패: {msg}");
-            System.Diagnostics.Debug.WriteLine($"[BtnTodo_Click] 오류: {ex}");
+            Debug.WriteLine($"[BtnTodo_Click] 오류: {ex}");
         }
     }
 
     // ══════════════════════════════════════════════════════════════════════
-    //  🖨 분석의뢰서 출력
+    //  🖨 분析기록부 출력
     // ══════════════════════════════════════════════════════════════════════
     private async void BtnPrint_Click(object? sender, RoutedEventArgs e)
     {
-        List<TreeViewItem> targets;
-        if (_tree.SelectedItem is TreeViewItem sel && sel.Tag is ParentTag)
-            targets = new List<TreeViewItem> { sel };
-        else
-            targets = GetParentNodes();
-
-        if (targets.Count == 0)
+        var parentNodes = GetParentNodes();
+        if (parentNodes.Count == 0)
         {
-            await ShowMessageAsync("출력할 항목이 없습니다.", "분석의뢰서 출력");
+            await ShowMessageAsync("출력할 항목이 없습니다.", "분析기록부 출력");
             return;
         }
 
-        foreach (var node in targets)
+        // 1) 분析항목별 (rec, row) 목록 구성
+        var groups = new Dictionary<string, List<(AnalysisRequestRecord rec, Dictionary<string, string> row)>>(
+            StringComparer.OrdinalIgnoreCase);
+
+        foreach (var node in parentNodes)
         {
             var rec = ((ParentTag)node.Tag!).Rec;
             string key = $"{rec.접수번호}:{rec.Id}";
@@ -313,34 +315,134 @@ public class AnalysisRequestListPanel : UserControl
             {
                 try { row = await Task.Run(() => AnalysisRequestService.GetRecordRow(rec.Id)); }
                 catch { row = new Dictionary<string, string>(); }
+                _rowCache[key] = row ?? new Dictionary<string, string>();
             }
-            await PrintAnalysisRequestAsync(rec, row);
+
+            var analyteNames = node.Items
+                .OfType<TreeViewItem>()
+                .Where(c => c.Tag is ChildTag)
+                .Select(c => ((ChildTag)c.Tag!).AnalyteName)
+                .ToList();
+
+            foreach (var analyteName in analyteNames)
+            {
+                if (!groups.ContainsKey(analyteName))
+                    groups[analyteName] = new();
+                groups[analyteName].Add((rec, _rowCache[key]));
+            }
         }
-    }
 
-    private async Task PrintAnalysisRequestAsync(
-        AnalysisRequestRecord rec, Dictionary<string, string> row)
-    {
-        // ── 출력 연동 포인트 ─────────────────────────────────────────────
-        // await ReportService.PrintAnalysisRequestAsync(rec, row);
-        // ────────────────────────────────────────────────────────────────
+        if (groups.Count == 0)
+        {
+            await ShowMessageAsync("분析항목이 없습니다.", "분析기록부 출력");
+            return;
+        }
 
-        var sb = new System.Text.StringBuilder();
-        sb.AppendLine("[ 분석의뢰서 출력 ]");
-        sb.AppendLine($"약칭     : {rec.약칭}");
-        sb.AppendLine($"시료명   : {rec.시료명}");
-        sb.AppendLine($"접수번호 : {rec.접수번호}");
-        sb.AppendLine($"의뢰일   : {rec.의뢰일}");
-        if (row.TryGetValue("채취일자", out var cd) && !string.IsNullOrWhiteSpace(cd))
-            sb.AppendLine($"채취일자 : {cd}");
-        if (row.TryGetValue("담당자",   out var mg) && !string.IsNullOrWhiteSpace(mg))
-            sb.AppendLine($"담당자   : {mg}");
-        int cnt = row.Count(kv =>
-            !FixedColsForAnalyte().Contains(kv.Key.Trim()) &&
-            !string.IsNullOrWhiteSpace(kv.Value));
-        sb.AppendLine($"분석항목 : {cnt}종");
+        // 2) 방류기준표 로드 및 출력 디렉터리
+        var 방류기준표 = await Task.Run(() => AnalysisRecordService.Load방류기준표());
+        string outputDir = AnalysisRecordService.GetOutputDir();
 
-        await ShowMessageAsync(sb.ToString(), "분석의뢰서 출력 확인");
+        // 3) 프로그레스 창 — 분析자별 진행 바
+        var today = DateTime.Today;
+
+        var progressDlg = new Window
+        {
+            Title = "분析기록부 출력 중",
+            Width = 420,
+            Height = 160,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            CanResize = false,
+            Background = Brush.Parse("#1a1a2a"),
+            SystemDecorations = Avalonia.Controls.SystemDecorations.Full,
+        };
+
+        var overallBar = new ProgressBar
+        {
+            Minimum = 0, Maximum = 100, Value = 0,
+            Height = 14, IsIndeterminate = true,
+            Foreground = Brush.Parse("#4a8a4a"),
+            Background = Brush.Parse("#2a2a3a"),
+        };
+        var statusLbl = new TextBlock
+        {
+            Text = $"분장 조회 중... ({today:yyyy-MM-dd} 기준)",
+            FontSize = 10, FontFamily = Font,
+            Foreground = Brush.Parse("#8888aa"),
+            Margin = new Avalonia.Thickness(0, 4, 0, 0),
+        };
+
+        progressDlg.Content = new StackPanel
+        {
+            Margin = new Avalonia.Thickness(16, 16),
+            Spacing = 6,
+            Children =
+            {
+                new TextBlock
+                {
+                    Text = $"분析항목 {groups.Count}개 — 분析자별 기록부 생성",
+                    FontSize = 11, FontFamily = Font,
+                    Foreground = Brush.Parse("#ccccee"),
+                },
+                overallBar,
+                statusLbl,
+            },
+        };
+
+        var owner = TopLevel.GetTopLevel(this) as Window;
+        if (owner != null) progressDlg.Show(owner);
+        else progressDlg.Show();
+
+        // 4) groups의 row dict 구성 (rec 정보 보완)
+        var finalGroups = new Dictionary<string, List<Dictionary<string, string>>>(
+            StringComparer.OrdinalIgnoreCase);
+        foreach (var kv in groups)
+        {
+            finalGroups[kv.Key] = kv.Value.Select(x =>
+            {
+                var d = new Dictionary<string, string>(x.row, StringComparer.OrdinalIgnoreCase);
+                if (!d.ContainsKey("견적번호") || string.IsNullOrEmpty(d["견적번호"]))
+                    d["견적번호"] = x.rec.접수번호;
+                if (!d.ContainsKey("약칭") || string.IsNullOrEmpty(d["약칭"]))
+                    d["약칭"] = x.rec.약칭;
+                if (!d.ContainsKey("시료명") || string.IsNullOrEmpty(d["시료명"]))
+                    d["시료명"] = x.rec.시료명;
+                return d;
+            }).ToList();
+        }
+
+        // 5) 분析자별 파일 생성
+        var results = await Task.Run(() =>
+            AnalysisRecordService.GenerateByAssignee(finalGroups, 방류기준표, outputDir, today));
+
+        overallBar.IsIndeterminate = false;
+        overallBar.Value = 100;
+
+        if (results.Count > 0)
+        {
+            var names = string.Join(", ", results.Select(r => r.Assignee));
+            statusLbl.Text = $"완료: {names} ({results.Count}개 파일)";
+            statusLbl.Foreground = Brush.Parse("#88ee88");
+        }
+        else
+        {
+            statusLbl.Text = "생성 실패 — 템플릿 파일을 확인하세요.";
+            statusLbl.Foreground = Brush.Parse("#ff6666");
+        }
+
+        await Task.Delay(1200);
+        progressDlg.Close();
+
+        if (results.Count > 0)
+        {
+            try { Process.Start(new ProcessStartInfo(outputDir) { UseShellExecute = true }); }
+            catch { }
+            var summary = string.Join(", ", results.Select(r => r.Assignee));
+            SetStatus($"✅ 분析기록부 {results.Count}개 생성 완료 ({summary}) {DateTime.Now:HH:mm}");
+        }
+        else
+        {
+            await ShowMessageAsync("파일 생성에 실패했습니다.\n템플릿 파일 또는 분장 데이터를 확인하세요.", "분析기록부 출력");
+        }
     }
 
     // ══════════════════════════════════════════════════════════════════════
@@ -369,8 +471,8 @@ public class AnalysisRequestListPanel : UserControl
         };
 
         var msg = isParent
-            ? "이 의뢰와 모든 분석항목을 목록에서 삭제할까요?"
-            : "이 분석항목을 목록에서 삭제할까요?";
+            ? "이 의뢰와 모든 분析항목을 목록에서 삭제할까요?"
+            : "이 분析항목을 목록에서 삭제할까요?";
 
         var btnOk = new Button
         {
@@ -434,6 +536,7 @@ public class AnalysisRequestListPanel : UserControl
                 break;
             }
         }
+        UpdateStatusCount();
     }
 
     // ══════════════════════════════════════════════════════════════════════
@@ -530,6 +633,19 @@ public class AnalysisRequestListPanel : UserControl
         if (_txbStatus != null) _txbStatus.Text = msg;
     }
 
+    private void UpdateStatusCount()
+    {
+        var parentNodes = GetParentNodes();
+        if (parentNodes.Count == 0)
+        {
+            SetStatus("");
+            return;
+        }
+
+        int totalAnalytes = parentNodes.Sum(p => p.Items.Count);
+        SetStatus($"📊 의뢰 {parentNodes.Count}개 + 분析항목 {totalAnalytes}개 수집됨 ({DateTime.Now:HH:mm})");
+    }
+
     private static HashSet<string> FixedColsForAnalyte() =>
         new(StringComparer.OrdinalIgnoreCase)
         {
@@ -537,7 +653,7 @@ public class AnalysisRequestListPanel : UserControl
             "담당자","연락처","이메일","견적번호","비고",
             "채취일자","채취시간","의뢰사업장","입회자",
             "시료채취자-1","시료채취자-2","방류허용기준 적용유무",
-            "정도보증유무","분석완료일자","견적구분",
+            "정도보증유무","분析완료일자","견적구분",
         };
 
     private async Task ShowMessageAsync(string message, string title = "알림")
@@ -590,7 +706,7 @@ public class AnalysisRequestListPanel : UserControl
 
     private sealed class ChildTag
     {
-        public string AnalyteName { get; } // 분석항목 전체명 (분장표준처리 컬럼 헤더와 매칭)
+        public string AnalyteName { get; } // 분析항목 전체명 (분장표준처리 컬럼 헤더와 매칭)
         public ChildTag(string analyteName) => AnalyteName = analyteName;
     }
 }

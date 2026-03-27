@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="ETA.Views.Pages.QuotationDetailPanel">
 
@@ -133,6 +133,7 @@
             <Button Classes="action-btn" Content="🥕  당근"        Click="BtnCarrot_Click"  ToolTip.Tip="이 건을 재활용해서 신규 작성" />
             <Button Classes="action-btn" Content="✏️  오작성 수정" Click="BtnCorrect_Click" ToolTip.Tip="시료명·견적번호·발행일·적용구분·업체명 등 잘못된 항목 수정" />
             <Button Classes="action-btn" Content="📋  의뢰서 작성" Click="BtnOrderRequest_Click" ToolTip.Tip="분석 의뢰서 작성" />
+            <Button Classes="action-btn" Content="📊  분석기록부 출력" Click="BtnAnalysisRecord_Click" ToolTip.Tip="분석항목별 기록부 Excel 파일 생성" x:Name="btnAnalysisRecord" />
             <Button Classes="action-btn" Content="🖨  인쇄"        Click="BtnPrint_Click" />
             <Button Classes="danger-btn" Content="🗑  삭제"        Click="BtnDelete_Click" />
         </StackPanel>

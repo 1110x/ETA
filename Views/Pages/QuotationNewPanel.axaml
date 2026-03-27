@@ -104,8 +104,8 @@
                 <Border Background="#1e2530" CornerRadius="5" Padding="10,8">
                     <StackPanel Spacing="5">
 
-                        <!-- 줄1: 견적번호 | 발행일 -->
-                        <Grid ColumnDefinitions="*,8,*">
+                        <!-- 줄1: 견적번호 | 발행일 | 담당자 -->
+                        <Grid ColumnDefinitions="*,8,*,8,*">
                             <StackPanel Grid.Column="0" Spacing="3">
                                 <TextBlock Classes="lbl" Text="견적번호" />
                                 <Grid ColumnDefinitions="*,Auto">
@@ -124,6 +124,11 @@
                             <StackPanel Grid.Column="2" Spacing="3">
                                 <TextBlock Classes="lbl" Text="발행일" />
                                 <TextBox x:Name="txbIssueDate" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="4" Spacing="3">
+                                <TextBlock Classes="lbl" Text="담당자" />
+                                <TextBox x:Name="txbManager"
+                                         Watermark="견적요청 담당자 입력" />
                             </StackPanel>
                         </Grid>
 

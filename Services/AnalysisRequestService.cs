@@ -3,6 +3,7 @@ using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace ETA.Services;
 
@@ -125,10 +126,10 @@ public static class AnalysisRequestService
     //
     //  실제 테이블 구조:
     //    항목명        | 부유물질 | 생물화학적 산소요구량 | 수소이온농도 | ...
-    //    표준처리기한  |    7     |          9            |      2       | ...
-    //    약칭          |   SS     |         BOD           |     pH       | ...
-    //    2025-07-01    |  김지은  |        정준하         |    유경지    | ...
-    //    2025-07-02    |  김지은  |        정준하         |    유경지    | ...
+    //    표준처리기한   |    7    |          9            |      2       | ...
+    //    약칭          |   SS    |         BOD           |     pH       | ...
+    //    2025-07-01   |  김지은  |        정준하         |    유경지    | ...
+    //    2025-07-02   |  김지은  |        정준하         |    유경지    | ...
     //
     //  반환: 컬럼 전체명 → (처리일수, 약식명)
     //    예: "생물화학적 산소요구량" → (9, "BOD")
@@ -259,5 +260,371 @@ public static class AnalysisRequestService
         foreach (var kv in info)
             result[kv.Key] = kv.Value.days;
         return result;
+    }
+
+    // =====================================================================
+    //  분장표준처리 — 특정 직원의 업무 분장 조회 (날짜 지정)
+    //  queryDate: 조회할 날짜 (해당 월의 첫 날짜부터 마지막 날짜까지)
+    //  반환: 분석항목 약식명 리스트
+    // =====================================================================
+    public static List<(string FullName, string ShortName)> GetAssignmentsForAgent(string employeeId, DateTime queryDate)
+    {
+        var assignments = new List<(string, string)>();
+        if (!File.Exists(DbPath)) return assignments;
+
+        try
+        {
+            using var conn = new SqliteConnection($"Data Source={DbPath}");
+            conn.Open();
+
+            // 담당자 이름 조회
+            string managerName = "";
+            using (var cmd2 = conn.CreateCommand())
+            {
+                cmd2.CommandText = "SELECT \"성명\" FROM \"Agent\" WHERE \"사번\" = @id";
+                cmd2.Parameters.AddWithValue("@id", employeeId);
+                var result = cmd2.ExecuteScalar();
+                if (result != null)
+                    managerName = result.ToString()?.Trim() ?? "";
+            }
+            if (string.IsNullOrEmpty(managerName)) return assignments;
+
+            // 지정된 날짜 기준으로 할당된 항목 조회
+            string queryDateStr = queryDate.ToString("yyyy-MM-dd");
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = $"SELECT * FROM \"분장표준처리\" WHERE \"항목명\" = @date";
+            cmd.Parameters.AddWithValue("@date", queryDateStr);
+
+            using var rdr = cmd.ExecuteReader();
+            if (rdr.Read())
+            {
+                // 분석항목 정보 가져오기
+                var info = GetStandardDaysInfo();
+                for (int i = 1; i < rdr.FieldCount; i++)
+                {
+                    string colName = rdr.GetName(i).Trim();
+                    string manager = rdr.IsDBNull(i) ? "" : rdr.GetValue(i)?.ToString()?.Trim() ?? "";
+                    if (manager == managerName)
+                    {
+                        // 약식명 찾기
+                        foreach (var kv in info)
+                        {
+                            if (kv.Key == colName)
+                            {
+                                assignments.Add((kv.Key, kv.Value.shortName));
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            Log($"GetAssignmentsForAgent({employeeId}/{managerName}, {queryDateStr}): {assignments.Count}개 할당");
+        }
+        catch (Exception ex) { Log($"GetAssignmentsForAgent 오류: {ex.Message}"); }
+
+        return assignments;
+    }
+
+    public static List<(string FullName, string ShortName)> GetAssignmentsForAgent(string employeeId)
+        => GetAssignmentsForAgent(employeeId, DateTime.Today);
+
+    // =====================================================================
+    //  분장표준처리 — 기간 범위 조회 (중복 제거, 날짜 범위 내 할당된 항목 전체)
+    // =====================================================================
+    public static List<(string FullName, string ShortName)> GetAssignmentsForAgentRange(
+        string employeeId, DateTime startDate, DateTime endDate)
+    {
+        var result = new List<(string, string)>();
+        if (!File.Exists(DbPath)) return result;
+
+        try
+        {
+            using var conn = new SqliteConnection($"Data Source={DbPath}");
+            conn.Open();
+
+            string managerName = "";
+            using (var cmd2 = conn.CreateCommand())
+            {
+                cmd2.CommandText = "SELECT \"성명\" FROM \"Agent\" WHERE \"사번\" = @id";
+                cmd2.Parameters.AddWithValue("@id", employeeId);
+                var r = cmd2.ExecuteScalar();
+                if (r != null) managerName = r.ToString()?.Trim() ?? "";
+            }
+            if (string.IsNullOrEmpty(managerName)) return result;
+
+            var info = GetStandardDaysInfo();
+            var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText =
+                "SELECT * FROM \"분장표준처리\" WHERE \"항목명\" BETWEEN @s AND @e ORDER BY \"항목명\"";
+            cmd.Parameters.AddWithValue("@s", startDate.ToString("yyyy-MM-dd"));
+            cmd.Parameters.AddWithValue("@e", endDate.ToString("yyyy-MM-dd"));
+
+            using var rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                for (int i = 1; i < rdr.FieldCount; i++)
+                {
+                    string colName = rdr.GetName(i).Trim();
+                    string manager = rdr.IsDBNull(i) ? "" : rdr.GetValue(i)?.ToString()?.Trim() ?? "";
+                    if (manager == managerName && seen.Add(colName))
+                    {
+                        if (info.TryGetValue(colName, out var meta))
+                            result.Add((colName, meta.shortName));
+                        else
+                            result.Add((colName, colName));
+                    }
+                }
+            }
+            Log($"GetAssignmentsForAgentRange({employeeId}, {startDate:yyyy-MM-dd}~{endDate:yyyy-MM-dd}): {result.Count}개");
+        }
+        catch (Exception ex) { Log($"GetAssignmentsForAgentRange 오류: {ex.Message}"); }
+
+        return result;
+    }
+
+    // =====================================================================
+    //  분장표준처리 — 기간 내 특정 항목을 담당하는 직원 목록 (중복 제거)
+    // =====================================================================
+    /// <summary>
+    /// 기간 내 특정 항목 담당자 목록 — 날짜별 중복 포함.
+    /// 같은 사람이 여러 날 담당하면 여러 번 포함됩니다.
+    /// </summary>
+    public static List<string> GetAssigneesForAnalyteInRange(string analyteFullName, DateTime start, DateTime end)
+    {
+        var assignees = new List<string>();
+        if (!File.Exists(DbPath)) return assignees;
+        try
+        {
+            using var conn = new SqliteConnection($"Data Source={DbPath}");
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText =
+                "SELECT * FROM \"분장표준처리\" WHERE \"항목명\" BETWEEN @s AND @e ORDER BY \"항목명\"";
+            cmd.Parameters.AddWithValue("@s", start.ToString("yyyy-MM-dd"));
+            cmd.Parameters.AddWithValue("@e", end.ToString("yyyy-MM-dd"));
+            using var rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                for (int i = 1; i < rdr.FieldCount; i++)
+                {
+                    if (!string.Equals(rdr.GetName(i).Trim(), analyteFullName,
+                        StringComparison.OrdinalIgnoreCase)) continue;
+                    var val = rdr.IsDBNull(i) ? "" : rdr.GetValue(i)?.ToString()?.Trim() ?? "";
+                    if (!string.IsNullOrEmpty(val)) assignees.Add(val);
+                    break;
+                }
+            }
+        }
+        catch (Exception ex) { Log($"GetAssigneesForAnalyteInRange 오류: {ex.Message}"); }
+        return assignees;
+    }
+
+    // =====================================================================
+    //  분장표준처리 — 특정 날짜에 특정 항목을 담당하는 직원 목록
+    // =====================================================================
+    public static List<string> GetAssigneesForAnalyteOnDate(string analyteFullName, DateTime date)
+    {
+        var assignees = new List<string>();
+        if (!File.Exists(DbPath)) return assignees;
+
+        try
+        {
+            using var conn = new SqliteConnection($"Data Source={DbPath}");
+            conn.Open();
+
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT * FROM \"분장표준처리\" WHERE \"항목명\" = @date";
+            cmd.Parameters.AddWithValue("@date", date.ToString("yyyy-MM-dd"));
+
+            using var rdr = cmd.ExecuteReader();
+            if (rdr.Read())
+            {
+                for (int i = 1; i < rdr.FieldCount; i++)
+                {
+                    if (!string.Equals(rdr.GetName(i).Trim(), analyteFullName,
+                        StringComparison.OrdinalIgnoreCase)) continue;
+                    var val = rdr.IsDBNull(i) ? "" : rdr.GetValue(i)?.ToString()?.Trim() ?? "";
+                    if (!string.IsNullOrEmpty(val)) assignees.Add(val);
+                    break;
+                }
+            }
+        }
+        catch (Exception ex) { Log($"GetAssigneesForAnalyteOnDate 오류: {ex.Message}"); }
+
+        return assignees;
+    }
+
+    // =====================================================================
+    // =====================================================================
+    //  분장표준처리 — 특정 직원의 기간 내 모든 분장을 NULL로 초기화
+    // =====================================================================
+    public static void ClearAssignmentsForAgent(string employeeId, DateTime startDate, DateTime endDate)
+    {
+        if (!File.Exists(DbPath)) return;
+
+        try
+        {
+            using var conn = new SqliteConnection($"Data Source={DbPath}");
+            conn.Open();
+
+            string managerName = "";
+            using (var cmd2 = conn.CreateCommand())
+            {
+                cmd2.CommandText = "SELECT \"성명\" FROM \"Agent\" WHERE \"사번\" = @id";
+                cmd2.Parameters.AddWithValue("@id", employeeId);
+                var r = cmd2.ExecuteScalar();
+                if (r != null) managerName = r.ToString()?.Trim() ?? "";
+            }
+            if (string.IsNullOrEmpty(managerName)) return;
+
+            // 컬럼 목록 (항목명 제외)
+            var columns = new List<string>();
+            using (var colCmd = conn.CreateCommand())
+            {
+                colCmd.CommandText = "PRAGMA table_info(\"분장표준처리\")";
+                using var colRdr = colCmd.ExecuteReader();
+                while (colRdr.Read())
+                {
+                    var col = colRdr.GetString(1);
+                    if (col != "항목명") columns.Add(col);
+                }
+            }
+            if (columns.Count == 0) return;
+
+            // 해당 기간 내 이 직원이 담당인 셀을 NULL로
+            var setClauses = columns.Select(
+                c => $"\"{c}\" = CASE WHEN \"{c}\" = @mgr THEN NULL ELSE \"{c}\" END");
+            var sql =
+                $"UPDATE \"분장표준처리\" SET {string.Join(", ", setClauses)} " +
+                $"WHERE \"항목명\" BETWEEN @start AND @end";
+
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = sql;
+            cmd.Parameters.AddWithValue("@mgr",   managerName);
+            cmd.Parameters.AddWithValue("@start", startDate.ToString("yyyy-MM-dd"));
+            cmd.Parameters.AddWithValue("@end",   endDate.ToString("yyyy-MM-dd"));
+            cmd.ExecuteNonQuery();
+
+            Log($"ClearAssignmentsForAgent: {employeeId}({managerName}) " +
+                $"{startDate:yyyy-MM-dd}~{endDate:yyyy-MM-dd}");
+        }
+        catch (Exception ex) { Log($"ClearAssignmentsForAgent 오류: {ex.Message}"); }
+    }
+
+    //  분장표준처리 — 업무 분장 추가 (기간별)
+    //
+    //  지정된 기간 동안 특정 분석항목을 특정 담당자로 설정
+    // =====================================================================
+    public static void AddAssignment(string employeeId, string analyte, DateTime startDate, DateTime endDate)
+    {
+        if (!File.Exists(DbPath)) return;
+
+        try
+        {
+            using var conn = new SqliteConnection($"Data Source={DbPath}");
+            conn.Open();
+
+            // 분석항목 컬럼명 확인 (전체명)
+            var info = GetStandardDaysInfo();
+            string? columnName = null;
+            foreach (var kv in info)
+            {
+                if (kv.Value.shortName == analyte || kv.Key == analyte)
+                {
+                    columnName = kv.Key;
+                    break;
+                }
+            }
+            if (string.IsNullOrEmpty(columnName))
+            {
+                Log($"AddAssignment: 분석항목 '{analyte}' 컬럼을 찾을 수 없음");
+                return;
+            }
+
+            // 담당자 이름 조회 (사번으로)
+            string managerName = "";
+            using (var cmd2 = conn.CreateCommand())
+            {
+                cmd2.CommandText = "SELECT \"성명\" FROM \"Agent\" WHERE \"사번\" = @id";
+                cmd2.Parameters.AddWithValue("@id", employeeId);
+                var result = cmd2.ExecuteScalar();
+                if (result != null)
+                    managerName = result.ToString()?.Trim() ?? "";
+            }
+            if (string.IsNullOrEmpty(managerName))
+            {
+                Log($"AddAssignment: 사번 '{employeeId}'의 이름을 찾을 수 없음");
+                return;
+            }
+
+            // 기간 내 각 날짜에 대해 처리
+            for (DateTime date = startDate; date <= endDate; date = date.AddDays(1))
+            {
+                string dateKey = date.ToString("yyyy-MM-dd");
+
+                // 해당 날짜 행 존재 확인
+                bool rowExists = false;
+                using (var chk = conn.CreateCommand())
+                {
+                    chk.CommandText = "SELECT COUNT(*) FROM \"분장표준처리\" WHERE \"항목명\" = @date";
+                    chk.Parameters.AddWithValue("@date", dateKey);
+                    rowExists = Convert.ToInt64(chk.ExecuteScalar()!) > 0;
+                }
+
+                if (rowExists)
+                {
+                    // 업데이트
+                    using var upd = conn.CreateCommand();
+                    upd.CommandText = $"UPDATE \"분장표준처리\" SET \"{columnName}\" = @manager WHERE \"항목명\" = @date";
+                    upd.Parameters.AddWithValue("@manager", managerName);
+                    upd.Parameters.AddWithValue("@date", dateKey);
+                    upd.ExecuteNonQuery();
+                }
+                else
+                {
+                    // 삽입 (새 행 생성)
+                    // 먼저 컬럼 목록 가져오기
+                    var columns = new List<string>();
+                    using (var colCmd = conn.CreateCommand())
+                    {
+                        colCmd.CommandText = "PRAGMA table_info(\"분장표준처리\")";
+                        using var colRdr = colCmd.ExecuteReader();
+                        while (colRdr.Read())
+                            columns.Add(colRdr.GetString(1)); // name
+                    }
+
+                    // INSERT 문 생성
+                    var insertColumns = new List<string> { "\"항목명\"" };
+                    var values = new List<string> { "@date" };
+                    var parameters = new Dictionary<string, object> { { "@date", dateKey } };
+
+                    foreach (var col in columns.Skip(1)) // 항목명 제외
+                    {
+                        insertColumns.Add($"\"{col}\"");
+                        if (col == columnName)
+                        {
+                            values.Add("@manager");
+                            parameters["@manager"] = managerName;
+                        }
+                        else
+                        {
+                            values.Add("NULL");
+                        }
+                    }
+
+                    using var ins = conn.CreateCommand();
+                    ins.CommandText = $"INSERT INTO \"분장표준처리\" ({string.Join(", ", insertColumns)}) VALUES ({string.Join(", ", values)})";
+                    foreach (var param in parameters)
+                        ins.Parameters.AddWithValue(param.Key, param.Value);
+                    ins.ExecuteNonQuery();
+                }
+            }
+
+            Log($"AddAssignment: {employeeId}({managerName})에게 {analyte}({columnName}) 분장 추가 ({startDate:yyyy-MM-dd} ~ {endDate:yyyy-MM-dd})");
+        }
+        catch (Exception ex) { Log($"AddAssignment 오류: {ex.Message}"); }
     }
 }

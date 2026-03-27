@@ -106,6 +106,13 @@ public partial class QuotationNewPanel : UserControl
             Log($"업체 최근 적용구분 자동선택: {latest.견적구분} ({latest.발행일})");
         }
 
+        // 최근 담당자 자동 설정
+        if (latest != null && !string.IsNullOrEmpty(latest.담당자))
+        {
+            txbManager.Text = latest.담당자;
+            Log($"업체 최근 담당자 자동설정: {latest.담당자}");
+        }
+
         CheckTypeWarning();
     }
 
@@ -146,6 +153,7 @@ public partial class QuotationNewPanel : UserControl
         txbQuotationNo.Text = GenerateNo();
         txbIssueDate.Text   = DateTime.Today.ToString("yyyy-MM-dd");
         txbSampleName.Text  = "";   // 시료명은 새로 입력
+        txbManager.Text     = issue.담당자;   // 담당자 유지
 
         SelectCombo(cmbType, issue.견적구분);
 
@@ -173,6 +181,7 @@ public partial class QuotationNewPanel : UserControl
         txbQuotationNo.Text = issue.견적번호;   // 기존 번호 유지 (수정 가능)
         txbIssueDate.Text   = issue.발행일;     // 기존 날짜 유지 (수정 가능)
         txbSampleName.Text  = issue.시료명;     // 기존 시료명 유지 (수정 가능)
+        txbManager.Text     = issue.담당자;     // 담당자 유지
 
         SelectCombo(cmbType, issue.견적구분);
 
@@ -203,6 +212,7 @@ public partial class QuotationNewPanel : UserControl
         txbQuotationNo.Text = GenerateNo();
         txbIssueDate.Text   = DateTime.Today.ToString("yyyy-MM-dd");
         txbSampleName.Text  = "";
+        txbManager.Text     = "";
         if (cmbType.Items.Count > 0) cmbType.SelectedIndex = 0;
 
         spItems.Children.Clear();
@@ -535,6 +545,7 @@ public partial class QuotationNewPanel : UserControl
             시료명   = txbSampleName.Text  ?? "",
             견적번호 = txbQuotationNo.Text ?? GenerateNo(),
             견적구분 = (cmbType.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "",
+            담당자   = txbManager.Text     ?? "",
             총금액   = total,
         };
 
