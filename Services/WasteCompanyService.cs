@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.Data.Sqlite;
+using System.Data;
+using System.Data.Common;
 using ETA.Models;
 using System.Diagnostics;
 
@@ -9,20 +10,18 @@ namespace ETA.Services;
 
 public static class WasteCompanyService
 {
-    public static string GetDatabasePath() => DbPathHelper.DbPath;
 
     public static List<WasteCompany> GetAllItems()
     {
         var items = new List<WasteCompany>();
-        string dbPath = GetDatabasePath();
 
-        if (!File.Exists(dbPath))
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath))
         {
             Debug.WriteLine("❌ DB 파일 없음");
             return items;
         }
 
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         using var command = conn.CreateCommand();
@@ -57,7 +56,7 @@ public static class WasteCompanyService
         return items;
     }
 
-    private static string GetStringOrEmpty(SqliteDataReader reader, string col)
+    private static string GetStringOrEmpty(DbDataReader reader, string col)
     {
         try
         {
@@ -79,9 +78,8 @@ public static class WasteCompanyService
             return false;
         }
 
-        string dbPath = GetDatabasePath();
 
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         using var cmd = conn.CreateCommand();

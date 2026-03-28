@@ -8,7 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using Microsoft.Data.Sqlite;
+using System.Data;
+using System.Data.Common;
 using ETA.Models;
 using ETA.Services;
 using System.Linq;
@@ -134,16 +135,14 @@ public partial class WasteCompanyPage : UserControl
 
     private bool SaveItem(WasteCompany item)
     {
-        string dbPath = WasteCompanyService.GetDatabasePath();
-
-        Log($"DB 경로 : {Path.GetFullPath(dbPath)}");
+        Log($"DB 경로 : {Path.GetFullPath(DbPathHelper.DbPath)}");
 
         string sql = $@"
             UPDATE ""{TableName}""
             SET 프로젝트=@p, 프로젝트명=@pn, 관리번호=@m, 사업자번호=@b
             WHERE {KeyColumn} = @key";
 
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         using var cmd = conn.CreateCommand();

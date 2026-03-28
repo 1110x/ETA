@@ -2,17 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using Microsoft.Data.Sqlite;
+using System.Data;
+using System.Data.Common;
 using ETA.Models;
 
 namespace ETA.Services;
 
 public static class RepairService
 {
-    private static string GetDatabasePath() => DbPathHelper.DbPath;
 
     // ── 테이블 자동 생성 ──────────────────────────────────────────────────
-    private static void EnsureTable(SqliteConnection conn)
+    private static void EnsureTable(DbConnection conn)
     {
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
@@ -36,8 +36,7 @@ public static class RepairService
     public static List<RepairItem> GetAll()
     {
         var list   = new List<RepairItem>();
-        var dbPath = GetDatabasePath();
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         EnsureTable(conn);
 
@@ -55,8 +54,7 @@ public static class RepairService
     public static List<(int Year, int Month, int Count)> GetMonthSummary()
     {
         var result = new List<(int, int, int)>();
-        var dbPath = GetDatabasePath();
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         EnsureTable(conn);
 
@@ -83,8 +81,7 @@ public static class RepairService
     public static List<RepairItem> GetByMonth(int year, int month)
     {
         var list   = new List<RepairItem>();
-        var dbPath = GetDatabasePath();
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         EnsureTable(conn);
 
@@ -105,8 +102,7 @@ public static class RepairService
     // ── 추가 ─────────────────────────────────────────────────────────────
     public static bool Insert(RepairItem item)
     {
-        var dbPath = GetDatabasePath();
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         EnsureTable(conn);
 
@@ -122,7 +118,7 @@ public static class RepairService
         if (rows > 0)
         {
             using var idCmd = conn.CreateCommand();
-            idCmd.CommandText = "SELECT last_insert_rowid()";
+            idCmd.CommandText = $"SELECT {DbConnectionFactory.LastInsertId}";
             item.Id = Convert.ToInt32(idCmd.ExecuteScalar());
         }
         Debug.WriteLine($"[RepairService] INSERT → {item.장비명}");
@@ -132,8 +128,7 @@ public static class RepairService
     // ── 수정 ─────────────────────────────────────────────────────────────
     public static bool Update(RepairItem item)
     {
-        var dbPath = GetDatabasePath();
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         using var cmd = conn.CreateCommand();
@@ -152,8 +147,7 @@ public static class RepairService
     // ── 상태 변경 ─────────────────────────────────────────────────────────
     public static bool UpdateStatus(int id, string status)
     {
-        var dbPath = GetDatabasePath();
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         using var cmd = conn.CreateCommand();
@@ -166,8 +160,7 @@ public static class RepairService
     // ── 삭제 ─────────────────────────────────────────────────────────────
     public static bool Delete(int id)
     {
-        var dbPath = GetDatabasePath();
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         using var cmd = conn.CreateCommand();
@@ -179,7 +172,7 @@ public static class RepairService
     }
 
     // ── 헬퍼 ─────────────────────────────────────────────────────────────
-    private static RepairItem Read(SqliteDataReader r) => new()
+    private static RepairItem Read(DbDataReader r) => new()
     {
         Id       = r.IsDBNull(0) ? 0 : r.GetInt32(0),
         구분     = S(r, 1),
@@ -194,7 +187,7 @@ public static class RepairService
         상태     = S(r, 10),
     };
 
-    private static void SetParams(SqliteCommand cmd, RepairItem item)
+    private static void SetParams(DbCommand cmd, RepairItem item)
     {
         cmd.Parameters.AddWithValue("@구분",     item.구분     ?? "");
         cmd.Parameters.AddWithValue("@장비명",   item.장비명   ?? "");
@@ -210,6 +203,6 @@ public static class RepairService
         cmd.Parameters.AddWithValue("@상태",     item.상태     ?? "대기");
     }
 
-    private static string S(SqliteDataReader r, int i)
+    private static string S(DbDataReader r, int i)
         => r.IsDBNull(i) ? "" : r.GetValue(i)?.ToString() ?? "";
 }

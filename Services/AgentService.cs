@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.Data.Sqlite;
+using System.Data;
+using System.Data.Common;
 using ETA.Models;
 using System.Diagnostics;
 
@@ -11,11 +12,10 @@ namespace ETA.Services;
 public static class AgentService
 {
     // ── DB / 사진 경로 ────────────────────────────────────────────────────────
-    public static string GetDatabasePath()  => DbPathHelper.DbPath;
     public static string GetPhotoDirectory() => DbPathHelper.PhotoDirectory;
 
     // ── PhotoPath 컬럼 자동 마이그레이션 ─────────────────────────────────────
-    private static void EnsurePhotoPathColumn(SqliteConnection conn)
+    private static void EnsurePhotoPathColumn(DbConnection conn)
     {
         using var check = conn.CreateCommand();
         check.CommandText = @"PRAGMA table_info(""Agent"")";
@@ -36,10 +36,9 @@ public static class AgentService
     // ── 계정 관련 컬럼 마이그레이션 (로그인 기능용) ──────────────────────────
     public static void MigrateAccountColumns()
     {
-        var dbPath = GetDatabasePath();
-        if (!File.Exists(dbPath)) return;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
 
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         var columns = new[]
@@ -69,10 +68,9 @@ public static class AgentService
     public static List<Agent> GetAllItems()
     {
         var items  = new List<Agent>();
-        var dbPath = GetDatabasePath();
-        if (!File.Exists(dbPath)) { Debug.WriteLine("❌ DB 없음"); return items; }
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) { Debug.WriteLine("❌ DB 없음"); return items; }
 
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         EnsurePhotoPathColumn(conn);
 
@@ -113,8 +111,7 @@ public static class AgentService
     {
         if (string.IsNullOrEmpty(agent.Original성명)) { Debug.WriteLine("❌ Original성명 없음"); return false; }
 
-        var dbPath = GetDatabasePath();
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         EnsurePhotoPathColumn(conn);
 
@@ -138,8 +135,7 @@ public static class AgentService
     // ── 추가 ─────────────────────────────────────────────────────────────────
     public static bool Insert(Agent agent)
     {
-        var dbPath = GetDatabasePath();
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         EnsurePhotoPathColumn(conn);
 
@@ -161,8 +157,7 @@ public static class AgentService
     {
         if (string.IsNullOrEmpty(agent.성명)) { Debug.WriteLine("❌ 삭제 대상 없음"); return false; }
 
-        var dbPath = GetDatabasePath();
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         using var cmd = conn.CreateCommand();
@@ -185,8 +180,7 @@ public static class AgentService
     // ── 회원가입 (신규 직원, 상태=pending) ───────────────────────────────────
     public static bool SignUp(string name, string employeeId, string password, string department)
     {
-        var dbPath = GetDatabasePath();
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         EnsurePhotoPathColumn(conn);
 
@@ -215,10 +209,9 @@ public static class AgentService
     public static (bool success, string message, bool mustChangePw) ValidateLogin(
         string employeeId, string password)
     {
-        var dbPath = GetDatabasePath();
-        if (!File.Exists(dbPath)) return (false, "등록된 계정이 없습니다.", false);
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return (false, "등록된 계정이 없습니다.", false);
 
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         using var cmd = conn.CreateCommand();
@@ -289,8 +282,7 @@ public static class AgentService
     // ── To Do 태스크 ID 저장 ──────────────────────────────────────────────────
     public static void SaveTodoTaskId(string employeeId, string taskId)
     {
-        var dbPath = GetDatabasePath();
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         using var cmd = conn.CreateCommand();
@@ -337,10 +329,9 @@ public static class AgentService
         {
             Log($"[ChangePassword] 시작 - 사번={employeeId}");
 
-            var dbPath = GetDatabasePath();
-            Log($"[ChangePassword] DB 경로={dbPath}");
+            Log($"[ChangePassword] DB 경로={DbPathHelper.DbPath}");
 
-            using var conn = new SqliteConnection($"Data Source={dbPath}");
+            using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             Log("[ChangePassword] DB 연결 성공");
 
@@ -386,10 +377,9 @@ public static class AgentService
     /// </summary>
     public static void MigrateInitialPasswords()
     {
-        var dbPath = GetDatabasePath();
-        if (!File.Exists(dbPath)) return;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
 
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         // must_change_pw 컬럼 없으면 추가 (이중 안전망)
@@ -419,10 +409,9 @@ public static class AgentService
     // ── 최초 비밀번호 변경 필요 여부 조회 ────────────────────────────────────
     public static bool NeedsPasswordChange(string employeeId)
     {
-        var dbPath = GetDatabasePath();
-        if (!File.Exists(dbPath)) return false;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return false;
 
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         using var cmd = conn.CreateCommand();
@@ -435,8 +424,7 @@ public static class AgentService
     // ── 계정 승인 (TodoService에서 호출) ─────────────────────────────────────
     public static void ApproveAccount(string employeeId)
     {
-        var dbPath = GetDatabasePath();
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         using var cmd = conn.CreateCommand();
@@ -464,12 +452,11 @@ public static class AgentService
             try { File.AppendAllText(logPath, line + "\n"); } catch { }
         }
 
-        var dbPath = GetDatabasePath();
-        if (!File.Exists(dbPath)) return;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
 
         string hash123456 = HashPassword("123456");
 
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         using var cmd = conn.CreateCommand();
@@ -499,8 +486,7 @@ public static class AgentService
             try { File.AppendAllText(logPath, line + "\n"); } catch { }
         }
 
-        var dbPath = GetDatabasePath();
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         using var cmd = conn.CreateCommand();
@@ -517,8 +503,7 @@ public static class AgentService
     /// </summary>
     public static void ResetToPending(string employeeId)
     {
-        var dbPath = GetDatabasePath();
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         using var cmd = conn.CreateCommand();
@@ -537,10 +522,9 @@ public static class AgentService
     public static List<(string 성명, string 사번, string 상태, string todo_task_id)> GetAllApprovalAccounts()
     {
         var list   = new List<(string, string, string, string)>();
-        var dbPath = GetDatabasePath();
-        if (!File.Exists(dbPath)) return list;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
 
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         using var cmd = conn.CreateCommand();
@@ -566,8 +550,7 @@ public static class AgentService
     public static List<Agent> GetPendingAccountsWithoutTask()
     {
         var list   = new List<Agent>();
-        var dbPath = GetDatabasePath();
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         using var cmd = conn.CreateCommand();
@@ -584,10 +567,9 @@ public static class AgentService
     public static List<string> GetAllNames()
     {
         var list   = new List<string>();
-        var dbPath = GetDatabasePath();
-        if (!File.Exists(dbPath)) return list;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
 
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         using var cmd = conn.CreateCommand();
@@ -621,11 +603,10 @@ public static class AgentService
             try { File.AppendAllText(logPath, line + "\n"); } catch { }
         }
 
-        var dbPath = GetDatabasePath();
-        Log($"[DebugCheck] DB 경로: {dbPath}");
-        Log($"[DebugCheck] DB 존재: {File.Exists(dbPath)}");
+        Log($"[DebugCheck] DB 경로: {DbPathHelper.DbPath}");
+        Log($"[DebugCheck] DB 존재: {File.Exists(DbPathHelper.DbPath)}");
 
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         using var cmd = conn.CreateCommand();
@@ -651,7 +632,7 @@ public static class AgentService
     }
 
     // ── 공통 파라미터 세팅 ────────────────────────────────────────────────────
-    private static void SetParams(SqliteCommand cmd, Agent a)
+    private static void SetParams(DbCommand cmd, Agent a)
     {
         cmd.Parameters.AddWithValue("@성명",           a.성명           ?? "");
         cmd.Parameters.AddWithValue("@직급",           a.직급           ?? "");
@@ -668,7 +649,7 @@ public static class AgentService
     }
 
     // ── 헬퍼 ─────────────────────────────────────────────────────────────────
-    private static string S(SqliteDataReader r, string col)
+    private static string S(DbDataReader r, string col)
     {
         try { int i = r.GetOrdinal(col); return !r.IsDBNull(i) ? r.GetString(i) ?? "" : ""; }
         catch { return ""; }
@@ -687,10 +668,9 @@ public static class AgentService
     /// <summary>사번으로 측정인 로그인 ID/PW 조회. 없으면 ("","") 반환.</summary>
     public static (string Id, string Pw) GetMeasurerCredentials(string 사번)
     {
-        var dbPath = GetDatabasePath();
-        if (!File.Exists(dbPath)) return ("", "");
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return ("", "");
 
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
         cmd.CommandText =
@@ -708,10 +688,9 @@ public static class AgentService
     /// <summary>사번에 해당하는 행에 측정인 로그인 ID/PW 저장.</summary>
     public static void SaveMeasurerCredentials(string 사번, string id, string pw)
     {
-        var dbPath = GetDatabasePath();
-        if (!File.Exists(dbPath)) return;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
 
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
         cmd.CommandText =
@@ -739,10 +718,9 @@ public static class AgentService
     public static int UpdateMeasurerEmployeeIds(List<(string Name, string Id)> pairs)
     {
         int count = 0;
-        var dbPath = GetDatabasePath();
-        if (!File.Exists(dbPath)) return 0;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return 0;
 
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         // Agent 이름 전체 로드 (메모리에서 매칭 — 수십 명 규모이므로 충분)

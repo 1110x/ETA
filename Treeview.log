@@ -1948,3 +1948,334 @@
 [23:03:33] 탭 전환 → 견적발행내역
 [23:03:34] 견적 선택: 화치 테스트 견적서 입니다. [20260326-152919]
 [23:03:37] 견적 선택: 화치 테스트 견적서 입니다. [20260326-152919]
+[14:22:37] QuotationHistoryPanel 초기화 완료
+[14:22:37] LoadData() 시작
+[14:22:37] 견적 발행건수=937
+[14:22:37] LoadData() 완료 — 루트노드=6
+[14:23:52] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[14:23:52] [AnalysisRequestService] GetAssignmentsForAgent(202202011/이재휘, 2026-03-28): 3개 할당
+[14:23:53] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[14:23:53] [AnalysisRequestService] GetAssignmentsForAgent(202301126/유경지, 2026-03-28): 2개 할당
+[14:23:53] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[14:23:53] [AnalysisRequestService] GetAssignmentsForAgent(202309008/윤민영, 2026-03-28): 14개 할당
+[14:23:54] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[14:23:54] [AnalysisRequestService] GetAssignmentsForAgent(12345/김청하, 2026-03-28): 0개 할당
+[14:23:54] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[14:23:54] [AnalysisRequestService] GetAssignmentsForAgent(202500340/손현주, 2026-03-28): 3개 할당
+[14:23:55] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[14:23:55] [AnalysisRequestService] GetAssignmentsForAgent(202500323/김가린, 2026-03-28): 3개 할당
+[14:36:25] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[14:36:25] [AnalysisRequestService] GetAssignmentsForAgent(202311039/정준하, 2026-03-28): 1개 할당
+[14:36:25] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[14:36:25] [AnalysisRequestService] GetAssignmentsForAgent(202309008/윤민영, 2026-03-28): 14개 할당
+[14:36:26] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[14:36:26] [AnalysisRequestService] GetAssignmentsForAgent(202303008/송준우, 2026-03-28): 14개 할당
+[14:36:26] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[14:36:26] [AnalysisRequestService] GetAssignmentsForAgent(202204016/정대호, 2026-03-28): 3개 할당
+[14:36:27] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[14:36:27] [AnalysisRequestService] GetAssignmentsForAgent(202106024/이예림, 2026-03-28): 7개 할당
+[14:36:27] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[14:36:27] [AnalysisRequestService] GetAssignmentsForAgent(202104002/방찬미, 2026-03-28): 4개 할당
+[14:36:28] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[14:36:28] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-03-28): 1개 할당
+[14:36:28] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[14:36:28] [AnalysisRequestService] GetAssignmentsForAgent(201101234/박은지, 2026-03-28): 4개 할당
+[14:36:29] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[14:36:29] [AnalysisRequestService] GetAssignmentsForAgent(202204016/정대호, 2026-03-28): 3개 할당
+[14:36:29] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[14:36:29] [AnalysisRequestService] GetAssignmentsForAgent(202311016/김지은, 2026-03-28): 5개 할당
+[14:36:33] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[14:36:33] [AnalysisRequestService] GetAssignmentsForAgent(202500340/손현주, 2026-03-28): 3개 할당
+[14:36:33] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[14:36:33] [AnalysisRequestService] GetAssignmentsForAgent(202500323/김가린, 2026-03-28): 3개 할당
+[14:36:34] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[14:36:34] [AnalysisRequestService] GetAssignmentsForAgent(202311016/김지은, 2026-03-28): 5개 할당
+[14:36:34] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[14:36:34] [AnalysisRequestService] GetAssignmentsForAgent(202301126/유경지, 2026-03-28): 2개 할당
+[14:36:34] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[14:36:34] [AnalysisRequestService] GetAssignmentsForAgent(202106024/이예림, 2026-03-28): 7개 할당
+[14:36:35] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[14:36:35] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-03-28): 1개 할당
+[14:39:17] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[14:39:17] [AnalysisRequestService] GetAssignmentsForAgent(201101234/박은지, 2026-03-28): 4개 할당
+[14:49:21] QuotationHistoryPanel 초기화 완료
+[14:49:21] LoadData() 시작
+[14:49:21] 견적 발행건수=937
+[14:49:21] LoadData() 완료 — 루트노드=6
+[14:58:22] QuotationHistoryPanel 초기화 완료
+[14:58:22] LoadData() 시작
+[14:58:22] 견적 발행건수=937
+[14:58:22] LoadData() 완료 — 루트노드=6
+[14:58:31] 견적 선택: 화치 테스트 견적서 입니다. [20260326-152919]
+[15:02:40] QuotationHistoryPanel 초기화 완료
+[15:02:40] LoadData() 시작
+[15:02:40] 견적 발행건수=937
+[15:02:40] LoadData() 완료 — 루트노드=6
+[15:12:29] QuotationHistoryPanel 초기화 완료
+[15:12:29] LoadData() 시작
+[15:12:29] 견적 발행건수=937
+[15:12:29] LoadData() 완료 — 루트노드=6
+[15:13:19] 새로고침
+[15:13:19] LoadData() 시작
+[15:13:19] 견적 발행건수=937
+[15:13:19] LoadData() 완료 — 루트노드=6
+[15:13:20] 새로고침
+[15:13:20] LoadData() 시작
+[15:13:20] 견적 발행건수=937
+[15:13:20] LoadData() 완료 — 루트노드=6
+[15:13:29] 탭 전환 → 분석의뢰내역
+[15:13:30] LoadAnalysisTreeAsync() 시작
+[15:13:30] [AnalysisRequestService] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db  존재=True
+[15:13:30] [AnalysisRequestService] 테이블 존재: 1
+[15:13:30] [AnalysisRequestService] 전체 행 수: 3677
+[15:13:30] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[15:13:30] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[15:13:30] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[15:13:30] [AnalysisRequestService] 완료: 3677건
+[15:13:30] DB 조회 완료: 3677건
+[15:13:30] FillMonthNodeWithDays: 2026-03 → 14건
+[15:13:30] 트리 완료 — 년노드=7
+[15:13:30] 탭 전환 → 견적발행내역
+[15:23:14] QuotationHistoryPanel 초기화 완료
+[15:23:14] LoadData() 시작
+[15:23:14] 견적 발행건수=937
+[15:23:14] LoadData() 완료 — 루트노드=6
+[15:25:50] QuotationHistoryPanel 초기화 완료
+[15:25:50] LoadData() 시작
+[15:25:50] 견적 발행건수=937
+[15:25:50] LoadData() 완료 — 루트노드=6
+[15:26:12] LoadData() 시작
+[15:26:12] 견적 발행건수=938
+[15:26:12] LoadData() 완료 — 루트노드=6
+[15:26:23] 견적 선택: LG용성 테스트견적서 [20260328-152554]
+[15:28:39] 견적 선택: 화치 테스트 견적서 입니다. [20260326-152919]
+[15:28:40] 견적 선택: LG용성 테스트견적서 [20260328-152554]
+[15:28:45] 견적 선택: 화치 테스트 견적서 입니다. [20260326-152919]
+[15:28:48] 견적 선택: LG용성 테스트견적서 [20260328-152554]
+[15:28:57] 견적 선택: 화치 테스트 견적서 입니다. [20260326-152919]
+[15:28:57] 견적 선택: LG용성 테스트견적서 [20260328-152554]
+[15:29:02] 삭제: 20260328-152554
+[15:29:03] 삭제: 20260328-152554
+[15:29:05] 견적 선택: LG용성 테스트견적서 [20260328-152554]
+[15:29:05] 견적 선택: LG용성 테스트견적서 [20260328-152554]
+[15:29:07] 삭제: 20260328-152554
+[15:29:08] 견적 선택: LG용성 테스트견적서 [20260328-152554]
+[15:29:09] 견적 선택: 화치 테스트 견적서 입니다. [20260326-152919]
+[15:29:11] 견적 선택: LG용성 테스트견적서 [20260328-152554]
+[15:29:14] 삭제: 20260328-152554
+[15:29:16] 견적 선택: LG용성 테스트견적서 [20260328-152554]
+[15:29:17] 삭제: 20260328-152554
+[15:29:26] 견적 선택: LG용성 테스트견적서 [20260328-152554]
+[15:29:58] 새로고침
+[15:29:58] LoadData() 시작
+[15:29:58] 견적 발행건수=937
+[15:29:58] LoadData() 완료 — 루트노드=6
+[15:29:59] 새로고침
+[15:29:59] LoadData() 시작
+[15:29:59] 견적 발행건수=937
+[15:29:59] LoadData() 완료 — 루트노드=6
+[15:30:02] 새로고침
+[15:30:02] LoadData() 시작
+[15:30:02] 견적 발행건수=937
+[15:30:02] LoadData() 완료 — 루트노드=6
+[15:30:04] 탭 전환 → 분석의뢰내역
+[15:30:04] LoadAnalysisTreeAsync() 시작
+[15:30:04] [AnalysisRequestService] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db  존재=True
+[15:30:04] [AnalysisRequestService] 테이블 존재: 1
+[15:30:04] [AnalysisRequestService] 전체 행 수: 3677
+[15:30:04] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[15:30:04] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[15:30:04] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[15:30:04] [AnalysisRequestService] 완료: 3677건
+[15:30:04] DB 조회 완료: 3677건
+[15:30:04] FillMonthNodeWithDays: 2026-03 → 14건
+[15:30:04] 트리 완료 — 년노드=7
+[15:30:04] 탭 전환 → 견적발행내역
+[15:30:05] 탭 전환 → 분석의뢰내역
+[15:30:05] LoadAnalysisTreeAsync() 시작
+[15:30:05] [AnalysisRequestService] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db  존재=True
+[15:30:05] [AnalysisRequestService] 테이블 존재: 1
+[15:30:05] [AnalysisRequestService] 전체 행 수: 3677
+[15:30:05] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[15:30:05] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[15:30:05] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[15:30:05] [AnalysisRequestService] 완료: 3677건
+[15:30:05] DB 조회 완료: 3677건
+[15:30:05] FillMonthNodeWithDays: 2026-03 → 14건
+[15:30:05] 트리 완료 — 년노드=7
+[15:32:44] 의뢰 선택: 화치 PVC_침전조 [20260326-152919]
+[15:32:46] 의뢰 선택: 화치 IPA생산팀폐수(TK-5737) [20260326-152919]
+[15:32:47] 의뢰 선택: 화치 ABS2(SC-8710) [20260326-152919]
+[15:32:48] 의뢰 선택: 화치 PVC_침전조 [20260326-152919]
+[15:32:50] 새로고침
+[15:32:50] LoadAnalysisTreeAsync() 시작
+[15:32:50] [AnalysisRequestService] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db  존재=True
+[15:32:50] [AnalysisRequestService] 테이블 존재: 1
+[15:32:50] [AnalysisRequestService] 전체 행 수: 3677
+[15:32:50] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[15:32:50] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[15:32:50] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[15:32:50] [AnalysisRequestService] 완료: 3677건
+[15:32:50] DB 조회 완료: 3677건
+[15:32:50] FillMonthNodeWithDays: 2026-03 → 14건
+[15:32:50] 트리 완료 — 년노드=7
+[15:32:51] 의뢰 선택: 화치 PVC_침전조 [20260326-152919]
+[15:32:53] 새로고침
+[15:32:53] LoadAnalysisTreeAsync() 시작
+[15:32:53] [AnalysisRequestService] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db  존재=True
+[15:32:53] [AnalysisRequestService] 테이블 존재: 1
+[15:32:53] [AnalysisRequestService] 전체 행 수: 3677
+[15:32:53] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[15:32:53] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[15:32:53] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[15:32:53] [AnalysisRequestService] 완료: 3677건
+[15:32:53] DB 조회 완료: 3677건
+[15:32:53] FillMonthNodeWithDays: 2026-03 → 14건
+[15:32:53] 트리 완료 — 년노드=7
+[15:32:54] 새로고침
+[15:32:54] LoadAnalysisTreeAsync() 시작
+[15:32:54] [AnalysisRequestService] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db  존재=True
+[15:32:54] [AnalysisRequestService] 테이블 존재: 1
+[15:32:54] [AnalysisRequestService] 전체 행 수: 3677
+[15:32:54] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[15:32:54] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[15:32:54] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[15:32:54] [AnalysisRequestService] 완료: 3677건
+[15:32:54] DB 조회 완료: 3677건
+[15:32:54] FillMonthNodeWithDays: 2026-03 → 14건
+[15:32:54] 트리 완료 — 년노드=7
+[15:32:55] 탭 전환 → 견적발행내역
+[15:32:55] 탭 전환 → 분석의뢰내역
+[15:32:55] LoadAnalysisTreeAsync() 시작
+[15:32:55] [AnalysisRequestService] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db  존재=True
+[15:32:55] [AnalysisRequestService] 테이블 존재: 1
+[15:32:55] [AnalysisRequestService] 전체 행 수: 3677
+[15:32:55] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[15:32:55] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[15:32:55] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[15:32:55] [AnalysisRequestService] 완료: 3677건
+[15:32:55] DB 조회 완료: 3677건
+[15:32:55] FillMonthNodeWithDays: 2026-03 → 14건
+[15:32:55] 트리 완료 — 년노드=7
+[15:32:57] 의뢰 선택: 화치 PVC_침전조 [20260326-152919]
+[15:32:57] 의뢰 선택: 화치 PVC_침전조 [20260326-152919]
+[15:32:57] 의뢰 선택: 화치 PVC_침전조 [20260326-152919]
+[15:32:57] 의뢰 선택: 화치 PVC_침전조 [20260326-152919]
+[15:33:02] 탭 전환 → 견적발행내역
+[15:33:03] 견적 선택: 화치 테스트 견적서 입니다. [20260326-152919]
+[15:33:06] 삭제: 20260326-152919
+[15:33:06] LoadData() 시작
+[15:33:06] 견적 발행건수=936
+[15:33:06] LoadData() 완료 — 루트노드=6
+[15:33:07] 견적 선택: 센터 왔싸 뵹 [20260325-191213]
+[15:33:08] 삭제: 20260325-191213
+[15:33:08] LoadData() 시작
+[15:33:08] 견적 발행건수=935
+[15:33:09] LoadData() 완료 — 루트노드=6
+[15:35:24] QuotationHistoryPanel 초기화 완료
+[15:35:24] LoadData() 시작
+[15:35:24] 견적 발행건수=935
+[15:35:25] LoadData() 완료 — 루트노드=6
+[15:35:29] 견적 선택: 보임 테스트 입니다….. [20260312-210229]
+[15:35:36] 새로고침
+[15:35:36] LoadData() 시작
+[15:35:36] 견적 발행건수=934
+[15:35:36] LoadData() 완료 — 루트노드=6
+[15:35:38] 견적 선택: 한화 테스트 테스트 테스트 아하~ 테스형~ [20260312-194943]
+[15:35:40] 삭제: 20260312-194943
+[15:35:40] LoadData() 시작
+[15:35:40] 견적 발행건수=933
+[15:35:40] LoadData() 완료 — 루트노드=6
+[15:36:13] LoadData() 시작
+[15:36:13] 견적 발행건수=934
+[15:36:13] LoadData() 완료 — 루트노드=6
+[15:36:36] 견적 선택: LG용성 테스트 견적 [20260328-153548]
+[15:36:38] 견적 선택: LG용성 테스트 견적 [20260328-153548]
+[15:36:49] 새로고침
+[15:36:49] LoadData() 시작
+[15:36:49] 견적 발행건수=933
+[15:36:49] LoadData() 완료 — 루트노드=6
+[15:36:52] 견적 선택: 국도화학 3/4 국도화학(주) 익산지점 3EA 견적서 [20260303-155028]
+[15:37:13] LoadData() 시작
+[15:37:13] 견적 발행건수=933
+[15:37:13] LoadData() 완료 — 루트노드=6
+[15:37:19] 견적 선택: 보임 (주)보임열병합발전 2026년 견적서 [20260303-113022]
+[15:37:22] 견적 선택: 국도화학 3/4 국도화학(주) 익산지점 3EA 견적서 [20260303-155028]
+[15:38:40] LoadData() 시작
+[15:38:40] 견적 발행건수=934
+[15:38:40] LoadData() 완료 — 루트노드=6
+[15:38:53] 견적 선택: 보임 (주)보임열병합발전 2026년 견적서 [20260303-113022]
+[15:38:54] 견적 선택: 국도 테스트 견적 [20260328-153729]
+[15:39:20] 견적 선택: 국도 테스트 견적 [20260328-153729]
+[15:39:22] 새로고침
+[15:39:22] LoadData() 시작
+[15:39:22] 견적 발행건수=933
+[15:39:22] LoadData() 완료 — 루트노드=6
+[15:39:24] 견적 선택: 국도화학 3/4 국도화학(주) 익산지점 3EA 견적서 [20260303-155028]
+[15:39:28] 견적 선택: 보임 (주)보임열병합발전 2026년 견적서 [20260303-113022]
+[15:39:29] 견적 선택: 국도화학 3/4 국도화학(주) 익산지점 3EA 견적서 [20260303-155028]
+[15:46:29] 견적 선택: 국도화학 3/4 국도화학(주) 익산지점 3EA 견적서 [20260303-155028]
+[15:46:30] 견적 선택: 보임 (주)보임열병합발전 2026년 견적서 [20260303-113022]
+[15:46:31] 견적 선택: 국도화학 3/4 국도화학(주) 익산지점 3EA 견적서 [20260303-155028]
+[15:46:31] 견적 선택: 보임 (주)보임열병합발전 2026년 견적서 [20260303-113022]
+[15:53:08] QuotationHistoryPanel 초기화 완료
+[15:53:08] LoadData() 시작
+[15:53:08] 견적 발행건수=933
+[15:53:08] LoadData() 완료 — 루트노드=6
+[15:53:52] LoadData() 시작
+[15:53:52] 견적 발행건수=934
+[15:53:52] LoadData() 완료 — 루트노드=6
+[15:53:56] 견적 선택: 국도 테스트 [20260328-155314]
+[15:54:05] LoadData() 시작
+[15:54:05] 견적 발행건수=934
+[15:54:05] LoadData() 완료 — 루트노드=6
+[15:54:08] 견적 선택: 국도 테스트 [20260328-155314]
+[15:55:10] 탭 전환 → 분석의뢰내역
+[15:55:10] LoadAnalysisTreeAsync() 시작
+[15:55:10] [AnalysisRequestService] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db  존재=True
+[15:55:10] [AnalysisRequestService] 테이블 존재: 1
+[15:55:10] [AnalysisRequestService] 전체 행 수: 3681
+[15:55:10] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 유입수 견적번호=
+[15:55:10] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=#W1 배출수 견적번호=
+[15:55:10] [AnalysisRequestService]   샘플: 채취일자=2026-02-27 약칭=포스코리튬 시료명=비점-유역1 유입수조 견적번호=
+[15:55:10] [AnalysisRequestService] 완료: 3681건
+[15:55:10] DB 조회 완료: 3681건
+[15:55:10] FillMonthNodeWithDays: 2026-03 → 18건
+[15:55:10] 트리 완료 — 년노드=7
+[15:55:13] 의뢰 선택: 국도 W1 방류수 [20260328-155314]
+[15:55:14] 의뢰 선택: 국도 공업용수 [20260328-155314]
+[15:55:14] 의뢰 선택: 국도 원폐수 [20260328-155314]
+[15:55:15] 의뢰 선택: 국도 정제염수 [20260328-155314]
+[15:55:27] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[15:55:27] [AnalysisRequestService] GetManagersByDate(2026-03-28): 113개 담당자 로드
+[15:55:56] [AnalysisRequestService] GetManagersByDate(2026-03-28): 113개 담당자 로드
+[15:56:25] [AnalysisRequestService] GetManagersByDate(2026-03-28): 113개 담당자 로드
+[15:56:52] [AnalysisRequestService] GetManagersByDate(2026-03-28): 113개 담당자 로드
+[16:02:42] LoadData() 시작
+[16:02:42] 견적 발행건수=934
+[16:02:43] LoadData() 완료 — 루트노드=6
+[16:31:16] QuotationHistoryPanel 초기화 완료
+[16:31:16] LoadData() 시작
+[16:31:16] 견적 발행건수=934
+[16:31:16] LoadData() 완료 — 루트노드=6
+[16:33:51] LoadData() 시작
+[16:33:51] 견적 발행건수=934
+[16:33:51] LoadData() 완료 — 루트노드=6
+[16:33:54] 견적 선택: 국도 테스트 [20260328-155314]
+[16:33:56] 삭제: 20260328-155314
+[16:33:56] LoadData() 시작
+[16:33:56] 견적 발행건수=933
+[16:33:56] LoadData() 완료 — 루트노드=6
+[16:34:34] LoadData() 시작
+[16:34:34] 견적 발행건수=934
+[16:34:35] LoadData() 완료 — 루트노드=6
+[16:35:12] LoadData() 시작
+[16:35:12] 견적 발행건수=934
+[16:35:12] LoadData() 완료 — 루트노드=6
+[16:35:15] LoadData() 시작
+[16:35:15] 견적 발행건수=934
+[16:35:16] LoadData() 완료 — 루트노드=6
+[23:11:53] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[23:11:53] [AnalysisRequestService] GetAssignmentsForAgent(201101234/박은지, 2026-03-28): 4개 할당
+[23:11:53] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[23:11:53] [AnalysisRequestService] GetAssignmentsForAgent(202106024/이예림, 2026-03-28): 7개 할당

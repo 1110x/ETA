@@ -40,7 +40,8 @@ public class AnalysisRequestListPanel : UserControl
     private readonly Dictionary<string, Dictionary<string, string>> _rowCache = new();
 
     // 상태 표시
-    private TextBlock? _txbStatus;
+    private TextBlock?    _txbStatus;
+    private ProgressBar?  _progressBar;
 
     public AnalysisRequestListPanel()
     {

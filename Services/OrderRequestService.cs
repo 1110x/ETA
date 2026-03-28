@@ -4,23 +4,23 @@ using System.IO;
 using System.Linq;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
-using Microsoft.Data.Sqlite;
+using System.Data;
+using System.Data.Common;
 using ETA.Models;
 
 namespace ETA.Services;
 
 public static class OrderRequestService
 {
-    private static string DbPath => DbPathHelper.DbPath;
 
     // ── 시료명칭 테이블 컬럼헤더(업체명) 전체 조회 ───────────────────────
     public static List<string> GetSampleNameColumns()
     {
         var list = new List<string>();
-        if (!File.Exists(DbPath)) return list;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
         try
         {
-            using var conn = new SqliteConnection($"Data Source={DbPath}");
+            using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var cmd = conn.CreateCommand();
             cmd.CommandText = @"PRAGMA table_info(""시료명칭"")";
@@ -61,10 +61,10 @@ public static class OrderRequestService
     public static List<string> GetSampleNames(string columnName)
     {
         var list = new List<string>();
-        if (!File.Exists(DbPath)) return list;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
         try
         {
-            using var conn = new SqliteConnection($"Data Source={DbPath}");
+            using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var cmd = conn.CreateCommand();
             cmd.CommandText = $@"SELECT ""{columnName}"" FROM ""시료명칭"" WHERE ""{columnName}"" IS NOT NULL AND ""{columnName}"" <> ''";
@@ -78,10 +78,10 @@ public static class OrderRequestService
     // ── 시료명칭 추가 ────────────────────────────────────────────────────
     public static bool AddSampleName(string columnName, string sampleName)
     {
-        if (!File.Exists(DbPath)) return false;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return false;
         try
         {
-            using var conn = new SqliteConnection($"Data Source={DbPath}");
+            using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var chk = conn.CreateCommand();
             chk.CommandText = $@"SELECT rowid FROM ""시료명칭"" WHERE ""{columnName}"" IS NULL OR ""{columnName}"" = '' LIMIT 1";
@@ -117,10 +117,10 @@ public static class OrderRequestService
             "정도보증유무","분석완료일자","견적구분"
         };
         var list = new List<string>();
-        if (!File.Exists(DbPath)) return list;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
         try
         {
-            using var conn = new SqliteConnection($"Data Source={DbPath}");
+            using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var cmd = conn.CreateCommand();
             cmd.CommandText = @"PRAGMA table_info(""분석의뢰및결과"")";
@@ -138,10 +138,10 @@ public static class OrderRequestService
     // ── 중복 확인 (견적번호 + 시료명) ────────────────────────────────────
     public static bool CheckDuplicate(string 견적번호, string 시료명)
     {
-        if (!File.Exists(DbPath)) return false;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return false;
         try
         {
-            using var conn = new SqliteConnection($"Data Source={DbPath}");
+            using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var cmd = conn.CreateCommand();
             cmd.CommandText = @"SELECT COUNT(*) FROM ""분석의뢰및결과"" WHERE ""견적번호""=@no AND ""시료명""=@sample";
@@ -155,10 +155,10 @@ public static class OrderRequestService
     // ── 기존 의뢰 삭제 (덮어쓰기용) ─────────────────────────────────────
     public static void DeleteByKey(string 견적번호, string 시료명)
     {
-        if (!File.Exists(DbPath)) return;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
         try
         {
-            using var conn = new SqliteConnection($"Data Source={DbPath}");
+            using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var cmd = conn.CreateCommand();
             cmd.CommandText = @"DELETE FROM ""분석의뢰및결과"" WHERE ""견적번호""=@no AND ""시료명""=@sample";
@@ -175,10 +175,10 @@ public static class OrderRequestService
         QuotationIssue issue,
         HashSet<string> checkedItems)
     {
-        if (!File.Exists(DbPath)) return false;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return false;
         try
         {
-            using var conn = new SqliteConnection($"Data Source={DbPath}");
+            using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
 
             var tableCols = new List<string>();

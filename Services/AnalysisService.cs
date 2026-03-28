@@ -1,28 +1,27 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.Data.Sqlite;
+using System.Data;
+using System.Data.Common;
 using ETA.Models;
 
 namespace ETA.Services;
 
 public static class AnalysisService
 {
-    public static string GetDatabasePath() => DbPathHelper.DbPath;
 
     public static List<AnalysisItem> GetAllItems()
     {
         var items = new List<AnalysisItem>();
 
-        string dbPath = GetDatabasePath();
-        Console.WriteLine($"DB 경로 확인: {dbPath}");  // 여기서 로그
-        if (!File.Exists(dbPath))
+        Console.WriteLine($"DB 경로 확인: {DbPathHelper.DbPath}");  // 여기서 로그
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath))
         {
-            Console.WriteLine($"Database not found: {dbPath}");
+            Console.WriteLine($"Database not found: {DbPathHelper.DbPath}");
             return items;
         }
 
-        using var connection = new SqliteConnection($"Data Source={dbPath}");
+        using var connection = DbConnectionFactory.CreateConnection();
         connection.Open();
 
         using var command = connection.CreateCommand();
@@ -62,7 +61,7 @@ public static class AnalysisService
     }
 
     // 확장 메서드
-    private static string GetStringOrEmpty(this SqliteDataReader reader, string columnName)
+    private static string GetStringOrEmpty(this DbDataReader reader, string columnName)
     {
         int ordinal = reader.GetOrdinal(columnName);
         return !reader.IsDBNull(ordinal) ? reader.GetString(ordinal) : string.Empty;

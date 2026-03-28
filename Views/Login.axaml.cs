@@ -180,6 +180,24 @@ public partial class Login : Window
     private void OnLoaded(object? sender, RoutedEventArgs e)
     {
         // 비디오 배경 제거됨
+        UpdateDbModeUI();
+    }
+
+    // ── DB 모드 토글 ──────────────────────────────────────────────────────────
+    private void DbModeToggle_Changed(object? sender, RoutedEventArgs e)
+    {
+        bool useMariaDb = toggleDbMode?.IsChecked == true;
+        DbConnectionFactory.UseMariaDb = useMariaDb;
+        UpdateDbModeUI();
+        Log($"[DB모드] {(useMariaDb ? "서버 DB (MariaDB)" : "로컬 DB (SQLite)")} 선택");
+    }
+
+    private void UpdateDbModeUI()
+    {
+        bool useMariaDb = DbConnectionFactory.UseMariaDb;
+        if (txtDbMode   != null) txtDbMode.Text   = useMariaDb ? "서버 DB"  : "로컬 DB";
+        if (txtDbStatus != null) txtDbStatus.Text = useMariaDb ? "MariaDB (온라인)" : "SQLite (오프라인)";
+        if (toggleDbMode != null) toggleDbMode.IsChecked = useMariaDb;
     }
 
     private void ShowError(string msg)

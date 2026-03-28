@@ -1,31 +1,30 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.Data.Sqlite;
+using System.Data;
+using System.Data.Common;
 using ETA.Models;
 
 namespace ETA.Services;
 
 public static class ContractPriceService
 {
-    private static string GetDatabasePath() => DbPathHelper.DbPath;
 
     public static List<ContractPrice> GetAllContractPrices()
     {
         Console.WriteLine("[ContractPriceService] GetAllContractPrices 호출됨");
         var prices = new List<ContractPrice>();
 
-        string dbPath = GetDatabasePath();
 
-        if (!File.Exists(dbPath))
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath))
         {
-            Console.WriteLine($"[오류] DB 파일 없음: {dbPath}");
+            Console.WriteLine($"[오류] DB 파일 없음: {DbPathHelper.DbPath}");
             return prices;
         }
 
         try
         {
-            using var connection = new SqliteConnection($"Data Source={dbPath}");
+            using var connection = DbConnectionFactory.CreateConnection();
             Console.WriteLine("[DB] 연결 시도...");
             connection.Open();
             Console.WriteLine("[DB] 연결 성공");
@@ -94,7 +93,7 @@ public static class ContractPriceService
     }
 
     // 확장 메서드 (로그 추가)
-    private static string GetStringOrEmpty(this SqliteDataReader reader, string columnName)
+    private static string GetStringOrEmpty(this DbDataReader reader, string columnName)
     {
         try
         {
@@ -108,7 +107,7 @@ public static class ContractPriceService
         }
     }
 
-    private static decimal? SafeGetDecimal(this SqliteDataReader reader, string columnName)
+    private static decimal? SafeGetDecimal(this DbDataReader reader, string columnName)
     {
         try
         {

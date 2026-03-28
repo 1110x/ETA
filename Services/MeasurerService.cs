@@ -1,4 +1,5 @@
-using Microsoft.Data.Sqlite;
+using System.Data;
+using System.Data.Common;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,20 +9,19 @@ namespace ETA.Services;
 
 public static class MeasurerService
 {
-    private static string GetDatabasePath() => DbPathHelper.DbPath;
 
     // ── 테이블 생성 + 컬럼 마이그레이션 ─────────────────────────────────────
     public static void EnsureMeasurerTable()
     {
-        using var conn = new SqliteConnection($"Data Source={GetDatabasePath()}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         // 기본 테이블 생성
         using (var cmd = conn.CreateCommand())
         {
-            cmd.CommandText = @"
+            cmd.CommandText = $@"
                 CREATE TABLE IF NOT EXISTS 측정인_채취지점 (
-                    Id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Id         INTEGER PRIMARY KEY {DbConnectionFactory.AutoIncrement},
                     계약번호   TEXT,
                     약칭       TEXT,
                     계약기간   TEXT,
@@ -49,12 +49,12 @@ public static class MeasurerService
     // ── 분석항목 테이블 생성 / 마이그레이션 ─────────────────────────────────
     public static void EnsureAnalysisItemTable()
     {
-        using var conn = new SqliteConnection($"Data Source={GetDatabasePath()}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"
+        cmd.CommandText = $@"
             CREATE TABLE IF NOT EXISTS 측정인_분석항목 (
-                Id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                Id         INTEGER PRIMARY KEY {DbConnectionFactory.AutoIncrement},
                 분야       TEXT NOT NULL DEFAULT '',
                 항목구분   TEXT NOT NULL DEFAULT '',
                 항목명     TEXT NOT NULL,
@@ -74,7 +74,7 @@ public static class MeasurerService
     {
         EnsureAnalysisItemTable();
         int count = 0;
-        using var conn = new SqliteConnection($"Data Source={GetDatabasePath()}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var txn = conn.BeginTransaction();
         try
@@ -83,14 +83,15 @@ public static class MeasurerService
             {
                 if (string.IsNullOrWhiteSpace(code)) continue;
                 using var cmd = conn.CreateCommand();
-                cmd.CommandText = @"
+                var upsert = DbConnectionFactory.UpsertSuffix(
+                    new[] { "코드값" },
+                    new[] { "분야", "항목구분", "항목명", "select2id" });
+                cmd.CommandText =
+                    $"""
                     INSERT INTO 측정인_분석항목 (분야, 항목구분, 항목명, 코드값, select2id)
                     VALUES (@field, @category, @name, @code, @s2id)
-                    ON CONFLICT(코드값) DO UPDATE SET
-                        분야      = excluded.분야,
-                        항목구분  = excluded.항목구분,
-                        항목명    = excluded.항목명,
-                        select2id = excluded.select2id;";
+                    {upsert};
+                    """;
                 cmd.Parameters.AddWithValue("@field",    field.Trim());
                 cmd.Parameters.AddWithValue("@category", category.Trim());
                 cmd.Parameters.AddWithValue("@name",     name.Trim());
@@ -115,7 +116,7 @@ public static class MeasurerService
     {
         EnsureAnalysisItemTable();
         var list = new List<(string, string, string, string, string)>();
-        using var conn = new SqliteConnection($"Data Source={GetDatabasePath()}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
         cmd.CommandText = "SELECT 분야, 항목구분, 항목명, 코드값, select2id FROM 측정인_분석항목 ORDER BY 분야 ASC, 항목구분 ASC, 항목명 ASC";
@@ -132,7 +133,7 @@ public static class MeasurerService
     // ── 전체 데이터 초기화 (재스크래핑 전 호출) ──────────────────────────────
     public static void ClearAll()
     {
-        using var conn = new SqliteConnection($"Data Source={GetDatabasePath()}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
         cmd.CommandText = "DELETE FROM 측정인_채취지점";
@@ -146,7 +147,7 @@ public static class MeasurerService
         string 계약번호 = "",
         string 계약기간 = "")
     {
-        using var conn = new SqliteConnection($"Data Source={GetDatabasePath()}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         using var txn = conn.BeginTransaction();
@@ -155,12 +156,15 @@ public static class MeasurerService
             foreach (var point in points.Where(p => !string.IsNullOrWhiteSpace(p)))
             {
                 using var cmd = conn.CreateCommand();
-                cmd.CommandText = @"
+                var upsert = DbConnectionFactory.UpsertSuffix(
+                    new[] { "업체명", "채취지점명" },
+                    new[] { "계약번호", "계약기간" });
+                cmd.CommandText =
+                    $"""
                     INSERT INTO 측정인_채취지점 (계약번호, 계약기간, 업체명, 채취지점명)
                     VALUES (@contractNo, @period, @company, @point)
-                    ON CONFLICT(업체명, 채취지점명) DO UPDATE SET
-                        계약번호 = excluded.계약번호,
-                        계약기간 = excluded.계약기간;";
+                    {upsert};
+                    """;
                 cmd.Parameters.AddWithValue("@contractNo", 계약번호.Trim());
                 cmd.Parameters.AddWithValue("@period",     계약기간.Trim());
                 cmd.Parameters.AddWithValue("@company",    companyName.Trim());
@@ -180,7 +184,7 @@ public static class MeasurerService
     // ── 업체별 관리 정보 조회 ────────────────────────────────────────────────
     public static (string 약칭, string 계약금액, string 견적구분) GetCompanyInfo(string companyName)
     {
-        using var conn = new SqliteConnection($"Data Source={GetDatabasePath()}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
@@ -196,7 +200,7 @@ public static class MeasurerService
     // ── 업체별 관리 정보 저장 ────────────────────────────────────────────────
     public static void UpdateCompanyInfo(string companyName, string 약칭, string 계약금액, string 견적구분)
     {
-        using var conn = new SqliteConnection($"Data Source={GetDatabasePath()}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
@@ -213,7 +217,7 @@ public static class MeasurerService
     // ── 계약 DB에서 약칭을 측정인_채취지점으로 동기화 ──────────────────────────
     public static void SyncAbbrFromContractDb()
     {
-        using var conn = new SqliteConnection($"Data Source={GetDatabasePath()}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
         // 약칭이 비어 있고 계약 DB에 같은 업체명이 있으면 약칭 복사
@@ -241,7 +245,7 @@ public static class MeasurerService
     public static List<string> GetCompanies()
     {
         var list = new List<string>();
-        using var conn = new SqliteConnection($"Data Source={GetDatabasePath()}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
         cmd.CommandText = "SELECT DISTINCT 업체명 FROM 측정인_채취지점 ORDER BY 업체명 ASC";
@@ -254,7 +258,7 @@ public static class MeasurerService
     public static List<string> GetSamplingPoints(string companyName)
     {
         var list = new List<string>();
-        using var conn = new SqliteConnection($"Data Source={GetDatabasePath()}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
         cmd.CommandText = "SELECT 채취지점명 FROM 측정인_채취지점 WHERE 업체명 = @company ORDER BY 채취지점명 ASC";
@@ -268,7 +272,7 @@ public static class MeasurerService
     public static List<ETA.Models.Contract> GetCompaniesAsContracts()
     {
         var map = new Dictionary<string, ETA.Models.Contract>(StringComparer.OrdinalIgnoreCase);
-        using var conn = new SqliteConnection($"Data Source={GetDatabasePath()}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
@@ -320,7 +324,7 @@ public static class MeasurerService
     public static List<(string 계약번호, string 약칭, string 계약기간, string 업체명, string 채취지점명)> GetAllData()
     {
         var list = new List<(string, string, string, string, string)>();
-        using var conn = new SqliteConnection($"Data Source={GetDatabasePath()}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"

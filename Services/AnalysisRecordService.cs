@@ -1,5 +1,6 @@
 using ClosedXML.Excel;
-using Microsoft.Data.Sqlite;
+using System.Data;
+using System.Data.Common;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,7 +12,6 @@ namespace ETA.Services;
 /// <summary>분석기록부 Excel 파일 생성 서비스</summary>
 public static class AnalysisRecordService
 {
-    private static string DbPath => DbPathHelper.DbPath;
 
     private static readonly string DataRoot = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "ETA", "Data");
@@ -36,7 +36,7 @@ public static class AnalysisRecordService
         var groups = new Dictionary<string, List<Dictionary<string, string>>>(
             StringComparer.OrdinalIgnoreCase);
 
-        if (!File.Exists(DbPath)) return groups;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return groups;
         try
         {
             var rows         = GetOrderRows(견적번호);
@@ -134,10 +134,10 @@ public static class AnalysisRecordService
     // ── 내부: 분석자/날짜로 담당자 조회 ─────────────────────────────────
     private static string? GetAssigneeForAnalyte(string analyteName, DateTime date)
     {
-        if (!File.Exists(DbPath)) return null;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return null;
         try
         {
-            using var conn = new SqliteConnection($"Data Source={DbPath}");
+            using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var cmd = conn.CreateCommand();
             cmd.CommandText = "SELECT * FROM \"분장표준처리\" WHERE \"항목명\" = @date";
@@ -238,10 +238,10 @@ public static class AnalysisRecordService
     private static List<Dictionary<string, string>> GetOrderRows(string 견적번호)
     {
         var result = new List<Dictionary<string, string>>();
-        if (!File.Exists(DbPath)) return result;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return result;
         try
         {
-            using var conn = new SqliteConnection($"Data Source={DbPath}");
+            using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var cmd = conn.CreateCommand();
             cmd.CommandText = "SELECT * FROM \"분석의뢰및결과\" WHERE \"견적번호\" = @no";
@@ -262,10 +262,10 @@ public static class AnalysisRecordService
     private static Dictionary<string, Dictionary<string, string>> Get방류기준표Internal()
     {
         var map = new Dictionary<string, Dictionary<string, string>>(StringComparer.OrdinalIgnoreCase);
-        if (!File.Exists(DbPath)) return map;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return map;
         try
         {
-            using var conn = new SqliteConnection($"Data Source={DbPath}");
+            using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var chk = conn.CreateCommand();
             chk.CommandText =

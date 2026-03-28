@@ -1,5 +1,6 @@
 using ETA.Views.Pages;
-using Microsoft.Data.Sqlite;
+using System.Data;
+using System.Data.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,7 +14,6 @@ namespace ETA.Services;
 /// </summary>
 public static class AnalysisRequestService
 {
-    private static string DbPath => DbPathHelper.DbPath;
 
     private static readonly string LogPath = Path.GetFullPath(
         Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "Treeview.log"));
@@ -31,10 +31,10 @@ public static class AnalysisRequestService
     public static List<AnalysisRequestRecord> GetAllRecords()
     {
         var list = new List<AnalysisRequestRecord>();
-        Log($"DB 경로: {DbPath}  존재={File.Exists(DbPath)}");
-        if (!File.Exists(DbPath)) { Log("DB 파일 없음"); return list; }
+        Log($"DB 경로: {DbPathHelper.DbPath}  존재={File.Exists(DbPathHelper.DbPath)}");
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) { Log("DB 파일 없음"); return list; }
 
-        using var conn = new SqliteConnection($"Data Source={DbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         using var chk = conn.CreateCommand();
@@ -101,9 +101,9 @@ public static class AnalysisRequestService
     public static Dictionary<string, string> GetRecordRow(int rowId)
     {
         var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        if (!File.Exists(DbPath)) return dict;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return dict;
 
-        using var conn = new SqliteConnection($"Data Source={DbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         using var cmd = conn.CreateCommand();
@@ -137,11 +137,11 @@ public static class AnalysisRequestService
     public static Dictionary<string, (int days, string shortName)> GetStandardDaysInfo()
     {
         var result = new Dictionary<string, (int, string)>(StringComparer.OrdinalIgnoreCase);
-        if (!File.Exists(DbPath)) { Log("GetStandardDaysInfo: DB 없음"); return result; }
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) { Log("GetStandardDaysInfo: DB 없음"); return result; }
 
         try
         {
-            using var conn = new SqliteConnection($"Data Source={DbPath}");
+            using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
 
             using var chk = conn.CreateCommand();
@@ -217,11 +217,11 @@ public static class AnalysisRequestService
     public static Dictionary<string, string> GetManagersByDate(string sampleDate)
     {
         var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        if (!File.Exists(DbPath)) return result;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return result;
 
         try
         {
-            using var conn = new SqliteConnection($"Data Source={DbPath}");
+            using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
 
             // 날짜 정규화: yyyy-MM-dd
@@ -270,11 +270,11 @@ public static class AnalysisRequestService
     public static List<(string FullName, string ShortName)> GetAssignmentsForAgent(string employeeId, DateTime queryDate)
     {
         var assignments = new List<(string, string)>();
-        if (!File.Exists(DbPath)) return assignments;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return assignments;
 
         try
         {
-            using var conn = new SqliteConnection($"Data Source={DbPath}");
+            using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
 
             // 담당자 이름 조회
@@ -336,11 +336,11 @@ public static class AnalysisRequestService
         string employeeId, DateTime startDate, DateTime endDate)
     {
         var result = new List<(string, string)>();
-        if (!File.Exists(DbPath)) return result;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return result;
 
         try
         {
-            using var conn = new SqliteConnection($"Data Source={DbPath}");
+            using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
 
             string managerName = "";
@@ -395,10 +395,10 @@ public static class AnalysisRequestService
     public static List<string> GetAssigneesForAnalyteInRange(string analyteFullName, DateTime start, DateTime end)
     {
         var assignees = new List<string>();
-        if (!File.Exists(DbPath)) return assignees;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return assignees;
         try
         {
-            using var conn = new SqliteConnection($"Data Source={DbPath}");
+            using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var cmd = conn.CreateCommand();
             cmd.CommandText =
@@ -428,11 +428,11 @@ public static class AnalysisRequestService
     public static List<string> GetAssigneesForAnalyteOnDate(string analyteFullName, DateTime date)
     {
         var assignees = new List<string>();
-        if (!File.Exists(DbPath)) return assignees;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return assignees;
 
         try
         {
-            using var conn = new SqliteConnection($"Data Source={DbPath}");
+            using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
 
             using var cmd = conn.CreateCommand();
@@ -463,11 +463,11 @@ public static class AnalysisRequestService
     // =====================================================================
     public static void ClearAssignmentsForAgent(string employeeId, DateTime startDate, DateTime endDate)
     {
-        if (!File.Exists(DbPath)) return;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
 
         try
         {
-            using var conn = new SqliteConnection($"Data Source={DbPath}");
+            using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
 
             string managerName = "";
@@ -520,11 +520,11 @@ public static class AnalysisRequestService
     // =====================================================================
     public static void AddAssignment(string employeeId, string analyte, DateTime startDate, DateTime endDate)
     {
-        if (!File.Exists(DbPath)) return;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
 
         try
         {
-            using var conn = new SqliteConnection($"Data Source={DbPath}");
+            using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
 
             // 분석항목 컬럼명 확인 (전체명)

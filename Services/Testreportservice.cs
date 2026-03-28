@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.Data.Sqlite;
+using System.Data;
+using System.Data.Common;
 using ETA.Models;
 using System.Diagnostics;
 
@@ -12,7 +13,6 @@ public static class TestReportService
 {
     private const string TableName = "분석의뢰및결과";
 
-    private static string GetDatabasePath() => DbPathHelper.DbPath;
 
     private static readonly HashSet<string> FixedColumns =
         new(StringComparer.OrdinalIgnoreCase)
@@ -25,9 +25,8 @@ public static class TestReportService
     public static List<string> GetAnalyteColumns()
     {
         var cols   = new List<string>();
-        var dbPath = GetDatabasePath();
-        if (!File.Exists(dbPath)) return cols;
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return cols;
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
         cmd.CommandText = $"PRAGMA table_info(\"{TableName}\")";
@@ -44,9 +43,8 @@ public static class TestReportService
     public static List<string> GetCompanyList()
     {
         var list   = new List<string>();
-        var dbPath = GetDatabasePath();
-        if (!File.Exists(dbPath)) { Debug.WriteLine($"[TestReport] DB없음"); return list; }
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) { Debug.WriteLine($"[TestReport] DB없음"); return list; }
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var chk = conn.CreateCommand();
         chk.CommandText = $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{TableName}'";
@@ -62,11 +60,10 @@ public static class TestReportService
     public static List<SampleRequest> GetSamplesByCompany(string 약칭)
     {
         var list   = new List<SampleRequest>();
-        var dbPath = GetDatabasePath();
-        if (!File.Exists(dbPath)) return list;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
         var analyteCols = GetAnalyteColumns();
         var colSelect   = analyteCols.Count > 0 ? "," + string.Join(",", analyteCols.Select(c => $"\"{c}\"")) : "";
-        using var conn  = new SqliteConnection($"Data Source={dbPath}");
+        using var conn  = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
         cmd.CommandText = $@"SELECT rowid AS Id,
@@ -113,8 +110,7 @@ public static class TestReportService
 
     public static bool UpdateResult(int rowId, string columnName, string newValue)
     {
-        var dbPath = GetDatabasePath();
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
         cmd.CommandText = $"UPDATE \"{TableName}\" SET \"{columnName.Trim()}\" = @val WHERE rowid = @id";
@@ -129,9 +125,8 @@ public static class TestReportService
     public static int BulkUpdateResults(int rowId, Dictionary<string, string> analyteValues)
     {
         if (analyteValues.Count == 0) return 0;
-        var dbPath = GetDatabasePath();
         int count = 0;
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var tx = conn.BeginTransaction();
         try
@@ -154,8 +149,7 @@ public static class TestReportService
 
     public static bool DeleteSample(int rowId)
     {
-        var dbPath = GetDatabasePath();
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
         cmd.CommandText = $"DELETE FROM \"{TableName}\" WHERE rowid = @id";
@@ -168,11 +162,10 @@ public static class TestReportService
     /// <summary>특정 rowId의 단일 분析항목 결과값 조회. 없으면 null</summary>
     public static string? GetAnalyteValue(int rowId, string columnName)
     {
-        var dbPath = GetDatabasePath();
-        if (!File.Exists(dbPath)) return null;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return null;
         try
         {
-            using var conn = new SqliteConnection($"Data Source={dbPath}");
+            using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var cmd = conn.CreateCommand();
             cmd.CommandText = $"SELECT \"{columnName.Trim()}\" FROM \"{TableName}\" WHERE rowid = @id LIMIT 1";
@@ -186,11 +179,10 @@ public static class TestReportService
     /// <summary>견적번호+시료명 또는 약칭+시료명으로 rowid 조회. 없으면 null</summary>
     public static int? FindRowId(string 견적번호, string 약칭, string 시료명)
     {
-        var dbPath = GetDatabasePath();
-        if (!File.Exists(dbPath)) return null;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return null;
         try
         {
-            using var conn = new SqliteConnection($"Data Source={dbPath}");
+            using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var cmd = conn.CreateCommand();
             if (!string.IsNullOrEmpty(견적번호))
@@ -214,9 +206,8 @@ public static class TestReportService
     public static Dictionary<string, AnalysisItem> GetAnalyteMeta()
     {
         var dict   = new Dictionary<string, AnalysisItem>(StringComparer.OrdinalIgnoreCase);
-        var dbPath = GetDatabasePath();
-        if (!File.Exists(dbPath)) return dict;
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return dict;
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var chk = conn.CreateCommand();
         chk.CommandText = "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='분석정보'";
@@ -238,11 +229,10 @@ public static class TestReportService
     public static string GetStandardValue(string 항목명, string 방류허용기준컬럼)
     {
         if (string.IsNullOrEmpty(항목명) || string.IsNullOrEmpty(방류허용기준컬럼)) return "";
-        var dbPath = GetDatabasePath();
-        if (!File.Exists(dbPath)) return "";
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return "";
         try
         {
-            using var conn = new SqliteConnection($"Data Source={dbPath}");
+            using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var chk = conn.CreateCommand();
             chk.CommandText = "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='방류기준표'";
@@ -281,7 +271,7 @@ public static class TestReportService
         catch (Exception ex) { Debug.WriteLine($"[방류기준] 오류: {ex.Message}"); return ""; }
     }
 
-    private static string S(SqliteDataReader r, int i)
+    private static string S(DbDataReader r, int i)
     {
         try { return r.IsDBNull(i) ? "" : r.GetValue(i)?.ToString() ?? ""; }
         catch { return ""; }

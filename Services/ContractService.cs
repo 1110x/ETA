@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.Data.Sqlite;
+using System.Data;
+using System.Data.Common;
 using ETA.Models;
 using System.Diagnostics;
 
@@ -10,16 +11,14 @@ namespace ETA.Services;
 public static class ContractService
 {
     // ── DB 경로 (AgentService 와 동일 방식) ──────────────────────────────────
-    public static string GetDatabasePath() => DbPathHelper.DbPath;
 
     // ── 전체 조회 ─────────────────────────────────────────────────────────────
     public static List<Contract> GetAllContracts()
     {
         var list   = new List<Contract>();
-        var dbPath = GetDatabasePath();
-        if (!File.Exists(dbPath)) { Debug.WriteLine("❌ DB 없음"); return list; }
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) { Debug.WriteLine("❌ DB 없음"); return list; }
 
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         using var cmd = conn.CreateCommand();
@@ -73,8 +72,7 @@ public static class ContractService
             Debug.WriteLine("❌ OriginalCompanyName 없음"); return false;
         }
 
-        var dbPath = GetDatabasePath();
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         using var cmd = conn.CreateCommand();
@@ -100,8 +98,7 @@ public static class ContractService
     // ── 추가 ─────────────────────────────────────────────────────────────────
     public static bool Insert(Contract contract)
     {
-        var dbPath = GetDatabasePath();
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         using var cmd = conn.CreateCommand();
@@ -126,8 +123,7 @@ public static class ContractService
     {
         if (string.IsNullOrEmpty(contract.C_CompanyName)) return false;
 
-        var dbPath = GetDatabasePath();
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         using var cmd = conn.CreateCommand();
@@ -147,14 +143,13 @@ public static class ContractService
 public static List<string> GetUnitPriceColumns()
     {
         var result = new List<string>();
-        var dbPath = GetDatabasePath();
-        if (!File.Exists(dbPath)) 
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) 
         { 
             Debug.WriteLine("❌ DB 없음"); 
             return result; 
         }
 
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         using var cmd = conn.CreateCommand();
@@ -185,8 +180,7 @@ public static List<string> GetUnitPriceColumns()
     public static List<KeyValuePair<string, string>> GetUnitPriceColumnData(string columnName)
     {
         var result = new List<KeyValuePair<string, string>>();
-        var dbPath = GetDatabasePath();
-        if (!File.Exists(dbPath)) { Debug.WriteLine("❌ DB 없음"); return result; }
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) { Debug.WriteLine("❌ DB 없음"); return result; }
 
         // 컬럼명 화이트리스트 검증 (SQL 인젝션 방지 — PRAGMA로 실제 컬럼 목록과 대조)
         var validColumns = GetAllUnitPriceColumnNames();
@@ -196,7 +190,7 @@ public static List<string> GetUnitPriceColumns()
             return result;
         }
 
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         // 첫 번째 컬럼(항목 키)을 동적으로 파악
@@ -234,10 +228,9 @@ public static List<string> GetUnitPriceColumns()
     private static List<string> GetAllUnitPriceColumnNames()
     {
         var result = new List<string>();
-        var dbPath = GetDatabasePath();
-        if (!File.Exists(dbPath)) return result;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return result;
 
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         using var cmd = conn.CreateCommand();
@@ -252,7 +245,7 @@ public static List<string> GetUnitPriceColumns()
     }
 
     // ── 공통 파라미터 ─────────────────────────────────────────────────────────
-    private static void SetParams(SqliteCommand cmd, Contract c)
+    private static void SetParams(DbCommand cmd, Contract c)
     {
         cmd.Parameters.AddWithValue("@name",    c.C_CompanyName    ?? "");
         cmd.Parameters.AddWithValue("@start",   c.C_ContractStart.HasValue
@@ -280,17 +273,17 @@ public static List<string> GetUnitPriceColumns()
     }
 
     // ── 헬퍼 ─────────────────────────────────────────────────────────────────
-    private static string S(SqliteDataReader r, string col)
+    private static string S(DbDataReader r, string col)
     {
         try { int i = r.GetOrdinal(col); return !r.IsDBNull(i) ? r.GetString(i) ?? "" : ""; }
         catch { return ""; }
     }
-    private static int? NullInt(SqliteDataReader r, string col)
+    private static int? NullInt(DbDataReader r, string col)
     {
         try { int i = r.GetOrdinal(col); return r.IsDBNull(i) ? null : r.GetInt32(i); }
         catch { return null; }
     }
-    private static decimal? NullDecimal(SqliteDataReader r, string col)
+    private static decimal? NullDecimal(DbDataReader r, string col)
     {
         try { int i = r.GetOrdinal(col); return r.IsDBNull(i) ? null : r.GetDecimal(i); }
         catch { return null; }

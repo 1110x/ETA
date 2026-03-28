@@ -5,7 +5,8 @@ using System.IO;
 using System.Linq;
 using ClosedXML.Excel;
 using ETA.Models;
-using Microsoft.Data.Sqlite;
+using System.Data;
+using System.Data.Common;
 
 namespace ETA.Services;
 
@@ -273,12 +274,10 @@ public static class TestReportPrintService
     private static (string companyName, string representative) GetContractInfo(string 약칭)
     {
         if (string.IsNullOrEmpty(약칭)) return ("", "");
-        var dbPath = Path.GetFullPath(
-            Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "Data", "eta.db"));
-        if (!File.Exists(dbPath)) { Debug.WriteLine("[Print] DB없음"); return ("", ""); }
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) { Debug.WriteLine("[Print] DB없음"); return ("", ""); }
         try
         {
-            using var conn = new SqliteConnection($"Data Source={dbPath}");
+            using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             // 컬럼 목록 먼저 확인
             using var pragma = conn.CreateCommand();

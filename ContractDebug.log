@@ -783,3 +783,11 @@
 [23:10:53] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
 [23:10:53] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
 [23:10:53] [Contract] 선택: ㈜LG화학 여수-화치
+[16:06:49] [Contract] LoadData() 시작
+[16:06:49] [Contract] 로드 완료 → 32건
+[16:06:49] [Contract] LoadData() 시작
+[16:06:49] [Contract] 로드 완료 → 32건
+[17:02:19] [Contract] LoadData() 시작
+[17:02:19] [Contract] 로드 완료 → 32건
+[17:02:19] [Contract] LoadData() 시작
+[17:02:19] [Contract] 로드 완료 → 32건

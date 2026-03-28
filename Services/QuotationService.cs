@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Microsoft.Data.Sqlite;
+using System.Data;
+using System.Data.Common;
 using ETA.Models;
 using System.Diagnostics;
 
@@ -33,10 +34,9 @@ public static class QuotationService
     public static List<Contract> GetContractCompanies(bool activeOnly)
     {
         var list   = new List<Contract>();
-        var dbPath = GetDatabasePath();
-        if (!File.Exists(dbPath)) return list;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
 
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         using var cmd = conn.CreateCommand();
@@ -83,10 +83,9 @@ public static class QuotationService
     public static List<QuotationIssue> GetAllIssues()
     {
         var list   = new List<QuotationIssue>();
-        var dbPath = GetDatabasePath();
-        if (!File.Exists(dbPath)) return list;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
 
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         if (!TableExists(conn, "견적발행내역")) return list;
 
@@ -126,10 +125,9 @@ public static class QuotationService
     // ── 업체명으로 최근 견적 담당자 조회 ───────────────────────────────
     public static string GetLatestManagerForCompany(string companyName)
     {
-        var dbPath = GetDatabasePath();
-        if (!File.Exists(dbPath)) return "";
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return "";
 
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         if (!TableExists(conn, "견적발행내역")) return "";
 
@@ -161,10 +159,9 @@ public static class QuotationService
     {
         // OrdinalIgnoreCase + Trim 기반으로 조회되도록
         var dict   = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        var dbPath = GetDatabasePath();
-        if (!File.Exists(dbPath)) return dict;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return dict;
 
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         if (!TableExists(conn, "견적발행내역")) return dict;
 
@@ -197,8 +194,7 @@ public static class QuotationService
     public static List<string> GetContractTypes()
     {
         var list   = new List<string>();
-        var dbPath = GetDatabasePath();
-        if (!File.Exists(dbPath)) return list;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
 
         // 분석단가 테이블에서 제외할 고정 컬럼
         var fixedCols = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
@@ -209,7 +205,7 @@ public static class QuotationService
 
         try
         {
-            using var conn = new SqliteConnection($"Data Source={dbPath}");
+            using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
 
             if (!TableExists(conn, "분석단가"))
@@ -238,11 +234,10 @@ public static class QuotationService
     public static Dictionary<string, decimal> GetPricesByColumn(string columnName)
     {
         var dict   = new Dictionary<string, decimal>(StringComparer.OrdinalIgnoreCase);
-        var dbPath = GetDatabasePath();
-        if (!File.Exists(dbPath)) return dict;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return dict;
         try
         {
-            using var conn = new SqliteConnection($"Data Source={dbPath}");
+            using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var pragma = conn.CreateCommand();
             pragma.CommandText = @"PRAGMA table_info(""분석단가"")";
@@ -277,12 +272,11 @@ public static class QuotationService
     public static bool Insert(QuotationIssue issue,
         Dictionary<string, (int Qty, decimal Price)>? itemData = null)
     {
-        var dbPath = GetDatabasePath();
-        Log($"Insert 시작: dbPath={dbPath}  존재={File.Exists(dbPath)}");
+        Log($"Insert 시작: DbPathHelper.DbPath={DbPathHelper.DbPath}  존재={File.Exists(DbPathHelper.DbPath)}");
         Log($"  issue: 발행일={issue.발행일} 업체명={issue.업체명} 번호={issue.견적번호} 구분={issue.견적구분}");
         Log($"  itemData 입력: {itemData?.Count ?? 0}개");
 
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         bool tableExists = TableExists(conn, "견적발행내역");
@@ -376,7 +370,7 @@ public static class QuotationService
         if (rows > 0)
         {
             using var idCmd = conn.CreateCommand();
-            idCmd.CommandText = "SELECT last_insert_rowid()";
+            idCmd.CommandText = $"SELECT {DbConnectionFactory.LastInsertId}";
             issue.Id = Convert.ToInt32(idCmd.ExecuteScalar());
         }
         Log($"  ExecuteNonQuery rows={rows}  new_id={issue.Id}");
@@ -390,8 +384,7 @@ public static class QuotationService
     // ── DELETE ────────────────────────────────────────────────────────────
     public static bool Delete(int rowid)
     {
-        var dbPath = GetDatabasePath();
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"DELETE FROM ""견적발행내역"" WHERE rowid = @id";
@@ -401,7 +394,7 @@ public static class QuotationService
 
     // ── 헬퍼 ─────────────────────────────────────────────────────────────
     // ── 견적발행내역 누락 컬럼 자동 추가 ─────────────────────────────────────
-    private static void MigrateIssueColumns(SqliteConnection conn)
+    private static void MigrateIssueColumns(DbConnection conn)
     {
         // 추가해야 할 컬럼 목록: (컬럼명, 타입, 기본값)
         var needed = new[]
@@ -435,7 +428,7 @@ public static class QuotationService
         }
     }
 
-    private static bool TableExists(SqliteConnection conn, string name)
+    private static bool TableExists(DbConnection conn, string name)
     {
         using var c = conn.CreateCommand();
         c.CommandText = "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=@n";
@@ -443,10 +436,10 @@ public static class QuotationService
         return Convert.ToInt32(c.ExecuteScalar()) > 0;
     }
 
-    private static string S(SqliteDataReader r, int i)
+    private static string S(DbDataReader r, int i)
         => r.IsDBNull(i) ? "" : r.GetValue(i)?.ToString() ?? "";
 
-    private static decimal Dec(SqliteDataReader r, int i)
+    private static decimal Dec(DbDataReader r, int i)
     {
         if (r.IsDBNull(i)) return 0;
         // 통화기호(₩, ,) 제거 후 파싱

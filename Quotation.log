@@ -2097,3 +2097,696 @@
 [23:03:37] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=22
 [23:03:40] [의뢰서] 견적항목 22개
 [23:06:10] [의뢰서] 견적항목 22개
+[14:58:31] === ShowIssue rowid=955  ㈜LG화학 여수-화치  테스트 견적서 입니다. ===
+[14:58:31] row 컬럼수=213
+[14:58:31] 항목 컬럼 후보(65개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질, 불소화합물
+[14:58:31] BuildItemLines → 22행
+[14:58:31] ApplyCheckStates: CheckPanel항목=67개
+[14:58:31] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=22
+[14:58:51] [의뢰서] 견적항목 22개
+[14:59:08] [의뢰서] 견적항목 22개
+[15:23:14] [NewPanel] 단가 로드: FS100 → 65개
+[15:23:23] [NewPanel] 단가 로드: FS100 → 65개
+[15:23:38] [NewPanel] ==== 저장 버튼 클릭 ====
+[15:23:38] [NewPanel]   _sampleDuplicated=False
+[15:23:38] [NewPanel]   companyName='(주)엘지화학(여수공장-용성2)'  abbr='LG용성'
+[15:23:38] [NewPanel]   _itemData.Count=15
+[15:23:38] [NewPanel]   발행일=2026-03-28  시료명=테스트견적  번호=20260328-152319
+[15:23:38] [NewPanel]   견적구분=FS100  담당자=테스트
+[15:23:38] [NewPanel]   total=519,200  editingIssue=null
+[15:23:38] [NewPanel]   DB 저장 시작 (Task.Run)
+[15:23:38] [QService] Insert 시작: dbPath=/Users/azrael/Documents/ETA/Data/eta.db  존재=True
+[15:23:38] [QService]   issue: 발행일=2026-03-28 업체명=(주)엘지화학(여수공장-용성2) 번호=20260328-152319 구분=FS100
+[15:23:38] [QService]   itemData 입력: 15개
+[15:23:38] [QService]   TableExists(견적발행내역)=True
+[15:23:38] [QService]   테이블 컬럼 수=213
+[15:23:38] [QService]   validItems(Qty>0, 컬럼존재)=15개
+[15:23:38] [QService]   ExecuteNonQuery 예외: SqliteException: SQLite Error 1: 'table 견적발행내역 has no column named 담당자'.
+[15:23:38] [QService]   SQL: 
+            INSERT INTO "견적발행내역"
+                ("견적발행일자", "업체명", "약칭", "시료명", "견적번호", "적용구분", "담당자", "합계 금액", "구리", "구리단가", "구리소계", "납", "납단가", "납소계", "니켈", "니켈단가", "니켈소계", "망간", "망간단가", "망간소계", "바륨", "바륨단가", "바륨소계", "비소", "비소단가", "비소소계", "아연", "아연단가", "아연소계", "안티몬", "안티몬단가", "안티몬소계", "주석", "주석단가
+[15:23:38] [NewPanel]   저장 예외: SqliteException: SQLite Error 1: 'table 견적발행내역 has no column named 담당자'.
+[15:23:38] [NewPanel]   StackTrace:    at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteCommand.PrepareAndEnumerateStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteCommand.GetStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteDataReader.NextResult()
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader(CommandBehavior behavior)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader()
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteNonQuery()
+   at ETA.Services.QuotationService.Insert(QuotationIssue issue, Dictionary`2 itemData) in /Users/azrael/Documents/ETA/Services/QuotationService.cs:line 359
+   at ETA.Views.Pages.QuotationNewPanel.<>c__DisplayClass43_0.<BtnSave_Click>b__2() in /Users/azrael/Documents/ETA/Views/Pages/QuotationNewPanel.axaml.cs:line 603
+   at System.Threading.Tasks.Task`1.InnerInvoke()
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at ETA.Views.Pages.QuotationNewPanel.BtnSave_Click(Object sender, RoutedEventArgs e) in /Users/azrael/Documents/ETA/Views/Pages/QuotationNewPanel.axaml.cs:line 596
+[15:23:38] [NewPanel]   → 저장 실패 (Insert 반환 false)
+[15:25:50] [NewPanel] 단가 로드: FS100 → 65개
+[15:26:10] [NewPanel] 단가 로드: FS100 → 65개
+[15:26:11] [NewPanel] 단가 로드: FS100 → 65개
+[15:26:12] [NewPanel] ==== 저장 버튼 클릭 ====
+[15:26:12] [NewPanel]   _sampleDuplicated=False
+[15:26:12] [NewPanel]   companyName='(주)엘지화학(여수공장-적량(SM))'  abbr='LG용성'
+[15:26:12] [NewPanel]   _itemData.Count=17
+[15:26:12] [NewPanel]   발행일=2026-03-28  시료명=테스트견적서  번호=20260328-152554
+[15:26:12] [NewPanel]   견적구분=FS100  담당자=테스트견적서
+[15:26:12] [NewPanel]   total=968,000  editingIssue=null
+[15:26:12] [NewPanel]   DB 저장 시작 (Task.Run)
+[15:26:12] [QService] Insert 시작: dbPath=/Users/azrael/Documents/ETA/Data/eta.db  존재=True
+[15:26:12] [QService]   issue: 발행일=2026-03-28 업체명=(주)엘지화학(여수공장-적량(SM)) 번호=20260328-152554 구분=FS100
+[15:26:12] [QService]   itemData 입력: 17개
+[15:26:12] [QService]   TableExists(견적발행내역)=True
+[15:26:12] [QService]   마이그레이션: '담당자' 컬럼 추가 완료
+[15:26:12] [QService]   마이그레이션 후 테이블 컬럼 수=214
+[15:26:12] [QService]   validItems(Qty>0, 컬럼존재)=17개
+[15:26:12] [QService]   고정컬럼 삽입 대상: 견적발행일자, 업체명, 약칭, 시료명, 견적번호, 적용구분, 담당자, 합계 금액
+[15:26:12] [QService]   ExecuteNonQuery rows=1  new_id=956
+[15:26:12] [NewPanel]   → 저장 성공: 20260328-152554  항목17개
+[15:26:12] === ShowIssue rowid=956  (주)엘지화학(여수공장-적량(SM))  테스트견적서 ===
+[15:26:12] row 컬럼수=214
+[15:26:12] 항목 컬럼 후보(66개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 담당자, 망간, 바륨, 벤젠, 부유물질
+[15:26:12] BuildItemLines → 18행
+[15:26:12] ApplyCheckStates: CheckPanel항목=67개
+[15:26:12] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=17
+[15:26:23] === ShowIssue rowid=956  (주)엘지화학(여수공장-적량(SM))  테스트견적서 ===
+[15:26:23] row 컬럼수=214
+[15:26:23] 항목 컬럼 후보(66개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 담당자, 망간, 바륨, 벤젠, 부유물질
+[15:26:23] BuildItemLines → 18행
+[15:26:23] ApplyCheckStates: CheckPanel항목=67개
+[15:26:23] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=17
+[15:28:26] [NewPanel] ==== 저장 버튼 클릭 ====
+[15:28:26] [NewPanel]   _sampleDuplicated=False
+[15:28:26] [NewPanel]   companyName='(주)엘지화학(여수공장-적량(SM))'  abbr='LG용성'
+[15:28:26] [NewPanel]   _itemData.Count=18
+[15:28:26] [NewPanel]   발행일=2026-03-28  시료명=테스트견적서  번호=20260328-152554
+[15:28:26] [NewPanel]   견적구분=FS100  담당자=테스트견적서
+[15:28:26] [NewPanel]   total=968,000  editingIssue=956
+[15:28:26] [NewPanel]   DB 저장 시작 (Task.Run)
+[15:28:26] [NewPanel]   기존 건 삭제: id=956
+[15:28:26] [QService] Insert 시작: dbPath=/Users/azrael/Documents/ETA/Data/eta.db  존재=True
+[15:28:26] [QService]   issue: 발행일=2026-03-28 업체명=(주)엘지화학(여수공장-적량(SM)) 번호=20260328-152554 구분=FS100
+[15:28:26] [QService]   itemData 입력: 18개
+[15:28:26] [QService]   TableExists(견적발행내역)=True
+[15:28:26] [QService]   마이그레이션 후 테이블 컬럼 수=214
+[15:28:26] [QService]   validItems(Qty>0, 컬럼존재)=18개
+[15:28:26] [QService]   고정컬럼 삽입 대상: 견적발행일자, 업체명, 약칭, 시료명, 견적번호, 적용구분, 담당자, 합계 금액
+[15:28:26] [QService]   ExecuteNonQuery 예외: SqliteException: SQLite Error 1: 'table 견적발행내역 has no column named 담당자단가'.
+[15:28:26] [QService]   SQL: 
+            INSERT INTO "견적발행내역"
+                ("견적발행일자", "업체명", "약칭", "시료명", "견적번호", "적용구분", "담당자", "합계 금액", "구리", "구리단가", "구리소계", "납", "납단가", "납소계", "니켈", "니켈단가", "니켈소계", "망간", "망간단가", "망간소계", "바륨", "바륨단가", "바륨소계", "비소", "비소단가", "비소소계", "아연", "아연단가", "아연소계", "안티몬", "안티몬단가", "안티몬소계", "주석", "주석단가
+[15:28:26] [NewPanel]   저장 예외: SqliteException: SQLite Error 1: 'table 견적발행내역 has no column named 담당자단가'.
+[15:28:26] [NewPanel]   StackTrace:    at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteCommand.PrepareAndEnumerateStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteCommand.GetStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteDataReader.NextResult()
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader(CommandBehavior behavior)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader()
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteNonQuery()
+   at ETA.Services.QuotationService.Insert(QuotationIssue issue, Dictionary`2 itemData)
+   at ETA.Views.Pages.QuotationNewPanel.<>c__DisplayClass43_0.<BtnSave_Click>b__2()
+   at System.Threading.Tasks.Task`1.InnerInvoke()
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at ETA.Views.Pages.QuotationNewPanel.BtnSave_Click(Object sender, RoutedEventArgs e)
+[15:28:26] [NewPanel]   → 저장 실패 (Insert 반환 false)
+[15:28:34] [NewPanel] ==== 저장 버튼 클릭 ====
+[15:28:34] [NewPanel]   _sampleDuplicated=False
+[15:28:34] [NewPanel]   companyName='(주)엘지화학(여수공장-적량(SM))'  abbr='LG용성'
+[15:28:34] [NewPanel]   _itemData.Count=18
+[15:28:34] [NewPanel]   발행일=2026-03-28  시료명=테스트견적서  번호=20260328-152554
+[15:28:34] [NewPanel]   견적구분=FS100  담당자=테스트견적서
+[15:28:34] [NewPanel]   total=1,162,800  editingIssue=956
+[15:28:34] [NewPanel]   DB 저장 시작 (Task.Run)
+[15:28:34] [NewPanel]   기존 건 삭제: id=956
+[15:28:34] [QService] Insert 시작: dbPath=/Users/azrael/Documents/ETA/Data/eta.db  존재=True
+[15:28:34] [QService]   issue: 발행일=2026-03-28 업체명=(주)엘지화학(여수공장-적량(SM)) 번호=20260328-152554 구분=FS100
+[15:28:34] [QService]   itemData 입력: 18개
+[15:28:34] [QService]   TableExists(견적발행내역)=True
+[15:28:34] [QService]   마이그레이션 후 테이블 컬럼 수=214
+[15:28:34] [QService]   validItems(Qty>0, 컬럼존재)=18개
+[15:28:34] [QService]   고정컬럼 삽입 대상: 견적발행일자, 업체명, 약칭, 시료명, 견적번호, 적용구분, 담당자, 합계 금액
+[15:28:34] [QService]   ExecuteNonQuery 예외: SqliteException: SQLite Error 1: 'table 견적발행내역 has no column named 담당자단가'.
+[15:28:34] [QService]   SQL: 
+            INSERT INTO "견적발행내역"
+                ("견적발행일자", "업체명", "약칭", "시료명", "견적번호", "적용구분", "담당자", "합계 금액", "구리", "구리단가", "구리소계", "납", "납단가", "납소계", "니켈", "니켈단가", "니켈소계", "망간", "망간단가", "망간소계", "바륨", "바륨단가", "바륨소계", "비소", "비소단가", "비소소계", "아연", "아연단가", "아연소계", "안티몬", "안티몬단가", "안티몬소계", "주석", "주석단가
+[15:28:34] [NewPanel]   저장 예외: SqliteException: SQLite Error 1: 'table 견적발행내역 has no column named 담당자단가'.
+[15:28:34] [NewPanel]   StackTrace:    at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteCommand.PrepareAndEnumerateStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteCommand.GetStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteDataReader.NextResult()
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader(CommandBehavior behavior)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader()
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteNonQuery()
+   at ETA.Services.QuotationService.Insert(QuotationIssue issue, Dictionary`2 itemData)
+   at ETA.Views.Pages.QuotationNewPanel.<>c__DisplayClass43_0.<BtnSave_Click>b__2()
+   at System.Threading.Tasks.Task`1.InnerInvoke()
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at ETA.Views.Pages.QuotationNewPanel.BtnSave_Click(Object sender, RoutedEventArgs e)
+[15:28:34] [NewPanel]   → 저장 실패 (Insert 반환 false)
+[15:28:39] === ShowIssue rowid=955  ㈜LG화학 여수-화치  테스트 견적서 입니다. ===
+[15:28:39] row 컬럼수=214
+[15:28:39] 항목 컬럼 후보(66개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 담당자, 망간, 바륨, 벤젠, 부유물질
+[15:28:39] BuildItemLines → 22행
+[15:28:39] ApplyCheckStates: CheckPanel항목=67개
+[15:28:39] [NewPanel] 단가 로드: FS100 → 65개
+[15:28:39] [NewPanel] 단가 로드: FS100 → 65개
+[15:28:39] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=22
+[15:28:40] === ShowIssue rowid=956  (주)엘지화학(여수공장-적량(SM))  테스트견적서 ===
+[15:28:40] row 컬럼수=0
+[15:28:40] 항목 컬럼 후보(0개): 
+[15:28:40] BuildItemLines → 0행
+[15:28:40] ApplyCheckStates: CheckPanel항목=67개
+[15:28:40] [NewPanel] 단가 로드: FS100 → 65개
+[15:28:40] [NewPanel] 단가 로드: FS100 → 65개
+[15:28:40] ApplyCheckStates 완료: 컬럼매칭=0  체크됨=0
+[15:28:45] === ShowIssue rowid=955  ㈜LG화학 여수-화치  테스트 견적서 입니다. ===
+[15:28:45] row 컬럼수=214
+[15:28:45] 항목 컬럼 후보(66개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 담당자, 망간, 바륨, 벤젠, 부유물질
+[15:28:45] BuildItemLines → 22행
+[15:28:45] ApplyCheckStates: CheckPanel항목=67개
+[15:28:45] [NewPanel] 단가 로드: FS100 → 65개
+[15:28:45] [NewPanel] 단가 로드: FS100 → 65개
+[15:28:45] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=22
+[15:28:48] === ShowIssue rowid=956  (주)엘지화학(여수공장-적량(SM))  테스트견적서 ===
+[15:28:48] row 컬럼수=0
+[15:28:48] 항목 컬럼 후보(0개): 
+[15:28:48] BuildItemLines → 0행
+[15:28:48] ApplyCheckStates: CheckPanel항목=67개
+[15:28:48] [NewPanel] 단가 로드: FS100 → 65개
+[15:28:48] [NewPanel] 단가 로드: FS100 → 65개
+[15:28:48] ApplyCheckStates 완료: 컬럼매칭=0  체크됨=0
+[15:28:57] === ShowIssue rowid=955  ㈜LG화학 여수-화치  테스트 견적서 입니다. ===
+[15:28:57] row 컬럼수=214
+[15:28:57] 항목 컬럼 후보(66개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 담당자, 망간, 바륨, 벤젠, 부유물질
+[15:28:57] BuildItemLines → 22행
+[15:28:57] ApplyCheckStates: CheckPanel항목=67개
+[15:28:57] [NewPanel] 단가 로드: FS100 → 65개
+[15:28:57] [NewPanel] 단가 로드: FS100 → 65개
+[15:28:57] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=22
+[15:28:57] === ShowIssue rowid=956  (주)엘지화학(여수공장-적량(SM))  테스트견적서 ===
+[15:28:57] row 컬럼수=0
+[15:28:57] 항목 컬럼 후보(0개): 
+[15:28:57] BuildItemLines → 0행
+[15:28:57] ApplyCheckStates: CheckPanel항목=67개
+[15:28:57] [NewPanel] 단가 로드: FS100 → 65개
+[15:28:57] [NewPanel] 단가 로드: FS100 → 65개
+[15:28:57] ApplyCheckStates 완료: 컬럼매칭=0  체크됨=0
+[15:29:05] === ShowIssue rowid=956  (주)엘지화학(여수공장-적량(SM))  테스트견적서 ===
+[15:29:05] row 컬럼수=0
+[15:29:05] 항목 컬럼 후보(0개): 
+[15:29:05] BuildItemLines → 0행
+[15:29:05] ApplyCheckStates: CheckPanel항목=67개
+[15:29:05] ApplyCheckStates 완료: 컬럼매칭=0  체크됨=0
+[15:29:05] === ShowIssue rowid=956  (주)엘지화학(여수공장-적량(SM))  테스트견적서 ===
+[15:29:05] row 컬럼수=0
+[15:29:05] 항목 컬럼 후보(0개): 
+[15:29:05] BuildItemLines → 0행
+[15:29:05] ApplyCheckStates: CheckPanel항목=67개
+[15:29:05] ApplyCheckStates 완료: 컬럼매칭=0  체크됨=0
+[15:29:08] === ShowIssue rowid=956  (주)엘지화학(여수공장-적량(SM))  테스트견적서 ===
+[15:29:08] row 컬럼수=0
+[15:29:08] 항목 컬럼 후보(0개): 
+[15:29:08] BuildItemLines → 0행
+[15:29:08] ApplyCheckStates: CheckPanel항목=67개
+[15:29:08] ApplyCheckStates 완료: 컬럼매칭=0  체크됨=0
+[15:29:09] === ShowIssue rowid=955  ㈜LG화학 여수-화치  테스트 견적서 입니다. ===
+[15:29:09] row 컬럼수=214
+[15:29:09] 항목 컬럼 후보(66개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 담당자, 망간, 바륨, 벤젠, 부유물질
+[15:29:09] BuildItemLines → 22행
+[15:29:09] ApplyCheckStates: CheckPanel항목=67개
+[15:29:09] [NewPanel] 단가 로드: FS100 → 65개
+[15:29:09] [NewPanel] 단가 로드: FS100 → 65개
+[15:29:09] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=22
+[15:29:11] === ShowIssue rowid=956  (주)엘지화학(여수공장-적량(SM))  테스트견적서 ===
+[15:29:11] row 컬럼수=0
+[15:29:11] 항목 컬럼 후보(0개): 
+[15:29:11] BuildItemLines → 0행
+[15:29:11] ApplyCheckStates: CheckPanel항목=67개
+[15:29:11] [NewPanel] 단가 로드: FS100 → 65개
+[15:29:11] [NewPanel] 단가 로드: FS100 → 65개
+[15:29:11] ApplyCheckStates 완료: 컬럼매칭=0  체크됨=0
+[15:29:16] === ShowIssue rowid=956  (주)엘지화학(여수공장-적량(SM))  테스트견적서 ===
+[15:29:16] row 컬럼수=0
+[15:29:16] 항목 컬럼 후보(0개): 
+[15:29:16] BuildItemLines → 0행
+[15:29:16] ApplyCheckStates: CheckPanel항목=67개
+[15:29:16] ApplyCheckStates 완료: 컬럼매칭=0  체크됨=0
+[15:29:26] === ShowIssue rowid=956  (주)엘지화학(여수공장-적량(SM))  테스트견적서 ===
+[15:29:26] row 컬럼수=0
+[15:29:26] 항목 컬럼 후보(0개): 
+[15:29:26] BuildItemLines → 0행
+[15:29:26] ApplyCheckStates: CheckPanel항목=67개
+[15:29:26] ApplyCheckStates 완료: 컬럼매칭=0  체크됨=0
+[15:32:44] [NewPanel] 단가 로드: FS100 → 65개
+[15:32:44] [NewPanel] 단가 로드: FS100 → 65개
+[15:32:47] [NewPanel] 단가 로드: FS100 → 65개
+[15:33:03] === ShowIssue rowid=955  ㈜LG화학 여수-화치  테스트 견적서 입니다. ===
+[15:33:03] row 컬럼수=214
+[15:33:03] 항목 컬럼 후보(66개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 담당자, 망간, 바륨, 벤젠, 부유물질
+[15:33:03] BuildItemLines → 22행
+[15:33:03] ApplyCheckStates: CheckPanel항목=67개
+[15:33:03] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=22
+[15:33:07] === ShowIssue rowid=949  수질분석센터㈜  왔싸 뵹 ===
+[15:33:07] row 컬럼수=214
+[15:33:07] 항목 컬럼 후보(66개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 담당자, 망간, 바륨, 벤젠, 부유물질
+[15:33:07] BuildItemLines → 65행
+[15:33:07] ApplyCheckStates: CheckPanel항목=67개
+[15:33:07] [NewPanel] 단가 로드: FS100 → 65개
+[15:33:07] [NewPanel] 단가 로드: FS100 → 65개
+[15:33:07] [NewPanel] 단가 로드: FS100 → 65개
+[15:33:07] [NewPanel] 단가 로드: FS100 → 65개
+[15:33:07] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=65
+[15:35:24] [NewPanel] 단가 로드: FS100 → 65개
+[15:35:29] === ShowIssue rowid=952  보임열병합발전㈜  테스트 입니다….. ===
+[15:35:29] row 컬럼수=214
+[15:35:29] 항목 컬럼 후보(65개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질, 불소화합물
+[15:35:29] BuildItemLines → 14행
+[15:35:29] ApplyCheckStates: CheckPanel항목=67개
+[15:35:29] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=14
+[15:35:31] 삭제 완료 → 20260312-210229
+[15:35:38] === ShowIssue rowid=951  한화에너지㈜ 여수공장  테스트 테스트 테스트 아하~ 테스형~ ===
+[15:35:38] row 컬럼수=214
+[15:35:38] 항목 컬럼 후보(65개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질, 불소화합물
+[15:35:38] BuildItemLines → 57행
+[15:35:38] ApplyCheckStates: CheckPanel항목=67개
+[15:35:38] [NewPanel] 단가 로드: FS100 → 65개
+[15:35:38] [NewPanel] 단가 로드: FS100 → 65개
+[15:35:38] [NewPanel] 단가 로드: FS100 → 65개
+[15:35:38] [NewPanel] 단가 로드: FS100 → 65개
+[15:35:38] [NewPanel] 단가 로드: FS100 → 65개
+[15:35:38] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=57
+[15:36:08] [NewPanel] 단가 로드: FS100 → 65개
+[15:36:08] [NewPanel] 단가 로드: FS100 → 65개
+[15:36:08] [NewPanel] 단가 로드: FS100 → 65개
+[15:36:08] [NewPanel] 단가 로드: FS100 → 65개
+[15:36:08] [NewPanel] 단가 로드: FS100 → 65개
+[15:36:08] [NewPanel] 단가 로드: FS100 → 65개
+[15:36:08] [NewPanel] 단가 로드: FS100 → 65개
+[15:36:08] [NewPanel] 단가 로드: FS100 → 65개
+[15:36:10] [NewPanel] 단가 로드: FS100 → 65개
+[15:36:11] [NewPanel] 단가 로드: FS100 → 65개
+[15:36:12] [NewPanel] ==== 저장 버튼 클릭 ====
+[15:36:12] [NewPanel]   _sampleDuplicated=False
+[15:36:12] [NewPanel]   companyName='(주)엘지화학(여수공장-용성1)'  abbr='LG용성'
+[15:36:12] [NewPanel]   _itemData.Count=17
+[15:36:12] [NewPanel]   발행일=2026-03-28  시료명=테스트 견적  번호=20260328-153548
+[15:36:12] [NewPanel]   견적구분=FS100  담당자=테스트 견적
+[15:36:12] [NewPanel]   total=968,000  editingIssue=null
+[15:36:12] [NewPanel]   DB 저장 시작 (Task.Run)
+[15:36:12] [QService] Insert 시작: dbPath=/Users/azrael/Documents/ETA/Data/eta.db  존재=True
+[15:36:12] [QService]   issue: 발행일=2026-03-28 업체명=(주)엘지화학(여수공장-용성1) 번호=20260328-153548 구분=FS100
+[15:36:12] [QService]   itemData 입력: 17개
+[15:36:12] [QService]   TableExists(견적발행내역)=True
+[15:36:12] [QService]   마이그레이션 후 테이블 컬럼 수=214
+[15:36:12] [QService]   validItems(Qty>0, 컬럼존재)=17개
+[15:36:12] [QService]   고정컬럼 삽입 대상: 견적발행일자, 업체명, 약칭, 시료명, 견적번호, 적용구분, 담당자, 합계 금액
+[15:36:13] [QService]   ExecuteNonQuery rows=1  new_id=955
+[15:36:13] [NewPanel]   → 저장 성공: 20260328-153548  항목17개
+[15:36:13] === ShowIssue rowid=955  (주)엘지화학(여수공장-용성1)  테스트 견적 ===
+[15:36:13] row 컬럼수=214
+[15:36:13] 항목 컬럼 후보(65개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질, 불소화합물
+[15:36:13] BuildItemLines → 17행
+[15:36:13] ApplyCheckStates: CheckPanel항목=67개
+[15:36:13] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=17
+[15:36:29] [NewPanel] ==== 저장 버튼 클릭 ====
+[15:36:29] [NewPanel]   _sampleDuplicated=False
+[15:36:29] [NewPanel]   companyName='(주)엘지화학(여수공장-용성1)'  abbr='LG용성'
+[15:36:29] [NewPanel]   _itemData.Count=18
+[15:36:29] [NewPanel]   발행일=2026-03-28  시료명=테스트 견적  번호=20260328-153548
+[15:36:29] [NewPanel]   견적구분=FS100  담당자=테스트 견적
+[15:36:29] [NewPanel]   total=1,013,500  editingIssue=955
+[15:36:29] [NewPanel]   DB 저장 시작 (Task.Run)
+[15:36:29] [NewPanel]   기존 건 삭제: id=955
+[15:36:29] [QService] Insert 시작: dbPath=/Users/azrael/Documents/ETA/Data/eta.db  존재=True
+[15:36:29] [QService]   issue: 발행일=2026-03-28 업체명=(주)엘지화학(여수공장-용성1) 번호=20260328-153548 구분=FS100
+[15:36:29] [QService]   itemData 입력: 18개
+[15:36:29] [QService]   TableExists(견적발행내역)=True
+[15:36:29] [QService]   마이그레이션 후 테이블 컬럼 수=214
+[15:36:29] [QService]   validItems(Qty>0, 컬럼존재)=18개
+[15:36:29] [QService]   고정컬럼 삽입 대상: 견적발행일자, 업체명, 약칭, 시료명, 견적번호, 적용구분, 담당자, 합계 금액
+[15:36:29] [QService]   ExecuteNonQuery 예외: SqliteException: SQLite Error 1: 'table 견적발행내역 has no column named 담당자단가'.
+[15:36:29] [QService]   SQL: 
+            INSERT INTO "견적발행내역"
+                ("견적발행일자", "업체명", "약칭", "시료명", "견적번호", "적용구분", "담당자", "합계 금액", "구리", "구리단가", "구리소계", "납", "납단가", "납소계", "니켈", "니켈단가", "니켈소계", "망간", "망간단가", "망간소계", "바륨", "바륨단가", "바륨소계", "비소", "비소단가", "비소소계", "아연", "아연단가", "아연소계", "안티몬", "안티몬단가", "안티몬소계", "주석", "주석단가
+[15:36:29] [NewPanel]   저장 예외: SqliteException: SQLite Error 1: 'table 견적발행내역 has no column named 담당자단가'.
+[15:36:29] [NewPanel]   StackTrace:    at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteCommand.PrepareAndEnumerateStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteCommand.GetStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteDataReader.NextResult()
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader(CommandBehavior behavior)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader()
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteNonQuery()
+   at ETA.Services.QuotationService.Insert(QuotationIssue issue, Dictionary`2 itemData) in /Users/azrael/Documents/ETA/Services/QuotationService.cs:line 364
+   at ETA.Views.Pages.QuotationNewPanel.<>c__DisplayClass43_0.<BtnSave_Click>b__2() in /Users/azrael/Documents/ETA/Views/Pages/QuotationNewPanel.axaml.cs:line 603
+   at System.Threading.Tasks.Task`1.InnerInvoke()
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at ETA.Views.Pages.QuotationNewPanel.BtnSave_Click(Object sender, RoutedEventArgs e) in /Users/azrael/Documents/ETA/Views/Pages/QuotationNewPanel.axaml.cs:line 596
+[15:36:29] [NewPanel]   → 저장 실패 (Insert 반환 false)
+[15:36:36] === ShowIssue rowid=955  (주)엘지화학(여수공장-용성1)  테스트 견적 ===
+[15:36:36] row 컬럼수=0
+[15:36:36] 항목 컬럼 후보(0개): 
+[15:36:36] BuildItemLines → 0행
+[15:36:36] ApplyCheckStates: CheckPanel항목=67개
+[15:36:36] [NewPanel] 단가 로드: FS100 → 65개
+[15:36:36] [NewPanel] 단가 로드: FS100 → 65개
+[15:36:36] ApplyCheckStates 완료: 컬럼매칭=0  체크됨=0
+[15:36:38] === ShowIssue rowid=955  (주)엘지화학(여수공장-용성1)  테스트 견적 ===
+[15:36:38] row 컬럼수=0
+[15:36:38] 항목 컬럼 후보(0개): 
+[15:36:38] BuildItemLines → 0행
+[15:36:38] ApplyCheckStates: CheckPanel항목=67개
+[15:36:38] ApplyCheckStates 완료: 컬럼매칭=0  체크됨=0
+[15:36:52] === ShowIssue rowid=953  국도화학㈜익산지점  3/4 국도화학(주) 익산지점 3EA 견적서 ===
+[15:36:52] row 컬럼수=214
+[15:36:52] 항목 컬럼 후보(65개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질, 불소화합물
+[15:36:52] BuildItemLines → 54행
+[15:36:52] ApplyCheckStates: CheckPanel항목=67개
+[15:36:52] [NewPanel] 단가 로드: FS100 → 65개
+[15:36:52] [NewPanel] 단가 로드: FS100 → 65개
+[15:36:52] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=54
+[15:37:07] [NewPanel] 단가 로드: NFS39 → 65개
+[15:37:13] [NewPanel] ==== 저장 버튼 클릭 ====
+[15:37:13] [NewPanel]   _sampleDuplicated=False
+[15:37:13] [NewPanel]   companyName='국도화학㈜익산지점'  abbr='국도화학'
+[15:37:13] [NewPanel]   _itemData.Count=54
+[15:37:13] [NewPanel]   발행일=2026-03-04  시료명=3/4 국도화학(주) 익산지점 3EA 견적서  번호=20260303-155028
+[15:37:13] [NewPanel]   견적구분=NFS39  담당자=
+[15:37:13] [NewPanel]   total=98,868,000  editingIssue=953
+[15:37:13] [NewPanel]   DB 저장 시작 (Task.Run)
+[15:37:13] [NewPanel]   기존 건 삭제: id=953
+[15:37:13] [QService] Insert 시작: dbPath=/Users/azrael/Documents/ETA/Data/eta.db  존재=True
+[15:37:13] [QService]   issue: 발행일=2026-03-04 업체명=국도화학㈜익산지점 번호=20260303-155028 구분=NFS39
+[15:37:13] [QService]   itemData 입력: 54개
+[15:37:13] [QService]   TableExists(견적발행내역)=True
+[15:37:13] [QService]   마이그레이션 후 테이블 컬럼 수=214
+[15:37:13] [QService]   validItems(Qty>0, 컬럼존재)=54개
+[15:37:13] [QService]   고정컬럼 삽입 대상: 견적발행일자, 업체명, 약칭, 시료명, 견적번호, 적용구분, 담당자, 합계 금액
+[15:37:13] [QService]   ExecuteNonQuery rows=1  new_id=955
+[15:37:13] [NewPanel]   → 저장 성공: 20260303-155028  항목54개
+[15:37:13] === ShowIssue rowid=955  국도화학㈜익산지점  3/4 국도화학(주) 익산지점 3EA 견적서 ===
+[15:37:13] row 컬럼수=214
+[15:37:13] 항목 컬럼 후보(65개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질, 불소화합물
+[15:37:13] BuildItemLines → 54행
+[15:37:13] ApplyCheckStates: CheckPanel항목=67개
+[15:37:13] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=54
+[15:37:19] === ShowIssue rowid=954  보임열병합발전㈜  (주)보임열병합발전 2026년 견적서 ===
+[15:37:19] row 컬럼수=214
+[15:37:19] 항목 컬럼 후보(65개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질, 불소화합물
+[15:37:19] BuildItemLines → 14행
+[15:37:19] ApplyCheckStates: CheckPanel항목=67개
+[15:37:19] [NewPanel] 단가 로드: NFS39 → 65개
+[15:37:19] [NewPanel] 단가 로드: NFS39 → 65개
+[15:37:19] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=14
+[15:37:22] === ShowIssue rowid=955  국도화학㈜익산지점  3/4 국도화학(주) 익산지점 3EA 견적서 ===
+[15:37:22] row 컬럼수=214
+[15:37:22] 항목 컬럼 후보(65개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질, 불소화합물
+[15:37:22] BuildItemLines → 54행
+[15:37:22] ApplyCheckStates: CheckPanel항목=67개
+[15:37:22] [NewPanel] 단가 로드: NFS39 → 65개
+[15:37:22] [NewPanel] 단가 로드: NFS39 → 65개
+[15:37:22] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=54
+[15:37:29] [NewPanel] 단가 로드: FS100 → 65개
+[15:38:35] [NewPanel] 단가 로드: FS100 → 65개
+[15:38:35] [NewPanel] 단가 로드: FS100 → 65개
+[15:38:35] [NewPanel] 단가 로드: FS100 → 65개
+[15:38:35] [NewPanel] 단가 로드: FS100 → 65개
+[15:38:35] [NewPanel] 단가 로드: FS100 → 65개
+[15:38:35] [NewPanel] 단가 로드: FS100 → 65개
+[15:38:39] [NewPanel] 단가 로드: FS100 → 65개
+[15:38:39] [NewPanel] 단가 로드: FS100 → 65개
+[15:38:40] [NewPanel] ==== 저장 버튼 클릭 ====
+[15:38:40] [NewPanel]   _sampleDuplicated=False
+[15:38:40] [NewPanel]   companyName='국도화학(주) 익산지점'  abbr='국도'
+[15:38:40] [NewPanel]   _itemData.Count=17
+[15:38:40] [NewPanel]   발행일=2026-03-28  시료명=테스트 견적  번호=20260328-153729
+[15:38:40] [NewPanel]   견적구분=FS100  담당자=서태
+[15:38:40] [NewPanel]   total=968,000  editingIssue=null
+[15:38:40] [NewPanel]   DB 저장 시작 (Task.Run)
+[15:38:40] [QService] Insert 시작: dbPath=/Users/azrael/Documents/ETA/Data/eta.db  존재=True
+[15:38:40] [QService]   issue: 발행일=2026-03-28 업체명=국도화학(주) 익산지점 번호=20260328-153729 구분=FS100
+[15:38:40] [QService]   itemData 입력: 17개
+[15:38:40] [QService]   TableExists(견적발행내역)=True
+[15:38:40] [QService]   마이그레이션 후 테이블 컬럼 수=214
+[15:38:40] [QService]   validItems(Qty>0, 컬럼존재)=17개
+[15:38:40] [QService]   고정컬럼 삽입 대상: 견적발행일자, 업체명, 약칭, 시료명, 견적번호, 적용구분, 담당자, 합계 금액
+[15:38:40] [QService]   ExecuteNonQuery rows=1  new_id=956
+[15:38:40] [NewPanel]   → 저장 성공: 20260328-153729  항목17개
+[15:38:41] === ShowIssue rowid=956  국도화학(주) 익산지점  테스트 견적 ===
+[15:38:41] row 컬럼수=214
+[15:38:41] 항목 컬럼 후보(65개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질, 불소화합물
+[15:38:41] BuildItemLines → 17행
+[15:38:41] ApplyCheckStates: CheckPanel항목=67개
+[15:38:41] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=17
+[15:38:50] [NewPanel] ==== 저장 버튼 클릭 ====
+[15:38:50] [NewPanel]   _sampleDuplicated=False
+[15:38:50] [NewPanel]   companyName='국도화학(주) 익산지점'  abbr='국도'
+[15:38:50] [NewPanel]   _itemData.Count=18
+[15:38:50] [NewPanel]   발행일=2026-03-28  시료명=테스트 견적  번호=20260328-153729
+[15:38:50] [NewPanel]   견적구분=FS100  담당자=서태
+[15:38:50] [NewPanel]   total=1,082,000  editingIssue=956
+[15:38:50] [NewPanel]   DB 저장 시작 (Task.Run)
+[15:38:50] [NewPanel]   기존 건 삭제: id=956
+[15:38:50] [QService] Insert 시작: dbPath=/Users/azrael/Documents/ETA/Data/eta.db  존재=True
+[15:38:50] [QService]   issue: 발행일=2026-03-28 업체명=국도화학(주) 익산지점 번호=20260328-153729 구분=FS100
+[15:38:50] [QService]   itemData 입력: 18개
+[15:38:50] [QService]   TableExists(견적발행내역)=True
+[15:38:50] [QService]   마이그레이션 후 테이블 컬럼 수=214
+[15:38:50] [QService]   validItems(Qty>0, 컬럼존재)=18개
+[15:38:50] [QService]   고정컬럼 삽입 대상: 견적발행일자, 업체명, 약칭, 시료명, 견적번호, 적용구분, 담당자, 합계 금액
+[15:38:50] [QService]   ExecuteNonQuery 예외: SqliteException: SQLite Error 1: 'table 견적발행내역 has no column named 담당자단가'.
+[15:38:50] [QService]   SQL: 
+            INSERT INTO "견적발행내역"
+                ("견적발행일자", "업체명", "약칭", "시료명", "견적번호", "적용구분", "담당자", "합계 금액", "구리", "구리단가", "구리소계", "납", "납단가", "납소계", "니켈", "니켈단가", "니켈소계", "망간", "망간단가", "망간소계", "바륨", "바륨단가", "바륨소계", "비소", "비소단가", "비소소계", "아연", "아연단가", "아연소계", "안티몬", "안티몬단가", "안티몬소계", "주석", "주석단가
+[15:38:50] [NewPanel]   저장 예외: SqliteException: SQLite Error 1: 'table 견적발행내역 has no column named 담당자단가'.
+[15:38:50] [NewPanel]   StackTrace:    at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteCommand.PrepareAndEnumerateStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteCommand.GetStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteDataReader.NextResult()
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader(CommandBehavior behavior)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteNonQuery()
+   at ETA.Services.QuotationService.Insert(QuotationIssue issue, Dictionary`2 itemData) in /Users/azrael/Documents/ETA/Services/QuotationService.cs:line 364
+   at ETA.Views.Pages.QuotationNewPanel.<>c__DisplayClass43_0.<BtnSave_Click>b__2() in /Users/azrael/Documents/ETA/Views/Pages/QuotationNewPanel.axaml.cs:line 603
+   at System.Threading.Tasks.Task`1.InnerInvoke()
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at ETA.Views.Pages.QuotationNewPanel.BtnSave_Click(Object sender, RoutedEventArgs e) in /Users/azrael/Documents/ETA/Views/Pages/QuotationNewPanel.axaml.cs:line 596
+[15:38:50] [NewPanel]   → 저장 실패 (Insert 반환 false)
+[15:38:53] === ShowIssue rowid=954  보임열병합발전㈜  (주)보임열병합발전 2026년 견적서 ===
+[15:38:53] row 컬럼수=214
+[15:38:53] 항목 컬럼 후보(65개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질, 불소화합물
+[15:38:53] BuildItemLines → 14행
+[15:38:53] ApplyCheckStates: CheckPanel항목=67개
+[15:38:53] [NewPanel] 단가 로드: FS100 → 65개
+[15:38:53] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=14
+[15:38:54] === ShowIssue rowid=956  국도화학(주) 익산지점  테스트 견적 ===
+[15:38:54] row 컬럼수=0
+[15:38:54] 항목 컬럼 후보(0개): 
+[15:38:54] BuildItemLines → 0행
+[15:38:54] ApplyCheckStates: CheckPanel항목=67개
+[15:38:54] [NewPanel] 단가 로드: FS100 → 65개
+[15:38:54] [NewPanel] 단가 로드: FS100 → 65개
+[15:38:54] [NewPanel] 단가 로드: FS100 → 65개
+[15:38:54] ApplyCheckStates 완료: 컬럼매칭=0  체크됨=0
+[15:39:20] === ShowIssue rowid=956  국도화학(주) 익산지점  테스트 견적 ===
+[15:39:20] row 컬럼수=0
+[15:39:20] 항목 컬럼 후보(0개): 
+[15:39:20] BuildItemLines → 0행
+[15:39:20] ApplyCheckStates: CheckPanel항목=67개
+[15:39:20] ApplyCheckStates 완료: 컬럼매칭=0  체크됨=0
+[15:39:24] === ShowIssue rowid=955  국도화학㈜익산지점  3/4 국도화학(주) 익산지점 3EA 견적서 ===
+[15:39:24] row 컬럼수=214
+[15:39:24] 항목 컬럼 후보(65개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질, 불소화합물
+[15:39:24] BuildItemLines → 54행
+[15:39:24] ApplyCheckStates: CheckPanel항목=67개
+[15:39:24] [NewPanel] 단가 로드: FS100 → 65개
+[15:39:24] [NewPanel] 단가 로드: FS100 → 65개
+[15:39:24] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=54
+[15:39:28] === ShowIssue rowid=954  보임열병합발전㈜  (주)보임열병합발전 2026년 견적서 ===
+[15:39:28] row 컬럼수=214
+[15:39:28] 항목 컬럼 후보(65개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질, 불소화합물
+[15:39:28] BuildItemLines → 14행
+[15:39:28] ApplyCheckStates: CheckPanel항목=67개
+[15:39:28] [NewPanel] 단가 로드: FS100 → 65개
+[15:39:28] [NewPanel] 단가 로드: FS100 → 65개
+[15:39:28] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=14
+[15:39:29] === ShowIssue rowid=955  국도화학㈜익산지점  3/4 국도화학(주) 익산지점 3EA 견적서 ===
+[15:39:29] row 컬럼수=214
+[15:39:29] 항목 컬럼 후보(65개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질, 불소화합물
+[15:39:29] BuildItemLines → 54행
+[15:39:29] ApplyCheckStates: CheckPanel항목=67개
+[15:39:29] [NewPanel] 단가 로드: FS100 → 65개
+[15:39:29] [NewPanel] 단가 로드: FS100 → 65개
+[15:39:29] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=54
+[15:40:09] [의뢰서] 견적항목 54개
+[15:45:51] [NewPanel] 단가 로드: NFS39 → 65개
+[15:46:25] [NewPanel] 미리보기 — 추후 연동
+[15:46:29] === ShowIssue rowid=955  국도화학㈜익산지점  3/4 국도화학(주) 익산지점 3EA 견적서 ===
+[15:46:29] row 컬럼수=214
+[15:46:29] 항목 컬럼 후보(65개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질, 불소화합물
+[15:46:29] BuildItemLines → 54행
+[15:46:29] ApplyCheckStates: CheckPanel항목=67개
+[15:46:29] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=54
+[15:46:30] === ShowIssue rowid=954  보임열병합발전㈜  (주)보임열병합발전 2026년 견적서 ===
+[15:46:30] row 컬럼수=214
+[15:46:30] 항목 컬럼 후보(65개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질, 불소화합물
+[15:46:30] BuildItemLines → 14행
+[15:46:30] ApplyCheckStates: CheckPanel항목=67개
+[15:46:30] [NewPanel] 단가 로드: NFS39 → 65개
+[15:46:30] [NewPanel] 단가 로드: NFS39 → 65개
+[15:46:30] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=14
+[15:46:31] === ShowIssue rowid=955  국도화학㈜익산지점  3/4 국도화학(주) 익산지점 3EA 견적서 ===
+[15:46:31] row 컬럼수=214
+[15:46:31] 항목 컬럼 후보(65개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질, 불소화합물
+[15:46:31] BuildItemLines → 54행
+[15:46:31] ApplyCheckStates: CheckPanel항목=67개
+[15:46:31] [NewPanel] 단가 로드: NFS39 → 65개
+[15:46:31] [NewPanel] 단가 로드: NFS39 → 65개
+[15:46:31] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=54
+[15:46:31] === ShowIssue rowid=954  보임열병합발전㈜  (주)보임열병합발전 2026년 견적서 ===
+[15:46:31] row 컬럼수=214
+[15:46:31] 항목 컬럼 후보(65개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질, 불소화합물
+[15:46:31] BuildItemLines → 14행
+[15:46:31] ApplyCheckStates: CheckPanel항목=67개
+[15:46:31] [NewPanel] 단가 로드: NFS39 → 65개
+[15:46:31] [NewPanel] 단가 로드: NFS39 → 65개
+[15:46:31] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=14
+[15:46:47] [의뢰서] 견적항목 14개
+[15:46:52] 분석기록부 출력 시작: 20260303-113022
+[15:53:08] [NewPanel] 단가 로드: FS100 → 65개
+[15:53:14] [NewPanel] 단가 로드: FS100 → 65개
+[15:53:33] [NewPanel] 단가 로드: FS100 → 65개
+[15:53:34] [NewPanel] 단가 로드: FS100 → 65개
+[15:53:35] [NewPanel] 단가 로드: FS100 → 65개
+[15:53:36] [NewPanel] 단가 로드: FS100 → 65개
+[15:53:36] [NewPanel] 단가 로드: FS100 → 65개
+[15:53:37] [NewPanel] 단가 로드: FS100 → 65개
+[15:53:38] [NewPanel] 단가 로드: FS100 → 65개
+[15:53:47] [NewPanel] 일괄 수량 1111 적용
+[15:53:52] [NewPanel] ==== 저장 버튼 클릭 ====
+[15:53:52] [NewPanel]   _sampleDuplicated=False
+[15:53:52] [NewPanel]   companyName='국도화학(주) 익산지점'  abbr='국도'
+[15:53:52] [NewPanel]   _itemData.Count=67
+[15:53:52] [NewPanel]   발행일=2026-03-28  시료명=테스트  번호=20260328-155314
+[15:53:52] [NewPanel]   견적구분=FS100  담당자=테스트 견저거
+[15:53:52] [NewPanel]   total=4,847,515,200  editingIssue=null
+[15:53:52] [NewPanel]   DB 저장 시작 (Task.Run)
+[15:53:52] [QService] Insert 시작: dbPath=/Users/azrael/Documents/ETA/Data/eta.db  존재=True
+[15:53:52] [QService]   issue: 발행일=2026-03-28 업체명=국도화학(주) 익산지점 번호=20260328-155314 구분=FS100
+[15:53:52] [QService]   itemData 입력: 67개
+[15:53:52] [QService]   TableExists(견적발행내역)=True
+[15:53:52] [QService]   마이그레이션 후 테이블 컬럼 수=214
+[15:53:52] [QService]   validItems(Qty>0, 컬럼존재)=65개
+[15:53:52] [QService]   고정컬럼 삽입 대상: 견적발행일자, 업체명, 약칭, 시료명, 견적번호, 적용구분, 담당자, 합계 금액
+[15:53:52] [QService]   ExecuteNonQuery rows=1  new_id=956
+[15:53:52] [NewPanel]   → 저장 성공: 20260328-155314  항목67개
+[15:53:53] === ShowIssue rowid=956  국도화학(주) 익산지점  테스트 ===
+[15:53:53] row 컬럼수=214
+[15:53:53] 항목 컬럼 후보(65개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질, 불소화합물
+[15:53:53] BuildItemLines → 65행
+[15:53:53] ApplyCheckStates: CheckPanel항목=67개
+[15:53:53] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=65
+[15:53:56] === ShowIssue rowid=956  국도화학(주) 익산지점  테스트 ===
+[15:53:56] row 컬럼수=214
+[15:53:56] 항목 컬럼 후보(65개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질, 불소화합물
+[15:53:56] BuildItemLines → 65행
+[15:53:56] ApplyCheckStates: CheckPanel항목=67개
+[15:53:56] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=65
+[15:54:05] [NewPanel] ==== 저장 버튼 클릭 ====
+[15:54:05] [NewPanel]   _sampleDuplicated=False
+[15:54:05] [NewPanel]   companyName='국도화학(주) 익산지점'  abbr='국도'
+[15:54:05] [NewPanel]   _itemData.Count=65
+[15:54:05] [NewPanel]   발행일=2026-03-28  시료명=테스트  번호=20260328-155314
+[15:54:05] [NewPanel]   견적구분=FS100  담당자=테스트 견저거
+[15:54:05] [NewPanel]   total=4,819,184,700  editingIssue=956
+[15:54:05] [NewPanel]   DB 저장 시작 (Task.Run)
+[15:54:05] [NewPanel]   기존 건 삭제: id=956
+[15:54:05] [QService] Insert 시작: dbPath=/Users/azrael/Documents/ETA/Data/eta.db  존재=True
+[15:54:05] [QService]   issue: 발행일=2026-03-28 업체명=국도화학(주) 익산지점 번호=20260328-155314 구분=FS100
+[15:54:05] [QService]   itemData 입력: 65개
+[15:54:05] [QService]   TableExists(견적발행내역)=True
+[15:54:05] [QService]   마이그레이션 후 테이블 컬럼 수=214
+[15:54:05] [QService]   validItems(Qty>0, 컬럼존재)=65개
+[15:54:05] [QService]   고정컬럼 삽입 대상: 견적발행일자, 업체명, 약칭, 시료명, 견적번호, 적용구분, 담당자, 합계 금액
+[15:54:05] [QService]   ExecuteNonQuery rows=1  new_id=956
+[15:54:05] [NewPanel]   → 저장 성공: 20260328-155314  항목65개
+[15:54:05] === ShowIssue rowid=956  국도화학(주) 익산지점  테스트 ===
+[15:54:05] row 컬럼수=214
+[15:54:05] 항목 컬럼 후보(65개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질, 불소화합물
+[15:54:05] BuildItemLines → 65행
+[15:54:05] ApplyCheckStates: CheckPanel항목=67개
+[15:54:05] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=65
+[15:54:08] === ShowIssue rowid=956  국도화학(주) 익산지점  테스트 ===
+[15:54:08] row 컬럼수=214
+[15:54:08] 항목 컬럼 후보(65개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질, 불소화합물
+[15:54:08] BuildItemLines → 65행
+[15:54:08] ApplyCheckStates: CheckPanel항목=67개
+[15:54:08] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=65
+[15:54:48] [의뢰서] 견적항목 65개
+[16:31:16] [NewPanel] 단가 로드: FS100 → 65개
+[16:33:54] === ShowIssue rowid=956  국도화학(주) 익산지점  테스트 ===
+[16:33:54] row 컬럼수=214
+[16:33:54] 항목 컬럼 후보(65개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질, 불소화합물
+[16:33:54] BuildItemLines → 65행
+[16:33:54] ApplyCheckStates: CheckPanel항목=67개
+[16:33:54] [NewPanel] 단가 로드: FS100 → 65개
+[16:33:54] [NewPanel] 단가 로드: FS100 → 65개
+[16:33:54] [NewPanel] 단가 로드: FS100 → 65개
+[16:33:54] [NewPanel] 단가 로드: FS100 → 65개
+[16:33:54] [NewPanel] 단가 로드: FS100 → 65개
+[16:33:54] [NewPanel] 단가 로드: FS100 → 65개
+[16:33:54] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=65
+[16:34:02] [NewPanel] 단가 로드: FS100 → 65개
+[16:34:02] [NewPanel] 단가 로드: FS100 → 65개
+[16:34:02] [NewPanel] 단가 로드: FS100 → 65개
+[16:34:02] [NewPanel] 단가 로드: FS100 → 65개
+[16:34:02] [NewPanel] 단가 로드: FS100 → 65개
+[16:34:02] [NewPanel] 단가 로드: FS100 → 65개
+[16:34:02] [NewPanel] 단가 로드: FS100 → 65개
+[16:34:02] [NewPanel] 단가 로드: FS100 → 65개
+[16:34:29] [NewPanel] 단가 로드: FS100 → 65개
+[16:34:30] [NewPanel] 단가 로드: FS100 → 65개
+[16:34:30] [NewPanel] 단가 로드: FS100 → 65개
+[16:34:31] [NewPanel] 단가 로드: FS100 → 65개
+[16:34:31] [NewPanel] 단가 로드: FS100 → 65개
+[16:34:32] [NewPanel] 단가 로드: FS100 → 65개
+[16:34:33] [NewPanel] 단가 로드: FS100 → 65개
+[16:34:34] [NewPanel] ==== 저장 버튼 클릭 ====
+[16:34:34] [NewPanel]   _sampleDuplicated=False
+[16:34:34] [NewPanel]   companyName='지에스칼텍스(주) 여수공장'  abbr='GS'
+[16:34:34] [NewPanel]   _itemData.Count=67
+[16:34:34] [NewPanel]   발행일=2026-03-28  시료명=테스트 입니다.  번호=20260328-163402
+[16:34:34] [NewPanel]   견적구분=FS100  담당자=테스트
+[16:34:34] [NewPanel]   total=4,363,200  editingIssue=null
+[16:34:34] [NewPanel]   DB 저장 시작 (Task.Run)
+[16:34:34] [QService] Insert 시작: dbPath=/Users/azrael/Documents/ETA/Data/eta.db  존재=True
+[16:34:34] [QService]   issue: 발행일=2026-03-28 업체명=지에스칼텍스(주) 여수공장 번호=20260328-163402 구분=FS100
+[16:34:34] [QService]   itemData 입력: 67개
+[16:34:34] [QService]   TableExists(견적발행내역)=True
+[16:34:34] [QService]   마이그레이션 후 테이블 컬럼 수=214
+[16:34:34] [QService]   validItems(Qty>0, 컬럼존재)=65개
+[16:34:34] [QService]   고정컬럼 삽입 대상: 견적발행일자, 업체명, 약칭, 시료명, 견적번호, 적용구분, 담당자, 합계 금액
+[16:34:34] [QService]   ExecuteNonQuery rows=1  new_id=956
+[16:34:34] [NewPanel]   → 저장 성공: 20260328-163402  항목67개
+[16:34:35] === ShowIssue rowid=956  지에스칼텍스(주) 여수공장  테스트 입니다. ===
+[16:34:35] row 컬럼수=214
+[16:34:35] 항목 컬럼 후보(65개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질, 불소화합물
+[16:34:35] BuildItemLines → 65행
+[16:34:35] ApplyCheckStates: CheckPanel항목=67개
+[16:34:35] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=65
+[16:34:46] [의뢰서] 견적항목 65개

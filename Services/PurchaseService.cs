@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.Data.Sqlite;
+using System.Data;
+using System.Data.Common;
 using ETA.Models;
 using System.Diagnostics;
 
@@ -10,10 +11,9 @@ namespace ETA.Services;
 public static class PurchaseService
 {
     // ── DB 경로 (AgentService 와 동일한 eta.db) ───────────────────────────────
-    private static string GetDatabasePath() => DbPathHelper.DbPath;
 
     // ── 테이블 자동 생성 ──────────────────────────────────────────────────────
-    private static void EnsureTable(SqliteConnection conn)
+    private static void EnsureTable(DbConnection conn)
     {
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
@@ -34,10 +34,9 @@ public static class PurchaseService
     public static List<PurchaseItem> GetAll()
     {
         var list   = new List<PurchaseItem>();
-        var dbPath = GetDatabasePath();
-        if (!File.Exists(dbPath)) return list;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
 
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         EnsureTable(conn);
 
@@ -72,10 +71,9 @@ public static class PurchaseService
     public static List<PurchaseItem> GetByMonth(int year, int month)
     {
         var list   = new List<PurchaseItem>();
-        var dbPath = GetDatabasePath();
-        if (!File.Exists(dbPath)) return list;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
 
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         EnsureTable(conn);
 
@@ -110,10 +108,9 @@ public static class PurchaseService
     public static List<(int Year, int Month, int Count)> GetMonthSummary()
     {
         var result = new List<(int, int, int)>();
-        var dbPath = GetDatabasePath();
-        if (!File.Exists(dbPath)) return result;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return result;
 
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         EnsureTable(conn);
 
@@ -139,8 +136,7 @@ public static class PurchaseService
     // ── 추가 ─────────────────────────────────────────────────────────────────────
     public static bool Insert(PurchaseItem item)
     {
-        var dbPath = GetDatabasePath();
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         EnsureTable(conn);
 
@@ -163,7 +159,7 @@ public static class PurchaseService
         if (rows > 0)
         {
             using var idCmd = conn.CreateCommand();
-            idCmd.CommandText = "SELECT last_insert_rowid()";
+            idCmd.CommandText = $"SELECT {DbConnectionFactory.LastInsertId}";
             item.Id = Convert.ToInt32(idCmd.ExecuteScalar());
         }
 
@@ -176,8 +172,7 @@ public static class PurchaseService
     public static bool Update(int id, string 구분, string 품목, int 수량,
                               string 요청자, string 비고)
     {
-        var dbPath = GetDatabasePath();
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         using var cmd = conn.CreateCommand();
@@ -201,8 +196,7 @@ public static class PurchaseService
 
     public static bool UpdateStatus(int id, string status)
     {
-        var dbPath = GetDatabasePath();
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         using var cmd = conn.CreateCommand();
@@ -218,8 +212,7 @@ public static class PurchaseService
     // ── 삭제 ─────────────────────────────────────────────────────────────────
     public static bool Delete(int id)
     {
-        var dbPath = GetDatabasePath();
-        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         using var cmd = conn.CreateCommand();
@@ -231,6 +224,6 @@ public static class PurchaseService
         return rows > 0;
     }
 
-    private static string S(SqliteDataReader r, int i)
+    private static string S(DbDataReader r, int i)
         => r.IsDBNull(i) ? "" : r.GetString(i) ?? "";
 }
