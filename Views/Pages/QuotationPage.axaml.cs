@@ -20,7 +20,7 @@ public partial class QuotationPage : UserControl
 
     // ── 내부 데이터 ───────────────────────────────────────────────────────
     private List<Contract> _allCompanies = [];
-    private bool _activeOnly = true;
+    private bool _useContractDb = false;   // false = 측정인 DB (기본), true = 계약 DB
 
     public QuotationPage()
     {
@@ -30,7 +30,17 @@ public partial class QuotationPage : UserControl
     // ── 외부에서 호출: 데이터 로드 ───────────────────────────────────────
     public void LoadData()
     {
-        _allCompanies = QuotationService.GetContractCompanies(_activeOnly);
+        if (_useContractDb)
+        {
+            _allCompanies = QuotationService.GetContractCompanies(activeOnly: true);
+            txbHeader.Text = "계약업체";
+        }
+        else
+        {
+            MeasurerService.SyncAbbrFromContractDb();
+            _allCompanies = MeasurerService.GetCompaniesAsContracts();
+            txbHeader.Text = "측정인 업체";
+        }
         ApplyFilter(txbSearch.Text ?? "");
     }
 
@@ -56,7 +66,7 @@ public partial class QuotationPage : UserControl
 
     private void TglActiveOnly_Changed(object? sender, RoutedEventArgs e)
     {
-        _activeOnly = tglActiveOnly.IsChecked == true;
+        _useContractDb = tglActiveOnly.IsChecked == true;
         LoadData();
     }
 

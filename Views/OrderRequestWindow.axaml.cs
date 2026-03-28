@@ -260,16 +260,48 @@ public class OrderRequestWindow : Window
         RefreshCheckboxes();
     }
 
+    // 업체명 정규화: ㈜/(주)/㈔/(사) 통일, 공백·괄호·하이픈 제거, 소문자화
+    private static string NormCompany(string name)
+    {
+        var s = name
+            .Replace("㈜", "주").Replace("(주)", "주").Replace("（주）", "주")
+            .Replace("㈔", "사").Replace("(사)", "사")
+            .Replace("주식회사", "주").Replace("유한회사", "유")
+            .Replace(" ", "").Replace("-", "").Replace("·", "")
+            .Replace("(", "").Replace(")", "").Replace("（", "").Replace("）", "");
+        return s.ToLower();
+    }
+
     // 측정인 DB에서 업체명 퍼지 매칭 후 채취지점 반환
     private List<string> FindMeasurerPoints(string companyName)
     {
         var companies = MeasurerService.GetCompanies();
 
-        // 완전일치
+        // 1. 완전일치
         var match = companies.FirstOrDefault(c =>
             string.Equals(c.Trim(), companyName.Trim(), StringComparison.OrdinalIgnoreCase));
 
-        // 포함 관계
+        // 2. 정규화 후 일치
+        if (match == null)
+        {
+            var normQuery = NormCompany(companyName);
+            match = companies.FirstOrDefault(c =>
+                string.Equals(NormCompany(c), normQuery, StringComparison.OrdinalIgnoreCase));
+        }
+
+        // 3. 정규화 포함 관계
+        if (match == null)
+        {
+            var normQuery = NormCompany(companyName);
+            match = companies.FirstOrDefault(c =>
+            {
+                var nc = NormCompany(c);
+                return nc.Contains(normQuery, StringComparison.OrdinalIgnoreCase) ||
+                       normQuery.Contains(nc, StringComparison.OrdinalIgnoreCase);
+            });
+        }
+
+        // 4. 원본 포함 관계 (기존 로직 유지)
         match ??= companies.FirstOrDefault(c =>
             c.Contains(companyName, StringComparison.OrdinalIgnoreCase) ||
             companyName.Contains(c, StringComparison.OrdinalIgnoreCase));

@@ -82,11 +82,21 @@
                 Padding="8,5" Margin="0,0,0,6">
             <Grid ColumnDefinitions="Auto,*,Auto">
                 <TextBlock Grid.Column="0" Classes="lbl" Text="업체 : " />
-                <TextBlock Grid.Column="1" x:Name="txbCompany"
-                           Text="— 오른쪽에서 업체를 선택하세요 —"
-                           FontSize="11" FontWeight="SemiBold"
-                           Foreground="#7cd87c" VerticalAlignment="Center"
-                           FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+                <StackPanel Grid.Column="1" Orientation="Horizontal"
+                            Spacing="6" VerticalAlignment="Center">
+                    <TextBlock x:Name="txbCompany"
+                               Text="— 오른쪽에서 업체를 선택하세요 —"
+                               FontSize="11" FontWeight="SemiBold"
+                               Foreground="#7cd87c"
+                               FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+                    <Border x:Name="bdgAbbr"
+                            IsVisible="False"
+                            CornerRadius="3" Padding="5,1">
+                        <TextBlock x:Name="txbAbbr"
+                                   FontSize="10"
+                                   FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+                    </Border>
+                </StackPanel>
                 <TextBlock Grid.Column="2" x:Name="txbMode"
                            FontSize="10" Foreground="#666"
                            VerticalAlignment="Center" Margin="6,0,0,0"

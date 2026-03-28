@@ -2,8 +2,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="ETA.Views.MeasurerLoginWindow"
         Title="측정인 로그인"
-        Width="380" Height="360"
-        MinWidth="340" MinHeight="320"
+        Width="380" Height="400"
+        MinWidth="340" MinHeight="360"
         WindowStartupLocation="CenterOwner"
         Background="#1a1a2e"
         CanResize="False"
@@ -42,6 +42,20 @@
 
         <!-- 폼 -->
         <StackPanel Grid.Row="1" Spacing="10">
+
+            <!-- 브라우저 선택 -->
+            <StackPanel Spacing="4">
+                <TextBlock Text="브라우저"
+                           FontSize="11" Foreground="#888"
+                           FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"/>
+                <ComboBox x:Name="cmbBrowser"
+                          Height="30" FontSize="12"
+                          Background="#22223a" Foreground="#ddd"
+                          BorderBrush="#3a3a55" Padding="6,2"
+                          CornerRadius="4"
+                          HorizontalAlignment="Stretch"
+                          FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"/>
+            </StackPanel>
 
             <!-- 아이디 -->
             <StackPanel Spacing="4">

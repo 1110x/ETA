@@ -19,6 +19,16 @@ public static class QuotationService
         return Path.Combine(dir, "eta.db");
     }
 
+    private static readonly string LogPath = Path.GetFullPath(
+        Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "Quotation.log"));
+
+    private static void Log(string msg)
+    {
+        var line = $"[{DateTime.Now:HH:mm:ss}] [QService] {msg}";
+        Debug.WriteLine(line);
+        try { File.AppendAllText(LogPath, line + Environment.NewLine); } catch { }
+    }
+
     // ── 계약업체 조회 ─────────────────────────────────────────────────────
     public static List<Contract> GetContractCompanies(bool activeOnly)
     {
@@ -268,9 +278,19 @@ public static class QuotationService
         Dictionary<string, (int Qty, decimal Price)>? itemData = null)
     {
         var dbPath = GetDatabasePath();
+        Log($"Insert 시작: dbPath={dbPath}  존재={File.Exists(dbPath)}");
+        Log($"  issue: 발행일={issue.발행일} 업체명={issue.업체명} 번호={issue.견적번호} 구분={issue.견적구분}");
+        Log($"  itemData 입력: {itemData?.Count ?? 0}개");
+
         using var conn = new SqliteConnection($"Data Source={dbPath}");
         conn.Open();
-        if (!TableExists(conn, "견적발행내역")) return false;
+
+        bool tableExists = TableExists(conn, "견적발행내역");
+        Log($"  TableExists(견적발행내역)={tableExists}");
+        if (!tableExists) return false;
+
+        // ── 누락 컬럼 마이그레이션 ──────────────────────────────────────
+        MigrateIssueColumns(conn);
 
         // ── 테이블 실제 컬럼 목록 조회 (항목 컬럼 검증용) ──────────────
         var tableCols = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -280,23 +300,35 @@ public static class QuotationService
             using var pr = pragma.ExecuteReader();
             while (pr.Read()) tableCols.Add(pr.GetString(1).Trim());
         }
+        Log($"  마이그레이션 후 테이블 컬럼 수={tableCols.Count}");
 
-        // ── 저장할 항목 필터링 (테이블에 존재하는 컬럼만) ───────────────
+        // ── 저장할 항목 필터링 (분석항목 컬럼만: 본체·단가·소계 모두 존재해야 함) ──
         var validItems = itemData?
-            .Where(kv => tableCols.Contains(kv.Key) && kv.Value.Qty > 0)
+            .Where(kv => tableCols.Contains(kv.Key)
+                      && tableCols.Contains(kv.Key + "단가")
+                      && tableCols.Contains(kv.Key + "소계")
+                      && kv.Value.Qty > 0)
             .ToList() ?? new();
+        Log($"  validItems(Qty>0, 컬럼존재)={validItems.Count}개");
+
+        // ── 고정 컬럼도 존재 여부 확인 후 동적 추가 ─────────────────────
+        var fixedCols = new List<(string Col, string Param, object? Value)>
+        {
+            ("견적발행일자", "@date",    issue.발행일   ?? DateTime.Today.ToString("yyyy-MM-dd")),
+            ("업체명",       "@company", issue.업체명   ?? ""),
+            ("약칭",         "@abbr",    issue.약칭     ?? ""),
+            ("시료명",       "@sample",  issue.시료명   ?? ""),
+            ("견적번호",     "@no",      issue.견적번호 ?? ""),
+            ("적용구분",     "@type",    issue.견적구분 ?? ""),
+            ("담당자",       "@manager", issue.담당자   ?? ""),
+            ("합계 금액",    "@amount",  issue.총금액),
+        };
+        var activeFix = fixedCols.Where(f => tableCols.Contains(f.Col)).ToList();
+        Log($"  고정컬럼 삽입 대상: {string.Join(", ", activeFix.Select(f => f.Col))}");
 
         // ── INSERT 쿼리 동적 생성 ────────────────────────────────────────
-        var colList = new List<string>
-        {
-            "\"견적발행일자\"", "\"업체명\"", "\"약칭\"", "\"시료명\"",
-            "\"견적번호\"", "\"적용구분\"", "\"담당자\"", "\"합계 금액\""
-        };
-        var paramList = new List<string>
-        {
-            "@date", "@company", "@abbr", "@sample",
-            "@no", "@type", "@manager", "@amount"
-        };
+        var colList   = activeFix.Select(f => $"\"{f.Col}\"").ToList();
+        var paramList = activeFix.Select(f => f.Param).ToList();
 
         foreach (var kv in validItems)
         {
@@ -316,14 +348,9 @@ public static class QuotationService
             VALUES
                 ({string.Join(", ", paramList)})";
 
-        cmd.Parameters.AddWithValue("@date",    issue.발행일   ?? DateTime.Today.ToString("yyyy-MM-dd"));
-        cmd.Parameters.AddWithValue("@company", issue.업체명   ?? "");
-        cmd.Parameters.AddWithValue("@abbr",    issue.약칭     ?? "");
-        cmd.Parameters.AddWithValue("@sample",  issue.시료명   ?? "");
-        cmd.Parameters.AddWithValue("@no",      issue.견적번호 ?? "");
-        cmd.Parameters.AddWithValue("@type",    issue.견적구분 ?? "");
-        cmd.Parameters.AddWithValue("@manager", issue.담당자   ?? "");
-        cmd.Parameters.AddWithValue("@amount",  issue.총금액);
+        // 고정 컬럼 파라미터 (존재하는 것만)
+        foreach (var (_, param, value) in activeFix)
+            cmd.Parameters.AddWithValue(param, value ?? "");
 
         foreach (var kv in validItems)
         {
@@ -334,14 +361,25 @@ public static class QuotationService
             cmd.Parameters.AddWithValue($"@sub_{p}",   sub);
         }
 
-        int rows = cmd.ExecuteNonQuery();
+        int rows;
+        try
+        {
+            rows = cmd.ExecuteNonQuery();
+        }
+        catch (Exception ex)
+        {
+            Log($"  ExecuteNonQuery 예외: {ex.GetType().Name}: {ex.Message}");
+            Log($"  SQL: {cmd.CommandText[..Math.Min(300, cmd.CommandText.Length)]}");
+            throw;
+        }
+
         if (rows > 0)
         {
             using var idCmd = conn.CreateCommand();
             idCmd.CommandText = "SELECT last_insert_rowid()";
             issue.Id = Convert.ToInt32(idCmd.ExecuteScalar());
         }
-        Debug.WriteLine($"[Insert] {rows}행 → {issue.견적번호}  항목{validItems.Count}개");
+        Log($"  ExecuteNonQuery rows={rows}  new_id={issue.Id}");
         return rows > 0;
     }
 
@@ -362,6 +400,41 @@ public static class QuotationService
     }
 
     // ── 헬퍼 ─────────────────────────────────────────────────────────────
+    // ── 견적발행내역 누락 컬럼 자동 추가 ─────────────────────────────────────
+    private static void MigrateIssueColumns(SqliteConnection conn)
+    {
+        // 추가해야 할 컬럼 목록: (컬럼명, 타입, 기본값)
+        var needed = new[]
+        {
+            ("담당자", "TEXT", "''"),
+            ("약칭",   "TEXT", "''"),
+        };
+
+        var existing = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        using (var p = conn.CreateCommand())
+        {
+            p.CommandText = @"PRAGMA table_info(""견적발행내역"")";
+            using var r = p.ExecuteReader();
+            while (r.Read()) existing.Add(r.GetString(1).Trim());
+        }
+
+        foreach (var (col, type, def) in needed)
+        {
+            if (existing.Contains(col)) continue;
+            try
+            {
+                using var alter = conn.CreateCommand();
+                alter.CommandText = $@"ALTER TABLE ""견적발행내역"" ADD COLUMN ""{col}"" {type} DEFAULT {def}";
+                alter.ExecuteNonQuery();
+                Log($"  마이그레이션: '{col}' 컬럼 추가 완료");
+            }
+            catch (Exception ex)
+            {
+                Log($"  마이그레이션 실패 '{col}': {ex.Message}");
+            }
+        }
+    }
+
     private static bool TableExists(SqliteConnection conn, string name)
     {
         using var c = conn.CreateCommand();

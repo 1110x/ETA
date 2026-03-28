@@ -36,4 +36,37 @@ public class Contract
         C_ContractAmountVATExcluded.HasValue
             ? C_ContractAmountVATExcluded.Value.ToString("N0") + " 원"
             : "";
+
+    // ── 잔여계약일 배지 ───────────────────────────────────────────────────────
+    public int? DaysLeft =>
+        C_ContractEnd.HasValue
+            ? (int)(C_ContractEnd.Value.Date - DateTime.Today).TotalDays
+            : (int?)null;
+
+    public bool   HasDaysLeft   => DaysLeft.HasValue;
+    public string DaysLeftText  =>
+        DaysLeft switch
+        {
+            null    => "",
+            >= 0    => $"D-{DaysLeft.Value}",
+            _       => "만료",
+        };
+    public string DaysLeftBg =>
+        DaysLeft switch
+        {
+            null    => "#333344",
+            > 90    => "#1a3a1a",
+            > 30    => "#3a3000",
+            > 0     => "#3a1a00",
+            _       => "#3a0000",
+        };
+    public string DaysLeftFg =>
+        DaysLeft switch
+        {
+            null    => "#888888",
+            > 90    => "#66cc66",
+            > 30    => "#ccaa44",
+            > 0     => "#cc8844",
+            _       => "#cc4444",
+        };
 }

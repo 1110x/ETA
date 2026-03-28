@@ -43,7 +43,7 @@ public partial class QuotationDetailPanel : UserControl
         new(StringComparer.OrdinalIgnoreCase)
         {
             "견적발행일자","업체명","약칭","대표자","견적요청담당",
-            "담당자연락처","담당자 e-Mail","시료명","견적번호",
+            "담당자","담당자연락처","담당자 e-Mail","시료명","견적번호",
             "적용구분","견적작성","합계 금액",   // ← 공백 없이 Trim된 값
             "수량","단가","소계","수량2","단가3","소계4",
         };

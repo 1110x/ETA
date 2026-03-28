@@ -72,7 +72,37 @@ public partial class MainPage : Window
     private void MainPage_Opened(object? sender, EventArgs e)
     {
         System.Diagnostics.Debug.WriteLine("[MainPage] Opened 이벤트");
+        LoadProfileInfo();
     }
+
+    private void LoadProfileInfo()
+    {
+        try
+        {
+            var empId = CurrentEmployeeId;
+            if (string.IsNullOrEmpty(empId)) return;
+
+            var agents = AgentService.GetAllItems();
+            var me = agents.FirstOrDefault(a => a.사번 == empId);
+            if (me == null) return;
+
+            if (profileName != null)
+                profileName.Text = me.성명;
+
+            if (profilePhoto != null && !string.IsNullOrEmpty(me.PhotoPath) && File.Exists(me.PhotoPath))
+            {
+                profilePhoto.Source = new Avalonia.Media.Imaging.Bitmap(me.PhotoPath);
+                profilePhoto.IsVisible = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[Profile] 로드 실패: {ex.Message}");
+        }
+    }
+
+    private void ProfileName_Click(object? sender, PointerPressedEventArgs e)
+        => Agent_Click(sender, new RoutedEventArgs());
 
     private void MainPage_Closing(object? sender, WindowClosingEventArgs e)
     {
@@ -600,6 +630,10 @@ public partial class MainPage : Window
             {
                 _lastShownIssue = savedIssue;
                 _quotationHistoryPanel?.LoadData();
+                // Content1 트리뷰 강제 갱신
+                ActivePageContent1.Content = null;
+                ActivePageContent1.Content = _quotationHistoryPanel;
+                LogContentChange("ActivePageContent1", _quotationHistoryPanel);
                 // DB에서 최신 row 재조회 후 DetailPanel 갱신
                 _quotationDetailPanel?.ShowIssue(savedIssue);
                 ActivePageContent2.Content = _quotationDetailPanel;
@@ -879,6 +913,7 @@ public partial class MainPage : Window
             case "Quotation":
                 // BT2 = 신규 작성 → Content2 를 NewPanel 로 교체
                 _quotationNewPanel?.Clear();
+                _quotationCheckPanel?.ClearAll();
                 ActivePageContent2.Content = _quotationNewPanel;
                 break;
             case "Repair":       _repairPage?.ApproveSelected();  break;

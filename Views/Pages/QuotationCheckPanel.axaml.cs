@@ -242,7 +242,7 @@ public partial class QuotationCheckPanel : UserControl
         SelectionChanged?.Invoke(GetSelected());
     }
 
-    private void BtnClearAll_Click(object? sender, RoutedEventArgs e)
+    public void ClearAll()
     {
         _suspendEvents = true;
         foreach (var cb in _cbMap.Values) cb.IsChecked = false;
@@ -250,6 +250,8 @@ public partial class QuotationCheckPanel : UserControl
         SyncAllCategories();
         SelectionChanged?.Invoke(GetSelected());
     }
+
+    private void BtnClearAll_Click(object? sender, RoutedEventArgs e) => ClearAll();
 
     // ── 헬퍼 ─────────────────────────────────────────────────────────────
     private static void SyncCategory(CheckBox cat, List<CheckBox> children)

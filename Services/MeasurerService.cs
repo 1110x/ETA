@@ -46,6 +46,89 @@ public static class MeasurerService
         }
     }
 
+    // ── 분석항목 테이블 생성 / 마이그레이션 ─────────────────────────────────
+    public static void EnsureAnalysisItemTable()
+    {
+        using var conn = new SqliteConnection($"Data Source={GetDatabasePath()}");
+        conn.Open();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+            CREATE TABLE IF NOT EXISTS 측정인_분석항목 (
+                Id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                분야       TEXT NOT NULL DEFAULT '',
+                항목구분   TEXT NOT NULL DEFAULT '',
+                항목명     TEXT NOT NULL,
+                코드값     TEXT NOT NULL,
+                select2id  TEXT,
+                UNIQUE(코드값)
+            );";
+        cmd.ExecuteNonQuery();
+        // 기존 테이블 마이그레이션
+        try { cmd.CommandText = "ALTER TABLE 측정인_분석항목 ADD COLUMN 분야 TEXT NOT NULL DEFAULT ''"; cmd.ExecuteNonQuery(); } catch { }
+        try { cmd.CommandText = "ALTER TABLE 측정인_분석항목 ADD COLUMN 항목구분 TEXT NOT NULL DEFAULT ''"; cmd.ExecuteNonQuery(); } catch { }
+    }
+
+    // ── 분석항목 일괄 저장 (UPSERT) ─────────────────────────────────────────
+    /// <param name="items">(분야, 항목구분, 항목명, 코드값, select2id) 목록</param>
+    public static int SaveAnalysisItems(List<(string 분야, string 항목구분, string 항목명, string 코드값, string Select2Id)> items)
+    {
+        EnsureAnalysisItemTable();
+        int count = 0;
+        using var conn = new SqliteConnection($"Data Source={GetDatabasePath()}");
+        conn.Open();
+        using var txn = conn.BeginTransaction();
+        try
+        {
+            foreach (var (field, category, name, code, s2id) in items)
+            {
+                if (string.IsNullOrWhiteSpace(code)) continue;
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = @"
+                    INSERT INTO 측정인_분석항목 (분야, 항목구분, 항목명, 코드값, select2id)
+                    VALUES (@field, @category, @name, @code, @s2id)
+                    ON CONFLICT(코드값) DO UPDATE SET
+                        분야      = excluded.분야,
+                        항목구분  = excluded.항목구분,
+                        항목명    = excluded.항목명,
+                        select2id = excluded.select2id;";
+                cmd.Parameters.AddWithValue("@field",    field.Trim());
+                cmd.Parameters.AddWithValue("@category", category.Trim());
+                cmd.Parameters.AddWithValue("@name",     name.Trim());
+                cmd.Parameters.AddWithValue("@code",     code.Trim());
+                cmd.Parameters.AddWithValue("@s2id",     s2id.Trim());
+                count += cmd.ExecuteNonQuery();
+            }
+            txn.Commit();
+            Debug.WriteLine($"[MeasurerService] SaveAnalysisItems: {{count}}/{{items.Count}}개 저장");
+        }
+        catch (Exception ex)
+        {
+            txn.Rollback();
+            Debug.WriteLine($"[MeasurerService] SaveAnalysisItems 오류: {{ex.Message}}");
+            throw;
+        }
+        return count;
+    }
+
+    // ── 분석항목 전체 조회 ───────────────────────────────────────────────────
+    public static List<(string 분야, string 항목구분, string 항목명, string 코드값, string Select2Id)> GetAllAnalysisItems()
+    {
+        EnsureAnalysisItemTable();
+        var list = new List<(string, string, string, string, string)>();
+        using var conn = new SqliteConnection($"Data Source={GetDatabasePath()}");
+        conn.Open();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT 분야, 항목구분, 항목명, 코드값, select2id FROM 측정인_분석항목 ORDER BY 분야 ASC, 항목구분 ASC, 항목명 ASC";
+        using var r = cmd.ExecuteReader();
+        while (r.Read())
+            list.Add((r.IsDBNull(0) ? "" : r.GetString(0),
+                      r.IsDBNull(1) ? "" : r.GetString(1),
+                      r.GetString(2),
+                      r.GetString(3),
+                      r.IsDBNull(4) ? "" : r.GetString(4)));
+        return list;
+    }
+
     // ── 전체 데이터 초기화 (재스크래핑 전 호출) ──────────────────────────────
     public static void ClearAll()
     {
@@ -127,6 +210,33 @@ public static class MeasurerService
         cmd.ExecuteNonQuery();
     }
 
+    // ── 계약 DB에서 약칭을 측정인_채취지점으로 동기화 ──────────────────────────
+    public static void SyncAbbrFromContractDb()
+    {
+        using var conn = new SqliteConnection($"Data Source={GetDatabasePath()}");
+        conn.Open();
+        using var cmd = conn.CreateCommand();
+        // 약칭이 비어 있고 계약 DB에 같은 업체명이 있으면 약칭 복사
+        cmd.CommandText = @"
+            UPDATE 측정인_채취지점
+            SET 약칭 = (
+                SELECT C_Abbreviation
+                FROM ""계약 DB""
+                WHERE ""계약 DB"".C_CompanyName = 측정인_채취지점.업체명
+                  AND C_Abbreviation IS NOT NULL
+                  AND C_Abbreviation != ''
+                LIMIT 1
+            )
+            WHERE (약칭 IS NULL OR 약칭 = '')
+              AND EXISTS (
+                SELECT 1 FROM ""계약 DB""
+                WHERE ""계약 DB"".C_CompanyName = 측정인_채취지점.업체명
+                  AND C_Abbreviation IS NOT NULL
+                  AND C_Abbreviation != ''
+              )";
+        cmd.ExecuteNonQuery();
+    }
+
     // ── 저장된 업체명 목록 조회 ──────────────────────────────────────────────
     public static List<string> GetCompanies()
     {
@@ -152,6 +262,58 @@ public static class MeasurerService
         using var r = cmd.ExecuteReader();
         while (r.Read()) list.Add(r.GetString(0));
         return list;
+    }
+
+    // ── 업체 목록을 Contract 형태로 반환 (견적/의뢰서 Content4용) ─────────────
+    public static List<ETA.Models.Contract> GetCompaniesAsContracts()
+    {
+        var map = new Dictionary<string, ETA.Models.Contract>(StringComparer.OrdinalIgnoreCase);
+        using var conn = new SqliteConnection($"Data Source={GetDatabasePath()}");
+        conn.Open();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+            SELECT 업체명, IFNULL(약칭,''), IFNULL(계약기간,'')
+            FROM 측정인_채취지점
+            GROUP BY 업체명
+            ORDER BY 업체명 ASC";
+        using var r = cmd.ExecuteReader();
+        while (r.Read())
+        {
+            string name   = r.GetString(0);
+            string abbr   = r.GetString(1);
+            string period = r.GetString(2);
+
+            DateTime? endDate = ParsePeriodEnd(period);
+            map[name] = new ETA.Models.Contract
+            {
+                C_CompanyName  = name,
+                C_Abbreviation = abbr,
+                C_ContractEnd  = endDate,
+            };
+        }
+        return [.. map.Values];
+    }
+
+    // "YYYY-MM-DD ~ YYYY-MM-DD" 또는 "YYYY.MM.DD~YYYY.MM.DD" 등 다양한 형식에서 종료일 파싱
+    private static DateTime? ParsePeriodEnd(string period)
+    {
+        if (string.IsNullOrWhiteSpace(period)) return null;
+        // 구분자 기준으로 뒷부분 추출
+        var sep = new[] { " ~ ", "~", " - ", "–", "—" };
+        string? endStr = null;
+        foreach (var s in sep)
+        {
+            int idx = period.IndexOf(s, StringComparison.Ordinal);
+            if (idx >= 0) { endStr = period[(idx + s.Length)..].Trim(); break; }
+        }
+        endStr ??= period.Trim();
+        // 날짜 형식 파싱 시도
+        var fmts = new[] { "yyyy-MM-dd", "yyyy.MM.dd", "yyyy/MM/dd", "yyyyMMdd" };
+        foreach (var fmt in fmts)
+            if (DateTime.TryParseExact(endStr, fmt, null,
+                    System.Globalization.DateTimeStyles.None, out var dt))
+                return dt;
+        return null;
     }
 
     // ── 전체 데이터 조회 ──────────────────────────────────────────────────────

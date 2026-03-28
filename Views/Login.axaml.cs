@@ -4,6 +4,7 @@ using Avalonia.Interactivity;
 using System;
 using System.IO;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using ETA.Services;
 
 namespace ETA.Views;
@@ -124,12 +125,33 @@ public partial class Login : Window
             Log("[DoLogin] 비밀번호 변경 완료");
         }
 
-        Log("[DoLogin] 로그인 성공 → MainPage 이동");
+        Log("[DoLogin] 로그인 성공 → Lottie 재생");
+        loginForm.IsVisible = false;
+        PlayLottieAndNavigate(empId);
+        }
+        finally { _isLoggingIn = false; }
+    }
+
+    private async void PlayLottieAndNavigate(string empId)
+    {
+        try
+        {
+            // Path 재할당으로 AutoPlay=True 상태에서 재로드 → 재생 트리거
+            var path = lottieView.Path;
+            lottieView.AutoPlay = true;
+            lottieView.Path = null;
+            lottieView.Path = path;
+            Log("[Lottie] 재생 시작");
+            await Task.Delay(4000);
+        }
+        catch (Exception ex) { Log($"[Lottie] 오류: {ex.Message}"); }
+
+        CurrentUserManager.Instance.SetCurrentUser(empId);
+        MainPage.CurrentEmployeeId = empId;
+
         var main = new MainPage();
         main.Show();
         Close();
-        }
-        finally { _isLoggingIn = false; }
     }
 
     private async void ChangePassword_Click(object? sender, RoutedEventArgs e)

@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
@@ -8,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 
 namespace ETA.Views.Pages;
@@ -51,12 +53,47 @@ public partial class QuotationNewPanel : UserControl
         // ESC 키 → 당근/오작성 수정 모드일 때 취소
         KeyDown += (_, e) =>
         {
-            if (e.Key == Avalonia.Input.Key.Escape &&
+            if (e.Key == Key.Escape &&
                 (_editingIssue != null || _carrotCompanyName.Length > 0))
             {
                 Clear();
                 EscapeCancelled?.Invoke();
             }
+        };
+
+        // Enter 키 네비게이션
+        txbSampleName.KeyDown  += (_, e) => { if (e.Key == Key.Enter) { e.Handled = true; txbManager.Focus(); } };
+        txbManager.KeyDown     += (_, e) => { if (e.Key == Key.Enter) { e.Handled = true; txbSampleName.Focus(); } };
+        txbIssueDate.KeyDown   += (_, e) => { if (e.Key == Key.Enter) { e.Handled = true; txbManager.Focus(); } };
+        txbQuotationNo.KeyDown += (_, e) => { if (e.Key == Key.Enter) { e.Handled = true; txbSampleName.Focus(); } };
+        txbBulkQty.KeyDown     += (_, e) => { if (e.Key == Key.Enter) { e.Handled = true; BtnBulkQty_Click(null, null!); } };
+        txbQty.KeyDown         += (_, e) => { if (e.Key == Key.Enter) { e.Handled = true; BtnApplyQty_Click(null, null!); } };
+
+        // 한글 IME 따라오기 방지: GotFocus 시 글자 수 저장, 이후 Background 우선순위로 초과분 제거
+        AttachImeFix(txbSampleName);
+        AttachImeFix(txbManager);
+        AttachImeFix(txbIssueDate);
+        AttachImeFix(txbQuotationNo);
+        AttachImeFix(txbBulkQty);
+        AttachImeFix(txbQty);
+    }
+
+    // ── 한글 IME 따라오기 방지 ───────────────────────────────────────────
+    private static void AttachImeFix(TextBox tb)
+    {
+        tb.GotFocus += (s, _) =>
+        {
+            var box      = (TextBox)s!;
+            var savedLen = (box.Text ?? "").Length;
+            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+            {
+                var cur = box.Text ?? "";
+                if (cur.Length > savedLen)
+                {
+                    box.Text       = cur[..savedLen];
+                    box.CaretIndex = savedLen;
+                }
+            }, Avalonia.Threading.DispatcherPriority.Background);
         };
     }
 
@@ -89,10 +126,28 @@ public partial class QuotationNewPanel : UserControl
     // ══════════════════════════════════════════════════════════════════════
     //  외부 API
     // ══════════════════════════════════════════════════════════════════════
+    // ── 업체 블록 표시 헬퍼 ──────────────────────────────────────────────────
+    private void ShowCompanyBadge(string companyName, string abbr)
+    {
+        txbCompany.Text = companyName;
+        if (!string.IsNullOrWhiteSpace(abbr))
+        {
+            var (bg, fg) = BadgeColorHelper.GetBadgeColor(abbr);
+            bdgAbbr.Background = Avalonia.Media.Brush.Parse(bg);
+            txbAbbr.Foreground = Avalonia.Media.Brush.Parse(fg);
+            txbAbbr.Text       = abbr;
+            bdgAbbr.IsVisible  = true;
+        }
+        else
+        {
+            bdgAbbr.IsVisible = false;
+        }
+    }
+
     public void SetCompany(Contract company)
     {
         _company = company;
-        txbCompany.Text = $"{company.C_CompanyName}  [{company.C_Abbreviation}]";
+        ShowCompanyBadge(company.C_CompanyName, company.C_Abbreviation);
 
         // 해당 업체의 최근 발행건 적용구분을 콤보박스에 자동 선택
         var latest = _allIssues
@@ -149,7 +204,7 @@ public partial class QuotationNewPanel : UserControl
 
         txbTitle.Text       = "🥕  당근 (재활용)";
         txbMode.Text        = "재활용 모드";
-        txbCompany.Text     = $"{issue.업체명}  [{issue.약칭}]";
+        ShowCompanyBadge(issue.업체명, issue.약칭);
         txbQuotationNo.Text = GenerateNo();
         txbIssueDate.Text   = DateTime.Today.ToString("yyyy-MM-dd");
         txbSampleName.Text  = "";   // 시료명은 새로 입력
@@ -177,7 +232,7 @@ public partial class QuotationNewPanel : UserControl
 
         txbTitle.Text       = "✏️  오작성 수정";
         txbMode.Text        = "수정 모드";
-        txbCompany.Text     = $"{issue.업체명}  [{issue.약칭}]";
+        ShowCompanyBadge(issue.업체명, issue.약칭);
         txbQuotationNo.Text = issue.견적번호;   // 기존 번호 유지 (수정 가능)
         txbIssueDate.Text   = issue.발행일;     // 기존 날짜 유지 (수정 가능)
         txbSampleName.Text  = issue.시료명;     // 기존 시료명 유지 (수정 가능)
@@ -209,6 +264,7 @@ public partial class QuotationNewPanel : UserControl
         txbTitle.Text       = "📝  신규 견적 작성";
         txbMode.Text        = "";
         txbCompany.Text     = "— 오른쪽에서 업체를 선택하세요 —";
+        bdgAbbr.IsVisible   = false;
         txbQuotationNo.Text = GenerateNo();
         txbIssueDate.Text   = DateTime.Today.ToString("yyyy-MM-dd");
         txbSampleName.Text  = "";
@@ -340,7 +396,7 @@ public partial class QuotationNewPanel : UserControl
         var fixedCols = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "견적발행일자","업체명","약칭","대표자","견적요청담당",
-            "담당자연락처","담당자 e-Mail","시료명","견적번호",
+            "담당자","담당자연락처","담당자 e-Mail","시료명","견적번호",
             "적용구분","견적작성","합계 금액",
             "수량","단가","소계","수량2","단가3","소계4",
         };
@@ -523,7 +579,10 @@ public partial class QuotationNewPanel : UserControl
     // 저장 (async — 프로그레스바 표시 후 DB 저장, 완료 후 목록 갱신)
     private async void BtnSave_Click(object? sender, RoutedEventArgs e)
     {
-        if (_sampleDuplicated) return;
+        Log("==== 저장 버튼 클릭 ====");
+        Log($"  _sampleDuplicated={_sampleDuplicated}");
+
+        if (_sampleDuplicated) { Log("  → 중복 시료 차단으로 중단"); return; }
 
         var companyName = _company?.C_CompanyName
                        ?? _editingIssue?.업체명
@@ -533,9 +592,16 @@ public partial class QuotationNewPanel : UserControl
                        ?? _editingIssue?.약칭
                        ?? (_carrotAbbr.Length > 0 ? _carrotAbbr : null)
                        ?? "";
-        if (string.IsNullOrEmpty(companyName)) { Log("업체 미선택"); return; }
+
+        Log($"  companyName='{companyName}'  abbr='{abbr}'");
+        Log($"  _itemData.Count={_itemData.Count}");
+        Log($"  발행일={txbIssueDate.Text}  시료명={txbSampleName.Text}  번호={txbQuotationNo.Text}");
+        Log($"  견적구분={(cmbType.SelectedItem as ComboBoxItem)?.Content}  담당자={txbManager.Text}");
+
+        if (string.IsNullOrEmpty(companyName)) { Log("  → 업체 미선택으로 중단"); return; }
 
         decimal total = _itemData.Values.Sum(d => d.Qty * d.Price);
+        Log($"  total={total:N0}  editingIssue={_editingIssue?.Id.ToString() ?? "null"}");
 
         var issue = new QuotationIssue
         {
@@ -561,15 +627,23 @@ public partial class QuotationNewPanel : UserControl
         bool ok = false;
         try
         {
+            Log("  DB 저장 시작 (Task.Run)");
             // DB 작업을 백그라운드 스레드에서 실행
             ok = await System.Threading.Tasks.Task.Run(() =>
             {
                 if (_editingIssue != null)
+                {
+                    Log($"  기존 건 삭제: id={_editingIssue.Id}");
                     QuotationService.Delete(_editingIssue.Id);
+                }
                 return QuotationService.Insert(issue, _itemData);
             });
         }
-        catch (Exception ex) { Log($"저장 예외: {ex.Message}"); }
+        catch (Exception ex)
+        {
+            Log($"  저장 예외: {ex.GetType().Name}: {ex.Message}");
+            Log($"  StackTrace: {ex.StackTrace}");
+        }
         finally
         {
             prgSave.IsIndeterminate = false;
@@ -577,7 +651,7 @@ public partial class QuotationNewPanel : UserControl
             btnSave.IsEnabled       = !_sampleDuplicated;
         }
 
-        Log(ok ? $"저장 완료 → {issue.견적번호}  항목{_itemData.Count}개" : "저장 실패");
+        Log(ok ? $"  → 저장 성공: {issue.견적번호}  항목{_itemData.Count}개" : "  → 저장 실패 (Insert 반환 false)");
 
         if (ok)
         {
@@ -614,5 +688,13 @@ public partial class QuotationNewPanel : UserControl
         if (cb.Items.Count > 0) cb.SelectedIndex = 0;
     }
 
-    private void Log(string msg) => Debug.WriteLine($"[NewPanel] {msg}");
+    private static readonly string LogPath = Path.GetFullPath(
+        Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "Quotation.log"));
+
+    private static void Log(string msg)
+    {
+        var line = $"[{DateTime.Now:HH:mm:ss}] [NewPanel] {msg}";
+        Debug.WriteLine(line);
+        try { File.AppendAllText(LogPath, line + Environment.NewLine); } catch { }
+    }
 }

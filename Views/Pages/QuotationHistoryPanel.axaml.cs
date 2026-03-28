@@ -187,15 +187,153 @@ public partial class QuotationHistoryPanel : UserControl
         }
     }
 
-    private void BtnDelete_Click(object? sender, RoutedEventArgs e)
+    private async void BtnDelete_Click(object? sender, RoutedEventArgs e)
     {
         if (_isAnalysisTab) return;
-        if (_treeQuotation.SelectedItem is TreeViewItem item &&
-            item.Tag is QuotationIssue issue)
+        if (!(_treeQuotation.SelectedItem is TreeViewItem item &&
+              item.Tag is QuotationIssue issue)) return;
+
+        var owner = TopLevel.GetTopLevel(this) as Window;
+
+        // 확인 다이얼로그
+        bool confirmed = await ShowConfirmDialogAsync(owner,
+            $"아래 견적을 삭제하시겠습니까?\n\n{issue.약칭}  {issue.시료명}\n{issue.견적번호}");
+        if (!confirmed) return;
+
+        Log($"삭제: {issue.견적번호}");
+        bool ok = QuotationService.Delete(issue.Id);
+        if (ok)
         {
-            Log($"삭제: {issue.견적번호}");
-            if (QuotationService.Delete(issue.Id)) LoadData();
+            LoadData();
+            await ShowAlertDialogAsync(owner, "삭제되었습니다.");
         }
+    }
+
+    // ── 다이얼로그 헬퍼 ──────────────────────────────────────────────────
+    private static Task<bool> ShowConfirmDialogAsync(Window? owner, string message)
+    {
+        var tcs = new System.Threading.Tasks.TaskCompletionSource<bool>();
+
+        var dlg = new Window
+        {
+            Title                 = "삭제 확인",
+            Width                 = 340,
+            SizeToContent         = SizeToContent.Height,
+            CanResize             = false,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            Background            = new SolidColorBrush(Color.Parse("#1e1e2e")),
+        };
+
+        var yesBtn = new Button
+        {
+            Content             = "삭제",
+            Width               = 70,
+            Background          = new SolidColorBrush(Color.Parse("#4a1a1a")),
+            Foreground          = new SolidColorBrush(Color.Parse("#ff8888")),
+            FontFamily          = Font,
+            FontSize            = 11,
+            HorizontalContentAlignment = HorizontalAlignment.Center,
+        };
+        var noBtn = new Button
+        {
+            Content             = "취소",
+            Width               = 70,
+            Background          = new SolidColorBrush(Color.Parse("#2a2a3a")),
+            Foreground          = new SolidColorBrush(Color.Parse("#aaaaaa")),
+            FontFamily          = Font,
+            FontSize            = 11,
+            HorizontalContentAlignment = HorizontalAlignment.Center,
+        };
+
+        yesBtn.Click += (_, _) => { tcs.TrySetResult(true);  dlg.Close(); };
+        noBtn.Click  += (_, _) => { tcs.TrySetResult(false); dlg.Close(); };
+        dlg.Closed   += (_, _) => tcs.TrySetResult(false);
+
+        dlg.Content = new StackPanel
+        {
+            Margin = new Thickness(20, 16, 20, 16),
+            Spacing = 16,
+            Children =
+            {
+                new TextBlock
+                {
+                    Text         = message,
+                    Foreground   = new SolidColorBrush(Color.Parse("#dddddd")),
+                    FontSize     = 12,
+                    FontFamily   = Font,
+                    TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+                },
+                new StackPanel
+                {
+                    Orientation         = Orientation.Horizontal,
+                    HorizontalAlignment = HorizontalAlignment.Right,
+                    Spacing             = 8,
+                    Children = { noBtn, yesBtn },
+                }
+            }
+        };
+
+        if (owner != null) dlg.ShowDialog(owner);
+        else dlg.Show();
+
+        return tcs.Task;
+    }
+
+    private static Task ShowAlertDialogAsync(Window? owner, string message)
+    {
+        var tcs = new System.Threading.Tasks.TaskCompletionSource<bool>();
+
+        var dlg = new Window
+        {
+            Title                 = "알림",
+            Width                 = 280,
+            SizeToContent         = SizeToContent.Height,
+            CanResize             = false,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            Background            = new SolidColorBrush(Color.Parse("#1e1e2e")),
+        };
+
+        var okBtn = new Button
+        {
+            Content             = "확인",
+            Width               = 70,
+            Background          = new SolidColorBrush(Color.Parse("#2a4a2a")),
+            Foreground          = new SolidColorBrush(Color.Parse("#aef0ae")),
+            FontFamily          = Font,
+            FontSize            = 11,
+            HorizontalContentAlignment = HorizontalAlignment.Center,
+        };
+
+        okBtn.Click += (_, _) => dlg.Close();
+        dlg.Closed  += (_, _) => tcs.TrySetResult(true);
+
+        dlg.Content = new StackPanel
+        {
+            Margin = new Thickness(20, 16, 20, 16),
+            Spacing = 16,
+            Children =
+            {
+                new TextBlock
+                {
+                    Text       = message,
+                    Foreground = new SolidColorBrush(Color.Parse("#dddddd")),
+                    FontSize   = 12,
+                    FontFamily = Font,
+                    TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+                },
+                new StackPanel
+                {
+                    Orientation         = Orientation.Horizontal,
+                    HorizontalAlignment = HorizontalAlignment.Right,
+                    Children = { okBtn },
+                }
+            }
+        };
+
+        if (owner != null) dlg.ShowDialog(owner);
+        else dlg.Show();
+
+        return tcs.Task;
     }
 
     private void BtnRefresh_Click(object? sender, RoutedEventArgs e)

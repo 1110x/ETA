@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.Data.Sqlite;
 using ETA.Models;
 using System.Diagnostics;
@@ -726,5 +727,62 @@ public static class AgentService
     {
         // 간단히 사번이 "admin"이거나 특정 사번이면 관리자
         return employeeId == "admin" || employeeId == "202912345"; // 예시
+    }
+
+    // ── 측정인.kr 인력 고유번호 일괄 업데이트 ───────────────────────────────
+    /// <summary>
+    /// 측정인.kr add_emp_id 드롭다운에서 수집한 (이름, 고유번호) 쌍으로
+    /// Agent 테이블의 측정인고유번호를 업데이트.
+    /// 이름 완전일치 → 앞 3글자+길이 유사 유일 후보 순으로 매칭.
+    /// </summary>
+    /// <returns>업데이트된 행 수</returns>
+    public static int UpdateMeasurerEmployeeIds(List<(string Name, string Id)> pairs)
+    {
+        int count = 0;
+        var dbPath = GetDatabasePath();
+        if (!File.Exists(dbPath)) return 0;
+
+        using var conn = new SqliteConnection($"Data Source={dbPath}");
+        conn.Open();
+
+        // Agent 이름 전체 로드 (메모리에서 매칭 — 수십 명 규모이므로 충분)
+        var agentNames = new List<string>();
+        using (var cmd = conn.CreateCommand())
+        {
+            cmd.CommandText = @"SELECT 성명 FROM ""Agent""";
+            using var r = cmd.ExecuteReader();
+            while (r.Read()) agentNames.Add(r.GetString(0));
+        }
+
+        foreach (var (name, id) in pairs)
+        {
+            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(id)) continue;
+
+            // 1) 완전 일치
+            string? matched = agentNames.FirstOrDefault(a =>
+                string.Equals(a, name, StringComparison.OrdinalIgnoreCase));
+
+            // 2) 앞 3글자 포함 + 길이 유사 (오차 ±1) → 후보가 1명일 때만
+            if (matched == null && name.Length >= 2)
+            {
+                string prefix = name[..Math.Min(3, name.Length)];
+                var candidates = agentNames
+                    .Where(a => a.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)
+                             && Math.Abs(a.Length - name.Length) <= 1)
+                    .ToList();
+                if (candidates.Count == 1) matched = candidates[0];
+            }
+
+            if (matched == null) continue;
+
+            using var upd = conn.CreateCommand();
+            upd.CommandText = @"UPDATE ""Agent"" SET 측정인고유번호=@id WHERE 성명=@name";
+            upd.Parameters.AddWithValue("@id",   id);
+            upd.Parameters.AddWithValue("@name", matched);
+            count += upd.ExecuteNonQuery();
+        }
+
+        Debug.WriteLine($"[AgentService] UpdateMeasurerEmployeeIds: {pairs.Count}개 수집 → {count}명 업데이트");
+        return count;
     }
 }

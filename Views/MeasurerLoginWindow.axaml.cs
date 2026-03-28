@@ -11,6 +11,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Diagnostics;
 
@@ -18,15 +19,20 @@ namespace ETA.Views;
 
 public partial class MeasurerLoginWindow : Window
 {
-    private const string LoginUrl = "https://측정인.kr/login.go";
+    private const string LoginUrl  = "https://측정인.kr/login.go";
     private const string TargetUrl = "https://측정인.kr/ms/field_water.do";
-    private const int    CdpPort  = 9222;
+    private const int    CdpPort   = 9222;
 
     private static readonly string LogPath =
         Path.Combine(AppContext.BaseDirectory, "측정인.log");
 
     private ClientWebSocket? _ws;
     private CancellationTokenSource _pollCts = new();
+
+    // ── 브라우저 옵션 ─────────────────────────────────────────────────────────
+    private record BrowserOption(string Label, string? ExePath);
+
+    private List<BrowserOption> _browsers = new();
 
     public MeasurerLoginWindow()
     {
@@ -35,13 +41,73 @@ public partial class MeasurerLoginWindow : Window
         Closing += OnWindowClosing;
     }
 
+    // ── 사용 가능한 브라우저 목록 구성 ───────────────────────────────────────
+    private List<BrowserOption> BuildBrowserList()
+    {
+        var list = new List<BrowserOption>();
+
+        if (OperatingSystem.IsMacOS())
+        {
+            // Mac Edge
+            const string macEdge = "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge";
+            if (File.Exists(macEdge))
+                list.Add(new BrowserOption("Microsoft Edge (Mac)", macEdge));
+
+            // Mac Chrome
+            const string macChrome = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+            if (File.Exists(macChrome))
+                list.Add(new BrowserOption("Google Chrome (Mac)", macChrome));
+
+            // Safari (CDP 미지원 — 수동 로그인)
+            list.Add(new BrowserOption("Safari (수동 로그인)", null));
+        }
+        else
+        {
+            // Windows Edge
+            foreach (var p in new[]
+            {
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
+                    "Microsoft", "Edge", "Application", "msedge.exe"),
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+                    "Microsoft", "Edge", "Application", "msedge.exe"),
+            })
+            {
+                if (File.Exists(p)) { list.Add(new BrowserOption("Microsoft Edge", p)); break; }
+            }
+
+            // Windows Chrome
+            foreach (var p in new[]
+            {
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
+                    "Google", "Chrome", "Application", "chrome.exe"),
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+                    "Google", "Chrome", "Application", "chrome.exe"),
+            })
+            {
+                if (File.Exists(p)) { list.Add(new BrowserOption("Google Chrome", p)); break; }
+            }
+        }
+
+        return list;
+    }
+
     private void OnWindowClosing(object? sender, WindowClosingEventArgs e)
     {
         _pollCts.Cancel();
         _ws?.Dispose();
     }
 
-    private void OnLoaded(object? sender, RoutedEventArgs e) => LoadCredentials();
+    private void OnLoaded(object? sender, RoutedEventArgs e)
+    {
+        _browsers = BuildBrowserList();
+        cmbBrowser.ItemsSource  = _browsers.Select(b => b.Label).ToList();
+        cmbBrowser.SelectedIndex = 0;
+
+        if (_browsers.Count == 0)
+            SetStatus("사용 가능한 브라우저를 찾을 수 없습니다.", "#ee4444");
+
+        LoadCredentials();
+    }
 
     // ── 자격증명 로드 ─────────────────────────────────────────────────────────
     private void LoadCredentials()
@@ -77,6 +143,24 @@ public partial class MeasurerLoginWindow : Window
     // ── 로그인 실행 ───────────────────────────────────────────────────────────
     private async void BtnLogin_Click(object? sender, RoutedEventArgs e)
     {
+        int idx = cmbBrowser.SelectedIndex;
+        if (idx < 0 || idx >= _browsers.Count)
+        {
+            SetStatus("브라우저를 선택하세요.", "#ee4444");
+            return;
+        }
+
+        var browser = _browsers[idx];
+
+        // Safari: CDP 미지원 — 수동으로 브라우저 열기
+        if (browser.ExePath == null)
+        {
+            SetStatus("Safari로 측정인.kr을 엽니다. 직접 로그인 후 사용하세요.", "#aaaacc");
+            try { Process.Start(new ProcessStartInfo("open", $"-a Safari \"{LoginUrl}\"") { UseShellExecute = false }); }
+            catch (Exception ex) { SetStatus($"Safari 열기 실패: {ex.Message}", "#ee4444"); }
+            return;
+        }
+
         string userId   = txbUserId.Text?.Trim()   ?? "";
         string password = txbPassword.Text?.Trim() ?? "";
 
@@ -90,7 +174,7 @@ public partial class MeasurerLoginWindow : Window
         {
             try
             {
-                await RunCdpLoginAsync(userId, password);
+                await RunCdpLoginAsync(userId, password, browser.ExePath);
                 SaveCredentials(userId, password);
             }
             catch (Exception ex)
@@ -107,32 +191,26 @@ public partial class MeasurerLoginWindow : Window
         else
         {
             // 창을 닫지 않고 대기 — 모달 버튼 클릭 감지 루프 시작
-            SetStatus("로그인 완료 — 측정인.kr 모달에서 'ETA DB 업데이트' 버튼을 누르세요.", "#88cc88");
+            SetStatus("로그인 완료 — 측정인.kr 모달에서 'ETA 계약 DB 업데이트' 또는 'ETA 분석DB 업데이트' 버튼을 누르세요.", "#88cc88");
             _pollCts = new CancellationTokenSource();
             _ = Task.Run(() => PollForSyncRequestAsync(_pollCts.Token));
         }
     }
 
     // ── CDP 기반 자동 로그인 ──────────────────────────────────────────────────
-    private async Task RunCdpLoginAsync(string userId, string password)
+    private async Task RunCdpLoginAsync(string userId, string password, string browserExePath)
     {
-        // ── 1. Edge 실행 파일 찾기 ───────────────────────────────────────────
-        Post("Edge 브라우저 실행 중...", "#aaaaaa");
+        // ── 1. 브라우저 실행 ─────────────────────────────────────────────────
+        Post("브라우저 실행 중...", "#aaaaaa");
 
-        string edgePath = FindEdgePath()
-            ?? throw new Exception(
-                "Microsoft Edge를 찾을 수 없습니다.\n" +
-                @"예상 경로: C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe");
-
-        // ── 2. 전용 프로필로 Edge 실행 ───────────────────────────────────────
         string sessionDir = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "ETA", "EdgeSession");
+            "ETA", "BrowserSession");
         Directory.CreateDirectory(sessionDir);
 
         Process.Start(new ProcessStartInfo
         {
-            FileName        = edgePath,
+            FileName        = browserExePath,
             Arguments       = $"--remote-debugging-port={CdpPort} " +
                               $"--user-data-dir=\"{sessionDir}\" " +
                               $"\"{LoginUrl}\"",
@@ -206,35 +284,60 @@ public partial class MeasurerLoginWindow : Window
     }
 
     // ── 모달 버튼 주입 (MutationObserver) ────────────────────────────────────
-    // 모달이 열릴 때마다 'ETA DB 업데이트' 버튼을 자동으로 삽입한다.
+    // 모달이 열릴 때마다 'ETA 계약 DB 업데이트' / 'ETA 분석DB 업데이트' 버튼을 자동으로 삽입한다.
     private async Task InjectSyncButtonObserverAsync()
     {
         const string script = @"(function() {
             if (window.__etaObserver) return 'ALREADY';
-            window.__etaSyncRequested = false;
+            window.__etaSyncRequested    = false;
+            window.__etaAnalysisRequested = false;
 
             function tryInject() {
                 var contSel = document.getElementById('add_meas_cont_no');
                 if (!contSel || !contSel.offsetParent) return;   // 보이지 않으면 skip
                 if (document.getElementById('__eta_sync_btn__')) return; // 이미 있음
 
-                var btn = document.createElement('button');
-                btn.id   = '__eta_sync_btn__';
-                btn.type = 'button';
-                btn.textContent = 'ETA DB 업데이트';
-                btn.style.cssText =
+                // ── 계약 DB 업데이트 버튼 (파란색) ──────────────────────────
+                var btnSync = document.createElement('button');
+                btnSync.id   = '__eta_sync_btn__';
+                btnSync.type = 'button';
+                btnSync.textContent = 'ETA 계약 DB 업데이트';
+                btnSync.style.cssText =
                     'background:#1a6fc4;color:#fff;border:none;padding:5px 14px;' +
-                    'border-radius:4px;cursor:pointer;font-size:13px;margin-top:8px;display:block;';
-                btn.onclick = function() {
+                    'border-radius:4px;cursor:pointer;font-size:13px;' +
+                    'margin-top:8px;display:inline-block;margin-right:6px;';
+                btnSync.onclick = function() {
                     if (window.__etaSyncRequested) return;
                     window.__etaSyncRequested = true;
-                    btn.textContent = '수집 중...';
-                    btn.disabled = true;
+                    btnSync.textContent = '수집 중...';
+                    btnSync.disabled = true;
+                };
+
+                // ── 분석DB 업데이트 버튼 (녹색) ─────────────────────────────
+                var btnAnalysis = document.createElement('button');
+                btnAnalysis.id   = '__eta_analysis_btn__';
+                btnAnalysis.type = 'button';
+                btnAnalysis.textContent = 'ETA 분석DB 업데이트';
+                btnAnalysis.style.cssText =
+                    'background:#1a6f2a;color:#fff;border:none;padding:5px 14px;' +
+                    'border-radius:4px;cursor:pointer;font-size:13px;' +
+                    'margin-top:8px;display:inline-block;';
+                btnAnalysis.onclick = function() {
+                    if (window.__etaAnalysisRequested) return;
+                    window.__etaAnalysisRequested = true;
+                    btnAnalysis.textContent = '수집 중...';
+                    btnAnalysis.disabled = true;
                 };
 
                 var parent = contSel.closest('.modal-body, .modal-content, .form-group')
                           || contSel.parentElement;
-                if (parent) parent.appendChild(btn);
+                if (parent) {
+                    var wrap = document.createElement('div');
+                    wrap.style.marginTop = '8px';
+                    wrap.appendChild(btnSync);
+                    wrap.appendChild(btnAnalysis);
+                    parent.appendChild(wrap);
+                }
             }
 
             window.__etaObserver = new MutationObserver(tryInject);
@@ -247,7 +350,7 @@ public partial class MeasurerLoginWindow : Window
         })()";
 
         await Evaluate(script);
-        Post("준비 완료 — 측정인.kr에서 모달을 열고 'ETA DB 업데이트'를 누르세요.", "#88cc88");
+        Post("준비 완료 — 측정인.kr 모달을 열고 버튼을 누르세요.", "#88cc88");
     }
 
     // ── 버튼 클릭 감지 폴링 루프 ─────────────────────────────────────────────
@@ -258,20 +361,33 @@ public partial class MeasurerLoginWindow : Window
             try
             {
                 await Task.Delay(600, ct);
+
+                // ── 계약 DB 업데이트 플래그 ──────────────────────────────────
                 string flag = ExtractCdpStringValue(await Evaluate("String(window.__etaSyncRequested)"));
-                if (flag != "true") continue;
+                if (flag == "true")
+                {
+                    await Evaluate("window.__etaSyncRequested = false;");
+                    Post("ETA DB 동기화 중...", "#aaaaaa");
+                    await ScrapeSamplingPointsAsync();
+                    await Evaluate(@"(function(){
+                        var b = document.getElementById('__eta_sync_btn__');
+                        if(b){ b.textContent='ETA 계약 DB 업데이트 (완료)'; b.disabled=false; }
+                    })()");
+                    continue;
+                }
 
-                // 플래그 즉시 리셋
-                await Evaluate("window.__etaSyncRequested = false;");
-
-                Post("ETA DB 동기화 중...", "#aaaaaa");
-                await ScrapeSamplingPointsAsync();
-
-                // 버튼 복원
-                await Evaluate(@"(function(){
-                    var b = document.getElementById('__eta_sync_btn__');
-                    if(b){ b.textContent='ETA DB 업데이트 (완료)'; b.disabled=false; }
-                })()");
+                // ── 분석DB 업데이트 플래그 ───────────────────────────────────
+                string flag2 = ExtractCdpStringValue(await Evaluate("String(window.__etaAnalysisRequested)"));
+                if (flag2 == "true")
+                {
+                    await Evaluate("window.__etaAnalysisRequested = false;");
+                    Post("분석항목 코드 수집 중...", "#aaaaaa");
+                    await ScrapeAnalysisItemsAsync();
+                    await Evaluate(@"(function(){
+                        var b = document.getElementById('__eta_analysis_btn__');
+                        if(b){ b.textContent='ETA 분석DB 업데이트 (완료)'; b.disabled=false; }
+                    })()");
+                }
             }
             catch (OperationCanceledException) { break; }
             catch (Exception ex) { Debug.WriteLine($"[Poll] {ex.Message}"); }
@@ -446,6 +562,139 @@ public partial class MeasurerLoginWindow : Window
         Log($"=== 완료: {contracts.Count}개 계약, 채취지점 {totalSaved}개 저장 ===");
         Dispatcher.UIThread.Post(() => SetProgress(contracts.Count, contracts.Count));
         Post($"완료 — 채취지점 {totalSaved}개 저장", "#88cc88");
+
+        // 인력 고유번호도 함께 동기화
+        await ScrapeEmployeeIdsAsync();
+    }
+
+    // ── 인력 고유번호 스크래핑 ────────────────────────────────────────────────
+    /// <summary>
+    /// 측정인.kr add_emp_id 드롭다운에서 인력 목록을 수집하여
+    /// ETA Agent 테이블의 측정인고유번호를 업데이트한다.
+    /// (채취지점 스크래핑 후 자동 호출)
+    /// </summary>
+    private async Task ScrapeEmployeeIdsAsync()
+    {
+        Log("=== 인력 고유번호 스크래핑 ===");
+        Post("인력 고유번호 수집 중...", "#aaaaaa");
+
+        // add_emp_id 옵션 전체 JSON 추출
+        // 옵션 텍스트 형식: "이름 / 소속 / ..." (VBA와 동일)
+        const string script = @"(function() {
+            var sel = document.getElementById('add_emp_id');
+            if (!sel) return '[]';
+            var opts = [];
+            for (var i = 0; i < sel.options.length; i++) {
+                var o = sel.options[i];
+                if (!o.value) continue;
+                var parts = o.text.trim().split(' / ');
+                opts.push({ value: o.value, name: parts[0].trim() });
+            }
+            return JSON.stringify(opts);
+        })()";
+
+        string json = ExtractCdpStringValue(await Evaluate(script));
+        Log($"인력 raw: {(json.Length > 200 ? json[..200] + "..." : json)}");
+
+        if (string.IsNullOrEmpty(json) || json == "[]")
+        {
+            Log("인력 고유번호: add_emp_id 요소 없음 또는 옵션 없음");
+            return;
+        }
+
+        var pairs = new List<(string Name, string Id)>();
+        try
+        {
+            using var doc = JsonDocument.Parse(json);
+            foreach (var item in doc.RootElement.EnumerateArray())
+            {
+                string name = item.GetProperty("name").GetString() ?? "";
+                string id   = item.GetProperty("value").GetString() ?? "";
+                if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(id))
+                    pairs.Add((name, id));
+            }
+        }
+        catch (Exception ex) { Log($"인력 JSON 파싱 오류: {ex.Message}"); return; }
+
+        Log($"인력 옵션 {pairs.Count}개 수집: {string.Join(", ", pairs.Take(5).Select(p => p.Name))}");
+
+        int updated = ETA.Services.AgentService.UpdateMeasurerEmployeeIds(pairs);
+        Log($"인력 고유번호 업데이트: {updated}명 / {pairs.Count}개 매칭");
+        Post($"인력 {updated}명 고유번호 업데이트 완료", "#88cc88");
+    }
+
+    // ── 분석항목 코드 스크래핑 (add_meas_item) ──────────────────────────────
+    /// <summary>
+    /// 측정인.kr add_meas_item 드롭다운에서 분석항목 목록(항목명, 코드값, select2id)을
+    /// 수집하여 ETA 측정인_분석항목 테이블에 저장한다.
+    /// </summary>
+    private async Task ScrapeAnalysisItemsAsync()
+    {
+        Log("=== 분석항목 코드 스크래핑 시작 ===");
+        Post("분석항목 코드 수집 중...", "#aaaaaa");
+
+        const string script = @"(function() {
+            var sel = document.getElementById('add_meas_item');
+            if (!sel) return '[]';
+            var opts = [];
+            for (var i = 0; i < sel.options.length; i++) {
+                var o = sel.options[i];
+                if (!o.value) continue;
+                var parts = o.text.split('|');
+                var field = '', category = '', name = '';
+                if (parts.length >= 3) {
+                    field    = parts[0].trim();
+                    category = parts[1].trim();
+                    name     = parts[2].trim();
+                } else if (parts.length === 2) {
+                    field = parts[0].trim();
+                    name  = parts[1].trim();
+                } else {
+                    name = o.text.trim();
+                }
+                opts.push({
+                    field:    field,
+                    category: category,
+                    name:     name,
+                    code:     o.value,
+                    select2id: o.getAttribute('data-select2-id') || ''
+                });
+            }
+            return JSON.stringify(opts);
+        })()";
+
+        string json = ExtractCdpStringValue(await Evaluate(script));
+        Log($"분석항목 raw: {(json.Length > 200 ? json[..200] + "..." : json)}");
+
+        if (string.IsNullOrEmpty(json) || json == "[]")
+        {
+            Log("분석항목: add_meas_item 요소 없음 또는 옵션 없음 — 모달이 열린 상태인지 확인하세요.");
+            Post("분석항목을 찾을 수 없습니다 (모달을 열고 다시 시도하세요)", "#ffaa44");
+            return;
+        }
+
+        var items = new List<(string 분야, string 항목구분, string 항목명, string 코드값, string Select2Id)>();
+        try
+        {
+            using var doc = JsonDocument.Parse(json);
+            foreach (var item in doc.RootElement.EnumerateArray())
+            {
+                string field    = item.GetProperty("field").GetString()    ?? "";
+                string category = item.GetProperty("category").GetString() ?? "";
+                string name     = item.GetProperty("name").GetString()     ?? "";
+                string code     = item.GetProperty("code").GetString()     ?? "";
+                string s2id     = item.GetProperty("select2id").GetString() ?? "";
+                if (!string.IsNullOrEmpty(code))
+                    items.Add((field, category, name, code, s2id));
+            }
+        }
+        catch (Exception ex) { Log($"분석항목 JSON 파싱 오류: {ex.Message}"); return; }
+
+        Log($"분석항목 {items.Count}개 수집: {string.Join(", ", items.Take(5).Select(i => $"{i.분야}|{i.항목구분}|{i.항목명}"))}");
+
+        int saved = MeasurerService.SaveAnalysisItems(items);
+        Log($"분석항목 저장 완료: {saved}개 반영 / {items.Count}개");
+        Post($"분석항목 {items.Count}개 저장 완료", "#88cc88");
     }
 
     // ── CDP 인스턴스 헬퍼 (_ws 사용) ─────────────────────────────────────────
@@ -570,19 +819,6 @@ public partial class MeasurerLoginWindow : Window
         throw new Exception(
             $"Edge CDP 응답 없음 (포트 {CdpPort})\n원인: {last?.Message}\n" +
             "기존에 열린 Edge 창을 모두 닫고 다시 시도하세요.");
-    }
-
-    // ── Edge 실행 파일 탐색 ───────────────────────────────────────────────────
-    private static string? FindEdgePath()
-    {
-        var candidates = new[]
-        {
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
-                "Microsoft", "Edge", "Application", "msedge.exe"),
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
-                "Microsoft", "Edge", "Application", "msedge.exe"),
-        };
-        return Array.Find(candidates, File.Exists);
     }
 
     private void BtnClose_Click(object? sender, RoutedEventArgs e) => Close();

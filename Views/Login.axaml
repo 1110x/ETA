@@ -1,97 +1,133 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:lottie="using:Avalonia.Labs.Lottie"
         d:DesignWidth="920" d:DesignHeight="580"
         x:Class="ETA.Views.Login"
         Title="RENEWUS TEAM Water Analysis Center"
         Icon="avares://ETA/Assets/icons/ETA.ico"
-        Width="450" Height="650"
+        Width="800" Height="650"
         WindowStartupLocation="CenterScreen">
 
+    <Window.Styles>
+        <!-- 포커스/호버 시 배경색 유지 -->
+        <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="#F8FAFF"/>
+        </Style>
+        <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="#F0F4FF"/>
+        </Style>
+    </Window.Styles>
+
     <Grid>
-        <!-- 배경 (비디오 대신 검은색) -->
-        <Border Background="#000000" />
 
-        <!-- 오버레이 -->
-        <Border Background="#00000080" />
+        <!-- 배경 -->
+        <Border Background="#EEF2FF" />
 
-        <!-- 로그인 폼 -->
-        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
-                    Spacing="20" Margin="40">
+        <!-- Lottie: 처음부터 보이되 멈춤, 로그인 성공 시 재생 -->
+        <lottie:Lottie x:Name="lottieView"
+                       HorizontalAlignment="Stretch"
+                       VerticalAlignment="Stretch"
+                       Path="avares://ETA/Assets/Videos/Loadercat.json"
+                       AutoPlay="False"
+                       RepeatCount="-1"
+                       Stretch="UniformToFill" />
 
-            <!-- 사번 입력 -->
-            <StackPanel Spacing="5">
-                <TextBlock Text="사번" FontSize="14" Foreground="White"
+        <!-- 로그인 카드 -->
+        <Border x:Name="loginForm"
+                Background="White"
+                CornerRadius="16"
+                Padding="48,40"
+                Width="380"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center">
+            <Border.BoxShadow>0 8 32 0 #1A3B6FE8</Border.BoxShadow>
+
+            <StackPanel Spacing="20">
+
+                <!-- 타이틀 -->
+                <StackPanel Spacing="4" Margin="0,0,0,8">
+                    <TextBlock Text="ETA" FontSize="28" FontWeight="Bold"
+                               Foreground="#3B6FE8" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Water Analysis Center" FontSize="12"
+                               Foreground="#9CA3AF" HorizontalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- 사번 입력 -->
+                <StackPanel Spacing="6">
+                    <TextBlock Text="사번" FontSize="13" FontWeight="SemiBold"
+                               Foreground="#374151"/>
+                    <TextBox x:Name="txtEmail" Watermark="202912345" FontSize="14"
+                             Padding="12,11" CornerRadius="9"
+                             BorderBrush="#D1D9FF" BorderThickness="1.5"
+                             Background="#F8FAFF" Foreground="#111827"/>
+                </StackPanel>
+
+                <!-- 비밀번호 입력 -->
+                <StackPanel Spacing="6">
+                    <TextBlock Text="비밀번호" FontSize="13" FontWeight="SemiBold"
+                               Foreground="#374151"/>
+                    <TextBox x:Name="txtPassword"
+                             Watermark="초기 비밀번호: 123456"
+                             PasswordChar="*"
+                             FontSize="14" Padding="12,11" CornerRadius="9"
+                             BorderBrush="#D1D9FF" BorderThickness="1.5"
+                             Background="#F8FAFF" Foreground="#111827"/>
+                </StackPanel>
+
+                <!-- 오류 메시지 -->
+                <TextBlock x:Name="txtError" Text="" FontSize="13"
+                           Foreground="#EF4444"
+                           IsVisible="False" TextWrapping="Wrap"
                            HorizontalAlignment="Center"/>
-                <TextBox x:Name="txtEmail" Watermark="202912345" FontSize="14"
-                         Padding="12,11" CornerRadius="9"
-                         BorderBrush="#FFFFFF" BorderThickness="1"
-                         Background="#FFFFFFCC"/>
-            </StackPanel>
 
-            <!-- 비밀번호 입력 -->
-            <StackPanel Spacing="5">
-                <TextBlock Text="비밀번호" FontSize="14" Foreground="White"
-                           HorizontalAlignment="Center"/>
-                <TextBox x:Name="txtPassword"
-                         Watermark="초기 비밀번호: 123456"
-                         PasswordChar="*"
-                         FontSize="14" Padding="12,11" CornerRadius="9"
-                         BorderBrush="#FFFFFF" BorderThickness="1"
-                         Background="#FFFFFFCC"/>
-            </StackPanel>
-
-            <!-- 오류 메시지 -->
-            <TextBlock x:Name="txtError" Text="" FontSize="13"
-                       Foreground="#FFAAAA"
-                       IsVisible="False" TextWrapping="Wrap"
-                       HorizontalAlignment="Center"/>
-
-            <!-- 버튼들 -->
-            <StackPanel Spacing="10" Margin="0,20,0,0">
-                <Button Content="로그인" Click="Login_Click"
-                        FontSize="16" FontWeight="SemiBold"
-                        Padding="0,16" CornerRadius="11" BorderThickness="0"
-                        HorizontalAlignment="Stretch"
-                        HorizontalContentAlignment="Center"
-                        Background="#0F766E" Foreground="White">
-                    <Button.Styles>
-                        <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-                            <Setter Property="Background" Value="#14A38E"/>
-                        </Style>
-                        <Style Selector="Button:pressed /template/ ContentPresenter#PART_ContentPresenter">
-                            <Setter Property="Background" Value="#0C5F58"/>
-                        </Style>
-                    </Button.Styles>
-                </Button>
-
-                <Grid ColumnDefinitions="*,*">
-                    <Button Grid.Column="0"
-                            Content="비밀번호 찾기"
-                            Click="ChangePassword_Click"
-                            FontSize="14" Padding="8,8"
-                            CornerRadius="8" BorderThickness="1"
-                            BorderBrush="#FFFFFF"
-                            Background="#FFFFFFCC" Foreground="#000000"
+                <!-- 버튼들 -->
+                <StackPanel Spacing="10" Margin="0,8,0,0">
+                    <Button Content="로그인" Click="Login_Click"
+                            FontSize="15" FontWeight="SemiBold"
+                            Padding="0,14" CornerRadius="10" BorderThickness="0"
                             HorizontalAlignment="Stretch"
-                            HorizontalContentAlignment="Center">
+                            HorizontalContentAlignment="Center"
+                            Background="#3B6FE8" Foreground="White">
                         <Button.Styles>
                             <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-                                <Setter Property="Background" Value="#FFFFFF"/>
+                                <Setter Property="Background" Value="#2952CC"/>
+                            </Style>
+                            <Style Selector="Button:pressed /template/ ContentPresenter#PART_ContentPresenter">
+                                <Setter Property="Background" Value="#1E3EA8"/>
                             </Style>
                         </Button.Styles>
                     </Button>
 
-                    <TextBlock Grid.Column="1"
-                               x:Name="lnkSignUp" Text="회원가입"
-                               Foreground="#FFFFFF" FontSize="14"
-                               Cursor="Hand"
-                               VerticalAlignment="Center"
-                               HorizontalAlignment="Center"
-                               PointerPressed="SignUp_Click"/>
-                </Grid>
-            </StackPanel>
+                    <Grid ColumnDefinitions="*,*" Margin="0,4,0,0">
+                        <Button Grid.Column="0"
+                                Content="비밀번호 찾기"
+                                Click="ChangePassword_Click"
+                                FontSize="13" Padding="8,9"
+                                CornerRadius="8" BorderThickness="1.5"
+                                BorderBrush="#D1D9FF"
+                                Background="White" Foreground="#374151"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Center">
+                            <Button.Styles>
+                                <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                                    <Setter Property="Background" Value="#EEF2FF"/>
+                                </Style>
+                            </Button.Styles>
+                        </Button>
 
-        </StackPanel>
+                        <TextBlock Grid.Column="1"
+                                   x:Name="lnkSignUp" Text="회원가입"
+                                   Foreground="#3B6FE8" FontSize="13"
+                                   FontWeight="SemiBold"
+                                   Cursor="Hand"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Center"
+                                   PointerPressed="SignUp_Click"/>
+                    </Grid>
+                </StackPanel>
+
+            </StackPanel>
+        </Border>
     </Grid>
 </Window>
