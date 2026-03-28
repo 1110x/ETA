@@ -34,7 +34,7 @@ public static class AnalysisService
             ES, 
             Method, 
             instrument
-            FROM ""분석정보""
+            FROM `분석정보`
             ORDER BY ES ASC";
 
         using var reader = command.ExecuteReader();

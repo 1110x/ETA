@@ -138,7 +138,7 @@ public partial class WasteCompanyPage : UserControl
         Log($"DB 경로 : {Path.GetFullPath(DbPathHelper.DbPath)}");
 
         string sql = $@"
-            UPDATE ""{TableName}""
+            UPDATE `{TableName}`
             SET 프로젝트=@p, 프로젝트명=@pn, 관리번호=@m, 사업자번호=@b
             WHERE {KeyColumn} = @key";
 

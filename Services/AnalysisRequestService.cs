@@ -37,22 +37,19 @@ public static class AnalysisRequestService
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
-        using var chk = conn.CreateCommand();
-        chk.CommandText =
-            "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='분석의뢰및결과'";
-        long tableExists = Convert.ToInt64(chk.ExecuteScalar()!);
+        long tableExists = DbConnectionFactory.TableExists(conn, "분석의뢰및결과") ? 1L : 0L;
         Log($"테이블 존재: {tableExists}");
         if (tableExists == 0) return list;
 
         using var cnt = conn.CreateCommand();
-        cnt.CommandText = "SELECT COUNT(*) FROM \"분석의뢰및결과\"";
+        cnt.CommandText = "SELECT COUNT(*) FROM `분석의뢰및결과`";
         long rowCount = Convert.ToInt64(cnt.ExecuteScalar()!);
         Log($"전체 행 수: {rowCount}");
         if (rowCount == 0) return list;
 
         using var sample = conn.CreateCommand();
         sample.CommandText =
-            "SELECT \"채취일자\", \"약칭\", \"시료명\", \"견적번호\" FROM \"분석의뢰및결과\" LIMIT 3";
+            "SELECT `채취일자`, `약칭`, `시료명`, `견적번호` FROM `분석의뢰및결과` LIMIT 3";
         using var srdr = sample.ExecuteReader();
         while (srdr.Read())
             Log($"  샘플: 채취일자={srdr.GetValue(0)} 약칭={srdr.GetValue(1)}" +
@@ -61,12 +58,12 @@ public static class AnalysisRequestService
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
             SELECT rowid,
-                   COALESCE(""약칭"",     ''),
-                   COALESCE(""시료명"",   ''),
-                   COALESCE(""견적번호"", ''),
-                   COALESCE(""채취일자"", '')
-            FROM   ""분석의뢰및결과""
-            ORDER  BY ""채취일자"" DESC";
+                   COALESCE(`약칭`,     ''),
+                   COALESCE(`시료명`,   ''),
+                   COALESCE(`견적번호`, ''),
+                   COALESCE(`채취일자`, '')
+            FROM   `분석의뢰및결과`
+            ORDER  BY `채취일자` DESC";
 
         using var rdr = cmd.ExecuteReader();
         while (rdr.Read())
@@ -107,7 +104,7 @@ public static class AnalysisRequestService
         conn.Open();
 
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = "SELECT * FROM \"분석의뢰및결과\" WHERE rowid = @id";
+        cmd.CommandText = "SELECT * FROM `분석의뢰및결과` WHERE rowid = @id";
         cmd.Parameters.AddWithValue("@id", rowId);
 
         using var rdr = cmd.ExecuteReader();
@@ -144,15 +141,12 @@ public static class AnalysisRequestService
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
 
-            using var chk = conn.CreateCommand();
-            chk.CommandText =
-                "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='분장표준처리'";
-            if (Convert.ToInt64(chk.ExecuteScalar()!) == 0)
+            if (!DbConnectionFactory.TableExists(conn, "분장표준처리"))
             { Log("GetStandardDaysInfo: 분장표준처리 테이블 없음"); return result; }
 
             // 처음 3행: 표준처리기한, 약칭, (날짜행)
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = "SELECT * FROM \"분장표준처리\" LIMIT 3";
+            cmd.CommandText = "SELECT * FROM `분장표준처리` LIMIT 3";
             using var rdr = cmd.ExecuteReader();
 
             int      fc       = rdr.FieldCount;
@@ -231,7 +225,7 @@ public static class AnalysisRequestService
 
             using var cmd = conn.CreateCommand();
             cmd.CommandText =
-                "SELECT * FROM \"분장표준처리\" WHERE \"항목명\" = @date LIMIT 1";
+                "SELECT * FROM `분장표준처리` WHERE `항목명` = @date LIMIT 1";
             cmd.Parameters.AddWithValue("@date", dateKey);
 
             using var rdr = cmd.ExecuteReader();
@@ -281,7 +275,7 @@ public static class AnalysisRequestService
             string managerName = "";
             using (var cmd2 = conn.CreateCommand())
             {
-                cmd2.CommandText = "SELECT \"성명\" FROM \"Agent\" WHERE \"사번\" = @id";
+                cmd2.CommandText = "SELECT `성명` FROM `Agent` WHERE `사번` = @id";
                 cmd2.Parameters.AddWithValue("@id", employeeId);
                 var result = cmd2.ExecuteScalar();
                 if (result != null)
@@ -292,7 +286,7 @@ public static class AnalysisRequestService
             // 지정된 날짜 기준으로 할당된 항목 조회
             string queryDateStr = queryDate.ToString("yyyy-MM-dd");
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = $"SELECT * FROM \"분장표준처리\" WHERE \"항목명\" = @date";
+            cmd.CommandText = $"SELECT * FROM `분장표준처리` WHERE `항목명` = @date";
             cmd.Parameters.AddWithValue("@date", queryDateStr);
 
             using var rdr = cmd.ExecuteReader();
@@ -346,7 +340,7 @@ public static class AnalysisRequestService
             string managerName = "";
             using (var cmd2 = conn.CreateCommand())
             {
-                cmd2.CommandText = "SELECT \"성명\" FROM \"Agent\" WHERE \"사번\" = @id";
+                cmd2.CommandText = "SELECT `성명` FROM `Agent` WHERE `사번` = @id";
                 cmd2.Parameters.AddWithValue("@id", employeeId);
                 var r = cmd2.ExecuteScalar();
                 if (r != null) managerName = r.ToString()?.Trim() ?? "";
@@ -358,7 +352,7 @@ public static class AnalysisRequestService
 
             using var cmd = conn.CreateCommand();
             cmd.CommandText =
-                "SELECT * FROM \"분장표준처리\" WHERE \"항목명\" BETWEEN @s AND @e ORDER BY \"항목명\"";
+                "SELECT * FROM `분장표준처리` WHERE `항목명` BETWEEN @s AND @e ORDER BY `항목명`";
             cmd.Parameters.AddWithValue("@s", startDate.ToString("yyyy-MM-dd"));
             cmd.Parameters.AddWithValue("@e", endDate.ToString("yyyy-MM-dd"));
 
@@ -402,7 +396,7 @@ public static class AnalysisRequestService
             conn.Open();
             using var cmd = conn.CreateCommand();
             cmd.CommandText =
-                "SELECT * FROM \"분장표준처리\" WHERE \"항목명\" BETWEEN @s AND @e ORDER BY \"항목명\"";
+                "SELECT * FROM `분장표준처리` WHERE `항목명` BETWEEN @s AND @e ORDER BY `항목명`";
             cmd.Parameters.AddWithValue("@s", start.ToString("yyyy-MM-dd"));
             cmd.Parameters.AddWithValue("@e", end.ToString("yyyy-MM-dd"));
             using var rdr = cmd.ExecuteReader();
@@ -436,7 +430,7 @@ public static class AnalysisRequestService
             conn.Open();
 
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = "SELECT * FROM \"분장표준처리\" WHERE \"항목명\" = @date";
+            cmd.CommandText = "SELECT * FROM `분장표준처리` WHERE `항목명` = @date";
             cmd.Parameters.AddWithValue("@date", date.ToString("yyyy-MM-dd"));
 
             using var rdr = cmd.ExecuteReader();
@@ -473,7 +467,7 @@ public static class AnalysisRequestService
             string managerName = "";
             using (var cmd2 = conn.CreateCommand())
             {
-                cmd2.CommandText = "SELECT \"성명\" FROM \"Agent\" WHERE \"사번\" = @id";
+                cmd2.CommandText = "SELECT `성명` FROM `Agent` WHERE `사번` = @id";
                 cmd2.Parameters.AddWithValue("@id", employeeId);
                 var r = cmd2.ExecuteScalar();
                 if (r != null) managerName = r.ToString()?.Trim() ?? "";
@@ -481,25 +475,16 @@ public static class AnalysisRequestService
             if (string.IsNullOrEmpty(managerName)) return;
 
             // 컬럼 목록 (항목명 제외)
-            var columns = new List<string>();
-            using (var colCmd = conn.CreateCommand())
-            {
-                colCmd.CommandText = "PRAGMA table_info(\"분장표준처리\")";
-                using var colRdr = colCmd.ExecuteReader();
-                while (colRdr.Read())
-                {
-                    var col = colRdr.GetString(1);
-                    if (col != "항목명") columns.Add(col);
-                }
-            }
+            var columns = DbConnectionFactory.GetColumnNames(conn, "분장표준처리")
+                .Where(c => c != "항목명").ToList();
             if (columns.Count == 0) return;
 
             // 해당 기간 내 이 직원이 담당인 셀을 NULL로
             var setClauses = columns.Select(
-                c => $"\"{c}\" = CASE WHEN \"{c}\" = @mgr THEN NULL ELSE \"{c}\" END");
+                c => $"`{c}` = CASE WHEN `{c}` = @mgr THEN NULL ELSE `{c}` END");
             var sql =
-                $"UPDATE \"분장표준처리\" SET {string.Join(", ", setClauses)} " +
-                $"WHERE \"항목명\" BETWEEN @start AND @end";
+                $"UPDATE `분장표준처리` SET {string.Join(", ", setClauses)} " +
+                $"WHERE `항목명` BETWEEN @start AND @end";
 
             using var cmd = conn.CreateCommand();
             cmd.CommandText = sql;
@@ -548,7 +533,7 @@ public static class AnalysisRequestService
             string managerName = "";
             using (var cmd2 = conn.CreateCommand())
             {
-                cmd2.CommandText = "SELECT \"성명\" FROM \"Agent\" WHERE \"사번\" = @id";
+                cmd2.CommandText = "SELECT `성명` FROM `Agent` WHERE `사번` = @id";
                 cmd2.Parameters.AddWithValue("@id", employeeId);
                 var result = cmd2.ExecuteScalar();
                 if (result != null)
@@ -569,7 +554,7 @@ public static class AnalysisRequestService
                 bool rowExists = false;
                 using (var chk = conn.CreateCommand())
                 {
-                    chk.CommandText = "SELECT COUNT(*) FROM \"분장표준처리\" WHERE \"항목명\" = @date";
+                    chk.CommandText = "SELECT COUNT(*) FROM `분장표준처리` WHERE `항목명` = @date";
                     chk.Parameters.AddWithValue("@date", dateKey);
                     rowExists = Convert.ToInt64(chk.ExecuteScalar()!) > 0;
                 }
@@ -578,7 +563,7 @@ public static class AnalysisRequestService
                 {
                     // 업데이트
                     using var upd = conn.CreateCommand();
-                    upd.CommandText = $"UPDATE \"분장표준처리\" SET \"{columnName}\" = @manager WHERE \"항목명\" = @date";
+                    upd.CommandText = $"UPDATE `분장표준처리` SET `{columnName}` = @manager WHERE `항목명` = @date";
                     upd.Parameters.AddWithValue("@manager", managerName);
                     upd.Parameters.AddWithValue("@date", dateKey);
                     upd.ExecuteNonQuery();
@@ -587,23 +572,16 @@ public static class AnalysisRequestService
                 {
                     // 삽입 (새 행 생성)
                     // 먼저 컬럼 목록 가져오기
-                    var columns = new List<string>();
-                    using (var colCmd = conn.CreateCommand())
-                    {
-                        colCmd.CommandText = "PRAGMA table_info(\"분장표준처리\")";
-                        using var colRdr = colCmd.ExecuteReader();
-                        while (colRdr.Read())
-                            columns.Add(colRdr.GetString(1)); // name
-                    }
+                    var columns = DbConnectionFactory.GetColumnNames(conn, "분장표준처리");
 
                     // INSERT 문 생성
-                    var insertColumns = new List<string> { "\"항목명\"" };
+                    var insertColumns = new List<string> { "`항목명`" };
                     var values = new List<string> { "@date" };
                     var parameters = new Dictionary<string, object> { { "@date", dateKey } };
 
                     foreach (var col in columns.Skip(1)) // 항목명 제외
                     {
-                        insertColumns.Add($"\"{col}\"");
+                        insertColumns.Add($"`{col}`");
                         if (col == columnName)
                         {
                             values.Add("@manager");
@@ -616,7 +594,7 @@ public static class AnalysisRequestService
                     }
 
                     using var ins = conn.CreateCommand();
-                    ins.CommandText = $"INSERT INTO \"분장표준처리\" ({string.Join(", ", insertColumns)}) VALUES ({string.Join(", ", values)})";
+                    ins.CommandText = $"INSERT INTO `분장표준처리` ({string.Join(", ", insertColumns)}) VALUES ({string.Join(", ", values)})";
                     foreach (var param in parameters)
                         ins.Parameters.AddWithValue(param.Key, param.Value);
                     ins.ExecuteNonQuery();

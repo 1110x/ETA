@@ -225,16 +225,16 @@ public static class MeasurerService
             UPDATE 측정인_채취지점
             SET 약칭 = (
                 SELECT C_Abbreviation
-                FROM ""계약 DB""
-                WHERE ""계약 DB"".C_CompanyName = 측정인_채취지점.업체명
+                FROM `계약 DB`
+                WHERE `계약 DB`.C_CompanyName = 측정인_채취지점.업체명
                   AND C_Abbreviation IS NOT NULL
                   AND C_Abbreviation != ''
                 LIMIT 1
             )
             WHERE (약칭 IS NULL OR 약칭 = '')
               AND EXISTS (
-                SELECT 1 FROM ""계약 DB""
-                WHERE ""계약 DB"".C_CompanyName = 측정인_채취지점.업체명
+                SELECT 1 FROM `계약 DB`
+                WHERE `계약 DB`.C_CompanyName = 측정인_채취지점.업체명
                   AND C_Abbreviation IS NOT NULL
                   AND C_Abbreviation != ''
               )";

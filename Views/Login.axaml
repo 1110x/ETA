@@ -128,22 +128,34 @@
                 </StackPanel>
 
                 <!-- DB 모드 토글 -->
-                <Border Background="#F8FAFF" CornerRadius="8" Padding="12,8"
-                        BorderBrush="#D1D9FF" BorderThickness="1">
+                <Border Background="#F0F4FF" CornerRadius="8" Padding="12,8"
+                        BorderBrush="#C7D2FE" BorderThickness="1">
                     <Grid ColumnDefinitions="*,Auto">
-                        <StackPanel Grid.Column="0" Spacing="2">
+                        <StackPanel Grid.Column="0" Spacing="2" VerticalAlignment="Center">
                             <TextBlock x:Name="txtDbMode" Text="로컬 DB"
                                        FontSize="12" FontWeight="SemiBold"
                                        Foreground="#374151"/>
                             <TextBlock x:Name="txtDbStatus" Text="SQLite (오프라인)"
-                                       FontSize="10" Foreground="#9CA3AF"/>
+                                       FontSize="10" Foreground="#6B7280"/>
                         </StackPanel>
-                        <ToggleSwitch Grid.Column="1"
-                                      x:Name="toggleDbMode"
-                                      OffContent="" OnContent=""
-                                      IsCheckedChanged="DbModeToggle_Changed"
-                                      VerticalAlignment="Center"
-                                      Margin="8,0,0,0"/>
+                        <!-- Dark 테마에서도 보이도록 커스텀 토글 버튼으로 대체 -->
+                        <Border Grid.Column="1"
+                                x:Name="toggleDbMode"
+                                Width="48" Height="26"
+                                CornerRadius="13"
+                                Background="#D1D5DB"
+                                VerticalAlignment="Center"
+                                Margin="8,0,0,0"
+                                Cursor="Hand"
+                                PointerPressed="DbModeToggle_Click">
+                            <Border x:Name="toggleKnob"
+                                    Width="20" Height="20"
+                                    CornerRadius="10"
+                                    Background="White"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    Margin="3,0,0,0"/>
+                        </Border>
                     </Grid>
                 </Border>
 

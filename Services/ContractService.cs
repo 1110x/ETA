@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Data;
 using System.Data.Common;
 using ETA.Models;
@@ -27,7 +28,7 @@ public static class ContractService
                    C_ContractAmountVATExcluded, C_Abbreviation, C_ContractType,
                    C_Address, C_Representative, C_FacilityType, C_CategoryType,
                    C_MainProduct, C_ContactPerson, C_PhoneNumber, C_Email
-            FROM ""계약 DB""
+            FROM `계약 DB`
             ORDER BY C_CompanyName ASC";
 
         using var r = cmd.ExecuteReader();
@@ -77,7 +78,7 @@ public static class ContractService
 
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            UPDATE ""계약 DB"" SET
+            UPDATE `계약 DB` SET
                 C_CompanyName=@name, C_ContractStart=@start, C_ContractEnd=@end,
                 C_ContractDays=@days, C_ContractAmountVATExcluded=@amount,
                 C_Abbreviation=@abbr, C_ContractType=@type, C_Address=@addr,
@@ -103,7 +104,7 @@ public static class ContractService
 
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            INSERT INTO ""계약 DB""
+            INSERT INTO `계약 DB`
                 (C_CompanyName, C_ContractStart, C_ContractEnd, C_ContractDays,
                  C_ContractAmountVATExcluded, C_Abbreviation, C_ContractType,
                  C_Address, C_Representative, C_FacilityType, C_CategoryType,
@@ -127,7 +128,7 @@ public static class ContractService
         conn.Open();
 
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"DELETE FROM ""계약 DB"" WHERE C_CompanyName=@name";
+        cmd.CommandText = @"DELETE FROM `계약 DB` WHERE C_CompanyName=@name";
         cmd.Parameters.AddWithValue("@name", contract.C_CompanyName);
 
         int rows = cmd.ExecuteNonQuery();
@@ -152,19 +153,11 @@ public static List<string> GetUnitPriceColumns()
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
-        using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"PRAGMA table_info(""분석단가"")";
-
-        using var r = cmd.ExecuteReader();
-        while (r.Read())
+        var allCols = DbConnectionFactory.GetColumnNames(conn, "분석단가");
+        for (int i = 3; i < allCols.Count; i++)
         {
-            int cid = r.GetInt32(0);                    // 컬럼 순번 (0=ES, 1=Category, 2=Analyte)
-            string colName = r.IsDBNull(1) ? "" : r.GetString(1);
-
-            if (cid >= 3 && !string.IsNullOrWhiteSpace(colName))
-            {
-                result.Add(colName);
-            }
+            if (!string.IsNullOrWhiteSpace(allCols[i]))
+                result.Add(allCols[i]);
         }
 
         Debug.WriteLine($"[Contract] 분석단가 컬럼 로드 완료 → {result.Count}개 (FS100~FS25)");
@@ -194,13 +187,7 @@ public static List<string> GetUnitPriceColumns()
         conn.Open();
 
         // 첫 번째 컬럼(항목 키)을 동적으로 파악
-        string keyColumn;
-        using (var pragmaCmd = conn.CreateCommand())
-        {
-            pragmaCmd.CommandText = @"PRAGMA table_info(""분석단가"")";
-            using var pr = pragmaCmd.ExecuteReader();
-            keyColumn = pr.Read() ? (pr.IsDBNull(1) ? "" : pr.GetString(1)) : "";
-        }
+        string keyColumn = DbConnectionFactory.GetColumnNames(conn, "분석단가").FirstOrDefault() ?? "";
 
         if (string.IsNullOrEmpty(keyColumn))
         {
@@ -210,7 +197,7 @@ public static List<string> GetUnitPriceColumns()
 
         using var cmd = conn.CreateCommand();
         // 컬럼명은 검증된 것만 사용하므로 직접 삽입 (파라미터 바인딩 불가)
-        cmd.CommandText = $@"SELECT ""{keyColumn}"", ""{columnName}"" FROM ""분석단가""";
+        cmd.CommandText = $@"SELECT `{keyColumn}`, `{columnName}` FROM `분석단가`";
 
         using var r = cmd.ExecuteReader();
         while (r.Read())
@@ -233,15 +220,7 @@ public static List<string> GetUnitPriceColumns()
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
-        using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"PRAGMA table_info(""분석단가"")";
-
-        using var r = cmd.ExecuteReader();
-        while (r.Read())
-        {
-            if (!r.IsDBNull(1)) result.Add(r.GetString(1));
-        }
-        return result;
+        return DbConnectionFactory.GetColumnNames(conn, "분석단가");
     }
 
     // ── 공통 파라미터 ─────────────────────────────────────────────────────────

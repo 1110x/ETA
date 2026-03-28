@@ -16,7 +16,7 @@ public static class RepairService
     {
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            CREATE TABLE IF NOT EXISTS ""보수요청"" (
+            CREATE TABLE IF NOT EXISTS `보수요청` (
                 Id       INTEGER PRIMARY KEY AUTOINCREMENT,
                 구분     TEXT    NOT NULL DEFAULT '',
                 장비명   TEXT    NOT NULL DEFAULT '',
@@ -43,7 +43,7 @@ public static class RepairService
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
             SELECT Id, 구분, 장비명, 증상, 위치, 요청자, 요청일, 완료예정일, 처리내용, 비고, 상태
-            FROM ""보수요청"" ORDER BY Id DESC";
+            FROM `보수요청` ORDER BY Id DESC";
 
         using var r = cmd.ExecuteReader();
         while (r.Read()) list.Add(Read(r));
@@ -63,7 +63,7 @@ public static class RepairService
             SELECT strftime('%Y', 요청일) AS yr,
                    strftime('%m', 요청일) AS mo,
                    COUNT(*)              AS cnt
-            FROM ""보수요청""
+            FROM `보수요청`
             GROUP BY yr, mo
             ORDER BY yr DESC, mo DESC";
 
@@ -89,7 +89,7 @@ public static class RepairService
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
             SELECT Id, 구분, 장비명, 증상, 위치, 요청자, 요청일, 완료예정일, 처리내용, 비고, 상태
-            FROM ""보수요청""
+            FROM `보수요청`
             WHERE strftime('%Y-%m', 요청일) = @ym
             ORDER BY Id DESC";
         cmd.Parameters.AddWithValue("@ym", ym);
@@ -108,7 +108,7 @@ public static class RepairService
 
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            INSERT INTO ""보수요청""
+            INSERT INTO `보수요청`
                 (구분, 장비명, 증상, 위치, 요청자, 요청일, 완료예정일, 처리내용, 비고, 상태)
             VALUES
                 (@구분, @장비명, @증상, @위치, @요청자, @요청일, @완료예정일, @처리내용, @비고, @상태)";
@@ -133,7 +133,7 @@ public static class RepairService
 
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            UPDATE ""보수요청"" SET
+            UPDATE `보수요청` SET
                 구분=@구분, 장비명=@장비명, 증상=@증상, 위치=@위치,
                 요청자=@요청자, 요청일=@요청일, 완료예정일=@완료예정일,
                 처리내용=@처리내용, 비고=@비고, 상태=@상태
@@ -151,7 +151,7 @@ public static class RepairService
         conn.Open();
 
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"UPDATE ""보수요청"" SET 상태=@상태 WHERE Id=@id";
+        cmd.CommandText = @"UPDATE `보수요청` SET 상태=@상태 WHERE Id=@id";
         cmd.Parameters.AddWithValue("@상태", status);
         cmd.Parameters.AddWithValue("@id",   id);
         return cmd.ExecuteNonQuery() > 0;
@@ -164,7 +164,7 @@ public static class RepairService
         conn.Open();
 
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"DELETE FROM ""보수요청"" WHERE Id=@id";
+        cmd.CommandText = @"DELETE FROM `보수요청` WHERE Id=@id";
         cmd.Parameters.AddWithValue("@id", id);
         int rows = cmd.ExecuteNonQuery();
         Debug.WriteLine($"[RepairService] DELETE id={id} → {rows}행");

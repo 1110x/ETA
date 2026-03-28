@@ -280,16 +280,12 @@ public static class TestReportPrintService
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             // 컬럼 목록 먼저 확인
-            using var pragma = conn.CreateCommand();
-            pragma.CommandText = @"PRAGMA table_info(""계약 DB"")";
-            var cols = new System.Collections.Generic.List<string>();
-            using (var pr = pragma.ExecuteReader())
-                while (pr.Read()) cols.Add(pr.GetString(1));
+            var cols = DbConnectionFactory.GetColumnNames(conn, "계약 DB");
             Log($"계약DB 컬럼: {string.Join(", ", cols)}");
 
             // 샘플 데이터 확인 (첫 3행)
             using var sample = conn.CreateCommand();
-            sample.CommandText = @"SELECT * FROM ""계약 DB"" LIMIT 3";
+            sample.CommandText = @"SELECT * FROM `계약 DB` LIMIT 3";
             using (var sr = sample.ExecuteReader())
                 while (sr.Read())
                 {
@@ -301,7 +297,7 @@ public static class TestReportPrintService
             using var cmd = conn.CreateCommand();
             cmd.CommandText = @"
                 SELECT C_CompanyName, C_Representative
-                FROM ""계약 DB""
+                FROM `계약 DB`
                 WHERE C_Abbreviation = @exact
                    OR C_Abbreviation LIKE @name
                    OR C_CompanyName  LIKE @name

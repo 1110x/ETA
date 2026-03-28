@@ -22,10 +22,7 @@ public static class OrderRequestService
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
-            using var cmd = conn.CreateCommand();
-            cmd.CommandText = @"PRAGMA table_info(""시료명칭"")";
-            using var r = cmd.ExecuteReader();
-            while (r.Read()) list.Add(r.GetString(1));
+            list.AddRange(DbConnectionFactory.GetColumnNames(conn, "시료명칭"));
         }
         catch (Exception ex) { Debug.WriteLine($"[OrderRequest] 컬럼조회 오류: {ex.Message}"); }
         return list;
@@ -67,7 +64,7 @@ public static class OrderRequestService
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = $@"SELECT ""{columnName}"" FROM ""시료명칭"" WHERE ""{columnName}"" IS NOT NULL AND ""{columnName}"" <> ''";
+            cmd.CommandText = $@"SELECT `{columnName}` FROM `시료명칭` WHERE `{columnName}` IS NOT NULL AND `{columnName}` <> ''";
             using var r = cmd.ExecuteReader();
             while (r.Read()) list.Add(r.GetString(0));
         }
@@ -84,13 +81,13 @@ public static class OrderRequestService
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var chk = conn.CreateCommand();
-            chk.CommandText = $@"SELECT rowid FROM ""시료명칭"" WHERE ""{columnName}"" IS NULL OR ""{columnName}"" = '' LIMIT 1";
+            chk.CommandText = $@"SELECT rowid FROM `시료명칭` WHERE `{columnName}` IS NULL OR `{columnName}` = '' LIMIT 1";
             var rowidObj = chk.ExecuteScalar();
 
             if (rowidObj != null)
             {
                 using var upd = conn.CreateCommand();
-                upd.CommandText = $@"UPDATE ""시료명칭"" SET ""{columnName}"" = @val WHERE rowid = @id";
+                upd.CommandText = $@"UPDATE `시료명칭` SET `{columnName}` = @val WHERE rowid = @id";
                 upd.Parameters.AddWithValue("@val", sampleName);
                 upd.Parameters.AddWithValue("@id", Convert.ToInt32(rowidObj));
                 upd.ExecuteNonQuery();
@@ -98,7 +95,7 @@ public static class OrderRequestService
             else
             {
                 using var ins = conn.CreateCommand();
-                ins.CommandText = $@"INSERT INTO ""시료명칭"" (""{columnName}"") VALUES (@val)";
+                ins.CommandText = $@"INSERT INTO `시료명칭` (`{columnName}`) VALUES (@val)";
                 ins.Parameters.AddWithValue("@val", sampleName);
                 ins.ExecuteNonQuery();
             }
@@ -122,13 +119,9 @@ public static class OrderRequestService
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
-            using var cmd = conn.CreateCommand();
-            cmd.CommandText = @"PRAGMA table_info(""분석의뢰및결과"")";
-            using var r = cmd.ExecuteReader();
-            while (r.Read())
+            foreach (var col in DbConnectionFactory.GetColumnNames(conn, "분석의뢰및결과"))
             {
-                var col = r.GetString(1).Trim();
-                if (!fixedCols.Contains(col)) list.Add(col);
+                if (!fixedCols.Contains(col.Trim())) list.Add(col.Trim());
             }
         }
         catch (Exception ex) { Debug.WriteLine($"[OrderRequest] 분석컬럼 오류: {ex.Message}"); }
@@ -144,7 +137,7 @@ public static class OrderRequestService
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = @"SELECT COUNT(*) FROM ""분석의뢰및결과"" WHERE ""견적번호""=@no AND ""시료명""=@sample";
+            cmd.CommandText = @"SELECT COUNT(*) FROM `분석의뢰및결과` WHERE `견적번호`=@no AND `시료명`=@sample";
             cmd.Parameters.AddWithValue("@no",     견적번호);
             cmd.Parameters.AddWithValue("@sample", 시료명);
             return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
@@ -161,7 +154,7 @@ public static class OrderRequestService
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = @"DELETE FROM ""분석의뢰및결과"" WHERE ""견적번호""=@no AND ""시료명""=@sample";
+            cmd.CommandText = @"DELETE FROM `분석의뢰및결과` WHERE `견적번호`=@no AND `시료명`=@sample";
             cmd.Parameters.AddWithValue("@no",     견적번호);
             cmd.Parameters.AddWithValue("@sample", 시료명);
             cmd.ExecuteNonQuery();
@@ -181,13 +174,7 @@ public static class OrderRequestService
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
 
-            var tableCols = new List<string>();
-            using (var pragma = conn.CreateCommand())
-            {
-                pragma.CommandText = @"PRAGMA table_info(""분석의뢰및결과"")";
-                using var pr = pragma.ExecuteReader();
-                while (pr.Read()) tableCols.Add(pr.GetString(1).Trim());
-            }
+            var tableCols = DbConnectionFactory.GetColumnNames(conn, "분석의뢰및결과");
 
             var fixedCols = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
@@ -198,17 +185,17 @@ public static class OrderRequestService
 
             var analysisCols = tableCols.Where(c => !fixedCols.Contains(c)).ToList();
 
-            var colList   = new List<string> { "\"의뢰사업장\"","\"약칭\"","\"시료명\"","\"견적번호\"","\"견적구분\"","\"채취일자\"" };
+            var colList   = new List<string> { "`의뢰사업장`","`약칭`","`시료명`","`견적번호`","`견적구분`","`채취일자`" };
             var paramList = new List<string> { "@company","@abbr","@sample","@no","@type","@date" };
 
             foreach (var col in analysisCols)
             {
-                colList.Add($"\"{col}\"");
+                colList.Add($"`{col}`");
                 paramList.Add($"@a_{ToParam(col)}");
             }
 
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = $@"INSERT INTO ""분석의뢰및결과"" ({string.Join(",", colList)}) VALUES ({string.Join(",", paramList)})";
+            cmd.CommandText = $@"INSERT INTO `분석의뢰및결과` ({string.Join(",", colList)}) VALUES ({string.Join(",", paramList)})";
 
             cmd.Parameters.AddWithValue("@company", issue.업체명   ?? "");
             cmd.Parameters.AddWithValue("@abbr",    issue.약칭     ?? "");

@@ -48,7 +48,7 @@ public static class ContractPriceService
                     NFS36,
                     NFS36RE,
                     FS25
-                FROM ""분석단가""
+                FROM `분석단가`
                 ORDER BY ES ASC";
 
             Console.WriteLine("[DB] 쿼리 실행 중...");

@@ -744,12 +744,12 @@ public partial class MeasurerLoginWindow : Window
             window.prompt  = function(msg, def) { return def || ''; };
 
             var selectors = [
-                '[class*=""close""]', '[class*=""Close""]',
-                '[id*=""close""]',    '[id*=""Close""]',
+                '[class*=`close`]', '[class*=`Close`]',
+                '[id*=`close`]',    '[id*=`Close`]',
                 '.layer-close',  '.popup-close',  '.modal-close',
                 '.btn-close',    '.btn_close',    '.pop_close',
                 '.layer_close',  '.ui-dialog-titlebar-close',
-                '[title=""닫기""]', '[alt=""닫기""]'
+                '[title=`닫기`]', '[alt=`닫기`]'
             ].join(',');
             try {
                 document.querySelectorAll(selectors).forEach(function(el) {
@@ -758,7 +758,7 @@ public partial class MeasurerLoginWindow : Window
             } catch(e) {}
 
             var closeTexts = ['닫기', '확인', '×', '✕', 'X', 'Close', 'OK'];
-            var btns = document.querySelectorAll('button, a, input[type=""button""], input[type=""submit""]');
+            var btns = document.querySelectorAll('button, a, input[type=`button`], input[type=`submit`]');
             btns.forEach(function(el) {
                 if (el.offsetParent === null) return;
                 var t = el.textContent.trim();

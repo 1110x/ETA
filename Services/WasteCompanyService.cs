@@ -32,7 +32,7 @@ public static class WasteCompanyService
                 관리번호,
                 업체명,
                 사업자번호
-            FROM ""폐수배출업소""
+            FROM `폐수배출업소`
             ORDER BY 관리번호 ASC";
 
         Debug.WriteLine($"[DEBUG] 실행될 SQL → {command.CommandText.Replace("\r\n", " ")}");
@@ -84,7 +84,7 @@ public static class WasteCompanyService
 
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            UPDATE ""폐수배출업소"" 
+            UPDATE `폐수배출업소` 
             SET 
                 프로젝트     = @프로젝트,
                 프로젝트명   = @프로젝트명,

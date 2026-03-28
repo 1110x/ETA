@@ -17,7 +17,7 @@ public static class PurchaseService
     {
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            CREATE TABLE IF NOT EXISTS ""물품구매"" (
+            CREATE TABLE IF NOT EXISTS `물품구매` (
                 Id      INTEGER PRIMARY KEY AUTOINCREMENT,
                 구분    TEXT    NOT NULL DEFAULT '',
                 품목    TEXT    NOT NULL DEFAULT '',
@@ -43,7 +43,7 @@ public static class PurchaseService
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
             SELECT Id, 구분, 품목, 수량, 비고, 요청자, 요청일, 상태
-            FROM ""물품구매""
+            FROM `물품구매`
             ORDER BY Id DESC";
 
         using var r = cmd.ExecuteReader();
@@ -83,7 +83,7 @@ public static class PurchaseService
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
             SELECT Id, 구분, 품목, 수량, 비고, 요청자, 요청일, 상태
-            FROM ""물품구매""
+            FROM `물품구매`
             WHERE strftime('%Y-%m', 요청일) = @ym
             ORDER BY Id DESC";
         cmd.Parameters.AddWithValue("@ym", ym);
@@ -119,7 +119,7 @@ public static class PurchaseService
             SELECT strftime('%Y', 요청일) AS yr,
                    strftime('%m', 요청일) AS mo,
                    COUNT(*)              AS cnt
-            FROM ""물품구매""
+            FROM `물품구매`
             GROUP BY yr, mo
             ORDER BY yr DESC, mo DESC";
 
@@ -142,7 +142,7 @@ public static class PurchaseService
 
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            INSERT INTO ""물품구매"" (구분, 품목, 수량, 비고, 요청자, 요청일, 상태)
+            INSERT INTO `물품구매` (구분, 품목, 수량, 비고, 요청자, 요청일, 상태)
             VALUES (@구분, @품목, @수량, @비고, @요청자, @요청일, @상태)";
 
         cmd.Parameters.AddWithValue("@구분",  item.구분  ?? "");
@@ -177,7 +177,7 @@ public static class PurchaseService
 
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            UPDATE ""물품구매"" SET
+            UPDATE `물품구매` SET
                 구분=@구분, 품목=@품목, 수량=@수량,
                 요청자=@요청자, 비고=@비고
             WHERE Id=@id";
@@ -200,7 +200,7 @@ public static class PurchaseService
         conn.Open();
 
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"UPDATE ""물품구매"" SET 상태=@상태 WHERE Id=@id";
+        cmd.CommandText = @"UPDATE `물품구매` SET 상태=@상태 WHERE Id=@id";
         cmd.Parameters.AddWithValue("@상태", status);
         cmd.Parameters.AddWithValue("@id",   id);
 
@@ -216,7 +216,7 @@ public static class PurchaseService
         conn.Open();
 
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"DELETE FROM ""물품구매"" WHERE Id=@id";
+        cmd.CommandText = @"DELETE FROM `물품구매` WHERE Id=@id";
         cmd.Parameters.AddWithValue("@id", id);
 
         int rows = cmd.ExecuteNonQuery();

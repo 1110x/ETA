@@ -68,6 +68,14 @@ public partial class Login : Window
         try
         {
         Log("---------- 로그인 시도 ----------");
+        Log($"[DoLogin] DB 모드: {(DbConnectionFactory.UseMariaDb ? "MariaDB" : "SQLite")}");
+
+        // MariaDB 모드인데 연결 문자열이 없으면 차단
+        if (DbConnectionFactory.UseMariaDb && string.IsNullOrEmpty(DbPathHelper.MariaDbConnectionString))
+        {
+            ShowError("서버 DB 연결 정보가 없습니다. appsettings.json을 확인하세요.");
+            return;
+        }
 
         string empId    = txtEmail?.Text?.Trim() ?? "";
         string password = txtPassword?.Text      ?? "";
@@ -129,6 +137,11 @@ public partial class Login : Window
         loginForm.IsVisible = false;
         PlayLottieAndNavigate(empId);
         }
+        catch (Exception ex)
+        {
+            Log($"[DoLogin] 예외 발생: {ex.GetType().Name}: {ex.Message}");
+            ShowError($"오류: {ex.Message}");
+        }
         finally { _isLoggingIn = false; }
     }
 
@@ -179,25 +192,50 @@ public partial class Login : Window
 
     private void OnLoaded(object? sender, RoutedEventArgs e)
     {
-        // 비디오 배경 제거됨
-        UpdateDbModeUI();
+        UpdateDbModeVisual();
+
+        // MariaDB 연결 문자열이 없으면 서버 토글 비활성화
+        if (string.IsNullOrEmpty(DbPathHelper.MariaDbConnectionString))
+        {
+            if (toggleDbMode != null) toggleDbMode.IsEnabled = false;
+            if (txtDbStatus  != null) txtDbStatus.Text = "appsettings.json 없음";
+            if (txtDbMode    != null) txtDbMode.Foreground = Avalonia.Media.Brush.Parse("#9CA3AF");
+            Log("[DB모드] MariaDbConnectionString 미설정 → 서버 토글 비활성화");
+        }
     }
 
-    // ── DB 모드 토글 ──────────────────────────────────────────────────────────
-    private void DbModeToggle_Changed(object? sender, RoutedEventArgs e)
+    // ── DB 모드 토글 (커스텀 Border 토글) ─────────────────────────────────────
+    private void DbModeToggle_Click(object? sender, PointerPressedEventArgs e)
     {
-        bool useMariaDb = toggleDbMode?.IsChecked == true;
+        bool useMariaDb = !DbConnectionFactory.UseMariaDb; // 현재 상태 반전
+
+        // MariaDB 선택인데 연결 문자열이 없으면 차단
+        if (useMariaDb && string.IsNullOrEmpty(DbPathHelper.MariaDbConnectionString))
+        {
+            ShowError("서버 DB 연결 설정(appsettings.json)이 없습니다.");
+            return;
+        }
+
         DbConnectionFactory.UseMariaDb = useMariaDb;
-        UpdateDbModeUI();
+        UpdateDbModeVisual();
         Log($"[DB모드] {(useMariaDb ? "서버 DB (MariaDB)" : "로컬 DB (SQLite)")} 선택");
     }
 
-    private void UpdateDbModeUI()
+    private void UpdateDbModeVisual()
     {
-        bool useMariaDb = DbConnectionFactory.UseMariaDb;
-        if (txtDbMode   != null) txtDbMode.Text   = useMariaDb ? "서버 DB"  : "로컬 DB";
-        if (txtDbStatus != null) txtDbStatus.Text = useMariaDb ? "MariaDB (온라인)" : "SQLite (오프라인)";
-        if (toggleDbMode != null) toggleDbMode.IsChecked = useMariaDb;
+        bool on = DbConnectionFactory.UseMariaDb;
+
+        // 트랙 색상
+        if (toggleDbMode != null)
+            toggleDbMode.Background = Avalonia.Media.Brush.Parse(on ? "#6366F1" : "#D1D5DB");
+
+        // 녹 위치 (ON: 오른쪽, OFF: 왼쪽)
+        if (toggleKnob != null)
+            toggleKnob.Margin = new Avalonia.Thickness(on ? 25 : 3, 0, 0, 0);
+
+        // 텍스트
+        if (txtDbMode   != null) txtDbMode.Text   = on ? "서버 DB"  : "로컬 DB";
+        if (txtDbStatus != null) txtDbStatus.Text = on ? "MariaDB (온라인)" : "SQLite (오프라인)";
     }
 
     private void ShowError(string msg)

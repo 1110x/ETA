@@ -46,7 +46,7 @@ public static class QuotationService
             cmd.CommandText = @"
                 SELECT C_CompanyName, C_Abbreviation, C_ContractType,
                        C_ContractStart, C_ContractEnd, C_FacilityType, C_CategoryType
-                FROM ""계약 DB""
+                FROM `계약 DB`
                 WHERE date(C_ContractStart) <= @today
                   AND date(C_ContractEnd)   >= @today
                 ORDER BY C_CompanyName ASC";
@@ -57,7 +57,7 @@ public static class QuotationService
             cmd.CommandText = @"
                 SELECT C_CompanyName, C_Abbreviation, C_ContractType,
                        C_ContractStart, C_ContractEnd, C_FacilityType, C_CategoryType
-                FROM ""계약 DB""
+                FROM `계약 DB`
                 ORDER BY C_CompanyName ASC";
         }
 
@@ -92,16 +92,16 @@ public static class QuotationService
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
             SELECT rowid,
-                   ""견적발행일자"",
-                   ""업체명"",
-                   ""약칭"",
-                   ""시료명"",
-                   ""견적번호"",
-                   ""적용구분"",
-                   ""담당자"",
-                   ""합계 금액""
-            FROM ""견적발행내역""
-            ORDER BY ""견적발행일자"" DESC, rowid DESC";
+                   `견적발행일자`,
+                   `업체명`,
+                   `약칭`,
+                   `시료명`,
+                   `견적번호`,
+                   `적용구분`,
+                   `담당자`,
+                   `합계 금액`
+            FROM `견적발행내역`
+            ORDER BY `견적발행일자` DESC, rowid DESC";
 
         using var r = cmd.ExecuteReader();
         while (r.Read())
@@ -133,12 +133,12 @@ public static class QuotationService
 
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            SELECT ""담당자""
-            FROM ""견적발행내역""
-            WHERE ""업체명"" = @company
-              AND ""담당자"" IS NOT NULL
-              AND TRIM(""담당자"") != ''
-            ORDER BY ""견적발행일자"" DESC, rowid DESC
+            SELECT `담당자`
+            FROM `견적발행내역`
+            WHERE `업체명` = @company
+              AND `담당자` IS NOT NULL
+              AND TRIM(`담당자`) != ''
+            ORDER BY `견적발행일자` DESC, rowid DESC
             LIMIT 1";
         cmd.Parameters.AddWithValue("@company", companyName);
 
@@ -166,7 +166,7 @@ public static class QuotationService
         if (!TableExists(conn, "견적발행내역")) return dict;
 
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"SELECT * FROM ""견적발행내역"" WHERE rowid = @id LIMIT 1";
+        cmd.CommandText = @"SELECT * FROM `견적발행내역` WHERE rowid = @id LIMIT 1";
         cmd.Parameters.AddWithValue("@id", rowid);
 
         using var r = cmd.ExecuteReader();
@@ -214,14 +214,10 @@ public static class QuotationService
                 return list;
             }
 
-            using var pragma = conn.CreateCommand();
-            pragma.CommandText = @"PRAGMA table_info(""분석단가"")";
-            using var r = pragma.ExecuteReader();
-            while (r.Read())
+            foreach (var col in DbConnectionFactory.GetColumnNames(conn, "분석단가"))
             {
-                var col = r.GetString(1).Trim();  // 컬럼명
-                if (!fixedCols.Contains(col))
-                    list.Add(col);
+                if (!fixedCols.Contains(col.Trim()))
+                    list.Add(col.Trim());
             }
 
             Debug.WriteLine($"[GetContractTypes] 분석단가 컬럼 → {list.Count}개: {string.Join(", ", list)}");
@@ -239,18 +235,14 @@ public static class QuotationService
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
-            using var pragma = conn.CreateCommand();
-            pragma.CommandText = @"PRAGMA table_info(""분석단가"")";
-            var cols = new List<string>();
-            using (var pr = pragma.ExecuteReader())
-                while (pr.Read()) cols.Add(pr.GetString(1));
+            var cols = DbConnectionFactory.GetColumnNames(conn, "분석단가");
 
             var match = cols.FirstOrDefault(c =>
                 string.Equals(c.Trim(), columnName.Trim(), StringComparison.OrdinalIgnoreCase));
             if (match == null) { Debug.WriteLine($"[Prices] '{columnName}' 컬럼 없음"); return dict; }
 
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = $@"SELECT ""Analyte"", ""{match}"" FROM ""분석단가""";
+            cmd.CommandText = $@"SELECT `Analyte`, `{match}` FROM `분석단가`";
             using var dr = cmd.ExecuteReader();
             while (dr.Read())
             {
@@ -287,13 +279,7 @@ public static class QuotationService
         MigrateIssueColumns(conn);
 
         // ── 테이블 실제 컬럼 목록 조회 (항목 컬럼 검증용) ──────────────
-        var tableCols = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        using (var pragma = conn.CreateCommand())
-        {
-            pragma.CommandText = @"PRAGMA table_info(""견적발행내역"")";
-            using var pr = pragma.ExecuteReader();
-            while (pr.Read()) tableCols.Add(pr.GetString(1).Trim());
-        }
+        var tableCols = new HashSet<string>(DbConnectionFactory.GetColumnNames(conn, "견적발행내역"), StringComparer.OrdinalIgnoreCase);
         Log($"  마이그레이션 후 테이블 컬럼 수={tableCols.Count}");
 
         // ── 저장할 항목 필터링 (분석항목 컬럼만: 본체·단가·소계 모두 존재해야 함) ──
@@ -327,9 +313,9 @@ public static class QuotationService
         foreach (var kv in validItems)
         {
             var name = kv.Key;
-            colList.Add($"\"{name}\"");
-            colList.Add($"\"{name}단가\"");
-            colList.Add($"\"{name}소계\"");
+            colList.Add($"`{name}`");
+            colList.Add($"`{name}단가`");
+            colList.Add($"`{name}소계`");
             paramList.Add($"@qty_{ToParamName(name)}");
             paramList.Add($"@price_{ToParamName(name)}");
             paramList.Add($"@sub_{ToParamName(name)}");
@@ -337,7 +323,7 @@ public static class QuotationService
 
         using var cmd = conn.CreateCommand();
         cmd.CommandText = $@"
-            INSERT INTO ""견적발행내역""
+            INSERT INTO `견적발행내역`
                 ({string.Join(", ", colList)})
             VALUES
                 ({string.Join(", ", paramList)})";
@@ -387,7 +373,7 @@ public static class QuotationService
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"DELETE FROM ""견적발행내역"" WHERE rowid = @id";
+        cmd.CommandText = @"DELETE FROM `견적발행내역` WHERE rowid = @id";
         cmd.Parameters.AddWithValue("@id", rowid);
         return cmd.ExecuteNonQuery() > 0;
     }
@@ -403,13 +389,7 @@ public static class QuotationService
             ("약칭",   "TEXT", "''"),
         };
 
-        var existing = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        using (var p = conn.CreateCommand())
-        {
-            p.CommandText = @"PRAGMA table_info(""견적발행내역"")";
-            using var r = p.ExecuteReader();
-            while (r.Read()) existing.Add(r.GetString(1).Trim());
-        }
+        var existing = new HashSet<string>(DbConnectionFactory.GetColumnNames(conn, "견적발행내역"), StringComparer.OrdinalIgnoreCase);
 
         foreach (var (col, type, def) in needed)
         {
@@ -417,7 +397,7 @@ public static class QuotationService
             try
             {
                 using var alter = conn.CreateCommand();
-                alter.CommandText = $@"ALTER TABLE ""견적발행내역"" ADD COLUMN ""{col}"" {type} DEFAULT {def}";
+                alter.CommandText = $@"ALTER TABLE `견적발행내역` ADD COLUMN `{col}` {type} DEFAULT {def}";
                 alter.ExecuteNonQuery();
                 Log($"  마이그레이션: '{col}' 컬럼 추가 완료");
             }
@@ -429,12 +409,7 @@ public static class QuotationService
     }
 
     private static bool TableExists(DbConnection conn, string name)
-    {
-        using var c = conn.CreateCommand();
-        c.CommandText = "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=@n";
-        c.Parameters.AddWithValue("@n", name);
-        return Convert.ToInt32(c.ExecuteScalar()) > 0;
-    }
+        => DbConnectionFactory.TableExists(conn, name);
 
     private static string S(DbDataReader r, int i)
         => r.IsDBNull(i) ? "" : r.GetValue(i)?.ToString() ?? "";

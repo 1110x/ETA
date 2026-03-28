@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using Microsoft.Data.Sqlite;
@@ -45,6 +46,54 @@ public static class DbConnectionFactory
                 System.Array.ConvertAll(updateCols, c => $"{c} = excluded.{c}"));
             return $"ON CONFLICT({conflict}) DO UPDATE SET\n                        {sets}";
         }
+    }
+
+    // ── 스키마 헬퍼 (PRAGMA 대체) ─────────────────────────────────────────────
+
+    /// <summary>
+    /// 테이블의 컬럼명 목록을 반환합니다.
+    /// SQLite: PRAGMA table_info  /  MariaDB: INFORMATION_SCHEMA.COLUMNS
+    /// </summary>
+    public static List<string> GetColumnNames(DbConnection conn, string tableName)
+    {
+        var cols = new List<string>();
+        using var cmd = conn.CreateCommand();
+        if (IsMariaDb)
+        {
+            cmd.CommandText = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS " +
+                              "WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME=@tbl " +
+                              "ORDER BY ORDINAL_POSITION";
+            cmd.Parameters.AddWithValue("@tbl", tableName);
+        }
+        else
+        {
+            cmd.CommandText = $"PRAGMA table_info(`{tableName}`)";
+        }
+        using var r = cmd.ExecuteReader();
+        while (r.Read())
+            cols.Add(r.GetString(IsMariaDb ? 0 : 1));
+        return cols;
+    }
+
+    /// <summary>특정 컬럼이 테이블에 존재하는지 확인합니다.</summary>
+    public static bool ColumnExists(DbConnection conn, string tableName, string columnName)
+        => GetColumnNames(conn, tableName).Contains(columnName);
+
+    /// <summary>테이블 존재 여부 확인 (sqlite_master / INFORMATION_SCHEMA 방언 처리)</summary>
+    public static bool TableExists(DbConnection conn, string tableName)
+    {
+        using var cmd = conn.CreateCommand();
+        if (IsMariaDb)
+        {
+            cmd.CommandText = "SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES " +
+                              "WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME=@n";
+        }
+        else
+        {
+            cmd.CommandText = "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=@n";
+        }
+        cmd.Parameters.AddWithValue("@n", tableName);
+        return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
     }
 
     // ── 연결 팩토리 ──────────────────────────────────────────────────────────

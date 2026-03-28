@@ -28,12 +28,8 @@ public static class TestReportService
         if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return cols;
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
-        using var cmd = conn.CreateCommand();
-        cmd.CommandText = $"PRAGMA table_info(\"{TableName}\")";
-        using var r = cmd.ExecuteReader();
-        while (r.Read())
+        foreach (var col in DbConnectionFactory.GetColumnNames(conn, TableName))
         {
-            var col = r.GetString(1);
             if (!FixedColumns.Contains(col)) cols.Add(col);
         }
         Debug.WriteLine($"[TestReport] 분석항목 {cols.Count}개");
@@ -46,11 +42,9 @@ public static class TestReportService
         if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) { Debug.WriteLine($"[TestReport] DB없음"); return list; }
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
-        using var chk = conn.CreateCommand();
-        chk.CommandText = $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{TableName}'";
-        if (Convert.ToInt32(chk.ExecuteScalar()) == 0) { Debug.WriteLine($"[TestReport] 테이블없음"); return list; }
+        if (!DbConnectionFactory.TableExists(conn, TableName)) { Debug.WriteLine($"[TestReport] 테이블없음"); return list; }
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = $"SELECT DISTINCT \"약칭\" FROM \"{TableName}\" WHERE \"약칭\" IS NOT NULL AND \"약칭\" <> '' ORDER BY \"약칭\" ASC";
+        cmd.CommandText = $"SELECT DISTINCT `약칭` FROM `{TableName}` WHERE `약칭` IS NOT NULL AND `약칭` <> '' ORDER BY `약칭` ASC";
         using var r = cmd.ExecuteReader();
         while (r.Read()) list.Add(r.GetString(0));
         Debug.WriteLine($"[TestReport] 업체 {list.Count}개");
@@ -62,16 +56,16 @@ public static class TestReportService
         var list   = new List<SampleRequest>();
         if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
         var analyteCols = GetAnalyteColumns();
-        var colSelect   = analyteCols.Count > 0 ? "," + string.Join(",", analyteCols.Select(c => $"\"{c}\"")) : "";
+        var colSelect   = analyteCols.Count > 0 ? "," + string.Join(",", analyteCols.Select(c => "`{c}`")) : "";
         using var conn  = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
         cmd.CommandText = $@"SELECT rowid AS Id,
-                ""채취일자"",""채취시간"",""의뢰사업장"",""약칭"",""시료명"",
-                ""견적번호"",""입회자"",""시료채취자-1"",""시료채취자-2"",
-                ""방류허용기준 적용유무"",""정도보증유무"",""분석완료일자"",""견적구분""
+                `채취일자`,`채취시간`,`의뢰사업장`,`약칭`,`시료명`,
+                `견적번호`,`입회자`,`시료채취자-1`,`시료채취자-2`,
+                `방류허용기준 적용유무`,`정도보증유무`,`분석완료일자`,`견적구분`
                 {colSelect}
-            FROM ""{TableName}"" WHERE ""약칭"" = @약칭 ORDER BY ""채취일자"" DESC, rowid DESC";
+            FROM `{TableName}` WHERE `약칭` = @약칭 ORDER BY `채취일자` DESC, rowid DESC";
         cmd.Parameters.AddWithValue("@약칭", 약칭);
         using var r = cmd.ExecuteReader();
         while (r.Read())
@@ -113,7 +107,7 @@ public static class TestReportService
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = $"UPDATE \"{TableName}\" SET \"{columnName.Trim()}\" = @val WHERE rowid = @id";
+        cmd.CommandText = $"UPDATE `{TableName}` SET `{columnName.Trim()}` = @val WHERE rowid = @id";
         cmd.Parameters.AddWithValue("@val", string.IsNullOrEmpty(newValue) ? DBNull.Value : (object)newValue);
         cmd.Parameters.AddWithValue("@id", rowId);
         int rows = cmd.ExecuteNonQuery();
@@ -135,7 +129,7 @@ public static class TestReportService
             {
                 using var cmd = conn.CreateCommand();
                 cmd.Transaction = tx;
-                cmd.CommandText = $"UPDATE \"{TableName}\" SET \"{kv.Key.Trim()}\" = @val WHERE rowid = @id";
+                cmd.CommandText = $"UPDATE `{TableName}` SET `{kv.Key.Trim()}` = @val WHERE rowid = @id";
                 cmd.Parameters.AddWithValue("@val", string.IsNullOrEmpty(kv.Value) ? DBNull.Value : (object)kv.Value);
                 cmd.Parameters.AddWithValue("@id", rowId);
                 if (cmd.ExecuteNonQuery() > 0) count++;
@@ -168,7 +162,7 @@ public static class TestReportService
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = $"SELECT \"{columnName.Trim()}\" FROM \"{TableName}\" WHERE rowid = @id LIMIT 1";
+            cmd.CommandText = $"SELECT `{columnName.Trim()}` FROM `{TableName}` WHERE rowid = @id LIMIT 1";
             cmd.Parameters.AddWithValue("@id", rowId);
             var result = cmd.ExecuteScalar();
             return result == null || result == DBNull.Value ? null : result.ToString();
@@ -187,13 +181,13 @@ public static class TestReportService
             using var cmd = conn.CreateCommand();
             if (!string.IsNullOrEmpty(견적번호))
             {
-                cmd.CommandText = $"SELECT rowid FROM \"{TableName}\" WHERE \"견적번호\" = @q AND \"시료명\" = @s LIMIT 1";
+                cmd.CommandText = $"SELECT rowid FROM `{TableName}` WHERE `견적번호` = @q AND `시료명` = @s LIMIT 1";
                 cmd.Parameters.AddWithValue("@q", 견적번호);
                 cmd.Parameters.AddWithValue("@s", 시료명);
             }
             else
             {
-                cmd.CommandText = $"SELECT rowid FROM \"{TableName}\" WHERE \"약칭\" = @y AND \"시료명\" = @s LIMIT 1";
+                cmd.CommandText = $"SELECT rowid FROM `{TableName}` WHERE `약칭` = @y AND `시료명` = @s LIMIT 1";
                 cmd.Parameters.AddWithValue("@y", 약칭);
                 cmd.Parameters.AddWithValue("@s", 시료명);
             }
@@ -209,11 +203,9 @@ public static class TestReportService
         if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return dict;
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
-        using var chk = conn.CreateCommand();
-        chk.CommandText = "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='분석정보'";
-        if (Convert.ToInt32(chk.ExecuteScalar()) == 0) return dict;
+        if (!DbConnectionFactory.TableExists(conn, "분석정보")) return dict;
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = "SELECT Analyte, unit, Method, instrument, ES, Category FROM \"분석정보\"";
+        cmd.CommandText = "SELECT Analyte, unit, Method, instrument, ES, Category FROM `분석정보`";
         using var r = cmd.ExecuteReader();
         while (r.Read())
         {
@@ -234,15 +226,10 @@ public static class TestReportService
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
-            using var chk = conn.CreateCommand();
-            chk.CommandText = "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='방류기준표'";
-            if (Convert.ToInt32(chk.ExecuteScalar()) == 0) { Debug.WriteLine("[방류기준] 테이블없음"); return ""; }
+            if (!DbConnectionFactory.TableExists(conn, "방류기준표")) { Debug.WriteLine("[방류기준] 테이블없음"); return ""; }
 
             var safeCol = 방류허용기준컬럼.Trim();
-            using var colCmd = conn.CreateCommand();
-            colCmd.CommandText = "PRAGMA table_info(\"방류기준표\")";
-            var cols = new List<string>();
-            using (var cr = colCmd.ExecuteReader()) while (cr.Read()) cols.Add(cr.GetString(1));
+            var cols = DbConnectionFactory.GetColumnNames(conn, "방류기준표");
 
             // 정확히 일치 → 없으면 하이픈/공백 무시 후 유사 매칭
             string? matchCol = cols.FirstOrDefault(col => col.Trim() == safeCol);
@@ -261,7 +248,7 @@ public static class TestReportService
             safeCol = matchCol.Trim();
 
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = $"SELECT \"{safeCol}\" FROM \"방류기준표\" WHERE TRIM(\"구분\") = @항목 LIMIT 1";
+            cmd.CommandText = $"SELECT `{safeCol}` FROM `방류기준표` WHERE TRIM(`구분`) = @항목 LIMIT 1";
             cmd.Parameters.AddWithValue("@항목", 항목명.Trim());
             var result = cmd.ExecuteScalar();
             var val    = result == null || result == DBNull.Value ? "" : result.ToString()?.Trim() ?? "";

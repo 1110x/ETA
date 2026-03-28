@@ -17,17 +17,10 @@ public static class AgentService
     // ── PhotoPath 컬럼 자동 마이그레이션 ─────────────────────────────────────
     private static void EnsurePhotoPathColumn(DbConnection conn)
     {
-        using var check = conn.CreateCommand();
-        check.CommandText = @"PRAGMA table_info(""Agent"")";
-        using var r = check.ExecuteReader();
-        bool exists = false;
-        while (r.Read())
-            if (r.GetString(1) == "PhotoPath") { exists = true; break; }
-
-        if (!exists)
+        if (!DbConnectionFactory.ColumnExists(conn, "Agent", "PhotoPath"))
         {
             using var alter = conn.CreateCommand();
-            alter.CommandText = @"ALTER TABLE ""Agent"" ADD COLUMN PhotoPath TEXT DEFAULT ''";
+            alter.CommandText = @"ALTER TABLE `Agent` ADD COLUMN PhotoPath TEXT DEFAULT ''";
             alter.ExecuteNonQuery();
             Debug.WriteLine("[DB] PhotoPath 컬럼 추가");
         }
@@ -56,7 +49,7 @@ public static class AgentService
             try
             {
                 using var cmd = conn.CreateCommand();
-                cmd.CommandText = $@"ALTER TABLE ""Agent"" ADD COLUMN ""{col}"" {def}";
+                cmd.CommandText = $@"ALTER TABLE `Agent` ADD COLUMN `{col}` {def}";
                 cmd.ExecuteNonQuery();
                 Debug.WriteLine($"[AgentService] 컬럼 추가: {col}");
             }
@@ -78,7 +71,7 @@ public static class AgentService
         cmd.CommandText = @"
             SELECT 성명, 직급, 직무, 입사일, 사번,
                    자격사항, Email, 기타, 측정인고유번호, PhotoPath
-            FROM ""Agent""
+            FROM `Agent`
             ORDER BY 사번 ASC";
 
         using var reader = cmd.ExecuteReader();
@@ -117,7 +110,7 @@ public static class AgentService
 
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            UPDATE ""Agent"" SET
+            UPDATE `Agent` SET
                 성명=@성명, 직급=@직급, 직무=@직무, 입사일=@입사일,
                 사번=@사번, 자격사항=@자격사항, Email=@Email,
                 기타=@기타, 측정인고유번호=@측정인고유번호, PhotoPath=@PhotoPath
@@ -141,7 +134,7 @@ public static class AgentService
 
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            INSERT INTO ""Agent""
+            INSERT INTO `Agent`
                 (성명, 직급, 직무, 입사일, 사번, 자격사항, Email, 기타, 측정인고유번호, PhotoPath)
             VALUES
                 (@성명, @직급, @직무, @입사일, @사번, @자격사항, @Email, @기타, @측정인고유번호, @PhotoPath)";
@@ -161,7 +154,7 @@ public static class AgentService
         conn.Open();
 
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"DELETE FROM ""Agent"" WHERE 성명=@성명";
+        cmd.CommandText = @"DELETE FROM `Agent` WHERE 성명=@성명";
         cmd.Parameters.AddWithValue("@성명", agent.성명);
 
         int rows = cmd.ExecuteNonQuery();
@@ -186,13 +179,13 @@ public static class AgentService
 
         // 중복 사번 확인
         using var chk = conn.CreateCommand();
-        chk.CommandText = @"SELECT COUNT(*) FROM ""Agent"" WHERE 사번=@id";
+        chk.CommandText = @"SELECT COUNT(*) FROM `Agent` WHERE 사번=@id";
         chk.Parameters.AddWithValue("@id", employeeId);
         if (Convert.ToInt32(chk.ExecuteScalar()) > 0) return false;
 
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            INSERT INTO ""Agent"" (성명, 사번, 비밀번호, 직무, 상태)
+            INSERT INTO `Agent` (성명, 사번, 비밀번호, 직무, 상태)
             VALUES (@name, @id, @pw, @dept, 'pending')";
         cmd.Parameters.AddWithValue("@name", name);
         cmd.Parameters.AddWithValue("@id",   employeeId);
@@ -216,7 +209,7 @@ public static class AgentService
 
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"SELECT 비밀번호, 상태, COALESCE(must_change_pw,0)
-                            FROM ""Agent"" WHERE 사번=@id";
+                            FROM `Agent` WHERE 사번=@id";
         cmd.Parameters.AddWithValue("@id", employeeId);
 
         using var r = cmd.ExecuteReader();
@@ -251,7 +244,7 @@ public static class AgentService
             // 이 시점에서 직접 123456 해시로 세팅 후 mustChangePw=true 반환
             string initialHash = HashPassword("123456");
             using var fix = conn.CreateCommand();
-            fix.CommandText = @"UPDATE ""Agent"" SET 비밀번호=@pw, must_change_pw=1 WHERE 사번=@id";
+            fix.CommandText = @"UPDATE `Agent` SET 비밀번호=@pw, must_change_pw=1 WHERE 사번=@id";
             fix.Parameters.AddWithValue("@pw", initialHash);
             fix.Parameters.AddWithValue("@id", employeeId);
             fix.ExecuteNonQuery();
@@ -286,7 +279,7 @@ public static class AgentService
         conn.Open();
 
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"UPDATE ""Agent"" SET todo_task_id=@tid WHERE 사번=@id";
+        cmd.CommandText = @"UPDATE `Agent` SET todo_task_id=@tid WHERE 사번=@id";
         cmd.Parameters.AddWithValue("@tid", taskId);
         cmd.Parameters.AddWithValue("@id",  employeeId);
         cmd.ExecuteNonQuery();
@@ -336,7 +329,7 @@ public static class AgentService
             Log("[ChangePassword] DB 연결 성공");
 
             using var chk = conn.CreateCommand();
-            chk.CommandText = @"SELECT 비밀번호 FROM ""Agent"" WHERE 사번=@id";
+            chk.CommandText = @"SELECT 비밀번호 FROM `Agent` WHERE 사번=@id";
             chk.Parameters.AddWithValue("@id", employeeId);
             var stored = chk.ExecuteScalar()?.ToString() ?? "";
             Log($"[ChangePassword] DB 저장 해시={stored[..Math.Min(8,stored.Length)]}..., 입력 해시={HashPassword(currentPassword)[..8]}...");
@@ -353,7 +346,7 @@ public static class AgentService
 
             using var upd = conn.CreateCommand();
             upd.CommandText = @"
-                UPDATE ""Agent""
+                UPDATE `Agent`
                 SET 비밀번호=@pw, must_change_pw=0
                 WHERE 사번=@id";
             upd.Parameters.AddWithValue("@pw", HashPassword(newPassword));
@@ -386,7 +379,7 @@ public static class AgentService
         try
         {
             using var alt = conn.CreateCommand();
-            alt.CommandText = @"ALTER TABLE ""Agent"" ADD COLUMN must_change_pw INTEGER DEFAULT 0";
+            alt.CommandText = @"ALTER TABLE `Agent` ADD COLUMN must_change_pw INTEGER DEFAULT 0";
             alt.ExecuteNonQuery();
         }
         catch { }
@@ -396,7 +389,7 @@ public static class AgentService
         using var cmd = conn.CreateCommand();
         // 비밀번호가 비어있는 approved 직원에게만 초기값 세팅
         cmd.CommandText = @"
-            UPDATE ""Agent""
+            UPDATE `Agent`
             SET 비밀번호 = @pw,
                 must_change_pw = 1
             WHERE (비밀번호 IS NULL OR 비밀번호 = '')
@@ -415,7 +408,7 @@ public static class AgentService
         conn.Open();
 
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"SELECT COALESCE(must_change_pw,0) FROM ""Agent"" WHERE 사번=@id";
+        cmd.CommandText = @"SELECT COALESCE(must_change_pw,0) FROM `Agent` WHERE 사번=@id";
         cmd.Parameters.AddWithValue("@id", employeeId);
         var val = cmd.ExecuteScalar();
         return val != null && Convert.ToInt64(val) != 0;
@@ -429,7 +422,7 @@ public static class AgentService
 
         using var cmd = conn.CreateCommand();
         // pending뿐 아니라 어떤 상태든 approved로 갱신 (재승인 허용)
-        cmd.CommandText = @"UPDATE ""Agent"" SET 상태='approved' WHERE 사번=@id";
+        cmd.CommandText = @"UPDATE `Agent` SET 상태='approved' WHERE 사번=@id";
         cmd.Parameters.AddWithValue("@id", employeeId);
         cmd.ExecuteNonQuery();
         Debug.WriteLine($"[AgentService] 승인 완료: {employeeId}");
@@ -462,7 +455,7 @@ public static class AgentService
         using var cmd = conn.CreateCommand();
         // 비어있지도 않고, 123456 해시도 아닌 계정만 대상
         cmd.CommandText = @"
-            UPDATE ""Agent""
+            UPDATE `Agent`
             SET 비밀번호 = @pw,
                 must_change_pw = 1
             WHERE 비밀번호 IS NOT NULL
@@ -490,7 +483,7 @@ public static class AgentService
         conn.Open();
 
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"UPDATE ""Agent"" SET 비밀번호=@pw, must_change_pw=1 WHERE 사번=@id";
+        cmd.CommandText = @"UPDATE `Agent` SET 비밀번호=@pw, must_change_pw=1 WHERE 사번=@id";
         cmd.Parameters.AddWithValue("@pw", HashPassword("123456"));
         cmd.Parameters.AddWithValue("@id", employeeId);
         int rows = cmd.ExecuteNonQuery();
@@ -508,7 +501,7 @@ public static class AgentService
 
         using var cmd = conn.CreateCommand();
         // approved 뿐 아니라 모든 상태에서 pending으로 (방어적 처리)
-        cmd.CommandText = @"UPDATE ""Agent"" SET 상태='pending' WHERE 사번=@id";
+        cmd.CommandText = @"UPDATE `Agent` SET 상태='pending' WHERE 사번=@id";
         cmd.Parameters.AddWithValue("@id", employeeId);
         int rows = cmd.ExecuteNonQuery();
         Debug.WriteLine($"[AgentService] 승인 취소 → pending: {employeeId} ({rows}행)");
@@ -530,7 +523,7 @@ public static class AgentService
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
             SELECT 성명, 사번, 상태, COALESCE(todo_task_id, '') AS todo_task_id
-            FROM ""Agent""
+            FROM `Agent`
             WHERE 상태 IN ('approved', 'pending')";
 
         using var r = cmd.ExecuteReader();
@@ -555,7 +548,7 @@ public static class AgentService
 
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            SELECT 성명, 사번 FROM ""Agent""
+            SELECT 성명, 사번 FROM `Agent`
             WHERE 상태='pending' AND (todo_task_id IS NULL OR todo_task_id = '')";
         using var r = cmd.ExecuteReader();
         while (r.Read())
@@ -574,7 +567,7 @@ public static class AgentService
 
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            SELECT 성명 FROM ""Agent""
+            SELECT 성명 FROM `Agent`
             WHERE 상태='approved' OR 상태='' OR 상태 IS NULL
             ORDER BY 성명";
         using var r = cmd.ExecuteReader();
@@ -611,7 +604,7 @@ public static class AgentService
 
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"SELECT 상태, todo_task_id, 비밀번호, COALESCE(must_change_pw,0)
-                            FROM ""Agent"" WHERE 사번=@id";
+                            FROM `Agent` WHERE 사번=@id";
         cmd.Parameters.AddWithValue("@id", empId);
 
         using var r = cmd.ExecuteReader();
@@ -674,7 +667,7 @@ public static class AgentService
         conn.Open();
         using var cmd = conn.CreateCommand();
         cmd.CommandText =
-            "SELECT 측정인LoginId, 측정인LoginPw FROM \"Agent\" WHERE 사번=@사번 LIMIT 1";
+            "SELECT 측정인LoginId, 측정인LoginPw FROM `Agent` WHERE 사번=@사번 LIMIT 1";
         cmd.Parameters.AddWithValue("@사번", 사번);
 
         using var r = cmd.ExecuteReader();
@@ -694,7 +687,7 @@ public static class AgentService
         conn.Open();
         using var cmd = conn.CreateCommand();
         cmd.CommandText =
-            "UPDATE \"Agent\" SET 측정인LoginId=@id, 측정인LoginPw=@pw WHERE 사번=@사번";
+            "UPDATE `Agent` SET 측정인LoginId=@id, 측정인LoginPw=@pw WHERE 사번=@사번";
         cmd.Parameters.AddWithValue("@id",  id  ?? "");
         cmd.Parameters.AddWithValue("@pw",  pw  ?? "");
         cmd.Parameters.AddWithValue("@사번", 사번 ?? "");
@@ -727,7 +720,7 @@ public static class AgentService
         var agentNames = new List<string>();
         using (var cmd = conn.CreateCommand())
         {
-            cmd.CommandText = @"SELECT 성명 FROM ""Agent""";
+            cmd.CommandText = @"SELECT 성명 FROM `Agent`";
             using var r = cmd.ExecuteReader();
             while (r.Read()) agentNames.Add(r.GetString(0));
         }
@@ -754,7 +747,7 @@ public static class AgentService
             if (matched == null) continue;
 
             using var upd = conn.CreateCommand();
-            upd.CommandText = @"UPDATE ""Agent"" SET 측정인고유번호=@id WHERE 성명=@name";
+            upd.CommandText = @"UPDATE `Agent` SET 측정인고유번호=@id WHERE 성명=@name";
             upd.Parameters.AddWithValue("@id",   id);
             upd.Parameters.AddWithValue("@name", matched);
             count += upd.ExecuteNonQuery();

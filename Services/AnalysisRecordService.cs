@@ -140,7 +140,7 @@ public static class AnalysisRecordService
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = "SELECT * FROM \"분장표준처리\" WHERE \"항목명\" = @date";
+            cmd.CommandText = "SELECT * FROM `분장표준처리` WHERE `항목명` = @date";
             cmd.Parameters.AddWithValue("@date", date.ToString("yyyy-MM-dd"));
             using var rdr = cmd.ExecuteReader();
             if (!rdr.Read()) return null;
@@ -244,7 +244,7 @@ public static class AnalysisRecordService
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = "SELECT * FROM \"분석의뢰및결과\" WHERE \"견적번호\" = @no";
+            cmd.CommandText = "SELECT * FROM `분석의뢰및결과` WHERE `견적번호` = @no";
             cmd.Parameters.AddWithValue("@no", 견적번호);
             using var rdr = cmd.ExecuteReader();
             while (rdr.Read())
@@ -267,22 +267,13 @@ public static class AnalysisRecordService
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
-            using var chk = conn.CreateCommand();
-            chk.CommandText =
-                "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='방류기준표'";
-            if (Convert.ToInt64(chk.ExecuteScalar()!) == 0) return map;
+            if (!DbConnectionFactory.TableExists(conn, "방류기준표")) return map;
 
-            var cols = new List<string>();
-            using (var pc = conn.CreateCommand())
-            {
-                pc.CommandText = "PRAGMA table_info(\"방류기준표\")";
-                using var pr = pc.ExecuteReader();
-                while (pr.Read()) cols.Add(pr.GetString(1));
-            }
+            var cols = DbConnectionFactory.GetColumnNames(conn, "방류기준표");
             if (cols.Count < 2) return map;
 
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = "SELECT * FROM \"방류기준표\"";
+            cmd.CommandText = "SELECT * FROM `방류기준표`";
             using var rdr = cmd.ExecuteReader();
             while (rdr.Read())
             {
