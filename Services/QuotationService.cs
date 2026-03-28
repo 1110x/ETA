@@ -91,7 +91,7 @@ public static class QuotationService
 
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            SELECT rowid,
+            SELECT _id,
                    `견적발행일자`,
                    `업체명`,
                    `약칭`,
@@ -101,7 +101,7 @@ public static class QuotationService
                    `담당자`,
                    `합계 금액`
             FROM `견적발행내역`
-            ORDER BY `견적발행일자` DESC, rowid DESC";
+            ORDER BY `견적발행일자` DESC, _id DESC";
 
         using var r = cmd.ExecuteReader();
         while (r.Read())
@@ -138,7 +138,7 @@ public static class QuotationService
             WHERE `업체명` = @company
               AND `담당자` IS NOT NULL
               AND TRIM(`담당자`) != ''
-            ORDER BY `견적발행일자` DESC, rowid DESC
+            ORDER BY `견적발행일자` DESC, _id DESC
             LIMIT 1";
         cmd.Parameters.AddWithValue("@company", companyName);
 
@@ -166,7 +166,7 @@ public static class QuotationService
         if (!TableExists(conn, "견적발행내역")) return dict;
 
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"SELECT * FROM `견적발행내역` WHERE rowid = @id LIMIT 1";
+        cmd.CommandText = @"SELECT * FROM `견적발행내역` WHERE _id = @id LIMIT 1";
         cmd.Parameters.AddWithValue("@id", rowid);
 
         using var r = cmd.ExecuteReader();
@@ -373,7 +373,7 @@ public static class QuotationService
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"DELETE FROM `견적발행내역` WHERE rowid = @id";
+        cmd.CommandText = @"DELETE FROM `견적발행내역` WHERE _id = @id";
         cmd.Parameters.AddWithValue("@id", rowid);
         return cmd.ExecuteNonQuery() > 0;
     }

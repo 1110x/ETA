@@ -2790,3 +2790,7 @@
 [16:34:35] ApplyCheckStates: CheckPanel항목=67개
 [16:34:35] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=65
 [16:34:46] [의뢰서] 견적항목 65개
+[00:25:09] [NewPanel] 단가 로드: FS100 → 0개
+[00:25:50] [NewPanel] 단가 로드: FS100 → 65개
+[00:58:40] [NewPanel] 단가 로드: FS100 → 65개
+[01:08:28] [NewPanel] 단가 로드: FS100 → 65개

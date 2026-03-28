@@ -1,12 +1,42 @@
-System.ArgumentException: Control with the name 'lottieView' already registered.
-   at Avalonia.Controls.NameScope.Register(String name, Object element)
-   at ETA.Views.Login.!XamlIlPopulate(IServiceProvider, Login) in /Users/azrael/Documents/ETA/Views/Login.axaml:line 26
-   at ETA.Views.Login.!XamlIlPopulateTrampoline(Login)
-   at ETA.Views.Login.InitializeComponent(Boolean loadXaml, Boolean attachDevTools) in /Users/azrael/Documents/ETA/obj/Debug/net8.0/Avalonia.Generators/Avalonia.Generators.NameGenerator.AvaloniaNameSourceGenerator/ETA.Views.Login.g.cs:line 36
-   at ETA.Views.Login..ctor() in /Users/azrael/Documents/ETA/Views/Login.axaml.cs:line 33
-   at ETA.App.OnFrameworkInitializationCompleted() in /Users/azrael/Documents/ETA/App.axaml.cs:line 22
-   at Avalonia.AppBuilder.SetupUnsafe()
-   at Avalonia.AppBuilder.Setup()
-   at Avalonia.AppBuilder.SetupWithLifetime(IApplicationLifetime lifetime)
+System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation.
+ ---> MySqlConnector.MySqlException (0x80004005): Unknown column 'rowid' in 'field list'
+   at MySqlConnector.Core.ServerSession.ReceiveReplyAsync(IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/Core/ServerSession.cs:line 1081
+   at MySqlConnector.Core.ResultSet.ReadResultSetHeaderAsync(IOBehavior ioBehavior) in /_/src/MySqlConnector/Core/ResultSet.cs:line 37
+   at MySqlConnector.MySqlDataReader.ActivateResultSet(CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlDataReader.cs:line 131
+   at MySqlConnector.MySqlDataReader.InitAsync(CommandListPosition commandListPosition, ICommandPayloadCreator payloadCreator, IDictionary`2 cachedProcedures, IMySqlCommand command, CommandBehavior behavior, Activity activity, IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlDataReader.cs:line 487
+   at MySqlConnector.Core.CommandExecutor.ExecuteReaderAsync(CommandListPosition commandListPosition, ICommandPayloadCreator payloadCreator, CommandBehavior behavior, Activity activity, IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/Core/CommandExecutor.cs:line 56
+   at MySqlConnector.MySqlCommand.ExecuteReaderAsync(CommandBehavior behavior, IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlCommand.cs:line 357
+   at MySqlConnector.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior) in /_/src/MySqlConnector/MySqlCommand.cs:line 290
+   at ETA.Services.QuotationService.GetAllIssues() in /Users/azrael/Documents/ETA/Services/QuotationService.cs:line 106
+   at ETA.Views.Pages.QuotationNewPanel..ctor() in /Users/azrael/Documents/ETA/Views/Pages/QuotationNewPanel.axaml.cs:line 51
+   at ETA.Views.MainPage.Quotation_Click(Object sender, RoutedEventArgs e) in /Users/azrael/Documents/ETA/Views/MainPage.axaml.cs:line 627
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+   --- End of inner exception stack trace ---
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+   at System.Delegate.DynamicInvokeImpl(Object[] args)
+   at Avalonia.Interactivity.EventRoute.RaiseEventImpl(RoutedEventArgs e)
+   at Avalonia.Interactivity.EventRoute.RaiseEvent(Interactive source, RoutedEventArgs e)
+   at Avalonia.Interactivity.Interactive.RaiseEvent(RoutedEventArgs e)
+   at Avalonia.Controls.MenuItem.Avalonia.Controls.IMenuItem.RaiseClick()
+   at Avalonia.Controls.Platform.DefaultMenuInteractionHandler.Click(IMenuItem item)
+   at Avalonia.Controls.Platform.DefaultMenuInteractionHandler.PointerReleased(Object sender, PointerReleasedEventArgs e)
+   at Avalonia.Interactivity.EventRoute.RaiseEventImpl(RoutedEventArgs e)
+   at Avalonia.Interactivity.EventRoute.RaiseEvent(Interactive source, RoutedEventArgs e)
+   at Avalonia.Interactivity.Interactive.RaiseEvent(RoutedEventArgs e)
+   at Avalonia.Input.MouseDevice.MouseUp(IMouseDevice device, UInt64 timestamp, IInputRoot root, Point p, PointerPointProperties props, KeyModifiers inputModifiers, IInputElement hitTest)
+   at Avalonia.Input.MouseDevice.ProcessRawEvent(RawPointerEventArgs e)
+   at Avalonia.Controls.TopLevel.<>c.<HandleInput>b__150_0(Object state)
+   at Avalonia.Threading.Dispatcher.Send(SendOrPostCallback action, Object arg, Nullable`1 priority)
+   at Avalonia.Native.TopLevelImpl.RawMouseEvent(AvnRawMouseEventType type, AvnPointerDeviceType deviceType, UInt64 timeStamp, AvnInputModifiers modifiers, AvnPoint point, AvnVector delta, Single pressure, Single xTilt, Single yTilt)
+   at Avalonia.Native.Interop.Impl.__MicroComIAvnTopLevelEventsVTable.RawMouseEvent(Void* this, AvnRawMouseEventType type, AvnPointerDeviceType deviceType, UInt64 timeStamp, AvnInputModifiers modifiers, AvnPoint point, AvnVector delta, Single pressure, Single xTilt, Single yTilt)
+--- End of stack trace from previous location ---
+   at Avalonia.Native.DispatcherImpl.RunLoop(CancellationToken token)
+   at Avalonia.Threading.DispatcherFrame.Run(IControlledDispatcherImpl impl)
+   at Avalonia.Threading.Dispatcher.PushFrame(DispatcherFrame frame)
+   at Avalonia.Threading.Dispatcher.MainLoop(CancellationToken cancellationToken)
+   at Avalonia.Controls.ApplicationLifetimes.ClassicDesktopStyleApplicationLifetime.StartCore(String[] args)
+   at Avalonia.Controls.ApplicationLifetimes.ClassicDesktopStyleApplicationLifetime.Start(String[] args)
    at Avalonia.ClassicDesktopStyleApplicationLifetimeExtensions.StartWithClassicDesktopLifetime(AppBuilder builder, String[] args, Action`1 lifetimeBuilder)
    at ETA.Program.Main(String[] args) in /Users/azrael/Documents/ETA/Program.cs:line 36

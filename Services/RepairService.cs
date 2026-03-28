@@ -15,9 +15,9 @@ public static class RepairService
     private static void EnsureTable(DbConnection conn)
     {
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"
+        cmd.CommandText = $@"
             CREATE TABLE IF NOT EXISTS `보수요청` (
-                Id       INTEGER PRIMARY KEY AUTOINCREMENT,
+                Id       INTEGER PRIMARY KEY {DbConnectionFactory.AutoIncrement},
                 구분     TEXT    NOT NULL DEFAULT '',
                 장비명   TEXT    NOT NULL DEFAULT '',
                 증상     TEXT             DEFAULT '',
@@ -59,9 +59,11 @@ public static class RepairService
         EnsureTable(conn);
 
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"
-            SELECT strftime('%Y', 요청일) AS yr,
-                   strftime('%m', 요청일) AS mo,
+        var dateFmtY = DbConnectionFactory.DateFmt("요청일", "%Y");
+        var dateFmtM = DbConnectionFactory.DateFmt("요청일", "%m");
+        cmd.CommandText = $@"
+            SELECT {dateFmtY} AS yr,
+                   {dateFmtM} AS mo,
                    COUNT(*)              AS cnt
             FROM `보수요청`
             GROUP BY yr, mo
@@ -86,11 +88,12 @@ public static class RepairService
         EnsureTable(conn);
 
         var ym = $"{year:D4}-{month:D2}";
+        var dateFmt = DbConnectionFactory.DateFmt("요청일", "%Y-%m");
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"
-            SELECT Id, 구분, 장비명, 증상, 위치, 요청자, 요청일, 완료예정일, 처리내용, 비고, 상태
+        cmd.CommandText = $@"
+            SELECT Id, 구분, 장비명, 증상, 위치, 요청자, 요청일, 완료예정일, 정리내용, 비고, 상태
             FROM `보수요청`
-            WHERE strftime('%Y-%m', 요청일) = @ym
+            WHERE {dateFmt} = @ym
             ORDER BY Id DESC";
         cmd.Parameters.AddWithValue("@ym", ym);
 

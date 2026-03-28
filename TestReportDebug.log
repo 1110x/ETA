@@ -5983,3 +5983,15 @@
 [17:17:17] [TestReport] 업체 28개
 [17:24:08] [TestReport] LoadData() 시작
 [17:24:08] [TestReport] 업체 28개
+[01:08:21] [TestReport] LoadData() 시작
+[01:08:21] [TestReport] 업체 28개
+[01:08:21] [TestReport] ★ 크래시 ★ Unknown column 'rowid' in 'field list'
+[01:11:58] [TestReport] LoadData() 시작
+[01:11:58] [TestReport] 업체 28개
+[01:11:58] [TestReport] ★ 크래시 ★ SQLite Error 1: 'no such column: {c}'.
+[01:12:06] [TestReport] LoadData() 시작
+[01:12:06] [TestReport] 업체 28개
+[01:12:06] [TestReport] ★ 크래시 ★ SQLite Error 1: 'no such column: {c}'.
+[01:12:15] [TestReport] LoadData() 시작
+[01:12:15] [TestReport] 업체 28개
+[01:12:15] [TestReport] ★ 크래시 ★ SQLite Error 1: 'no such column: {c}'.

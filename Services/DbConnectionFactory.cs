@@ -27,6 +27,10 @@ public static class DbConnectionFactory
     /// <summary>마지막 삽입 ID 조회 함수</summary>
     public static string LastInsertId => IsMariaDb ? "LAST_INSERT_ID()" : "last_insert_rowid()";
 
+    /// <summary>날짜 포맷 함수 — SQLite: strftime('%Y', col), MariaDB: DATE_FORMAT(col, '%Y')</summary>
+    public static string DateFmt(string col, string fmt)
+        => IsMariaDb ? $"DATE_FORMAT({col}, '{fmt}')" : $"strftime('{fmt}', {col})";
+
     /// <summary>
     /// UPSERT 뒷부분 생성.
     /// SQLite : ON CONFLICT(conflictCols) DO UPDATE SET col = excluded.col, ...

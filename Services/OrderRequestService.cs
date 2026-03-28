@@ -81,13 +81,13 @@ public static class OrderRequestService
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var chk = conn.CreateCommand();
-            chk.CommandText = $@"SELECT rowid FROM `시료명칭` WHERE `{columnName}` IS NULL OR `{columnName}` = '' LIMIT 1";
+            chk.CommandText = $@"SELECT _id FROM `시료명칭` WHERE `{columnName}` IS NULL OR `{columnName}` = '' LIMIT 1";
             var rowidObj = chk.ExecuteScalar();
 
             if (rowidObj != null)
             {
                 using var upd = conn.CreateCommand();
-                upd.CommandText = $@"UPDATE `시료명칭` SET `{columnName}` = @val WHERE rowid = @id";
+                upd.CommandText = $@"UPDATE `시료명칭` SET `{columnName}` = @val WHERE _id = @id";
                 upd.Parameters.AddWithValue("@val", sampleName);
                 upd.Parameters.AddWithValue("@id", Convert.ToInt32(rowidObj));
                 upd.ExecuteNonQuery();

@@ -2279,3 +2279,27 @@
 [23:11:53] [AnalysisRequestService] GetAssignmentsForAgent(201101234/박은지, 2026-03-28): 4개 할당
 [23:11:53] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
 [23:11:53] [AnalysisRequestService] GetAssignmentsForAgent(202106024/이예림, 2026-03-28): 7개 할당
+[00:25:50] QuotationHistoryPanel 초기화 완료
+[00:25:50] LoadData() 시작
+[00:25:50] 견적 발행건수=934
+[00:25:50] LoadData() 완료 — 루트노드=6
+[00:58:23] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[00:58:23] [AnalysisRequestService] GetAssignmentsForAgent(202106024/이예림, 2026-03-29): 7개 할당
+[00:58:23] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[00:58:23] [AnalysisRequestService] GetAssignmentsForAgent(202204016/정대호, 2026-03-29): 3개 할당
+[00:58:24] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[00:58:24] [AnalysisRequestService] GetAssignmentsForAgent(202301126/유경지, 2026-03-29): 2개 할당
+[00:58:24] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[00:58:24] [AnalysisRequestService] GetAssignmentsForAgent(202303008/송준우, 2026-03-29): 14개 할당
+[00:58:25] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[00:58:25] [AnalysisRequestService] GetAssignmentsForAgent(202309008/윤민영, 2026-03-29): 14개 할당
+[00:58:25] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[00:58:25] [AnalysisRequestService] GetAssignmentsForAgent(202311016/김지은, 2026-03-29): 5개 할당
+[00:58:25] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[00:58:26] [AnalysisRequestService] GetAssignmentsForAgent(12345/김청하, 2026-03-29): 0개 할당
+[00:58:26] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[00:58:26] [AnalysisRequestService] GetAssignmentsForAgent(202500340/손현주, 2026-03-29): 3개 할당
+[00:58:27] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[00:58:27] [AnalysisRequestService] GetAssignmentsForAgent(202303008/송준우, 2026-03-29): 14개 할당
+[00:58:27] [AnalysisRequestService] GetStandardDaysInfo: 113개 로드 (days=True, short=True)
+[00:58:27] [AnalysisRequestService] GetAssignmentsForAgent(201101234/박은지, 2026-03-29): 4개 할당

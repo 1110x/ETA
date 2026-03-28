@@ -16,9 +16,9 @@ public static class PurchaseService
     private static void EnsureTable(DbConnection conn)
     {
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"
+        cmd.CommandText = $@"
             CREATE TABLE IF NOT EXISTS `물품구매` (
-                Id      INTEGER PRIMARY KEY AUTOINCREMENT,
+                Id      INTEGER PRIMARY KEY {DbConnectionFactory.AutoIncrement},
                 구분    TEXT    NOT NULL DEFAULT '',
                 품목    TEXT    NOT NULL DEFAULT '',
                 수량    INTEGER NOT NULL DEFAULT 1,
@@ -79,12 +79,13 @@ public static class PurchaseService
 
         // SQLite: strftime('%Y-%m', 요청일) 로 년-월 필터
         var ym = $"{year:D4}-{month:D2}";
+        var dateFmt = DbConnectionFactory.DateFmt("요청일", "%Y-%m");
 
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"
+        cmd.CommandText = $@"
             SELECT Id, 구분, 품목, 수량, 비고, 요청자, 요청일, 상태
             FROM `물품구매`
-            WHERE strftime('%Y-%m', 요청일) = @ym
+            WHERE {dateFmt} = @ym
             ORDER BY Id DESC";
         cmd.Parameters.AddWithValue("@ym", ym);
 
@@ -115,9 +116,11 @@ public static class PurchaseService
         EnsureTable(conn);
 
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"
-            SELECT strftime('%Y', 요청일) AS yr,
-                   strftime('%m', 요청일) AS mo,
+        var dateFmtY = DbConnectionFactory.DateFmt("요청일", "%Y");
+        var dateFmtM = DbConnectionFactory.DateFmt("요청일", "%m");
+        cmd.CommandText = $@"
+            SELECT {dateFmtY} AS yr,
+                   {dateFmtM} AS mo,
                    COUNT(*)              AS cnt
             FROM `물품구매`
             GROUP BY yr, mo

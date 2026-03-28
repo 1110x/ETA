@@ -791,3 +791,21 @@
 [17:02:19] [Contract] 로드 완료 → 32건
 [17:02:19] [Contract] LoadData() 시작
 [17:02:19] [Contract] 로드 완료 → 32건
+[00:25:06] [Contract] LoadData() 시작
+[00:25:06] [Contract] 로드 완료 → 0건
+[00:25:06] [Contract] LoadData() 시작
+[00:25:06] [Contract] 로드 완료 → 0건
+[00:58:29] [Contract] LoadData() 시작
+[00:58:29] [Contract] 로드 완료 → 32건
+[00:58:29] [Contract] LoadData() 시작
+[00:58:29] [Contract] 로드 완료 → 32건
+[00:58:30] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[00:58:33] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[00:58:33] [Contract] 선택: 금호미쓰이화학㈜ 여수
+[00:58:34] [Contract] ✅ GetUnitPriceColumns → 10개 (컬럼 4부터 FS100~)
+[00:58:37] [Contract] ✅ 전체 단가 테이블 표시 완료 (11개 컬럼, 선택: FS25)
+[00:58:37] [Contract] 선택: 디엘케미칼㈜ 여수
+[01:12:03] [Contract] LoadData() 시작
+[01:12:03] [Contract] 로드 완료 → 32건
+[01:12:04] [Contract] LoadData() 시작
+[01:12:04] [Contract] 로드 완료 → 32건

@@ -1069,3 +1069,383 @@
 [2026-03-28 14:58:11] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
 [2026-03-28 14:58:11] [DoLogin] 로그인 성공 → Lottie 재생
 [2026-03-28 14:58:11] [Lottie] 재생 시작
+[2026-03-28 23:32:59] ========== 로그인 창 시작 ==========
+[2026-03-28 23:32:59] [Init] MigrateAccountColumns 시작
+[2026-03-28 23:32:59] [Init] MigrateAccountColumns 완료
+[2026-03-28 23:32:59] [Init] MigrateInitialPasswords 시작
+[2026-03-28 23:33:00] [Init] MigrateInitialPasswords 완료
+[2026-03-28 23:33:36] ---------- 로그인 시도 ----------
+[2026-03-28 23:33:36] [DoLogin] 사번 입력값: '201000308'
+[2026-03-28 23:33:36] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-03-28 23:33:36] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-03-28 23:33:36] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-03-28 23:33:36.030] === SyncApprovalStatusAsync() 시작 ===
+[2026-03-28 23:33:38.218] To Do ETA Task: 15개  DB 계정: 14개
+[2026-03-28 23:33:38.220] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-03-28 23:33:38] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-03-28 23:33:38] [DoLogin] DB 계정 상태 확인 시작
+[2026-03-28 23:33:38] [DebugCheck] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db
+[2026-03-28 23:33:38] [DebugCheck] DB 존재: True
+[2026-03-28 23:33:38] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-03-28 23:33:38] [DebugCheck] 123456 해시=8d969eef...
+[2026-03-28 23:33:38] [DoLogin] ValidateLogin 호출
+[2026-03-28 23:33:38] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-03-28 23:33:38] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-03-28 23:33:38] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-03-28 23:33:38] [Lottie] 재생 시작
+[2026-03-28 23:58:07] ========== 로그인 창 시작 ==========
+[2026-03-28 23:58:07] [Init] MigrateAccountColumns 시작
+[2026-03-28 23:58:07] [Init] MigrateAccountColumns 완료
+[2026-03-28 23:58:07] [Init] MigrateInitialPasswords 시작
+[2026-03-28 23:58:07] [Init] MigrateInitialPasswords 완료
+[2026-03-28 23:58:55] [DB모드] 서버 DB (MariaDB) 선택
+[2026-03-28 23:58:55] [DB모드] 로컬 DB (SQLite) 선택
+[2026-03-28 23:58:56] [DB모드] 서버 DB (MariaDB) 선택
+[2026-03-29 00:00:47] ========== 로그인 창 시작 ==========
+[2026-03-29 00:00:48] [Init] MigrateAccountColumns 시작
+[2026-03-29 00:00:48] [Init] MigrateAccountColumns 완료
+[2026-03-29 00:00:48] [Init] MigrateInitialPasswords 시작
+[2026-03-29 00:00:48] [Init] MigrateInitialPasswords 완료
+[2026-03-29 00:00:51] [DB모드] 서버 DB (MariaDB) 선택
+[2026-03-29 00:00:52] [DB모드] 로컬 DB (SQLite) 선택
+[2026-03-29 00:00:53] [DB모드] 서버 DB (MariaDB) 선택
+[2026-03-29 00:01:03] ---------- 로그인 시도 ----------
+[2026-03-29 00:01:03] [DoLogin] DB 모드: MariaDB
+[2026-03-29 00:01:03] [DoLogin] 사번 입력값: '201000308'
+[2026-03-29 00:01:03] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-03-29 00:01:03] [DoLogin] 비밀번호 입력 해시: 0a776887...
+[2026-03-29 00:01:03] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-03-29 00:01:03.649] === SyncApprovalStatusAsync() 시작 ===
+[2026-03-29 00:01:05.863] ❌ SyncApprovalStatusAsync 오류: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '"Agent"
+            WHERE 상태 IN ('approved', 'pending')' at line 2
+   at MySqlConnector.Core.ServerSession.ReceiveReplyAsync(IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/Core/ServerSession.cs:line 1081
+   at MySqlConnector.Core.ResultSet.ReadResultSetHeaderAsync(IOBehavior ioBehavior) in /_/src/MySqlConnector/Core/ResultSet.cs:line 37
+   at MySqlConnector.MySqlDataReader.ActivateResultSet(CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlDataReader.cs:line 131
+   at MySqlConnector.MySqlDataReader.InitAsync(CommandListPosition commandListPosition, ICommandPayloadCreator payloadCreator, IDictionary`2 cachedProcedures, IMySqlCommand command, CommandBehavior behavior, Activity activity, IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlDataReader.cs:line 487
+   at MySqlConnector.Core.CommandExecutor.ExecuteReaderAsync(CommandListPosition commandListPosition, ICommandPayloadCreator payloadCreator, CommandBehavior behavior, Activity activity, IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/Core/CommandExecutor.cs:line 56
+   at MySqlConnector.MySqlCommand.ExecuteReaderAsync(CommandBehavior behavior, IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlCommand.cs:line 357
+   at MySqlConnector.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior) in /_/src/MySqlConnector/MySqlCommand.cs:line 290
+   at ETA.Services.AgentService.GetAllApprovalAccounts() in /Users/azrael/Documents/ETA/Services/AgentService.cs:line 536
+   at ETA.Services.TodoService.SyncApprovalStatusAsync() in /Users/azrael/Documents/ETA/Services/TodoService.cs:line 127
+[2026-03-29 00:01:05] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-03-29 00:01:05] [DoLogin] DB 계정 상태 확인 시작
+[2026-03-29 00:01:05] [DebugCheck] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db
+[2026-03-29 00:01:05] [DebugCheck] DB 존재: True
+[2026-03-29 00:01:05] [DoLogin] 예외 발생: MySqlException: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '"Agent" WHERE 사번='201000308'' at line 2
+[2026-03-29 00:01:36] [DB모드] 로컬 DB (SQLite) 선택
+[2026-03-29 00:01:38] ---------- 로그인 시도 ----------
+[2026-03-29 00:01:38] [DoLogin] DB 모드: SQLite
+[2026-03-29 00:01:38] [DoLogin] 사번 입력값: '201000308'
+[2026-03-29 00:01:38] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-03-29 00:01:38] [DoLogin] 비밀번호 입력 해시: 0a776887...
+[2026-03-29 00:01:38] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-03-29 00:01:38.092] === SyncApprovalStatusAsync() 시작 ===
+[2026-03-29 00:01:38.948] To Do ETA Task: 15개  DB 계정: 14개
+[2026-03-29 00:01:38.951] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-03-29 00:01:38] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-03-29 00:01:38] [DoLogin] DB 계정 상태 확인 시작
+[2026-03-29 00:01:38] [DebugCheck] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db
+[2026-03-29 00:01:38] [DebugCheck] DB 존재: True
+[2026-03-29 00:01:38] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-03-29 00:01:38] [DebugCheck] 123456 해시=8d969eef...
+[2026-03-29 00:01:38] [DoLogin] ValidateLogin 호출
+[2026-03-29 00:01:38] [ValidateLogin] DB해시=f3898fe2... / 입력해시=0a776887... / 일치=False
+[2026-03-29 00:01:38] [DoLogin] ValidateLogin 결과 → success=False, mustChangePw=False, message='비밀번호가 올바르지 않습니다.'
+[2026-03-29 00:01:38] [DoLogin] 로그인 실패: 비밀번호가 올바르지 않습니다.
+[2026-03-29 00:01:43] ---------- 로그인 시도 ----------
+[2026-03-29 00:01:43] [DoLogin] DB 모드: SQLite
+[2026-03-29 00:01:43] [DoLogin] 사번 입력값: '201000308'
+[2026-03-29 00:01:43] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-03-29 00:01:43] [DoLogin] 비밀번호 입력 해시: 0a776887...
+[2026-03-29 00:01:43] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-03-29 00:01:43.428] === SyncApprovalStatusAsync() 시작 ===
+[2026-03-29 00:01:44.259] To Do ETA Task: 15개  DB 계정: 14개
+[2026-03-29 00:01:44.261] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-03-29 00:01:44] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-03-29 00:01:44] [DoLogin] DB 계정 상태 확인 시작
+[2026-03-29 00:01:44] [DebugCheck] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db
+[2026-03-29 00:01:44] [DebugCheck] DB 존재: True
+[2026-03-29 00:01:44] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-03-29 00:01:44] [DebugCheck] 123456 해시=8d969eef...
+[2026-03-29 00:01:44] [DoLogin] ValidateLogin 호출
+[2026-03-29 00:01:44] [ValidateLogin] DB해시=f3898fe2... / 입력해시=0a776887... / 일치=False
+[2026-03-29 00:01:44] [DoLogin] ValidateLogin 결과 → success=False, mustChangePw=False, message='비밀번호가 올바르지 않습니다.'
+[2026-03-29 00:01:44] [DoLogin] 로그인 실패: 비밀번호가 올바르지 않습니다.
+[2026-03-29 00:01:55] ---------- 로그인 시도 ----------
+[2026-03-29 00:01:55] [DoLogin] DB 모드: SQLite
+[2026-03-29 00:01:55] [DoLogin] 사번 입력값: '201000308'
+[2026-03-29 00:01:55] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-03-29 00:01:55] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-03-29 00:01:55] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-03-29 00:01:55.738] === SyncApprovalStatusAsync() 시작 ===
+[2026-03-29 00:01:56.541] To Do ETA Task: 15개  DB 계정: 14개
+[2026-03-29 00:01:56.542] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-03-29 00:01:56] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-03-29 00:01:56] [DoLogin] DB 계정 상태 확인 시작
+[2026-03-29 00:01:56] [DebugCheck] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db
+[2026-03-29 00:01:56] [DebugCheck] DB 존재: True
+[2026-03-29 00:01:56] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-03-29 00:01:56] [DebugCheck] 123456 해시=8d969eef...
+[2026-03-29 00:01:56] [DoLogin] ValidateLogin 호출
+[2026-03-29 00:01:56] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-03-29 00:01:56] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-03-29 00:01:56] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-03-29 00:01:56] [Lottie] 재생 시작
+[2026-03-29 00:03:04] ========== 로그인 창 시작 ==========
+[2026-03-29 00:03:05] [Init] MigrateAccountColumns 시작
+[2026-03-29 00:03:05] [Init] MigrateAccountColumns 완료
+[2026-03-29 00:03:05] [Init] MigrateInitialPasswords 시작
+[2026-03-29 00:03:05] [Init] MigrateInitialPasswords 완료
+[2026-03-29 00:03:17] [DB모드] 서버 DB (MariaDB) 선택
+[2026-03-29 00:03:19] ---------- 로그인 시도 ----------
+[2026-03-29 00:03:19] [DoLogin] DB 모드: MariaDB
+[2026-03-29 00:03:19] [DoLogin] 사번 입력값: '201000308'
+[2026-03-29 00:03:19] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-03-29 00:03:19] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-03-29 00:03:19] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-03-29 00:03:19.024] === SyncApprovalStatusAsync() 시작 ===
+[2026-03-29 00:03:20.978] ❌ SyncApprovalStatusAsync 오류: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '"Agent"
+            WHERE 상태 IN ('approved', 'pending')' at line 2
+   at MySqlConnector.Core.ServerSession.ReceiveReplyAsync(IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/Core/ServerSession.cs:line 1081
+   at MySqlConnector.Core.ResultSet.ReadResultSetHeaderAsync(IOBehavior ioBehavior) in /_/src/MySqlConnector/Core/ResultSet.cs:line 37
+   at MySqlConnector.MySqlDataReader.ActivateResultSet(CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlDataReader.cs:line 131
+   at MySqlConnector.MySqlDataReader.InitAsync(CommandListPosition commandListPosition, ICommandPayloadCreator payloadCreator, IDictionary`2 cachedProcedures, IMySqlCommand command, CommandBehavior behavior, Activity activity, IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlDataReader.cs:line 487
+   at MySqlConnector.Core.CommandExecutor.ExecuteReaderAsync(CommandListPosition commandListPosition, ICommandPayloadCreator payloadCreator, CommandBehavior behavior, Activity activity, IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/Core/CommandExecutor.cs:line 56
+   at MySqlConnector.MySqlCommand.ExecuteReaderAsync(CommandBehavior behavior, IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlCommand.cs:line 357
+   at MySqlConnector.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior) in /_/src/MySqlConnector/MySqlCommand.cs:line 290
+   at ETA.Services.AgentService.GetAllApprovalAccounts() in /Users/azrael/Documents/ETA/Services/AgentService.cs:line 536
+   at ETA.Services.TodoService.SyncApprovalStatusAsync() in /Users/azrael/Documents/ETA/Services/TodoService.cs:line 127
+[2026-03-29 00:03:20] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-03-29 00:03:20] [DoLogin] DB 계정 상태 확인 시작
+[2026-03-29 00:03:20] [DebugCheck] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db
+[2026-03-29 00:03:20] [DebugCheck] DB 존재: True
+[2026-03-29 00:03:20] [DoLogin] 예외 발생: MySqlException: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '"Agent" WHERE 사번='201000308'' at line 2
+[2026-03-29 00:19:21] ========== 로그인 창 시작 ==========
+[2026-03-29 00:19:21] [Init] MigrateAccountColumns 시작
+[2026-03-29 00:19:21] [Init] MigrateAccountColumns 완료
+[2026-03-29 00:19:21] [Init] MigrateInitialPasswords 시작
+[2026-03-29 00:19:21] [Init] MigrateInitialPasswords 완료
+[2026-03-29 00:19:32] [DB모드] 서버 DB (MariaDB) 선택
+[2026-03-29 00:19:34] ---------- 로그인 시도 ----------
+[2026-03-29 00:19:34] [DoLogin] DB 모드: MariaDB
+[2026-03-29 00:19:34] [DoLogin] 사번 입력값: '201000308'
+[2026-03-29 00:19:34] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-03-29 00:19:34] [DoLogin] 비밀번호 입력 해시: 0a776887...
+[2026-03-29 00:19:34] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-03-29 00:19:34.503] === SyncApprovalStatusAsync() 시작 ===
+[2026-03-29 00:19:36.682] To Do ETA Task: 15개  DB 계정: 28개
+[2026-03-29 00:19:36.683] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-03-29 00:19:36] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-03-29 00:19:36] [DoLogin] DB 계정 상태 확인 시작
+[2026-03-29 00:19:36] [DebugCheck] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db
+[2026-03-29 00:19:36] [DebugCheck] DB 존재: True
+[2026-03-29 00:19:36] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-03-29 00:19:36] [DebugCheck] 123456 해시=8d969eef...
+[2026-03-29 00:19:36] [DoLogin] ValidateLogin 호출
+[2026-03-29 00:19:36] [ValidateLogin] DB해시=f3898fe2... / 입력해시=0a776887... / 일치=False
+[2026-03-29 00:19:36] [DoLogin] ValidateLogin 결과 → success=False, mustChangePw=False, message='비밀번호가 올바르지 않습니다.'
+[2026-03-29 00:19:36] [DoLogin] 로그인 실패: 비밀번호가 올바르지 않습니다.
+[2026-03-29 00:19:46] ---------- 로그인 시도 ----------
+[2026-03-29 00:19:46] [DoLogin] DB 모드: MariaDB
+[2026-03-29 00:19:46] [DoLogin] 사번 입력값: '201000308'
+[2026-03-29 00:19:46] [DoLogin] 비밀번호 길이: 11자 / 비어있음: False
+[2026-03-29 00:19:46] [DoLogin] 비밀번호 입력 해시: 71de42b8...
+[2026-03-29 00:19:46] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-03-29 00:19:46.095] === SyncApprovalStatusAsync() 시작 ===
+[2026-03-29 00:19:46.929] To Do ETA Task: 15개  DB 계정: 28개
+[2026-03-29 00:19:46.930] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-03-29 00:19:46] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-03-29 00:19:46] [DoLogin] DB 계정 상태 확인 시작
+[2026-03-29 00:19:46] [DebugCheck] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db
+[2026-03-29 00:19:46] [DebugCheck] DB 존재: True
+[2026-03-29 00:19:46] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-03-29 00:19:46] [DebugCheck] 123456 해시=8d969eef...
+[2026-03-29 00:19:46] [DoLogin] ValidateLogin 호출
+[2026-03-29 00:19:46] [ValidateLogin] DB해시=f3898fe2... / 입력해시=71de42b8... / 일치=False
+[2026-03-29 00:19:46] [DoLogin] ValidateLogin 결과 → success=False, mustChangePw=False, message='비밀번호가 올바르지 않습니다.'
+[2026-03-29 00:19:46] [DoLogin] 로그인 실패: 비밀번호가 올바르지 않습니다.
+[2026-03-29 00:19:56] ---------- 로그인 시도 ----------
+[2026-03-29 00:19:56] [DoLogin] DB 모드: MariaDB
+[2026-03-29 00:19:56] [DoLogin] 사번 입력값: '201000308'
+[2026-03-29 00:19:56] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-03-29 00:19:56] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-03-29 00:19:56] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-03-29 00:19:56.257] === SyncApprovalStatusAsync() 시작 ===
+[2026-03-29 00:19:57.013] To Do ETA Task: 15개  DB 계정: 28개
+[2026-03-29 00:19:57.014] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-03-29 00:19:57] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-03-29 00:19:57] [DoLogin] DB 계정 상태 확인 시작
+[2026-03-29 00:19:57] [DebugCheck] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db
+[2026-03-29 00:19:57] [DebugCheck] DB 존재: True
+[2026-03-29 00:19:57] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-03-29 00:19:57] [DebugCheck] 123456 해시=8d969eef...
+[2026-03-29 00:19:57] [DoLogin] ValidateLogin 호출
+[2026-03-29 00:19:57] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-03-29 00:19:57] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-03-29 00:19:57] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-03-29 00:19:57] [Lottie] 재생 시작
+[2026-03-29 00:25:28] ========== 로그인 창 시작 ==========
+[2026-03-29 00:25:28] [Init] MigrateAccountColumns 시작
+[2026-03-29 00:25:28] [Init] MigrateAccountColumns 완료
+[2026-03-29 00:25:28] [Init] MigrateInitialPasswords 시작
+[2026-03-29 00:25:28] [Init] MigrateInitialPasswords 완료
+[2026-03-29 00:25:39] ---------- 로그인 시도 ----------
+[2026-03-29 00:25:39] [DoLogin] DB 모드: SQLite
+[2026-03-29 00:25:39] [DoLogin] 사번 입력값: '201000308'
+[2026-03-29 00:25:39] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-03-29 00:25:39] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-03-29 00:25:39] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-03-29 00:25:39.745] === SyncApprovalStatusAsync() 시작 ===
+[2026-03-29 00:25:41.005] To Do ETA Task: 15개  DB 계정: 14개
+[2026-03-29 00:25:41.006] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-03-29 00:25:41] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-03-29 00:25:41] [DoLogin] DB 계정 상태 확인 시작
+[2026-03-29 00:25:41] [DebugCheck] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db
+[2026-03-29 00:25:41] [DebugCheck] DB 존재: True
+[2026-03-29 00:25:41] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-03-29 00:25:41] [DebugCheck] 123456 해시=8d969eef...
+[2026-03-29 00:25:41] [DoLogin] ValidateLogin 호출
+[2026-03-29 00:25:41] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-03-29 00:25:41] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-03-29 00:25:41] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-03-29 00:25:41] [Lottie] 재생 시작
+[2026-03-29 00:54:05] ========== 로그인 창 시작 ==========
+[2026-03-29 00:54:05] [Init] MigrateAccountColumns 시작
+[2026-03-29 00:54:06] [Init] MigrateAccountColumns 완료
+[2026-03-29 00:54:06] [Init] MigrateInitialPasswords 시작
+[2026-03-29 00:54:06] [Init] MigrateInitialPasswords 완료
+[2026-03-29 00:58:06] [DB모드] 서버 DB (MariaDB) 선택
+[2026-03-29 00:58:07] ---------- 로그인 시도 ----------
+[2026-03-29 00:58:07] [DoLogin] DB 모드: MariaDB
+[2026-03-29 00:58:07] [DoLogin] 사번 입력값: '201000308'
+[2026-03-29 00:58:07] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-03-29 00:58:07] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-03-29 00:58:07] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-03-29 00:58:07.319] === SyncApprovalStatusAsync() 시작 ===
+[2026-03-29 00:58:09.598] To Do ETA Task: 15개  DB 계정: 14개
+[2026-03-29 00:58:09.598] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-03-29 00:58:09] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-03-29 00:58:09] [DoLogin] DB 계정 상태 확인 시작
+[2026-03-29 00:58:09] [DebugCheck] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db
+[2026-03-29 00:58:09] [DebugCheck] DB 존재: True
+[2026-03-29 00:58:09] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-03-29 00:58:09] [DebugCheck] 123456 해시=8d969eef...
+[2026-03-29 00:58:09] [DoLogin] ValidateLogin 호출
+[2026-03-29 00:58:09] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-03-29 00:58:09] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-03-29 00:58:09] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-03-29 00:58:09] [Lottie] 재생 시작
+[2026-03-29 01:07:37] ========== 로그인 창 시작 ==========
+[2026-03-29 01:07:37] [Init] MigrateAccountColumns 시작
+[2026-03-29 01:07:38] [Init] MigrateAccountColumns 완료
+[2026-03-29 01:07:38] [Init] MigrateInitialPasswords 시작
+[2026-03-29 01:07:38] [Init] MigrateInitialPasswords 완료
+[2026-03-29 01:07:49] ---------- 로그인 시도 ----------
+[2026-03-29 01:07:49] [DoLogin] DB 모드: SQLite
+[2026-03-29 01:07:49] [DoLogin] 사번 입력값: '201000308'
+[2026-03-29 01:07:49] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-03-29 01:07:49] [DoLogin] 비밀번호 입력 해시: 0a776887...
+[2026-03-29 01:07:49] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-03-29 01:07:49.833] === SyncApprovalStatusAsync() 시작 ===
+[2026-03-29 01:07:51.690] To Do ETA Task: 15개  DB 계정: 14개
+[2026-03-29 01:07:51.691] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-03-29 01:07:51] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-03-29 01:07:51] [DoLogin] DB 계정 상태 확인 시작
+[2026-03-29 01:07:51] [DebugCheck] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db
+[2026-03-29 01:07:51] [DebugCheck] DB 존재: True
+[2026-03-29 01:07:51] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-03-29 01:07:51] [DebugCheck] 123456 해시=8d969eef...
+[2026-03-29 01:07:51] [DoLogin] ValidateLogin 호출
+[2026-03-29 01:07:51] [ValidateLogin] DB해시=f3898fe2... / 입력해시=0a776887... / 일치=False
+[2026-03-29 01:07:51] [DoLogin] ValidateLogin 결과 → success=False, mustChangePw=False, message='비밀번호가 올바르지 않습니다.'
+[2026-03-29 01:07:51] [DoLogin] 로그인 실패: 비밀번호가 올바르지 않습니다.
+[2026-03-29 01:08:00] [DB모드] 서버 DB (MariaDB) 선택
+[2026-03-29 01:08:06] ---------- 로그인 시도 ----------
+[2026-03-29 01:08:06] [DoLogin] DB 모드: MariaDB
+[2026-03-29 01:08:06] [DoLogin] 사번 입력값: '201000308'
+[2026-03-29 01:08:06] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-03-29 01:08:06] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-03-29 01:08:06] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-03-29 01:08:06.090] === SyncApprovalStatusAsync() 시작 ===
+[2026-03-29 01:08:07.386] To Do ETA Task: 15개  DB 계정: 14개
+[2026-03-29 01:08:07.386] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-03-29 01:08:07] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-03-29 01:08:07] [DoLogin] DB 계정 상태 확인 시작
+[2026-03-29 01:08:07] [DebugCheck] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db
+[2026-03-29 01:08:07] [DebugCheck] DB 존재: True
+[2026-03-29 01:08:07] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-03-29 01:08:07] [DebugCheck] 123456 해시=8d969eef...
+[2026-03-29 01:08:07] [DoLogin] ValidateLogin 호출
+[2026-03-29 01:08:07] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-03-29 01:08:07] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-03-29 01:08:07] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-03-29 01:08:07] [Lottie] 재생 시작
+[2026-03-29 01:11:25] ========== 로그인 창 시작 ==========
+[2026-03-29 01:11:25] [Init] MigrateAccountColumns 시작
+[2026-03-29 01:11:25] [Init] MigrateAccountColumns 완료
+[2026-03-29 01:11:25] [Init] MigrateInitialPasswords 시작
+[2026-03-29 01:11:25] [Init] MigrateInitialPasswords 완료
+[2026-03-29 01:11:38] ---------- 로그인 시도 ----------
+[2026-03-29 01:11:38] [DoLogin] DB 모드: SQLite
+[2026-03-29 01:11:38] [DoLogin] 사번 입력값: '201000308'
+[2026-03-29 01:11:38] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-03-29 01:11:38] [DoLogin] 비밀번호 입력 해시: 0a776887...
+[2026-03-29 01:11:38] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-03-29 01:11:38.405] === SyncApprovalStatusAsync() 시작 ===
+[2026-03-29 01:11:39.924] To Do ETA Task: 15개  DB 계정: 14개
+[2026-03-29 01:11:39.925] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-03-29 01:11:39] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-03-29 01:11:39] [DoLogin] DB 계정 상태 확인 시작
+[2026-03-29 01:11:39] [DebugCheck] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db
+[2026-03-29 01:11:39] [DebugCheck] DB 존재: True
+[2026-03-29 01:11:39] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-03-29 01:11:39] [DebugCheck] 123456 해시=8d969eef...
+[2026-03-29 01:11:39] [DoLogin] ValidateLogin 호출
+[2026-03-29 01:11:39] [ValidateLogin] DB해시=f3898fe2... / 입력해시=0a776887... / 일치=False
+[2026-03-29 01:11:39] [DoLogin] ValidateLogin 결과 → success=False, mustChangePw=False, message='비밀번호가 올바르지 않습니다.'
+[2026-03-29 01:11:39] [DoLogin] 로그인 실패: 비밀번호가 올바르지 않습니다.
+[2026-03-29 01:11:45] ---------- 로그인 시도 ----------
+[2026-03-29 01:11:45] [DoLogin] DB 모드: SQLite
+[2026-03-29 01:11:45] [DoLogin] 사번 입력값: '201000308'
+[2026-03-29 01:11:45] [DoLogin] 비밀번호 길이: 11자 / 비어있음: False
+[2026-03-29 01:11:45] [DoLogin] 비밀번호 입력 해시: 71de42b8...
+[2026-03-29 01:11:45] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-03-29 01:11:45.099] === SyncApprovalStatusAsync() 시작 ===
+[2026-03-29 01:11:45.863] To Do ETA Task: 15개  DB 계정: 14개
+[2026-03-29 01:11:45.865] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-03-29 01:11:45] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-03-29 01:11:45] [DoLogin] DB 계정 상태 확인 시작
+[2026-03-29 01:11:45] [DebugCheck] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db
+[2026-03-29 01:11:45] [DebugCheck] DB 존재: True
+[2026-03-29 01:11:45] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-03-29 01:11:45] [DebugCheck] 123456 해시=8d969eef...
+[2026-03-29 01:11:45] [DoLogin] ValidateLogin 호출
+[2026-03-29 01:11:45] [ValidateLogin] DB해시=f3898fe2... / 입력해시=71de42b8... / 일치=False
+[2026-03-29 01:11:45] [DoLogin] ValidateLogin 결과 → success=False, mustChangePw=False, message='비밀번호가 올바르지 않습니다.'
+[2026-03-29 01:11:45] [DoLogin] 로그인 실패: 비밀번호가 올바르지 않습니다.
+[2026-03-29 01:11:46] ---------- 로그인 시도 ----------
+[2026-03-29 01:11:46] [DoLogin] DB 모드: SQLite
+[2026-03-29 01:11:46] [DoLogin] 사번 입력값: '201000308'
+[2026-03-29 01:11:46] [DoLogin] 비밀번호 길이: 0자 / 비어있음: True
+[2026-03-29 01:11:46] [DoLogin] 비밀번호 입력 해시: e3b0c442...
+[2026-03-29 01:11:46] [DoLogin] 중단: 비밀번호 없음
+[2026-03-29 01:11:50] ---------- 로그인 시도 ----------
+[2026-03-29 01:11:50] [DoLogin] DB 모드: SQLite
+[2026-03-29 01:11:50] [DoLogin] 사번 입력값: '201000308'
+[2026-03-29 01:11:50] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-03-29 01:11:50] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-03-29 01:11:50] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-03-29 01:11:50.169] === SyncApprovalStatusAsync() 시작 ===
+[2026-03-29 01:11:50.918] To Do ETA Task: 15개  DB 계정: 14개
+[2026-03-29 01:11:50.919] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-03-29 01:11:50] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-03-29 01:11:50] [DoLogin] DB 계정 상태 확인 시작
+[2026-03-29 01:11:50] [DebugCheck] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db
+[2026-03-29 01:11:50] [DebugCheck] DB 존재: True
+[2026-03-29 01:11:50] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-03-29 01:11:50] [DebugCheck] 123456 해시=8d969eef...
+[2026-03-29 01:11:50] [DoLogin] ValidateLogin 호출
+[2026-03-29 01:11:50] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-03-29 01:11:50] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-03-29 01:11:50] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-03-29 01:11:50] [Lottie] 재생 시작

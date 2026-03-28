@@ -57,12 +57,12 @@ public static class AnalysisRequestService
 
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            SELECT rowid,
+            SELECT _id,
                    COALESCE(`약칭`,     ''),
                    COALESCE(`시료명`,   ''),
                    COALESCE(`견적번호`, ''),
                    COALESCE(`채취일자`, '')
-            FROM   `분석의뢰및결과`
+            FROM   `분析의뢰및결과`
             ORDER  BY `채취일자` DESC";
 
         using var rdr = cmd.ExecuteReader();
@@ -104,7 +104,7 @@ public static class AnalysisRequestService
         conn.Open();
 
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = "SELECT * FROM `분석의뢰및결과` WHERE rowid = @id";
+        cmd.CommandText = "SELECT * FROM `분析의뢰및결과` WHERE _id = @id";
         cmd.Parameters.AddWithValue("@id", rowId);
 
         using var rdr = cmd.ExecuteReader();
