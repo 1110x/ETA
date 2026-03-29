@@ -1129,7 +1129,51 @@ public partial class MeasurerLoginWindow : Window
         Log($"[전체DB] 다음 측정용도 선택: {nextPurposeResult}");
         await Task.Delay(500);
 
-        // 10. 저장 버튼 클릭 (보이는 버튼 기준으로 강제 클릭)
+        // 10. 측정인력 선택 (add_emp_id)
+        string selEmp = "NO_OPT";
+        for (int i = 0; i < 12; i++)
+        {
+            await Task.Delay(400);
+            selEmp = ExtractCdpStringValue(await Evaluate(@"(function(){
+                var sel = document.getElementById('add_emp_id');
+                if (!sel) {
+                    var all = Array.from(document.querySelectorAll('select'));
+                    sel = all.find(function(s){
+                        var k = ((s.id || '') + ' ' + (s.name || '') + ' ' + (s.className || '')).toLowerCase();
+                        return k.indexOf('emp') >= 0 || k.indexOf('worker') >= 0 || k.indexOf('measurer') >= 0;
+                    }) || null;
+                }
+                if (!sel) return 'NO_SEL';
+                if (!sel.options || sel.options.length < 2) return 'NO_OPT';
+
+                var picked = null;
+                for (var i = 1; i < sel.options.length; i++) {
+                    var o = sel.options[i];
+                    if ((o.value || '').trim() !== '') { picked = o; break; }
+                }
+                if (!picked) return 'NO_VALID_OPTION';
+
+                if (window.$) {
+                    try {
+                        window.$(sel).val(picked.value)
+                            .trigger({type:'select2:select', params:{data:{id:picked.value, text:picked.text}}})
+                            .trigger('change');
+                        return 'select2:' + picked.value + '|' + ((picked.text || '').trim());
+                    } catch(e) {}
+                }
+
+                sel.value = picked.value;
+                sel.dispatchEvent(new Event('input', {bubbles:true}));
+                sel.dispatchEvent(new Event('change', {bubbles:true}));
+                return 'native:' + picked.value + '|' + ((picked.text || '').trim());
+            })()"));
+
+            if (!selEmp.StartsWith("NO_")) break;
+        }
+        Log($"[전체DB] 측정인력 선택: {selEmp}");
+        await Task.Delay(300);
+
+        // 11. 저장 버튼 클릭 (보이는 버튼 기준으로 강제 클릭)
         Post("더미 계획서 저장 중...", "#bb88ff");
         await PollElementExistsAsync("insertFieldPlanBtn", 5000);
         string saveClickResult = ExtractCdpStringValue(await Evaluate(@"(function(){
@@ -1178,7 +1222,7 @@ public partial class MeasurerLoginWindow : Window
         Log($"[전체DB] 저장 직후 유효성/알림: {saveValidation}");
         await Task.Delay(400);
 
-        // 11. 모달 닫힌 대기 — 모달이 완전히 닫혀야만 다음 진행
+        // 12. 모달 닫힌 대기 — 모달이 완전히 닫혀야만 다음 진행
         Log("[전체DB] 모달 닫힘 대기 시작");
         bool modalClosed = false;
         for (int w = 0; w < 15000; w += 300)
