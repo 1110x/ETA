@@ -946,37 +946,87 @@ public partial class MeasurerLoginWindow : Window
                 "String(!!(document.getElementById('add_meas_cont_no')?.offsetParent))"));
             if (vis == "false") break;
         }
-        await Task.Delay(800);
-        Log("[전체DB] 모달 닫힌 완료");
+        await Task.Delay(2500);
+        Log("[전체DB] 모달 닫힌 완료 - 테이블 새로고침 대기중");
+        
+        // 테이블 스크롤 최상단으로 이동 (첫 행 보이게)
+        await Evaluate(@"(function(){
+            var tbl = document.querySelector('table, [role=""grid""]');
+            if (!tbl) return;
+            tbl.scrollTop = 0;
+            var firstRow = tbl.querySelector('tr[role=""row""], tr.rg-data-row');
+            if (firstRow) firstRow.scrollIntoView({behavior:'instant', block:'start'});
+        })");
+        await Task.Delay(600);
 
-        // 11. 테이블에서 "ETA DB 업데이트" 행 더블클릭
+        // 11. 테이블에서 "ETA DB 업데이트" 행 더블클릭 (최대 6초 반복 탐색)
         Post("테이블에서 ETA DB 업데이트 행 탐색 중...", "#bb88ff");
-        string dblResult = ExtractCdpStringValue(await Evaluate(@"(function(){
-            var rows = Array.from(document.querySelectorAll('tr[role=""row""], tr.rg-data-row'));
-            for (var row of rows) {
-                var t = (row.innerText || row.textContent || '');
-                if (t.indexOf('ETA DB') >= 0) {
-                    row.dispatchEvent(new MouseEvent('dblclick', {bubbles:true, cancelable:true, view:window}));
-                    return 'OK:' + t.trim().slice(0, 80).replace(/\n/g, ' ');
-                }
-            }
-            var divs = Array.from(document.querySelectorAll('.rg-renderer'));
-            for (var d of divs) {
-                var dt = (d.innerText || d.textContent || '').trim();
-                if (dt.indexOf('ETA DB') >= 0) {
-                    var tr = d.closest('tr');
-                    if (tr) {
-                        tr.dispatchEvent(new MouseEvent('dblclick', {bubbles:true, cancelable:true, view:window}));
-                        return 'OK_DIV:' + dt.slice(0, 60);
+        string dblResult = "NOT_FOUND";
+        for (int retry = 0; retry < 12; retry++) // 최대 6초 (500ms * 12회)
+        {
+            dblResult = ExtractCdpStringValue(await Evaluate(@"(function(){
+                var rows = Array.from(document.querySelectorAll('tr[role=""row""], tr.rg-data-row'));
+                var debugCount = rows.length;
+                
+                console.log('[ETA] Table rows:', debugCount);
+                if (debugCount === 0) return 'EMPTY_TABLE';
+                
+                // 1차: tr 행 내 직접 찾기
+                for (var i = 0; i < rows.length; i++) {
+                    var row = rows[i];
+                    var t = (row.innerText || row.textContent || '').trim();
+                    if (t && t.indexOf('ETA DB') >= 0) {
+                        console.log('[ETA] Found at row', i);
+                        row.focus();
+                        row.dispatchEvent(new MouseEvent('mousedown', {bubbles:true, view:window}));
+                        row.dispatchEvent(new MouseEvent('mouseup', {bubbles:true, view:window}));
+                        row.dispatchEvent(new MouseEvent('click', {bubbles:true, view:window}));
+                        setTimeout(function() {
+                            row.dispatchEvent(new MouseEvent('dblclick', {bubbles:true, view:window}));
+                        }, 100);
+                        return 'OK_ROW:' + t.slice(0, 80);
                     }
                 }
+                
+                // 2차: .rg-renderer div 찾기
+                var divs = Array.from(document.querySelectorAll('.rg-renderer'));
+                for (var d of divs) {
+                    var dt = (d.innerText || d.textContent || '').trim();
+                    if (dt && dt.indexOf('ETA DB') >= 0) {
+                        var tr = d.closest('tr');
+                        if (tr) {
+                            console.log('[ETA] Found via DIV');
+                            tr.focus();
+                            tr.dispatchEvent(new MouseEvent('mousedown', {bubbles:true, view:window}));
+                            tr.dispatchEvent(new MouseEvent('mouseup', {bubbles:true, view:window}));
+                            tr.dispatchEvent(new MouseEvent('click', {bubbles:true, view:window}));
+                            setTimeout(function() {
+                                tr.dispatchEvent(new MouseEvent('dblclick', {bubbles:true, view:window}));
+                            }, 100);
+                            return 'OK_DIV:' + dt.slice(0, 70);
+                        }
+                    }
+                }
+                
+                return 'NOT_FOUND';\n            })()"""));
+            
+            if (!dblResult.StartsWith("NOT_FOUND")) 
+            {
+                Log($"[전체DB] 행 탐색 성공 (시도 {retry + 1}/12): {dblResult}");
+                break;
             }
-            return 'NOT_FOUND';
-        })()"));
-        Log($"[전체DB] 행 더블클릭: {dblResult}");
+            
+            if (retry < 11)
+            {
+                Log($"[전체DB] 행 탐색 시도 {retry + 1}/12");
+                await Task.Delay(500);
+            }
+        }
+        
+        Log($"[전체DB] 행 더블클릭 최종: {dblResult}");
 
         if (dblResult.StartsWith("NOT_FOUND"))
-            Post("' ETA DB 업데이트' 행을 찾지 못했습니다.", "#ffaa44");
+            Post($"'ETA DB 업데이트' 행을 찾지 못했습니다. ({dblResult})", "#ff6644");
         else
             Post($"더블클릭 완료: {dblResult}", "#88cc88");
     }
