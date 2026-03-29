@@ -904,14 +904,38 @@ public partial class MeasurerLoginWindow : Window
         await Task.Delay(400);
 
         // 7. meas_no_yn 체크박스 클릭 -> add_meas_no 활성화
+        // HTML 구조: <label class="checkbox"><input type="checkbox" id="meas_no_yn"><i></i>측정번호 직접입력</label>
+        Log("[전체DB] meas_no_yn 체크박스 활성화 시도");
         await Evaluate(@"(function(){
             var cb = document.getElementById('meas_no_yn');
-            if (cb && !cb.checked) {
-                cb.click();
-                cb.dispatchEvent(new Event('change', {bubbles:true}));
+            if (!cb || cb.checked) return;
+            
+            // 방법 1: <i> 태그 클릭 (체크박스 스타일을 위한 <i> 요소)
+            var iTag = cb.parentElement?.querySelector('i');
+            if (iTag) {
+                console.log('[ETA] Clicking <i> tag');
+                iTag.click();
+            } else {
+                // 방법 2: <label> 태그 클릭
+                var label = cb.closest('label');
+                if (label) {
+                    console.log('[ETA] Clicking <label> tag');
+                    label.click();
+                } else {
+                    // 방법 3: input 직접 클릭
+                    console.log('[ETA] Clicking <input> directly');
+                    cb.click();
+                }
             }
+            
+            // 모든 경우에 속성과 이벤트도 명시적으로 설정
+            cb.checked = true;
+            cb.dispatchEvent(new Event('change', {bubbles:true}));
+            cb.dispatchEvent(new Event('input', {bubbles:true}));
+            cb.dispatchEvent(new Event('click', {bubbles:true}));
+            console.log('[ETA] Checkbox checked:', cb.checked);
         })");
-        await Task.Delay(400);
+        await Task.Delay(600);
 
         // 8. add_meas_no = "ETA DB 업데이트" 입력 후 Enter
         await Evaluate(@"(function(){
