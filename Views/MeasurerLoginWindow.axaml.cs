@@ -980,21 +980,42 @@ public partial class MeasurerLoginWindow : Window
         })()"));
         Log($"[전체DB] add_meas_no 입력 전: {inpBefore}");
         
-        await Evaluate(@"(function(){
-            var inps = Array.from(document.querySelectorAll('#add_meas_no'));
-            var inp = inps.find(function(x){ return !!x && x.offsetParent !== null; }) || inps[0] || null;
-            if (!inp) return;
-            inp.removeAttribute('disabled');
-            inp.disabled = false;
-            inp.focus();
-            inp.value = 'ETA DB 업데이트';
-            inp.dispatchEvent(new Event('input',  {bubbles:true}));
-            inp.dispatchEvent(new Event('change', {bubbles:true}));
-            inp.dispatchEvent(new KeyboardEvent('keydown',  {key:'Enter', code:'Enter', keyCode:13, bubbles:true}));
-            inp.dispatchEvent(new KeyboardEvent('keypress', {key:'Enter', code:'Enter', keyCode:13, bubbles:true}));
-            inp.dispatchEvent(new KeyboardEvent('keyup',    {key:'Enter', code:'Enter', keyCode:13, bubbles:true}));
-        })");
-        await Task.Delay(500);
+        try
+        {
+            string setResult = ExtractCdpStringValue(await Evaluate(@"(function(){
+                var inps = Array.from(document.querySelectorAll('#add_meas_no'));
+                var inp = inps.find(function(x){ return !!x && x.offsetParent !== null; }) || inps[0] || null;
+                if (!inp) return 'no_input';
+
+                inp.removeAttribute('disabled');
+                inp.disabled = false;
+                inp.readOnly = false;
+                inp.focus();
+
+                // 프레임워크 바인딩을 우회하지 않도록 native value setter 사용
+                var proto = Object.getPrototypeOf(inp);
+                var desc = Object.getOwnPropertyDescriptor(proto, 'value');
+                if (desc && typeof desc.set === 'function') desc.set.call(inp, 'ETA DB 업데이트');
+                else inp.value = 'ETA DB 업데이트';
+
+                inp.dispatchEvent(new Event('input', { bubbles:true }));
+                inp.dispatchEvent(new Event('change', { bubbles:true }));
+                inp.dispatchEvent(new Event('blur',  { bubbles:true }));
+
+                if (window.$) {
+                    try { window.$(inp).trigger('input').trigger('change').trigger('blur'); } catch(e) {}
+                }
+
+                return 'ok|disabled:' + inp.disabled + '|value:' + (inp.value || '(empty)');
+            })()"));
+            Log($"[전체DB] add_meas_no 설정 결과: {setResult}");
+        }
+        catch (Exception ex)
+        {
+            Log($"[전체DB] add_meas_no 설정 예외: {ex.Message}");
+        }
+
+        await Task.Delay(700);
         
         string inpAfter = ExtractCdpStringValue(await Evaluate(@"(function(){
             var inps = Array.from(document.querySelectorAll('#add_meas_no'));
