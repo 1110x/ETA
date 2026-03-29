@@ -1184,24 +1184,27 @@ public partial class MeasurerLoginWindow : Window
                 return vis || list[0];
             }
 
+            function modalVisible() {
+                var c = document.getElementById('add_meas_cont_no');
+                return !!(c && c.offsetParent !== null);
+            }
+
             var btn = pickVisibleButton();
             if (!btn) return 'NO_BTN';
 
             btn.scrollIntoView({ behavior: 'instant', block: 'center' });
             btn.focus();
 
-            btn.dispatchEvent(new MouseEvent('mousedown', { bubbles:true, cancelable:true, view:window }));
-            btn.dispatchEvent(new MouseEvent('mouseup',   { bubbles:true, cancelable:true, view:window }));
-            btn.dispatchEvent(new MouseEvent('click',     { bubbles:true, cancelable:true, view:window }));
+            // 중복 생성 방지: 기본은 1회 클릭, 모달이 그대로일 때만 1회 재시도
+            try { btn.click(); } catch(e) { return 'CLICK_ERR:' + e; }
 
-            // 핸들러가 native click에 의존하는 경우까지 보장
-            try { btn.click(); } catch(e) {}
-
-            if (window.$) {
-                try { window.$(btn).trigger('click'); } catch(e) {}
+            var retried = false;
+            if (modalVisible()) {
+                retried = true;
+                try { btn.click(); } catch(e2) {}
             }
 
-            return 'OK|text:' + ((btn.innerText || btn.textContent || '').replace(/\s+/g, ' ').trim()) + '|disabled:' + (!!btn.disabled);
+            return 'OK|text:' + ((btn.innerText || btn.textContent || '').replace(/\s+/g, ' ').trim()) + '|disabled:' + (!!btn.disabled) + '|retry:' + retried;
         })()"));
         Log($"[전체DB] insertFieldPlanBtn 클릭: {saveClickResult}");
 
