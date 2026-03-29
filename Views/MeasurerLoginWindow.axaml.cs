@@ -1106,14 +1106,38 @@ public partial class MeasurerLoginWindow : Window
         Log($"[전체DB] 다음 측정용도 선택: {nextPurposeResult}");
         await Task.Delay(500);
 
-        // 10. 저장 버튼 클릭
+        // 10. 저장 버튼 클릭 (보이는 버튼 기준으로 강제 클릭)
         Post("더미 계획서 저장 중...", "#bb88ff");
         await PollElementExistsAsync("insertFieldPlanBtn", 5000);
-        await Evaluate(@"(function(){
-            var btn = document.getElementById('insertFieldPlanBtn');
-            if (btn) btn.click();
-        })");
-        Log("[전체DB] insertFieldPlanBtn 클릭");
+        string saveClickResult = ExtractCdpStringValue(await Evaluate(@"(function(){
+            function pickVisibleButton() {
+                var list = Array.from(document.querySelectorAll('#insertFieldPlanBtn, button[name=""insertFieldPlanBtn""]'));
+                if (!list.length) return null;
+                var vis = list.find(function(b){ return !!b && b.offsetParent !== null && !b.disabled; });
+                return vis || list[0];
+            }
+
+            var btn = pickVisibleButton();
+            if (!btn) return 'NO_BTN';
+
+            btn.scrollIntoView({ behavior: 'instant', block: 'center' });
+            btn.focus();
+
+            btn.dispatchEvent(new MouseEvent('mousedown', { bubbles:true, cancelable:true, view:window }));
+            btn.dispatchEvent(new MouseEvent('mouseup',   { bubbles:true, cancelable:true, view:window }));
+            btn.dispatchEvent(new MouseEvent('click',     { bubbles:true, cancelable:true, view:window }));
+
+            // 핸들러가 native click에 의존하는 경우까지 보장
+            try { btn.click(); } catch(e) {}
+
+            if (window.$) {
+                try { window.$(btn).trigger('click'); } catch(e) {}
+            }
+
+            return 'OK|text:' + ((btn.innerText || btn.textContent || '').replace(/\s+/g, ' ').trim()) + '|disabled:' + (!!btn.disabled);
+        })()"));
+        Log($"[전체DB] insertFieldPlanBtn 클릭: {saveClickResult}");
+        await Task.Delay(400);
 
         // 11. 모달 닫힌 대기 — 모달이 완전히 닫혀야만 다음 진행
         Log("[전체DB] 모달 닫힘 대기 시작");
