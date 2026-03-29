@@ -906,6 +906,13 @@ public partial class MeasurerLoginWindow : Window
         // 7. meas_no_yn 체크박스 클릭 -> add_meas_no 활성화
         // HTML 구조: <label class="checkbox"><input type="checkbox" id="meas_no_yn"><i></i>측정번호 직접입력</label>
         Log("[전체DB] meas_no_yn 체크박스 활성화 시도");
+        string cbResultBefore = ExtractCdpStringValue(await Evaluate(@"(function(){
+            var cb = document.getElementById('meas_no_yn');
+            var inp = document.getElementById('add_meas_no');
+            return cb?.checked + '|' + (inp?.disabled || true);
+        })()"));
+        Log($"[전체DB] 체크박스 활성화 전: checked={cbResultBefore.Split('|')[0]}, add_meas_no.disabled={cbResultBefore.Split('|')[1]}");
+        
         await Evaluate(@"(function(){
             var cb = document.getElementById('meas_no_yn');
             if (!cb || cb.checked) return;
@@ -936,8 +943,22 @@ public partial class MeasurerLoginWindow : Window
             console.log('[ETA] Checkbox checked:', cb.checked);
         })");
         await Task.Delay(600);
+        
+        string cbResultAfter = ExtractCdpStringValue(await Evaluate(@"(function(){
+            var cb = document.getElementById('meas_no_yn');
+            var inp = document.getElementById('add_meas_no');
+            return cb?.checked + '|' + (inp?.disabled || true);
+        })()"));
+        Log($"[전체DB] 체크박스 활성화 후: checked={cbResultAfter.Split('|')[0]}, add_meas_no.disabled={cbResultAfter.Split('|')[1]}");
 
         // 8. add_meas_no = "ETA DB 업데이트" 입력 후 Enter
+        Log("[전체DB] add_meas_no 입력 시작");
+        string inpBefore = ExtractCdpStringValue(await Evaluate(@"(function(){
+            var inp = document.getElementById('add_meas_no');
+            return 'exists:' + !!inp + '|disabled:' + (inp?.disabled) + '|value:' + (inp?.value || '(empty)');
+        })()"));
+        Log($"[전체DB] add_meas_no 입력 전: {inpBefore}");
+        
         await Evaluate(@"(function(){
             var inp = document.getElementById('add_meas_no');
             if (!inp) return;
@@ -950,8 +971,13 @@ public partial class MeasurerLoginWindow : Window
             inp.dispatchEvent(new KeyboardEvent('keypress', {key:'Enter', code:'Enter', keyCode:13, bubbles:true}));
             inp.dispatchEvent(new KeyboardEvent('keyup',    {key:'Enter', code:'Enter', keyCode:13, bubbles:true}));
         })");
-        Log("[전체DB] add_meas_no 입력 Enter 발생");
-        await Task.Delay(400);
+        await Task.Delay(500);
+        
+        string inpAfter = ExtractCdpStringValue(await Evaluate(@"(function(){
+            var inp = document.getElementById('add_meas_no');
+            return 'exists:' + !!inp + '|disabled:' + (inp?.disabled) + '|value:' + (inp?.value || '(empty)');
+        })()"));
+        Log($"[전체DB] add_meas_no 입력 후: {inpAfter}");
 
         // 9. 저장 버튼 클릭
         Post("더미 계획서 저장 중...", "#bb88ff");
@@ -986,8 +1012,17 @@ public partial class MeasurerLoginWindow : Window
             })");
         }
         
-        // 모달 닫힌 후 추가 대기 (테이블 렌더링)
-        await Task.Delay(2500);
+        // 모달 닫힌 후 테이블 상태 확인
+        await Task.Delay(1000);
+        string tableInfo = ExtractCdpStringValue(await Evaluate(@"(function(){
+            var rows = Array.from(document.querySelectorAll('tr[role=""row""], tr.rg-data-row'));
+            var etaRows = rows.filter(r => (r.innerText || r.textContent || '').indexOf('ETA DB') >= 0);
+            return 'totalRows:' + rows.length + '|etaDbRows:' + etaRows.length;
+        })()"));
+        Log($"[전체DB] 테이블 상태 (모달 닫힌 직후): {tableInfo}");
+        
+        // 추가 대기 (테이블 렌더링)
+        await Task.Delay(1500);
         Log("[전체DB] 모달 닫힘 완료 - 테이블 렌더링 대기");
         
         // 테이블 스크롤 최상단으로 이동 (첫 행 보이게)
@@ -999,10 +1034,18 @@ public partial class MeasurerLoginWindow : Window
             if (firstRow) firstRow.scrollIntoView({behavior:'instant', block:'start'});
         })");
         await Task.Delay(800);
+        
+        string tableAfterScroll = ExtractCdpStringValue(await Evaluate(@"(function(){
+            var rows = Array.from(document.querySelectorAll('tr[role=""row""], tr.rg-data-row'));
+            var etaRows = rows.filter(r => (r.innerText || r.textContent || '').indexOf('ETA DB') >= 0);
+            return 'totalRows:' + rows.length + '|etaDbRows:' + etaRows.length;
+        })()"));
+        Log($"[전체DB] 테이블 상태 (스크롤 후): {tableAfterScroll}");
 
         // 11. 테이블에서 "ETA DB 업데이트" 행 더블클릭 (최대 6초 반복 탐색)
         // 체크박스 셀이 아닌 데이터 셀을 더블클릭해서 체크박스 토글 방지
         Post("테이블에서 ETA DB 업데이트 행 탐색 중...", "#bb88ff");
+        Log("[전체DB] 테이블 행 탐색 시작");
         string dblResult = "NOT_FOUND";
         for (int retry = 0; retry < 12; retry++) // 최대 6초 (500ms * 12회)
         {
@@ -1018,7 +1061,7 @@ public partial class MeasurerLoginWindow : Window
                     var row = rows[i];
                     var t = (row.innerText || row.textContent || '').trim();
                     if (t && t.indexOf('ETA DB') >= 0) {
-                        console.log('[ETA] Found at row', i);
+                        console.log('[ETA] Found at row', i, ':', t.slice(0,100));
                         
                         // 행 내에서 체크박스가 아닌 데이터 셀 찾기
                         var cells = Array.from(row.querySelectorAll('td, th, .rg-renderer, [role=""gridcell""]'));
@@ -1054,24 +1097,27 @@ public partial class MeasurerLoginWindow : Window
             
             if (!dblResult.StartsWith("NOT_FOUND")) 
             {
-                Log($"[전체DB] 행 탐색 성공 (시도 {retry + 1}/12): {dblResult}");
+                Log($"[전체DB] ✓ 행 탐색 성공 (시도 {retry + 1}/12): {dblResult}");
                 await Task.Delay(300); // 더블클릭 이벤트 처리 대기
                 break;
             }
             
-            if (retry < 11)
-            {
-                Log($"[전체DB] 행 탐색 시도 {retry + 1}/12");
-                await Task.Delay(500);
-            }
+            Log($"[전체DB] 행 탐색 시도 {retry + 1}/12: {dblResult}");
+            await Task.Delay(500);
         }
         
-        Log($"[전체DB] 행 더블클릭 최종: {dblResult}");
+        Log($"[전체DB] 행 더블클릭 최종 결과: {dblResult}");
 
         if (dblResult.StartsWith("NOT_FOUND"))
+        {
+            Log($"[전체DB] ✗ 실패: {dblResult}");
             Post($"'ETA DB 업데이트' 행을 찾지 못했습니다. ({dblResult})", "#ff6644");
+        }
         else
+        {
+            Log($"[전체DB] ✓ 성공: {dblResult}");
             Post($"더블클릭 완료: {dblResult}", "#88cc88");
+        }
     }
 
     // ── 채취지점 스크래핑: 계약 → 현장(cmb_emis_cmpy_plc_no) → 채취지점(add_emis_fac_no) ──
