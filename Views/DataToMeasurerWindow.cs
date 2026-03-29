@@ -744,18 +744,37 @@ public class DataToMeasurerWindow : Window
                     ).singleNodeValue;
                     if(!tbody) return JSON.stringify({{error:'noTbody'}});
                     var trs = Array.from(tbody.children).filter(function(n){{ return n && n.tagName==='TR' && n.querySelector('td:nth-child(4)') && n.querySelector('td:nth-child(6)'); }});
+                    function getCoords(tr){{
+                        var td6 = tr.querySelector('td:nth-child(6)');
+                        var td3 = tr.querySelector('td:nth-child(3)');
+                        td6.scrollIntoView({{block:'center',behavior:'instant'}});
+                        var r6 = td6.getBoundingClientRect();
+                        var r3 = td3 ? td3.getBoundingClientRect() : r6;
+                        return JSON.stringify({{x:r6.x+r6.width/2, y:r6.y+r6.height/2, cx:r3.x+r3.width/2, cy:r3.y+r3.height/2}});
+                    }}
+                    // 1순위: rowIndex로 직접 접근
+                    if({rowIndex} < trs.length){{
+                        var td4ri = trs[{rowIndex}].querySelector('td:nth-child(4) div') || trs[{rowIndex}].querySelector('td:nth-child(4)');
+                        var labelri = norm((td4ri.innerText||td4ri.textContent||'').trim());
+                        if(labelri===target) return getCoords(trs[{rowIndex}]);
+                    }}
+                    // 2순위: 정확히 일치하는 행 검색
                     for(var i=0; i<trs.length; i++){{
                         var td4 = trs[i].querySelector('td:nth-child(4) div') || trs[i].querySelector('td:nth-child(4)');
                         var label = norm((td4.innerText||td4.textContent||'').trim());
-                        if(label===target || label.indexOf(target)>=0 || target.indexOf(label)>=0){{
-                            var td6 = trs[i].querySelector('td:nth-child(6)');
-                            var td3 = trs[i].querySelector('td:nth-child(3)');
-                            td6.scrollIntoView({{block:'center',behavior:'instant'}});
-                            var r6 = td6.getBoundingClientRect();
-                            var r3 = td3 ? td3.getBoundingClientRect() : r6;
-                            return JSON.stringify({{x:r6.x+r6.width/2, y:r6.y+r6.height/2, cx:r3.x+r3.width/2, cy:r3.y+r3.height/2}});
+                        if(label===target) return getCoords(trs[i]);
+                    }}
+                    // 3순위: 부분문자열 매칭 (길이가 긴 쪽 우선)
+                    var best = null, bestLen = 0;
+                    for(var i=0; i<trs.length; i++){{
+                        var td4 = trs[i].querySelector('td:nth-child(4) div') || trs[i].querySelector('td:nth-child(4)');
+                        var label = norm((td4.innerText||td4.textContent||'').trim());
+                        if(label.indexOf(target)>=0 || target.indexOf(label)>=0){{
+                            var ml = Math.min(label.length, target.length);
+                            if(ml > bestLen){{ best = trs[i]; bestLen = ml; }}
                         }}
                     }}
+                    if(best) return getCoords(best);
                     return JSON.stringify({{error:'notFound'}});
                 }})()";
 
@@ -763,7 +782,6 @@ public class DataToMeasurerWindow : Window
                 try
                 {
                     string coordJson = await JsEvalAsync(getCoordsJs);
-                    await Task.Delay(30, cts.Token); // scrollIntoView 안정화
                     using var cDoc = JsonDocument.Parse(coordJson);
                     if (cDoc.RootElement.TryGetProperty("error", out _))
                     {
@@ -782,7 +800,7 @@ public class DataToMeasurerWindow : Window
                 {
                     // 1) CDP 더블클릭으로 셀 편집모드 진입
                     await CdpDoubleClickAsync(x, y);
-                    await Task.Delay(150, cts.Token);
+                    await Task.Delay(30, cts.Token);
 
                     // 2) Ctrl+A (기존 텍스트 전체 선택)
                     await CdpSendAsync("Input.dispatchKeyEvent",
@@ -794,13 +812,12 @@ public class DataToMeasurerWindow : Window
 
                     // 3) Input.insertText: isTrusted=true 텍스트 입력
                     await CdpSendAsync("Input.insertText", new { text = value });
-                    await Task.Delay(50, cts.Token);
 
                     // 4) 같은 행 td[3] 클릭으로 에디터 커밋 (값 확정)
                     if (commitX > 0 && commitY > 0)
                     {
                         await CdpClickAsync(commitX, commitY);
-                        await Task.Delay(100, cts.Token);
+                        await Task.Delay(30, cts.Token);
                     }
 
                     filled++;

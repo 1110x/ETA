@@ -25143,3 +25143,350 @@ LogHost: Initializing to normal mode (.cctor)
 [WindowPositionManager] 저장: Mode_TestReport - Window:(920,136) 1600x900, Content2Star=8, Content4Star=2, UpperStar=8.5, LowerStar=1.5, LeftPanelWidth=559
 [MainPage] 저장: Mode_TestReport - Window:(920,136) 1600x900, Content2Star=8, Content4Star=2, UpperStar=8.5, LowerStar=1.5, LeftPanelWidth=559
 ========== ETA 종료 2026-03-30 01:10:00 ==========
+========== ETA 시작 2026-03-30 01:10:10 ==========
+LogHost: Initializing to normal mode (.cctor)
+[WindowPositionManager] 사용자: azrael, 로그 경로: /Users/azrael/Library/Application Support/ETA/Users/azrael/PageHW.log
+[WindowPositionManager] 로드됨: 4개 레이아웃
+[MainPage] Opened 이벤트
+[TestReport] 메타 67개
+[01:10:17] ContentChange: Show1 = TestReportPage
+[01:10:17] ContentChange: Show2 = null
+[01:10:17] ContentChange: Show3 = null
+[01:10:18] ContentChange: Show4 = ReportsPanel
+[WindowPositionManager] 조회: Mode_TestReport - Window:(920,136) 1600x900, Content2Star=8, Content4Star=2, UpperStar=8.5, LowerStar=1.5, LeftPanelWidth=559
+[MainPage] 복원: Mode_TestReport - Window:(920,136) 1600x900, Content2Star=8, Content4Star=2, UpperStar=8.5, LowerStar=1.5, LeftPanelWidth=559
+[01:10:18] [TestReport] LoadData() 시작
+[01:10:18] ContentChange: Show2 = Grid
+[01:10:18] ContentChange: Show3 = null
+[TestReport] 업체 27개
+[01:10:18] [TestReport] 업체 27개
+[TestReport] 분석항목 114개
+[TestReport] DL → 23건
+[TestReport] 분석항목 114개
+[TestReport] GS → 379건
+[TestReport] 분석항목 114개
+[TestReport] LG생명과학 → 12건
+[TestReport] 분석항목 114개
+[TestReport] 고흥나로우주 → 20건
+[TestReport] 분석항목 114개
+[TestReport] 국도화학 → 6건
+[TestReport] 분석항목 114개
+[TestReport] 금호 → 54건
+[TestReport] 분석항목 114개
+[TestReport] 롯데첨단소재 → 42건
+[TestReport] 분석항목 114개
+[TestReport] 머티리얼즈 → 26건
+[TestReport] 분석항목 114개
+[TestReport] 보임 → 12건
+[TestReport] 분석항목 114개
+[TestReport] 산하 → 3건
+[TestReport] 분석항목 114개
+[TestReport] 심텍 → 43건
+[TestReport] 분석항목 114개
+[TestReport] 심텍(오창2지점) → 15건
+[TestReport] 분석항목 114개
+[TestReport] 심텍(오창3지점) → 8건
+[TestReport] 분석항목 114개
+[TestReport] 심텍(오창지점) → 8건
+[TestReport] 분석항목 114개
+[TestReport] 에코랩스 → 12건
+[TestReport] 분석항목 114개
+[TestReport] 에코원 → 4건
+[TestReport] 분석항목 114개
+[TestReport] 에코융합 → 2건
+[TestReport] 분석항목 114개
+[TestReport] 엠시시 → 18건
+[TestReport] 분석항목 114개
+[TestReport] 용성 → 612건
+[TestReport] 분석항목 114개
+[TestReport] 적량 → 233건
+[TestReport] 분석항목 114개
+[TestReport] 포스코리튬 → 12건
+[TestReport] 분석항목 114개
+[TestReport] 필바라 → 235건
+[TestReport] 분석항목 114개
+[TestReport] 한세 → 8건
+[TestReport] 분석항목 114개
+[TestReport] 한화 → 144건
+[TestReport] 분석항목 114개
+[TestReport] 호남 → 250건
+[TestReport] 분석항목 114개
+[TestReport] 화치 → 1079건
+[TestReport] 분석항목 114개
+[TestReport] 확장 → 404건
+[측정인] === 로그인 완료, 폴링 시작 (UserId=ironuk@emc-env.com) ===
+[DataToMeasurer] LoadData 시작, _sourceSample=null
+[DataToMeasurer] 메타 67개 로드
+[01:10:35] ContentChange: Show2 = Grid
+[01:10:35] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[DataToMeasurer] LoadData 시작, _sourceSample=#W1 (제1폐수처리장/유입수)
+[DataToMeasurer] 메타 67개 로드
+[DataToMeasurer] 분석결과 항목 수: 65
+[01:10:36] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[01:10:36] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[DataToMeasurer] managers 114개, stdDays 114개
+[DataToMeasurer] 65건 로드
+[DataToMeasurer] h2=20260328-163402 #W1 (제1폐수처리장/유입수) / 수질 / 2026-03-29 / 지에스칼텍스(주) 여수공장 / #W1 (제1폐수처리장/유입수), 업체유사=0%, 시료유사=100%
+[MainPage] Closing 이벤트 - 현재 모드 레이아웃 저장
+[WindowPositionManager] 저장 완료: /Users/azrael/Library/Application Support/ETA/Users/azrael/PageHW.log
+[WindowPositionManager] 저장: Mode_TestReport - Window:(920,136) 1600x900, Content2Star=8, Content4Star=2, UpperStar=8.5, LowerStar=1.5, LeftPanelWidth=559
+[MainPage] 저장: Mode_TestReport - Window:(920,136) 1600x900, Content2Star=8, Content4Star=2, UpperStar=8.5, LowerStar=1.5, LeftPanelWidth=559
+========== ETA 종료 2026-03-30 01:15:10 ==========
+========== ETA 시작 2026-03-30 01:15:14 ==========
+LogHost: Initializing to normal mode (.cctor)
+[WindowPositionManager] 사용자: azrael, 로그 경로: /Users/azrael/Library/Application Support/ETA/Users/azrael/PageHW.log
+[WindowPositionManager] 로드됨: 4개 레이아웃
+[MainPage] Opened 이벤트
+[TestReport] 메타 67개
+[01:15:19] ContentChange: Show1 = TestReportPage
+[01:15:19] ContentChange: Show2 = null
+[01:15:19] ContentChange: Show3 = null
+[01:15:19] ContentChange: Show4 = ReportsPanel
+[WindowPositionManager] 조회: Mode_TestReport - Window:(920,136) 1600x900, Content2Star=8, Content4Star=2, UpperStar=8.5, LowerStar=1.5, LeftPanelWidth=559
+[MainPage] 복원: Mode_TestReport - Window:(920,136) 1600x900, Content2Star=8, Content4Star=2, UpperStar=8.5, LowerStar=1.5, LeftPanelWidth=559
+[01:15:19] [TestReport] LoadData() 시작
+[01:15:19] ContentChange: Show2 = Grid
+[01:15:19] ContentChange: Show3 = null
+[TestReport] 업체 27개
+[01:15:19] [TestReport] 업체 27개
+[TestReport] 분석항목 114개
+[TestReport] DL → 23건
+[TestReport] 분석항목 114개
+[TestReport] GS → 379건
+[TestReport] 분석항목 114개
+[TestReport] LG생명과학 → 12건
+[TestReport] 분석항목 114개
+[TestReport] 고흥나로우주 → 20건
+[TestReport] 분석항목 114개
+[TestReport] 국도화학 → 6건
+[TestReport] 분석항목 114개
+[TestReport] 금호 → 54건
+[TestReport] 분석항목 114개
+[TestReport] 롯데첨단소재 → 42건
+[TestReport] 분석항목 114개
+[TestReport] 머티리얼즈 → 26건
+[TestReport] 분석항목 114개
+[TestReport] 보임 → 12건
+[TestReport] 분석항목 114개
+[TestReport] 산하 → 3건
+[TestReport] 분석항목 114개
+[TestReport] 심텍 → 43건
+[TestReport] 분석항목 114개
+[TestReport] 심텍(오창2지점) → 15건
+[TestReport] 분석항목 114개
+[TestReport] 심텍(오창3지점) → 8건
+[TestReport] 분석항목 114개
+[TestReport] 심텍(오창지점) → 8건
+[TestReport] 분석항목 114개
+[TestReport] 에코랩스 → 12건
+[TestReport] 분석항목 114개
+[TestReport] 에코원 → 4건
+[TestReport] 분석항목 114개
+[TestReport] 에코융합 → 2건
+[TestReport] 분석항목 114개
+[TestReport] 엠시시 → 18건
+[TestReport] 분석항목 114개
+[TestReport] 용성 → 612건
+[TestReport] 분석항목 114개
+[TestReport] 적량 → 233건
+[TestReport] 분석항목 114개
+[TestReport] 포스코리튬 → 12건
+[TestReport] 분석항목 114개
+[TestReport] 필바라 → 235건
+[TestReport] 분석항목 114개
+[TestReport] 한세 → 8건
+[TestReport] 분석항목 114개
+[TestReport] 한화 → 144건
+[TestReport] 분석항목 114개
+[TestReport] 호남 → 250건
+[TestReport] 분석항목 114개
+[TestReport] 화치 → 1079건
+[TestReport] 분석항목 114개
+[TestReport] 확장 → 404건
+[01:15:22] ContentChange: Show2 = Grid
+[01:15:22] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[측정인] === 로그인 완료, 폴링 시작 (UserId=ironuk@emc-env.com) ===
+[01:15:37] ContentChange: Show2 = Grid
+[01:15:37] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[DataToMeasurer] LoadData 시작, _sourceSample=#W1 (제1폐수처리장/유입수)
+[DataToMeasurer] 메타 67개 로드
+[DataToMeasurer] 분석결과 항목 수: 65
+[01:15:38] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[01:15:38] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[DataToMeasurer] managers 114개, stdDays 114개
+[DataToMeasurer] 65건 로드
+[DataToMeasurer] h2=20260328-163402 #W1 (제1폐수처리장/유입수) / 수질 / 2026-03-29 / 지에스칼텍스(주) 여수공장 / #W1 (제1폐수처리장/유입수), 업체유사=0%, 시료유사=100%
+[MainPage] Closing 이벤트 - 현재 모드 레이아웃 저장
+[WindowPositionManager] 저장 완료: /Users/azrael/Library/Application Support/ETA/Users/azrael/PageHW.log
+[WindowPositionManager] 저장: Mode_TestReport - Window:(920,136) 1600x900, Content2Star=8, Content4Star=2, UpperStar=8.5, LowerStar=1.5, LeftPanelWidth=559
+[MainPage] 저장: Mode_TestReport - Window:(920,136) 1600x900, Content2Star=8, Content4Star=2, UpperStar=8.5, LowerStar=1.5, LeftPanelWidth=559
+========== ETA 종료 2026-03-30 01:17:24 ==========
+========== ETA 시작 2026-03-30 01:17:28 ==========
+LogHost: Initializing to normal mode (.cctor)
+[WindowPositionManager] 사용자: azrael, 로그 경로: /Users/azrael/Library/Application Support/ETA/Users/azrael/PageHW.log
+[WindowPositionManager] 로드됨: 4개 레이아웃
+[MainPage] Opened 이벤트
+[TestReport] 메타 67개
+[01:17:34] ContentChange: Show1 = TestReportPage
+[01:17:34] ContentChange: Show2 = null
+[01:17:34] ContentChange: Show3 = null
+[01:17:34] ContentChange: Show4 = ReportsPanel
+[WindowPositionManager] 조회: Mode_TestReport - Window:(920,136) 1600x900, Content2Star=8, Content4Star=2, UpperStar=8.5, LowerStar=1.5, LeftPanelWidth=559
+[MainPage] 복원: Mode_TestReport - Window:(920,136) 1600x900, Content2Star=8, Content4Star=2, UpperStar=8.5, LowerStar=1.5, LeftPanelWidth=559
+[01:17:34] [TestReport] LoadData() 시작
+[01:17:34] ContentChange: Show2 = Grid
+[01:17:34] ContentChange: Show3 = null
+[TestReport] 업체 27개
+[01:17:34] [TestReport] 업체 27개
+[TestReport] 분석항목 114개
+[TestReport] DL → 23건
+[TestReport] 분석항목 114개
+[TestReport] GS → 379건
+[TestReport] 분석항목 114개
+[TestReport] LG생명과학 → 12건
+[TestReport] 분석항목 114개
+[TestReport] 고흥나로우주 → 20건
+[TestReport] 분석항목 114개
+[TestReport] 국도화학 → 6건
+[TestReport] 분석항목 114개
+[TestReport] 금호 → 54건
+[TestReport] 분석항목 114개
+[TestReport] 롯데첨단소재 → 42건
+[TestReport] 분석항목 114개
+[TestReport] 머티리얼즈 → 26건
+[TestReport] 분석항목 114개
+[TestReport] 보임 → 12건
+[TestReport] 분석항목 114개
+[TestReport] 산하 → 3건
+[TestReport] 분석항목 114개
+[TestReport] 심텍 → 43건
+[TestReport] 분석항목 114개
+[TestReport] 심텍(오창2지점) → 15건
+[TestReport] 분석항목 114개
+[TestReport] 심텍(오창3지점) → 8건
+[TestReport] 분석항목 114개
+[TestReport] 심텍(오창지점) → 8건
+[TestReport] 분석항목 114개
+[TestReport] 에코랩스 → 12건
+[TestReport] 분석항목 114개
+[TestReport] 에코원 → 4건
+[TestReport] 분석항목 114개
+[TestReport] 에코융합 → 2건
+[TestReport] 분석항목 114개
+[TestReport] 엠시시 → 18건
+[TestReport] 분석항목 114개
+[TestReport] 용성 → 612건
+[TestReport] 분석항목 114개
+[TestReport] 적량 → 233건
+[TestReport] 분석항목 114개
+[TestReport] 포스코리튬 → 12건
+[TestReport] 분석항목 114개
+[TestReport] 필바라 → 235건
+[TestReport] 분석항목 114개
+[TestReport] 한세 → 8건
+[TestReport] 분석항목 114개
+[TestReport] 한화 → 144건
+[TestReport] 분석항목 114개
+[TestReport] 호남 → 250건
+[TestReport] 분석항목 114개
+[TestReport] 화치 → 1079건
+[TestReport] 분석항목 114개
+[TestReport] 확장 → 404건
+[01:17:37] ContentChange: Show2 = Grid
+[01:17:37] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[측정인] === 로그인 완료, 폴링 시작 (UserId=ironuk@emc-env.com) ===
+[DataToMeasurer] LoadData 시작, _sourceSample=#W1 (제1폐수처리장/유입수)
+[DataToMeasurer] 메타 67개 로드
+[DataToMeasurer] 분석결과 항목 수: 65
+[01:17:49] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[01:17:49] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[DataToMeasurer] managers 114개, stdDays 114개
+[DataToMeasurer] 65건 로드
+[DataToMeasurer] h2=20260328-163402 #W1 (제1폐수처리장/유입수) / 수질 / 2026-03-29 / 지에스칼텍스(주) 여수공장 / #W1 (제1폐수처리장/유입수), 업체유사=0%, 시료유사=100%
+[MainPage] Closing 이벤트 - 현재 모드 레이아웃 저장
+[WindowPositionManager] 저장 완료: /Users/azrael/Library/Application Support/ETA/Users/azrael/PageHW.log
+[WindowPositionManager] 저장: Mode_TestReport - Window:(920,136) 1600x900, Content2Star=8, Content4Star=2, UpperStar=8.5, LowerStar=1.5, LeftPanelWidth=559
+[MainPage] 저장: Mode_TestReport - Window:(920,136) 1600x900, Content2Star=8, Content4Star=2, UpperStar=8.5, LowerStar=1.5, LeftPanelWidth=559
+========== ETA 종료 2026-03-30 01:18:31 ==========
+========== ETA 시작 2026-03-30 01:18:56 ==========
+LogHost: Initializing to normal mode (.cctor)
+[WindowPositionManager] 사용자: azrael, 로그 경로: /Users/azrael/Library/Application Support/ETA/Users/azrael/PageHW.log
+[WindowPositionManager] 로드됨: 4개 레이아웃
+[MainPage] Opened 이벤트
+[TestReport] 메타 67개
+[01:19:04] ContentChange: Show1 = TestReportPage
+[01:19:04] ContentChange: Show2 = null
+[01:19:04] ContentChange: Show3 = null
+[01:19:04] ContentChange: Show4 = ReportsPanel
+[WindowPositionManager] 조회: Mode_TestReport - Window:(920,136) 1600x900, Content2Star=8, Content4Star=2, UpperStar=8.5, LowerStar=1.5, LeftPanelWidth=559
+[MainPage] 복원: Mode_TestReport - Window:(920,136) 1600x900, Content2Star=8, Content4Star=2, UpperStar=8.5, LowerStar=1.5, LeftPanelWidth=559
+[01:19:05] [TestReport] LoadData() 시작
+[01:19:05] ContentChange: Show2 = Grid
+[01:19:05] ContentChange: Show3 = null
+[TestReport] 업체 27개
+[01:19:05] [TestReport] 업체 27개
+[TestReport] 분석항목 114개
+[TestReport] DL → 23건
+[TestReport] 분석항목 114개
+[TestReport] GS → 379건
+[TestReport] 분석항목 114개
+[TestReport] LG생명과학 → 12건
+[TestReport] 분석항목 114개
+[TestReport] 고흥나로우주 → 20건
+[TestReport] 분석항목 114개
+[TestReport] 국도화학 → 6건
+[TestReport] 분석항목 114개
+[TestReport] 금호 → 54건
+[TestReport] 분석항목 114개
+[TestReport] 롯데첨단소재 → 42건
+[TestReport] 분석항목 114개
+[TestReport] 머티리얼즈 → 26건
+[TestReport] 분석항목 114개
+[TestReport] 보임 → 12건
+[TestReport] 분석항목 114개
+[TestReport] 산하 → 3건
+[TestReport] 분석항목 114개
+[TestReport] 심텍 → 43건
+[TestReport] 분석항목 114개
+[TestReport] 심텍(오창2지점) → 15건
+[TestReport] 분석항목 114개
+[TestReport] 심텍(오창3지점) → 8건
+[TestReport] 분석항목 114개
+[TestReport] 심텍(오창지점) → 8건
+[TestReport] 분석항목 114개
+[TestReport] 에코랩스 → 12건
+[TestReport] 분석항목 114개
+[TestReport] 에코원 → 4건
+[TestReport] 분석항목 114개
+[TestReport] 에코융합 → 2건
+[TestReport] 분석항목 114개
+[TestReport] 엠시시 → 18건
+[TestReport] 분석항목 114개
+[TestReport] 용성 → 612건
+[TestReport] 분석항목 114개
+[TestReport] 적량 → 233건
+[TestReport] 분석항목 114개
+[TestReport] 포스코리튬 → 12건
+[TestReport] 분석항목 114개
+[TestReport] 필바라 → 235건
+[TestReport] 분석항목 114개
+[TestReport] 한세 → 8건
+[TestReport] 분석항목 114개
+[TestReport] 한화 → 144건
+[TestReport] 분석항목 114개
+[TestReport] 호남 → 250건
+[TestReport] 분석항목 114개
+[TestReport] 화치 → 1079건
+[TestReport] 분석항목 114개
+[TestReport] 확장 → 404건
+[01:19:09] ContentChange: Show2 = Grid
+[01:19:09] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[측정인] === 로그인 완료, 폴링 시작 (UserId=ironuk@emc-env.com) ===
+[DataToMeasurer] LoadData 시작, _sourceSample=#W1 (제1폐수처리장/유입수)
+[DataToMeasurer] 메타 67개 로드
+[DataToMeasurer] 분석결과 항목 수: 65
+[01:19:27] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[01:19:27] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[DataToMeasurer] managers 114개, stdDays 114개
+[DataToMeasurer] 65건 로드
+[DataToMeasurer] h2=20260328-163402 #W1 (제1폐수처리장/유입수) / 수질 / 2026-03-29 / 지에스칼텍스(주) 여수공장 / #W1 (제1폐수처리장/유입수), 업체유사=0%, 시료유사=100%
