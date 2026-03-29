@@ -904,65 +904,88 @@ public partial class MeasurerLoginWindow : Window
         await Task.Delay(400);
 
         // 7. meas_no_yn 체크박스 클릭 -> add_meas_no 활성화
-        // HTML 구조: <label class="checkbox"><input type="checkbox" id="meas_no_yn"><i></i>측정번호 직접입력</label>
+        // 동일 id가 숨김 템플릿에도 존재할 수 있어, 반드시 '보이는 요소'를 대상으로 처리
         Log("[전체DB] meas_no_yn 체크박스 활성화 시도");
         string cbResultBefore = ExtractCdpStringValue(await Evaluate(@"(function(){
-            var cb = document.getElementById('meas_no_yn');
-            var inp = document.getElementById('add_meas_no');
-            return cb?.checked + '|' + (inp?.disabled || true);
+            var cbs = Array.from(document.querySelectorAll('#meas_no_yn'));
+            var cb = cbs.find(function(x){ return !!x && x.offsetParent !== null; }) || cbs[0] || null;
+            var inps = Array.from(document.querySelectorAll('#add_meas_no'));
+            var inp = inps.find(function(x){ return !!x && x.offsetParent !== null; }) || inps[0] || null;
+            if (!cb) return 'cb_not_found';
+            return cb.checked + '|' + (cb.disabled || false) + '|' + (inp?.disabled ?? true) + '|cbCount:' + cbs.length + '|inpCount:' + inps.length;
         })()"));
-        Log($"[전체DB] 체크박스 활성화 전: checked={cbResultBefore.Split('|')[0]}, add_meas_no.disabled={cbResultBefore.Split('|')[1]}");
-        
-        await Evaluate(@"(function(){
-            var cb = document.getElementById('meas_no_yn');
-            if (!cb || cb.checked) return;
-            
-            // 방법 1: <i> 태그 클릭 (체크박스 스타일을 위한 <i> 요소)
-            var iTag = cb.parentElement?.querySelector('i');
-            if (iTag) {
-                console.log('[ETA] Clicking <i> tag');
-                iTag.click();
-            } else {
-                // 방법 2: <label> 태그 클릭
+        Log($"[전체DB] 체크박스 활성화 전: {cbResultBefore}");
+
+        string cbApplyResult = ExtractCdpStringValue(await Evaluate(@"(function(){
+            var cbs = Array.from(document.querySelectorAll('#meas_no_yn'));
+            var cb = cbs.find(function(x){ return !!x && x.offsetParent !== null; }) || cbs[0] || null;
+            var inps = Array.from(document.querySelectorAll('#add_meas_no'));
+            var inp = inps.find(function(x){ return !!x && x.offsetParent !== null; }) || inps[0] || null;
+            if (!cb) return 'cb_not_found';
+
+            for (var n = 0; n < 5; n++) {
+                if (cb.checked) break;
+
                 var label = cb.closest('label');
-                if (label) {
-                    console.log('[ETA] Clicking <label> tag');
-                    label.click();
-                } else {
-                    // 방법 3: input 직접 클릭
-                    console.log('[ETA] Clicking <input> directly');
-                    cb.click();
+                var iTag = label ? label.querySelector('i') : null;
+
+                if (iTag) {
+                    iTag.dispatchEvent(new MouseEvent('mousedown', { bubbles:true, cancelable:true, view:window }));
+                    iTag.dispatchEvent(new MouseEvent('mouseup',   { bubbles:true, cancelable:true, view:window }));
+                    iTag.dispatchEvent(new MouseEvent('click',     { bubbles:true, cancelable:true, view:window }));
                 }
+                if (!cb.checked && label) {
+                    label.dispatchEvent(new MouseEvent('click', { bubbles:true, cancelable:true, view:window }));
+                }
+                if (!cb.checked) {
+                    cb.dispatchEvent(new MouseEvent('click', { bubbles:true, cancelable:true, view:window }));
+                }
+                if (!cb.checked) {
+                    cb.checked = true;
+                }
+
+                cb.dispatchEvent(new Event('input', { bubbles:true }));
+                cb.dispatchEvent(new Event('change', { bubbles:true }));
             }
-            
-            // 모든 경우에 속성과 이벤트도 명시적으로 설정
-            cb.checked = true;
-            cb.dispatchEvent(new Event('change', {bubbles:true}));
-            cb.dispatchEvent(new Event('input', {bubbles:true}));
-            cb.dispatchEvent(new Event('click', {bubbles:true}));
-            console.log('[ETA] Checkbox checked:', cb.checked);
-        })");
-        await Task.Delay(600);
-        
-        string cbResultAfter = ExtractCdpStringValue(await Evaluate(@"(function(){
-            var cb = document.getElementById('meas_no_yn');
-            var inp = document.getElementById('add_meas_no');
-            return cb?.checked + '|' + (inp?.disabled || true);
+
+            if (inp) {
+                inp.removeAttribute('disabled');
+                inp.disabled = false;
+                inp.dispatchEvent(new Event('input', { bubbles:true }));
+                inp.dispatchEvent(new Event('change', { bubbles:true }));
+            }
+
+            return 'checked:' + cb.checked + '|cbDisabled:' + cb.disabled + '|inpDisabled:' + (inp?.disabled ?? true);
         })()"));
-        Log($"[전체DB] 체크박스 활성화 후: checked={cbResultAfter.Split('|')[0]}, add_meas_no.disabled={cbResultAfter.Split('|')[1]}");
+        Log($"[전체DB] 체크박스 적용 결과: {cbApplyResult}");
+
+        await Task.Delay(800);
+
+        string cbResultAfter = ExtractCdpStringValue(await Evaluate(@"(function(){
+            var cbs = Array.from(document.querySelectorAll('#meas_no_yn'));
+            var cb = cbs.find(function(x){ return !!x && x.offsetParent !== null; }) || cbs[0] || null;
+            var inps = Array.from(document.querySelectorAll('#add_meas_no'));
+            var inp = inps.find(function(x){ return !!x && x.offsetParent !== null; }) || inps[0] || null;
+            if (!cb) return 'cb_not_found';
+            return 'checked:' + cb.checked + '|cbDisabled:' + cb.disabled + '|inpDisabled:' + (inp?.disabled ?? true);
+        })()"));
+        Log($"[전체DB] 체크박스 활성화 후: {cbResultAfter}");
 
         // 8. add_meas_no = "ETA DB 업데이트" 입력 후 Enter
         Log("[전체DB] add_meas_no 입력 시작");
         string inpBefore = ExtractCdpStringValue(await Evaluate(@"(function(){
-            var inp = document.getElementById('add_meas_no');
+            var inps = Array.from(document.querySelectorAll('#add_meas_no'));
+            var inp = inps.find(function(x){ return !!x && x.offsetParent !== null; }) || inps[0] || null;
             return 'exists:' + !!inp + '|disabled:' + (inp?.disabled) + '|value:' + (inp?.value || '(empty)');
         })()"));
         Log($"[전체DB] add_meas_no 입력 전: {inpBefore}");
         
         await Evaluate(@"(function(){
-            var inp = document.getElementById('add_meas_no');
+            var inps = Array.from(document.querySelectorAll('#add_meas_no'));
+            var inp = inps.find(function(x){ return !!x && x.offsetParent !== null; }) || inps[0] || null;
             if (!inp) return;
             inp.removeAttribute('disabled');
+            inp.disabled = false;
             inp.focus();
             inp.value = 'ETA DB 업데이트';
             inp.dispatchEvent(new Event('input',  {bubbles:true}));
@@ -974,7 +997,8 @@ public partial class MeasurerLoginWindow : Window
         await Task.Delay(500);
         
         string inpAfter = ExtractCdpStringValue(await Evaluate(@"(function(){
-            var inp = document.getElementById('add_meas_no');
+            var inps = Array.from(document.querySelectorAll('#add_meas_no'));
+            var inp = inps.find(function(x){ return !!x && x.offsetParent !== null; }) || inps[0] || null;
             return 'exists:' + !!inp + '|disabled:' + (inp?.disabled) + '|value:' + (inp?.value || '(empty)');
         })()"));
         Log($"[전체DB] add_meas_no 입력 후: {inpAfter}");
@@ -1093,9 +1117,14 @@ public partial class MeasurerLoginWindow : Window
                     }
                 }
                 
-                return 'NOT_FOUND';\n            })()"""));
+                return 'NOT_FOUND';\n            })()"));
             
-            if (!dblResult.StartsWith("NOT_FOUND")) 
+            if (string.IsNullOrWhiteSpace(dblResult))
+            {
+                dblResult = "NOT_FOUND_EMPTY";
+            }
+
+            if (dblResult.StartsWith("OK_"))
             {
                 Log($"[전체DB] ✓ 행 탐색 성공 (시도 {retry + 1}/12): {dblResult}");
                 await Task.Delay(300); // 더블클릭 이벤트 처리 대기
