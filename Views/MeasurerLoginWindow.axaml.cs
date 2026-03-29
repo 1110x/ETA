@@ -1024,7 +1024,89 @@ public partial class MeasurerLoginWindow : Window
         })()"));
         Log($"[전체DB] add_meas_no 입력 후: {inpAfter}");
 
-        // 9. 저장 버튼 클릭
+        // 9. 다음 측정용도 선택 (필수값 누락 시 저장 실패/미반영 방지)
+        string nextPurposeResult = ExtractCdpStringValue(await Evaluate(@"(function(){
+            function chooseOption(sel) {
+                if (!sel || !sel.options || sel.options.length === 0) return 'NO_OPTION';
+
+                var chosen = -1;
+                for (var i = 0; i < sel.options.length; i++) {
+                    var t = (sel.options[i].text || '').trim();
+                    if (t.indexOf('자가측정') >= 0) { chosen = i; break; }
+                }
+                if (chosen < 0) {
+                    for (var j = 1; j < sel.options.length; j++) {
+                        if ((sel.options[j].value || '').trim() !== '') { chosen = j; break; }
+                    }
+                }
+                if (chosen < 0) {
+                    for (var k = 0; k < sel.options.length; k++) {
+                        if ((sel.options[k].value || '').trim() !== '') { chosen = k; break; }
+                    }
+                }
+                if (chosen < 0) return 'NO_VALID_OPTION';
+
+                sel.selectedIndex = chosen;
+                sel.dispatchEvent(new Event('input', { bubbles:true }));
+                sel.dispatchEvent(new Event('change', { bubbles:true }));
+                if (window.$) { try { window.$(sel).trigger('change'); } catch(e) {} }
+
+                var opt = sel.options[chosen];
+                return 'OK:' + (sel.id || sel.name || '(no-id)') + '|' + (opt.value || '') + '|' + ((opt.text || '').trim());
+            }
+
+            function findByLabelText() {
+                var nodes = Array.from(document.querySelectorAll('label, th, td, span, div'));
+                for (var i = 0; i < nodes.length; i++) {
+                    var txt = (nodes[i].innerText || nodes[i].textContent || '').replace(/\s+/g, ' ').trim();
+                    if (!txt || txt.indexOf('다음 측정용도') < 0) continue;
+
+                    var el = nodes[i];
+                    var container = el.closest('tr, .row, .form-group, .form-row, li, div') || el.parentElement;
+                    if (!container) continue;
+
+                    var sel = container.querySelector('select');
+                    if (sel) return sel;
+
+                    var siblingSel = (el.parentElement && el.parentElement.querySelector('select')) || null;
+                    if (siblingSel) return siblingSel;
+                }
+                return null;
+            }
+
+            var candidates = [];
+            var all = Array.from(document.querySelectorAll('select'));
+            for (var a = 0; a < all.length; a++) {
+                var s = all[a];
+                var key = ((s.id || '') + ' ' + (s.name || '') + ' ' + (s.className || '') + ' ' + (s.getAttribute('aria-label') || '')).toLowerCase();
+                if (key.indexOf('next') >= 0 || key.indexOf('nxt') >= 0 || key.indexOf('after') >= 0 ||
+                    key.indexOf('prp') >= 0 || key.indexOf('purpose') >= 0 || key.indexOf('meas_purp') >= 0 ||
+                    key.indexOf('용도') >= 0) {
+                    candidates.push(s);
+                }
+            }
+
+            // 우선 후보 중 보이는 요소
+            var visible = candidates.find(function(s){ return s && s.offsetParent !== null; }) || null;
+            if (visible) return chooseOption(visible);
+
+            // 라벨 텍스트 기반 탐색
+            var byLabel = findByLabelText();
+            if (byLabel) return chooseOption(byLabel);
+
+            // 마지막 fallback: 측정용도/용도 관련 select 중 첫 번째
+            var fallback = all.find(function(s){
+                var t = ((s.id || '') + ' ' + (s.name || '') + ' ' + (s.className || '')).toLowerCase();
+                return t.indexOf('meas') >= 0 && (t.indexOf('prp') >= 0 || t.indexOf('purpose') >= 0 || t.indexOf('용도') >= 0);
+            }) || null;
+
+            if (fallback) return chooseOption(fallback);
+            return 'NOT_FOUND';
+        })()"));
+        Log($"[전체DB] 다음 측정용도 선택: {nextPurposeResult}");
+        await Task.Delay(500);
+
+        // 10. 저장 버튼 클릭
         Post("더미 계획서 저장 중...", "#bb88ff");
         await PollElementExistsAsync("insertFieldPlanBtn", 5000);
         await Evaluate(@"(function(){
@@ -1033,7 +1115,7 @@ public partial class MeasurerLoginWindow : Window
         })");
         Log("[전체DB] insertFieldPlanBtn 클릭");
 
-        // 10. 모달 닫힌 대기 — 모달이 완전히 닫혀야만 다음 진행
+        // 11. 모달 닫힌 대기 — 모달이 완전히 닫혀야만 다음 진행
         Log("[전체DB] 모달 닫힘 대기 시작");
         bool modalClosed = false;
         for (int w = 0; w < 15000; w += 300)
@@ -1087,7 +1169,7 @@ public partial class MeasurerLoginWindow : Window
         })()"));
         Log($"[전체DB] 테이블 상태 (스크롤 후): {tableAfterScroll}");
 
-        // 11. 테이블에서 "ETA DB 업데이트" 행 더블클릭 (최대 6초 반복 탐색)
+        // 12. 테이블에서 "ETA DB 업데이트" 행 더블클릭 (최대 6초 반복 탐색)
         // 체크박스 셀이 아닌 데이터 셀을 더블클릭해서 체크박스 토글 방지
         Post("테이블에서 ETA DB 업데이트 행 탐색 중...", "#bb88ff");
         Log("[전체DB] 테이블 행 탐색 시작");
