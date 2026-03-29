@@ -809,3 +809,66 @@
 [01:12:03] [Contract] 로드 완료 → 32건
 [01:12:04] [Contract] LoadData() 시작
 [01:12:04] [Contract] 로드 완료 → 32건
+[03:15:13] [Contract] LoadData() 시작
+[03:15:13] [Contract] 로드 완료 → 32건
+[03:15:13] [Contract] LoadData() 시작
+[03:15:13] [Contract] 로드 완료 → 32건
+[03:15:18] [Contract] LoadData() 시작
+[03:15:18] [Contract] 로드 완료 → 32건
+[03:15:18] [Contract] LoadData() 시작
+[03:15:18] [Contract] 로드 완료 → 32건
+[03:15:26] [Contract] LoadData() 시작
+[03:15:26] [Contract] 로드 완료 → 32건
+[03:15:26] [Contract] LoadData() 시작
+[03:15:26] [Contract] 로드 완료 → 32건
+[03:19:55] [Contract] LoadData() 시작
+[03:19:55] [Contract] 로드 완료 → 32건
+[03:19:55] [Contract] LoadData() 시작
+[03:19:55] [Contract] 로드 완료 → 32건
+[03:19:56] [Contract] ✅ GetUnitPriceColumns → 11개 (컬럼 4부터 FS100~)
+[03:20:00] [Contract] ✅ 전체 단가 테이블 표시 완료 (12개 컬럼, 선택: FS25)
+[03:20:00] [Contract] 선택: ㈜LG화학 생명과학 익산공장
+[10:44:08] [Contract] LoadData() 시작
+[10:44:08] [Contract] 로드 완료 → 32건
+[10:44:08] [Contract] LoadData() 시작
+[10:44:08] [Contract] 로드 완료 → 32건
+[10:44:10] [Contract] ✅ GetUnitPriceColumns → 11개 (컬럼 4부터 FS100~)
+[10:44:10] [Contract] 선택: ㈜에어레인
+[10:44:11] [Contract] ✅ GetUnitPriceColumns → 11개 (컬럼 4부터 FS100~)
+[10:44:11] [Contract] 선택: ㈜LG화학 생명과학 익산공장
+[10:44:11] [Contract] ✅ GetUnitPriceColumns → 11개 (컬럼 4부터 FS100~)
+[10:44:11] [Contract] 선택: ㈜LG화학 여수-용성
+[10:44:12] [Contract] ✅ GetUnitPriceColumns → 11개 (컬럼 4부터 FS100~)
+[10:44:12] [Contract] 선택: ㈜LG화학 여수-적량
+[10:44:12] [Contract] ✅ GetUnitPriceColumns → 11개 (컬럼 4부터 FS100~)
+[10:44:12] [Contract] 선택: ㈜LG화학 여수-화치
+[10:44:13] [Contract] ✅ GetUnitPriceColumns → 11개 (컬럼 4부터 FS100~)
+[10:44:13] [Contract] 선택: ㈜LG화학 여수-확장
+[10:44:14] [Contract] ✅ GetUnitPriceColumns → 11개 (컬럼 4부터 FS100~)
+[10:44:14] [Contract] 선택: ㈜LG화학 여수-확장
+[10:44:15] [Contract] ✅ GetUnitPriceColumns → 11개 (컬럼 4부터 FS100~)
+[10:44:15] [Contract] 선택: 금호미쓰이화학㈜ 여수
+[10:44:16] [Contract] ✅ GetUnitPriceColumns → 11개 (컬럼 4부터 FS100~)
+[10:44:16] [Contract] 선택: 금호석유화학
+[10:44:16] [Contract] ✅ GetUnitPriceColumns → 11개 (컬럼 4부터 FS100~)
+[10:44:16] [Contract] 선택: 동서식품㈜
+[10:44:17] [Contract] ✅ GetUnitPriceColumns → 11개 (컬럼 4부터 FS100~)
+[10:44:17] [Contract] 선택: 디엘케미칼㈜ 여수
+[10:44:18] [Contract] ✅ GetUnitPriceColumns → 11개 (컬럼 4부터 FS100~)
+[10:44:18] [Contract] 선택: 롯데에너지머티리얼즈㈜
+[11:59:24] [Contract] LoadData() 시작
+[11:59:24] [Contract] 로드 완료 → 32건
+[11:59:24] [Contract] LoadData() 시작
+[11:59:24] [Contract] 로드 완료 → 32건
+[12:08:24] [Contract] LoadData() 시작
+[12:08:24] [Contract] 로드 완료 → 32건
+[12:08:24] [Contract] LoadData() 시작
+[12:08:24] [Contract] 로드 완료 → 32건
+[14:26:09] [Contract] LoadData() 시작
+[14:26:09] [Contract] 로드 완료 → 32건
+[14:26:09] [Contract] LoadData() 시작
+[14:26:09] [Contract] 로드 완료 → 32건
+[17:49:13] [Contract] LoadData() 시작
+[17:49:13] [Contract] 로드 완료 → 32건
+[17:49:13] [Contract] LoadData() 시작
+[17:49:13] [Contract] 로드 완료 → 32건

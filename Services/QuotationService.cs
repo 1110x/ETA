@@ -90,8 +90,8 @@ public static class QuotationService
         if (!TableExists(conn, "견적발행내역")) return list;
 
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"
-            SELECT _id,
+        cmd.CommandText = $@"
+            SELECT {DbConnectionFactory.RowId},
                    `견적발행일자`,
                    `업체명`,
                    `약칭`,
@@ -101,7 +101,7 @@ public static class QuotationService
                    `담당자`,
                    `합계 금액`
             FROM `견적발행내역`
-            ORDER BY `견적발행일자` DESC, _id DESC";
+            ORDER BY `견적발행일자` DESC, {DbConnectionFactory.RowId} DESC";
 
         using var r = cmd.ExecuteReader();
         while (r.Read())
@@ -138,7 +138,7 @@ public static class QuotationService
             WHERE `업체명` = @company
               AND `담당자` IS NOT NULL
               AND TRIM(`담당자`) != ''
-            ORDER BY `견적발행일자` DESC, _id DESC
+            ORDER BY `견적발행일자` DESC, {DbConnectionFactory.RowId} DESC
             LIMIT 1";
         cmd.Parameters.AddWithValue("@company", companyName);
 
@@ -166,7 +166,7 @@ public static class QuotationService
         if (!TableExists(conn, "견적발행내역")) return dict;
 
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"SELECT * FROM `견적발행내역` WHERE _id = @id LIMIT 1";
+        cmd.CommandText = $"SELECT * FROM `견적발행내역` WHERE {DbConnectionFactory.RowId} = @id LIMIT 1";
         cmd.Parameters.AddWithValue("@id", rowid);
 
         using var r = cmd.ExecuteReader();
@@ -199,6 +199,7 @@ public static class QuotationService
         // 분석단가 테이블에서 제외할 고정 컬럼
         var fixedCols = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
+            "_id", "id",
             "Analyte", "Category", "ES", "unit", "Unit", "Method", "방법",
             "비고", "Note", "단위", "분류",
         };
@@ -307,7 +308,7 @@ public static class QuotationService
         Log($"  고정컬럼 삽입 대상: {string.Join(", ", activeFix.Select(f => f.Col))}");
 
         // ── INSERT 쿼리 동적 생성 ────────────────────────────────────────
-        var colList   = activeFix.Select(f => $"\"{f.Col}\"").ToList();
+        var colList   = activeFix.Select(f => $"`{f.Col}`").ToList();
         var paramList = activeFix.Select(f => f.Param).ToList();
 
         foreach (var kv in validItems)
@@ -373,7 +374,7 @@ public static class QuotationService
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"DELETE FROM `견적발행내역` WHERE _id = @id";
+        cmd.CommandText = $"DELETE FROM `견적발행내역` WHERE {DbConnectionFactory.RowId} = @id";
         cmd.Parameters.AddWithValue("@id", rowid);
         return cmd.ExecuteNonQuery() > 0;
     }

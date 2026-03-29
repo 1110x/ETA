@@ -254,7 +254,6 @@
                         <MenuItem Header="계약업체"    Click="Contract_Click"/>
                         <MenuItem Header="견적/의뢰서" Click="Quotation_Click"/>
                         <MenuItem Header="시험성적서"  Click="TestReport_Click"/>
-                        <MenuItem Header="측정인"/>
                         <MenuItem Header="보수요청"    Click="Repair_Click"/>
                         <MenuItem Header="물품구매"    Click="Purchase_Click"/>
                         <MenuItem Header="테스트"/>
@@ -315,6 +314,7 @@
                 <Button x:Name="BT5" Content="항목5" Click="BT5_Click"/>
                 <Button x:Name="BT6" Content="항목6" Click="BT6_Click"/>
                 <Button x:Name="BT7" Content="항목7" Click="BT7_Click"/>
+                <Button x:Name="BT8" Content="항목8" Click="BT8_Click"/>
                 <Button x:Name="BT1110"/>
             </StackPanel>
 
@@ -335,7 +335,7 @@
                 <Border Grid.Column="0"
                         Background="{DynamicResource PanelBg}"
                         CornerRadius="6" Padding="16" Margin="0,0,1,0">
-                    <ContentControl x:Name="ActivePageContent1"
+                    <ContentControl x:Name="Show1"
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Stretch"
                                     HorizontalContentAlignment="Stretch"
@@ -370,7 +370,7 @@
                             <Border Grid.Column="0"
                                     Background="{DynamicResource PanelInnerBg}"
                                     CornerRadius="4" Padding="8" Margin="0,0,4,0">
-                                <ContentControl x:Name="ActivePageContent2"
+                                <ContentControl x:Name="Show2"
                                                 HorizontalAlignment="Stretch"
                                                 VerticalAlignment="Stretch"
                                                 HorizontalContentAlignment="Stretch"
@@ -396,7 +396,7 @@
                                     Grid.Column="2"
                                     Background="{DynamicResource PanelInnerBg}"
                                     CornerRadius="4" Padding="8" Margin="4,0,0,0">
-                                <ContentControl x:Name="ActivePageContent4"
+                                <ContentControl x:Name="Show4"
                                                 HorizontalAlignment="Stretch"
                                                 VerticalAlignment="Stretch"
                                                 HorizontalContentAlignment="Stretch"
@@ -425,7 +425,7 @@
                             CornerRadius="6" Padding="12">
                         <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                                       VerticalScrollBarVisibility="Auto">
-                            <ContentControl x:Name="ActivePageContent3"
+                            <ContentControl x:Name="Show3"
                                             HorizontalAlignment="Stretch"
                                             VerticalAlignment="Top"/>
                         </ScrollViewer>

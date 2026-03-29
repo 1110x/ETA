@@ -1,27 +1,30 @@
-System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation.
- ---> MySqlConnector.MySqlException (0x80004005): Unknown column 'rowid' in 'field list'
-   at MySqlConnector.Core.ServerSession.ReceiveReplyAsync(IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/Core/ServerSession.cs:line 1081
-   at MySqlConnector.Core.ResultSet.ReadResultSetHeaderAsync(IOBehavior ioBehavior) in /_/src/MySqlConnector/Core/ResultSet.cs:line 37
-   at MySqlConnector.MySqlDataReader.ActivateResultSet(CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlDataReader.cs:line 131
-   at MySqlConnector.MySqlDataReader.InitAsync(CommandListPosition commandListPosition, ICommandPayloadCreator payloadCreator, IDictionary`2 cachedProcedures, IMySqlCommand command, CommandBehavior behavior, Activity activity, IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlDataReader.cs:line 487
-   at MySqlConnector.Core.CommandExecutor.ExecuteReaderAsync(CommandListPosition commandListPosition, ICommandPayloadCreator payloadCreator, CommandBehavior behavior, Activity activity, IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/Core/CommandExecutor.cs:line 56
-   at MySqlConnector.MySqlCommand.ExecuteReaderAsync(CommandBehavior behavior, IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlCommand.cs:line 357
-   at MySqlConnector.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior) in /_/src/MySqlConnector/MySqlCommand.cs:line 290
-   at ETA.Services.QuotationService.GetAllIssues() in /Users/azrael/Documents/ETA/Services/QuotationService.cs:line 106
-   at ETA.Views.Pages.QuotationNewPanel..ctor() in /Users/azrael/Documents/ETA/Views/Pages/QuotationNewPanel.axaml.cs:line 51
-   at ETA.Views.MainPage.Quotation_Click(Object sender, RoutedEventArgs e) in /Users/azrael/Documents/ETA/Views/MainPage.axaml.cs:line 627
-   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
-   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
-   --- End of inner exception stack trace ---
-   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
-   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
-   at System.Delegate.DynamicInvokeImpl(Object[] args)
-   at Avalonia.Interactivity.EventRoute.RaiseEventImpl(RoutedEventArgs e)
-   at Avalonia.Interactivity.EventRoute.RaiseEvent(Interactive source, RoutedEventArgs e)
-   at Avalonia.Interactivity.Interactive.RaiseEvent(RoutedEventArgs e)
-   at Avalonia.Controls.MenuItem.Avalonia.Controls.IMenuItem.RaiseClick()
-   at Avalonia.Controls.Platform.DefaultMenuInteractionHandler.Click(IMenuItem item)
-   at Avalonia.Controls.Platform.DefaultMenuInteractionHandler.PointerReleased(Object sender, PointerReleasedEventArgs e)
+Microsoft.Data.Sqlite.SqliteException (0x80004005): SQLite Error 1: 'no such column: _id'.
+   at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteCommand.PrepareAndEnumerateStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteCommand.GetStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteDataReader.NextResult()
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader(CommandBehavior behavior)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at ETA.Services.TestReportService.GetSamplesByCompany(String 약칭) in /Users/azrael/Documents/ETA/Services/Testreportservice.cs:line 70
+   at ETA.Views.Pages.TestReportPage.LoadSampleNodes(TreeViewItem parent, String company) in /Users/azrael/Documents/ETA/Views/Pages/TestReportPage.axaml.cs:line 240
+   at ETA.Views.Pages.TestReportPage.<>c__DisplayClass28_0.<BuildTreeByCompany>b__0(Object s, AvaloniaPropertyChangedEventArgs e) in /Users/azrael/Documents/ETA/Views/Pages/TestReportPage.axaml.cs:line 128
+   at Avalonia.PropertyStore.EffectiveValue`1.NotifyValueChanged(ValueStore owner, StyledProperty`1 property, T oldValue)
+   at Avalonia.PropertyStore.EffectiveValue`1.SetAndRaiseCore(ValueStore owner, StyledProperty`1 property, T value, BindingPriority priority, Boolean isOverriddenCurrentValue, Boolean isCoercedDefaultValue)
+   at Avalonia.AvaloniaObject.SetCurrentValue[T](StyledProperty`1 property, T value)
+   at Avalonia.StyledProperty`1.RouteSetCurrentValue(AvaloniaObject target, Object value)
+   at Avalonia.AvaloniaObject.SetCurrentValue(AvaloniaProperty property, Object value)
+   at Avalonia.Data.TemplateBinding.WriteValueToSource(Object value)
+   at Avalonia.Data.TemplateBinding.OnTargetPropertyChanged(Object sender, AvaloniaPropertyChangedEventArgs e)
+   at Avalonia.AvaloniaObject.RaisePropertyChanged[T](AvaloniaProperty`1 property, Optional`1 oldValue, BindingValue`1 newValue, BindingPriority priority, Boolean isEffectiveValue)
+   at Avalonia.PropertyStore.EffectiveValue`1.NotifyValueChanged(ValueStore owner, StyledProperty`1 property, T oldValue)
+   at Avalonia.PropertyStore.EffectiveValue`1.SetAndRaiseCore(ValueStore owner, StyledProperty`1 property, T value, BindingPriority priority, Boolean isOverriddenCurrentValue, Boolean isCoercedDefaultValue)
+   at Avalonia.PropertyStore.EffectiveValue`1.SetCurrentValueAndRaise(ValueStore owner, StyledProperty`1 property, T value)
+   at Avalonia.PropertyStore.ValueStore.SetCurrentValue[T](StyledProperty`1 property, T value)
+   at Avalonia.AvaloniaObject.SetCurrentValue[T](StyledProperty`1 property, T value)
+   at Avalonia.Controls.Primitives.ToggleButton.Toggle()
+   at Avalonia.Controls.Primitives.ToggleButton.OnClick()
+   at Avalonia.Controls.Button.OnPointerReleased(PointerReleasedEventArgs e)
+   at Avalonia.Reactive.LightweightObservableBase`1.PublishNext(T value)
    at Avalonia.Interactivity.EventRoute.RaiseEventImpl(RoutedEventArgs e)
    at Avalonia.Interactivity.EventRoute.RaiseEvent(Interactive source, RoutedEventArgs e)
    at Avalonia.Interactivity.Interactive.RaiseEvent(RoutedEventArgs e)

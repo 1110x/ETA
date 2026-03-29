@@ -54,25 +54,26 @@
                 </StackPanel>
 
                 <!-- 사번 입력 -->
-                <StackPanel Spacing="6">
+                <StackPanel Spacing="10">
                     <TextBlock Text="사번" FontSize="13" FontWeight="SemiBold"
                                Foreground="#374151"/>
                     <TextBox x:Name="txtEmail" Watermark="202912345" FontSize="14"
-                             Padding="12,11" CornerRadius="9"
+                             Padding="12,12" CornerRadius="9"
                              BorderBrush="#D1D9FF" BorderThickness="1.5"
-                             Background="#F8FAFF" Foreground="#111827"/>
+                             Background="#F8FAFF" Foreground="#111827"
+                             LetterSpacing="3"/>
                 </StackPanel>
 
                 <!-- 비밀번호 입력 -->
-                <StackPanel Spacing="6">
+                <StackPanel Spacing="10">
                     <TextBlock Text="비밀번호" FontSize="13" FontWeight="SemiBold"
                                Foreground="#374151"/>
                     <TextBox x:Name="txtPassword"
                              Watermark="초기 비밀번호: 123456"
-                             PasswordChar="*"
-                             FontSize="14" Padding="12,11" CornerRadius="9"
+                             FontSize="14" Padding="12,12" CornerRadius="9"
                              BorderBrush="#D1D9FF" BorderThickness="1.5"
-                             Background="#F8FAFF" Foreground="#111827"/>
+                             Background="#F8FAFF" Foreground="#111827"
+                             LetterSpacing="3"/>
                 </StackPanel>
 
                 <!-- 오류 메시지 -->

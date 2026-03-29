@@ -17,9 +17,9 @@ public static class TestReportService
     private static readonly HashSet<string> FixedColumns =
         new(StringComparer.OrdinalIgnoreCase)
         {
-            "Id", "채취일자", "채취시간", "의뢰사업장", "약칭", "시료명",
+            "_id", "Id", "채취일자", "채취시간", "의뢰사업장", "약칭", "시료명",
             "견적번호", "입회자", "시료채취자-1", "시료채취자-2",
-            "방류허용기준 적용유무", "정도보증유무", "분석완료일자", "견적구분"
+            "방류허용기준 적용유무", "정도보증유무", "분석완료일자", "분석완료일자", "견적구분"
         };
 
     public static List<string> GetAnalyteColumns()
@@ -56,16 +56,17 @@ public static class TestReportService
         var list   = new List<SampleRequest>();
         if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
         var analyteCols = GetAnalyteColumns();
-        var colSelect   = analyteCols.Count > 0 ? "," + string.Join(",", analyteCols.Select(c => "`{c}`")) : "";
+        var colSelect   = analyteCols.Count > 0 ? "," + string.Join(",", analyteCols.Select(c => $"`{c}`")) : "";
         using var conn  = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = $@"SELECT _id AS Id,
+        var rid = DbConnectionFactory.RowId;
+        cmd.CommandText = $@"SELECT {rid} AS Id,
                 `채취일자`,`채취시간`,`의뢰사업장`,`약칭`,`시료명`,
                 `견적번호`,`입회자`,`시료채취자-1`,`시료채취자-2`,
-                `방류허용기준 적용유무`,`정도보증유무`,`분析완료일자`,`견적구분`
+                `방류허용기준 적용유무`,`정도보증유무`,`분석완료일자`,`견적구분`
                 {colSelect}
-            FROM `{TableName}` WHERE `약칭` = @약칭 ORDER BY `채취일자` DESC, _id DESC";
+            FROM `{TableName}` WHERE `약칭` = @약칭 ORDER BY `채취일자` DESC, {rid} DESC";
         cmd.Parameters.AddWithValue("@약칭", 약칭);
         using var r = cmd.ExecuteReader();
         while (r.Read())
@@ -107,7 +108,7 @@ public static class TestReportService
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = $"UPDATE `{TableName}` SET `{columnName.Trim()}` = @val WHERE _id = @id";
+        cmd.CommandText = $"UPDATE `{TableName}` SET `{columnName.Trim()}` = @val WHERE {DbConnectionFactory.RowId} = @id";
         cmd.Parameters.AddWithValue("@val", string.IsNullOrEmpty(newValue) ? DBNull.Value : (object)newValue);
         cmd.Parameters.AddWithValue("@id", rowId);
         int rows = cmd.ExecuteNonQuery();
@@ -115,7 +116,7 @@ public static class TestReportService
         return rows > 0;
     }
 
-    /// <summary>여러 분析항목 결과값을 한 번에 업데이트. 반환값 = 성공한 항목 수</summary>
+    /// <summary>여러 분석항목 결과값을 한 번에 업데이트. 반환값 = 성공한 항목 수</summary>
     public static int BulkUpdateResults(int rowId, Dictionary<string, string> analyteValues)
     {
         if (analyteValues.Count == 0) return 0;
@@ -129,7 +130,7 @@ public static class TestReportService
             {
                 using var cmd = conn.CreateCommand();
                 cmd.Transaction = tx;
-                cmd.CommandText = $"UPDATE `{TableName}` SET `{kv.Key.Trim()}` = @val WHERE _id = @id";
+                cmd.CommandText = $"UPDATE `{TableName}` SET `{kv.Key.Trim()}` = @val WHERE {DbConnectionFactory.RowId} = @id";
                 cmd.Parameters.AddWithValue("@val", string.IsNullOrEmpty(kv.Value) ? DBNull.Value : (object)kv.Value);
                 cmd.Parameters.AddWithValue("@id", rowId);
                 if (cmd.ExecuteNonQuery() > 0) count++;
@@ -146,14 +147,14 @@ public static class TestReportService
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = $"DELETE FROM `{TableName}` WHERE _id = @id";
+        cmd.CommandText = $"DELETE FROM `{TableName}` WHERE {DbConnectionFactory.RowId} = @id";
         cmd.Parameters.AddWithValue("@id", rowId);
         int rows = cmd.ExecuteNonQuery();
         Debug.WriteLine($"[DELETE] rowid={rowId} → {rows}행");
         return rows > 0;
     }
 
-    /// <summary>특정 rowId의 단일 분析항목 결과값 조회. 없으면 null</summary>
+    /// <summary>특정 rowId의 단일 분석항목 결과값 조회. 없으면 null</summary>
     public static string? GetAnalyteValue(int rowId, string columnName)
     {
         if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return null;
@@ -162,7 +163,7 @@ public static class TestReportService
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = $"SELECT `{columnName.Trim()}` FROM `{TableName}` WHERE _id = @id LIMIT 1";
+            cmd.CommandText = $"SELECT `{columnName.Trim()}` FROM `{TableName}` WHERE {DbConnectionFactory.RowId} = @id LIMIT 1";
             cmd.Parameters.AddWithValue("@id", rowId);
             var result = cmd.ExecuteScalar();
             return result == null || result == DBNull.Value ? null : result.ToString();
@@ -181,13 +182,13 @@ public static class TestReportService
             using var cmd = conn.CreateCommand();
             if (!string.IsNullOrEmpty(견적번호))
             {
-                cmd.CommandText = $"SELECT _id FROM `{TableName}` WHERE `견적번호` = @q AND `시료명` = @s LIMIT 1";
+                cmd.CommandText = $"SELECT {DbConnectionFactory.RowId} FROM `{TableName}` WHERE `견적번호` = @q AND `시료명` = @s LIMIT 1";
                 cmd.Parameters.AddWithValue("@q", 견적번호);
                 cmd.Parameters.AddWithValue("@s", 시료명);
             }
             else
             {
-                cmd.CommandText = $"SELECT _id FROM `{TableName}` WHERE `약칭` = @y AND `시료명` = @s LIMIT 1";
+                cmd.CommandText = $"SELECT {DbConnectionFactory.RowId} FROM `{TableName}` WHERE `약칭` = @y AND `시료명` = @s LIMIT 1";
                 cmd.Parameters.AddWithValue("@y", 약칭);
                 cmd.Parameters.AddWithValue("@s", 시료명);
             }

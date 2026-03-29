@@ -23,11 +23,20 @@ public partial class MeasurerLoginWindow : Window
     private const string TargetUrl = "https://측정인.kr/ms/field_water.do";
     private const int    CdpPort   = 9222;
 
+    // Personal SET.log 저장 경로
+    private static readonly string PersonalSetPath =
+        Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            "Documents", "ETA", "Data", "Personal SET.log");
+
     private static readonly string LogPath =
         Path.Combine(AppContext.BaseDirectory, "측정인.log");
 
     private ClientWebSocket? _ws;
     private CancellationTokenSource _pollCts = new();
+
+    /// <summary>로그인 성공 시 발생 — 외부에서 창 닫힌 후 데이터 주입 재시도용</summary>
+    public bool LoginSucceeded { get; private set; }
 
     // ── 브라우저 옵션 ─────────────────────────────────────────────────────────
     private record BrowserOption(string Label, string? ExePath);
@@ -93,12 +102,15 @@ public partial class MeasurerLoginWindow : Window
 
     private void OnWindowClosing(object? sender, WindowClosingEventArgs e)
     {
+        // 로그인 성공 시에는 폴링/WebSocket 유지 (백그라운드에서 계속 동작)
+        if (LoginSucceeded) return;
         _pollCts.Cancel();
         _ws?.Dispose();
     }
 
     private void OnLoaded(object? sender, RoutedEventArgs e)
     {
+        LogSessionStart();
         _browsers = BuildBrowserList();
         cmbBrowser.ItemsSource  = _browsers.Select(b => b.Label).ToList();
         cmbBrowser.SelectedIndex = 0;
@@ -109,14 +121,30 @@ public partial class MeasurerLoginWindow : Window
         LoadCredentials();
     }
 
-    // ── 자격증명 로드 ─────────────────────────────────────────────────────────
+    // ── 자격증명 로드 (Personal SET.log 우선, AgentService fallback) ─────────────────
     private void LoadCredentials()
     {
         try
         {
             string empId = MainPage.CurrentEmployeeId;
-            if (string.IsNullOrEmpty(empId)) return;
 
+            // 1순위: Personal SET.log 파일
+            if (File.Exists(PersonalSetPath))
+            {
+                var entries = LoadPersonalSet();
+                var entry = entries.FirstOrDefault(e =>
+                    string.IsNullOrEmpty(empId) || e.EmpId == empId);
+                if (entry != null && !string.IsNullOrEmpty(entry.UserId))
+                {
+                    txbUserId.Text   = entry.UserId;
+                    txbPassword.Text = entry.Password;
+                    SetStatus("저장된 자격증명을 불러왔습니다. 바로 로그인 실행 가능합니다.", "#88cc88");
+                    return;
+                }
+            }
+
+            // 2순위: AgentService (DB)
+            if (string.IsNullOrEmpty(empId)) return;
             var (id, pw) = AgentService.GetMeasurerCredentials(empId);
             if (!string.IsNullOrEmpty(id))
             {
@@ -128,12 +156,65 @@ public partial class MeasurerLoginWindow : Window
         catch { }
     }
 
-    // ── 자격증명 저장 ─────────────────────────────────────────────────────────
+    // ── Personal SET.log 모델 ──────────────────────────────────────────────────
+    private record PersonalSetEntry(string EmpId, string UserId, string Password);
+
+    private static List<PersonalSetEntry> LoadPersonalSet()
+    {
+        try
+        {
+            string json = File.ReadAllText(PersonalSetPath);
+            using var doc = JsonDocument.Parse(json);
+            var list = new List<PersonalSetEntry>();
+            foreach (var el in doc.RootElement.EnumerateArray())
+            {
+                string empId = el.TryGetProperty("empId",    out var e1) ? e1.GetString() ?? "" : "";
+                string uid   = el.TryGetProperty("userId",   out var e2) ? e2.GetString() ?? "" : "";
+                string pw    = el.TryGetProperty("password", out var e3) ? e3.GetString() ?? "" : "";
+                list.Add(new PersonalSetEntry(empId, uid, pw));
+            }
+            return list;
+        }
+        catch { return new List<PersonalSetEntry>(); }
+    }
+
+    // ── 자격증명 저장 (Personal SET.log + AgentService 동시) ─────────────────────
     private static void SaveCredentials(string userId, string password)
     {
         try
         {
-            string empId = MainPage.CurrentEmployeeId;
+            string empId = MainPage.CurrentEmployeeId ?? "";
+
+            // Personal SET.log 저장
+            var entries = File.Exists(PersonalSetPath)
+                ? LoadPersonalSet()
+                : new List<PersonalSetEntry>();
+
+            bool found = false;
+            for (int i = 0; i < entries.Count; i++)
+            {
+                if (entries[i].EmpId == empId)
+                {
+                    entries[i] = new PersonalSetEntry(empId, userId, password);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+                entries.Add(new PersonalSetEntry(empId, userId, password));
+
+            Directory.CreateDirectory(Path.GetDirectoryName(PersonalSetPath)!);
+            var jsonArr = entries.Select(e => new
+            {
+                empId    = e.EmpId,
+                userId   = e.UserId,
+                password = e.Password
+            });
+            File.WriteAllText(PersonalSetPath,
+                JsonSerializer.Serialize(jsonArr,
+                    new JsonSerializerOptions { WriteIndented = true }));
+
+            // AgentService(DB) 백업
             if (!string.IsNullOrEmpty(empId))
                 AgentService.SaveMeasurerCredentials(empId, userId, password);
         }
@@ -190,10 +271,12 @@ public partial class MeasurerLoginWindow : Window
         }
         else
         {
-            // 창을 닫지 않고 대기 — 모달 버튼 클릭 감지 루프 시작
-            SetStatus("로그인 완료 — 측정인.kr 모달에서 'ETA 계약 DB 업데이트' 또는 'ETA 분석DB 업데이트' 버튼을 누르세요.", "#88cc88");
+            // 로그인 성공 — 폴링 시작 + 창 닫기
+            LoginSucceeded = true;
+            Log($"=== 로그인 완료, 폴링 시작 (UserId={txbUserId.Text?.Trim()}) ===");
             _pollCts = new CancellationTokenSource();
             _ = Task.Run(() => PollForSyncRequestAsync(_pollCts.Token));
+            Close();
         }
     }
 
@@ -289,15 +372,17 @@ public partial class MeasurerLoginWindow : Window
     {
         const string script = @"(function() {
             if (window.__etaObserver) return 'ALREADY';
-            window.__etaSyncRequested    = false;
-            window.__etaAnalysisRequested = false;
+            window.__etaSyncRequested      = false;
+            window.__etaAnalysisRequested  = false;
+            window.__etaFieldPlanRequested = false;
+            window.__etaAutoOpenFieldPlanRequested = false;
 
-            function tryInject() {
+            // ── [A] 모달 내 계약/분석DB 버튼 ─────────────────────────────────
+            function tryInjectModal() {
                 var contSel = document.getElementById('add_meas_cont_no');
-                if (!contSel || !contSel.offsetParent) return;   // 보이지 않으면 skip
-                if (document.getElementById('__eta_sync_btn__')) return; // 이미 있음
+                if (!contSel || !contSel.offsetParent) return;
+                if (document.getElementById('__eta_sync_btn__')) return;
 
-                // ── 계약 DB 업데이트 버튼 (파란색) ──────────────────────────
                 var btnSync = document.createElement('button');
                 btnSync.id   = '__eta_sync_btn__';
                 btnSync.type = 'button';
@@ -313,7 +398,6 @@ public partial class MeasurerLoginWindow : Window
                     btnSync.disabled = true;
                 };
 
-                // ── 분석DB 업데이트 버튼 (녹색) ─────────────────────────────
                 var btnAnalysis = document.createElement('button');
                 btnAnalysis.id   = '__eta_analysis_btn__';
                 btnAnalysis.type = 'button';
@@ -338,6 +422,37 @@ public partial class MeasurerLoginWindow : Window
                     wrap.appendChild(btnAnalysis);
                     parent.appendChild(wrap);
                 }
+            }
+
+            // ── [B] 기존 #addFieldPlan 버튼 클릭 감지 ───────────────────────
+            function hookFieldPlanBtn() {
+                var planBtn = document.getElementById('addFieldPlan');
+                if (!planBtn || !planBtn.offsetParent) return;
+                if (planBtn.dataset.etaHooked === '1') return;
+
+                planBtn.dataset.etaHooked = '1';
+                planBtn.addEventListener('click', function() {
+                    if (!window.__etaRequestData || !window.__etaRequestData.length) {
+                        alert('ETA 의뢰데이터 없음. 측정인 전송을 먼저 누르세요.');
+                        return;
+                    }
+                    if (window.__etaFieldPlanRequested) return;
+                    window.__etaFieldPlanRequested = true;
+                }, true);
+            }
+
+            function tryAutoOpenFieldPlan() {
+                if (!window.__etaAutoOpenFieldPlanRequested) return;
+                var planBtn = document.getElementById('addFieldPlan');
+                if (!planBtn || !planBtn.offsetParent) return;
+                window.__etaAutoOpenFieldPlanRequested = false;
+                planBtn.click();
+            }
+
+            function tryInject() {
+                tryInjectModal();
+                hookFieldPlanBtn();
+                tryAutoOpenFieldPlan();
             }
 
             window.__etaObserver = new MutationObserver(tryInject);
@@ -387,6 +502,27 @@ public partial class MeasurerLoginWindow : Window
                         var b = document.getElementById('__eta_analysis_btn__');
                         if(b){ b.textContent='ETA 분석DB 업데이트 (완료)'; b.disabled=false; }
                     })()");
+                    continue;
+                }
+
+                // ── 의뢰계획 일괄작성 플래그 ─────────────────────────────────
+                string flag3 = ExtractCdpStringValue(await Evaluate("String(window.__etaFieldPlanRequested)"));
+                if (flag3 == "true")
+                {
+                    await Evaluate("window.__etaFieldPlanRequested = false;");
+                    Post("의뢰계획 일괄작성 중...", "#aa88ff");
+
+                    try
+                    {
+                        await FillFieldPlanAsync();
+                    }
+                    catch (Exception ex2)
+                    {
+                        Log($"[의뢰계획] {ex2}");
+                        Post($"의뢰계획 작성 실패: {ex2.Message}", "#ff8844");
+                    }
+
+                    continue;
                 }
             }
             catch (OperationCanceledException) { break; }
@@ -394,10 +530,286 @@ public partial class MeasurerLoginWindow : Window
         }
     }
 
+    private async Task FillFieldPlanAsync()
+    {
+        int requestCount = await GetRequestDataCountAsync();
+        if (requestCount <= 0)
+            throw new Exception("의뢰데이터가 없습니다. 먼저 측정인 전송을 실행하세요.");
+
+        await Task.Delay(900);
+
+        int rowCount = await GetFieldPlanRowCountAsync();
+        for (int attempt = 0; rowCount <= 0 && attempt < 12; attempt++)
+        {
+            await Task.Delay(300);
+            rowCount = await GetFieldPlanRowCountAsync();
+        }
+
+        if (rowCount <= 0)
+            throw new Exception("계획 작성 모달의 입력 Row를 찾지 못했습니다.");
+
+        string fillResultJson = ExtractCdpStringValue(await Evaluate(@"(function() {
+            var data = Array.isArray(window.__etaRequestData) ? window.__etaRequestData : [];
+            function isVisible(el) {
+                return !!el && el.offsetParent !== null && getComputedStyle(el).visibility !== 'hidden';
+            }
+            function normalize(value) {
+                return (value || '').toString().trim();
+            }
+            function toDateText(value) {
+                var text = normalize(value);
+                if (!text) return '';
+                text = text.replace(/\./g, '-').replace(/\//g, '-');
+                return text.length >= 10 ? text.slice(0, 10) : text;
+            }
+            function trigger(el) {
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+                el.dispatchEvent(new Event('change', { bubbles: true }));
+                el.dispatchEvent(new Event('blur', { bubbles: true }));
+            }
+            function setValue(el, value) {
+                if (!el || !isVisible(el) || el.disabled || el.readOnly) return false;
+                var text = normalize(value);
+                if (!text) return false;
+                el.focus();
+                el.value = text;
+                trigger(el);
+                return true;
+            }
+            function setSelect(el, preferred) {
+                if (!el || el.disabled) return false;
+                var options = Array.from(el.options || []);
+                if (!options.length) return false;
+
+                var wants = (preferred || []).map(normalize).filter(Boolean);
+                var match = -1;
+
+                for (var wi = 0; wi < wants.length && match < 0; wi++) {
+                    var want = wants[wi].toLowerCase();
+                    match = options.findIndex(function(opt) {
+                        var text = normalize(opt.text).toLowerCase();
+                        var value = normalize(opt.value).toLowerCase();
+                        return text.indexOf(want) >= 0 || value === want;
+                    });
+                }
+
+                if (match < 0) {
+                    match = options.findIndex(function(opt) {
+                        var text = normalize(opt.text);
+                        return normalize(opt.value) && text !== '선택' && text.toLowerCase() !== 'select';
+                    });
+                }
+
+                if (match < 0) return false;
+                el.selectedIndex = match;
+                trigger(el);
+                return true;
+            }
+            function setSelect2Value(el, option) {
+                if (!el || !option) return false;
+                if (window.$) {
+                    var $el = window.$(el);
+                    $el.val(option.value);
+                    $el.trigger({
+                        type: 'select2:select',
+                        params: { data: { id: option.value, text: option.text } }
+                    });
+                    $el.trigger('change');
+                    return true;
+                }
+                el.value = option.value;
+                trigger(el);
+                return true;
+            }
+            function findContractOption(options, item) {
+                var wantNo = normalize(item.contractNo).toLowerCase();
+                var wantCompany = normalize(item.contractCompany || item.company).toLowerCase();
+                var wantPoint = normalize(item.contractPoint || item.workSite).toLowerCase();
+                var wantLabel = normalize(item.contractLabel).toLowerCase();
+
+                var scored = options.map(function(opt, idx) {
+                    var text = normalize(opt.text).toLowerCase();
+                    var value = normalize(opt.value).toLowerCase();
+                    var score = 0;
+                    if (wantNo && (value === wantNo || text.indexOf(wantNo) >= 0)) score += 500;
+                    if (wantCompany && text.indexOf(wantCompany) >= 0) score += 220;
+                    if (wantPoint && text.indexOf(wantPoint) >= 0) score += 180;
+                    if (wantLabel && text === wantLabel) score += 320;
+                    if (score === 0 && wantCompany && wantPoint && text.indexOf(wantCompany) >= 0 && text.indexOf(wantPoint) >= 0) score += 260;
+                    return { idx: idx, option: opt, score: score };
+                }).sort(function(a, b) { return b.score - a.score; });
+
+                return scored.length && scored[0].score > 0 ? scored[0].option : null;
+            }
+            function selectContractForRow(row, item, rowIndex, totalRows) {
+                // 행 안에 계약 select가 있으면 사용
+                var scopedSelects = Array.from(row.querySelectorAll('select')).filter(function(el) {
+                    var key = (normalize(el.name) + ' ' + normalize(el.id)).toLowerCase();
+                    return key.indexOf('cont') >= 0 || key.indexOf('contract') >= 0 || key.indexOf('meas_cont_no') >= 0;
+                });
+
+                // 전역 add_meas_cont_no (모달 전체에서 하나) — 첫 행에서만 설정
+                if (!scopedSelects.length && rowIndex === 0) {
+                    var globalSelect = document.getElementById('add_meas_cont_no');
+                    if (globalSelect && globalSelect.tagName === 'SELECT') scopedSelects.push(globalSelect);
+                }
+
+                for (var si = 0; si < scopedSelects.length; si++) {
+                    var select = scopedSelects[si];
+                    var options = Array.from(select.options || []).filter(function(opt) {
+                        return normalize(opt.value) && normalize(opt.text) && normalize(opt.text) !== '선택';
+                    });
+                    if (!options.length) continue;
+
+                    var chosen = findContractOption(options, item);
+                    if (!chosen) continue;
+                    if (setSelect2Value(select, chosen)) return true;
+                }
+
+                return false;
+            }
+            function findRows() {
+                var tables = Array.from(document.querySelectorAll('table')).filter(isVisible);
+                var bestRows = [];
+                tables.forEach(function(table) {
+                    var rows = Array.from(table.querySelectorAll('tbody tr, tr')).filter(function(row) {
+                        return row.querySelector('input, textarea, select');
+                    });
+                    if (rows.length > bestRows.length) bestRows = rows;
+                });
+                return bestRows;
+            }
+            function pickByKeyword(elements, keywords) {
+                return elements.find(function(el) {
+                    var key = (normalize(el.name) + ' ' + normalize(el.id) + ' ' + normalize(el.placeholder)).toLowerCase();
+                    return keywords.some(function(word) { return key.indexOf(word) >= 0; });
+                });
+            }
+
+            var rows = findRows();
+            if (!rows.length)
+                return JSON.stringify({ ok: false, error: '계획 입력 Row를 찾을 수 없습니다.' });
+
+            var filled = 0;
+            rows.forEach(function(row, index) {
+                var item = data[index];
+                if (!item) return;
+
+                var textInputs = Array.from(row.querySelectorAll('input:not([type]), input[type=text], textarea')).filter(function(el) {
+                    return isVisible(el) && !el.disabled && !el.readOnly;
+                });
+                var dateInputs = Array.from(row.querySelectorAll('input[type=date], input[id*=date], input[name*=date], input[id*=dt], input[name*=dt]')).filter(function(el) {
+                    return isVisible(el) && !el.disabled && !el.readOnly;
+                });
+                var selects = Array.from(row.querySelectorAll('select')).filter(isVisible);
+
+                var analyteText = Array.isArray(item.analytes) ? item.analytes.filter(Boolean).join(', ') : '';
+                var planText = normalize(item.planText) || analyteText || normalize(item.sample);
+                var summaryText = [normalize(item.accNo), normalize(item.sample), analyteText].filter(Boolean).join(' / ');
+                var company = normalize(item.company);
+                var manager = normalize(item.manager);
+                var workSite = normalize(item.workSite);
+                var note = normalize(item.note);
+                var dateText = toDateText(item.sampleDate || item.date);
+
+                selectContractForRow(row, item, index, rows.length);
+
+                setValue(pickByKeyword(textInputs, ['acc', 'receipt', 'request', '접수']), item.accNo);
+                setValue(pickByKeyword(textInputs, ['sample', '시료', 'title', 'name']), item.sample);
+                setValue(pickByKeyword(textInputs, ['analyte', 'item', 'target', '항목']), analyteText || planText);
+                setValue(pickByKeyword(textInputs, ['memo', 'remark', '비고', 'content', '내용', 'plan', '계획']), note || summaryText || planText);
+                setValue(pickByKeyword(textInputs, ['company', 'corp', '업체']), company);
+                setValue(pickByKeyword(textInputs, ['manager', '담당']), manager);
+                setValue(pickByKeyword(textInputs, ['site', 'place', '사업장', '현장']), workSite);
+
+                var candidates = [
+                    normalize(item.accNo),
+                    normalize(item.sample),
+                    analyteText || planText,
+                    note || summaryText || planText,
+                    company,
+                    manager,
+                    workSite
+                ].filter(Boolean);
+
+                textInputs.forEach(function(input) {
+                    if (normalize(input.value)) return;
+                    var nextValue = candidates.shift();
+                    if (nextValue) setValue(input, nextValue);
+                });
+
+                if (dateText) {
+                    var dateInput = dateInputs.find(function(input) { return !normalize(input.value); }) || dateInputs[0];
+                    if (dateInput) setValue(dateInput, dateText);
+                }
+
+                selects.forEach(function(select) {
+                    var current = normalize(select.value);
+                    if (current) return;
+                    setSelect(select, [item.abbr, item.sample, analyteText, item.company]);
+                });
+
+                filled++;
+            });
+
+            return JSON.stringify({ ok: true, rows: rows.length, filled: filled, requested: data.length });
+        })()"));
+
+        using (var doc = JsonDocument.Parse(fillResultJson))
+        {
+            bool ok = doc.RootElement.TryGetProperty("ok", out var okProp) && okProp.GetBoolean();
+            if (!ok)
+            {
+                string error = doc.RootElement.TryGetProperty("error", out var errProp)
+                    ? errProp.GetString() ?? "알 수 없는 오류"
+                    : "알 수 없는 오류";
+                throw new Exception(error);
+            }
+        }
+
+        await PollElementExistsAsync("insertFieldPlanBtn", 8000);
+        await Task.Delay(200);
+        await Evaluate(@"(function(){
+            var b = document.getElementById('insertFieldPlanBtn');
+            if (!b || b.offsetParent === null) return 'NO_BTN';
+            b.click();
+            return 'OK';
+        })()");
+
+        Post($"의뢰계획 {requestCount}건 작성 후 저장 완료", "#88cc88");
+        Log($"의뢰계획 자동작성 완료: {requestCount}건");
+    }
+
+    private async Task<int> GetRequestDataCountAsync()
+    {
+        string raw = ExtractCdpStringValue(await Evaluate("String((window.__etaRequestData || []).length)"));
+        return int.TryParse(raw, out var count) ? count : 0;
+    }
+
+    private async Task<int> GetFieldPlanRowCountAsync()
+    {
+        string raw = ExtractCdpStringValue(await Evaluate(@"(function() {
+            function isVisible(el) {
+                return !!el && el.offsetParent !== null && getComputedStyle(el).visibility !== 'hidden';
+            }
+            var best = 0;
+            Array.from(document.querySelectorAll('table')).filter(isVisible).forEach(function(table) {
+                var rows = Array.from(table.querySelectorAll('tbody tr, tr')).filter(function(row) {
+                    return row.querySelector('input, textarea, select');
+                }).length;
+                if (rows > best) best = rows;
+            });
+            return String(best);
+        })()"));
+
+        return int.TryParse(raw, out var count) ? count : 0;
+    }
+
     // ── 채취지점 스크래핑: 계약 → 현장(cmb_emis_cmpy_plc_no) → 채취지점(add_emis_fac_no) ──
     private async Task ScrapeSamplingPointsAsync()
     {
-        Log("=== ScrapeSamplingPointsAsync 시작 ===");
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        Log($"=== 계약 DB 스크래핑 시작 [{DateTime.Now:yyyy-MM-dd HH:mm:ss}] ===");
 
         // ── 1단계: 계약 목록 ─────────────────────────────────────────────────
         const string getContractsScript = @"(function() {
@@ -416,7 +828,8 @@ public partial class MeasurerLoginWindow : Window
         Log($"contracts = {contractsJson}");
         if (string.IsNullOrEmpty(contractsJson) || contractsJson == "[]")
         {
-            Post("계약 목록을 찾을 수 없습니다", "#ffaa44");
+            Log("[계약DB] 계약 목록 없음 — 모달이 열린 상태인지 확인하세요.");
+            Post("계약 목록을 찾을 수 없습니다 (모달을 먼저 여세요)", "#ffaa44");
             return;
         }
 
@@ -438,13 +851,15 @@ public partial class MeasurerLoginWindow : Window
         MeasurerService.ClearAll();   // 재스크래핑 전 초기화
         int totalSaved = 0;
         Dispatcher.UIThread.Post(() => SetProgress(0, contracts.Count));
+        await WebProgress_InjectAsync($"ETA 계약 DB 업데이트 (쳙 {contracts.Count}건)", contracts.Count, "#1a6fc4");
 
-        // ── 2단계: 계약별 반복 ───────────────────────────────────────────────
+        // ── 2단계: 계약별 반복 ───────────────────────────────────────────
         for (int ci = 0; ci < contracts.Count; ci++)
         {
             var (contVal, 계약번호, 계약기간) = contracts[ci];
             Post($"[{ci + 1}/{contracts.Count}] 계약 선택 중...", "#aaaaaa");
             Dispatcher.UIThread.Post(() => SetProgress(ci + 1, contracts.Count));
+            await WebProgress_UpdateAsync(ci + 1, contracts.Count, $"[{ci + 1}/{contracts.Count}] {{계약번호}}");
             Log($"--- 계약 [{ci+1}/{contracts.Count}] {계약번호} ({계약기간}) ---");
 
             // 계약 선택 (select2)
@@ -559,12 +974,15 @@ public partial class MeasurerLoginWindow : Window
             }
         }
 
-        Log($"=== 완료: {contracts.Count}개 계약, 채취지점 {totalSaved}개 저장 ===");
+        sw.Stop();
+        Log($"=== 계약 DB 스크래핑 완료: {contracts.Count}개 계약, 채취지점 {totalSaved}개 저장 (소요 {sw.Elapsed.TotalSeconds:F1}초) ===");
         Dispatcher.UIThread.Post(() => SetProgress(contracts.Count, contracts.Count));
+        await WebProgress_UpdateAsync(contracts.Count, contracts.Count, $"완료 — 채취지점 {totalSaved}개 저장");
         Post($"완료 — 채취지점 {totalSaved}개 저장", "#88cc88");
 
         // 인력 고유번호도 함께 동기화
         await ScrapeEmployeeIdsAsync();
+        await WebProgress_RemoveAsync();
     }
 
     // ── 인력 고유번호 스크래핑 ────────────────────────────────────────────────
@@ -630,9 +1048,9 @@ public partial class MeasurerLoginWindow : Window
     /// </summary>
     private async Task ScrapeAnalysisItemsAsync()
     {
-        Log("=== 분석항목 코드 스크래핑 시작 ===");
-        Post("분석항목 코드 수집 중...", "#aaaaaa");
-
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        Log($"=== 분석항목 코드 스크래핑 시작 [{DateTime.Now:yyyy-MM-dd HH:mm:ss}] ===");
+        Post("분석항목 코드 수집 중...", "#aaaaaa");        await WebProgress_InjectAsync("ETA 분석DB 업데이트 중...", 100, "#1a6f2a");
         const string script = @"(function() {
             var sel = document.getElementById('add_meas_item');
             if (!sel) return '[]';
@@ -668,10 +1086,12 @@ public partial class MeasurerLoginWindow : Window
 
         if (string.IsNullOrEmpty(json) || json == "[]")
         {
-            Log("분석항목: add_meas_item 요소 없음 또는 옵션 없음 — 모달이 열린 상태인지 확인하세요.");
+            Log("[분석DB] add_meas_item 요소 없음 또는 옵션 없음 — 모달이 열린 상태인지 확인하세요.");
+            await WebProgress_RemoveAsync();
             Post("분석항목을 찾을 수 없습니다 (모달을 열고 다시 시도하세요)", "#ffaa44");
             return;
         }
+        Log($"[분석DB] raw JSON 길이: {json.Length}자");
 
         var items = new List<(string 분야, string 항목구분, string 항목명, string 코드값, string Select2Id)>();
         try
@@ -688,13 +1108,18 @@ public partial class MeasurerLoginWindow : Window
                     items.Add((field, category, name, code, s2id));
             }
         }
-        catch (Exception ex) { Log($"분석항목 JSON 파싱 오류: {ex.Message}"); return; }
+        catch (Exception ex) { Log($"[분석DB] JSON 파싱 오류: {ex.Message}\n{ex.StackTrace}"); throw; }
 
-        Log($"분석항목 {items.Count}개 수집: {string.Join(", ", items.Take(5).Select(i => $"{i.분야}|{i.항목구분}|{i.항목명}"))}");
+        Log($"[분석DB] {items.Count}개 수집. 샘플: {string.Join(", ", items.Take(5).Select(i => $"{i.분야}|{i.항목구분}|{i.항목명}"))}");
+        Post($"분석항목 {items.Count}개 파싱 완료 — DB 저장 중...", "#aaaaaa");
+        await WebProgress_UpdateAsync(50, 100, $"항목 {items.Count}개 파싱 완료 — DB 저장 중...");
 
         int saved = MeasurerService.SaveAnalysisItems(items);
-        Log($"분석항목 저장 완료: {saved}개 반영 / {items.Count}개");
+        sw.Stop();
+        Log($"[분석DB] 저장 완료: {saved}개 반영 / {items.Count}개 (소요 {sw.Elapsed.TotalSeconds:F1}초)");
+        await WebProgress_UpdateAsync(100, 100, $"분석항목 {items.Count}개 저장 완료");
         Post($"분석항목 {items.Count}개 저장 완료", "#88cc88");
+        await WebProgress_RemoveAsync();
     }
 
     // ── CDP 인스턴스 헬퍼 (_ws 사용) ─────────────────────────────────────────
@@ -832,7 +1257,22 @@ public partial class MeasurerLoginWindow : Window
         try
         {
             File.AppendAllText(LogPath,
-                $"[{DateTime.Now:HH:mm:ss}] {msg}{Environment.NewLine}");
+                $"[{DateTime.Now:HH:mm:ss.fff}] {msg}{Environment.NewLine}");
+            Debug.WriteLine($"[측정인] {msg}");
+        }
+        catch { }
+    }
+
+    // 세션 시작 시 로그 헤더 기록
+    private static void LogSessionStart()
+    {
+        try
+        {
+            File.AppendAllText(LogPath,
+                $"{Environment.NewLine}{'=',60}{Environment.NewLine}" +
+                $"  세션 시작: {DateTime.Now:yyyy-MM-dd HH:mm:ss}{Environment.NewLine}" +
+                $"  로그 경로: {LogPath}{Environment.NewLine}" +
+                $"{'=',60}{Environment.NewLine}");
         }
         catch { }
     }
@@ -847,5 +1287,61 @@ public partial class MeasurerLoginWindow : Window
     {
         pgbScrape.IsVisible = total > 0;
         pgbScrape.Value     = total > 0 ? (double)current / total * 100 : 0;
+    }
+
+    // ── 웹페이지 JS 프로그레스바 주입 헬퍼 ─────────────────────────────────────
+    private async Task WebProgress_InjectAsync(string title, int total, string color = "#1a6fc4")
+    {
+        string safeSrc = title.Replace("\\", "\\\\").Replace("'", "\\'");
+        int    tot     = total;
+        string js = $@"(function(){{
+            var old = document.getElementById('__eta_pb__');
+            if (old) old.remove();
+            var d   = document.createElement('div');
+            d.id    = '__eta_pb__';
+            d.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:999999;'
+                + 'background:rgba(18,18,36,0.97);color:#ddd;font-size:12px;'
+                + 'padding:7px 16px;display:flex;align-items:center;gap:10px;'
+                + 'box-shadow:0 2px 8px rgba(0,0,0,0.6);font-family:sans-serif;';
+            var lbl = document.createElement('span');
+            lbl.id = '__eta_pb_lbl__';
+            lbl.textContent = '{safeSrc}';
+            lbl.style.cssText = 'min-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+            var wrap = document.createElement('div');
+            wrap.style.cssText = 'flex:1;background:#444;border-radius:4px;height:8px;';
+            var bar = document.createElement('div');
+            bar.id = '__eta_pb_bar__';
+            bar.style.cssText = 'height:8px;background:{color};border-radius:4px;width:0%;transition:width 0.3s;';
+            wrap.appendChild(bar);
+            var cnt = document.createElement('span');
+            cnt.id = '__eta_pb_cnt__';
+            cnt.textContent = '0 / {tot}';
+            cnt.style.cssText = 'min-width:60px;text-align:right;color:#aaa;';
+            d.appendChild(lbl); d.appendChild(wrap); d.appendChild(cnt);
+            document.body.prepend(d);
+            return 'OK';
+        }})()";
+        try {{ await Evaluate(js); }} catch {{ }}
+    }
+
+    private async Task WebProgress_UpdateAsync(int current, int total, string msg)
+    {
+        int    pct     = total > 0 ? (int)(current * 100.0 / total) : 100;
+        string safeMsg = msg.Replace("\\", "\\\\").Replace("'", "\\'");
+        string js = $@"(function(){{
+            var l = document.getElementById('__eta_pb_lbl__');
+            var b = document.getElementById('__eta_pb_bar__');
+            var c = document.getElementById('__eta_pb_cnt__');
+            if (l) l.textContent = '{safeMsg}';
+            if (b) b.style.width = '{pct}%';
+            if (c) c.textContent = '{current} / {total}';
+        }})()";
+        try {{ await Evaluate(js); }} catch {{ }}
+    }
+
+    private async Task WebProgress_RemoveAsync()
+    {
+        const string js = "(function(){{ var e=document.getElementById('__eta_pb__'); if(e) e.remove(); }})()";
+        try { await Evaluate(js); } catch { }
     }
 }

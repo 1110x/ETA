@@ -470,21 +470,21 @@ public partial class MainPage : Window
             _agentTreePage = new AgentTreePage();
             _agentTreePage.DetailPanelChanged += panel =>
             {
-                ActivePageContent2.Content = panel;
-                LogContentChange("ActivePageContent2", panel);
+                Show2.Content = panel;
+                LogContentChange("Show2", panel);
             };
         }
 
-        ActivePageContent1.Content = _agentTreePage;
-        LogContentChange("ActivePageContent1", _agentTreePage);
-        ActivePageContent2.Content = null;
-        LogContentChange("ActivePageContent2", null);
-        ActivePageContent3.Content = null;
-        LogContentChange("ActivePageContent3", null);
+        Show1.Content = _agentTreePage;
+        LogContentChange("Show1", _agentTreePage);
+        Show2.Content = null;
+        LogContentChange("Show2", null);
+        Show3.Content = null;
+        LogContentChange("Show3", null);
         
         // ✅ Content4: 분석항목 카드 리스트 (드래그&드롭용)
-        ActivePageContent4.Content = CreateAnalysisItemsListBox();
-        LogContentChange("ActivePageContent4", _analysisItemsListBox);
+        Show4.Content = CreateAnalysisItemsListBox();
+        LogContentChange("Show4", _analysisItemsListBox);
         
         // AgentTreePage에 ListBox 참조 전달
         _agentTreePage.AnalysisItemsListBox = _analysisItemsListBox;
@@ -505,14 +505,14 @@ public partial class MainPage : Window
         _currentMode = "WasteCompany";
         if (_wasteCompanyPage == null) _wasteCompanyPage = new WasteCompanyPage();
 
-        ActivePageContent1.Content = _wasteCompanyPage;
-        LogContentChange("ActivePageContent1", _wasteCompanyPage);
-        ActivePageContent2.Content = null;
-        LogContentChange("ActivePageContent2", null);
-        ActivePageContent3.Content = null;
-        LogContentChange("ActivePageContent3", null);
-        ActivePageContent4.Content = null;
-        LogContentChange("ActivePageContent4", null);
+        Show1.Content = _wasteCompanyPage;
+        LogContentChange("Show1", _wasteCompanyPage);
+        Show2.Content = null;
+        LogContentChange("Show2", null);
+        Show3.Content = null;
+        LogContentChange("Show3", null);
+        Show4.Content = null;
+        LogContentChange("Show4", null);
         _wasteCompanyPage.LoadData();
         _bt1SaveAction = null;
 
@@ -528,9 +528,9 @@ public partial class MainPage : Window
     {
         _currentMode = "Analysis";
         _analysisPage ??= new AnalysisPage();
-        ActivePageContent1.Content = _analysisPage;
-        ActivePageContent2.Content = null;
-        ActivePageContent4.Content = null;
+        Show1.Content = _analysisPage;
+        Show2.Content = null;
+        Show4.Content = null;
         _bt1SaveAction = null;
 
         SetSubMenu("분석 시작", "새로고침", "데이터 추가", "선택 삭제", "엑셀 내보내기", "인쇄", "설정");
@@ -551,19 +551,19 @@ public partial class MainPage : Window
             _contractPage.ParentMainPage = this;
             _contractPage.DetailPanelChanged += panel =>
             {
-                ActivePageContent2.Content = panel;
-                LogContentChange("ActivePageContent2", panel);
+                Show2.Content = panel;
+                LogContentChange("Show2", panel);
             };
         }
 
-        ActivePageContent1.Content = _contractPage;
-        LogContentChange("ActivePageContent1", _contractPage);
-        ActivePageContent2.Content = null;
-        LogContentChange("ActivePageContent2", null);
-        ActivePageContent3.Content = null;
-        LogContentChange("ActivePageContent3", null);
-        ActivePageContent4.Content = null;
-        LogContentChange("ActivePageContent4", null);
+        Show1.Content = _contractPage;
+        LogContentChange("Show1", _contractPage);
+        Show2.Content = null;
+        LogContentChange("Show2", null);
+        Show3.Content = null;
+        LogContentChange("Show3", null);
+        Show4.Content = null;
+        LogContentChange("Show4", null);
         _contractPage.LoadData();
         _bt1SaveAction = _contractPage.SaveSelected;
 
@@ -585,14 +585,14 @@ public partial class MainPage : Window
         _currentMode = "Repair";
         _repairPage ??= new RepairPage();
 
-        ActivePageContent1.Content = _repairPage.TreeControl;
-        LogContentChange("ActivePageContent1", _repairPage.TreeControl);
-        ActivePageContent2.Content = _repairPage.ListControl;
-        LogContentChange("ActivePageContent2", _repairPage.ListControl);
-        ActivePageContent3.Content = _repairPage.FormControl;
-        LogContentChange("ActivePageContent3", _repairPage.FormControl);
-        ActivePageContent4.Content = null;
-        LogContentChange("ActivePageContent4", null);
+        Show1.Content = _repairPage.TreeControl;
+        LogContentChange("Show1", _repairPage.TreeControl);
+        Show2.Content = _repairPage.ListControl;
+        LogContentChange("Show2", _repairPage.ListControl);
+        Show3.Content = _repairPage.FormControl;
+        LogContentChange("Show3", _repairPage.FormControl);
+        Show4.Content = null;
+        LogContentChange("Show4", null);
         _bt1SaveAction = null;
 
         SetSubMenu("새로고침", "승인", "반려", "완료", "삭제", "", "설정");
@@ -631,13 +631,13 @@ public partial class MainPage : Window
                 _lastShownIssue = savedIssue;
                 _quotationHistoryPanel?.LoadData();
                 // Content1 트리뷰 강제 갱신
-                ActivePageContent1.Content = null;
-                ActivePageContent1.Content = _quotationHistoryPanel;
-                LogContentChange("ActivePageContent1", _quotationHistoryPanel);
+                Show1.Content = null;
+                Show1.Content = _quotationHistoryPanel;
+                LogContentChange("Show1", _quotationHistoryPanel);
                 // DB에서 최신 row 재조회 후 DetailPanel 갱신
                 _quotationDetailPanel?.ShowIssue(savedIssue);
-                ActivePageContent2.Content = _quotationDetailPanel;
-                LogContentChange("ActivePageContent2", _quotationDetailPanel);
+                Show2.Content = _quotationDetailPanel;
+                LogContentChange("Show2", _quotationDetailPanel);
             };
         }
         // CheckPanel → NewPanel 연동
@@ -660,8 +660,8 @@ public partial class MainPage : Window
                 if (target == null) return;
                 _lastShownIssue = target;
                 _quotationNewPanel!.LoadFromIssue(target);
-                ActivePageContent2.Content = _quotationNewPanel;
-                LogContentChange("ActivePageContent2", _quotationNewPanel);
+                Show2.Content = _quotationNewPanel;
+                LogContentChange("Show2", _quotationNewPanel);
             };
 
             // ✏️ 오작성 수정: 기존 Id 덮어쓰기 — 메타 수정
@@ -671,8 +671,8 @@ public partial class MainPage : Window
                 if (target == null) return;
                 _lastShownIssue = target;
                 _quotationNewPanel!.LoadFromIssueCorrect(target);
-                ActivePageContent2.Content = _quotationNewPanel;
-                LogContentChange("ActivePageContent2", _quotationNewPanel);
+                Show2.Content = _quotationNewPanel;
+                LogContentChange("Show2", _quotationNewPanel);
             };
 
             // ESC 취소 → DetailPanel 복귀 + 마지막 issue 재표시
@@ -680,8 +680,8 @@ public partial class MainPage : Window
             {
                 if (_lastShownIssue != null)
                     _quotationDetailPanel?.ShowIssue(_lastShownIssue);
-                ActivePageContent2.Content = _quotationDetailPanel;
-                LogContentChange("ActivePageContent2", _quotationDetailPanel);
+                Show2.Content = _quotationDetailPanel;
+                LogContentChange("Show2", _quotationDetailPanel);
             };
 
             // 📋 의뢰서 작성: 편집 패널로 전환
@@ -691,17 +691,17 @@ public partial class MainPage : Window
                 _orderRequestEditPanel.SubmitCompleted += () =>
                 {
                     // 제출 완료 후 세부내역으로 복귀
-                    ActivePageContent2.Content = _quotationDetailPanel;
-                    LogContentChange("ActivePageContent2", _quotationDetailPanel);
+                    Show2.Content = _quotationDetailPanel;
+                    LogContentChange("Show2", _quotationDetailPanel);
                 };
                 _orderRequestEditPanel.Cancelled += () =>
                 {
-                    ActivePageContent2.Content = _quotationDetailPanel;
-                    LogContentChange("ActivePageContent2", _quotationDetailPanel);
+                    Show2.Content = _quotationDetailPanel;
+                    LogContentChange("Show2", _quotationDetailPanel);
                 };
                 _orderRequestEditPanel.Load(issue, samples, quotedItems);
-                ActivePageContent2.Content = _orderRequestEditPanel;
-                LogContentChange("ActivePageContent2", _orderRequestEditPanel);
+                Show2.Content = _orderRequestEditPanel;
+                LogContentChange("Show2", _orderRequestEditPanel);
             };
         }
         _quotationDetailPanel.CheckPanel = _quotationCheckPanel;
@@ -716,25 +716,25 @@ public partial class MainPage : Window
             {
                 _lastShownIssue = issue;
                 _quotationDetailPanel!.ShowIssue(issue);
-                ActivePageContent2.Content = _quotationDetailPanel;
-                LogContentChange("ActivePageContent2", _quotationDetailPanel);
-                ActivePageContent4.Content = _quotationPage;
-                LogContentChange("ActivePageContent4", _quotationPage);
+                Show2.Content = _quotationDetailPanel;
+                LogContentChange("Show2", _quotationDetailPanel);
+                Show4.Content = _quotationPage;
+                LogContentChange("Show4", _quotationPage);
             };
 
             // 분석의뢰내역 탭으로 전환됨 → Content4: 의뢰 리스트 + TODO 패널
             _quotationHistoryPanel.AnalysisTabActivated += () =>
             {
                 _analysisRequestListPanel ??= new AnalysisRequestListPanel();
-                ActivePageContent4.Content = _analysisRequestListPanel;
-                LogContentChange("ActivePageContent4", _analysisRequestListPanel);
+                Show4.Content = _analysisRequestListPanel;
+                LogContentChange("Show4", _analysisRequestListPanel);
             };
 
             // 견적발행내역 탭으로 복귀 → Content4: 계약업체 목록 + TODO 패널
             _quotationHistoryPanel.QuotationTabActivated += () =>
             {
-                ActivePageContent4.Content = _quotationPage;
-                LogContentChange("ActivePageContent4", _quotationPage);
+                Show4.Content = _quotationPage;
+                LogContentChange("Show4", _quotationPage);
             };
 
             // 분석의뢰내역 노드 선택
@@ -743,24 +743,24 @@ public partial class MainPage : Window
                 _analysisRequestDetailPanel ??= new AnalysisRequestDetailPanel();
                 _analysisRequestDetailPanel.CheckPanel = _quotationCheckPanel;
                 _analysisRequestDetailPanel.ShowRecord(record);
-                ActivePageContent2.Content = _analysisRequestDetailPanel;
-                LogContentChange("ActivePageContent2", _analysisRequestDetailPanel);
+                Show2.Content = _analysisRequestDetailPanel;
+                LogContentChange("Show2", _analysisRequestDetailPanel);
                 _analysisRequestListPanel ??= new AnalysisRequestListPanel();
-                ActivePageContent4.Content = _analysisRequestListPanel;
-                LogContentChange("ActivePageContent4", _analysisRequestListPanel);
+                Show4.Content = _analysisRequestListPanel;
+                LogContentChange("Show4", _analysisRequestListPanel);
                 // Content4 트리뷰에 선택된 의뢰 추가
                 _analysisRequestListPanel.AddRecord(record);
             };
         }
 
-        ActivePageContent1.Content = _quotationHistoryPanel;
-        LogContentChange("ActivePageContent1", _quotationHistoryPanel);
-        ActivePageContent2.Content = _quotationDetailPanel;
-        LogContentChange("ActivePageContent2", _quotationDetailPanel);
-        ActivePageContent3.Content = _quotationCheckPanel;
-        LogContentChange("ActivePageContent3", _quotationCheckPanel);
-        ActivePageContent4.Content = _quotationPage;
-        LogContentChange("ActivePageContent4", _quotationPage);
+        Show1.Content = _quotationHistoryPanel;
+        LogContentChange("Show1", _quotationHistoryPanel);
+        Show2.Content = _quotationDetailPanel;
+        LogContentChange("Show2", _quotationDetailPanel);
+        Show3.Content = _quotationCheckPanel;
+        LogContentChange("Show3", _quotationCheckPanel);
+        Show4.Content = _quotationPage;
+        LogContentChange("Show4", _quotationPage);
         _bt1SaveAction = null;
 
         _quotationHistoryPanel.LoadData();
@@ -782,14 +782,14 @@ public partial class MainPage : Window
         _currentMode = "Purchase";
         _purchasePage ??= new PurchasePage();
 
-        ActivePageContent1.Content = _purchasePage.TreeControl;
-        LogContentChange("ActivePageContent1", _purchasePage.TreeControl);
-        ActivePageContent2.Content = _purchasePage.ListControl;
-        LogContentChange("ActivePageContent2", _purchasePage.ListControl);
-        ActivePageContent3.Content = _purchasePage.FormControl;
-        LogContentChange("ActivePageContent3", _purchasePage.FormControl);
-        ActivePageContent4.Content = null;
-        LogContentChange("ActivePageContent4", null);
+        Show1.Content = _purchasePage.TreeControl;
+        LogContentChange("Show1", _purchasePage.TreeControl);
+        Show2.Content = _purchasePage.ListControl;
+        LogContentChange("Show2", _purchasePage.ListControl);
+        Show3.Content = _purchasePage.FormControl;
+        LogContentChange("Show3", _purchasePage.FormControl);
+        Show4.Content = null;
+        LogContentChange("Show4", null);
         _bt1SaveAction = null;
 
         SetSubMenu("새로고침", "엑셀 내보내기", "승인", "반려", "완료", "삭제", "설정");
@@ -810,31 +810,31 @@ public partial class MainPage : Window
             _testReportPage = new TestReportPage();
             _testReportPage.ResultListChanged += panel =>
             {
-                ActivePageContent2.Content = panel;
-                LogContentChange("ActivePageContent2", panel);
+                Show2.Content = panel;
+                LogContentChange("Show2", panel);
             };
             _testReportPage.EditPanelChanged += panel =>
             {
-                ActivePageContent3.Content = panel;
-                LogContentChange("ActivePageContent3", panel);
+                Show3.Content = panel;
+                LogContentChange("Show3", panel);
             };
         }
 
-        ActivePageContent1.Content = _testReportPage;
-        LogContentChange("ActivePageContent1", _testReportPage);
-        ActivePageContent2.Content = null;
-        LogContentChange("ActivePageContent2", null);
-        ActivePageContent3.Content = null;
-        LogContentChange("ActivePageContent3", null);
+        Show1.Content = _testReportPage;
+        LogContentChange("Show1", _testReportPage);
+        Show2.Content = null;
+        LogContentChange("Show2", null);
+        Show3.Content = null;
+        LogContentChange("Show3", null);
 
         // Content4: 출력 보관함 (Reports 폴더)
         _reportsPanel ??= new ReportsPanel();
         _reportsPanel.LoadFiles();
-        ActivePageContent4.Content = _reportsPanel;
-        LogContentChange("ActivePageContent4", _reportsPanel);
+        Show4.Content = _reportsPanel;
+        LogContentChange("Show4", _reportsPanel);
         _bt1SaveAction = null;
 
-        SetSubMenu("새로고침", "CSV 저장", "삭제", "엑셀 출력", "PDF 출력", "일괄 엑셀", "측정인 LOGIN");
+        SetSubMenu("새로고침", "CSV 저장", "삭제", "엑셀 출력", "PDF 출력", "일괄 엑셀", "측정인 LOGIN", "자료TO측정인");
 
         SetContentLayout(content2Star: 8, content4Star: 2, upperStar: 8.5, lowerStar: 1.5);
         
@@ -849,9 +849,9 @@ public partial class MainPage : Window
     private void Admin_Click(object? sender, RoutedEventArgs e)
     {
         _currentMode = "Admin";
-        ActivePageContent1.Content = null;
-        ActivePageContent2.Content = null;
-        ActivePageContent4.Content = null;
+        Show1.Content = null;
+        Show2.Content = null;
+        Show4.Content = null;
         _bt1SaveAction = null;
 
         SetSubMenu("사용자 관리", "권한 설정", "로그 확인", "백업하기", "시스템 설정", "통계", "종료");
@@ -862,9 +862,9 @@ public partial class MainPage : Window
     {
         _currentMode = "Permission";
         // TODO: 권한관리 페이지 구현
-        ActivePageContent1.Content = null;
-        ActivePageContent2.Content = null;
-        ActivePageContent4.Content = null;
+        Show1.Content = null;
+        Show2.Content = null;
+        Show4.Content = null;
         _bt1SaveAction = null;
 
         SetSubMenu("저장", "새로고침", "삭제", "설정", "통계", "종료", "도움말");
@@ -877,11 +877,12 @@ public partial class MainPage : Window
     // ══════════════════════════════════════════════════════════════════════
 
     private void SetSubMenu(string bt1, string bt2, string bt3,
-                            string bt4, string bt5, string bt6, string bt7)
+                            string bt4, string bt5, string bt6,
+                            string bt7 = "", string bt8 = "")
     {
         SetBtn(BT1, bt1); SetBtn(BT2, bt2); SetBtn(BT3, bt3);
         SetBtn(BT4, bt4); SetBtn(BT5, bt5);
-        SetBtn(BT6, bt6); SetBtn(BT7, bt7);
+        SetBtn(BT6, bt6); SetBtn(BT7, bt7); SetBtn(BT8, bt8);
     }
 
     private static void SetBtn(Avalonia.Controls.Button btn, string label)
@@ -914,7 +915,7 @@ public partial class MainPage : Window
                 // BT2 = 신규 작성 → Content2 를 NewPanel 로 교체
                 _quotationNewPanel?.Clear();
                 _quotationCheckPanel?.ClearAll();
-                ActivePageContent2.Content = _quotationNewPanel;
+                Show2.Content = _quotationNewPanel;
                 break;
             case "Repair":       _repairPage?.ApproveSelected();  break;
             default: Debug.WriteLine($"[{_currentMode}] BT2");   break;
@@ -977,11 +978,24 @@ public partial class MainPage : Window
                 _purchasePage?.ShowSettings(this);
                 break;
             case "TestReport":
-                var loginWin = new MeasurerLoginWindow();
-                loginWin.Show(this);
+                new MeasurerLoginWindow().Show(this);
                 break;
             default:
                 Debug.WriteLine($"[{_currentMode}] BT7");
+                break;
+        }
+    }
+
+    private void BT8_Click(object? sender, RoutedEventArgs e)
+    {
+        switch (_currentMode)
+        {
+            case "TestReport":
+                var inputWin = new DataToMeasurerWindow(_testReportPage?.SelectedSample);
+                inputWin.Show(this);
+                break;
+            default:
+                Debug.WriteLine($"[{_currentMode}] BT8");
                 break;
         }
     }

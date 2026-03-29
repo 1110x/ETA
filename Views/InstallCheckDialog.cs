@@ -214,7 +214,8 @@ public class InstallCheckDialog : Window
     /// </summary>
     public static async Task CheckAndShowAsync(Window? owner = null)
     {
-        var missing = AppInstaller.GetMissingPackages();
+        // Required=false 패키지(LibreOffice 등)는 설치 확인 스킵
+        var missing = AppInstaller.GetMissingPackages().Where(p => p.Required).ToList();
         if (missing.Count == 0)
         {
             // 설치 필요 없음 — 마커만 기록

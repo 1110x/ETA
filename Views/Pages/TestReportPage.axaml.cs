@@ -19,10 +19,12 @@ namespace ETA.Views.Pages;
 public partial class TestReportPage : UserControl
 {
     // ── 외부(MainPage) 연결 ──────────────────────────────────────────────────
-    /// ActivePageContent2 에 넣을 결과 리스트 컨트롤
+    /// Show2 에 넣을 결과 리스트 컨트롤
     public event Action<Control?>? ResultListChanged;
-    /// ActivePageContent3 에 넣을 수정 폼 컨트롤
+    /// Show3 에 넣을 수정 폼 컨트롤
     public event Action<Control?>? EditPanelChanged;
+    /// 현재 트리에서 선택된 시료 (DataToMeasurerWindow에서 사용)
+    public SampleRequest? SelectedSample => _selectedSample;
 
     // ── 상태 ────────────────────────────────────────────────────────────────
     private SampleRequest?                    _selectedSample;
@@ -325,7 +327,7 @@ public partial class TestReportPage : UserControl
     }
 
     // =========================================================================
-    // 리스트 컨트롤 빌드 (ActivePageContent2)
+    // 리스트 컨트롤 빌드 (Show2)
     // =========================================================================
     private Control BuildListControl()
     {
@@ -573,7 +575,7 @@ public partial class TestReportPage : UserControl
     }
 
     // =========================================================================
-    // 결과 행 선택 → 수정 폼 (ActivePageContent3)
+    // 결과 행 선택 → 수정 폼 (Show3)
     // =========================================================================
     private void SelectResultRow(Border border, AnalysisResultRow row, SolidColorBrush normalBg)
     {
@@ -590,10 +592,10 @@ public partial class TestReportPage : UserControl
     }
 
     // =========================================================================
-    // Excel 결과 불러오기 패널 (ActivePageContent3 — 항상 활성)
+    // Excel 결과 불러오기 패널 (Show3 — 항상 활성)
     // =========================================================================
     // =========================================================================
-    // Excel 불러오기 액션 패널 (ActivePageContent3)
+    // Excel 불러오기 액션 패널 (Show3)
     // =========================================================================
     private Control BuildImportActionPanel()
     {
@@ -950,13 +952,14 @@ public partial class TestReportPage : UserControl
     }
 
     // =========================================================================
-    // 수정 패널 (ActivePageContent3)
+    // 수정 패널 (Show3)
     // =========================================================================
     private string GetStdDisplay(AnalysisResultRow row)
     {
         if (_selectedSample == null) { Log("[방류기준] _selectedSample null"); return ""; }
         var col = _selectedSample.방류허용기준;
-        if (string.IsNullOrEmpty(col)) { Log($"[방류기준] 방류허용기준 비어있음 - 시료: {_selectedSample.시료명}"); return ""; }
+        if (string.IsNullOrEmpty(col) || col == "기준없음" || col == "해당없음")
+            return "";
         var result = TestReportService.GetStandardValue(row.항목명, col);
         Log($"[방류기준] {row.항목명} / 기준컬럼={col} → '{result}'");
         return result;

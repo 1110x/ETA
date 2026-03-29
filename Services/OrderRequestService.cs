@@ -72,6 +72,27 @@ public static class OrderRequestService
         return list;
     }
 
+    // ── 시료명칭 테이블에 업체 컬럼 생성 ─────────────────────────────────
+    public static bool CreateCompanyColumn(string companyName)
+    {
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return false;
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            // 이미 있는지 확인
+            var existing = DbConnectionFactory.GetColumnNames(conn, "시료명칭");
+            if (existing.Any(c => string.Equals(c.Trim(), companyName.Trim(), StringComparison.OrdinalIgnoreCase)))
+                return true;
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = $@"ALTER TABLE `시료명칭` ADD COLUMN `{companyName}` TEXT DEFAULT NULL";
+            cmd.ExecuteNonQuery();
+            Debug.WriteLine($"[OrderRequest] 시료명칭 컬럼 생성: {companyName}");
+            return true;
+        }
+        catch (Exception ex) { Debug.WriteLine($"[OrderRequest] 컬럼생성 오류: {ex.Message}"); return false; }
+    }
+
     // ── 시료명칭 추가 ────────────────────────────────────────────────────
     public static bool AddSampleName(string columnName, string sampleName)
     {
@@ -81,13 +102,13 @@ public static class OrderRequestService
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var chk = conn.CreateCommand();
-            chk.CommandText = $@"SELECT _id FROM `시료명칭` WHERE `{columnName}` IS NULL OR `{columnName}` = '' LIMIT 1";
+            chk.CommandText = $@"SELECT {DbConnectionFactory.RowId} FROM `시료명칭` WHERE `{columnName}` IS NULL OR `{columnName}` = '' LIMIT 1";
             var rowidObj = chk.ExecuteScalar();
 
             if (rowidObj != null)
             {
                 using var upd = conn.CreateCommand();
-                upd.CommandText = $@"UPDATE `시료명칭` SET `{columnName}` = @val WHERE _id = @id";
+                upd.CommandText = $@"UPDATE `시료명칭` SET `{columnName}` = @val WHERE {DbConnectionFactory.RowId} = @id";
                 upd.Parameters.AddWithValue("@val", sampleName);
                 upd.Parameters.AddWithValue("@id", Convert.ToInt32(rowidObj));
                 upd.ExecuteNonQuery();
@@ -109,6 +130,8 @@ public static class OrderRequestService
     {
         var fixedCols = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
+            "_id","id","rowid",
+            "접수번호","의뢰일","업체명","대표자","담당자","연락처","이메일","비고",
             "채취일자","채취시간","의뢰사업장","약칭","시료명","견적번호",
             "입회자","시료채취자-1","시료채취자-2","방류허용기준 적용유무",
             "정도보증유무","분석완료일자","견적구분"
@@ -178,6 +201,8 @@ public static class OrderRequestService
 
             var fixedCols = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
+                "_id","id","rowid",
+                "접수번호","의뢰일","업체명","대표자","담당자","연락처","이메일","비고",
                 "채취일자","채취시간","의뢰사업장","약칭","시료명","견적번호",
                 "입회자","시료채취자-1","시료채취자-2","방류허용기준 적용유무",
                 "정도보증유무","분석완료일자","견적구분"

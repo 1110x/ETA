@@ -83,6 +83,7 @@ public static class MeasurerService
             {
                 if (string.IsNullOrWhiteSpace(code)) continue;
                 using var cmd = conn.CreateCommand();
+                cmd.Transaction = txn;
                 var upsert = DbConnectionFactory.UpsertSuffix(
                     new[] { "코드값" },
                     new[] { "분야", "항목구분", "항목명", "select2id" });
@@ -156,6 +157,7 @@ public static class MeasurerService
             foreach (var point in points.Where(p => !string.IsNullOrWhiteSpace(p)))
             {
                 using var cmd = conn.CreateCommand();
+                cmd.Transaction = txn;
                 var upsert = DbConnectionFactory.UpsertSuffix(
                     new[] { "업체명", "채취지점명" },
                     new[] { "계약번호", "계약기간" });
@@ -335,5 +337,127 @@ public static class MeasurerService
         while (r.Read())
             list.Add((r.GetString(0), r.GetString(1), r.GetString(2), r.GetString(3), r.GetString(4)));
         return list;
+    }
+
+    /// <summary>
+    /// 채취지점명을 기준으로 계약번호를 직접 조회합니다.
+    /// sampleName이 DB의 채취지점명과 일치하는 행의 계약번호를 반환합니다.
+    /// </summary>
+    public static (string 계약번호, string 약칭, string 계약기간, string 업체명, string 채취지점명) FindContractBySamplingPoint(
+        string sampleName,
+        string abbr = "")
+    {
+        var all = GetAllData();
+        if (all.Count == 0 || string.IsNullOrWhiteSpace(sampleName))
+            return ("", "", "", "", "");
+
+        string normSample = NormalizeCompany(sampleName);
+        string normAbbr   = NormalizeCompany(abbr);
+
+        var best = all
+            .Select(item =>
+            {
+                string itemSite = NormalizeCompany(item.채취지점명);
+                string itemAbbr = NormalizeCompany(item.약칭);
+
+                int score = 0;
+                if (itemSite == normSample) score += 1000;
+                else if (itemSite.Contains(normSample, StringComparison.OrdinalIgnoreCase)
+                      || normSample.Contains(itemSite, StringComparison.OrdinalIgnoreCase))
+                    score += 500;
+
+                if (!string.IsNullOrWhiteSpace(normAbbr))
+                {
+                    if (itemAbbr == normAbbr) score += 200;
+                    else if (itemAbbr.Contains(normAbbr, StringComparison.OrdinalIgnoreCase)
+                          || normAbbr.Contains(itemAbbr, StringComparison.OrdinalIgnoreCase))
+                        score += 80;
+                }
+                if (!string.IsNullOrWhiteSpace(item.계약번호)) score += 20;
+
+                return (item, score);
+            })
+            .Where(x => x.score > 0)
+            .OrderByDescending(x => x.score)
+            .FirstOrDefault();
+
+        return best.score > 0 ? best.item : ("", "", "", "", "");
+    }
+
+    public static (string 계약번호, string 약칭, string 계약기간, string 업체명, string 채취지점명) FindBestContract(
+        string companyName,
+        string workSite,
+        string abbr = "")
+    {
+        var all = GetAllData();
+        if (all.Count == 0)
+            return ("", "", "", "", "");
+
+        string normCompany = NormalizeCompany(companyName);
+        string normSite = NormalizeCompany(workSite);
+        string normAbbr = NormalizeCompany(abbr);
+
+        int Score(string source, string query, int exactScore, int containsScore)
+        {
+            if (string.IsNullOrWhiteSpace(source) || string.IsNullOrWhiteSpace(query)) return 0;
+            if (source == query) return exactScore;
+            if (source.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                query.Contains(source, StringComparison.OrdinalIgnoreCase))
+                return containsScore;
+            return 0;
+        }
+
+        var best = all
+            .Select(item =>
+            {
+                string itemCompany = NormalizeCompany(item.업체명);
+                string itemSite = NormalizeCompany(item.채취지점명);
+                string itemAbbr = NormalizeCompany(item.약칭);
+
+                int score = 0;
+                score += Score(itemCompany, normCompany, 500, 280);
+                score += Score(itemSite, normSite, 320, 180);
+                score += Score(itemAbbr, normAbbr, 120, 60);
+
+                if (!string.IsNullOrWhiteSpace(normCompany) && !string.IsNullOrWhiteSpace(normSite))
+                {
+                    if ((itemCompany + itemSite).Contains(normCompany + normSite, StringComparison.OrdinalIgnoreCase) ||
+                        (normCompany + normSite).Contains(itemCompany + itemSite, StringComparison.OrdinalIgnoreCase))
+                        score += 140;
+                }
+
+                if (!string.IsNullOrWhiteSpace(item.계약번호))
+                    score += 20;
+
+                return (item, score);
+            })
+            .OrderByDescending(x => x.score)
+            .ThenByDescending(x => !string.IsNullOrWhiteSpace(x.item.계약번호))
+            .FirstOrDefault();
+
+        return best.score > 0 ? best.item : ("", "", "", "", "");
+    }
+
+    private static string NormalizeCompany(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return "";
+
+        return name
+            .Replace("㈜", "주")
+            .Replace("(주)", "주")
+            .Replace("（주）", "주")
+            .Replace("주식회사", "주")
+            .Replace("유한회사", "유")
+            .Replace("㈔", "사")
+            .Replace("(사)", "사")
+            .Replace(" ", "")
+            .Replace("-", "")
+            .Replace("·", "")
+            .Replace("(", "")
+            .Replace(")", "")
+            .Replace("（", "")
+            .Replace("）", "")
+            .ToLowerInvariant()
+            .Trim();
     }
 }

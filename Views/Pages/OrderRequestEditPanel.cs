@@ -14,8 +14,8 @@ using System.Threading.Tasks;
 namespace ETA.Views.Pages;
 
 /// <summary>
-/// 의뢰서 편집 패널 — ActivePageContent2 에 표시
-/// 1열: 시료명 / 2열~: 분析항목 / 셀: 체크박스 (견적항목 기본 체크)
+/// 의뢰서 편집 패널 — Show2 에 표시
+/// 1열: 시료명 / 2열~: 분석항목 / 셀: 체크박스 (견적항목 기본 체크)
 /// </summary>
 public class OrderRequestEditPanel : UserControl
 {
@@ -145,7 +145,7 @@ public class OrderRequestEditPanel : UserControl
         // 헤더: 시료명
         grid.Children.Add(HCell("시료명", 0, 0));
 
-        // 헤더: 분析항목
+        // 헤더: 분석항목
         for (int ci = 0; ci < _analysisCols.Count; ci++)
         {
             var col  = _analysisCols[ci];

@@ -91,7 +91,7 @@ public static class RepairService
         var dateFmt = DbConnectionFactory.DateFmt("요청일", "%Y-%m");
         using var cmd = conn.CreateCommand();
         cmd.CommandText = $@"
-            SELECT Id, 구분, 장비명, 증상, 위치, 요청자, 요청일, 완료예정일, 정리내용, 비고, 상태
+            SELECT Id, 구분, 장비명, 증상, 위치, 요청자, 요청일, 완료예정일, 처리내용, 비고, 상태
             FROM `보수요청`
             WHERE {dateFmt} = @ym
             ORDER BY Id DESC";

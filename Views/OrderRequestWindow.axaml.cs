@@ -244,8 +244,8 @@ public class OrderRequestWindow : Window
         _matchedColumn = OrderRequestService.FindColumnByCompany(_issue.업체명);
         if (_matchedColumn == null)
         {
-            _txbInfo.Text       = $"⚠️ '{_issue.업체명}' 컬럼을 찾지 못했습니다.\n하단에서 직접 추가해주세요.";
-            _txbInfo.Foreground = Brush.Parse("#f0c040");
+            _txbInfo.Text       = $"ℹ️ '{_issue.업체명}' 컬럼이 없습니다. 하단에서 시료명을 추가하면 자동 생성됩니다.";
+            _txbInfo.Foreground = Brush.Parse("#aaaacc");
             _cbPanel.Children.Clear();
             UpdateNextButton();
             return;
@@ -378,10 +378,23 @@ public class OrderRequestWindow : Window
         var name = _txbNew.Text?.Trim() ?? "";
         if (string.IsNullOrEmpty(name)) return;
 
+        // 업체 컬럼이 없으면 자동 생성
         if (_matchedColumn == null)
         {
-            ShowStatus("⚠️ 업체 컬럼이 없어 추가할 수 없습니다.", error: true);
-            return;
+            var colName = _issue.업체명?.Trim() ?? "";
+            if (string.IsNullOrEmpty(colName))
+            {
+                ShowStatus("⚠️ 업체명이 비어있어 컬럼을 생성할 수 없습니다.", error: true);
+                return;
+            }
+            if (!OrderRequestService.CreateCompanyColumn(colName))
+            {
+                ShowStatus("❌ 업체 컬럼 생성 실패", error: true);
+                return;
+            }
+            _matchedColumn = colName;
+            _txbInfo.Text       = $"✅ '{colName}' 컬럼 자동 생성";
+            _txbInfo.Foreground = Brush.Parse("#88cc88");
         }
 
         bool ok = OrderRequestService.AddSampleName(_matchedColumn, name);

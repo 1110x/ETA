@@ -2794,3 +2794,307 @@
 [00:25:50] [NewPanel] 단가 로드: FS100 → 65개
 [00:58:40] [NewPanel] 단가 로드: FS100 → 65개
 [01:08:28] [NewPanel] 단가 로드: FS100 → 65개
+[03:06:44] [NewPanel] 단가 로드: _id → 67개
+[03:14:39] [NewPanel] 단가 로드: FS100 → 65개
+[03:18:29] [NewPanel] 단가 로드: _id → 67개
+[10:26:22] [NewPanel] 단가 로드: FS100 → 65개
+[11:12:36] [NewPanel] 단가 로드: _id → 67개
+[12:21:49] [NewPanel] 단가 로드: _id → 67개
+[12:57:48] [NewPanel] 단가 로드: _id → 67개
+[14:17:13] [NewPanel] 단가 로드: _id → 67개
+[14:17:26] === ShowIssue rowid=934  지에스칼텍스(주) 여수공장  테스트 입니다. ===
+[14:17:26] row 컬럼수=215
+[14:17:26] 항목 컬럼 후보(66개): _id, 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[14:17:26] BuildItemLines → 66행
+[14:17:26] ApplyCheckStates: CheckPanel항목=67개
+[14:17:26] [NewPanel] 단가 로드: _id → 67개
+[14:17:26] [NewPanel] 단가 로드: _id → 67개
+[14:17:26] [NewPanel] 단가 로드: _id → 67개
+[14:17:26] [NewPanel] 단가 로드: _id → 67개
+[14:17:26] [NewPanel] 단가 로드: _id → 67개
+[14:17:26] [NewPanel] 단가 로드: _id → 67개
+[14:17:26] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=65
+[14:17:33] [의뢰서] 견적항목 66개
+[14:26:12] [NewPanel] 단가 로드: _id → 67개
+[14:26:16] [NewPanel] 단가 로드: _id → 67개
+[14:26:16] [NewPanel] 단가 로드: _id → 67개
+[14:26:16] [NewPanel] 단가 로드: _id → 67개
+[14:26:16] [NewPanel] 단가 로드: _id → 67개
+[14:26:16] [NewPanel] 단가 로드: _id → 67개
+[14:26:16] [NewPanel] 단가 로드: _id → 67개
+[14:32:54] [NewPanel] 단가 로드: _id → 67개
+[14:32:57] [NewPanel] 단가 로드: _id → 67개
+[14:32:57] [NewPanel] 단가 로드: _id → 67개
+[14:32:57] [NewPanel] 단가 로드: _id → 67개
+[14:32:57] [NewPanel] 단가 로드: _id → 67개
+[14:32:57] [NewPanel] 단가 로드: _id → 67개
+[14:32:57] [NewPanel] 단가 로드: _id → 67개
+[14:45:12] [NewPanel] 단가 로드: _id → 67개
+[14:45:27] [NewPanel] 단가 로드: _id → 67개
+[14:45:27] [NewPanel] 단가 로드: _id → 67개
+[14:45:27] [NewPanel] 단가 로드: _id → 67개
+[14:45:27] [NewPanel] 단가 로드: _id → 67개
+[14:45:27] [NewPanel] 단가 로드: _id → 67개
+[14:45:27] [NewPanel] 단가 로드: _id → 67개
+[14:47:24] === ShowIssue rowid=934  지에스칼텍스(주) 여수공장  테스트 입니다. ===
+[14:47:24] row 컬럼수=215
+[14:47:24] 항목 컬럼 후보(66개): _id, 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[14:47:24] BuildItemLines → 66행
+[14:47:24] ApplyCheckStates: CheckPanel항목=67개
+[14:47:24] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=65
+[15:16:24] [NewPanel] 단가 로드: _id → 67개
+[15:16:30] [NewPanel] 단가 로드: _id → 67개
+[15:16:30] [NewPanel] 단가 로드: _id → 67개
+[15:16:30] [NewPanel] 단가 로드: _id → 67개
+[15:16:30] [NewPanel] 단가 로드: _id → 67개
+[15:16:30] [NewPanel] 단가 로드: _id → 67개
+[15:16:30] [NewPanel] 단가 로드: _id → 67개
+[15:20:28] [NewPanel] 단가 로드: _id → 67개
+[15:20:32] [NewPanel] 단가 로드: _id → 67개
+[15:20:32] [NewPanel] 단가 로드: _id → 67개
+[15:20:32] [NewPanel] 단가 로드: _id → 67개
+[15:20:32] [NewPanel] 단가 로드: _id → 67개
+[15:20:32] [NewPanel] 단가 로드: _id → 67개
+[15:20:32] [NewPanel] 단가 로드: _id → 67개
+[15:27:48] [NewPanel] 단가 로드: _id → 67개
+[15:27:52] [NewPanel] 단가 로드: _id → 67개
+[15:27:52] [NewPanel] 단가 로드: _id → 67개
+[15:27:52] [NewPanel] 단가 로드: _id → 67개
+[15:27:52] [NewPanel] 단가 로드: _id → 67개
+[15:27:52] [NewPanel] 단가 로드: _id → 67개
+[15:27:52] [NewPanel] 단가 로드: _id → 67개
+[15:30:33] [NewPanel] 단가 로드: _id → 67개
+[15:30:35] [NewPanel] 단가 로드: _id → 67개
+[15:30:35] [NewPanel] 단가 로드: _id → 67개
+[15:30:35] [NewPanel] 단가 로드: _id → 67개
+[15:30:35] [NewPanel] 단가 로드: _id → 67개
+[15:30:35] [NewPanel] 단가 로드: _id → 67개
+[15:30:35] [NewPanel] 단가 로드: _id → 67개
+[15:33:14] [NewPanel] 단가 로드: _id → 67개
+[15:33:14] [NewPanel] 단가 로드: _id → 67개
+[15:33:14] [NewPanel] 단가 로드: _id → 67개
+[15:33:14] [NewPanel] 단가 로드: _id → 67개
+[15:33:14] [NewPanel] 단가 로드: _id → 67개
+[15:33:14] [NewPanel] 단가 로드: _id → 67개
+[15:33:14] [NewPanel] 단가 로드: _id → 67개
+[15:33:14] [NewPanel] 단가 로드: _id → 67개
+[15:33:31] [NewPanel] 단가 로드: FS100 → 65개
+[15:33:52] [NewPanel] 단가 로드: FS100 → 65개
+[15:33:54] [NewPanel] 일괄 수량 11 적용
+[15:33:57] [NewPanel] ==== 저장 버튼 클릭 ====
+[15:33:57] [NewPanel]   _sampleDuplicated=False
+[15:33:57] [NewPanel]   companyName='주식회사 울림이엔티'  abbr=''
+[15:33:57] [NewPanel]   _itemData.Count=15
+[15:33:57] [NewPanel]   발행일=2026-03-29  시료명=테스트 견적  번호=20260329-153314
+[15:33:57] [NewPanel]   견적구분=FS100  담당자=테스트
+[15:33:57] [NewPanel]   total=5,711,200  editingIssue=null
+[15:33:57] [NewPanel]   DB 저장 시작 (Task.Run)
+[15:33:57] [QService] Insert 시작: DbPathHelper.DbPath=/Users/azrael/Documents/ETA/Data/eta.db  존재=True
+[15:33:57] [QService]   issue: 발행일=2026-03-29 업체명=주식회사 울림이엔티 번호=20260329-153314 구분=FS100
+[15:33:57] [QService]   itemData 입력: 15개
+[15:33:57] [QService]   TableExists(견적발행내역)=True
+[15:33:57] [QService]   마이그레이션 후 테이블 컬럼 수=215
+[15:33:57] [QService]   validItems(Qty>0, 컬럼존재)=15개
+[15:33:57] [QService]   고정컬럼 삽입 대상: 견적발행일자, 업체명, 약칭, 시료명, 견적번호, 적용구분, 담당자, 합계 금액
+[15:33:57] [QService]   ExecuteNonQuery 예외: MySqlException: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '"견적발행일자", "업체명", "약칭", "시료명", "견적번호", "...' at line 2
+[15:33:57] [QService]   SQL: 
+            INSERT INTO `견적발행내역`
+                ("견적발행일자", "업체명", "약칭", "시료명", "견적번호", "적용구분", "담당자", "합계 금액", `구리`, `구리단가`, `구리소계`, `납`, `납단가`, `납소계`, `니켈`, `니켈단가`, `니켈소계`, `망간`, `망간단가`, `망간소계`, `바륨`, `바륨단가`, `바륨소계`, `비소`, `비소단가`, `비소소계`, `아연`, `아연단가`, `아연소계`, `안티몬`, `안티몬단가`, `안티몬소계`, `주석`, `주석단가
+[15:33:57] [NewPanel]   저장 예외: MySqlException: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '"견적발행일자", "업체명", "약칭", "시료명", "견적번호", "...' at line 2
+[15:33:57] [NewPanel]   StackTrace:    at MySqlConnector.Core.ServerSession.ReceiveReplyAsync(IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/Core/ServerSession.cs:line 1081
+   at MySqlConnector.Core.ResultSet.ReadResultSetHeaderAsync(IOBehavior ioBehavior) in /_/src/MySqlConnector/Core/ResultSet.cs:line 37
+   at MySqlConnector.MySqlDataReader.ActivateResultSet(CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlDataReader.cs:line 131
+   at MySqlConnector.MySqlDataReader.InitAsync(CommandListPosition commandListPosition, ICommandPayloadCreator payloadCreator, IDictionary`2 cachedProcedures, IMySqlCommand command, CommandBehavior behavior, Activity activity, IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlDataReader.cs:line 487
+   at MySqlConnector.Core.CommandExecutor.ExecuteReaderAsync(CommandListPosition commandListPosition, ICommandPayloadCreator payloadCreator, CommandBehavior behavior, Activity activity, IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/Core/CommandExecutor.cs:line 56
+   at MySqlConnector.MySqlCommand.ExecuteNonQueryAsync(IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlCommand.cs:line 309
+   at MySqlConnector.MySqlCommand.ExecuteNonQuery() in /_/src/MySqlConnector/MySqlCommand.cs:line 108
+   at ETA.Services.QuotationService.Insert(QuotationIssue issue, Dictionary`2 itemData) in /Users/azrael/Documents/ETA/Services/QuotationService.cs:line 347
+   at ETA.Views.Pages.QuotationNewPanel.<>c__DisplayClass44_0.<BtnSave_Click>b__2() in /Users/azrael/Documents/ETA/Views/Pages/QuotationNewPanel.axaml.cs:line 639
+   at System.Threading.Tasks.Task`1.InnerInvoke()
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at ETA.Views.Pages.QuotationNewPanel.BtnSave_Click(Object sender, RoutedEventArgs e) in /Users/azrael/Documents/ETA/Views/Pages/QuotationNewPanel.axaml.cs:line 632
+[15:33:57] [NewPanel]   → 저장 실패 (Insert 반환 false)
+[15:35:49] [NewPanel] 단가 로드: _id → 67개
+[15:35:49] [NewPanel] 단가 로드: _id → 67개
+[15:36:31] [NewPanel] 단가 로드: _id → 67개
+[15:36:34] [NewPanel] 단가 로드: FS100Plus → 65개
+[15:36:37] [NewPanel] 단가 로드: NFS56 → 65개
+[15:36:39] [NewPanel] ==== 저장 버튼 클릭 ====
+[15:36:39] [NewPanel]   _sampleDuplicated=False
+[15:36:39] [NewPanel]   companyName=''  abbr=''
+[15:36:39] [NewPanel]   _itemData.Count=15
+[15:36:39] [NewPanel]   발행일=2026-03-29  시료명=  번호=20260329-153549
+[15:36:39] [NewPanel]   견적구분=NFS56  담당자=
+[15:36:39] [NewPanel]   → 업체 미선택으로 중단
+[15:43:33] [NewPanel] 단가 로드: FS100 → 65개
+[15:43:36] [NewPanel] 단가 로드: FS100 → 65개
+[15:43:41] [NewPanel] 업체 최근 적용구분 자동선택: 56% NFS (2026-02-09)
+[15:43:45] [NewPanel] 단가 로드: FS56 → 65개
+[15:44:00] [NewPanel] 단가 로드: FS56 → 65개
+[15:44:01] [NewPanel] ==== 저장 버튼 클릭 ====
+[15:44:01] [NewPanel]   _sampleDuplicated=False
+[15:44:01] [NewPanel]   companyName='에코랩스 주식회사'  abbr='에코랩스'
+[15:44:01] [NewPanel]   _itemData.Count=15
+[15:44:01] [NewPanel]   발행일=2026-03-29  시료명=테스트 견적서  번호=20260329-154336
+[15:44:01] [NewPanel]   견적구분=FS56  담당자=테스트
+[15:44:01] [NewPanel]   total=243,000  editingIssue=null
+[15:44:01] [NewPanel]   DB 저장 시작 (Task.Run)
+[15:44:01] [QService] Insert 시작: DbPathHelper.DbPath=/Users/azrael/Documents/ETA/Data/eta.db  존재=True
+[15:44:01] [QService]   issue: 발행일=2026-03-29 업체명=에코랩스 주식회사 번호=20260329-154336 구분=FS56
+[15:44:01] [QService]   itemData 입력: 15개
+[15:44:01] [QService]   TableExists(견적발행내역)=True
+[15:44:01] [QService]   마이그레이션 후 테이블 컬럼 수=215
+[15:44:01] [QService]   validItems(Qty>0, 컬럼존재)=15개
+[15:44:01] [QService]   고정컬럼 삽입 대상: 견적발행일자, 업체명, 약칭, 시료명, 견적번호, 적용구분, 담당자, 합계 금액
+[15:44:01] [QService]   ExecuteNonQuery rows=1  new_id=935
+[15:44:01] [NewPanel]   → 저장 성공: 20260329-154336  항목15개
+[15:44:02] === ShowIssue rowid=935  에코랩스 주식회사  테스트 견적서 ===
+[15:44:02] row 컬럼수=215
+[15:44:02] 항목 컬럼 후보(66개): _id, 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[15:44:02] BuildItemLines → 16행
+[15:44:02] ApplyCheckStates: CheckPanel항목=67개
+[15:44:02] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=15
+[15:44:07] === ShowIssue rowid=935  에코랩스 주식회사  테스트 견적서 ===
+[15:44:07] row 컬럼수=215
+[15:44:07] 항목 컬럼 후보(66개): _id, 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[15:44:07] BuildItemLines → 16행
+[15:44:07] ApplyCheckStates: CheckPanel항목=67개
+[15:44:07] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=15
+[15:44:09] === ShowIssue rowid=935  에코랩스 주식회사  테스트 견적서 ===
+[15:44:09] row 컬럼수=215
+[15:44:09] 항목 컬럼 후보(66개): _id, 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[15:44:09] BuildItemLines → 16행
+[15:44:09] ApplyCheckStates: CheckPanel항목=67개
+[15:44:09] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=15
+[15:44:09] === ShowIssue rowid=935  에코랩스 주식회사  테스트 견적서 ===
+[15:44:09] row 컬럼수=215
+[15:44:09] 항목 컬럼 후보(66개): _id, 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[15:44:09] BuildItemLines → 16행
+[15:44:09] ApplyCheckStates: CheckPanel항목=67개
+[15:44:09] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=15
+[15:44:12] [의뢰서] 견적항목 16개
+[15:44:40] [NewPanel] 단가 로드: FS100 → 65개
+[15:44:40] [NewPanel] 단가 로드: FS100 → 65개
+[15:44:40] [NewPanel] 단가 로드: FS100 → 65개
+[15:44:47] === ShowIssue rowid=935  에코랩스 주식회사  테스트 견적서 ===
+[15:44:47] row 컬럼수=215
+[15:44:47] 항목 컬럼 후보(66개): _id, 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[15:44:47] BuildItemLines → 16행
+[15:44:47] ApplyCheckStates: CheckPanel항목=67개
+[15:44:47] [NewPanel] 단가 로드: FS100 → 65개
+[15:44:47] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=15
+[15:44:50] [의뢰서] 견적항목 16개
+[15:48:33] [NewPanel] 업체 최근 적용구분 자동선택: FS100 (2026-03-28)
+[15:48:33] [NewPanel] 업체 최근 담당자 자동설정: 테스트
+[15:48:36] === ShowIssue rowid=934  지에스칼텍스(주) 여수공장  테스트 입니다. ===
+[15:48:36] row 컬럼수=215
+[15:48:36] 항목 컬럼 후보(66개): _id, 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[15:48:36] BuildItemLines → 66행
+[15:48:36] ApplyCheckStates: CheckPanel항목=67개
+[15:48:36] [NewPanel] 단가 로드: FS100 → 65개
+[15:48:36] [NewPanel] 단가 로드: FS100 → 65개
+[15:48:36] [NewPanel] 단가 로드: FS100 → 65개
+[15:48:36] [NewPanel] 단가 로드: FS100 → 65개
+[15:48:36] [NewPanel] 단가 로드: FS100 → 65개
+[15:48:36] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=65
+[15:48:38] [의뢰서] 견적항목 66개
+[15:49:10] [의뢰서] 견적항목 66개
+[16:04:27] [NewPanel] 단가 로드: FS100 → 65개
+[16:04:31] === ShowIssue rowid=934  지에스칼텍스(주) 여수공장  테스트 입니다. ===
+[16:04:31] row 컬럼수=215
+[16:04:31] 항목 컬럼 후보(66개): _id, 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[16:04:31] BuildItemLines → 66행
+[16:04:31] ApplyCheckStates: CheckPanel항목=67개
+[16:04:31] [NewPanel] 단가 로드: FS100 → 65개
+[16:04:31] [NewPanel] 단가 로드: FS100 → 65개
+[16:04:31] [NewPanel] 단가 로드: FS100 → 65개
+[16:04:31] [NewPanel] 단가 로드: FS100 → 65개
+[16:04:31] [NewPanel] 단가 로드: FS100 → 65개
+[16:04:31] [NewPanel] 단가 로드: FS100 → 65개
+[16:04:31] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=65
+[16:04:33] [의뢰서] 견적항목 66개
+[16:05:32] [의뢰서] 견적항목 66개
+[16:10:37] [NewPanel] 단가 로드: FS100 → 65개
+[16:10:39] === ShowIssue rowid=934  지에스칼텍스(주) 여수공장  테스트 입니다. ===
+[16:10:39] row 컬럼수=215
+[16:10:39] 항목 컬럼 후보(66개): _id, 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[16:10:39] BuildItemLines → 66행
+[16:10:39] ApplyCheckStates: CheckPanel항목=67개
+[16:10:39] [NewPanel] 단가 로드: FS100 → 65개
+[16:10:39] [NewPanel] 단가 로드: FS100 → 65개
+[16:10:39] [NewPanel] 단가 로드: FS100 → 65개
+[16:10:39] [NewPanel] 단가 로드: FS100 → 65개
+[16:10:39] [NewPanel] 단가 로드: FS100 → 65개
+[16:10:39] [NewPanel] 단가 로드: FS100 → 65개
+[16:10:39] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=65
+[16:17:53] [NewPanel] 단가 로드: FS100 → 65개
+[16:17:54] === ShowIssue rowid=934  지에스칼텍스(주) 여수공장  테스트 입니다. ===
+[16:17:54] row 컬럼수=215
+[16:17:54] 항목 컬럼 후보(66개): _id, 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[16:17:54] BuildItemLines → 66행
+[16:17:54] ApplyCheckStates: CheckPanel항목=67개
+[16:17:54] [NewPanel] 단가 로드: FS100 → 65개
+[16:17:54] [NewPanel] 단가 로드: FS100 → 65개
+[16:17:54] [NewPanel] 단가 로드: FS100 → 65개
+[16:17:54] [NewPanel] 단가 로드: FS100 → 65개
+[16:17:54] [NewPanel] 단가 로드: FS100 → 65개
+[16:17:54] [NewPanel] 단가 로드: FS100 → 65개
+[16:17:54] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=65
+[16:30:29] [NewPanel] 단가 로드: FS100 → 65개
+[16:30:31] === ShowIssue rowid=934  지에스칼텍스(주) 여수공장  테스트 입니다. ===
+[16:30:31] row 컬럼수=215
+[16:30:31] 항목 컬럼 후보(66개): _id, 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[16:30:31] BuildItemLines → 66행
+[16:30:31] ApplyCheckStates: CheckPanel항목=67개
+[16:30:31] [NewPanel] 단가 로드: FS100 → 65개
+[16:30:31] [NewPanel] 단가 로드: FS100 → 65개
+[16:30:31] [NewPanel] 단가 로드: FS100 → 65개
+[16:30:31] [NewPanel] 단가 로드: FS100 → 65개
+[16:30:31] [NewPanel] 단가 로드: FS100 → 65개
+[16:30:31] [NewPanel] 단가 로드: FS100 → 65개
+[16:30:31] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=65
+[16:52:59] [NewPanel] 단가 로드: FS100 → 65개
+[16:53:00] === ShowIssue rowid=934  지에스칼텍스(주) 여수공장  테스트 입니다. ===
+[16:53:00] row 컬럼수=215
+[16:53:00] 항목 컬럼 후보(66개): _id, 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[16:53:00] BuildItemLines → 66행
+[16:53:00] ApplyCheckStates: CheckPanel항목=67개
+[16:53:00] [NewPanel] 단가 로드: FS100 → 65개
+[16:53:00] [NewPanel] 단가 로드: FS100 → 65개
+[16:53:00] [NewPanel] 단가 로드: FS100 → 65개
+[16:53:00] [NewPanel] 단가 로드: FS100 → 65개
+[16:53:00] [NewPanel] 단가 로드: FS100 → 65개
+[16:53:00] [NewPanel] 단가 로드: FS100 → 65개
+[16:53:00] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=65
+[17:03:50] [NewPanel] 단가 로드: FS100 → 65개
+[17:03:53] [NewPanel] 단가 로드: FS100 → 65개
+[17:03:53] [NewPanel] 단가 로드: FS100 → 65개
+[17:03:53] [NewPanel] 단가 로드: FS100 → 65개
+[17:03:53] [NewPanel] 단가 로드: FS100 → 65개
+[17:03:53] [NewPanel] 단가 로드: FS100 → 65개
+[17:03:53] [NewPanel] 단가 로드: FS100 → 65개
+[17:18:29] [NewPanel] 단가 로드: FS100 → 65개
+[17:18:36] [NewPanel] 단가 로드: FS100 → 65개
+[17:18:36] [NewPanel] 단가 로드: FS100 → 65개
+[17:18:36] [NewPanel] 단가 로드: FS100 → 65개
+[17:18:36] [NewPanel] 단가 로드: FS100 → 65개
+[17:18:36] [NewPanel] 단가 로드: FS100 → 65개
+[17:18:36] [NewPanel] 단가 로드: FS100 → 65개
+[17:32:44] [NewPanel] 단가 로드: FS100 → 65개
+[17:32:47] [NewPanel] 단가 로드: FS100 → 65개
+[17:32:47] [NewPanel] 단가 로드: FS100 → 65개
+[17:32:47] [NewPanel] 단가 로드: FS100 → 65개
+[17:32:47] [NewPanel] 단가 로드: FS100 → 65개
+[17:32:47] [NewPanel] 단가 로드: FS100 → 65개
+[17:32:47] [NewPanel] 단가 로드: FS100 → 65개
+[17:49:15] [NewPanel] 단가 로드: FS100 → 65개
+[17:49:19] [NewPanel] 단가 로드: FS100 → 65개
+[17:49:19] [NewPanel] 단가 로드: FS100 → 65개
+[17:49:19] [NewPanel] 단가 로드: FS100 → 65개
+[17:49:19] [NewPanel] 단가 로드: FS100 → 65개
+[17:49:19] [NewPanel] 단가 로드: FS100 → 65개
+[17:49:19] [NewPanel] 단가 로드: FS100 → 65개

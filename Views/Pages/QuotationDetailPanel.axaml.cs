@@ -415,7 +415,7 @@ public partial class QuotationDetailPanel : UserControl
             var owner = TopLevel.GetTopLevel(this) as Window;
             if (owner != null) progressWin.Show(owner); else progressWin.Show();
 
-            // 3. 파일 생성 (분析자별)
+            // 3. 파일 생성 (분석자별)
             var outputDir  = AnalysisRecordService.GetOutputDir();
             var 방류기준표 = await Task.Run(() => AnalysisRecordService.Load방류기준표());
 
@@ -444,7 +444,7 @@ public partial class QuotationDetailPanel : UserControl
             if (anySuccess)
                 Process.Start(new ProcessStartInfo { FileName = outputDir, UseShellExecute = true });
 
-            Log($"분析기록부 {results.Count}개 생성 완료 → {outputDir}");
+            Log($"분석기록부 {results.Count}개 생성 완료 → {outputDir}");
         }
         finally
         {

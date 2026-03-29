@@ -35,6 +35,8 @@ public class AnalysisRequestDetailPanel : UserControl
     private static readonly HashSet<string> FixedCols =
         new(StringComparer.OrdinalIgnoreCase)
         {
+            // 내부 키 컬럼 (MariaDB: _id, SQLite: rowid)
+            "_id","rowid",
             "약칭","시료명","접수번호","의뢰일","업체명","대표자",
             "담당자","연락처","이메일","견적번호","비고",
             // 분석의뢰및결과 고정 컬럼 추가

@@ -14,7 +14,7 @@ namespace ETA.Services;
 public static class DbConnectionFactory
 {
     /// <summary>true = MariaDB 사용, false = 로컬 SQLite 사용</summary>
-    public static bool UseMariaDb { get; set; } = false;
+    public static bool UseMariaDb { get; set; } = true;
 
     /// <summary>현재 선택된 DB 타입</summary>
     public static bool IsMariaDb => UseMariaDb;
@@ -26,6 +26,9 @@ public static class DbConnectionFactory
 
     /// <summary>마지막 삽입 ID 조회 함수</summary>
     public static string LastInsertId => IsMariaDb ? "LAST_INSERT_ID()" : "last_insert_rowid()";
+
+    /// <summary>행 ID 컬럼명 — MariaDB: _id, SQLite: rowid</summary>
+    public static string RowId => IsMariaDb ? "_id" : "rowid";
 
     /// <summary>날짜 포맷 함수 — SQLite: strftime('%Y', col), MariaDB: DATE_FORMAT(col, '%Y')</summary>
     public static string DateFmt(string col, string fmt)

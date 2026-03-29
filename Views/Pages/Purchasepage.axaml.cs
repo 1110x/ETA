@@ -13,9 +13,9 @@ namespace ETA.Views.Pages;
 
 /// <summary>
 /// 물품구매 페이지
-///   TreeControl  → ActivePageContent1 (왼쪽: 연/월 트리)
-///   ListControl  → ActivePageContent2 (상단: 해당 월 리스트)
-///   FormControl  → ActivePageContent3 (하단: 신규 추가 폼)
+///   TreeControl  → Show1 (왼쪽: 연/월 트리)
+///   ListControl  → Show2 (상단: 해당 월 리스트)
+///   FormControl  → Show3 (하단: 신규 추가 폼)
 /// </summary>
 public class PurchasePage
 {

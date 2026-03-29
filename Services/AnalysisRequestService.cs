@@ -31,63 +31,56 @@ public static class AnalysisRequestService
     public static List<AnalysisRequestRecord> GetAllRecords()
     {
         var list = new List<AnalysisRequestRecord>();
-        Log($"DB 경로: {DbPathHelper.DbPath}  존재={File.Exists(DbPathHelper.DbPath)}");
         if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) { Log("DB 파일 없음"); return list; }
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
-        long tableExists = DbConnectionFactory.TableExists(conn, "분석의뢰및결과") ? 1L : 0L;
-        Log($"테이블 존재: {tableExists}");
-        if (tableExists == 0) return list;
-
-        using var cnt = conn.CreateCommand();
-        cnt.CommandText = "SELECT COUNT(*) FROM `분석의뢰및결과`";
-        long rowCount = Convert.ToInt64(cnt.ExecuteScalar()!);
-        Log($"전체 행 수: {rowCount}");
-        if (rowCount == 0) return list;
-
-        using var sample = conn.CreateCommand();
-        sample.CommandText =
-            "SELECT `채취일자`, `약칭`, `시료명`, `견적번호` FROM `분석의뢰및결과` LIMIT 3";
-        using var srdr = sample.ExecuteReader();
-        while (srdr.Read())
-            Log($"  샘플: 채취일자={srdr.GetValue(0)} 약칭={srdr.GetValue(1)}" +
-                $" 시료명={srdr.GetValue(2)} 견적번호={srdr.GetValue(3)}");
-
-        using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"
-            SELECT _id,
-                   COALESCE(`약칭`,     ''),
-                   COALESCE(`시료명`,   ''),
-                   COALESCE(`견적번호`, ''),
-                   COALESCE(`채취일자`, '')
-            FROM   `분析의뢰및결과`
-            ORDER  BY `채취일자` DESC";
-
-        using var rdr = cmd.ExecuteReader();
-        while (rdr.Read())
+        if (!DbConnectionFactory.TableExists(conn, "분석의뢰및결과"))
         {
-            var date = rdr.GetString(4);
-            string 연도 = "", 월 = "";
-            if (date.Length >= 10 && (date[4] == '-' || date[4] == '/'))
-            { 연도 = date[..4]; 월 = date[5..7]; }
-            else if (date.Length >= 8 && int.TryParse(date[..4], out _))
-            { 연도 = date[..4]; 월 = date[4..6]; }
-            else if (date.Length >= 4)
-            { 연도 = date[..4]; }
-
-            list.Add(new AnalysisRequestRecord
-            {
-                Id       = (int)rdr.GetInt64(0),
-                약칭     = rdr.GetString(1),
-                시료명   = rdr.GetString(2),
-                접수번호 = rdr.GetString(3),
-                의뢰일   = date,
-                연도     = 연도,
-                월       = 월,
-            });
+            Log("테이블 없음: 분석의뢰및결과");
+            return list;
         }
+
+        // MariaDB: using var 중첩 시 커넥션 충돌 방지 — 단일 using 블록
+        using (var cmd = conn.CreateCommand())
+        {
+            cmd.CommandText = $@"
+                SELECT {DbConnectionFactory.RowId},
+                       COALESCE(`약칭`,     ''),
+                       COALESCE(`시료명`,   ''),
+                       COALESCE(`견적번호`, ''),
+                       COALESCE(`채취일자`, '')
+                FROM   `분석의뢰및결과`
+                ORDER  BY `채취일자` DESC";
+
+            using (var rdr = cmd.ExecuteReader())
+            {
+                while (rdr.Read())
+                {
+                    var date = rdr.IsDBNull(4) ? "" : rdr.GetString(4);
+                    string 연도 = "", 월 = "";
+                    if (date.Length >= 10 && (date[4] == '-' || date[4] == '/'))
+                    { 연도 = date[..4]; 월 = date[5..7]; }
+                    else if (date.Length >= 8 && int.TryParse(date[..4], out _))
+                    { 연도 = date[..4]; 월 = date[4..6]; }
+                    else if (date.Length >= 4)
+                    { 연도 = date[..4]; }
+
+                    list.Add(new AnalysisRequestRecord
+                    {
+                        Id       = Convert.ToInt32(rdr.GetValue(0)),
+                        약칭     = rdr.IsDBNull(1) ? "" : rdr.GetString(1),
+                        시료명   = rdr.IsDBNull(2) ? "" : rdr.GetString(2),
+                        접수번호 = rdr.IsDBNull(3) ? "" : rdr.GetString(3),
+                        의뢰일   = date,
+                        연도     = 연도,
+                        월       = 월,
+                    });
+                }
+            }
+        }
+
         Log($"완료: {list.Count}건");
         return list;
     }
@@ -104,7 +97,7 @@ public static class AnalysisRequestService
         conn.Open();
 
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = "SELECT * FROM `분析의뢰및결과` WHERE _id = @id";
+        cmd.CommandText = $"SELECT * FROM `분석의뢰및결과` WHERE {DbConnectionFactory.RowId} = @id";
         cmd.Parameters.AddWithValue("@id", rowId);
 
         using var rdr = cmd.ExecuteReader();
@@ -116,6 +109,26 @@ public static class AnalysisRequestService
                 dict[col] = val;
             }
         return dict;
+    }
+
+    // =====================================================================
+    //  레코드 삭제
+    // =====================================================================
+    public static bool DeleteRecord(int id)
+    {
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return false;
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = $"DELETE FROM `분석의뢰및결과` WHERE {DbConnectionFactory.RowId} = @id";
+            cmd.Parameters.AddWithValue("@id", id);
+            int rows = cmd.ExecuteNonQuery();
+            Log($"DeleteRecord: id={id} → {rows}행 삭제");
+            return rows > 0;
+        }
+        catch (Exception ex) { Log($"DeleteRecord 오류: {ex.Message}"); return false; }
     }
 
     // =====================================================================

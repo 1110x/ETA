@@ -189,20 +189,41 @@ public partial class QuotationHistoryPanel : UserControl
 
     private async void BtnDelete_Click(object? sender, RoutedEventArgs e)
     {
-        if (_isAnalysisTab) return;
-        if (!(_treeQuotation.SelectedItem is TreeViewItem item &&
-              item.Tag is QuotationIssue issue)) return;
-
         var owner = TopLevel.GetTopLevel(this) as Window;
 
-        // 확인 다이얼로그
-        bool confirmed = await ShowConfirmDialogAsync(owner,
+        // ── 분析의뢰내역 탭 삭제 ─────────────────────────────────────────
+        if (_isAnalysisTab)
+        {
+            if (!(_treeAnalysis.SelectedItem is TreeViewItem item &&
+                  item.Tag is AnalysisRequestRecord rec)) return;
+
+            bool confirmed = await ShowConfirmDialogAsync(owner,
+                $"아래 분析의뢰를 DB에서 삭제하시겠습니까?\n\n{rec.약칭}  {rec.시료명}\n{rec.접수번호}");
+            if (!confirmed) return;
+
+            Log($"분析의뢰 삭제: {rec.접수번호} id={rec.Id}");
+            bool ok = await Task.Run(() => AnalysisRequestService.DeleteRecord(rec.Id));
+            if (ok)
+            {
+                _loadedMonths.Clear();
+                _analysisByMonth.Clear();
+                await LoadAnalysisTreeAsync();
+                await ShowAlertDialogAsync(owner, "삭제되었습니다.");
+            }
+            return;
+        }
+
+        // ── 견적발행내역 탭 삭제 ─────────────────────────────────────────
+        if (!(_treeQuotation.SelectedItem is TreeViewItem qItem &&
+              qItem.Tag is QuotationIssue issue)) return;
+
+        bool qConfirmed = await ShowConfirmDialogAsync(owner,
             $"아래 견적을 삭제하시겠습니까?\n\n{issue.약칭}  {issue.시료명}\n{issue.견적번호}");
-        if (!confirmed) return;
+        if (!qConfirmed) return;
 
         Log($"삭제: {issue.견적번호}");
-        bool ok = QuotationService.Delete(issue.Id);
-        if (ok)
+        bool qOk = QuotationService.Delete(issue.Id);
+        if (qOk)
         {
             LoadData();
             await ShowAlertDialogAsync(owner, "삭제되었습니다.");
@@ -557,6 +578,26 @@ public partial class QuotationHistoryPanel : UserControl
             Text = rec.접수번호, FontSize = 9, FontFamily = Font,
             Foreground = Brush.Parse("#445566"), Margin = new Thickness(0, 0, 0, 1),
         });
-        return new TreeViewItem { Header = sp, Tag = rec };
+
+        var node = new TreeViewItem { Header = sp, Tag = rec };
+
+        // 더블탭 → 삭제 확인
+        node.DoubleTapped += async (_, _) =>
+        {
+            var owner = TopLevel.GetTopLevel(node) as Window;
+            bool confirmed = await ShowConfirmDialogAsync(owner,
+                $"아래 분析의뢰를 DB에서 삭제하시겠습니까?\n\n{rec.약칭}  {rec.시료명}\n{rec.접수번호}");
+            if (!confirmed) return;
+            bool ok = await Task.Run(() => AnalysisRequestService.DeleteRecord(rec.Id));
+            if (ok)
+            {
+                _loadedMonths.Clear();
+                _analysisByMonth.Clear();
+                await LoadAnalysisTreeAsync();
+                await ShowAlertDialogAsync(owner, "삭제되었습니다.");
+            }
+        };
+
+        return node;
     }
 }

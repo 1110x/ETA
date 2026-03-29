@@ -481,7 +481,7 @@ public partial class ContractPage : UserControl
     // ★ 계약구분 ComboBox 행 추가
     //   - 분석단가 테이블의 FS100 이후 컬럼을 항목으로 채움
     //   - 기본 선택값 : FS25 (없으면 첫 번째 항목)
-    //   - 선택 변경 시 : ActivePageContent3 에 해당 컬럼 데이터 테이블 표시
+    //   - 선택 변경 시 : Show3 에 해당 컬럼 데이터 테이블 표시
     // =========================================================================
     private void AddGridRowComboBox(Grid grid, int row, string label, string currentValue)
     {
@@ -542,14 +542,6 @@ public partial class ContractPage : UserControl
         else if (columns.Count > 0)
             comboBox.SelectedIndex = 0;
 
-        // ── 선택 변경 → ActivePageContent3 에 테이블 표시 ────────────────────
-        comboBox.SelectionChanged += (_, _) =>
-        {
-            var selected = comboBox.SelectedItem?.ToString();
-            if (!string.IsNullOrEmpty(selected))
-                LoadUnitPriceTable(selected);
-        };
-
         // 필드 저장용 참조 보관
         _contractTypeComboBox = comboBox;
 
@@ -561,145 +553,7 @@ public partial class ContractPage : UserControl
         Grid.SetRow(panel, gridRow);
         grid.Children.Add(panel);
 
-        // 초기 로드 (패널 빌드 시점에도 테이블 표시)
-        var initialCol = comboBox.SelectedItem?.ToString();
-        if (!string.IsNullOrEmpty(initialCol))
-            LoadUnitPriceTable(initialCol);
     }
-
-   // =========================================================================
-// ★ ActivePageContent3 에 전체 단가 테이블 표시 + 선택 컬럼 강조
-// =========================================================================
-private void LoadUnitPriceTable(string selectedColumn)
-{
-    try
-    {
-        // ActivePageContent3 안전하게 찾기 (TopLevel 방식 - 에러 zero)
-        var mainPage = TopLevel.GetTopLevel(this) as MainPage;
-        var target = mainPage?.ActivePageContent3;
-        if (target == null)
-        {
-            Log($"★ ActivePageContent3 를 찾을 수 없음");
-            return;
-        }
-
-        // 전체 컬럼 목록 (3번째부터)
-        var allColumns = ContractService.GetUnitPriceColumns()
-                            .Skip(2)
-                            .Where(c => !string.IsNullOrWhiteSpace(c))
-                            .ToList();
-
-        if (allColumns.Count == 0)
-        {
-            Log("컬럼이 없습니다.");
-            return;
-        }
-
-        // 행 키는 첫 번째 컬럼(ES) 기준으로 가져옴
-        var rowKeys = ContractService.GetUnitPriceColumnData(allColumns[0])
-                        .Select(r => r.Key)
-                        .ToList();
-
-        // 전체 행 데이터 구성 (Dictionary로 동적 바인딩)
-        var fullRows = new List<Dictionary<string, string>>();
-        for (int i = 0; i < rowKeys.Count; i++)
-        {
-            var row = new Dictionary<string, string> { ["항목"] = rowKeys[i] };
-
-            foreach (var col in allColumns)
-            {
-                var colData = ContractService.GetUnitPriceColumnData(col);
-                var match = colData.FirstOrDefault(r => r.Key == rowKeys[i]);
-                var value = (match.Key == rowKeys[i] ? match.Value : "");
-
-                row[col] = value;
-            }
-            fullRows.Add(row);
-        }
-
-        // DataGrid 생성
-        var dataGrid = new DataGrid
-        {
-            IsReadOnly = true,
-            CanUserResizeColumns = true,
-            Background = new SolidColorBrush(Color.Parse("#1e1e2e")),
-            Foreground = Brushes.WhiteSmoke,
-            GridLinesVisibility = DataGridGridLinesVisibility.All,
-            HorizontalGridLinesBrush = new SolidColorBrush(Color.Parse("#444444")),
-            VerticalGridLinesBrush = new SolidColorBrush(Color.Parse("#444444")),
-            FontFamily = Font,
-            FontSize = 12,
-            Margin = new Thickness(4),
-        };
-
-        // 1) 항목 컬럼
-        dataGrid.Columns.Add(new DataGridTextColumn
-        {
-            Header = "항목",
-            Binding = new Avalonia.Data.Binding("항목"),
-            Width = DataGridLength.Auto,
-        });
-
-        // 2) 모든 FS 컬럼 + 선택된 컬럼 강조
-        foreach (var col in allColumns)
-        {
-            var isSelected = col == selectedColumn;
-
-            var headerText = new TextBlock
-            {
-                Text = col,
-                FontWeight = isSelected ? FontWeight.Bold : FontWeight.Normal,
-                Foreground = isSelected 
-                    ? new SolidColorBrush(Color.Parse("#ffaa00"))   // 주황색 강조
-                    : Brushes.WhiteSmoke,
-                Padding = new Thickness(8, 4),
-            };
-
-            var column = new DataGridTextColumn
-            {
-                Header = headerText,
-                Binding = new Avalonia.Data.Binding(col),
-                Width = new DataGridLength(1, DataGridLengthUnitType.Star),
-            };
-
-            // 선택된 컬럼에 테두리 효과 (헤더 배경)
-            if (isSelected)
-            {
-                headerText.Background = new SolidColorBrush(Color.Parse("#3a2a1f")); // 약간 어두운 주황 배경
-            }
-
-            dataGrid.Columns.Add(column);
-        }
-
-        dataGrid.ItemsSource = fullRows;
-
-        // 래퍼 (타이틀 + 구분선)
-        var wrapper = new StackPanel { Spacing = 6, Margin = new Thickness(4) };
-        wrapper.Children.Add(new TextBlock
-        {
-            Text = $"📊 전체 분석단가 테이블 ({allColumns.Count}개 컬럼)",
-            FontSize = 13,
-            FontFamily = Font,
-            FontWeight = FontWeight.SemiBold,
-            Foreground = Brushes.WhiteSmoke,
-            Margin = new Thickness(0, 0, 0, 4),
-        });
-        wrapper.Children.Add(new Border
-        {
-            Height = 1,
-            Background = new SolidColorBrush(Color.Parse("#555555")),
-            Margin = new Thickness(0, 0, 0, 4),
-        });
-        wrapper.Children.Add(dataGrid);
-
-        target.Content = wrapper;
-        Log($"✅ 전체 단가 테이블 표시 완료 ({allColumns.Count}개 컬럼, 선택: {selectedColumn})");
-    }
-    catch (Exception ex)
-    {
-        Log($"★ LoadUnitPriceTable 오류: {ex.Message}");
-    }
-}
 
     // =========================================================================
     // 확인 다이얼로그
