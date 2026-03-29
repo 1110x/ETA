@@ -938,16 +938,33 @@ public partial class MeasurerLoginWindow : Window
         })");
         Log("[전체DB] insertFieldPlanBtn 클릭");
 
-        // 10. 모달 닫힌 대기
-        for (int w = 0; w < 10000; w += 400)
+        // 10. 모달 닫힌 대기 — 모달이 완전히 닫혀야만 다음 진행
+        Log("[전체DB] 모달 닫힘 대기 시작");
+        bool modalClosed = false;
+        for (int w = 0; w < 15000; w += 300)
         {
-            await Task.Delay(400);
+            await Task.Delay(300);
             string vis = ExtractCdpStringValue(await Evaluate(
                 "String(!!(document.getElementById('add_meas_cont_no')?.offsetParent))"));
-            if (vis == "false") break;
+            if (vis == "false") 
+            { 
+                modalClosed = true;
+                break;
+            }
         }
+        
+        if (!modalClosed)
+        {
+            Log("[전체DB] 경고: 모달이 닫히지 않음. 강제 닫기 시도");
+            await Evaluate(@"(function(){
+                var modals = document.querySelectorAll('.modal, [role=""dialog""], .overlay');
+                modals.forEach(function(m) { if (m) m.style.display = 'none'; });
+            })");
+        }
+        
+        // 모달 닫힌 후 추가 대기 (테이블 렌더링)
         await Task.Delay(2500);
-        Log("[전체DB] 모달 닫힌 완료 - 테이블 새로고침 대기중");
+        Log("[전체DB] 모달 닫힘 완료 - 테이블 렌더링 대기");
         
         // 테이블 스크롤 최상단으로 이동 (첫 행 보이게)
         await Evaluate(@"(function(){
@@ -957,9 +974,10 @@ public partial class MeasurerLoginWindow : Window
             var firstRow = tbl.querySelector('tr[role=""row""], tr.rg-data-row');
             if (firstRow) firstRow.scrollIntoView({behavior:'instant', block:'start'});
         })");
-        await Task.Delay(600);
+        await Task.Delay(800);
 
         // 11. 테이블에서 "ETA DB 업데이트" 행 더블클릭 (최대 6초 반복 탐색)
+        // 체크박스 셀이 아닌 데이터 셀을 더블클릭해서 체크박스 토글 방지
         Post("테이블에서 ETA DB 업데이트 행 탐색 중...", "#bb88ff");
         string dblResult = "NOT_FOUND";
         for (int retry = 0; retry < 12; retry++) // 최대 6초 (500ms * 12회)
@@ -971,40 +989,40 @@ public partial class MeasurerLoginWindow : Window
                 console.log('[ETA] Table rows:', debugCount);
                 if (debugCount === 0) return 'EMPTY_TABLE';
                 
-                // 1차: tr 행 내 직접 찾기
+                // ETA DB 업데이트 행 찾기
                 for (var i = 0; i < rows.length; i++) {
                     var row = rows[i];
                     var t = (row.innerText || row.textContent || '').trim();
                     if (t && t.indexOf('ETA DB') >= 0) {
                         console.log('[ETA] Found at row', i);
-                        row.focus();
-                        row.dispatchEvent(new MouseEvent('mousedown', {bubbles:true, view:window}));
-                        row.dispatchEvent(new MouseEvent('mouseup', {bubbles:true, view:window}));
-                        row.dispatchEvent(new MouseEvent('click', {bubbles:true, view:window}));
-                        setTimeout(function() {
-                            row.dispatchEvent(new MouseEvent('dblclick', {bubbles:true, view:window}));
-                        }, 100);
-                        return 'OK_ROW:' + t.slice(0, 80);
-                    }
-                }
-                
-                // 2차: .rg-renderer div 찾기
-                var divs = Array.from(document.querySelectorAll('.rg-renderer'));
-                for (var d of divs) {
-                    var dt = (d.innerText || d.textContent || '').trim();
-                    if (dt && dt.indexOf('ETA DB') >= 0) {
-                        var tr = d.closest('tr');
-                        if (tr) {
-                            console.log('[ETA] Found via DIV');
-                            tr.focus();
-                            tr.dispatchEvent(new MouseEvent('mousedown', {bubbles:true, view:window}));
-                            tr.dispatchEvent(new MouseEvent('mouseup', {bubbles:true, view:window}));
-                            tr.dispatchEvent(new MouseEvent('click', {bubbles:true, view:window}));
-                            setTimeout(function() {
-                                tr.dispatchEvent(new MouseEvent('dblclick', {bubbles:true, view:window}));
-                            }, 100);
-                            return 'OK_DIV:' + dt.slice(0, 70);
+                        
+                        // 행 내에서 체크박스가 아닌 데이터 셀 찾기
+                        var cells = Array.from(row.querySelectorAll('td, th, .rg-renderer, [role=""gridcell""]'));
+                        var dataCell = null;
+                        
+                        for (var cell of cells) {
+                            // input[type=checkbox]는 스킵
+                            if (cell.querySelector('input[type=""checkbox""]')) continue;
+                            // 텍스트가 있는 첫 번째 셀 사용
+                            var ct = (cell.innerText || cell.textContent || '').trim();
+                            if (ct && ct.length > 0) {
+                                dataCell = cell;
+                                break;
+                            }
                         }
+                        
+                        // 데이터 셀이 없으면 행 전체 사용
+                        if (!dataCell) dataCell = row;
+                        
+                        // 데이터 셀에 더블클릭
+                        dataCell.focus();
+                        dataCell.dispatchEvent(new MouseEvent('mousedown', {bubbles:true, view:window}));
+                        dataCell.dispatchEvent(new MouseEvent('mouseup', {bubbles:true, view:window}));
+                        dataCell.dispatchEvent(new MouseEvent('click', {bubbles:true, view:window}));
+                        setTimeout(function() {
+                            dataCell.dispatchEvent(new MouseEvent('dblclick', {bubbles:true, view:window}));
+                        }, 150);
+                        return 'OK_CELL:' + t.slice(0, 80);
                     }
                 }
                 
@@ -1013,6 +1031,7 @@ public partial class MeasurerLoginWindow : Window
             if (!dblResult.StartsWith("NOT_FOUND")) 
             {
                 Log($"[전체DB] 행 탐색 성공 (시도 {retry + 1}/12): {dblResult}");
+                await Task.Delay(300); // 더블클릭 이벤트 처리 대기
                 break;
             }
             
