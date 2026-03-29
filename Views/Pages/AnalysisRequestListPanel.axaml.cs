@@ -1197,30 +1197,26 @@ public class AnalysisRequestListPanel : UserControl
 
             Debug.WriteLine($"[BtnMeasurer] 레코드 {ri + 1}/{records.Count} 폼 입력 완료");
 
-            // ── 마지막 레코드가 아니면: 저장 → 모달 닫힘 대기 → 다음 루프에서 다시 열기 ──
-            // 마지막 레코드면 저장하지 않고 사용자가 확인 후 저장하도록 남겨둠
-            if (ri < records.Count - 1)
-            {
-                // insertFieldPlanBtn 클릭 → 저장
-                await CdpEvalAsync(socket, @"(function(){
-                    var btn = document.getElementById('insertFieldPlanBtn');
-                    if (btn) btn.click();
-                    return 'SAVE';
-                })()", cts.Token);
+            // ── 저장 버튼 클릭 → 모달 닫힘 대기 (마지막 레코드 포함 전체) ──
+            string saveResult = ExtractCdpValue(await CdpEvalAsync(socket, @"(function(){
+                var btn = document.getElementById('insertFieldPlanBtn');
+                if (btn) { btn.click(); return 'SAVE'; }
+                return 'NO_BTN';
+            })()", cts.Token));
+            Debug.WriteLine($"[BtnMeasurer] 저장: {saveResult}");
 
-                // 모달 닫힘 대기 (add_meas_cont_no 사라질 때까지 또는 3초)
-                for (int w = 0; w < 3000; w += 400)
-                {
-                    await Task.Delay(400, cts.Token);
-                    string chk = ExtractCdpValue(await CdpEvalAsync(socket, @"(function(){
-                        var el = document.getElementById('add_meas_cont_no');
-                        return (el && el.offsetParent !== null) ? 'OPEN' : 'CLOSED';
-                    })()", cts.Token));
-                    if (chk == "CLOSED") break;
-                }
-                // 다음 모달 열기 전 잠깐 대기
-                await Task.Delay(800, cts.Token);
+            // 모달 닫힘 대기 (add_meas_cont_no 사라질 때까지 최대 5초)
+            for (int w = 0; w < 5000; w += 400)
+            {
+                await Task.Delay(400, cts.Token);
+                string chk = ExtractCdpValue(await CdpEvalAsync(socket, @"(function(){
+                    var el = document.getElementById('add_meas_cont_no');
+                    return (el && el.offsetParent !== null) ? 'OPEN' : 'CLOSED';
+                })()", cts.Token));
+                if (chk == "CLOSED") break;
             }
+            // 다음 루프 또는 완료 전 잠깐 대기
+            await Task.Delay(800, cts.Token);
         } // end for each record
 
         await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "", CancellationToken.None);
