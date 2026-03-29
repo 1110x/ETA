@@ -845,26 +845,49 @@ public partial class MeasurerLoginWindow : Window
         })()"));
         Log($"[전체DB] 계약 선택: {selContract}");
 
-        // 3. 현장 선택
-        await Task.Delay(1500);
-        string selPlc = ExtractCdpStringValue(await Evaluate(@"(function(){
-            var sel = document.getElementById('cmb_emis_cmpy_plc_no');
-            if (!sel || sel.options.length < 2) return 'NO_OPT';
-            sel.selectedIndex = 1;
-            sel.dispatchEvent(new Event('change', {bubbles:true}));
-            return 'native:' + sel.options[1].value;
-        })()"));
+        // 3. 현장 선택 (동적 로딩 지연 대비 재시도)
+        string selPlc = "NO_OPT";
+        for (int i = 0; i < 12; i++)
+        {
+            await Task.Delay(500);
+            selPlc = ExtractCdpStringValue(await Evaluate(@"(function(){
+                var sel = document.getElementById('cmb_emis_cmpy_plc_no');
+                if (!sel) return 'NO_SEL';
+                if (sel.options.length < 2) return 'NO_OPT';
+                var opt = sel.options[1];
+                if (window.$) {
+                    try {
+                        window.$('#cmb_emis_cmpy_plc_no').val(opt.value)
+                            .trigger({type:'select2:select', params:{data:{id:opt.value, text:opt.text}}})
+                            .trigger('change');
+                        return 'select2:' + opt.value;
+                    } catch(e) {}
+                }
+                sel.selectedIndex = 1;
+                sel.dispatchEvent(new Event('change', {bubbles:true}));
+                return 'native:' + opt.value;
+            })()"));
+
+            if (!selPlc.StartsWith("NO_")) break;
+        }
         Log($"[전체DB] 현장 선택: {selPlc}");
 
         // 4. 채취지점 선택 (add_emis_fac_no)
-        await Task.Delay(1500);
-        string selFac = ExtractCdpStringValue(await Evaluate(@"(function(){
-            var sel = document.getElementById('add_emis_fac_no');
-            if (!sel || sel.options.length < 2) return 'NO_OPT';
-            sel.selectedIndex = 1;
-            sel.dispatchEvent(new Event('change', {bubbles:true}));
-            return 'native:' + sel.options[1].value;
-        })()"));
+        string selFac = "NO_OPT";
+        for (int i = 0; i < 12; i++)
+        {
+            await Task.Delay(500);
+            selFac = ExtractCdpStringValue(await Evaluate(@"(function(){
+                var sel = document.getElementById('add_emis_fac_no');
+                if (!sel) return 'NO_SEL';
+                if (sel.options.length < 2) return 'NO_OPT';
+                sel.selectedIndex = 1;
+                sel.dispatchEvent(new Event('change', {bubbles:true}));
+                return 'native:' + sel.options[1].value;
+            })()"));
+
+            if (!selFac.StartsWith("NO_")) break;
+        }
         Log($"[전체DB] 채취지점 선택: {selFac}");
         await Task.Delay(500);
 
@@ -1137,6 +1160,22 @@ public partial class MeasurerLoginWindow : Window
             return 'OK|text:' + ((btn.innerText || btn.textContent || '').replace(/\s+/g, ' ').trim()) + '|disabled:' + (!!btn.disabled);
         })()"));
         Log($"[전체DB] insertFieldPlanBtn 클릭: {saveClickResult}");
+
+        string saveValidation = ExtractCdpStringValue(await Evaluate(@"(function(){
+            var root = document;
+            var nodes = Array.from(root.querySelectorAll('.error, .invalid-feedback, .help-block, .text-danger, .alert, .toast, .swal2-container, .swal2-popup'));
+            var msgs = [];
+            for (var i = 0; i < nodes.length; i++) {
+                var n = nodes[i];
+                if (!n || n.offsetParent === null) continue;
+                var t = (n.innerText || n.textContent || '').replace(/\s+/g, ' ').trim();
+                if (t) msgs.push(t);
+                if (msgs.length >= 3) break;
+            }
+            if (!msgs.length) return 'NONE';
+            return msgs.join(' | ');
+        })()"));
+        Log($"[전체DB] 저장 직후 유효성/알림: {saveValidation}");
         await Task.Delay(400);
 
         // 11. 모달 닫힌 대기 — 모달이 완전히 닫혀야만 다음 진행
