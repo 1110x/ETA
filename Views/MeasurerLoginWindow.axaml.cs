@@ -29,11 +29,30 @@ public partial class MeasurerLoginWindow : Window
             Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
             "Documents", "ETA", "Data", "Personal SET.log");
 
-    private static readonly string LogPath =
-        Path.Combine(AppContext.BaseDirectory, "측정인.log");
+    private static readonly string LogPath = ResolveMeasurerLogPath();
+
+    private static string ResolveMeasurerLogPath()
+    {
+        // 개발 실행(dotnet run)에서는 프로젝트 루트의 Data/측정인.log를 우선 사용한다.
+        // 경로를 찾지 못하면 기존처럼 실행 폴더(AppContext.BaseDirectory)로 fallback.
+        try
+        {
+            string cwdDataDir = Path.Combine(Directory.GetCurrentDirectory(), "Data");
+            if (Directory.Exists(cwdDataDir))
+            {
+                return Path.Combine(cwdDataDir, "측정인.log");
+            }
+        }
+        catch { }
+
+        return Path.Combine(AppContext.BaseDirectory, "측정인.log");
+    }
 
     private ClientWebSocket? _ws;
     private CancellationTokenSource _pollCts = new();
+    private int _isFullDbUpdateRunning = 0;
+    private long _lastFullDbUpdateFinishedTicksUtc = 0;
+    private const int FullDbUpdateCooldownSeconds = 20;
 
     /// <summary>로그인 성공 시 발생 — 외부에서 창 닫힌 후 데이터 주입 재시도용</summary>
     public bool LoginSucceeded { get; private set; }
@@ -382,9 +401,60 @@ public partial class MeasurerLoginWindow : Window
             if (window.__etaObserver) return 'ALREADY';
             window.__etaSyncRequested        = false;
             window.__etaAnalysisRequested    = false;
+            window.__etaEquipmentRequested   = false;
             window.__etaFullUpdateRequested  = false;
+            window.__etaFullUpdateRunning    = false;
             window.__etaFieldPlanRequested   = false;
             window.__etaAutoOpenFieldPlanRequested = false;
+
+            function ensureEquipmentButton() {
+                if (document.getElementById('__eta_equipment_li__')) return;
+
+                var btn = document.createElement('button');
+                btn.id = '__eta_equipment_btn__';
+                btn.type = 'button';
+                btn.textContent = 'ETA 분석장비 UPDATE';
+
+                btn.onclick = function() {
+                    if (window.__etaEquipmentRequested) return;
+                    window.__etaEquipmentRequested = true;
+                    btn.textContent = '장비 수집 중...';
+                    btn.disabled = true;
+                };
+
+                // 사이드바 nav ul 탐색 (SmartAdmin 계열 셀렉터 순서로 시도)
+                var navUl = document.querySelector('#left-panel nav ul')
+                         || document.querySelector('#navigation')
+                         || document.querySelector('nav ul.navigation')
+                         || (function(){
+                               var lis = document.querySelectorAll('ul > li > a');
+                               for (var i = 0; i < lis.length; i++) {
+                                   if (lis[i].textContent.indexOf('사용자정보') >= 0)
+                                       return lis[i].closest('ul');
+                               }
+                               return null;
+                           })();
+
+                if (navUl) {
+                    btn.style.cssText =
+                        'width:100%;background:#0b7a75;color:#fff;border:none;' +
+                        'padding:9px 14px;border-radius:4px;cursor:pointer;' +
+                        'font-size:12px;font-weight:700;text-align:left;display:block;';
+                    var li = document.createElement('li');
+                    li.id = '__eta_equipment_li__';
+                    li.style.cssText = 'padding:4px 8px 4px 14px;';
+                    li.appendChild(btn);
+                    navUl.insertBefore(li, navUl.firstChild);
+                } else {
+                    // 폴백: 화면 우하단 고정 버튼
+                    btn.style.cssText =
+                        'position:fixed;right:24px;bottom:24px;z-index:2147483647;' +
+                        'background:#0b7a75;color:#fff;border:none;padding:10px 14px;' +
+                        'border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;' +
+                        'box-shadow:0 6px 18px rgba(0,0,0,.25);';
+                    document.body.appendChild(btn);
+                }
+            }
 
             function tryInjectModal() {
                 var contSel = document.getElementById('add_meas_cont_no');
@@ -400,7 +470,7 @@ public partial class MeasurerLoginWindow : Window
                     'border-radius:4px;cursor:pointer;font-size:13px;font-weight:bold;' +
                     'margin-top:8px;display:inline-block;';
                 btn.onclick = function() {
-                    if (window.__etaFullUpdateRequested) return;
+                    if (window.__etaFullUpdateRequested || window.__etaFullUpdateRunning) return;
                     window.__etaFullUpdateRequested = true;
                     btn.textContent = '수집 중...';
                     btn.disabled = true;
@@ -443,6 +513,7 @@ public partial class MeasurerLoginWindow : Window
 
             function tryInject() {
                 tryInjectModal();
+                ensureEquipmentButton();
                 hookFieldPlanBtn();
                 tryAutoOpenFieldPlan();
             }
@@ -475,12 +546,48 @@ public partial class MeasurerLoginWindow : Window
                 if (flagFull == "true")
                 {
                     await Evaluate("window.__etaFullUpdateRequested = false;");
+
+                    if (Interlocked.CompareExchange(ref _isFullDbUpdateRunning, 1, 0) != 0)
+                    {
+                        Log("[전체DB] 중복 요청 무시: 이미 실행 중");
+                        await Evaluate(@"(function(){
+                            window.__etaFullUpdateRunning = true;
+                            var b = document.getElementById('__eta_full_update_btn__');
+                            if(b){ b.textContent='ETA DB 전체 업데이트'; b.disabled=false; }
+                        })()");
+                        continue;
+                    }
+
+                    long finishedTicks = Interlocked.Read(ref _lastFullDbUpdateFinishedTicksUtc);
+                    if (finishedTicks > 0)
+                    {
+                        double elapsedSec = (DateTime.UtcNow - new DateTime(finishedTicks, DateTimeKind.Utc)).TotalSeconds;
+                        if (elapsedSec < FullDbUpdateCooldownSeconds)
+                        {
+                            Log($"[전체DB] 중복 요청 무시: 쿨다운 {elapsedSec:0.0}s/{FullDbUpdateCooldownSeconds}s");
+                            Interlocked.Exchange(ref _isFullDbUpdateRunning, 0);
+                            await Evaluate(@"(function(){
+                                window.__etaFullUpdateRunning = false;
+                                var b = document.getElementById('__eta_full_update_btn__');
+                                if(b){ b.textContent='ETA DB 전체 업데이트'; b.disabled=false; }
+                            })()");
+                            continue;
+                        }
+                    }
+
+                    await Evaluate("window.__etaFullUpdateRunning = true;");
                     Post("전체 DB 업데이트 시작...", "#bb88ff");
                     try { await ScrapeFullDbAsync(); }
                     catch (Exception ex2)
                     {
                         Log($"[전체DB] {ex2}");
                         Post($"전체 DB 업데이트 실패: {ex2.Message}", "#ff8844");
+                    }
+                    finally
+                    {
+                        Interlocked.Exchange(ref _lastFullDbUpdateFinishedTicksUtc, DateTime.UtcNow.Ticks);
+                        Interlocked.Exchange(ref _isFullDbUpdateRunning, 0);
+                        await Evaluate("window.__etaFullUpdateRunning = false;");
                     }
                     await Evaluate(@"(function(){
                         var b = document.getElementById('__eta_full_update_btn__');
@@ -512,6 +619,20 @@ public partial class MeasurerLoginWindow : Window
                     await Evaluate(@"(function(){
                         var b = document.getElementById('__eta_analysis_btn__');
                         if(b){ b.textContent='ETA 분석DB 업데이트 (완료)'; b.disabled=false; }
+                    })()");
+                    continue;
+                }
+
+                // ── 분석장비 업데이트 플래그 ─────────────────────────────────
+                string flagEquip = ExtractCdpStringValue(await Evaluate("String(window.__etaEquipmentRequested)"));
+                if (flagEquip == "true")
+                {
+                    await Evaluate("window.__etaEquipmentRequested = false;");
+                    Post("분석장비 목록 수집 중...", "#0b7a75");
+                    await ScrapeAnalysisEquipmentsAsync();
+                    await Evaluate(@"(function(){
+                        var b = document.getElementById('__eta_equipment_btn__');
+                        if (b) { b.textContent='ETA 분석장비 UPDATE (완료)'; b.disabled=false; }
                     })()");
                     continue;
                 }
@@ -1195,16 +1316,10 @@ public partial class MeasurerLoginWindow : Window
             btn.scrollIntoView({ behavior: 'instant', block: 'center' });
             btn.focus();
 
-            // 중복 생성 방지: 기본은 1회 클릭, 모달이 그대로일 때만 1회 재시도
+            // 중복 생성 방지: 저장 버튼은 단 1회만 클릭
             try { btn.click(); } catch(e) { return 'CLICK_ERR:' + e; }
 
-            var retried = false;
-            if (modalVisible()) {
-                retried = true;
-                try { btn.click(); } catch(e2) {}
-            }
-
-            return 'OK|text:' + ((btn.innerText || btn.textContent || '').replace(/\s+/g, ' ').trim()) + '|disabled:' + (!!btn.disabled) + '|retry:' + retried;
+            return 'OK|text:' + ((btn.innerText || btn.textContent || '').replace(/\s+/g, ' ').trim()) + '|disabled:' + (!!btn.disabled) + '|retry:false';
         })()"));
         Log($"[전체DB] insertFieldPlanBtn 클릭: {saveClickResult}");
 
@@ -1279,87 +1394,10 @@ public partial class MeasurerLoginWindow : Window
         })()"));
         Log($"[전체DB] 테이블 상태 (스크롤 후): {tableAfterScroll}");
 
-        // 12. 테이블에서 "ETA DB 업데이트" 행 더블클릭 (최대 6초 반복 탐색)
-        // 체크박스 셀이 아닌 데이터 셀을 더블클릭해서 체크박스 토글 방지
-        Post("테이블에서 ETA DB 업데이트 행 탐색 중...", "#bb88ff");
-        Log("[전체DB] 테이블 행 탐색 시작");
-        string dblResult = "NOT_FOUND";
-        for (int retry = 0; retry < 12; retry++) // 최대 6초 (500ms * 12회)
-        {
-            dblResult = ExtractCdpStringValue(await Evaluate(@"(function(){
-                var rows = Array.from(document.querySelectorAll('tr[role=""row""], tr.rg-data-row'));
-                var debugCount = rows.length;
-                
-                console.log('[ETA] Table rows:', debugCount);
-                if (debugCount === 0) return 'EMPTY_TABLE';
-                
-                // ETA DB 업데이트 행 찾기
-                for (var i = 0; i < rows.length; i++) {
-                    var row = rows[i];
-                    var t = (row.innerText || row.textContent || '').trim();
-                    if (t && t.indexOf('ETA DB') >= 0) {
-                        console.log('[ETA] Found at row', i, ':', t.slice(0,100));
-                        
-                        // 행 내에서 체크박스가 아닌 데이터 셀 찾기
-                        var cells = Array.from(row.querySelectorAll('td, th, .rg-renderer, [role=""gridcell""]'));
-                        var dataCell = null;
-                        
-                        for (var cell of cells) {
-                            // input[type=checkbox]는 스킵
-                            if (cell.querySelector('input[type=""checkbox""]')) continue;
-                            // 텍스트가 있는 첫 번째 셀 사용
-                            var ct = (cell.innerText || cell.textContent || '').trim();
-                            if (ct && ct.length > 0) {
-                                dataCell = cell;
-                                break;
-                            }
-                        }
-                        
-                        // 데이터 셀이 없으면 행 전체 사용
-                        if (!dataCell) dataCell = row;
-                        
-                        // 데이터 셀에 더블클릭
-                        dataCell.focus();
-                        dataCell.dispatchEvent(new MouseEvent('mousedown', {bubbles:true, view:window}));
-                        dataCell.dispatchEvent(new MouseEvent('mouseup', {bubbles:true, view:window}));
-                        dataCell.dispatchEvent(new MouseEvent('click', {bubbles:true, view:window}));
-                        setTimeout(function() {
-                            dataCell.dispatchEvent(new MouseEvent('dblclick', {bubbles:true, view:window}));
-                        }, 150);
-                        return 'OK_CELL:' + t.slice(0, 80);
-                    }
-                }
-                
-                return 'NOT_FOUND';\n            })()"));
-            
-            if (string.IsNullOrWhiteSpace(dblResult))
-            {
-                dblResult = "NOT_FOUND_EMPTY";
-            }
-
-            if (dblResult.StartsWith("OK_"))
-            {
-                Log($"[전체DB] ✓ 행 탐색 성공 (시도 {retry + 1}/12): {dblResult}");
-                await Task.Delay(300); // 더블클릭 이벤트 처리 대기
-                break;
-            }
-            
-            Log($"[전체DB] 행 탐색 시도 {retry + 1}/12: {dblResult}");
-            await Task.Delay(500);
-        }
-        
-        Log($"[전체DB] 행 더블클릭 최종 결과: {dblResult}");
-
-        if (dblResult.StartsWith("NOT_FOUND"))
-        {
-            Log($"[전체DB] ✗ 실패: {dblResult}");
-            Post($"'ETA DB 업데이트' 행을 찾지 못했습니다. ({dblResult})", "#ff6644");
-        }
-        else
-        {
-            Log($"[전체DB] ✓ 성공: {dblResult}");
-            Post($"더블클릭 완료: {dblResult}", "#88cc88");
-        }
+        // 12. 자동화 범위 종료: 더미 생성/저장까지만 수행
+        // 이후 마지막 페이지 진입(행 선택/더블클릭)은 사용자가 수동으로 진행
+        Log("[전체DB] 자동화 종료: 더미 생성 완료. 마지막 페이지 진입은 수동 진행");
+        Post("더미 생성 완료. 마지막 페이지 진입은 수동으로 진행하세요.", "#88cc88");
     }
 
     // ── 채취지점 스크래핑: 계약 → 현장(cmb_emis_cmpy_plc_no) → 채취지점(add_emis_fac_no) ──
@@ -1676,6 +1714,92 @@ public partial class MeasurerLoginWindow : Window
         Log($"[분석DB] 저장 완료: {saved}개 반영 / {items.Count}개 (소요 {sw.Elapsed.TotalSeconds:F1}초)");
         await WebProgress_UpdateAsync(100, 100, $"분석항목 {items.Count}개 저장 완료");
         Post($"분석항목 {items.Count}개 저장 완료", "#88cc88");
+        await WebProgress_RemoveAsync();
+    }
+
+    // ── 분석장비 목록 스크래핑 (rg-dropdown-list-0) ─────────────────────────
+    /// <summary>
+    /// 페이지의 분석장비 드롭다운 리스트에서 장비명을 수집하여 ETA 측정인_분석장비 테이블에 저장한다.
+    /// </summary>
+    private async Task ScrapeAnalysisEquipmentsAsync()
+    {
+        var sw = Stopwatch.StartNew();
+        Log($"=== 분석장비 스크래핑 시작 [{DateTime.Now:yyyy-MM-dd HH:mm:ss}] ===");
+        await WebProgress_InjectAsync("ETA 분석장비 UPDATE 중...", 100, "#0b7a75");
+
+        const string script = @"(function(){
+            function isVisible(el) {
+                if (!el) return false;
+                var st = getComputedStyle(el);
+                return el.offsetParent !== null && st.display !== 'none' && st.visibility !== 'hidden';
+            }
+
+            var lists = Array.from(document.querySelectorAll('div.rg-dropdownlist#rg-dropdown-list-0'));
+            var list = lists.find(isVisible) || lists[lists.length - 1] || null;
+            if (!list) return '[]';
+
+            var opts = Array.from(list.querySelectorAll('.rg-dropdown-item[role=""option""]'));
+            var out = [];
+            for (var i = 0; i < opts.length; i++) {
+                var o = opts[i];
+                var labelEl = o.querySelector('.rg-dropdown-label') || o;
+                var name = (labelEl.innerText || labelEl.textContent || '').replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim();
+                if (!name) continue;
+                var code = (o.id || '').trim();
+                if (!code) code = name; // id가 없으면 장비명을 코드로 사용
+                out.push({ name: name, code: code });
+            }
+
+            // 중복 제거 (code 기준)
+            var seen = {};
+            var dedup = [];
+            for (var j = 0; j < out.length; j++) {
+                var key = out[j].code;
+                if (seen[key]) continue;
+                seen[key] = true;
+                dedup.push(out[j]);
+            }
+
+            return JSON.stringify(dedup);
+        })()";
+
+        string json = ExtractCdpStringValue(await Evaluate(script));
+        if (string.IsNullOrWhiteSpace(json) || json == "[]")
+        {
+            Log("[분석장비] rg-dropdown-list-0 목록을 찾지 못했습니다.");
+            await WebProgress_RemoveAsync();
+            Post("분석장비 목록을 찾지 못했습니다. 장비 드롭다운을 먼저 열어주세요.", "#ffaa44");
+            return;
+        }
+
+        var items = new List<(string 장비명, string 코드값)>();
+        try
+        {
+            using var doc = JsonDocument.Parse(json);
+            foreach (var item in doc.RootElement.EnumerateArray())
+            {
+                string name = item.GetProperty("name").GetString() ?? "";
+                string code = item.GetProperty("code").GetString() ?? "";
+                if (!string.IsNullOrWhiteSpace(name) && !string.IsNullOrWhiteSpace(code))
+                    items.Add((name, code));
+            }
+        }
+        catch (Exception ex)
+        {
+            Log($"[분석장비] JSON 파싱 오류: {ex.Message}");
+            await WebProgress_RemoveAsync();
+            throw;
+        }
+
+        Log($"[분석장비] 수집: {items.Count}개");
+        await WebProgress_UpdateAsync(60, 100, $"장비 {items.Count}개 파싱 완료 — DB 저장 중...");
+
+        int saved = MeasurerService.SaveEquipments(items);
+        sw.Stop();
+
+        Log($"[분석장비] 저장 완료: {saved}개 반영 / {items.Count}개 (소요 {sw.Elapsed.TotalSeconds:F1}초)");
+        await WebProgress_UpdateAsync(100, 100, $"분석장비 {items.Count}개 저장 완료");
+        Post($"분석장비 {items.Count}개 저장 완료", "#88cc88");
         await WebProgress_RemoveAsync();
     }
 

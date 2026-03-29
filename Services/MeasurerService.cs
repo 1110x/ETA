@@ -46,6 +46,65 @@ public static class MeasurerService
         }
     }
 
+    // ── 분석장비 테이블 생성 / 마이그레이션 ─────────────────────────────────
+    public static void EnsureEquipmentTable()
+    {
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = $@"
+            CREATE TABLE IF NOT EXISTS 측정인_분석장비 (
+                Id       INTEGER PRIMARY KEY {DbConnectionFactory.AutoIncrement},
+                장비명   TEXT NOT NULL,
+                코드값   TEXT NOT NULL,
+                UNIQUE(코드값)
+            );";
+        cmd.ExecuteNonQuery();
+    }
+
+    // ── 분석장비 일괄 저장 (UPSERT) ─────────────────────────────────────────
+    public static int SaveEquipments(List<(string 장비명, string 코드값)> items)
+    {
+        EnsureEquipmentTable();
+        int count = 0;
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+        using var txn = conn.BeginTransaction();
+        try
+        {
+            foreach (var (name, code) in items)
+            {
+                if (string.IsNullOrWhiteSpace(code)) continue;
+                using var cmd = conn.CreateCommand();
+                cmd.Transaction = txn;
+                var upsert = DbConnectionFactory.UpsertSuffix(new[] { "코드값" }, new[] { "장비명" });
+                cmd.CommandText = $"INSERT INTO 측정인_분석장비 (장비명, 코드값) VALUES (@name, @code) {upsert};";
+                cmd.Parameters.AddWithValue("@name", name.Trim());
+                cmd.Parameters.AddWithValue("@code", code.Trim());
+                count += cmd.ExecuteNonQuery();
+            }
+            txn.Commit();
+            Debug.WriteLine($"[MeasurerService] SaveEquipments: {count}/{items.Count}개 저장");
+        }
+        catch (Exception ex) { txn.Rollback(); Debug.WriteLine($"[MeasurerService] SaveEquipments 오류: {ex.Message}"); throw; }
+        return count;
+    }
+
+    // ── 분석장비 전체 조회 ───────────────────────────────────────────────────
+    public static List<(string 장비명, string 코드값)> GetAllEquipments()
+    {
+        EnsureEquipmentTable();
+        var list = new List<(string, string)>();
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT 장비명, 코드값 FROM 측정인_분석장비 ORDER BY 장비명 ASC";
+        using var r = cmd.ExecuteReader();
+        while (r.Read())
+            list.Add((r.GetString(0), r.GetString(1)));
+        return list;
+    }
+
     // ── 분석항목 테이블 생성 / 마이그레이션 ─────────────────────────────────
     public static void EnsureAnalysisItemTable()
     {
@@ -131,7 +190,8 @@ public static class MeasurerService
         return list;
     }
 
-    // ── 전체 데이터 초기화 (재스크래핑 전 호출) ──────────────────────────────
+    // ── 전체 데이터 수동 초기화 (필요 시 직접 호출 — 스크래핑 자동 흐름에서는 사용하지 않음) ──
+    // SaveSamplingPoints가 UPSERT를 사용하므로 일반적으로 호출 불필요.
     public static void ClearAll()
     {
         using var conn = DbConnectionFactory.CreateConnection();

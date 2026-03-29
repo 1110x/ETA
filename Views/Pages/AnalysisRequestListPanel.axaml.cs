@@ -686,39 +686,31 @@ public class AnalysisRequestListPanel : UserControl
         _btnMeasurer.IsEnabled = false;
         try
         {
-            bool injected = await TryInjectRequestDataAsync(parentNodes, purposeValues, empIdsPerRecord);
-            if (!injected)
+            SetStatus("⏳ 측정인 로그인 창을 엽니다...");
+            var loginWin = new MeasurerLoginWindow();
+            if (owner != null)
+                await loginWin.ShowDialog(owner);
+            else
             {
-                SetStatus("⏳ 측정인 로그인 창을 엽니다...");
-                var loginWin = new MeasurerLoginWindow();
-                if (owner != null)
-                    await loginWin.ShowDialog(owner);
-                else
-                {
-                    var tcs = new TaskCompletionSource();
-                    loginWin.Closed += (_, _) => tcs.TrySetResult();
-                    loginWin.Show();
-                    await tcs.Task;
-                }
+                var tcs = new TaskCompletionSource();
+                loginWin.Closed += (_, _) => tcs.TrySetResult();
+                loginWin.Show();
+                await tcs.Task;
+            }
 
-                if (loginWin.LoginSucceeded)
-                {
-                    SetStatus($"⏳ 로그인 완료 — {parentNodes.Count}건 개별 전송 중...");
-                    await Task.Delay(1500); // 브라우저 다음 페이지 로드 대기
-                    bool retry = await TryInjectRequestDataAsync(parentNodes, purposeValues, empIdsPerRecord);
-                    if (retry)
-                        SetStatus($"✅ 의뢰계획 {parentNodes.Count}건 개별 전달 완료 ({DateTime.Now:HH:mm})");
-                    else
-                        SetStatus("⚠ 로그인은 되었으나 탭 연결에 실패했습니다. 다시 시도해주세요.");
-                }
+            if (loginWin.LoginSucceeded)
+            {
+                SetStatus($"⏳ 로그인 완료 — {parentNodes.Count}건 개별 전송 중...");
+                await Task.Delay(1500); // 브라우저 다음 페이지 로드 대기
+                bool injected = await TryInjectRequestDataAsync(parentNodes, purposeValues, empIdsPerRecord);
+                if (injected)
+                    SetStatus($"✅ 의뢰계획 {parentNodes.Count}건 개별 전달 완료 ({DateTime.Now:HH:mm})");
                 else
-                {
-                    SetStatus("⚠ 로그인 취소됨");
-                }
+                    SetStatus("⚠ 로그인은 되었으나 탭 연결에 실패했습니다. 다시 시도해주세요.");
             }
             else
             {
-                SetStatus($"✅ 의뢰계획 {parentNodes.Count}건 개별 전달 완료 ({DateTime.Now:HH:mm})");
+                SetStatus("⚠ 로그인 취소됨");
             }
         }
         catch (Exception ex)
@@ -791,6 +783,7 @@ public class AnalysisRequestListPanel : UserControl
             row.TryGetValue("채취일자", out var sampleDate);
             row.TryGetValue("의뢰사업장", out var workSite);
             row.TryGetValue("비고", out var note);
+            row.TryGetValue("견적번호", out var quoteNo);
 
             // 1순위: 시료명 → 채취지점명 직접 매칭
             var matchedContract = MeasurerService.FindContractBySamplingPoint(pt.Rec.시료명, pt.Rec.약칭 ?? "");
@@ -804,6 +797,7 @@ public class AnalysisRequestListPanel : UserControl
                 abbr    = pt.Rec.약칭,
                 sample  = pt.Rec.시료명,
                 accNo   = pt.Rec.접수번호,
+                quoteNo,
                 date    = pt.Rec.의뢰일,
                 company,
                 manager,
@@ -1082,7 +1076,8 @@ public class AnalysisRequestListPanel : UserControl
 
             // ── D2. 계획번호 입력 — meas_no_yn 체크 + add_meas_no / edit_meas_no (둘 다 시도) ──
             {
-                string measNo = $"{rec.contractNo ?? ""} {rec.sample ?? ""}".Trim();
+                string baseNo = (rec.quoteNo ?? rec.accNo ?? "").Trim();
+                string measNo = $"{baseNo} {rec.sample ?? ""}".Trim();
                 string measNoE = measNo.Replace("\\", "\\\\").Replace("'", "\\'");
                 await CdpEvalAsync(socket, $@"(function(){{
                     var chk = document.getElementById('meas_no_yn');

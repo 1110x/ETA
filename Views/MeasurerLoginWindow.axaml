@@ -1,9 +1,9 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="ETA.Views.MeasurerLoginWindow"
-        Title="측정인 로그인"
-        Width="380" Height="400"
-        MinWidth="340" MinHeight="360"
+        Title="측정인 로그인 / DB 업데이트"
+        Width="420" Height="460"
+        MinWidth="380" MinHeight="420"
         WindowStartupLocation="CenterOwner"
         Background="#1a1a2e"
         CanResize="False"
@@ -32,7 +32,7 @@
                        Foreground="#88aacc"
                        FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
                        HorizontalAlignment="Center"/>
-            <TextBlock Text="측정인.kr 로그인 지원"
+            <TextBlock Text="측정인.kr 로그인 · DB 업데이트"
                        FontSize="11"
                        Foreground="#555"
                        FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"
@@ -102,6 +102,40 @@
                          Foreground="#1a6fc4"
                          Background="#222233"
                          IsVisible="False"/>
+
+            <!-- ── 로그인 완료 후 DB 업데이트 안내 패널 ── -->
+            <Border x:Name="pnlDbUpdate"
+                    IsVisible="False"
+                    Background="#12201a" CornerRadius="6"
+                    Padding="12,10" Margin="0,4,0,0">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="✅ 로그인 완료 — 브라우저에서 DB 업데이트 가능"
+                               FontSize="11" FontWeight="Bold"
+                               Foreground="#88ffaa"
+                               FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                               TextWrapping="Wrap"/>
+                    <TextBlock
+                               Text="측정인.kr 계획 작성 모달을 열면 아래 버튼이 자동 삽입됩니다. 클릭하면 ETA DB에 반영됩니다."
+                               FontSize="10" Foreground="#99aabb"
+                               FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"
+                               TextWrapping="Wrap"/>
+                    <Border Background="#1a1a2e" CornerRadius="4" Padding="8,6">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="🔵 ETA 계약 DB 업데이트 — 채취지점·계약 정보 수집"
+                                       FontSize="10" Foreground="#88aaff"
+                                       FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"/>
+                            <TextBlock Text="🟢 ETA 분석DB 업데이트 — 분석항목 코드 수집"
+                                       FontSize="10" Foreground="#88ffcc"
+                                       FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"/>
+                        </StackPanel>
+                    </Border>
+                    <TextBlock x:Name="txbPollStatus"
+                               Text="⏳ DB 업데이트 대기 중..."
+                               FontSize="10" Foreground="#aaaacc"
+                               FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+            </Border>
         </StackPanel>
 
         <!-- 버튼 -->

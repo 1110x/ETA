@@ -26,7 +26,7 @@ public sealed class MeasurerSendDialog : Window
 
     // ── 내부 per-record 컨트롤 ───────────────────────────────────────
     private readonly List<(RadioButton rbSelf, RadioButton rbCf)> _purposeRows = new();
-    private readonly List<ListBox> _agentLists = new();
+    private readonly List<List<CheckBox>> _agentChecksPerRecord = new();
 
     public MeasurerSendDialog(
         IReadOnlyList<(string sample, string analytes, string company)> records,
@@ -133,32 +133,45 @@ public sealed class MeasurerSendDialog : Window
             cardContent.Children.Add(purposeRow);
             _purposeRows.Add((rbSelf, rbCf));
 
-            // 측정인력 ListBox
-            cardContent.Children.Add(MakeLabel("측정인력 (Ctrl/Cmd 다중선택):", "#aaaacc", 10));
-            var lb = new ListBox
+            // 측정인력 체크박스 리스트
+            cardContent.Children.Add(MakeLabel("측정인력 (체크박스 다중선택):", "#aaaacc", 10));
+            var checks = new List<CheckBox>();
+            var checksPanel = new StackPanel
             {
-                SelectionMode = SelectionMode.Multiple,
-                Background = Brush.Parse("#16162a"),
-                Foreground = labelFg,
-                FontFamily = Font,
-                FontSize = 10,
-                MaxHeight = 100,
-                Margin = new Avalonia.Thickness(0, 2, 0, 0),
+                Spacing = 2,
+                Margin = new Avalonia.Thickness(4, 2, 0, 0),
             };
+
             foreach (var ag in measAgents)
             {
-                lb.Items.Add(new ListBoxItem
+                var cb = new CheckBox
                 {
                     Content = $"{ag.성명}  ({ag.직급})  [{ag.측정인고유번호}]",
                     Tag = ag.측정인고유번호,
-                    FontFamily = Font, FontSize = 10,
+                    FontFamily = Font,
+                    FontSize = 10,
                     Foreground = labelFg,
-                    Background = Brushes.Transparent,
-                    Padding = new Avalonia.Thickness(6, 3),
-                });
+                    Margin = new Avalonia.Thickness(0, 0, 0, 1),
+                };
+                checks.Add(cb);
+                checksPanel.Children.Add(cb);
             }
-            cardContent.Children.Add(lb);
-            _agentLists.Add(lb);
+
+            cardContent.Children.Add(new Border
+            {
+                Background = Brush.Parse("#16162a"),
+                CornerRadius = new Avalonia.CornerRadius(4),
+                Padding = new Avalonia.Thickness(6, 4),
+                Child = new ScrollViewer
+                {
+                    Content = checksPanel,
+                    MaxHeight = 120,
+                    HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
+                    VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+                }
+            });
+
+            _agentChecksPerRecord.Add(checks);
 
             card.Child = cardContent;
             recordsSp.Children.Add(card);
@@ -176,9 +189,9 @@ public sealed class MeasurerSendDialog : Window
             {
                 PurposeValues.Add(_purposeRows[i].rbSelf.IsChecked == true ? "SELF" : "CF");
                 EmpIdsPerRecord.Add(
-                    _agentLists[i].SelectedItems
-                        .OfType<ListBoxItem>()
-                        .Select(it => it.Tag as string ?? "")
+                    _agentChecksPerRecord[i]
+                        .Where(cb => cb.IsChecked == true)
+                        .Select(cb => cb.Tag as string ?? "")
                         .Where(s => !string.IsNullOrEmpty(s))
                         .ToList()
                 );

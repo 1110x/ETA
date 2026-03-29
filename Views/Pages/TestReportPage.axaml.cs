@@ -1222,27 +1222,38 @@ public partial class TestReportPage : UserControl
         catch (Exception ex) { Log($"CSV 저장 오류: {ex.Message}"); }
     }
 
-    /// BT3 — 삭제
+    /// BT3 — 삭제 (체크된 노드 전체, 없으면 선택 노드 단건)
     public async Task DeleteSampleAsync()
     {
-        if (_selectedSample == null) { Log("삭제: 선택 없음"); return; }
+        var targets = _checkedSamples.Count > 0
+            ? _checkedSamples.ToList()
+            : (_selectedSample != null ? new List<SampleRequest> { _selectedSample } : new List<SampleRequest>());
 
-        var confirmed = await ShowConfirmAsync(
-            $"'{_selectedSample.시료명}' 시료를 삭제하시겠습니까?\n(분석결과 포함 전체 삭제)");
+        if (targets.Count == 0) { Log("삭제: 선택 없음"); return; }
+
+        string msg = targets.Count == 1
+            ? $"'{targets[0].시료명}' 시료를 삭제하시겠습니까?\n(분석결과 포함 전체 삭제)"
+            : $"체크된 {targets.Count}건을 모두 삭제하시겠습니까?\n(분석결과 포함 전체 삭제)";
+
+        var confirmed = await ShowConfirmAsync(msg);
         if (!confirmed) return;
 
-        bool ok = TestReportService.DeleteSample(_selectedSample.Id);
-        Log(ok ? $"✅ 삭제: {_selectedSample.시료명}" : "❌ 삭제 실패");
-
-        if (ok)
+        int successCount = 0;
+        foreach (var sample in targets)
         {
-            // 트리에서 해당 노드 제거
-            RemoveSampleNodeFromTree(_selectedSample);
-            _selectedSample = null;
-            _resultRows.Clear();
-            ResultListChanged?.Invoke(BuildListControl());
-            EditPanelChanged?.Invoke(null);
+            bool ok = TestReportService.DeleteSample(sample.Id);
+            Log(ok ? $"✅ 삭제: {sample.시료명}" : $"❌ 삭제 실패: {sample.시료명}");
+            if (ok) successCount++;
         }
+
+        _checkedSamples.Clear();
+        _selectedSample    = null;
+        _selectedRow       = null;
+        _selectedRowBorder = null;
+        _resultRows.Clear();
+
+        Log($"삭제 완료 {successCount}/{targets.Count}건 — 트리 새로고침");
+        LoadData();
     }
 
     private void RemoveSampleNodeFromTree(SampleRequest sample)
