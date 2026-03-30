@@ -3222,3 +3222,187 @@
 [01:17:49] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
 [01:19:27] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
 [01:19:27] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[11:02:41] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[11:02:41] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-03-30): 1개 할당
+[11:02:42] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[11:02:42] [AnalysisRequestService] GetAssignmentsForAgent(201101234/박은지, 2026-03-30): 4개 할당
+[11:02:42] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[11:02:42] [AnalysisRequestService] GetAssignmentsForAgent(202104002/방찬미, 2026-03-30): 4개 할당
+[11:02:42] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[11:02:42] [AnalysisRequestService] GetAssignmentsForAgent(202202011/이재휘, 2026-03-30): 3개 할당
+[11:02:43] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[11:02:43] [AnalysisRequestService] GetAssignmentsForAgent(202204016/정대호, 2026-03-30): 3개 할당
+[11:02:43] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[11:02:43] [AnalysisRequestService] GetAssignmentsForAgent(202309008/윤민영, 2026-03-30): 14개 할당
+[11:02:44] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[11:02:44] [AnalysisRequestService] GetAssignmentsForAgent(202311016/김지은, 2026-03-30): 5개 할당
+[11:02:44] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[11:02:44] [AnalysisRequestService] GetAssignmentsForAgent(12345/김청하, 2026-03-30): 0개 할당
+[11:02:45] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[11:02:45] [AnalysisRequestService] GetAssignmentsForAgent(202500340/손현주, 2026-03-30): 3개 할당
+[11:02:46] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[11:02:46] [AnalysisRequestService] GetAssignmentsForAgent(202500323/김가린, 2026-03-30): 3개 할당
+[11:03:53] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[11:03:53] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[13:17:20] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[13:17:20] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-03-30): 1개 할당
+[13:17:59] QuotationHistoryPanel 초기화 완료
+[13:17:59] LoadData() 시작
+[13:17:59] 견적 발행건수=934
+[13:17:59] LoadData() 완료 — 루트노드=6
+[13:18:01] 견적 선택: GS DB 업데이트 [20260328-163402]
+[13:18:05] 탭 전환 → 분석의뢰내역
+[13:18:05] LoadAnalysisTreeAsync() 시작
+[13:18:06] [AnalysisRequestService] 완료: 3665건
+[13:18:06] DB 조회 완료: 3665건
+[13:18:06] FillMonthNodeWithDays: 2026-03 → 2건
+[13:18:06] 트리 완료 — 년노드=7
+[13:18:08] 의뢰 선택: GS #W1 (제1폐수처리장/유입수) [20260328-163402]
+[13:18:10] 의뢰 선택: GS #W1 (제1폐수처리장/유입수) [20260328-163402]
+[13:22:15] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[13:22:15] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[13:22:45] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[13:22:45] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[13:30:22] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[13:30:22] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[13:42:54] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[13:42:54] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[13:49:49] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[13:49:49] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[13:54:32] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[13:54:32] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[14:01:11] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[14:01:11] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[14:09:50] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[14:09:50] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[14:21:05] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[14:21:05] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[14:37:32] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[14:37:32] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[14:43:29] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[14:43:29] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[14:48:31] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[14:48:31] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[14:54:24] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[14:54:25] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[14:57:55] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[14:57:55] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[15:03:39] QuotationHistoryPanel 초기화 완료
+[15:03:40] LoadData() 시작
+[15:03:40] 견적 발행건수=934
+[15:03:40] LoadData() 완료 — 루트노드=6
+[15:03:43] 견적 선택: GS DB 업데이트 [20260328-163402]
+[15:10:00] 탭 전환 → 분석의뢰내역
+[15:10:00] LoadAnalysisTreeAsync() 시작
+[15:10:00] [AnalysisRequestService] 완료: 3665건
+[15:10:00] DB 조회 완료: 3665건
+[15:10:00] FillMonthNodeWithDays: 2026-03 → 2건
+[15:10:00] 트리 완료 — 년노드=7
+[15:16:51] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[15:16:51] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[15:31:56] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[15:31:56] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[15:50:07] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[15:50:08] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[15:59:18] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[15:59:18] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[16:07:26] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[16:07:26] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[16:11:20] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[16:11:20] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[16:16:29] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[16:16:29] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[16:21:16] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[16:21:16] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[16:31:05] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[16:31:05] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[16:39:58] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[16:39:58] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[17:10:44] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[17:10:44] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[17:21:18] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[17:21:18] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[17:35:56] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[17:35:56] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[17:45:05] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[17:45:05] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[17:50:06] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[17:50:06] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[17:54:44] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[17:54:44] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[18:13:40] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[18:13:40] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[18:16:02] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[18:16:02] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[18:26:06] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[18:26:06] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[18:30:23] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[18:30:23] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[18:45:37] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[18:45:37] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[18:50:40] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[18:50:40] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[18:57:13] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[18:57:13] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[19:13:39] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[19:13:39] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[19:16:55] QuotationHistoryPanel 초기화 완료
+[19:16:55] LoadData() 시작
+[19:16:55] 견적 발행건수=934
+[19:16:55] LoadData() 완료 — 루트노드=6
+[19:17:06] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[19:17:06] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[19:28:35] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[19:28:35] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[19:32:46] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[19:32:46] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[19:34:48] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[19:34:48] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[19:45:48] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[19:45:48] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[19:50:27] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[19:50:27] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[19:53:08] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[19:53:08] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[19:55:42] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[19:55:42] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[19:58:05] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[19:58:05] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[20:09:07] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[20:09:07] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[20:11:40] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[20:11:41] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[20:27:46] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[20:27:46] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[20:37:06] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[20:37:06] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[20:48:02] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[20:48:02] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[20:54:10] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[20:54:10] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[21:02:04] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[21:02:04] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[21:06:22] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[21:06:22] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[21:13:59] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[21:13:59] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[21:18:17] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[21:18:17] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[21:22:58] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[21:22:58] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[21:22:58] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[21:22:58] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[21:30:55] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[21:30:55] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[21:38:31] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[21:38:31] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[21:51:05] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[21:51:05] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[21:55:53] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[21:55:53] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[22:16:51] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[22:16:51] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[22:21:09] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[22:21:10] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)
+[22:29:53] [AnalysisRequestService] GetManagersByDate(2026-03-29): 114개 담당자 로드
+[22:29:53] [AnalysisRequestService] GetStandardDaysInfo: 114개 로드 (days=False, short=False)

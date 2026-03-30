@@ -1,4 +1,4 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Data;
@@ -599,20 +599,6 @@ public class DataToMeasurerWindow : Window
                 return "";
             }
 
-            // CDP 더블클릭 (isTrusted=true)
-            async Task CdpDoubleClickAsync(double x, double y)
-            {
-                var left = "left";
-                await CdpSendAsync("Input.dispatchMouseEvent",
-                    new { type = "mousePressed", x, y, button = left, clickCount = 1 });
-                await CdpSendAsync("Input.dispatchMouseEvent",
-                    new { type = "mouseReleased", x, y, button = left, clickCount = 1 });
-                await CdpSendAsync("Input.dispatchMouseEvent",
-                    new { type = "mousePressed", x, y, button = left, clickCount = 2 });
-                await CdpSendAsync("Input.dispatchMouseEvent",
-                    new { type = "mouseReleased", x, y, button = left, clickCount = 2 });
-            }
-
             // CDP 단일 클릭
             async Task CdpClickAsync(double x, double y)
             {
@@ -621,159 +607,6 @@ public class DataToMeasurerWindow : Window
                     new { type = "mousePressed", x, y, button = left, clickCount = 1 });
                 await CdpSendAsync("Input.dispatchMouseEvent",
                     new { type = "mouseReleased", x, y, button = left, clickCount = 1 });
-            }
-
-            // Tab 키 전송 (다음 셀로 이동 + 현재 셀 커밋)
-            async Task SendTabAsync()
-            {
-                await CdpSendAsync("Input.dispatchKeyEvent",
-                    new { type = "keyDown", key = "Tab", code = "Tab", windowsVirtualKeyCode = 9 });
-                await CdpSendAsync("Input.dispatchKeyEvent",
-                    new { type = "keyUp",   key = "Tab", code = "Tab", windowsVirtualKeyCode = 9 });
-            }
-
-            // 드롭다운: 타이핑 후 [role='option'] 2번째 항목 클릭 (첫 번째는 빈값)
-            async Task SelectDropdownOptionAsync()
-            {
-                string optJs = @"(function(){
-                    var opts = document.querySelectorAll(""[role='option']"");
-                    if(opts.length < 2) return JSON.stringify({error:'lessThan2'});
-                    var opt = opts[1];
-                    opt.scrollIntoView({block:'nearest'});
-                    var r = opt.getBoundingClientRect();
-                    return JSON.stringify({x: r.x+r.width/2, y: r.y+r.height/2});
-                })()";
-                try
-                {
-                    string optJson = await JsEvalAsync(optJs);
-                    using var optDoc = JsonDocument.Parse(optJson);
-                    if (!optDoc.RootElement.TryGetProperty("error", out _))
-                        await CdpClickAsync(
-                            optDoc.RootElement.GetProperty("x").GetDouble(),
-                            optDoc.RootElement.GetProperty("y").GetDouble());
-                }
-                catch { }
-            }
-
-            // analyte 이름으로 행 찾기 → 지정된 td 좌표 반환
-            async Task<(double x, double y)?> GetTdCoordsAsync(int tdIdx, string safeAnalyteParam)
-            {
-                string js = $@"(function(){{
-                    function norm(s){{ return (s||'').toString().toLowerCase()
-                        .replace(/\s+/g,'').replace(/[()\[\]\-_,.:/%]/g,'').replace(/[^0-9a-z가-힣]/g,''); }}
-                    var target = norm('{safeAnalyteParam}');
-                    var tbody = document.evaluate(
-                        ""//*[@id='gridAnalySampAnzeDataAirItemList1']/div/div[1]/div/div[1]/div[1]/div[4]/table/tbody"",
-                        document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null
-                    ).singleNodeValue;
-                    if(!tbody) return JSON.stringify({{error:'noTbody'}});
-                    var trs = Array.from(tbody.children).filter(function(n){{
-                        return n && n.tagName==='TR' && n.querySelector('td:nth-child(4)');
-                    }});
-                    function getCoords(tr){{
-                        var td = tr.querySelector('td:nth-child({tdIdx})');
-                        if(!td) return null;
-                        td.scrollIntoView({{block:'center',behavior:'instant'}});
-                        var r = td.getBoundingClientRect();
-                        return {{x:r.x+r.width/2, y:r.y+r.height/2}};
-                    }}
-                    for(var i=0;i<trs.length;i++){{
-                        var td4 = trs[i].querySelector('td:nth-child(4) div') || trs[i].querySelector('td:nth-child(4)');
-                        var label = norm((td4.innerText||td4.textContent||'').trim());
-                        if(label===target){{ var c=getCoords(trs[i]); if(c) return JSON.stringify(c); }}
-                    }}
-                    for(var i=0;i<trs.length;i++){{
-                        var td4 = trs[i].querySelector('td:nth-child(4) div') || trs[i].querySelector('td:nth-child(4)');
-                        var label = norm((td4.innerText||td4.textContent||'').trim());
-                        if(label.indexOf(target)>=0||target.indexOf(label)>=0){{ var c=getCoords(trs[i]); if(c) return JSON.stringify(c); }}
-                    }}
-                    return JSON.stringify({{error:'notFound'}});
-                }})()";
-                try
-                {
-                    string json2 = await JsEvalAsync(js);
-                    using var d = JsonDocument.Parse(json2);
-                    if (d.RootElement.TryGetProperty("error", out _)) return null;
-                    return (d.RootElement.GetProperty("x").GetDouble(), d.RootElement.GetProperty("y").GetDouble());
-                }
-                catch { return null; }
-            }
-
-            // 날짜 셀 입력: td 클릭 → $$_rg_editor648 포커스 → insertText → Tab 커밋
-            // VBA 시퀀스 재현: targetTD.Click → targetInputField2.SendKeys date
-            async Task InputDateAsync(string safeAnalyteParam, int tdIdx, string date)
-            {
-                AppendInputLog($"[날짜 td{tdIdx}] 시작 - analyte={safeAnalyteParam} date={date}");
-
-                // 1) td 클릭 → editor 활성화
-                var coords = await GetTdCoordsAsync(tdIdx, safeAnalyteParam);
-                if (coords == null) { AppendInputLog($"[날짜 td{tdIdx}] td 좌표 실패"); return; }
-                AppendInputLog($"[날짜 td{tdIdx}] td 좌표 x={coords.Value.x:F1} y={coords.Value.y:F1}");
-                await CdpClickAsync(coords.Value.x, coords.Value.y);
-                AppendInputLog($"[날짜 td{tdIdx}] td 클릭 완료");
-                await Task.Delay(80, cts.Token);
-
-                // 2) $$_rg_editor648 좌표 조회 (JS getBoundingClientRect)
-                string edCoordsJson = await JsEvalAsync(@"(function(){
-                    var ed = document.getElementById('$$_rg_editor648');
-                    if(!ed) return JSON.stringify({error:'notfound'});
-                    var r = ed.getBoundingClientRect();
-                    var disp = window.getComputedStyle(ed).display;
-                    return JSON.stringify({x:r.x+r.width/2, y:r.y+r.height/2,
-                        display:disp, val:(ed.value||''), w:r.width, h:r.height});
-                })()");
-                AppendInputLog($"[날짜 td{tdIdx}] editor 조회: {edCoordsJson}");
-
-                double edX = 0, edY = 0;
-                try
-                {
-                    using var edDoc = JsonDocument.Parse(edCoordsJson);
-                    if (edDoc.RootElement.TryGetProperty("error", out _))
-                    {
-                        AppendInputLog($"[날짜 td{tdIdx}] editor element 없음");
-                        return;
-                    }
-                    edX = edDoc.RootElement.GetProperty("x").GetDouble();
-                    edY = edDoc.RootElement.GetProperty("y").GetDouble();
-                }
-                catch { AppendInputLog($"[날짜 td{tdIdx}] editor 좌표 파싱 실패"); return; }
-
-                // 3) editor 자체를 CDP 클릭 → 실제 브라우저 포커스
-                AppendInputLog($"[날짜 td{tdIdx}] editor CDP 클릭 x={edX:F1} y={edY:F1}");
-                await CdpClickAsync(edX, edY);
-                await Task.Delay(30, cts.Token);
-
-                // 4) Ctrl+A 전체 선택 후 insertText
-                await CdpSendAsync("Input.dispatchKeyEvent",
-                    new { type = "keyDown", key = "a", code = "KeyA", modifiers = 2, windowsVirtualKeyCode = 65 });
-                await CdpSendAsync("Input.dispatchKeyEvent",
-                    new { type = "keyUp",   key = "a", code = "KeyA", modifiers = 2, windowsVirtualKeyCode = 65 });
-
-                await CdpSendAsync("Input.insertText", new { text = date });
-                AppendInputLog($"[날짜 td{tdIdx}] insertText 완료: [{date}]");
-                await Task.Delay(30, cts.Token);
-
-                // 5) editor 값 확인
-                string afterVal = await JsEvalAsync(@"(function(){
-                    var ed = document.getElementById('$$_rg_editor648');
-                    if(!ed) return 'notfound';
-                    return 'value=[' + (ed.value||'') + ']';
-                })()");
-                AppendInputLog($"[날짜 td{tdIdx}] insertText 후: {afterVal}");
-
-                // 6) Enter로 커밋 (Tab은 RealGrid 날짜 에디터에서 취소 동작)
-                await CdpSendAsync("Input.dispatchKeyEvent",
-                    new { type = "keyDown", key = "Enter", code = "Enter", windowsVirtualKeyCode = 13 });
-                await CdpSendAsync("Input.dispatchKeyEvent",
-                    new { type = "keyUp",   key = "Enter", code = "Enter", windowsVirtualKeyCode = 13 });
-                AppendInputLog($"[날짜 td{tdIdx}] Enter 완료");
-
-                string finalVal = await JsEvalAsync(@"(function(){
-                    var ed = document.getElementById('$$_rg_editor648');
-                    if(!ed) return 'notfound';
-                    return 'value=[' + (ed.value||'') + ']';
-                })()");
-                AppendInputLog($"[날짜 td{tdIdx}] Enter 후 editor: {finalVal}");
             }
 
             // ── Phase 0: 높이 확장 → 가상스크롤 비활성화, 전체 행 DOM 렌더링 ──
@@ -882,226 +715,164 @@ public class DataToMeasurerWindow : Window
                 }
             }
 
-            // ── Phase 2: 셀마다 analyte로 행 찾기 → fresh 좌표 → CDP 더블클릭 → 입력 → td[3] 클릭 커밋 ──
+            // ── Phase 2: 각 행(td6 분석결과 → td16 비고 "X") 순차 입력 ──
             double commitX = 0, commitY = 0;
             foreach (var (analyte, value, rowIndex) in matchedItems)
             {
-                // JS: analyte 이름으로 행 검색 → td[6] scrollIntoView → fresh 좌표
                 string safeAnalyte = analyte.Replace("\\", "\\\\").Replace("'", "\\'");
-                string getCoordsJs = $@"(function(){{
-                    function norm(s){{ return (s||'').toString().toLowerCase().replace(/\s+/g,'').replace(/[()\[\]\-_,.:/%]/g,'').replace(/[^0-9a-z가-힣]/g,''); }}
-                    var target = norm('{safeAnalyte}');
-                    var tbody = document.evaluate(
-                        ""//*[@id='gridAnalySampAnzeDataAirItemList1']/div/div[1]/div/div[1]/div[1]/div[4]/table/tbody"",
-                        document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null
-                    ).singleNodeValue;
-                    if(!tbody) return JSON.stringify({{error:'noTbody'}});
-                    var trs = Array.from(tbody.children).filter(function(n){{ return n && n.tagName==='TR' && n.querySelector('td:nth-child(4)') && n.querySelector('td:nth-child(6)'); }});
-                    function getCoords(tr){{
-                        var td6 = tr.querySelector('td:nth-child(6)');
-                        var td3 = tr.querySelector('td:nth-child(3)');
-                        td6.scrollIntoView({{block:'center',behavior:'instant'}});
-                        var r6 = td6.getBoundingClientRect();
-                        var r3 = td3 ? td3.getBoundingClientRect() : r6;
-                        return JSON.stringify({{x:r6.x+r6.width/2, y:r6.y+r6.height/2, cx:r3.x+r3.width/2, cy:r3.y+r3.height/2}});
-                    }}
-                    // 1순위: rowIndex로 직접 접근
-                    if({rowIndex} < trs.length){{
-                        var td4ri = trs[{rowIndex}].querySelector('td:nth-child(4) div') || trs[{rowIndex}].querySelector('td:nth-child(4)');
-                        var labelri = norm((td4ri.innerText||td4ri.textContent||'').trim());
-                        if(labelri===target) return getCoords(trs[{rowIndex}]);
-                    }}
-                    // 2순위: 정확히 일치하는 행 검색
-                    for(var i=0; i<trs.length; i++){{
-                        var td4 = trs[i].querySelector('td:nth-child(4) div') || trs[i].querySelector('td:nth-child(4)');
-                        var label = norm((td4.innerText||td4.textContent||'').trim());
-                        if(label===target) return getCoords(trs[i]);
-                    }}
-                    // 3순위: 부분문자열 매칭 (길이가 긴 쪽 우선)
-                    var best = null, bestLen = 0;
-                    for(var i=0; i<trs.length; i++){{
-                        var td4 = trs[i].querySelector('td:nth-child(4) div') || trs[i].querySelector('td:nth-child(4)');
-                        var label = norm((td4.innerText||td4.textContent||'').trim());
-                        if(label.indexOf(target)>=0 || target.indexOf(label)>=0){{
-                            var ml = Math.min(label.length, target.length);
-                            if(ml > bestLen){{ best = trs[i]; bestLen = ml; }}
+
+                // td 좌표 조회 헬퍼
+                async Task<(double x, double y, double cx, double cy)?> GetCoordsForTdAsync(int tdIdx, string? subSel = null)
+                {
+                    string subSelJs = subSel != null ? $"'{subSel}'" : "null";
+                    string js = $@"(function(){{
+                        function norm(s){{ return (s||'').toString().toLowerCase().replace(/\s+/g,'').replace(/[()\[\]\-_,.:/%]/g,'').replace(/[^0-9a-z가-힣]/g,''); }}
+                        var target = norm('{safeAnalyte}');
+                        var tbody = document.evaluate(
+                            ""//*[@id='gridAnalySampAnzeDataAirItemList1']/div/div[1]/div/div[1]/div[1]/div[4]/table/tbody"",
+                            document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null
+                        ).singleNodeValue;
+                        if(!tbody) return JSON.stringify({{error:'noTbody'}});
+                        var trs = Array.from(tbody.children).filter(function(n){{ return n && n.tagName==='TR' && n.querySelector('td:nth-child(4)'); }});
+                        function getCoords(tr){{
+                            var td = tr.querySelector('td:nth-child({tdIdx})');
+                            var td3 = tr.querySelector('td:nth-child(3)');
+                            if(!td) return null;
+                            var sub = {subSelJs};
+                            var clickEl = sub ? (td.querySelector(sub) || td) : td;
+                            clickEl.scrollIntoView({{block:'center',behavior:'instant'}});
+                            var r = clickEl.getBoundingClientRect();
+                            var r3 = td3 ? td3.getBoundingClientRect() : r;
+                            return {{x:r.x+r.width/2, y:r.y+r.height/2, cx:r3.x+r3.width/2, cy:r3.y+r3.height/2}};
                         }}
-                    }}
-                    if(best) return getCoords(best);
-                    return JSON.stringify({{error:'notFound'}});
-                }})()";
-
-                double x, y;
-                try
-                {
-                    string coordJson = await JsEvalAsync(getCoordsJs);
-                    using var cDoc = JsonDocument.Parse(coordJson);
-                    if (cDoc.RootElement.TryGetProperty("error", out _))
+                        for(var i=0; i<trs.length; i++){{
+                            var td4 = trs[i].querySelector('td:nth-child(4) div') || trs[i].querySelector('td:nth-child(4)');
+                            var label = norm((td4.innerText||td4.textContent||'').trim());
+                            if(label===target){{ var c=getCoords(trs[i]); if(c) return JSON.stringify(c); }}
+                        }}
+                        for(var i=0; i<trs.length; i++){{
+                            var td4 = trs[i].querySelector('td:nth-child(4) div') || trs[i].querySelector('td:nth-child(4)');
+                            var label = norm((td4.innerText||td4.textContent||'').trim());
+                            if(label.indexOf(target)>=0 || target.indexOf(label)>=0){{ var c=getCoords(trs[i]); if(c) return JSON.stringify(c); }}
+                        }}
+                        return JSON.stringify({{error:'notFound'}});
+                    }})()";
+                    try
                     {
-                        commitFailed.Add(analyte);
-                        continue;
+                        string coordJson = await JsEvalAsync(js);
+                        using var cDoc = JsonDocument.Parse(coordJson);
+                        if (cDoc.RootElement.TryGetProperty("error", out _)) return null;
+                        return (cDoc.RootElement.GetProperty("x").GetDouble(),
+                                cDoc.RootElement.GetProperty("y").GetDouble(),
+                                cDoc.RootElement.GetProperty("cx").GetDouble(),
+                                cDoc.RootElement.GetProperty("cy").GetDouble());
                     }
-                    x = cDoc.RootElement.GetProperty("x").GetDouble();
-                    y = cDoc.RootElement.GetProperty("y").GetDouble();
-                    commitX = cDoc.RootElement.GetProperty("cx").GetDouble();
-                    commitY = cDoc.RootElement.GetProperty("cy").GetDouble();
-                    if (x <= 0 || y <= 0) { commitFailed.Add(analyte); continue; }
+                    catch { return null; }
                 }
-                catch { commitFailed.Add(analyte); continue; }
 
-                try
+                // 셀 클릭 + 입력
+                async Task<bool> InputToTdAsync(int tdIdx, string inputText, string? subSel = null)
                 {
-                    // ── td[5] 방류기준 "1" 입력 ──
-                    var c5 = await GetTdCoordsAsync(5, safeAnalyte);
-                    if (c5 != null)
-                    {
-                        await CdpClickAsync(c5.Value.x, c5.Value.y);
-                        await Task.Delay(30, cts.Token);
-                        await CdpSendAsync("Input.insertText", new { text = "1" });
-                        await SendTabAsync();
-                    }
-
-                    // 1) CDP 더블클릭으로 셀 편집모드 진입
-                    await CdpDoubleClickAsync(x, y);
+                    var coords = await GetCoordsForTdAsync(tdIdx, subSel);
+                    if (coords == null) return false;
+                    var (cx, cy, _, _) = coords.Value;
+                    await CdpClickAsync(cx, cy);
                     await Task.Delay(30, cts.Token);
-
-                    // 2) Ctrl+A (기존 텍스트 전체 선택)
-                    await CdpSendAsync("Input.dispatchKeyEvent",
-                        new { type = "keyDown", key = "a", code = "KeyA",
-                              modifiers = 4, windowsVirtualKeyCode = 65 }); // 4 = Meta(Cmd)
-                    await CdpSendAsync("Input.dispatchKeyEvent",
-                        new { type = "keyUp", key = "a", code = "KeyA",
-                              modifiers = 4, windowsVirtualKeyCode = 65 });
-
-                    // 3) Input.insertText: isTrusted=true 텍스트 입력
-                    await CdpSendAsync("Input.insertText", new { text = value });
-
-                    // 4) 같은 행 td[3] 클릭으로 에디터 커밋 (값 확정)
-                    if (commitX > 0 && commitY > 0)
-                    {
-                        await CdpClickAsync(commitX, commitY);
-                        await Task.Delay(30, cts.Token);
-                    }
-
-                    // ── td[8] 측정분석방법 드롭다운 ──
-                    var row = _rows.FirstOrDefault(r => r.분석항목 == analyte);
-                    if (row != null && !string.IsNullOrWhiteSpace(row.측정분석방법))
-                    {
-                        var c8 = await GetTdCoordsAsync(8, safeAnalyte);
-                        if (c8 != null)
-                        {
-                            await CdpClickAsync(c8.Value.x, c8.Value.y);
-                            await Task.Delay(50, cts.Token);
-                            await CdpSendAsync("Input.insertText", new { text = row.측정분석방법 });
-                            await Task.Delay(80, cts.Token);
-                            await SelectDropdownOptionAsync();
-                        }
-                    }
-
-                    // ── td[9] 분석장비 드롭다운 ──
-                    if (row != null && !string.IsNullOrWhiteSpace(row.분석장비))
-                    {
-                        var c9 = await GetTdCoordsAsync(9, safeAnalyte);
-                        if (c9 != null)
-                        {
-                            await CdpClickAsync(c9.Value.x, c9.Value.y);
-                            await Task.Delay(50, cts.Token);
-                            await CdpSendAsync("Input.insertText", new { text = row.분석장비 });
-                            await Task.Delay(80, cts.Token);
-                            await SelectDropdownOptionAsync();
-                        }
-                    }
-
-                    // ── td[10] 분석자 드롭다운 ──
-                    if (row != null && !string.IsNullOrWhiteSpace(row.분석자))
-                    {
-                        var c10 = await GetTdCoordsAsync(10, safeAnalyte);
-                        if (c10 != null)
-                        {
-                            await CdpClickAsync(c10.Value.x, c10.Value.y);
-                            await Task.Delay(50, cts.Token);
-                            await CdpSendAsync("Input.insertText", new { text = row.분석자 });
-                            await Task.Delay(80, cts.Token);
-                            await SelectDropdownOptionAsync();
-                        }
-                    }
-
-                    // ── td[11] 분석일시작 날짜 ──
-                    if (row != null && !string.IsNullOrWhiteSpace(row.분석일시작))
-                        await InputDateAsync(safeAnalyte, 11, row.분석일시작);
-
-                    // ── td[12] 시작시간 ──
-                    var c12 = await GetTdCoordsAsync(12, safeAnalyte);
-                    if (c12 != null)
-                    {
-                        await CdpClickAsync(c12.Value.x, c12.Value.y);
-                        await Task.Delay(30, cts.Token);
-                        await CdpSendAsync("Input.insertText", new { text = row?.시작시간 ?? "09:00" });
-                        await SendTabAsync();
-                    }
-
-                    // ── td[13] 분석일종료 날짜 ──
-                    if (row != null && !string.IsNullOrWhiteSpace(row.분석일종료))
-                        await InputDateAsync(safeAnalyte, 13, row.분석일종료);
-
-                    // ── td[14] 종료시간 ──
-                    var c14 = await GetTdCoordsAsync(14, safeAnalyte);
-                    if (c14 != null)
-                    {
-                        await CdpClickAsync(c14.Value.x, c14.Value.y);
-                        await Task.Delay(30, cts.Token);
-                        await CdpSendAsync("Input.insertText", new { text = row?.종료시간 ?? "18:00" });
-                        await SendTabAsync();
-                    }
-
-                    // ── td[15] 시료용량 ──
-                    var c15 = await GetTdCoordsAsync(15, safeAnalyte);
-                    if (c15 != null)
-                    {
-                        await CdpClickAsync(c15.Value.x, c15.Value.y);
-                        await Task.Delay(30, cts.Token);
-                        await CdpSendAsync("Input.insertText", new { text = "100" });
-                        await SendTabAsync();
-                    }
-
-                    filled++;
-                    if (valuePreview.Count < 5)
-                        valuePreview.Add($"[{analyte}→'{value}']");
+                    await CdpSendAsync("Input.insertText", new { text = inputText });
+                    return true;
                 }
-                catch
+
+                // 날짜 셀: span.rg-button-calendar 클릭 → 입력 → Enter로 커밋
+                async Task<bool> InputDateTdAsync(int tdIdx, string dateText)
                 {
-                    commitFailed.Add(analyte);
+                    var coords = await GetCoordsForTdAsync(tdIdx, "span.rg-button-calendar");
+                    if (coords == null) coords = await GetCoordsForTdAsync(tdIdx);
+                    if (coords == null) return false;
+                    var (cx, cy, _, _) = coords.Value;
+                    await CdpClickAsync(cx, cy);
+                    await Task.Delay(30, cts.Token);
+                    await CdpSendAsync("Input.insertText", new { text = dateText });
+                    // Enter로 값 커밋 (안 하면 포커스 이탈 시 사라짐)
+                    await CdpSendAsync("Input.dispatchKeyEvent", new { type = "keyDown", key = "Enter", code = "Enter", windowsVirtualKeyCode = 13 });
+                    await CdpSendAsync("Input.dispatchKeyEvent", new { type = "keyUp",   key = "Enter", code = "Enter", windowsVirtualKeyCode = 13 });
+                    return true;
                 }
-            }
 
-            // 마지막 행 커밋: 다른 셀 클릭하여 editor 포커스 해제
-            try
-            {
-                string commitJs = @"(function(){
-                    var tbody = document.evaluate(
-                        ""//*[@id='gridAnalySampAnzeDataAirItemList1']/div/div[1]/div/div[1]/div[1]/div[4]/table/tbody"",
-                        document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null
-                    ).singleNodeValue;
-                    if(!tbody) return JSON.stringify({error:1});
-                    var tr = tbody.querySelector('tr');
-                    if(!tr) return JSON.stringify({error:1});
-                    var td4 = tr.querySelector('td:nth-child(4)');
-                    if(!td4) return JSON.stringify({error:1});
-                    td4.scrollIntoView({block:'center',behavior:'instant'});
-                    var r = td4.getBoundingClientRect();
-                    return JSON.stringify({x:r.x+r.width/2, y:r.y+r.height/2});
-                })()";
-                string cjson = await JsEvalAsync(commitJs);
-                using var cDoc2 = JsonDocument.Parse(cjson);
-                if (!cDoc2.RootElement.TryGetProperty("error", out _))
+                // 드롭다운 인풋 셀: 클릭 → 타이핑(필터) → 두 번째 옵션 선택
+                async Task<bool> InputDropdownTdAsync(int tdIdx, string inputText)
                 {
-                    double cx = cDoc2.RootElement.GetProperty("x").GetDouble();
-                    double cy = cDoc2.RootElement.GetProperty("y").GetDouble();
-                    if (cx > 0 && cy > 0)
-                        await CdpClickAsync(cx, cy);
+                    var coords = await GetCoordsForTdAsync(tdIdx);
+                    if (coords == null) return false;
+                    var (cx, cy, _, _) = coords.Value;
+                    await CdpClickAsync(cx, cy);
+                    await Task.Delay(80, cts.Token);
+                    await CdpSendAsync("Input.insertText", new { text = inputText });
+                    await Task.Delay(80, cts.Token);
+                    // 필터 후 남은 목록의 두 번째 항목(첫 번째는 blank) 클릭
+                    string optJs = @"(function(){
+                        var opts = document.querySelectorAll(""[role='option']"");
+                        if(opts.length < 2) return JSON.stringify({error:'lessThan2'});
+                        var opt = opts[1];
+                        opt.scrollIntoView({block:'nearest'});
+                        var r = opt.getBoundingClientRect();
+                        return JSON.stringify({x: r.x+r.width/2, y: r.y+r.height/2});
+                    })()";
+                    try
+                    {
+                        string optJson = await JsEvalAsync(optJs);
+                        using var optDoc = JsonDocument.Parse(optJson);
+                        if (optDoc.RootElement.TryGetProperty("error", out _)) return false;
+                        await CdpClickAsync(
+                            optDoc.RootElement.GetProperty("x").GetDouble(),
+                            optDoc.RootElement.GetProperty("y").GetDouble());
+                        return true;
+                    }
+                    catch { return false; }
                 }
+
+                // _rows에서 해당 행 찾기
+                var row = _rows.FirstOrDefault(r => r.분석항목 == analyte);
+
+                // ── td[5] 법적기준 "1" 입력 ──
+                await InputToTdAsync(5, "1");
+
+                // ── td[6] 분석결과 입력 ──
+                if (!await InputToTdAsync(6, value))
+                { commitFailed.Add(analyte + "(td6)"); continue; }
+
+                // ── td[8] 측정분석방법 (컬럼4) ──
+                if (row != null && !string.IsNullOrWhiteSpace(row.측정분석방법))
+                    await InputDropdownTdAsync(8, row.측정분석방법);
+
+                // ── td[9] 분석장비 (컬럼5) ──
+                if (row != null && !string.IsNullOrWhiteSpace(row.분석장비))
+                    await InputDropdownTdAsync(9, row.분석장비);
+
+                // ── td[10] 분석자 (컬럼6) ──
+                if (row != null && !string.IsNullOrWhiteSpace(row.분석자))
+                    await InputDropdownTdAsync(10, row.분석자);
+
+                // ── td[11] 시작일 (날짜필드 → div[2] 클릭) ──
+                if (row != null && !string.IsNullOrWhiteSpace(row.분석일시작))
+                    await InputDateTdAsync(11, row.분석일시작);
+
+                // ── td[12] 시작시간 "09:00" ──
+                await InputToTdAsync(12, "09:00");
+
+                // ── td[13] 종료일 (날짜필드 → div[2] 클릭) ──
+                if (row != null && !string.IsNullOrWhiteSpace(row.분석일종료))
+                    await InputDateTdAsync(13, row.분석일종료);
+
+                // ── td[14] 종료시간 "18:00" ──
+                await InputToTdAsync(14, "18:00");
+
+                // ── td[15] 시료용량 "100" ──
+                await InputToTdAsync(15, "100");
+
+                filled++;
+                if (valuePreview.Count < 5)
+                    valuePreview.Add($"[{analyte}→'{value}']");
             }
-            catch { /* 커밋 클릭 실패 무시 */ }
 
             // ── Phase 3: 높이 원복 ──
             string restoreJs = @"(function(){

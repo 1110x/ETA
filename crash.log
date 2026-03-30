@@ -1,30 +1,24 @@
-Microsoft.Data.Sqlite.SqliteException (0x80004005): SQLite Error 1: 'no such column: _id'.
-   at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
-   at Microsoft.Data.Sqlite.SqliteCommand.PrepareAndEnumerateStatements()+MoveNext()
-   at Microsoft.Data.Sqlite.SqliteCommand.GetStatements()+MoveNext()
-   at Microsoft.Data.Sqlite.SqliteDataReader.NextResult()
-   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader(CommandBehavior behavior)
-   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteDbDataReader(CommandBehavior behavior)
-   at ETA.Services.TestReportService.GetSamplesByCompany(String 약칭) in /Users/azrael/Documents/ETA/Services/Testreportservice.cs:line 70
-   at ETA.Views.Pages.TestReportPage.LoadSampleNodes(TreeViewItem parent, String company) in /Users/azrael/Documents/ETA/Views/Pages/TestReportPage.axaml.cs:line 240
-   at ETA.Views.Pages.TestReportPage.<>c__DisplayClass28_0.<BuildTreeByCompany>b__0(Object s, AvaloniaPropertyChangedEventArgs e) in /Users/azrael/Documents/ETA/Views/Pages/TestReportPage.axaml.cs:line 128
-   at Avalonia.PropertyStore.EffectiveValue`1.NotifyValueChanged(ValueStore owner, StyledProperty`1 property, T oldValue)
-   at Avalonia.PropertyStore.EffectiveValue`1.SetAndRaiseCore(ValueStore owner, StyledProperty`1 property, T value, BindingPriority priority, Boolean isOverriddenCurrentValue, Boolean isCoercedDefaultValue)
-   at Avalonia.AvaloniaObject.SetCurrentValue[T](StyledProperty`1 property, T value)
-   at Avalonia.StyledProperty`1.RouteSetCurrentValue(AvaloniaObject target, Object value)
-   at Avalonia.AvaloniaObject.SetCurrentValue(AvaloniaProperty property, Object value)
-   at Avalonia.Data.TemplateBinding.WriteValueToSource(Object value)
-   at Avalonia.Data.TemplateBinding.OnTargetPropertyChanged(Object sender, AvaloniaPropertyChangedEventArgs e)
-   at Avalonia.AvaloniaObject.RaisePropertyChanged[T](AvaloniaProperty`1 property, Optional`1 oldValue, BindingValue`1 newValue, BindingPriority priority, Boolean isEffectiveValue)
-   at Avalonia.PropertyStore.EffectiveValue`1.NotifyValueChanged(ValueStore owner, StyledProperty`1 property, T oldValue)
-   at Avalonia.PropertyStore.EffectiveValue`1.SetAndRaiseCore(ValueStore owner, StyledProperty`1 property, T value, BindingPriority priority, Boolean isOverriddenCurrentValue, Boolean isCoercedDefaultValue)
-   at Avalonia.PropertyStore.EffectiveValue`1.SetCurrentValueAndRaise(ValueStore owner, StyledProperty`1 property, T value)
-   at Avalonia.PropertyStore.ValueStore.SetCurrentValue[T](StyledProperty`1 property, T value)
-   at Avalonia.AvaloniaObject.SetCurrentValue[T](StyledProperty`1 property, T value)
-   at Avalonia.Controls.Primitives.ToggleButton.Toggle()
-   at Avalonia.Controls.Primitives.ToggleButton.OnClick()
-   at Avalonia.Controls.Button.OnPointerReleased(PointerReleasedEventArgs e)
-   at Avalonia.Reactive.LightweightObservableBase`1.PublishNext(T value)
+System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation.
+ ---> System.InvalidOperationException: MariaDB 연결 문자열이 설정되지 않았습니다. appsettings.json을 확인하세요.
+   at ETA.Services.DbConnectionFactory.CreateConnection() in C:\Users\ironu\Documents\ETA\Services\DbConnectionFactory.cs:line 117
+   at ETA.Services.AnalysisService.GetAllItems() in C:\Users\ironu\Documents\ETA\Services\AnalysisService.cs:line 24
+   at ETA.Views.MainPage.LoadAnalysisItems() in C:\Users\ironu\Documents\ETA\Views\MainPage.axaml.cs:line 242
+   at ETA.Views.MainPage.CreateAnalysisItemsListBox() in C:\Users\ironu\Documents\ETA\Views\MainPage.axaml.cs:line 137
+   at ETA.Views.MainPage.Agent_Click(Object sender, RoutedEventArgs e) in C:\Users\ironu\Documents\ETA\Views\MainPage.axaml.cs:line 486
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+   --- End of inner exception stack trace ---
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+   at System.Delegate.DynamicInvokeImpl(Object[] args)
+   at Avalonia.Interactivity.EventRoute.RaiseEventImpl(RoutedEventArgs e)
+   at Avalonia.Interactivity.EventRoute.RaiseEvent(Interactive source, RoutedEventArgs e)
+   at Avalonia.Interactivity.Interactive.RaiseEvent(RoutedEventArgs e)
+   at Avalonia.Controls.MenuItem.Avalonia.Controls.IMenuItem.RaiseClick()
+   at Avalonia.Controls.Platform.DefaultMenuInteractionHandler.Click(IMenuItem item)
+   at Avalonia.Controls.Platform.DefaultMenuInteractionHandler.PointerReleased(Object sender, PointerReleasedEventArgs e)
+   at Avalonia.Interactivity.Interactive.<AddHandler>g__InvokeAdapter|8_0[TEventArgs](Delegate baseHandler, Object sender, RoutedEventArgs args)
+   at Avalonia.Interactivity.Interactive.<>c__8`1.<AddHandler>b__8_1(Delegate baseHandler, Object sender, RoutedEventArgs args)
    at Avalonia.Interactivity.EventRoute.RaiseEventImpl(RoutedEventArgs e)
    at Avalonia.Interactivity.EventRoute.RaiseEvent(Interactive source, RoutedEventArgs e)
    at Avalonia.Interactivity.Interactive.RaiseEvent(RoutedEventArgs e)
@@ -32,14 +26,17 @@ Microsoft.Data.Sqlite.SqliteException (0x80004005): SQLite Error 1: 'no such col
    at Avalonia.Input.MouseDevice.ProcessRawEvent(RawPointerEventArgs e)
    at Avalonia.Controls.TopLevel.<>c.<HandleInput>b__150_0(Object state)
    at Avalonia.Threading.Dispatcher.Send(SendOrPostCallback action, Object arg, Nullable`1 priority)
-   at Avalonia.Native.TopLevelImpl.RawMouseEvent(AvnRawMouseEventType type, AvnPointerDeviceType deviceType, UInt64 timeStamp, AvnInputModifiers modifiers, AvnPoint point, AvnVector delta, Single pressure, Single xTilt, Single yTilt)
-   at Avalonia.Native.Interop.Impl.__MicroComIAvnTopLevelEventsVTable.RawMouseEvent(Void* this, AvnRawMouseEventType type, AvnPointerDeviceType deviceType, UInt64 timeStamp, AvnInputModifiers modifiers, AvnPoint point, AvnVector delta, Single pressure, Single xTilt, Single yTilt)
---- End of stack trace from previous location ---
-   at Avalonia.Native.DispatcherImpl.RunLoop(CancellationToken token)
+   at Avalonia.Controls.TopLevel.HandleInput(RawInputEventArgs e)
+   at Avalonia.Win32.WindowImpl.AppWndProc(IntPtr hWnd, UInt32 msg, IntPtr wParam, IntPtr lParam)
+   at Avalonia.Win32.WindowImpl.WndProc(IntPtr hWnd, UInt32 msg, IntPtr wParam, IntPtr lParam)
+   at Avalonia.Win32.PopupImpl.WndProc(IntPtr hWnd, UInt32 msg, IntPtr wParam, IntPtr lParam)
+   at Avalonia.Win32.WindowImpl.WndProcMessageHandler(IntPtr hWnd, UInt32 msg, IntPtr wParam, IntPtr lParam)
+   at Avalonia.Win32.Interop.UnmanagedMethods.DispatchMessage(MSG& lpmsg)
+   at Avalonia.Win32.Win32DispatcherImpl.RunLoop(CancellationToken cancellationToken)
    at Avalonia.Threading.DispatcherFrame.Run(IControlledDispatcherImpl impl)
    at Avalonia.Threading.Dispatcher.PushFrame(DispatcherFrame frame)
    at Avalonia.Threading.Dispatcher.MainLoop(CancellationToken cancellationToken)
    at Avalonia.Controls.ApplicationLifetimes.ClassicDesktopStyleApplicationLifetime.StartCore(String[] args)
    at Avalonia.Controls.ApplicationLifetimes.ClassicDesktopStyleApplicationLifetime.Start(String[] args)
    at Avalonia.ClassicDesktopStyleApplicationLifetimeExtensions.StartWithClassicDesktopLifetime(AppBuilder builder, String[] args, Action`1 lifetimeBuilder)
-   at ETA.Program.Main(String[] args) in /Users/azrael/Documents/ETA/Program.cs:line 36
+   at ETA.Program.Main(String[] args) in C:\Users\ironu\Documents\ETA\Program.cs:line 54

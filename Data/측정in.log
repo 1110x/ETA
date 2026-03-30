@@ -122,3 +122,772 @@
 [2026-03-30 01:17:54] 입력 성공: 전체 65, DOM행 64, 매칭 64, 입력(실반영) 64, 미매칭 0, 미매칭샘플 [], 커밋실패 0, 커밋실패샘플 [], 값프리뷰 [[노말헥산추출물질(동·식물 유지류)→'O'], [부유물질→'O'], [색도→'O'], [생물화학적 산소요구량→'O'], [수소이온농도→'O']]
 [2026-03-30 01:19:29] 측정값 입력 진행 시작
 [2026-03-30 01:19:36] 입력 성공: 전체 65, DOM행 64, 매칭 64, 입력(실반영) 64, 미매칭 0, 미매칭샘플 [], 커밋실패 0, 커밋실패샘플 [], 값프리뷰 [[노말헥산추출물질(동·식물 유지류)→'O'], [부유물질→'O'], [색도→'O'], [생물화학적 산소요구량→'O'], [수소이온농도→'O']]
+[2026-03-30 11:03:55] 측정값 입력 진행 시작
+[2026-03-30 11:04:16] 입력 성공: 전체 65, DOM행 64, 매칭 64, 입력(실반영) 64, 미매칭 0, 미매칭샘플 [], 커밋실패 0, 커밋실패샘플 [], 값프리뷰 [[노말헥산추출물질(동·식물 유지류)→'O'], [부유물질→'O'], [색도→'O'], [생물화학적 산소요구량→'O'], [수소이온농도→'O']]
+[2026-03-30 13:22:17] 측정값 입력 진행 시작
+[2026-03-30 13:22:39] 입력 성공: 전체 65, DOM행 64, 매칭 64, 입력(실반영) 64, 미매칭 0, 미매칭샘플 [], 커밋실패 0, 커밋실패샘플 [], 값프리뷰 [[노말헥산추출물질(동·식물 유지류)→'O'], [부유물질→'O'], [색도→'O'], [생물화학적 산소요구량→'O'], [수소이온농도→'O']]
+[2026-03-30 13:22:47] 측정값 입력 진행 시작
+[2026-03-30 13:23:07] 입력 성공: 전체 65, DOM행 64, 매칭 64, 입력(실반영) 64, 미매칭 0, 미매칭샘플 [], 커밋실패 0, 커밋실패샘플 [], 값프리뷰 [[노말헥산추출물질(동·식물 유지류)→'O'], [부유물질→'O'], [색도→'O'], [생물화학적 산소요구량→'O'], [수소이온농도→'O']]
+[2026-03-30 13:42:56] 측정값 입력 진행 시작
+[2026-03-30 13:46:23] 입력 성공: 전체 65, DOM행 64, 매칭 64, 입력(실반영) 420, 미매칭 0, 미매칭샘플 [], 커밋실패 25, 커밋실패샘플 [불소화합물-분석결과, 불소화합물-분석장비, 불소화합물-분석자, 불소화합물-시작일, 불소화합물-시작시간], 값프리뷰 [[노말헥산추출물질(동·식물 유지류)→분석결과='O'], [노말헥산추출물질(동·식물 유지류)→분석장비='Dry oven / C-DF3 / 191220'], [노말헥산추출물질(동·식물 유지류)→분석자='방찬미'], [노말헥산추출물질(동·식물 유지류)→시작일='2026-03-29'], [노말헥산추출물질(동·식물 유지류)→시작시간='09:00']]
+[2026-03-30 13:49:50] 측정값 입력 진행 시작
+[2026-03-30 13:49:55] 입력 실패: The requested operation requires an element of type 'String', but the target element has type 'Object'.
+[2026-03-30 13:50:11] 측정값 입력 진행 시작
+[2026-03-30 13:50:15] 입력 실패: The requested operation requires an element of type 'String', but the target element has type 'Object'.
+[2026-03-30 13:54:38] 측정값 입력 진행 시작
+[2026-03-30 13:54:47] 입력 실패: CdpSendAsync는 TryAutoInputResultsAsync 내부에서만 사용됩니다.
+[2026-03-30 14:01:13] 측정값 입력 진행 시작
+[2026-03-30 14:09:51] 측정값 입력 진행 시작
+[2026-03-30 14:21:07] 측정값 입력 진행 시작
+[2026-03-30 14:37:34] 측정값 입력 진행 시작
+[2026-03-30 14:37:43] [입력시작] 노말헥산추출물질(동·식물 유지류)
+[2026-03-30 14:37:48] [입력완료] 노말헥산추출물질(동·식물 유지류)
+[2026-03-30 14:37:48] [입력시작] 부유물질
+[2026-03-30 14:37:51] [입력완료] 부유물질
+[2026-03-30 14:37:51] [입력시작] 색도
+[2026-03-30 14:37:55] [입력완료] 색도
+[2026-03-30 14:37:55] [입력시작] 생물화학적 산소요구량
+[2026-03-30 14:37:58] [입력완료] 생물화학적 산소요구량
+[2026-03-30 14:37:58] [입력시작] 수소이온농도
+[2026-03-30 14:38:02] [입력완료] 수소이온농도
+[2026-03-30 14:38:02] [입력시작] 온도
+[2026-03-30 14:38:05] [입력완료] 온도
+[2026-03-30 14:38:05] [입력시작] 전기전도도
+[2026-03-30 14:38:09] [입력완료] 전기전도도
+[2026-03-30 14:38:09] [입력시작] 총 유기탄소
+[2026-03-30 14:38:13] [입력완료] 총 유기탄소
+[2026-03-30 14:38:13] [입력시작] 탁도
+[2026-03-30 14:38:17] [입력완료] 탁도
+[2026-03-30 14:38:17] [입력시작] 화학적 산소요구량
+[2026-03-30 14:38:20] [입력완료] 화학적 산소요구량
+[2026-03-30 14:38:20] [입력시작] 시안
+[2026-03-30 14:38:24] [입력완료] 시안
+[2026-03-30 14:38:24] [입력시작] 음이온계면활성제
+[2026-03-30 14:38:28] [입력완료] 음이온계면활성제
+[2026-03-30 14:38:28] [입력시작] 총인
+[2026-03-30 14:38:33] [입력완료] 총인
+[2026-03-30 14:38:33] [입력시작] 총질소
+[2026-03-30 14:38:36] [입력완료] 총질소
+[2026-03-30 14:38:36] [입력시작] 퍼클로레이트
+[2026-03-30 14:38:40] [입력완료] 퍼클로레이트
+[2026-03-30 14:38:40] [입력시작] 페놀류
+[2026-03-30 14:38:44] [입력완료] 페놀류
+[2026-03-30 14:38:44] [입력시작] 불소화합물
+[2026-03-30 14:38:47] [입력완료] 불소화합물
+[2026-03-30 14:38:47] [입력시작] 염소이온
+[2026-03-30 14:38:50] [입력완료] 염소이온
+[2026-03-30 14:38:50] [입력시작] 황산이온
+[2026-03-30 14:38:54] [입력완료] 황산이온
+[2026-03-30 14:38:54] [입력시작] 구리
+[2026-03-30 14:38:57] [입력완료] 구리
+[2026-03-30 14:38:57] [입력시작] 납
+[2026-03-30 14:39:00] [입력완료] 납
+[2026-03-30 14:39:00] [입력시작] 니켈
+[2026-03-30 14:39:03] [입력완료] 니켈
+[2026-03-30 14:39:03] [입력시작] 망간
+[2026-03-30 14:39:07] [입력완료] 망간
+[2026-03-30 14:39:07] [입력시작] 바륨
+[2026-03-30 14:39:10] [입력완료] 바륨
+[2026-03-30 14:39:10] [입력시작] 비소
+[2026-03-30 14:39:13] [입력완료] 비소
+[2026-03-30 14:39:13] [입력시작] 아연
+[2026-03-30 14:39:16] [입력완료] 아연
+[2026-03-30 14:39:16] [입력시작] 안티몬
+[2026-03-30 14:39:20] [입력완료] 안티몬
+[2026-03-30 14:39:20] [입력시작] 주석
+[2026-03-30 14:39:23] [입력완료] 주석
+[2026-03-30 14:39:23] [입력시작] 철
+[2026-03-30 14:39:26] [입력완료] 철
+[2026-03-30 14:39:26] [입력시작] 셀레늄
+[2026-03-30 14:39:29] [입력완료] 셀레늄
+[2026-03-30 14:39:29] [입력시작] 수은
+[2026-03-30 14:39:33] [입력완료] 수은
+[2026-03-30 14:39:33] [입력시작] 카드뮴
+[2026-03-30 14:39:36] [입력완료] 카드뮴
+[2026-03-30 14:39:36] [입력시작] 크롬
+[2026-03-30 14:39:39] [입력완료] 크롬
+[2026-03-30 14:39:39] [입력시작] 6가크롬
+[2026-03-30 14:39:43] [입력완료] 6가크롬
+[2026-03-30 14:39:43] [입력시작] 다이에틸헥실프탈레이트
+[2026-03-30 14:39:46] [입력완료] 다이에틸헥실프탈레이트
+[2026-03-30 14:39:46] [입력시작] 유기인
+[2026-03-30 14:39:49] [입력완료] 유기인
+[2026-03-30 14:39:49] [입력시작] 폴리클로리네이티드비페닐
+[2026-03-30 14:39:53] [입력완료] 폴리클로리네이티드비페닐
+[2026-03-30 14:39:53] [입력시작] 다이에틸헥실아디페이트
+[2026-03-30 14:39:56] [입력완료] 다이에틸헥실아디페이트
+[2026-03-30 14:39:56] [입력시작] 과불화헥산술폰산(PFHxS)
+[2026-03-30 14:39:59] [입력완료] 과불화헥산술폰산(PFHxS)
+[2026-03-30 14:39:59] [입력시작] 과불화옥탄술폰산(PFOS)
+[2026-03-30 14:40:02] [입력완료] 과불화옥탄술폰산(PFOS)
+[2026-03-30 14:40:02] [입력시작] 과불화옥탄산(PFOA)
+[2026-03-30 14:40:05] [입력완료] 과불화옥탄산(PFOA)
+[2026-03-30 14:40:05] [입력시작] 1,4-다이옥산
+[2026-03-30 14:40:09] [입력완료] 1,4-다이옥산
+[2026-03-30 14:40:09] [입력시작] 아크릴로니트릴
+[2026-03-30 14:40:12] [입력완료] 아크릴로니트릴
+[2026-03-30 14:40:12] [입력시작] 염화비닐
+[2026-03-30 14:40:16] [입력완료] 염화비닐
+[2026-03-30 14:40:16] [입력시작] 브로모포름
+[2026-03-30 14:40:19] [입력완료] 브로모포름
+[2026-03-30 14:40:19] [입력시작] 1,1-다이클로로에틸렌
+[2026-03-30 14:40:23] [입력완료] 1,1-다이클로로에틸렌
+[2026-03-30 14:40:23] [입력시작] 다이클로로메탄
+[2026-03-30 14:40:26] [입력완료] 다이클로로메탄
+[2026-03-30 14:40:26] [입력시작] 클로로폼
+[2026-03-30 14:40:29] [입력완료] 클로로폼
+[2026-03-30 14:40:29] [입력시작] 1,2-다이클로로에탄
+[2026-03-30 14:40:33] [입력완료] 1,2-다이클로로에탄
+[2026-03-30 14:40:33] [입력시작] 벤젠
+[2026-03-30 14:40:36] [입력완료] 벤젠
+[2026-03-30 14:40:36] [입력시작] 사염화탄소
+[2026-03-30 14:40:40] [입력완료] 사염화탄소
+[2026-03-30 14:40:40] [입력시작] 트리클로로에틸렌
+[2026-03-30 14:40:43] [입력완료] 트리클로로에틸렌
+[2026-03-30 14:40:43] [입력시작] 톨루엔
+[2026-03-30 14:40:47] [입력완료] 톨루엔
+[2026-03-30 14:40:47] [입력시작] 테트라클로로에틸렌
+[2026-03-30 14:40:50] [입력완료] 테트라클로로에틸렌
+[2026-03-30 14:40:50] [입력시작] 자일렌
+[2026-03-30 14:40:54] [입력완료] 자일렌
+[2026-03-30 14:40:54] [입력시작] 폼알데하이드
+[2026-03-30 14:40:57] [입력완료] 폼알데하이드
+[2026-03-30 14:40:57] [입력시작] 나프탈렌
+[2026-03-30 14:41:01] [입력완료] 나프탈렌
+[2026-03-30 14:41:01] [입력시작] 아크릴아미드
+[2026-03-30 14:41:04] [입력완료] 아크릴아미드
+[2026-03-30 14:41:04] [입력시작] 에피클로로하이드린
+[2026-03-30 14:41:07] [입력완료] 에피클로로하이드린
+[2026-03-30 14:41:07] [입력시작] 스타이렌
+[2026-03-30 14:41:11] [입력완료] 스타이렌
+[2026-03-30 14:41:11] [입력시작] 페놀
+[2026-03-30 14:41:14] [입력완료] 페놀
+[2026-03-30 14:41:14] [입력시작] 펜타클로로페놀
+[2026-03-30 14:41:17] [입력완료] 펜타클로로페놀
+[2026-03-30 14:41:17] [입력시작] 총대장균군
+[2026-03-30 14:41:21] [입력완료] 총대장균군
+[2026-03-30 14:41:21] [입력시작] 생태독성
+[2026-03-30 14:41:24] [입력완료] 생태독성
+[2026-03-30 14:41:24] 입력 성공: 전체 65, DOM행 64, 매칭 64, 입력(실반영) 64, 미매칭 0, 미매칭샘플 [], 커밋실패 0, 커밋실패샘플 [], 값프리뷰 [[분석결과=O], [측정분석방법=노말헥산 추출물질], [분석장비=Dry oven / C-DF3 / 191220], [분석자=방찬미], [시작일=2026-03-29], [시작시간=09:00], [종료일=2026-03-29], [종료시간=18:00]]
+[2026-03-30 14:43:33] 측정값 입력 진행 시작
+[2026-03-30 14:43:58] 입력 성공: 전체 65, DOM행 64, 매칭 64, 입력(실반영) 64, 미매칭 0, 미매칭샘플 [], 커밋실패 0, 커밋실패샘플 [], 값프리뷰 [[노말헥산추출물질(동·식물 유지류)→'O'], [부유물질→'O'], [색도→'O'], [생물화학적 산소요구량→'O'], [수소이온농도→'O']]
+[2026-03-30 14:48:41] 측정값 입력 진행 시작
+[2026-03-30 14:49:05] 입력 성공: 전체 65, DOM행 64, 매칭 64, 입력(실반영) 64, 미매칭 0, 미매칭샘플 [], 커밋실패 0, 커밋실패샘플 [], 값프리뷰 [[노말헥산추출물질(동·식물 유지류)→'O'], [부유물질→'O'], [색도→'O'], [생물화학적 산소요구량→'O'], [수소이온농도→'O']]
+[2026-03-30 14:54:26] 측정값 입력 진행 시작
+[2026-03-30 14:54:59] 입력 성공: 전체 65, DOM행 64, 매칭 64, 입력(실반영) 64, 미매칭 0, 미매칭샘플 [], 커밋실패 0, 커밋실패샘플 [], 값프리뷰 [[노말헥산추출물질(동·식물 유지류)→'O'], [부유물질→'O'], [색도→'O'], [생물화학적 산소요구량→'O'], [수소이온농도→'O']]
+[2026-03-30 15:16:53] 측정값 입력 진행 시작
+[2026-03-30 15:17:54] 입력 성공: 전체 65, DOM행 64, 매칭 64, 입력(실반영) 64, 미매칭 0, 미매칭샘플 [], 커밋실패 0, 커밋실패샘플 [], 값프리뷰 [[노말헥산추출물질(동·식물 유지류)→'1'], [부유물질→'1'], [색도→'O'], [생물화학적 산소요구량→'O'], [수소이온농도→'O']]
+[2026-03-30 15:31:57] 측정값 입력 진행 시작
+[2026-03-30 15:35:21] 입력 성공: 전체 65, DOM행 64, 매칭 64, 입력(실반영) 64, 미매칭 0, 미매칭샘플 [], 커밋실패 0, 커밋실패샘플 [], 값프리뷰 [[노말헥산추출물질(동·식물 유지류)→'1'], [부유물질→'1'], [색도→'O'], [생물화학적 산소요구량→'O'], [수소이온농도→'O']]
+[2026-03-30 15:50:12] 측정값 입력 진행 시작
+[2026-03-30 15:50:20] 입력 실패: 입력 완료: 0/65건 | 실패: \uB178\uB9D0\uD5E5\uC0B0\uCD94\uCD9C\uBB3C\uC9C8(\uB3D9\u00B7\uC2DD\uBB3C \uC720\uC9C0\uB958)(row), \uBD80\uC720\uBB3C\uC9C8(row), \uC0C9\uB3C4(row), \uC0DD\uBB3C\uD654\uD559\uC801 \uC0B0\uC18C\uC694\uAD6C\uB7C9(row), \uC218\uC18C\uC774\uC628\uB18D\uB3C4(row), \uC628\uB3C4(row), \uC804\uAE30\uC804\uB3C4\uB3C4(row), \uCD1D \uC720\uAE30\uD0C4\uC18C(row), \uD0C1\uB3C4(row), \uD654\uD559\uC801 \uC0B0\uC18C\uC694\uAD6C\uB7C9(row), \uC2DC\uC548(row), \uC74C\uC774\uC628\uACC4\uBA74\uD65C\uC131\uC81C(row), \uCD1D\uC778(row), \uCD1D\uC9C8\uC18C(row), \uD37C\uD074\uB85C\uB808\uC774\uD2B8(row), \uD398\uB180\uB958(row), \uBD88\uC18C\uD654\uD569\uBB3C(row), \uC5FC\uC18C\uC774\uC628(row), \uD669\uC0B0\uC774\uC628(row), \uAD6C\uB9AC(row), \uB0A9(row), \uB2C8\uCF08(row), \uB9DD\uAC04(row), \uBC14\uB968(row), \uBE44\uC18C(row), \uC544\uC5F0(row), \uC548\uD2F0\uBAAC(row), \uC8FC\uC11D(row), \uCCA0(row), \uC140\uB808\uB284(row), \uC218\uC740(row), \uCE74\uB4DC\uBBB4(row), \uD06C\uB86C(row), 6\uAC00\uD06C\uB86C(row), \uB2E4\uC774\uC5D0\uD2F8\uD5E5\uC2E4\uD504\uD0C8\uB808\uC774\uD2B8(row), \uC720\uAE30\uC778(row), \uD3F4\uB9AC\uD074\uB85C\uB9AC\uB124\uC774\uD2F0\uB4DC\uBE44\uD398\uB2D0(row), \uB2E4\uC774\uC5D0\uD2F8\uD5E5\uC2E4\uC544\uB514\uD398\uC774\uD2B8(row), \uACFC\uBD88\uD654\uD5E5\uC0B0\uC220\uD3F0\uC0B0(PFHxS)(row), \uACFC\uBD88\uD654\uC625\uD0C4\uC220\uD3F0\uC0B0(PFOS)(row), \uACFC\uBD88\uD654\uC625\uD0C4\uC0B0(PFOA)(row), 1,4-\uB2E4\uC774\uC625\uC0B0(row), \uC544\uD06C\uB9B4\uB85C\uB2C8\uD2B8\uB9B4(row), \uC5FC\uD654\uBE44\uB2D0(row), \uBE0C\uB85C\uBAA8\uD3EC\uB984(row), 1,1-\uB2E4\uC774\uD074\uB85C\uB85C\uC5D0\uD2F8\uB80C(row), \uB2E4\uC774\uD074\uB85C\uB85C\uBA54\uD0C4(row), \uD074\uB85C\uB85C\uD3FC(row), 1,2-\uB2E4\uC774\uD074\uB85C\uB85C\uC5D0\uD0C4(row), \uBCA4\uC820(row), \uC0AC\uC5FC\uD654\uD0C4\uC18C(row), \uD2B8\uB9AC\uD074\uB85C\uB85C\uC5D0\uD2F8\uB80C(row), \uD1A8\uB8E8\uC5D4(row), \uD14C\uD2B8\uB77C\uD074\uB85C\uB85C\uC5D0\uD2F8\uB80C(row), \uC790\uC77C\uB80C(row), \uD3FC\uC54C\uB370\uD558\uC774\uB4DC(row), \uB098\uD504\uD0C8\uB80C(row), \uC544\uD06C\uB9B4\uC544\uBBF8\uB4DC(row), \uC5D0\uD53C\uD074\uB85C\uB85C\uD558\uC774\uB4DC\uB9B0(row), \uC2A4\uD0C0\uC774\uB80C(row), \uD398\uB180(row), \uD39C\uD0C0\uD074\uB85C\uB85C\uD398\uB180(row), \uCD1D\uB300\uC7A5\uADE0\uAD70(row), \uC0DD\uD0DC\uB3C5\uC131(row), \uD604\uC7A5\uCE21\uC815 \uBC0F \uC2DC\uB8CC\uCC44\uCDE8(row)
+[2026-03-30 15:59:26] 측정값 입력 진행 시작
+[2026-03-30 15:59:34] 입력 실패: 입력 완료: 0/65건 | 실패: \uB178\uB9D0\uD5E5\uC0B0\uCD94\uCD9C\uBB3C\uC9C8(\uB3D9\u00B7\uC2DD\uBB3C \uC720\uC9C0\uB958)(row), \uBD80\uC720\uBB3C\uC9C8(row), \uC0C9\uB3C4(row), \uC0DD\uBB3C\uD654\uD559\uC801 \uC0B0\uC18C\uC694\uAD6C\uB7C9(row), \uC218\uC18C\uC774\uC628\uB18D\uB3C4(row), \uC628\uB3C4(row), \uC804\uAE30\uC804\uB3C4\uB3C4(row), \uCD1D \uC720\uAE30\uD0C4\uC18C(row), \uD0C1\uB3C4(row), \uD654\uD559\uC801 \uC0B0\uC18C\uC694\uAD6C\uB7C9(row), \uC2DC\uC548(row), \uC74C\uC774\uC628\uACC4\uBA74\uD65C\uC131\uC81C(row), \uCD1D\uC778(row), \uCD1D\uC9C8\uC18C(row), \uD37C\uD074\uB85C\uB808\uC774\uD2B8(row), \uD398\uB180\uB958(row), \uBD88\uC18C\uD654\uD569\uBB3C(row), \uC5FC\uC18C\uC774\uC628(row), \uD669\uC0B0\uC774\uC628(row), \uAD6C\uB9AC(row), \uB0A9(row), \uB2C8\uCF08(row), \uB9DD\uAC04(row), \uBC14\uB968(row), \uBE44\uC18C(row), \uC544\uC5F0(row), \uC548\uD2F0\uBAAC(row), \uC8FC\uC11D(row), \uCCA0(row), \uC140\uB808\uB284(row), \uC218\uC740(row), \uCE74\uB4DC\uBBB4(row), \uD06C\uB86C(row), 6\uAC00\uD06C\uB86C(row), \uB2E4\uC774\uC5D0\uD2F8\uD5E5\uC2E4\uD504\uD0C8\uB808\uC774\uD2B8(row), \uC720\uAE30\uC778(row), \uD3F4\uB9AC\uD074\uB85C\uB9AC\uB124\uC774\uD2F0\uB4DC\uBE44\uD398\uB2D0(row), \uB2E4\uC774\uC5D0\uD2F8\uD5E5\uC2E4\uC544\uB514\uD398\uC774\uD2B8(row), \uACFC\uBD88\uD654\uD5E5\uC0B0\uC220\uD3F0\uC0B0(PFHxS)(row), \uACFC\uBD88\uD654\uC625\uD0C4\uC220\uD3F0\uC0B0(PFOS)(row), \uACFC\uBD88\uD654\uC625\uD0C4\uC0B0(PFOA)(row), 1,4-\uB2E4\uC774\uC625\uC0B0(row), \uC544\uD06C\uB9B4\uB85C\uB2C8\uD2B8\uB9B4(row), \uC5FC\uD654\uBE44\uB2D0(row), \uBE0C\uB85C\uBAA8\uD3EC\uB984(row), 1,1-\uB2E4\uC774\uD074\uB85C\uB85C\uC5D0\uD2F8\uB80C(row), \uB2E4\uC774\uD074\uB85C\uB85C\uBA54\uD0C4(row), \uD074\uB85C\uB85C\uD3FC(row), 1,2-\uB2E4\uC774\uD074\uB85C\uB85C\uC5D0\uD0C4(row), \uBCA4\uC820(row), \uC0AC\uC5FC\uD654\uD0C4\uC18C(row), \uD2B8\uB9AC\uD074\uB85C\uB85C\uC5D0\uD2F8\uB80C(row), \uD1A8\uB8E8\uC5D4(row), \uD14C\uD2B8\uB77C\uD074\uB85C\uB85C\uC5D0\uD2F8\uB80C(row), \uC790\uC77C\uB80C(row), \uD3FC\uC54C\uB370\uD558\uC774\uB4DC(row), \uB098\uD504\uD0C8\uB80C(row), \uC544\uD06C\uB9B4\uC544\uBBF8\uB4DC(row), \uC5D0\uD53C\uD074\uB85C\uB85C\uD558\uC774\uB4DC\uB9B0(row), \uC2A4\uD0C0\uC774\uB80C(row), \uD398\uB180(row), \uD39C\uD0C0\uD074\uB85C\uB85C\uD398\uB180(row), \uCD1D\uB300\uC7A5\uADE0\uAD70(row), \uC0DD\uD0DC\uB3C5\uC131(row), \uD604\uC7A5\uCE21\uC815 \uBC0F \uC2DC\uB8CC\uCC44\uCDE8(row)
+[디버그] 테이블 행 수: 64개
+[페이지에 보이는 샘플 분석항목]
+노말헥산추출물질(동·식물 유지류)
+부유물질
+색도
+생물화학적 산소요구량
+수소이온농도
+온도
+전기전도도
+총 유기탄소
+[2026-03-30 16:07:29] 측정값 입력 진행 시작
+[2026-03-30 16:07:38] 입력 실패: 입력 완료: 0/65건 | 실패: \uB178\uB9D0\uD5E5\uC0B0\uCD94\uCD9C\uBB3C\uC9C8(\uB3D9\u00B7\uC2DD\uBB3C \uC720\uC9C0\uB958)(row), \uBD80\uC720\uBB3C\uC9C8(row), \uC0C9\uB3C4(row), \uC0DD\uBB3C\uD654\uD559\uC801 \uC0B0\uC18C\uC694\uAD6C\uB7C9(row), \uC218\uC18C\uC774\uC628\uB18D\uB3C4(row), \uC628\uB3C4(row), \uC804\uAE30\uC804\uB3C4\uB3C4(row), \uCD1D \uC720\uAE30\uD0C4\uC18C(row), \uD0C1\uB3C4(row), \uD654\uD559\uC801 \uC0B0\uC18C\uC694\uAD6C\uB7C9(row), \uC2DC\uC548(row), \uC74C\uC774\uC628\uACC4\uBA74\uD65C\uC131\uC81C(row), \uCD1D\uC778(row), \uCD1D\uC9C8\uC18C(row), \uD37C\uD074\uB85C\uB808\uC774\uD2B8(row), \uD398\uB180\uB958(row), \uBD88\uC18C\uD654\uD569\uBB3C(row), \uC5FC\uC18C\uC774\uC628(row), \uD669\uC0B0\uC774\uC628(row), \uAD6C\uB9AC(row), \uB0A9(row), \uB2C8\uCF08(row), \uB9DD\uAC04(row), \uBC14\uB968(row), \uBE44\uC18C(row), \uC544\uC5F0(row), \uC548\uD2F0\uBAAC(row), \uC8FC\uC11D(row), \uCCA0(row), \uC140\uB808\uB284(row), \uC218\uC740(row), \uCE74\uB4DC\uBBB4(row), \uD06C\uB86C(row), 6\uAC00\uD06C\uB86C(row), \uB2E4\uC774\uC5D0\uD2F8\uD5E5\uC2E4\uD504\uD0C8\uB808\uC774\uD2B8(row), \uC720\uAE30\uC778(row), \uD3F4\uB9AC\uD074\uB85C\uB9AC\uB124\uC774\uD2F0\uB4DC\uBE44\uD398\uB2D0(row), \uB2E4\uC774\uC5D0\uD2F8\uD5E5\uC2E4\uC544\uB514\uD398\uC774\uD2B8(row), \uACFC\uBD88\uD654\uD5E5\uC0B0\uC220\uD3F0\uC0B0(PFHxS)(row), \uACFC\uBD88\uD654\uC625\uD0C4\uC220\uD3F0\uC0B0(PFOS)(row), \uACFC\uBD88\uD654\uC625\uD0C4\uC0B0(PFOA)(row), 1,4-\uB2E4\uC774\uC625\uC0B0(row), \uC544\uD06C\uB9B4\uB85C\uB2C8\uD2B8\uB9B4(row), \uC5FC\uD654\uBE44\uB2D0(row), \uBE0C\uB85C\uBAA8\uD3EC\uB984(row), 1,1-\uB2E4\uC774\uD074\uB85C\uB85C\uC5D0\uD2F8\uB80C(row), \uB2E4\uC774\uD074\uB85C\uB85C\uBA54\uD0C4(row), \uD074\uB85C\uB85C\uD3FC(row), 1,2-\uB2E4\uC774\uD074\uB85C\uB85C\uC5D0\uD0C4(row), \uBCA4\uC820(row), \uC0AC\uC5FC\uD654\uD0C4\uC18C(row), \uD2B8\uB9AC\uD074\uB85C\uB85C\uC5D0\uD2F8\uB80C(row), \uD1A8\uB8E8\uC5D4(row), \uD14C\uD2B8\uB77C\uD074\uB85C\uB85C\uC5D0\uD2F8\uB80C(row), \uC790\uC77C\uB80C(row), \uD3FC\uC54C\uB370\uD558\uC774\uB4DC(row), \uB098\uD504\uD0C8\uB80C(row), \uC544\uD06C\uB9B4\uC544\uBBF8\uB4DC(row), \uC5D0\uD53C\uD074\uB85C\uB85C\uD558\uC774\uB4DC\uB9B0(row), \uC2A4\uD0C0\uC774\uB80C(row), \uD398\uB180(row), \uD39C\uD0C0\uD074\uB85C\uB85C\uD398\uB180(row), \uCD1D\uB300\uC7A5\uADE0\uAD70(row), \uC0DD\uD0DC\uB3C5\uC131(row), \uD604\uC7A5\uCE21\uC815 \uBC0F \uC2DC\uB8CC\uCC44\uCDE8(row)
+[디버그] 테이블 행 수: 64개
+[페이지에 보이는 샘플 분석항목]
+노말헥산추출물질(동·식물 유지류)
+부유물질
+색도
+생물화학적 산소요구량
+수소이온농도
+온도
+전기전도도
+총 유기탄소
+[2026-03-30 16:11:22] 측정값 입력 진행 시작
+[2026-03-30 16:11:31] 입력 실패: 입력 완료: 0/65건 | 실패: \uB178\uB9D0\uD5E5\uC0B0\uCD94\uCD9C\uBB3C\uC9C8(\uB3D9\u00B7\uC2DD\uBB3C \uC720\uC9C0\uB958)(row), \uBD80\uC720\uBB3C\uC9C8(row), \uC0C9\uB3C4(row), \uC0DD\uBB3C\uD654\uD559\uC801 \uC0B0\uC18C\uC694\uAD6C\uB7C9(row), \uC218\uC18C\uC774\uC628\uB18D\uB3C4(row), \uC628\uB3C4(row), \uC804\uAE30\uC804\uB3C4\uB3C4(row), \uCD1D \uC720\uAE30\uD0C4\uC18C(row), \uD0C1\uB3C4(row), \uD654\uD559\uC801 \uC0B0\uC18C\uC694\uAD6C\uB7C9(row), \uC2DC\uC548(row), \uC74C\uC774\uC628\uACC4\uBA74\uD65C\uC131\uC81C(row), \uCD1D\uC778(row), \uCD1D\uC9C8\uC18C(row), \uD37C\uD074\uB85C\uB808\uC774\uD2B8(row), \uD398\uB180\uB958(row), \uBD88\uC18C\uD654\uD569\uBB3C(row), \uC5FC\uC18C\uC774\uC628(row), \uD669\uC0B0\uC774\uC628(row), \uAD6C\uB9AC(row), \uB0A9(row), \uB2C8\uCF08(row), \uB9DD\uAC04(row), \uBC14\uB968(row), \uBE44\uC18C(row), \uC544\uC5F0(row), \uC548\uD2F0\uBAAC(row), \uC8FC\uC11D(row), \uCCA0(row), \uC140\uB808\uB284(row), \uC218\uC740(row), \uCE74\uB4DC\uBBB4(row), \uD06C\uB86C(row), 6\uAC00\uD06C\uB86C(row), \uB2E4\uC774\uC5D0\uD2F8\uD5E5\uC2E4\uD504\uD0C8\uB808\uC774\uD2B8(row), \uC720\uAE30\uC778(row), \uD3F4\uB9AC\uD074\uB85C\uB9AC\uB124\uC774\uD2F0\uB4DC\uBE44\uD398\uB2D0(row), \uB2E4\uC774\uC5D0\uD2F8\uD5E5\uC2E4\uC544\uB514\uD398\uC774\uD2B8(row), \uACFC\uBD88\uD654\uD5E5\uC0B0\uC220\uD3F0\uC0B0(PFHxS)(row), \uACFC\uBD88\uD654\uC625\uD0C4\uC220\uD3F0\uC0B0(PFOS)(row), \uACFC\uBD88\uD654\uC625\uD0C4\uC0B0(PFOA)(row), 1,4-\uB2E4\uC774\uC625\uC0B0(row), \uC544\uD06C\uB9B4\uB85C\uB2C8\uD2B8\uB9B4(row), \uC5FC\uD654\uBE44\uB2D0(row), \uBE0C\uB85C\uBAA8\uD3EC\uB984(row), 1,1-\uB2E4\uC774\uD074\uB85C\uB85C\uC5D0\uD2F8\uB80C(row), \uB2E4\uC774\uD074\uB85C\uB85C\uBA54\uD0C4(row), \uD074\uB85C\uB85C\uD3FC(row), 1,2-\uB2E4\uC774\uD074\uB85C\uB85C\uC5D0\uD0C4(row), \uBCA4\uC820(row), \uC0AC\uC5FC\uD654\uD0C4\uC18C(row), \uD2B8\uB9AC\uD074\uB85C\uB85C\uC5D0\uD2F8\uB80C(row), \uD1A8\uB8E8\uC5D4(row), \uD14C\uD2B8\uB77C\uD074\uB85C\uB85C\uC5D0\uD2F8\uB80C(row), \uC790\uC77C\uB80C(row), \uD3FC\uC54C\uB370\uD558\uC774\uB4DC(row), \uB098\uD504\uD0C8\uB80C(row), \uC544\uD06C\uB9B4\uC544\uBBF8\uB4DC(row), \uC5D0\uD53C\uD074\uB85C\uB85C\uD558\uC774\uB4DC\uB9B0(row), \uC2A4\uD0C0\uC774\uB80C(row), \uD398\uB180(row), \uD39C\uD0C0\uD074\uB85C\uB85C\uD398\uB180(row), \uCD1D\uB300\uC7A5\uADE0\uAD70(row), \uC0DD\uD0DC\uB3C5\uC131(row), \uD604\uC7A5\uCE21\uC815 \uBC0F \uC2DC\uB8CC\uCC44\uCDE8(row)
+[디버그] 테이블 행 수: 64개
+[페이지에 보이는 샘플 분석항목]
+노말헥산추출물질(동·식물 유지류)
+부유물질
+색도
+생물화학적 산소요구량
+수소이온농도
+온도
+전기전도도
+총 유기탄소
+[2026-03-30 16:16:31] 측정값 입력 진행 시작
+[2026-03-30 16:16:40] 입력 실패: 입력 완료: 0/65건 | 실패: \uB178\uB9D0\uD5E5\uC0B0\uCD94\uCD9C\uBB3C\uC9C8(\uB3D9\u00B7\uC2DD\uBB3C \uC720\uC9C0\uB958)(no match), \uBD80\uC720\uBB3C\uC9C8(no match), \uC0C9\uB3C4(no match), \uC0DD\uBB3C\uD654\uD559\uC801 \uC0B0\uC18C\uC694\uAD6C\uB7C9(no match), \uC218\uC18C\uC774\uC628\uB18D\uB3C4(no match), \uC628\uB3C4(no match), \uC804\uAE30\uC804\uB3C4\uB3C4(no match), \uCD1D \uC720\uAE30\uD0C4\uC18C(no match), \uD0C1\uB3C4(no match), \uD654\uD559\uC801 \uC0B0\uC18C\uC694\uAD6C\uB7C9(no match), \uC2DC\uC548(no match), \uC74C\uC774\uC628\uACC4\uBA74\uD65C\uC131\uC81C(no match), \uCD1D\uC778(no match), \uCD1D\uC9C8\uC18C(no match), \uD37C\uD074\uB85C\uB808\uC774\uD2B8(no match), \uD398\uB180\uB958(no match), \uBD88\uC18C\uD654\uD569\uBB3C(no match), \uC5FC\uC18C\uC774\uC628(no match), \uD669\uC0B0\uC774\uC628(no match), \uAD6C\uB9AC(no match), \uB0A9(no match), \uB2C8\uCF08(no match), \uB9DD\uAC04(no match), \uBC14\uB968(no match), \uBE44\uC18C(no match), \uC544\uC5F0(no match), \uC548\uD2F0\uBAAC(no match), \uC8FC\uC11D(no match), \uCCA0(no match), \uC140\uB808\uB284(no match), \uC218\uC740(no match), \uCE74\uB4DC\uBBB4(no match), \uD06C\uB86C(no match), 6\uAC00\uD06C\uB86C(no match), \uB2E4\uC774\uC5D0\uD2F8\uD5E5\uC2E4\uD504\uD0C8\uB808\uC774\uD2B8(no match), \uC720\uAE30\uC778(no match), \uD3F4\uB9AC\uD074\uB85C\uB9AC\uB124\uC774\uD2F0\uB4DC\uBE44\uD398\uB2D0(no match), \uB2E4\uC774\uC5D0\uD2F8\uD5E5\uC2E4\uC544\uB514\uD398\uC774\uD2B8(no match), \uACFC\uBD88\uD654\uD5E5\uC0B0\uC220\uD3F0\uC0B0(PFHxS)(no match), \uACFC\uBD88\uD654\uC625\uD0C4\uC220\uD3F0\uC0B0(PFOS)(no match), \uACFC\uBD88\uD654\uC625\uD0C4\uC0B0(PFOA)(no match), 1,4-\uB2E4\uC774\uC625\uC0B0(no match), \uC544\uD06C\uB9B4\uB85C\uB2C8\uD2B8\uB9B4(no match), \uC5FC\uD654\uBE44\uB2D0(no match), \uBE0C\uB85C\uBAA8\uD3EC\uB984(no match), 1,1-\uB2E4\uC774\uD074\uB85C\uB85C\uC5D0\uD2F8\uB80C(no match), \uB2E4\uC774\uD074\uB85C\uB85C\uBA54\uD0C4(no match), \uD074\uB85C\uB85C\uD3FC(no match), 1,2-\uB2E4\uC774\uD074\uB85C\uB85C\uC5D0\uD0C4(no match), \uBCA4\uC820(no match), \uC0AC\uC5FC\uD654\uD0C4\uC18C(no match), \uD2B8\uB9AC\uD074\uB85C\uB85C\uC5D0\uD2F8\uB80C(no match), \uD1A8\uB8E8\uC5D4(no match), \uD14C\uD2B8\uB77C\uD074\uB85C\uB85C\uC5D0\uD2F8\uB80C(no match), \uC790\uC77C\uB80C(no match), \uD3FC\uC54C\uB370\uD558\uC774\uB4DC(no match), \uB098\uD504\uD0C8\uB80C(no match), \uC544\uD06C\uB9B4\uC544\uBBF8\uB4DC(no match), \uC5D0\uD53C\uD074\uB85C\uB85C\uD558\uC774\uB4DC\uB9B0(no match), \uC2A4\uD0C0\uC774\uB80C(no match), \uD398\uB180(no match), \uD39C\uD0C0\uD074\uB85C\uB85C\uD398\uB180(no match), \uCD1D\uB300\uC7A5\uADE0\uAD70(no match), \uC0DD\uD0DC\uB3C5\uC131(no match), \uD604\uC7A5\uCE21\uC815 \uBC0F \uC2DC\uB8CC\uCC44\uCDE8(no match)
+[디버그] 테이블 행 수: 64개
+[2026-03-30 16:21:24] 측정값 입력 진행 시작
+[2026-03-30 16:21:33] 입력 실패: 입력 완료: 0/65건 | 실패: \uB178\uB9D0\uD5E5\uC0B0\uCD94\uCD9C\uBB3C\uC9C8(\uB3D9\u00B7\uC2DD\uBB3C \uC720\uC9C0\uB958)(no match), \uBD80\uC720\uBB3C\uC9C8(no match), \uC0C9\uB3C4(no match), \uC0DD\uBB3C\uD654\uD559\uC801 \uC0B0\uC18C\uC694\uAD6C\uB7C9(no match), \uC218\uC18C\uC774\uC628\uB18D\uB3C4(no match), \uC628\uB3C4(no match), \uC804\uAE30\uC804\uB3C4\uB3C4(no match), \uCD1D \uC720\uAE30\uD0C4\uC18C(no match), \uD0C1\uB3C4(no match), \uD654\uD559\uC801 \uC0B0\uC18C\uC694\uAD6C\uB7C9(no match), \uC2DC\uC548(no match), \uC74C\uC774\uC628\uACC4\uBA74\uD65C\uC131\uC81C(no match), \uCD1D\uC778(no match), \uCD1D\uC9C8\uC18C(no match), \uD37C\uD074\uB85C\uB808\uC774\uD2B8(no match), \uD398\uB180\uB958(no match), \uBD88\uC18C\uD654\uD569\uBB3C(no match), \uC5FC\uC18C\uC774\uC628(no match), \uD669\uC0B0\uC774\uC628(no match), \uAD6C\uB9AC(no match), \uB0A9(no match), \uB2C8\uCF08(no match), \uB9DD\uAC04(no match), \uBC14\uB968(no match), \uBE44\uC18C(no match), \uC544\uC5F0(no match), \uC548\uD2F0\uBAAC(no match), \uC8FC\uC11D(no match), \uCCA0(no match), \uC140\uB808\uB284(no match), \uC218\uC740(no match), \uCE74\uB4DC\uBBB4(no match), \uD06C\uB86C(no match), 6\uAC00\uD06C\uB86C(no match), \uB2E4\uC774\uC5D0\uD2F8\uD5E5\uC2E4\uD504\uD0C8\uB808\uC774\uD2B8(no match), \uC720\uAE30\uC778(no match), \uD3F4\uB9AC\uD074\uB85C\uB9AC\uB124\uC774\uD2F0\uB4DC\uBE44\uD398\uB2D0(no match), \uB2E4\uC774\uC5D0\uD2F8\uD5E5\uC2E4\uC544\uB514\uD398\uC774\uD2B8(no match), \uACFC\uBD88\uD654\uD5E5\uC0B0\uC220\uD3F0\uC0B0(PFHxS)(no match), \uACFC\uBD88\uD654\uC625\uD0C4\uC220\uD3F0\uC0B0(PFOS)(no match), \uACFC\uBD88\uD654\uC625\uD0C4\uC0B0(PFOA)(no match), 1,4-\uB2E4\uC774\uC625\uC0B0(no match), \uC544\uD06C\uB9B4\uB85C\uB2C8\uD2B8\uB9B4(no match), \uC5FC\uD654\uBE44\uB2D0(no match), \uBE0C\uB85C\uBAA8\uD3EC\uB984(no match), 1,1-\uB2E4\uC774\uD074\uB85C\uB85C\uC5D0\uD2F8\uB80C(no match), \uB2E4\uC774\uD074\uB85C\uB85C\uBA54\uD0C4(no match), \uD074\uB85C\uB85C\uD3FC(no match), 1,2-\uB2E4\uC774\uD074\uB85C\uB85C\uC5D0\uD0C4(no match), \uBCA4\uC820(no match), \uC0AC\uC5FC\uD654\uD0C4\uC18C(no match), \uD2B8\uB9AC\uD074\uB85C\uB85C\uC5D0\uD2F8\uB80C(no match), \uD1A8\uB8E8\uC5D4(no match), \uD14C\uD2B8\uB77C\uD074\uB85C\uB85C\uC5D0\uD2F8\uB80C(no match), \uC790\uC77C\uB80C(no match), \uD3FC\uC54C\uB370\uD558\uC774\uB4DC(no match), \uB098\uD504\uD0C8\uB80C(no match), \uC544\uD06C\uB9B4\uC544\uBBF8\uB4DC(no match), \uC5D0\uD53C\uD074\uB85C\uB85C\uD558\uC774\uB4DC\uB9B0(no match), \uC2A4\uD0C0\uC774\uB80C(no match), \uD398\uB180(no match), \uD39C\uD0C0\uD074\uB85C\uB85C\uD398\uB180(no match), \uCD1D\uB300\uC7A5\uADE0\uAD70(no match), \uC0DD\uD0DC\uB3C5\uC131(no match), \uD604\uC7A5\uCE21\uC815 \uBC0F \uC2DC\uB8CC\uCC44\uCDE8(no match)
+[디버그] 테이블 행 수: 64개
+[2026-03-30 16:31:06] 측정값 입력 진행 시작
+[2026-03-30 16:31:15] 입력 실패: 입력 완료: 0/65건 | 실패: \uB178\uB9D0\uD5E5\uC0B0\uCD94\uCD9C\uBB3C\uC9C8(\uB3D9\u00B7\uC2DD\uBB3C \uC720\uC9C0\uB958)(no match), \uBD80\uC720\uBB3C\uC9C8(no match), \uC0C9\uB3C4(no match), \uC0DD\uBB3C\uD654\uD559\uC801 \uC0B0\uC18C\uC694\uAD6C\uB7C9(no match), \uC218\uC18C\uC774\uC628\uB18D\uB3C4(no match), \uC628\uB3C4(no match), \uC804\uAE30\uC804\uB3C4\uB3C4(no match), \uCD1D \uC720\uAE30\uD0C4\uC18C(no match), \uD0C1\uB3C4(no match), \uD654\uD559\uC801 \uC0B0\uC18C\uC694\uAD6C\uB7C9(no match), \uC2DC\uC548(no match), \uC74C\uC774\uC628\uACC4\uBA74\uD65C\uC131\uC81C(no match), \uCD1D\uC778(no match), \uCD1D\uC9C8\uC18C(no match), \uD37C\uD074\uB85C\uB808\uC774\uD2B8(no match), \uD398\uB180\uB958(no match), \uBD88\uC18C\uD654\uD569\uBB3C(no match), \uC5FC\uC18C\uC774\uC628(no match), \uD669\uC0B0\uC774\uC628(no match), \uAD6C\uB9AC(no match), \uB0A9(no match), \uB2C8\uCF08(no match), \uB9DD\uAC04(no match), \uBC14\uB968(no match), \uBE44\uC18C(no match), \uC544\uC5F0(no match), \uC548\uD2F0\uBAAC(no match), \uC8FC\uC11D(no match), \uCCA0(no match), \uC140\uB808\uB284(no match), \uC218\uC740(no match), \uCE74\uB4DC\uBBB4(no match), \uD06C\uB86C(no match), 6\uAC00\uD06C\uB86C(no match), \uB2E4\uC774\uC5D0\uD2F8\uD5E5\uC2E4\uD504\uD0C8\uB808\uC774\uD2B8(no match), \uC720\uAE30\uC778(no match), \uD3F4\uB9AC\uD074\uB85C\uB9AC\uB124\uC774\uD2F0\uB4DC\uBE44\uD398\uB2D0(no match), \uB2E4\uC774\uC5D0\uD2F8\uD5E5\uC2E4\uC544\uB514\uD398\uC774\uD2B8(no match), \uACFC\uBD88\uD654\uD5E5\uC0B0\uC220\uD3F0\uC0B0(PFHxS)(no match), \uACFC\uBD88\uD654\uC625\uD0C4\uC220\uD3F0\uC0B0(PFOS)(no match), \uACFC\uBD88\uD654\uC625\uD0C4\uC0B0(PFOA)(no match), 1,4-\uB2E4\uC774\uC625\uC0B0(no match), \uC544\uD06C\uB9B4\uB85C\uB2C8\uD2B8\uB9B4(no match), \uC5FC\uD654\uBE44\uB2D0(no match), \uBE0C\uB85C\uBAA8\uD3EC\uB984(no match), 1,1-\uB2E4\uC774\uD074\uB85C\uB85C\uC5D0\uD2F8\uB80C(no match), \uB2E4\uC774\uD074\uB85C\uB85C\uBA54\uD0C4(no match), \uD074\uB85C\uB85C\uD3FC(no match), 1,2-\uB2E4\uC774\uD074\uB85C\uB85C\uC5D0\uD0C4(no match), \uBCA4\uC820(no match), \uC0AC\uC5FC\uD654\uD0C4\uC18C(no match), \uD2B8\uB9AC\uD074\uB85C\uB85C\uC5D0\uD2F8\uB80C(no match), \uD1A8\uB8E8\uC5D4(no match), \uD14C\uD2B8\uB77C\uD074\uB85C\uB85C\uC5D0\uD2F8\uB80C(no match), \uC790\uC77C\uB80C(no match), \uD3FC\uC54C\uB370\uD558\uC774\uB4DC(no match), \uB098\uD504\uD0C8\uB80C(no match), \uC544\uD06C\uB9B4\uC544\uBBF8\uB4DC(no match), \uC5D0\uD53C\uD074\uB85C\uB85C\uD558\uC774\uB4DC\uB9B0(no match), \uC2A4\uD0C0\uC774\uB80C(no match), \uD398\uB180(no match), \uD39C\uD0C0\uD074\uB85C\uB85C\uD398\uB180(no match), \uCD1D\uB300\uC7A5\uADE0\uAD70(no match), \uC0DD\uD0DC\uB3C5\uC131(no match), \uD604\uC7A5\uCE21\uC815 \uBC0F \uC2DC\uB8CC\uCC44\uCDE8(no match)
+[디버그] 테이블 행 수: 64개
+[페이지 라벨]
+노말헥산추출물질(동·식물 유지류)
+부유물질
+색도
+생물화학적 산소요구량
+수소이온농도
+온도
+전기전도도
+총 유기탄소
+탁도
+화학적 산소요구량
+[입력 데이터]
+\uB178\uB9D0\uD5E5\uC0B0\uCD94\uCD9C\uBB3C\uC9C8(\uB3D9\u00B7\uC2DD\uBB3C \uC720\uC9C0\uB958)
+\uBD80\uC720\uBB3C\uC9C8
+\uC0C9\uB3C4
+\uC0DD\uBB3C\uD654\uD559\uC801 \uC0B0\uC18C\uC694\uAD6C\uB7C9
+\uC218\uC18C\uC774\uC628\uB18D\uB3C4
+[매칭 결과]
+
+[2026-03-30 16:40:00] 측정값 입력 진행 시작
+[2026-03-30 16:40:54] 입력 실패: The remote party closed the WebSocket connection without completing the close handshake.
+[2026-03-30 17:10:46] 측정값 입력 진행 시작
+[2026-03-30 17:10:55] 입력 실패: JS error: {"exceptionId":1,"text":"Uncaught","lineNumber":1,"columnNumber":35,"scriptId":"101","exception":{"type":"object","subtype":"error","className":"DOMException","description":"SyntaxError: Failed to execute 'querySelectorAll' on 'Document': '//tr[@role='row' and contains(@class, 'rg-data-row')]' is not a valid selector.\n    at <anonymous>:2:36\n    at <anonymous>:12:15","objectId":"3296907820395762599.4.2","preview":{"type":"object","subtype":"error","description":"SyntaxError: Failed to execute 'querySelectorAll' on 'Document': '//tr[@role='row' and contains(@class, 'rg-data-row')]' is not a valid selector.\n    at <anonymous>:2:36\n    at <anonymous>:12:15","overflow":false,"properties":[{"name":"stack","type":"string","value":"SyntaxError: Failed to execute 'querySelectorAll' \u2026\n    at <anonymous>:2:36\n    at <anonymous>:12:15"},{"name":"code","type":"number","value":"12"},{"name":"name","type":"string","value":"SyntaxError"},{"name":"message","type":"string","value":"Failed to execute 'querySelectorAll' on 'Document'\u2026@class, 'rg-data-row')]' is not a valid selector."}]}}}
+[2026-03-30 17:21:22] 측정값 입력 진행 시작
+[2026-03-30 17:24:11] 입력 성공: 전체 65, DOM행 64, 매칭 64, 입력(실반영) 64, 미매칭 0, 미매칭샘플 [], 커밋실패 0, 커밋실패샘플 [], 값프리뷰 [[노말헥산추출물질(동·식물 유지류)→'1'], [부유물질→'1'], [색도→'O'], [생물화학적 산소요구량→'O'], [수소이온농도→'O']]
+[2026-03-30 17:36:05] 측정값 입력 진행 시작
+[2026-03-30 17:39:05] 입력 성공: 전체 65, DOM행 64, 매칭 64, 입력(실반영) 64, 미매칭 0, 미매칭샘플 [], 커밋실패 0, 커밋실패샘플 [], 값프리뷰 [[노말헥산추출물질(동·식물 유지류)→'1'], [부유물질→'1'], [색도→'O'], [생물화학적 산소요구량→'O'], [수소이온농도→'O']]
+[2026-03-30 17:45:12] 측정값 입력 진행 시작
+[2026-03-30 17:45:39] 입력 성공: 전체 65, DOM행 64, 매칭 64, 입력(실반영) 7, 미매칭 0, 미매칭샘플 [], 커밋실패 57, 커밋실패샘플 [총 유기탄소(td6), 탁도(td6), 화학적 산소요구량(td6), 불소화합물(td6), 시안(td6)], 값프리뷰 [[노말헥산추출물질(동·식물 유지류)→'1'], [부유물질→'1'], [색도→'O'], [생물화학적 산소요구량→'O'], [수소이온농도→'O']]
+[2026-03-30 17:50:27] 측정값 입력 진행 시작
+[2026-03-30 17:51:03] 입력 성공: 전체 65, DOM행 64, 매칭 64, 입력(실반영) 10, 미매칭 0, 미매칭샘플 [], 커밋실패 54, 커밋실패샘플 [불소화합물(td6), 시안(td6), 염소이온(td6), 음이온계면활성제(td6), 총인(td6)], 값프리뷰 [[노말헥산추출물질(동·식물 유지류)→'1'], [부유물질→'1'], [색도→'O'], [생물화학적 산소요구량→'O'], [수소이온농도→'O']]
+[2026-03-30 17:54:51] 측정값 입력 진행 시작
+[2026-03-30 17:57:58] 입력 성공: 전체 65, DOM행 64, 매칭 64, 입력(실반영) 64, 미매칭 0, 미매칭샘플 [], 커밋실패 0, 커밋실패샘플 [], 값프리뷰 [[노말헥산추출물질(동·식물 유지류)→'1'], [부유물질→'1'], [색도→'O'], [생물화학적 산소요구량→'O'], [수소이온농도→'O']]
+[2026-03-30 18:13:47] 측정값 입력 진행 시작
+[2026-03-30 18:14:55] 입력 실패: The remote party closed the WebSocket connection without completing the close handshake.
+[2026-03-30 18:16:03] 측정값 입력 진행 시작
+[2026-03-30 18:17:06] 입력 실패: The remote party closed the WebSocket connection without completing the close handshake.
+[2026-03-30 18:26:15] 측정값 입력 진행 시작
+[2026-03-30 18:28:26] 입력 실패: The remote party closed the WebSocket connection without completing the close handshake.
+[2026-03-30 18:30:26] 측정값 입력 진행 시작
+[2026-03-30 18:32:55] 입력 성공: 전체 65, DOM행 64, 매칭 64, 입력(실반영) 64, 미매칭 0, 미매칭샘플 [], 커밋실패 0, 커밋실패샘플 [], 값프리뷰 [[노말헥산추출물질(동·식물 유지류)→'1'], [부유물질→'1'], [색도→'O'], [생물화학적 산소요구량→'O'], [수소이온농도→'O']]
+[2026-03-30 18:45:43] 측정값 입력 진행 시작
+[2026-03-30 18:50:51] 측정값 입력 진행 시작
+[2026-03-30 18:57:17] 측정값 입력 진행 시작
+[2026-03-30 18:59:40] 입력 성공: 전체 65, DOM행 64, 매칭 64, 입력(실반영) 64, 미매칭 0, 미매칭샘플 [], 커밋실패 0, 커밋실패샘플 [], 값프리뷰 [[노말헥산추출물질(동·식물 유지류)→'1'], [부유물질→'1'], [색도→'O'], [생물화학적 산소요구량→'O'], [수소이온농도→'O']]
+[2026-03-30 19:13:40] 측정값 입력 진행 시작
+[2026-03-30 19:15:16] 입력 실패: The remote party closed the WebSocket connection without completing the close handshake.
+[2026-03-30 19:35:12] 측정값 입력 진행 시작
+[2026-03-30 19:36:41] 입력 실패: The remote party closed the WebSocket connection without completing the close handshake.
+[2026-03-30 19:46:04] 측정값 입력 진행 시작
+[2026-03-30 19:47:06] 입력 실패: The remote party closed the WebSocket connection without completing the close handshake.
+[2026-03-30 19:50:30] 측정값 입력 진행 시작
+[2026-03-30 19:52:07] 입력 실패: The remote party closed the WebSocket connection without completing the close handshake.
+[2026-03-30 19:53:12] 측정값 입력 진행 시작
+[2026-03-30 19:53:57] 입력 실패: The remote party closed the WebSocket connection without completing the close handshake.
+[2026-03-30 19:55:42] 측정값 입력 진행 시작
+[2026-03-30 19:56:37] 입력 실패: The remote party closed the WebSocket connection without completing the close handshake.
+[2026-03-30 19:58:10] 측정값 입력 진행 시작
+[2026-03-30 19:59:19] 입력 실패: The remote party closed the WebSocket connection without completing the close handshake.
+[2026-03-30 20:09:08] 측정값 입력 진행 시작
+[2026-03-30 20:09:39] 입력 실패: The remote party closed the WebSocket connection without completing the close handshake.
+[2026-03-30 20:11:54] 측정값 입력 진행 시작
+[2026-03-30 20:13:59] 입력 성공: 전체 65, DOM행 64, 매칭 64, 입력(실반영) 64, 미매칭 0, 미매칭샘플 [], 커밋실패 0, 커밋실패샘플 [], 값프리뷰 [[노말헥산추출물질(동·식물 유지류)→'1'], [부유물질→'1'], [색도→'O'], [생물화학적 산소요구량→'O'], [수소이온농도→'O']]
+[2026-03-30 20:27:47] 측정값 입력 진행 시작
+[2026-03-30 20:30:48] 입력 성공: 전체 65, DOM행 64, 매칭 64, 입력(실반영) 64, 미매칭 0, 미매칭샘플 [], 커밋실패 0, 커밋실패샘플 [], 값프리뷰 [[노말헥산추출물질(동·식물 유지류)→'1'], [부유물질→'1'], [색도→'O'], [생물화학적 산소요구량→'O'], [수소이온농도→'O']]
+[2026-03-30 20:37:07] 측정값 입력 진행 시작
+[2026-03-30 20:37:19] $$_rg_editor555 을 찾지 못함 - 날짜: 2026-03-29
+[2026-03-30 20:37:19] $$_rg_editor555 을 찾지 못함 - 날짜: 2026-03-29
+[2026-03-30 20:37:22] $$_rg_editor555 을 찾지 못함 - 날짜: 2026-03-29
+[2026-03-30 20:37:22] $$_rg_editor555 을 찾지 못함 - 날짜: 2026-03-29
+[2026-03-30 20:37:24] $$_rg_editor555 을 찾지 못함 - 날짜: 2026-03-29
+[2026-03-30 20:37:24] $$_rg_editor555 을 찾지 못함 - 날짜: 2026-03-29
+[2026-03-30 20:37:26] $$_rg_editor555 을 찾지 못함 - 날짜: 2026-03-29
+[2026-03-30 20:37:26] $$_rg_editor555 을 찾지 못함 - 날짜: 2026-03-29
+[2026-03-30 20:37:27] $$_rg_editor555 을 찾지 못함 - 날짜: 2026-03-29
+[2026-03-30 20:37:27] $$_rg_editor555 을 찾지 못함 - 날짜: 2026-03-29
+[2026-03-30 20:37:29] $$_rg_editor555 을 찾지 못함 - 날짜: 2026-03-29
+[2026-03-30 20:37:29] $$_rg_editor555 을 찾지 못함 - 날짜: 2026-03-29
+[2026-03-30 20:37:30] $$_rg_editor555 을 찾지 못함 - 날짜: 2026-03-29
+[2026-03-30 20:37:30] $$_rg_editor555 을 찾지 못함 - 날짜: 2026-03-29
+[2026-03-30 20:37:31] $$_rg_editor555 을 찾지 못함 - 날짜: 2026-03-29
+[2026-03-30 20:37:32] $$_rg_editor555 을 찾지 못함 - 날짜: 2026-03-29
+[2026-03-30 20:37:33] $$_rg_editor555 을 찾지 못함 - 날짜: 2026-03-29
+[2026-03-30 20:37:33] $$_rg_editor555 을 찾지 못함 - 날짜: 2026-03-29
+[2026-03-30 20:37:35] $$_rg_editor555 을 찾지 못함 - 날짜: 2026-03-29
+[2026-03-30 20:37:35] $$_rg_editor555 을 찾지 못함 - 날짜: 2026-03-29
+[2026-03-30 20:37:36] $$_rg_editor555 을 찾지 못함 - 날짜: 2026-03-29
+[2026-03-30 20:37:36] $$_rg_editor555 을 찾지 못함 - 날짜: 2026-03-29
+[2026-03-30 20:37:38] $$_rg_editor555 을 찾지 못함 - 날짜: 2026-03-29
+[2026-03-30 20:37:38] $$_rg_editor555 을 찾지 못함 - 날짜: 2026-03-29
+[2026-03-30 20:37:40] $$_rg_editor555 을 찾지 못함 - 날짜: 2026-03-29
+[2026-03-30 20:37:40] $$_rg_editor555 을 찾지 못함 - 날짜: 2026-03-29
+[2026-03-30 20:48:08] 측정값 입력 진행 시작
+[2026-03-30 20:49:31] 입력 실패: The remote party closed the WebSocket connection without completing the close handshake.
+[2026-03-30 20:54:12] 측정값 입력 진행 시작
+[2026-03-30 20:55:32] 입력 성공: 전체 65, DOM행 64, 매칭 64, 입력(실반영) 64, 미매칭 0, 미매칭샘플 [], 커밋실패 0, 커밋실패샘플 [], 값프리뷰 [[노말헥산추출물질(동·식물 유지류)→'1'], [부유물질→'1'], [색도→'O'], [생물화학적 산소요구량→'O'], [수소이온농도→'O']]
+[2026-03-30 21:02:06] 측정값 입력 진행 시작
+[2026-03-30 21:02:40] 입력 실패: The remote party closed the WebSocket connection without completing the close handshake.
+[2026-03-30 21:06:29] 측정값 입력 진행 시작
+[2026-03-30 21:08:59] 입력 성공: 전체 65, DOM행 64, 매칭 64, 입력(실반영) 64, 미매칭 0, 미매칭샘플 [], 커밋실패 0, 커밋실패샘플 [], 값프리뷰 [[노말헥산추출물질(동·식물 유지류)→'1'], [부유물질→'1'], [색도→'O'], [생물화학적 산소요구량→'O'], [수소이온농도→'O']]
+[2026-03-30 21:14:01] 측정값 입력 진행 시작
+[2026-03-30 21:16:00] 입력 실패: The remote party closed the WebSocket connection without completing the close handshake.
+[2026-03-30 21:18:18] 측정값 입력 진행 시작
+[2026-03-30 21:19:25] 입력 실패: The remote party closed the WebSocket connection without completing the close handshake.
+[2026-03-30 21:23:00] 측정값 입력 진행 시작
+[2026-03-30 21:23:51] 입력 실패: The remote party closed the WebSocket connection without completing the close handshake.
+[2026-03-30 21:30:56] 측정값 입력 진행 시작
+[2026-03-30 21:31:15] 입력 실패: The remote party closed the WebSocket connection without completing the close handshake.
+[2026-03-30 21:38:37] 측정값 입력 진행 시작
+[2026-03-30 21:41:27] 입력 성공: 전체 65, DOM행 64, 매칭 64, 입력(실반영) 64, 미매칭 0, 미매칭샘플 [], 커밋실패 0, 커밋실패샘플 [], 값프리뷰 [[노말헥산추출물질(동·식물 유지류)→'1'], [부유물질→'1'], [색도→'O'], [생물화학적 산소요구량→'O'], [수소이온농도→'O']]
+[2026-03-30 21:41:42] 측정값 입력 진행 시작
+[2026-03-30 21:42:50] 입력 실패: The remote party closed the WebSocket connection without completing the close handshake.
+[2026-03-30 21:51:06] 측정값 입력 진행 시작
+[2026-03-30 21:56:11] 측정값 입력 진행 시작
+[2026-03-30 22:16:56] 측정값 입력 진행 시작
+[2026-03-30 22:17:08] [날짜 td11] 시작 - analyte=노말헥산추출물질(동·식물 유지류) date=2026-03-29
+[2026-03-30 22:17:08] [날짜 td11] 좌표 x=919.0 y=438.1
+[2026-03-30 22:17:08] [날짜 td11] 클릭 완료
+[2026-03-30 22:17:08] [날짜 td11] 클릭 후 editor 상태: display=block value=[yyyy-MM-dd]
+[2026-03-30 22:17:08] [날짜 td11] focus/select 결과: focused=true value=[yyyy-MM-dd]
+[2026-03-30 22:17:08] [날짜 td11] insertText 완료: [2026-03-29]
+[2026-03-30 22:17:08] [날짜 td11] insertText 후 editor: value=[2026-03-29]
+[2026-03-30 22:17:08] [날짜 td11] Tab 완료
+[2026-03-30 22:17:08] [날짜 td11] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:17:08] [날짜 td13] 시작 - analyte=노말헥산추출물질(동·식물 유지류) date=2026-03-29
+[2026-03-30 22:17:08] [날짜 td13] 좌표 x=1010.5 y=438.1
+[2026-03-30 22:17:09] [날짜 td13] 클릭 완료
+[2026-03-30 22:17:09] [날짜 td13] 클릭 후 editor 상태: display=block value=[yyyy-MM-dd]
+[2026-03-30 22:17:09] [날짜 td13] focus/select 결과: focused=true value=[yyyy-MM-dd]
+[2026-03-30 22:17:09] [날짜 td13] insertText 완료: [2026-03-29]
+[2026-03-30 22:17:09] [날짜 td13] insertText 후 editor: value=[2026-03-29]
+[2026-03-30 22:17:09] [날짜 td13] Tab 완료
+[2026-03-30 22:17:09] [날짜 td13] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:17:11] [날짜 td11] 시작 - analyte=부유물질 date=2026-03-29
+[2026-03-30 22:17:11] [날짜 td11] 좌표 x=919.0 y=438.1
+[2026-03-30 22:17:11] [날짜 td11] 클릭 완료
+[2026-03-30 22:17:11] [날짜 td11] 클릭 후 editor 상태: display=block value=[yyyy-MM-dd]
+[2026-03-30 22:17:11] [날짜 td11] focus/select 결과: focused=true value=[yyyy-MM-dd]
+[2026-03-30 22:17:11] [날짜 td11] insertText 완료: [2026-03-29]
+[2026-03-30 22:17:12] [날짜 td11] insertText 후 editor: value=[2026-03-29]
+[2026-03-30 22:17:12] [날짜 td11] Tab 완료
+[2026-03-30 22:17:12] [날짜 td11] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:17:12] [날짜 td13] 시작 - analyte=부유물질 date=2026-03-29
+[2026-03-30 22:17:12] [날짜 td13] 좌표 x=1010.5 y=438.1
+[2026-03-30 22:17:12] [날짜 td13] 클릭 완료
+[2026-03-30 22:17:12] [날짜 td13] 클릭 후 editor 상태: display=block value=[yyyy-MM-dd]
+[2026-03-30 22:17:12] [날짜 td13] focus/select 결과: focused=true value=[yyyy-MM-dd]
+[2026-03-30 22:17:12] [날짜 td13] insertText 완료: [2026-03-29]
+[2026-03-30 22:17:12] [날짜 td13] insertText 후 editor: value=[2026-03-29]
+[2026-03-30 22:17:12] [날짜 td13] Tab 완료
+[2026-03-30 22:17:12] [날짜 td13] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:17:14] [날짜 td11] 시작 - analyte=색도 date=2026-03-29
+[2026-03-30 22:17:14] [날짜 td11] 좌표 x=919.0 y=438.1
+[2026-03-30 22:17:14] [날짜 td11] 클릭 완료
+[2026-03-30 22:17:14] [날짜 td11] 클릭 후 editor 상태: display=block value=[yyyy-MM-dd]
+[2026-03-30 22:17:14] [날짜 td11] focus/select 결과: focused=true value=[yyyy-MM-dd]
+[2026-03-30 22:17:15] [날짜 td11] insertText 완료: [2026-03-29]
+[2026-03-30 22:17:15] [날짜 td11] insertText 후 editor: value=[2026-03-29]
+[2026-03-30 22:17:15] [날짜 td11] Tab 완료
+[2026-03-30 22:17:15] [날짜 td11] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:17:15] [날짜 td13] 시작 - analyte=색도 date=2026-03-29
+[2026-03-30 22:17:15] [날짜 td13] 좌표 x=1010.5 y=438.1
+[2026-03-30 22:17:15] [날짜 td13] 클릭 완료
+[2026-03-30 22:17:15] [날짜 td13] 클릭 후 editor 상태: display=block value=[yyyy-MM-dd]
+[2026-03-30 22:17:15] [날짜 td13] focus/select 결과: focused=true value=[yyyy-MM-dd]
+[2026-03-30 22:17:15] [날짜 td13] insertText 완료: [2026-03-29]
+[2026-03-30 22:17:15] [날짜 td13] insertText 후 editor: value=[2026-03-29]
+[2026-03-30 22:17:15] [날짜 td13] Tab 완료
+[2026-03-30 22:17:16] [날짜 td13] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:17:18] [날짜 td11] 시작 - analyte=생물화학적 산소요구량 date=2026-03-29
+[2026-03-30 22:17:18] [날짜 td11] 좌표 x=919.0 y=438.1
+[2026-03-30 22:17:18] [날짜 td11] 클릭 완료
+[2026-03-30 22:17:18] [날짜 td11] 클릭 후 editor 상태: display=block value=[yyyy-MM-dd]
+[2026-03-30 22:17:18] [날짜 td11] focus/select 결과: focused=true value=[yyyy-MM-dd]
+[2026-03-30 22:17:18] [날짜 td11] insertText 완료: [2026-03-29]
+[2026-03-30 22:17:18] [날짜 td11] insertText 후 editor: value=[2026-03-29]
+[2026-03-30 22:17:18] [날짜 td11] Tab 완료
+[2026-03-30 22:17:18] [날짜 td11] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:17:18] [날짜 td13] 시작 - analyte=생물화학적 산소요구량 date=2026-03-29
+[2026-03-30 22:17:18] [날짜 td13] 좌표 x=1010.5 y=438.1
+[2026-03-30 22:17:18] [날짜 td13] 클릭 완료
+[2026-03-30 22:17:19] [날짜 td13] 클릭 후 editor 상태: display=block value=[yyyy-MM-dd]
+[2026-03-30 22:17:19] [날짜 td13] focus/select 결과: focused=true value=[yyyy-MM-dd]
+[2026-03-30 22:17:19] [날짜 td13] insertText 완료: [2026-03-29]
+[2026-03-30 22:17:19] [날짜 td13] insertText 후 editor: value=[2026-03-29]
+[2026-03-30 22:17:19] [날짜 td13] Tab 완료
+[2026-03-30 22:17:19] [날짜 td13] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:17:21] [날짜 td11] 시작 - analyte=수소이온농도 date=2026-03-29
+[2026-03-30 22:17:21] [날짜 td11] 좌표 x=919.0 y=438.1
+[2026-03-30 22:17:21] [날짜 td11] 클릭 완료
+[2026-03-30 22:17:21] [날짜 td11] 클릭 후 editor 상태: display=block value=[yyyy-MM-dd]
+[2026-03-30 22:17:21] [날짜 td11] focus/select 결과: focused=true value=[yyyy-MM-dd]
+[2026-03-30 22:17:21] [날짜 td11] insertText 완료: [2026-03-29]
+[2026-03-30 22:17:21] [날짜 td11] insertText 후 editor: value=[2026-03-29]
+[2026-03-30 22:17:21] [날짜 td11] Tab 완료
+[2026-03-30 22:17:21] [날짜 td11] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:17:22] [날짜 td13] 시작 - analyte=수소이온농도 date=2026-03-29
+[2026-03-30 22:17:22] [날짜 td13] 좌표 x=1010.5 y=438.1
+[2026-03-30 22:17:22] [날짜 td13] 클릭 완료
+[2026-03-30 22:17:22] [날짜 td13] 클릭 후 editor 상태: display=block value=[yyyy-MM-dd]
+[2026-03-30 22:17:22] [날짜 td13] focus/select 결과: focused=true value=[yyyy-MM-dd]
+[2026-03-30 22:17:22] [날짜 td13] insertText 완료: [2026-03-29]
+[2026-03-30 22:17:22] [날짜 td13] insertText 후 editor: value=[2026-03-29]
+[2026-03-30 22:17:22] [날짜 td13] Tab 완료
+[2026-03-30 22:17:22] [날짜 td13] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:17:24] [날짜 td11] 시작 - analyte=온도 date=2026-03-29
+[2026-03-30 22:17:24] [날짜 td11] 좌표 x=919.0 y=438.1
+[2026-03-30 22:17:24] [날짜 td11] 클릭 완료
+[2026-03-30 22:17:25] [날짜 td11] 클릭 후 editor 상태: display=block value=[yyyy-MM-dd]
+[2026-03-30 22:17:25] [날짜 td11] focus/select 결과: focused=true value=[yyyy-MM-dd]
+[2026-03-30 22:17:25] [날짜 td11] insertText 완료: [2026-03-29]
+[2026-03-30 22:17:25] [날짜 td11] insertText 후 editor: value=[2026-03-29]
+[2026-03-30 22:17:25] [날짜 td11] Tab 완료
+[2026-03-30 22:17:25] [날짜 td11] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:17:25] [날짜 td13] 시작 - analyte=온도 date=2026-03-29
+[2026-03-30 22:17:25] [날짜 td13] 좌표 x=1010.5 y=438.1
+[2026-03-30 22:17:25] [날짜 td13] 클릭 완료
+[2026-03-30 22:17:25] [날짜 td13] 클릭 후 editor 상태: display=block value=[yyyy-MM-dd]
+[2026-03-30 22:17:25] [날짜 td13] focus/select 결과: focused=true value=[yyyy-MM-dd]
+[2026-03-30 22:17:25] [날짜 td13] insertText 완료: [2026-03-29]
+[2026-03-30 22:17:25] [날짜 td13] insertText 후 editor: value=[2026-03-29]
+[2026-03-30 22:17:25] [날짜 td13] Tab 완료
+[2026-03-30 22:17:25] [날짜 td13] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:17:28] [날짜 td11] 시작 - analyte=전기전도도 date=2026-03-29
+[2026-03-30 22:17:28] [날짜 td11] 좌표 x=919.0 y=438.1
+[2026-03-30 22:17:28] [날짜 td11] 클릭 완료
+[2026-03-30 22:17:28] [날짜 td11] 클릭 후 editor 상태: display=block value=[yyyy-MM-dd]
+[2026-03-30 22:17:28] [날짜 td11] focus/select 결과: focused=true value=[yyyy-MM-dd]
+[2026-03-30 22:17:28] [날짜 td11] insertText 완료: [2026-03-29]
+[2026-03-30 22:17:28] [날짜 td11] insertText 후 editor: value=[2026-03-29]
+[2026-03-30 22:17:28] [날짜 td11] Tab 완료
+[2026-03-30 22:17:28] [날짜 td11] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:17:28] [날짜 td13] 시작 - analyte=전기전도도 date=2026-03-29
+[2026-03-30 22:17:28] [날짜 td13] 좌표 x=1010.5 y=438.1
+[2026-03-30 22:17:28] [날짜 td13] 클릭 완료
+[2026-03-30 22:17:28] [날짜 td13] 클릭 후 editor 상태: display=block value=[yyyy-MM-dd]
+[2026-03-30 22:17:28] [날짜 td13] focus/select 결과: focused=true value=[yyyy-MM-dd]
+[2026-03-30 22:17:28] [날짜 td13] insertText 완료: [2026-03-29]
+[2026-03-30 22:17:28] [날짜 td13] insertText 후 editor: value=[2026-03-29]
+[2026-03-30 22:17:29] [날짜 td13] Tab 완료
+[2026-03-30 22:17:29] [날짜 td13] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:17:31] [날짜 td11] 시작 - analyte=총 유기탄소 date=2026-03-29
+[2026-03-30 22:17:31] [날짜 td11] 좌표 x=919.0 y=438.1
+[2026-03-30 22:17:31] [날짜 td11] 클릭 완료
+[2026-03-30 22:17:31] [날짜 td11] 클릭 후 editor 상태: display=block value=[yyyy-MM-dd]
+[2026-03-30 22:17:31] [날짜 td11] focus/select 결과: focused=true value=[yyyy-MM-dd]
+[2026-03-30 22:17:31] [날짜 td11] insertText 완료: [2026-03-29]
+[2026-03-30 22:17:31] [날짜 td11] insertText 후 editor: value=[2026-03-29]
+[2026-03-30 22:17:31] [날짜 td11] Tab 완료
+[2026-03-30 22:17:31] [날짜 td11] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:17:31] [날짜 td13] 시작 - analyte=총 유기탄소 date=2026-03-29
+[2026-03-30 22:17:31] [날짜 td13] 좌표 x=1010.5 y=438.1
+[2026-03-30 22:17:31] [날짜 td13] 클릭 완료
+[2026-03-30 22:17:32] [날짜 td13] 클릭 후 editor 상태: display=block value=[yyyy-MM-dd]
+[2026-03-30 22:17:32] [날짜 td13] focus/select 결과: focused=true value=[yyyy-MM-dd]
+[2026-03-30 22:17:32] [날짜 td13] insertText 완료: [2026-03-29]
+[2026-03-30 22:17:32] [날짜 td13] insertText 후 editor: value=[2026-03-29]
+[2026-03-30 22:17:32] [날짜 td13] Tab 완료
+[2026-03-30 22:17:32] [날짜 td13] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:17:34] [날짜 td11] 시작 - analyte=탁도 date=2026-03-29
+[2026-03-30 22:17:34] [날짜 td11] 좌표 x=919.0 y=438.1
+[2026-03-30 22:17:34] [날짜 td11] 클릭 완료
+[2026-03-30 22:17:35] [날짜 td11] 클릭 후 editor 상태: display=block value=[yyyy-MM-dd]
+[2026-03-30 22:17:35] [날짜 td11] focus/select 결과: focused=true value=[yyyy-MM-dd]
+[2026-03-30 22:17:35] [날짜 td11] insertText 완료: [2026-03-29]
+[2026-03-30 22:17:35] [날짜 td11] insertText 후 editor: value=[2026-03-29]
+[2026-03-30 22:17:35] [날짜 td11] Tab 완료
+[2026-03-30 22:17:35] [날짜 td11] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:17:35] [날짜 td13] 시작 - analyte=탁도 date=2026-03-29
+[2026-03-30 22:17:35] [날짜 td13] 좌표 x=1010.5 y=438.1
+[2026-03-30 22:17:35] [날짜 td13] 클릭 완료
+[2026-03-30 22:17:35] [날짜 td13] 클릭 후 editor 상태: display=block value=[yyyy-MM-dd]
+[2026-03-30 22:17:35] [날짜 td13] focus/select 결과: focused=true value=[yyyy-MM-dd]
+[2026-03-30 22:17:35] [날짜 td13] insertText 완료: [2026-03-29]
+[2026-03-30 22:17:35] [날짜 td13] insertText 후 editor: value=[2026-03-29]
+[2026-03-30 22:17:35] [날짜 td13] Tab 완료
+[2026-03-30 22:17:35] [날짜 td13] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:17:38] [날짜 td11] 시작 - analyte=화학적 산소요구량 date=2026-03-29
+[2026-03-30 22:17:38] [날짜 td11] 좌표 x=919.0 y=438.1
+[2026-03-30 22:17:38] [날짜 td11] 클릭 완료
+[2026-03-30 22:17:38] [날짜 td11] 클릭 후 editor 상태: display=block value=[yyyy-MM-dd]
+[2026-03-30 22:17:38] [날짜 td11] focus/select 결과: focused=true value=[yyyy-MM-dd]
+[2026-03-30 22:17:38] [날짜 td11] insertText 완료: [2026-03-29]
+[2026-03-30 22:17:38] [날짜 td11] insertText 후 editor: value=[2026-03-29]
+[2026-03-30 22:17:38] [날짜 td11] Tab 완료
+[2026-03-30 22:17:38] [날짜 td11] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:17:39] [날짜 td13] 시작 - analyte=화학적 산소요구량 date=2026-03-29
+[2026-03-30 22:17:39] [날짜 td13] 좌표 x=1010.5 y=438.1
+[2026-03-30 22:17:39] [날짜 td13] 클릭 완료
+[2026-03-30 22:17:39] [날짜 td13] 클릭 후 editor 상태: display=block value=[yyyy-MM-dd]
+[2026-03-30 22:17:39] [날짜 td13] focus/select 결과: focused=true value=[yyyy-MM-dd]
+[2026-03-30 22:17:39] [날짜 td13] insertText 완료: [2026-03-29]
+[2026-03-30 22:17:39] [날짜 td13] insertText 후 editor: value=[2026-03-29]
+[2026-03-30 22:17:39] [날짜 td13] Tab 완료
+[2026-03-30 22:17:39] [날짜 td13] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:17:42] [날짜 td11] 시작 - analyte=불소화합물 date=2026-03-29
+[2026-03-30 22:17:42] [날짜 td11] 좌표 x=919.0 y=438.1
+[2026-03-30 22:17:42] [날짜 td11] 클릭 완료
+[2026-03-30 22:17:42] [날짜 td11] 클릭 후 editor 상태: display=block value=[yyyy-MM-dd]
+[2026-03-30 22:17:42] [날짜 td11] focus/select 결과: focused=true value=[yyyy-MM-dd]
+[2026-03-30 22:17:42] [날짜 td11] insertText 완료: [2026-03-29]
+[2026-03-30 22:17:42] [날짜 td11] insertText 후 editor: value=[2026-03-29]
+[2026-03-30 22:17:42] [날짜 td11] Tab 완료
+[2026-03-30 22:17:42] [날짜 td11] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:17:43] [날짜 td13] 시작 - analyte=불소화합물 date=2026-03-29
+[2026-03-30 22:17:43] [날짜 td13] 좌표 x=1010.5 y=438.1
+[2026-03-30 22:17:43] [날짜 td13] 클릭 완료
+[2026-03-30 22:17:43] [날짜 td13] 클릭 후 editor 상태: display=block value=[yyyy-MM-dd]
+[2026-03-30 22:17:43] [날짜 td13] focus/select 결과: focused=true value=[yyyy-MM-dd]
+[2026-03-30 22:17:43] [날짜 td13] insertText 완료: [2026-03-29]
+[2026-03-30 22:17:43] [날짜 td13] insertText 후 editor: value=[2026-03-29]
+[2026-03-30 22:17:43] [날짜 td13] Tab 완료
+[2026-03-30 22:17:43] [날짜 td13] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:17:45] [날짜 td11] 시작 - analyte=시안 date=2026-03-29
+[2026-03-30 22:17:45] [날짜 td11] 좌표 x=919.0 y=438.1
+[2026-03-30 22:17:45] [날짜 td11] 클릭 완료
+[2026-03-30 22:17:46] [날짜 td11] 클릭 후 editor 상태: display=block value=[yyyy-MM-dd]
+[2026-03-30 22:17:46] [날짜 td11] focus/select 결과: focused=true value=[yyyy-MM-dd]
+[2026-03-30 22:17:46] [날짜 td11] insertText 완료: [2026-03-29]
+[2026-03-30 22:17:46] [날짜 td11] insertText 후 editor: value=[2026-03-29]
+[2026-03-30 22:17:46] [날짜 td11] Tab 완료
+[2026-03-30 22:17:46] [날짜 td11] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:17:46] [날짜 td13] 시작 - analyte=시안 date=2026-03-29
+[2026-03-30 22:17:46] [날짜 td13] 좌표 x=1010.5 y=438.1
+[2026-03-30 22:17:46] [날짜 td13] 클릭 완료
+[2026-03-30 22:17:46] [날짜 td13] 클릭 후 editor 상태: display=block value=[yyyy-MM-dd]
+[2026-03-30 22:17:46] [날짜 td13] focus/select 결과: focused=true value=[yyyy-MM-dd]
+[2026-03-30 22:17:46] [날짜 td13] insertText 완료: [2026-03-29]
+[2026-03-30 22:17:46] [날짜 td13] insertText 후 editor: value=[2026-03-29]
+[2026-03-30 22:17:46] [날짜 td13] Tab 완료
+[2026-03-30 22:17:46] [날짜 td13] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:17:49] [날짜 td11] 시작 - analyte=염소이온 date=2026-03-29
+[2026-03-30 22:17:49] [날짜 td11] 좌표 x=919.0 y=438.1
+[2026-03-30 22:17:49] [날짜 td11] 클릭 완료
+[2026-03-30 22:17:49] [날짜 td11] 클릭 후 editor 상태: display=block value=[yyyy-MM-dd]
+[2026-03-30 22:17:49] [날짜 td11] focus/select 결과: focused=true value=[yyyy-MM-dd]
+[2026-03-30 22:17:49] [날짜 td11] insertText 완료: [2026-03-29]
+[2026-03-30 22:17:49] [날짜 td11] insertText 후 editor: value=[2026-03-29]
+[2026-03-30 22:17:49] [날짜 td11] Tab 완료
+[2026-03-30 22:17:49] [날짜 td11] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:17:50] [날짜 td13] 시작 - analyte=염소이온 date=2026-03-29
+[2026-03-30 22:17:50] [날짜 td13] 좌표 x=1010.5 y=438.1
+[2026-03-30 22:17:50] [날짜 td13] 클릭 완료
+[2026-03-30 22:17:50] [날짜 td13] 클릭 후 editor 상태: display=block value=[yyyy-MM-dd]
+[2026-03-30 22:17:50] [날짜 td13] focus/select 결과: focused=true value=[yyyy-MM-dd]
+[2026-03-30 22:17:50] [날짜 td13] insertText 완료: [2026-03-29]
+[2026-03-30 22:17:50] [날짜 td13] insertText 후 editor: value=[2026-03-29]
+[2026-03-30 22:17:50] [날짜 td13] Tab 완료
+[2026-03-30 22:17:50] [날짜 td13] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:17:52] [날짜 td11] 시작 - analyte=음이온계면활성제 date=2026-03-29
+[2026-03-30 22:17:53] [날짜 td11] 좌표 x=919.0 y=438.1
+[2026-03-30 22:17:53] [날짜 td11] 클릭 완료
+[2026-03-30 22:17:53] [날짜 td11] 클릭 후 editor 상태: display=block value=[yyyy-MM-dd]
+[2026-03-30 22:17:53] [날짜 td11] focus/select 결과: focused=true value=[yyyy-MM-dd]
+[2026-03-30 22:17:53] [날짜 td11] insertText 완료: [2026-03-29]
+[2026-03-30 22:17:53] [날짜 td11] insertText 후 editor: value=[2026-03-29]
+[2026-03-30 22:17:53] [날짜 td11] Tab 완료
+[2026-03-30 22:17:53] [날짜 td11] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:17:53] [날짜 td13] 시작 - analyte=음이온계면활성제 date=2026-03-29
+[2026-03-30 22:17:53] [날짜 td13] 좌표 x=1010.5 y=438.1
+[2026-03-30 22:17:53] [날짜 td13] 클릭 완료
+[2026-03-30 22:17:53] [날짜 td13] 클릭 후 editor 상태: display=block value=[yyyy-MM-dd]
+[2026-03-30 22:17:53] [날짜 td13] focus/select 결과: focused=true value=[yyyy-MM-dd]
+[2026-03-30 22:17:53] [날짜 td13] insertText 완료: [2026-03-29]
+[2026-03-30 22:17:54] [날짜 td13] insertText 후 editor: value=[2026-03-29]
+[2026-03-30 22:17:54] [날짜 td13] Tab 완료
+[2026-03-30 22:17:54] [날짜 td13] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:17:56] [날짜 td11] 시작 - analyte=총인 date=2026-03-29
+[2026-03-30 22:17:56] [날짜 td11] 좌표 x=919.0 y=438.1
+[2026-03-30 22:17:56] [날짜 td11] 클릭 완료
+[2026-03-30 22:17:56] [날짜 td11] 클릭 후 editor 상태: display=block value=[yyyy-MM-dd]
+[2026-03-30 22:17:56] [날짜 td11] focus/select 결과: focused=true value=[yyyy-MM-dd]
+[2026-03-30 22:17:56] [날짜 td11] insertText 완료: [2026-03-29]
+[2026-03-30 22:17:56] [날짜 td11] insertText 후 editor: value=[2026-03-29]
+[2026-03-30 22:17:56] [날짜 td11] Tab 완료
+[2026-03-30 22:17:56] [날짜 td11] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:17:57] [날짜 td13] 시작 - analyte=총인 date=2026-03-29
+[2026-03-30 22:17:57] [날짜 td13] 좌표 x=1010.5 y=438.1
+[2026-03-30 22:17:57] [날짜 td13] 클릭 완료
+[2026-03-30 22:17:57] [날짜 td13] 클릭 후 editor 상태: display=block value=[yyyy-MM-dd]
+[2026-03-30 22:17:57] [날짜 td13] focus/select 결과: focused=true value=[yyyy-MM-dd]
+[2026-03-30 22:17:57] 입력 성공: 전체 65, DOM행 64, 매칭 64, 입력(실반영) 14, 미매칭 0, 미매칭샘플 [], 커밋실패 50, 커밋실패샘플 [총인, 총질소, 퍼클로레이트, 페놀류, 황산이온], 값프리뷰 [[노말헥산추출물질(동·식물 유지류)→'1'], [부유물질→'1'], [색도→'O'], [생물화학적 산소요구량→'O'], [수소이온농도→'O']]
+[2026-03-30 22:21:11] 측정값 입력 진행 시작
+[2026-03-30 22:21:23] [날짜 td11] 시작 - analyte=노말헥산추출물질(동·식물 유지류) date=2026-03-29
+[2026-03-30 22:21:23] [날짜 td11] td 좌표 x=919.0 y=438.1
+[2026-03-30 22:21:23] [날짜 td11] td 클릭 완료
+[2026-03-30 22:21:23] [날짜 td11] editor 조회: {"x":337,"y":381.625,"display":"block","val":"yyyy-MM-dd","w":4,"h":0}
+[2026-03-30 22:21:23] [날짜 td11] editor CDP 클릭 x=337.0 y=381.6
+[2026-03-30 22:21:23] [날짜 td11] insertText 완료: [2026-03-29]
+[2026-03-30 22:21:23] [날짜 td11] insertText 후: value=[2026-03-29]
+[2026-03-30 22:21:23] [날짜 td11] Tab 완료
+[2026-03-30 22:21:23] [날짜 td11] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:21:24] [날짜 td13] 시작 - analyte=노말헥산추출물질(동·식물 유지류) date=2026-03-29
+[2026-03-30 22:21:24] [날짜 td13] td 좌표 x=1010.5 y=438.1
+[2026-03-30 22:21:24] [날짜 td13] td 클릭 완료
+[2026-03-30 22:21:24] [날짜 td13] editor 조회: {"x":910,"y":435.625,"display":"block","val":"yyyy-MM-dd","w":38,"h":22}
+[2026-03-30 22:21:24] [날짜 td13] editor CDP 클릭 x=910.0 y=435.6
+[2026-03-30 22:21:24] [날짜 td13] insertText 완료: [2026-03-29]
+[2026-03-30 22:21:24] [날짜 td13] insertText 후: value=[2026-03-29]
+[2026-03-30 22:21:24] [날짜 td13] Tab 완료
+[2026-03-30 22:21:24] [날짜 td13] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:21:26] [날짜 td11] 시작 - analyte=부유물질 date=2026-03-29
+[2026-03-30 22:21:27] [날짜 td11] td 좌표 x=919.0 y=438.1
+[2026-03-30 22:21:27] [날짜 td11] td 클릭 완료
+[2026-03-30 22:21:27] [날짜 td11] editor 조회: {"x":910,"y":410.625,"display":"block","val":"yyyy-MM-dd","w":38,"h":22}
+[2026-03-30 22:21:27] [날짜 td11] editor CDP 클릭 x=910.0 y=410.6
+[2026-03-30 22:21:27] [날짜 td11] insertText 완료: [2026-03-29]
+[2026-03-30 22:21:27] [날짜 td11] insertText 후: value=[2026-03-29]
+[2026-03-30 22:21:27] [날짜 td11] Tab 완료
+[2026-03-30 22:21:27] [날짜 td11] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:21:27] [날짜 td13] 시작 - analyte=부유물질 date=2026-03-29
+[2026-03-30 22:21:27] [날짜 td13] td 좌표 x=1010.5 y=438.1
+[2026-03-30 22:21:27] [날짜 td13] td 클릭 완료
+[2026-03-30 22:21:27] [날짜 td13] editor 조회: {"x":910,"y":410.625,"display":"block","val":"yyyy-MM-dd","w":38,"h":22}
+[2026-03-30 22:21:27] [날짜 td13] editor CDP 클릭 x=910.0 y=410.6
+[2026-03-30 22:21:27] [날짜 td13] insertText 완료: [2026-03-29]
+[2026-03-30 22:21:27] [날짜 td13] insertText 후: value=[2026-03-29]
+[2026-03-30 22:21:27] [날짜 td13] Tab 완료
+[2026-03-30 22:21:27] [날짜 td13] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:21:29] [날짜 td11] 시작 - analyte=색도 date=2026-03-29
+[2026-03-30 22:21:29] [날짜 td11] td 좌표 x=919.0 y=438.1
+[2026-03-30 22:21:30] [날짜 td11] td 클릭 완료
+[2026-03-30 22:21:30] [날짜 td11] editor 조회: {"x":910,"y":385.625,"display":"block","val":"yyyy-MM-dd","w":38,"h":22}
+[2026-03-30 22:21:30] [날짜 td11] editor CDP 클릭 x=910.0 y=385.6
+[2026-03-30 22:21:30] [날짜 td11] insertText 완료: [2026-03-29]
+[2026-03-30 22:21:30] [날짜 td11] insertText 후: value=[2026-03-29]
+[2026-03-30 22:21:30] [날짜 td11] Tab 완료
+[2026-03-30 22:21:30] [날짜 td11] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:21:30] [날짜 td13] 시작 - analyte=색도 date=2026-03-29
+[2026-03-30 22:21:30] [날짜 td13] td 좌표 x=1010.5 y=438.1
+[2026-03-30 22:21:30] [날짜 td13] td 클릭 완료
+[2026-03-30 22:21:30] [날짜 td13] editor 조회: {"x":910,"y":385.625,"display":"block","val":"yyyy-MM-dd","w":38,"h":22}
+[2026-03-30 22:21:30] [날짜 td13] editor CDP 클릭 x=910.0 y=385.6
+[2026-03-30 22:21:30] [날짜 td13] insertText 완료: [2026-03-29]
+[2026-03-30 22:21:30] [날짜 td13] insertText 후: value=[2026-03-29]
+[2026-03-30 22:21:31] [날짜 td13] Tab 완료
+[2026-03-30 22:21:31] [날짜 td13] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:21:33] [날짜 td11] 시작 - analyte=생물화학적 산소요구량 date=2026-03-29
+[2026-03-30 22:21:33] [날짜 td11] td 좌표 x=919.0 y=438.1
+[2026-03-30 22:21:33] [날짜 td11] td 클릭 완료
+[2026-03-30 22:21:33] [날짜 td11] editor 조회: {"x":910,"y":360.625,"display":"block","val":"yyyy-MM-dd","w":38,"h":22}
+[2026-03-30 22:21:33] [날짜 td11] editor CDP 클릭 x=910.0 y=360.6
+[2026-03-30 22:21:33] [날짜 td11] insertText 완료: [2026-03-29]
+[2026-03-30 22:21:33] [날짜 td11] insertText 후: value=[2026-03-29]
+[2026-03-30 22:21:33] [날짜 td11] Tab 완료
+[2026-03-30 22:21:33] [날짜 td11] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:21:33] [날짜 td13] 시작 - analyte=생물화학적 산소요구량 date=2026-03-29
+[2026-03-30 22:21:33] [날짜 td13] td 좌표 x=1010.5 y=438.1
+[2026-03-30 22:21:33] [날짜 td13] td 클릭 완료
+[2026-03-30 22:21:33] [날짜 td13] editor 조회: {"x":910,"y":360.625,"display":"block","val":"yyyy-MM-dd","w":38,"h":22}
+[2026-03-30 22:21:33] [날짜 td13] editor CDP 클릭 x=910.0 y=360.6
+[2026-03-30 22:21:33] [날짜 td13] insertText 완료: [2026-03-29]
+[2026-03-30 22:21:34] [날짜 td13] insertText 후: value=[2026-03-29]
+[2026-03-30 22:21:34] [날짜 td13] Tab 완료
+[2026-03-30 22:21:34] [날짜 td13] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:21:36] [날짜 td11] 시작 - analyte=수소이온농도 date=2026-03-29
+[2026-03-30 22:21:36] [날짜 td11] td 좌표 x=919.0 y=438.1
+[2026-03-30 22:21:36] [날짜 td11] td 클릭 완료
+[2026-03-30 22:21:36] [날짜 td11] editor 조회: {"x":910,"y":335.625,"display":"block","val":"yyyy-MM-dd","w":38,"h":22}
+[2026-03-30 22:21:36] [날짜 td11] editor CDP 클릭 x=910.0 y=335.6
+[2026-03-30 22:21:36] [날짜 td11] insertText 완료: [2026-03-29]
+[2026-03-30 22:21:36] [날짜 td11] insertText 후: value=[2026-03-29]
+[2026-03-30 22:21:37] [날짜 td11] Tab 완료
+[2026-03-30 22:21:37] [날짜 td11] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:21:37] [날짜 td13] 시작 - analyte=수소이온농도 date=2026-03-29
+[2026-03-30 22:21:37] [날짜 td13] td 좌표 x=1010.5 y=438.1
+[2026-03-30 22:21:37] [날짜 td13] td 클릭 완료
+[2026-03-30 22:21:37] [날짜 td13] editor 조회: {"x":910,"y":335.625,"display":"block","val":"yyyy-MM-dd","w":38,"h":22}
+[2026-03-30 22:21:37] [날짜 td13] editor CDP 클릭 x=910.0 y=335.6
+[2026-03-30 22:21:37] [날짜 td13] insertText 완료: [2026-03-29]
+[2026-03-30 22:21:37] [날짜 td13] insertText 후: value=[2026-03-29]
+[2026-03-30 22:21:37] [날짜 td13] Tab 완료
+[2026-03-30 22:21:37] [날짜 td13] Tab 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:21:38] 입력 성공: 전체 65, DOM행 64, 매칭 64, 입력(실반영) 5, 미매칭 0, 미매칭샘플 [], 커밋실패 59, 커밋실패샘플 [온도, 전기전도도, 총 유기탄소, 탁도, 화학적 산소요구량], 값프리뷰 [[노말헥산추출물질(동·식물 유지류)→'1'], [부유물질→'1'], [색도→'O'], [생물화학적 산소요구량→'O'], [수소이온농도→'O']]
+[2026-03-30 22:29:54] 측정값 입력 진행 시작
+[2026-03-30 22:30:06] [날짜 td11] 시작 - analyte=노말헥산추출물질(동·식물 유지류) date=2026-03-29
+[2026-03-30 22:30:06] [날짜 td11] td 좌표 x=919.0 y=438.1
+[2026-03-30 22:30:06] [날짜 td11] td 클릭 완료
+[2026-03-30 22:30:06] [날짜 td11] editor 조회: {"x":337,"y":381.625,"display":"block","val":"yyyy-MM-dd","w":4,"h":0}
+[2026-03-30 22:30:06] [날짜 td11] editor CDP 클릭 x=337.0 y=381.6
+[2026-03-30 22:30:06] [날짜 td11] insertText 완료: [2026-03-29]
+[2026-03-30 22:30:06] [날짜 td11] insertText 후: value=[2026-03-29]
+[2026-03-30 22:30:06] [날짜 td11] Enter 완료
+[2026-03-30 22:30:06] [날짜 td11] Enter 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:30:06] [날짜 td13] 시작 - analyte=노말헥산추출물질(동·식물 유지류) date=2026-03-29
+[2026-03-30 22:30:06] [날짜 td13] td 좌표 x=1010.5 y=438.1
+[2026-03-30 22:30:06] [날짜 td13] td 클릭 완료
+[2026-03-30 22:30:07] [날짜 td13] editor 조회: {"x":910,"y":435.625,"display":"block","val":"yyyy-MM-dd","w":38,"h":22}
+[2026-03-30 22:30:07] [날짜 td13] editor CDP 클릭 x=910.0 y=435.6
+[2026-03-30 22:30:07] [날짜 td13] insertText 완료: [2026-03-29]
+[2026-03-30 22:30:07] [날짜 td13] insertText 후: value=[2026-03-29]
+[2026-03-30 22:30:07] [날짜 td13] Enter 완료
+[2026-03-30 22:30:07] [날짜 td13] Enter 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:30:09] [날짜 td11] 시작 - analyte=부유물질 date=2026-03-29
+[2026-03-30 22:30:09] [날짜 td11] td 좌표 x=919.0 y=438.1
+[2026-03-30 22:30:09] [날짜 td11] td 클릭 완료
+[2026-03-30 22:30:09] [날짜 td11] editor 조회: {"x":910,"y":410.625,"display":"block","val":"yyyy-MM-dd","w":38,"h":22}
+[2026-03-30 22:30:09] [날짜 td11] editor CDP 클릭 x=910.0 y=410.6
+[2026-03-30 22:30:10] [날짜 td11] insertText 완료: [2026-03-29]
+[2026-03-30 22:30:10] [날짜 td11] insertText 후: value=[2026-03-29]
+[2026-03-30 22:30:10] [날짜 td11] Enter 완료
+[2026-03-30 22:30:10] [날짜 td11] Enter 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:30:10] [날짜 td13] 시작 - analyte=부유물질 date=2026-03-29
+[2026-03-30 22:30:10] [날짜 td13] td 좌표 x=1010.5 y=438.1
+[2026-03-30 22:30:10] [날짜 td13] td 클릭 완료
+[2026-03-30 22:30:10] [날짜 td13] editor 조회: {"x":910,"y":410.625,"display":"block","val":"yyyy-MM-dd","w":38,"h":22}
+[2026-03-30 22:30:10] [날짜 td13] editor CDP 클릭 x=910.0 y=410.6
+[2026-03-30 22:30:10] [날짜 td13] insertText 완료: [2026-03-29]
+[2026-03-30 22:30:10] [날짜 td13] insertText 후: value=[2026-03-29]
+[2026-03-30 22:30:11] [날짜 td13] Enter 완료
+[2026-03-30 22:30:11] [날짜 td13] Enter 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:30:13] [날짜 td11] 시작 - analyte=색도 date=2026-03-29
+[2026-03-30 22:30:13] [날짜 td11] td 좌표 x=919.0 y=438.1
+[2026-03-30 22:30:13] [날짜 td11] td 클릭 완료
+[2026-03-30 22:30:13] [날짜 td11] editor 조회: {"x":910,"y":385.625,"display":"block","val":"yyyy-MM-dd","w":38,"h":22}
+[2026-03-30 22:30:13] [날짜 td11] editor CDP 클릭 x=910.0 y=385.6
+[2026-03-30 22:30:13] [날짜 td11] insertText 완료: [2026-03-29]
+[2026-03-30 22:30:13] [날짜 td11] insertText 후: value=[2026-03-29]
+[2026-03-30 22:30:13] [날짜 td11] Enter 완료
+[2026-03-30 22:30:13] [날짜 td11] Enter 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:30:14] [날짜 td13] 시작 - analyte=색도 date=2026-03-29
+[2026-03-30 22:30:14] [날짜 td13] td 좌표 x=1010.5 y=438.1
+[2026-03-30 22:30:14] [날짜 td13] td 클릭 완료
+[2026-03-30 22:30:14] [날짜 td13] editor 조회: {"x":910,"y":385.625,"display":"block","val":"yyyy-MM-dd","w":38,"h":22}
+[2026-03-30 22:30:14] [날짜 td13] editor CDP 클릭 x=910.0 y=385.6
+[2026-03-30 22:30:14] [날짜 td13] insertText 완료: [2026-03-29]
+[2026-03-30 22:30:14] [날짜 td13] insertText 후: value=[2026-03-29]
+[2026-03-30 22:30:14] [날짜 td13] Enter 완료
+[2026-03-30 22:30:14] [날짜 td13] Enter 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:30:17] [날짜 td11] 시작 - analyte=생물화학적 산소요구량 date=2026-03-29
+[2026-03-30 22:30:17] [날짜 td11] td 좌표 x=919.0 y=438.1
+[2026-03-30 22:30:17] [날짜 td11] td 클릭 완료
+[2026-03-30 22:30:17] [날짜 td11] editor 조회: {"x":910,"y":360.625,"display":"block","val":"yyyy-MM-dd","w":38,"h":22}
+[2026-03-30 22:30:17] [날짜 td11] editor CDP 클릭 x=910.0 y=360.6
+[2026-03-30 22:30:17] [날짜 td11] insertText 완료: [2026-03-29]
+[2026-03-30 22:30:17] [날짜 td11] insertText 후: value=[2026-03-29]
+[2026-03-30 22:30:17] [날짜 td11] Enter 완료
+[2026-03-30 22:30:17] [날짜 td11] Enter 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:30:18] [날짜 td13] 시작 - analyte=생물화학적 산소요구량 date=2026-03-29
+[2026-03-30 22:30:18] [날짜 td13] td 좌표 x=1010.5 y=438.1
+[2026-03-30 22:30:18] [날짜 td13] td 클릭 완료
+[2026-03-30 22:30:18] [날짜 td13] editor 조회: {"x":910,"y":360.625,"display":"block","val":"yyyy-MM-dd","w":38,"h":22}
+[2026-03-30 22:30:18] [날짜 td13] editor CDP 클릭 x=910.0 y=360.6
+[2026-03-30 22:30:18] [날짜 td13] insertText 완료: [2026-03-29]
+[2026-03-30 22:30:18] [날짜 td13] insertText 후: value=[2026-03-29]
+[2026-03-30 22:30:18] [날짜 td13] Enter 완료
+[2026-03-30 22:30:18] [날짜 td13] Enter 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:30:21] [날짜 td11] 시작 - analyte=수소이온농도 date=2026-03-29
+[2026-03-30 22:30:21] [날짜 td11] td 좌표 x=919.0 y=438.1
+[2026-03-30 22:30:21] [날짜 td11] td 클릭 완료
+[2026-03-30 22:30:21] [날짜 td11] editor 조회: {"x":910,"y":335.625,"display":"block","val":"yyyy-MM-dd","w":38,"h":22}
+[2026-03-30 22:30:21] [날짜 td11] editor CDP 클릭 x=910.0 y=335.6
+[2026-03-30 22:30:21] [날짜 td11] insertText 완료: [2026-03-29]
+[2026-03-30 22:30:21] [날짜 td11] insertText 후: value=[2026-03-29]
+[2026-03-30 22:30:21] [날짜 td11] Enter 완료
+[2026-03-30 22:30:21] [날짜 td11] Enter 후 editor: value=[yyyy-MM-dd]
+[2026-03-30 22:30:21] [날짜 td13] 시작 - analyte=수소이온농도 date=2026-03-29
+[2026-03-30 22:30:21] [날짜 td13] td 좌표 x=1010.5 y=438.1
+[2026-03-30 22:30:21] [날짜 td13] td 클릭 완료
+[2026-03-30 22:30:22] [날짜 td13] editor 조회: {"x":910,"y":335.625,"display":"block","val":"yyyy-MM-dd","w":38,"h":22}
+[2026-03-30 22:30:22] [날짜 td13] editor CDP 클릭 x=910.0 y=335.6
+[2026-03-30 22:30:22] [날짜 td13] insertText 완료: [2026-03-29]
+[2026-03-30 22:30:22] [날짜 td13] insertText 후: value=[2026-03-29]
+[2026-03-30 22:30:22] [날짜 td13] Enter 완료
+[2026-03-30 22:30:22] [날짜 td13] Enter 후 editor: value=[yyyy-MM-dd]
