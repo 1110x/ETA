@@ -991,8 +991,7 @@ public partial class MainPage : Window
         switch (_currentMode)
         {
             case "TestReport":
-                var inputWin = new DataToMeasurerWindow(_testReportPage?.SelectedSample);
-                inputWin.Show(this);
+                _testReportPage?.ShowMeasurerPanel();
                 break;
             default:
                 Debug.WriteLine($"[{_currentMode}] BT8");

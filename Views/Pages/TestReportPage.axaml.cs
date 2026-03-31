@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
@@ -59,6 +59,10 @@ public partial class TestReportPage : UserControl
     private string _importStatusHex   = "#888888";
     private bool   _importHasPending  = false;
     private bool   _importHasConflict = false;
+
+    // 자료TO측정인 패널
+    private bool            _showMeasurerPanel = false;
+    private List<MeasurerRow> _measurerRows    = new();
 
     // 선택된 결과 행
     private AnalysisResultRow? _selectedRow;
@@ -331,6 +335,8 @@ public partial class TestReportPage : UserControl
     // =========================================================================
     private Control BuildListControl()
     {
+        if (_showMeasurerPanel) return BuildMeasurerListControl();
+
         if (_stdToggle == null)
         {
             _stdToggle = new ToggleSwitch
@@ -1050,6 +1056,276 @@ public partial class TestReportPage : UserControl
         Padding = new Thickness(12, 5), VerticalAlignment = VerticalAlignment.Center,
     };
 
+
+    // =========================================================================
+    // 자료TO측정인 패널 (Show2 인라인)
+    // =========================================================================
+
+    /// <summary>BT8 클릭 시 MainPage 에서 호출 — Show2를 측정인 패널로 전환</summary>
+    public void ShowMeasurerPanel()
+    {
+        if (_selectedSample == null)
+        {
+            ShowToast("시료를 먼저 선택하세요.");
+            return;
+        }
+        _showMeasurerPanel = true;
+        _measurerRows = DataToMeasurerService.BuildRows(_selectedSample);
+        ResultListChanged?.Invoke(BuildListControl());
+        EditPanelChanged?.Invoke(BuildMeasurerActionPanel());
+    }
+
+    private Control BuildMeasurerListControl()
+    {
+        // ── 헤더 (뒤로가기 + 시료 정보) ──────────────────────────────────────
+        var backBtn = new Button
+        {
+            Content         = "◀ 결과 목록으로",
+            FontFamily      = Font, FontSize = 11,
+            Background      = new SolidColorBrush(Color.Parse("#2a2a3a")),
+            Foreground      = Brushes.WhiteSmoke,
+            BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
+            Padding         = new Thickness(10, 4),
+            Margin          = new Thickness(8, 6),
+        };
+        backBtn.Click += (_, _) =>
+        {
+            _showMeasurerPanel = false;
+            ResultListChanged?.Invoke(BuildListControl());
+            EditPanelChanged?.Invoke(null);
+        };
+
+        var titleTb = new TextBlock
+        {
+            Text       = $"자료TO측정인  —  {_selectedSample?.약칭} / {_selectedSample?.시료명}",
+            FontFamily = Font, FontSize = 12,
+            Foreground = new SolidColorBrush(Color.Parse("#aaaaee")),
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin = new Thickness(4, 0),
+        };
+
+        var topRow = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            Children    = { backBtn, titleTb },
+        };
+
+        // ── 컬럼 정의 ──────────────────────────────────────────────────────
+        const string MeasurerColStr = "*,80,80,*,*,80,80,80";
+
+        // ── 헤더 행 ────────────────────────────────────────────────────────
+        var headerBorder = new Border
+        {
+            Background = new SolidColorBrush(Color.Parse("#2a2a3a")),
+            Padding    = new Thickness(8, 5),
+            Child = new Grid
+            {
+                ColumnDefinitions = new ColumnDefinitions(MeasurerColStr),
+                Children =
+                {
+                    MeasurerHeaderCell("분석항목",   0),
+                    MeasurerHeaderCell("법적기준",   1),
+                    MeasurerHeaderCell("결과값",     2),
+                    MeasurerHeaderCell("측정방법",   3),
+                    MeasurerHeaderCell("장비",       4),
+                    MeasurerHeaderCell("담당자",     5),
+                    MeasurerHeaderCell("시작일",     6),
+                    MeasurerHeaderCell("종료일",     7),
+                }
+            }
+        };
+
+        // ── 데이터 행 ──────────────────────────────────────────────────────
+        var listPanel = new StackPanel { Spacing = 0 };
+        if (_measurerRows.Count == 0)
+        {
+            listPanel.Children.Add(new TextBlock
+            {
+                Text = "분석결과가 없습니다. 결과값을 먼저 입력하세요.",
+                FontFamily = Font, FontSize = 12,
+                Foreground = new SolidColorBrush(Color.Parse("#555566")),
+                Margin     = new Thickness(12, 20),
+                HorizontalAlignment = HorizontalAlignment.Center,
+            });
+        }
+        else
+        {
+            bool odd = false;
+            foreach (var row in _measurerRows)
+            {
+                var bg = new SolidColorBrush(odd ? Color.Parse("#2e2e3a") : Color.Parse("#252530"));
+                listPanel.Children.Add(new Border
+                {
+                    Background = bg,
+                    Padding    = new Thickness(8, 4),
+                    Child = new Grid
+                    {
+                        ColumnDefinitions = new ColumnDefinitions(MeasurerColStr),
+                        Children =
+                        {
+                            MeasurerDataCell(row.항목명,   0, Brushes.WhiteSmoke, bold: true),
+                            MeasurerDataCell(row.법적기준, 1),
+                            MeasurerDataCell(row.결과값, 2, new SolidColorBrush(Color.Parse("#88ee88")), bold: true),
+                            MeasurerDataCell(row.측정방법, 3),
+                            MeasurerDataCell(row.장비명,   4),
+                            MeasurerDataCell(row.담당자,   5),
+                            MeasurerDataCell(row.시작일 + " " + row.시작시간, 6),
+                            MeasurerDataCell(row.종료일,   7),
+                        }
+                    }
+                });
+                odd = !odd;
+            }
+        }
+
+        var scroll = new ScrollViewer
+        {
+            VerticalScrollBarVisibility   = ScrollBarVisibility.Auto,
+            HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+            Content = listPanel,
+        };
+
+        var outer = new Grid { RowDefinitions = new RowDefinitions("Auto,Auto,*") };
+        Grid.SetRow(topRow,       0);
+        Grid.SetRow(headerBorder, 1);
+        Grid.SetRow(scroll,       2);
+        outer.Children.Add(topRow);
+        outer.Children.Add(headerBorder);
+        outer.Children.Add(scroll);
+        return outer;
+    }
+
+    private Control BuildMeasurerActionPanel()
+    {
+        var matchTb = new TextBlock
+        {
+            FontFamily   = Font, FontSize = 11,
+            Foreground   = new SolidColorBrush(Color.Parse("#8888aa")),
+            TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+            Margin       = new Thickness(0, 4, 0, 0),
+            Text         = "브라우저에서 측정인.kr 입력 화면을 먼저 열어 주세요.",
+        };
+
+        var statusTb = new TextBlock
+        {
+            FontFamily   = Font, FontSize = 11,
+            Foreground   = new SolidColorBrush(Color.Parse("#88cc88")),
+            TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+            Margin       = new Thickness(0, 4, 0, 0),
+            IsVisible    = false,
+        };
+
+        var checkBtn = new Button
+        {
+            Content         = "페이지 확인",
+            FontFamily      = Font, FontSize = 11,
+            Background      = new SolidColorBrush(Color.Parse("#1a3a5a")),
+            Foreground      = Brushes.WhiteSmoke,
+            BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
+            Padding         = new Thickness(12, 5),
+        };
+
+        var inputBtn = new Button
+        {
+            Content         = "측정값 입력 진행",
+            FontFamily      = Font, FontSize = 12,
+            Background      = new SolidColorBrush(Color.Parse("#264026")),
+            Foreground      = Brushes.WhiteSmoke,
+            BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
+            Padding         = new Thickness(16, 6),
+        };
+
+        var infoTb = new TextBlock
+        {
+            Text         = $"항목 {_measurerRows.Count}건 준비",
+            FontFamily   = Font, FontSize = 10,
+            Foreground   = new SolidColorBrush(Color.Parse("#555566")),
+            Margin       = new Thickness(0, 8, 0, 0),
+        };
+
+        checkBtn.Click += async (_, _) =>
+        {
+            if (_selectedSample == null) return;
+            checkBtn.IsEnabled = false;
+            matchTb.Text       = "페이지 확인 중...";
+            matchTb.Foreground = new SolidColorBrush(Color.Parse("#aaaacc"));
+            var (text, hex) = await MeasurerCdpService.CheckPageMatchAsync(
+                _selectedSample.약칭, _selectedSample.시료명, _selectedSample.채취일자);
+            matchTb.Text       = text;
+            matchTb.Foreground = new SolidColorBrush(Color.Parse(hex));
+            checkBtn.IsEnabled = true;
+        };
+
+        inputBtn.Click += async (_, _) =>
+        {
+            if (_measurerRows.Count == 0)
+            {
+                statusTb.Text     = "입력할 항목이 없습니다.";
+                statusTb.IsVisible = true;
+                return;
+            }
+            inputBtn.IsEnabled  = false;
+            checkBtn.IsEnabled  = false;
+            statusTb.IsVisible  = true;
+            statusTb.Foreground = new SolidColorBrush(Color.Parse("#88cc88"));
+            try
+            {
+                var (ok, msg) = await MeasurerCdpService.AutoInputAsync(
+                    _measurerRows,
+                    text => Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                    {
+                        statusTb.Text = text;
+                    }));
+                statusTb.Text       = (ok ? "✅ " : "⚠ ") + msg;
+                statusTb.Foreground = new SolidColorBrush(Color.Parse(ok ? "#44cc44" : "#ffaa44"));
+            }
+            catch (Exception ex)
+            {
+                statusTb.Text       = "❌ " + ex.Message;
+                statusTb.Foreground = new SolidColorBrush(Color.Parse("#ee4444"));
+            }
+            finally { inputBtn.IsEnabled = true; checkBtn.IsEnabled = true; }
+        };
+
+        var btnRow = new StackPanel
+        {
+            Orientation = Orientation.Horizontal, Spacing = 8,
+            Children    = { checkBtn, inputBtn },
+        };
+
+        return new Border
+        {
+            Padding = new Thickness(10),
+            Child   = new StackPanel { Spacing = 6, Children = { btnRow, matchTb, statusTb, infoTb } }
+        };
+    }
+
+    private static TextBlock MeasurerHeaderCell(string text, int col)
+    {
+        var tb = new TextBlock
+        {
+            Text = text, FontFamily = Font, FontSize = 10, FontWeight = FontWeight.SemiBold,
+            Foreground = new SolidColorBrush(Color.Parse("#aaaacc")),
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        Grid.SetColumn(tb, col);
+        return tb;
+    }
+
+    private static TextBlock MeasurerDataCell(string text, int col, IBrush? fg = null, bool bold = false)
+    {
+        var tb = new TextBlock
+        {
+            Text         = text ?? "",
+            FontFamily   = Font, FontSize = 11,
+            FontWeight   = bold ? FontWeight.SemiBold : FontWeight.Normal,
+            Foreground   = fg ?? new SolidColorBrush(Color.Parse("#cccccc")),
+            TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        Grid.SetColumn(tb, col);
+        return tb;
+    }
 
     // =========================================================================
     // ── 일괄 엑셀 출력 ────────────────────────────────────────────────────────
