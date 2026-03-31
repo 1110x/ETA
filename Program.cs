@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
@@ -36,7 +36,7 @@ class Program
             Console.WriteLine("★ Unhandled Exception ★");
             Console.WriteLine(e.ExceptionObject.ToString());
             // 파일로도 저장 가능
-            File.WriteAllText("crash.log", e.ExceptionObject.ToString());
+            File.WriteAllText("Logs/crash.log", e.ExceptionObject.ToString());
 #if DEBUG
             // 디버그 모드면 중단
             System.Diagnostics.Debugger.Break();

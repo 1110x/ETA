@@ -1,0 +1,931 @@
+[17:24:09] [AgentTree] LoadData() 시작
+[17:24:09] [AgentTree] 로드 완료 → 14명
+[17:24:24] [AgentTree] 선택: 김청하
+[17:24:24] [AgentTree] 선택: 정승욱
+[17:24:25] [AgentTree] 선택: 방찬미
+[17:24:25] [AgentTree] 선택: 이예림
+[17:24:25] [AgentTree] 선택: 정대호
+[17:24:26] [AgentTree] 선택: 윤민영
+[17:24:26] [AgentTree] 선택: 정준하
+[17:24:26] [AgentTree] 선택: 김가린
+[17:24:29] [AgentTree] 선택: 이재휘
+[17:24:29] [AgentTree] 선택: 송준우
+[17:31:51] [AgentTree] LoadData() 시작
+[17:31:51] [AgentTree] 로드 완료 → 14명
+[17:31:52] [AgentTree] 선택: 김청하
+[17:33:37] [AgentTree] LoadData() 시작
+[17:33:37] [AgentTree] 로드 완료 → 14명
+[17:33:38] [AgentTree] 선택: 김청하
+[17:33:59] [AgentTree] 사진 선택: 파일명=12345.jpg
+[17:34:03] [AgentTree] ✅ 수정 저장: 김청하
+[17:34:03] [AgentTree] 선택: 정승욱
+[17:34:05] [AgentTree] 선택: 박은지
+[17:34:05] [AgentTree] 선택: 방찬미
+[17:34:05] [AgentTree] 선택: 이예림
+[17:34:06] [AgentTree] 선택: 이재휘
+[17:34:06] [AgentTree] 선택: 유경지
+[17:34:06] [AgentTree] 선택: 윤민영
+[17:34:07] [AgentTree] 선택: 정준하
+[17:34:07] [AgentTree] 선택: 손현주
+[17:34:10] [AgentTree] 선택: 김가린
+[17:34:11] [AgentTree] 선택: 송준우
+[17:34:11] [AgentTree] 선택: 이재휘
+[17:34:12] [AgentTree] 선택: 방찬미
+[17:34:12] [AgentTree] 선택: 박은지
+[17:34:12] [AgentTree] 선택: 정승욱
+[17:34:13] [AgentTree] 선택: 이재휘
+[17:34:13] [AgentTree] 선택: 유경지
+[17:34:13] [AgentTree] 선택: 김지은
+[17:34:14] [AgentTree] 선택: 정준하
+[17:34:14] [AgentTree] 선택: 손현주
+[17:34:14] [AgentTree] 선택: 윤민영
+[17:34:15] [AgentTree] 선택: 정대호
+[17:34:15] [AgentTree] 선택: 이예림
+[17:34:15] [AgentTree] 선택: 박은지
+[17:34:15] [AgentTree] 선택: 김청하
+[17:34:16] [AgentTree] 선택: 김청하
+[17:34:16] [AgentTree] 선택: 이예림
+[17:34:16] [AgentTree] 선택: 유경지
+[17:34:17] [AgentTree] 선택: 윤민영
+[17:34:17] [AgentTree] 선택: 손현주
+[08:54:24] [AgentTree] LoadData() 시작
+[08:54:25] [AgentTree] 로드 완료 → 14명
+[15:25:15] [AgentTree] LoadData() 시작
+[15:25:15] [AgentTree] 로드 완료 → 14명
+[15:25:16] [AgentTree] 선택: 정승욱
+[15:25:17] [AgentTree] 선택: 박은지
+[15:25:17] [AgentTree] 선택: 방찬미
+[15:25:18] [AgentTree] 선택: 이예림
+[15:25:18] [AgentTree] 선택: 이재휘
+[15:25:19] [AgentTree] 선택: 정대호
+[15:25:19] [AgentTree] 선택: 유경지
+[15:25:20] [AgentTree] 선택: 윤민영
+[15:25:20] [AgentTree] 선택: 김지은
+[15:25:21] [AgentTree] 선택: 정준하
+[15:25:21] [AgentTree] 선택: 김청하
+[15:25:22] [AgentTree] 선택: 손현주
+[15:25:22] [AgentTree] 선택: 김가린
+[15:25:24] [AgentTree] 선택: 정준하
+[15:25:24] [AgentTree] 선택: 송준우
+[15:25:25] [AgentTree] 선택: 유경지
+[15:25:25] [AgentTree] 선택: 이재휘
+[15:25:30] [AgentTree] 추가 모드
+[15:28:39] [AgentTree] LoadData() 시작
+[15:28:39] [AgentTree] 로드 완료 → 14명
+[15:28:39] [AgentTree] 선택: 박은지
+[15:28:40] [AgentTree] 선택: 방찬미
+[15:28:40] [AgentTree] 선택: 정대호
+[15:28:53] [AgentTree] 선택: 방찬미
+[15:28:53] [AgentTree] 선택: 이재휘
+[15:28:53] [AgentTree] 선택: 송준우
+[17:13:33] [AgentTree] LoadData() 시작
+[17:13:33] [AgentTree] 로드 완료 → 14명
+[17:15:14] [AgentTree] LoadData() 시작
+[17:15:14] [AgentTree] 로드 완료 → 14명
+[17:15:56] [AgentTree] 선택: 박은지
+[17:15:57] [AgentTree] 선택: 방찬미
+[17:15:57] [AgentTree] 선택: 이예림
+[17:15:58] [AgentTree] 선택: 이재휘
+[17:15:58] [AgentTree] 선택: 정대호
+[17:15:59] [AgentTree] 선택: 송준우
+[17:15:59] [AgentTree] 선택: 김지은
+[17:15:59] [AgentTree] 선택: 김청하
+[17:16:00] [AgentTree] 선택: 손현주
+[17:16:00] [AgentTree] 선택: 김가린
+[17:16:01] [AgentTree] 선택: 손현주
+[17:16:02] [AgentTree] 선택: 유경지
+[17:16:04] [AgentTree] 선택: 이재휘
+[17:16:05] [AgentTree] 선택: 박은지
+[17:16:05] [AgentTree] 선택: 정승욱
+[17:16:06] [AgentTree] 선택: 방찬미
+[17:16:06] [AgentTree] 선택: 이재휘
+[17:16:06] [AgentTree] 선택: 송준우
+[17:16:07] [AgentTree] 선택: 김지은
+[17:16:07] [AgentTree] 선택: 김가린
+[17:16:08] [AgentTree] 선택: 김청하
+[17:16:08] [AgentTree] 선택: 윤민영
+[17:16:08] [AgentTree] 선택: 정대호
+[17:16:09] [AgentTree] 선택: 방찬미
+[17:25:18] [AgentTree] LoadData() 시작
+[17:25:19] [AgentTree] 로드 완료 → 14명
+[17:25:20] [AgentTree] 선택: 박은지
+[17:28:35] [AgentTree] 선택: 이예림
+[17:28:36] [AgentTree] 선택: 이재휘
+[17:28:36] [AgentTree] 선택: 유경지
+[17:28:37] [AgentTree] 선택: 윤민영
+[17:28:37] [AgentTree] 선택: 정준하
+[17:28:37] [AgentTree] 선택: 손현주
+[17:28:38] [AgentTree] 선택: 김가린
+[17:28:39] [AgentTree] 선택: 정승욱
+[17:28:40] [AgentTree] 선택: 방찬미
+[17:28:40] [AgentTree] 선택: 정대호
+[17:28:40] [AgentTree] 선택: 송준우
+[17:28:41] [AgentTree] 선택: 김지은
+[17:28:41] [AgentTree] 선택: 김청하
+[17:28:42] [AgentTree] 선택: 손현주
+[17:28:43] [AgentTree] 선택: 김가린
+[17:28:44] [AgentTree] 선택: 정승욱
+[17:30:55] [AgentTree] LoadData() 시작
+[17:30:55] [AgentTree] 로드 완료 → 14명
+[17:30:57] [AgentTree] 선택: 이예림
+[17:30:58] [AgentTree] 선택: 송준우
+[17:30:59] [AgentTree] 선택: 윤민영
+[17:30:59] [AgentTree] 선택: 정준하
+[17:31:00] [AgentTree] 선택: 김청하
+[17:32:10] [AgentTree] LoadData() 시작
+[17:32:11] [AgentTree] 로드 완료 → 14명
+[17:32:13] [AgentTree] 선택: 박은지
+[17:33:13] [AgentTree] LoadData() 시작
+[17:33:13] [AgentTree] 로드 완료 → 14명
+[17:33:27] [AgentTree] LoadData() 시작
+[17:33:27] [AgentTree] 로드 완료 → 14명
+[10:29:30] [AgentTree] LoadData() 시작
+[10:29:31] [AgentTree] 로드 완료 → 14명
+[10:29:36] [AgentTree] 선택: 박은지
+[10:29:37] [AgentTree] 선택: 이예림
+[10:29:37] [AgentTree] 선택: 정대호
+[10:29:38] [AgentTree] 선택: 유경지
+[10:29:38] [AgentTree] 선택: 윤민영
+[10:29:44] [AgentTree] LoadData() 시작
+[10:29:44] [AgentTree] 로드 완료 → 14명
+[10:30:22] [AgentTree] LoadData() 시작
+[10:30:22] [AgentTree] 로드 완료 → 14명
+[10:30:26] [AgentTree] 선택: 이예림
+[10:41:34] [AgentTree] LoadData() 시작
+[10:41:34] [AgentTree] 로드 완료 → 14명
+[10:41:45] [AgentTree] LoadData() 시작
+[10:41:45] [AgentTree] 로드 완료 → 14명
+[10:43:24] [AgentTree] LoadData() 시작
+[10:43:24] [AgentTree] 로드 완료 → 14명
+[10:43:51] [AgentTree] LoadData() 시작
+[10:43:51] [AgentTree] 로드 완료 → 14명
+[10:56:15] [AgentTree] LoadData() 시작
+[10:56:16] [AgentTree] 로드 완료 → 14명
+[11:02:08] [AgentTree] LoadData() 시작
+[11:02:08] [AgentTree] 로드 완료 → 14명
+[11:04:36] [AgentTree] 선택: 박은지
+[11:06:23] [AgentTree] 선택: 이예림
+[11:06:24] [AgentTree] 선택: 이재휘
+[11:06:24] [AgentTree] 선택: 유경지
+[11:06:25] [AgentTree] 선택: 윤민영
+[11:06:25] [AgentTree] 선택: 정준하
+[11:06:26] [AgentTree] 선택: 김청하
+[11:06:26] [AgentTree] 선택: 손현주
+[11:06:27] [AgentTree] 선택: 김가린
+[11:06:28] [AgentTree] 선택: 정승욱
+[11:06:28] [AgentTree] 선택: 방찬미
+[11:06:29] [AgentTree] 선택: 이예림
+[11:06:29] [AgentTree] 선택: 송준우
+[11:06:29] [AgentTree] 선택: 김지은
+[11:06:30] [AgentTree] 선택: 김청하
+[11:06:30] [AgentTree] 선택: 김가린
+[11:11:30] [AgentTree] LoadData() 시작
+[11:11:30] [AgentTree] 로드 완료 → 14명
+[11:11:31] [AgentTree] 선택: 박은지
+[11:11:32] [AgentTree] 선택: 이예림
+[11:16:58] [AgentTree] LoadData() 시작
+[11:16:58] [AgentTree] 로드 완료 → 14명
+[11:17:01] [AgentTree] 선택: 이예림
+[11:20:45] [AgentTree] 선택: 이재휘
+[11:20:46] [AgentTree] 선택: 정대호
+[11:20:46] [AgentTree] 선택: 송준우
+[11:20:47] [AgentTree] 선택: 김지은
+[11:20:47] [AgentTree] 선택: 정준하
+[11:20:48] [AgentTree] 선택: 김청하
+[11:20:49] [AgentTree] 선택: 정준하
+[11:20:50] [AgentTree] 선택: 김지은
+[11:20:51] [AgentTree] 선택: 윤민영
+[11:20:51] [AgentTree] 선택: 송준우
+[11:20:52] [AgentTree] 선택: 김지은
+[11:20:52] [AgentTree] 선택: 김청하
+[11:20:53] [AgentTree] 선택: 손현주
+[11:20:53] [AgentTree] 선택: 김가린
+[11:20:54] [AgentTree] 선택: 손현주
+[11:20:54] [AgentTree] 선택: 김청하
+[11:20:54] [AgentTree] 선택: 정준하
+[11:20:55] [AgentTree] 선택: 김청하
+[11:20:56] [AgentTree] 선택: 손현주
+[11:20:57] [AgentTree] 선택: 정준하
+[11:20:57] [AgentTree] 선택: 송준우
+[11:20:57] [AgentTree] 선택: 유경지
+[11:20:58] [AgentTree] 선택: 정대호
+[11:20:58] [AgentTree] 선택: 이재휘
+[11:20:59] [AgentTree] 선택: 이예림
+[11:20:59] [AgentTree] 선택: 방찬미
+[11:21:00] [AgentTree] 선택: 박은지
+[11:21:01] [AgentTree] 선택: 정승욱
+[11:21:02] [AgentTree] 선택: 방찬미
+[11:21:02] [AgentTree] 선택: 이재휘
+[11:21:03] [AgentTree] 선택: 정대호
+[11:21:03] [AgentTree] 선택: 송준우
+[11:21:04] [AgentTree] 선택: 윤민영
+[11:21:04] [AgentTree] 선택: 김지은
+[11:21:05] [AgentTree] 선택: 정준하
+[11:21:06] [AgentTree] 선택: 김청하
+[11:21:06] [AgentTree] 선택: 손현주
+[11:21:07] [AgentTree] 선택: 김가린
+[11:21:08] [AgentTree] 선택: 손현주
+[11:21:08] [AgentTree] 선택: 김청하
+[11:21:09] [AgentTree] 선택: 김청하
+[11:21:09] [AgentTree] 선택: 정준하
+[11:21:10] [AgentTree] 선택: 김지은
+[11:21:16] [AgentTree] 선택: 윤민영
+[11:21:21] [AgentTree] 선택: 정대호
+[11:21:21] [AgentTree] 선택: 이재휘
+[11:21:22] [AgentTree] 선택: 이예림
+[11:21:22] [AgentTree] 선택: 방찬미
+[11:21:22] [AgentTree] 선택: 박은지
+[11:21:23] [AgentTree] 선택: 정승욱
+[11:22:19] [AgentTree] 선택: 정준하
+[11:30:40] [AgentTree] LoadData() 시작
+[11:30:40] [AgentTree] 로드 완료 → 14명
+[11:30:42] [AgentTree] 선택: 정승욱
+[11:40:25] [AgentTree] LoadData() 시작
+[11:40:25] [AgentTree] 로드 완료 → 14명
+[11:40:30] [AgentTree] 선택: 이재휘
+[12:07:47] [AgentTree] LoadData() 시작
+[12:07:47] [AgentTree] 로드 완료 → 14명
+[12:07:49] [AgentTree] 선택: 정대호
+[12:07:53] [AgentTree] 이전월 조회: 2026-02
+[12:07:53] [AgentTree] 이전월 조회: 2026-01
+[12:07:55] [AgentTree] 오늘 조회: 2026-03-27
+[12:07:55] [AgentTree] 오늘 조회: 2026-03-27
+[12:07:55] [AgentTree] 오늘 조회: 2026-03-27
+[12:07:56] [AgentTree] 오늘 조회: 2026-03-27
+[12:07:57] [AgentTree] 선택: 유경지
+[12:08:05] [AgentTree] 선택: 김청하
+[12:08:06] [AgentTree] 선택: 손현주
+[12:09:24] [AgentTree] 다음월 조회: 2026-04
+[12:09:25] [AgentTree] 다음월 조회: 2026-05
+[12:09:25] [AgentTree] 다음월 조회: 2026-06
+[12:09:25] [AgentTree] 이전월 조회: 2026-05
+[12:09:26] [AgentTree] 이전월 조회: 2026-04
+[12:09:26] [AgentTree] 이전월 조회: 2026-03
+[12:09:26] [AgentTree] 이전월 조회: 2026-02
+[12:09:26] [AgentTree] 이전월 조회: 2026-01
+[12:09:26] [AgentTree] 이전월 조회: 2025-12
+[12:09:26] [AgentTree] 이전월 조회: 2025-11
+[12:09:27] [AgentTree] 다음월 조회: 2025-12
+[12:09:27] [AgentTree] 다음월 조회: 2026-01
+[12:09:27] [AgentTree] 다음월 조회: 2026-02
+[12:09:27] [AgentTree] 다음월 조회: 2026-03
+[12:09:28] [AgentTree] 다음월 조회: 2026-04
+[12:09:28] [AgentTree] 다음월 조회: 2026-05
+[12:09:28] [AgentTree] 다음월 조회: 2026-06
+[12:09:28] [AgentTree] 다음월 조회: 2026-07
+[12:09:28] [AgentTree] 다음월 조회: 2026-08
+[12:09:28] [AgentTree] 다음월 조회: 2026-09
+[12:15:50] [AgentTree] LoadData() 시작
+[12:15:51] [AgentTree] 로드 완료 → 14명
+[12:15:52] [AgentTree] 선택: 정대호
+[12:15:54] [AgentTree] 선택: 윤민영
+[12:15:55] [AgentTree] 선택: 정준하
+[12:15:56] [AgentTree] 선택: 정승욱
+[12:15:57] [AgentTree] 선택: 방찬미
+[12:15:57] [AgentTree] 선택: 정승욱
+[12:15:58] [AgentTree] 선택: 박은지
+[12:15:58] [AgentTree] 선택: 방찬미
+[12:15:58] [AgentTree] 선택: 이재휘
+[12:15:59] [AgentTree] 선택: 정대호
+[12:15:59] [AgentTree] 선택: 송준우
+[12:19:07] [AgentTree] LoadData() 시작
+[12:19:07] [AgentTree] 로드 완료 → 14명
+[12:35:42] [AgentTree] LoadData() 시작
+[12:35:43] [AgentTree] 로드 완료 → 14명
+[12:35:44] [AgentTree] 선택: 박은지
+[12:43:57] [AgentTree] LoadData() 시작
+[12:43:58] [AgentTree] 로드 완료 → 14명
+[12:43:59] [AgentTree] 선택: 유경지
+[12:44:01] [AgentTree] 선택: 정준하
+[12:44:02] [AgentTree] 선택: 김청하
+[12:44:03] [AgentTree] 선택: 정준하
+[12:44:03] [AgentTree] 선택: 송준우
+[12:44:12] [AgentTree] 이전월 조회: 2026-02
+[12:44:13] [AgentTree] 이전월 조회: 2026-01
+[12:44:16] [AgentTree] 다음월 조회: 2026-02
+[12:44:17] [AgentTree] 이전월 조회: 2026-01
+[12:44:19] [AgentTree] 오늘 조회: 2026-03-27
+[12:44:26] [AgentTree] 분장 추가: 송준우 ← 페놀류
+[12:44:32] [AgentTree] 분장 추가: 송준우 ← 퍼클로레이트
+[12:59:43] [AgentTree] LoadData() 시작
+[12:59:44] [AgentTree] 로드 완료 → 14명
+[12:59:48] [AgentTree] 선택: 박은지
+[13:00:01] [AgentTree] 기간 조회: 2025-09-01 ~ 2025-09-01
+[13:00:02] [AgentTree] 기간 조회: 2025-09-01 ~ 2025-09-26
+[13:00:03] [AgentTree] 기간 조회: 2025-09-01 ~ 2025-09-01
+[13:00:06] [AgentTree] 기간 조회: 2025-09-01 ~ 2025-09-17
+[13:00:10] [AgentTree] 기간 조회: 2025-08-01 ~ 2025-08-01
+[13:00:11] [AgentTree] 기간 조회: 2025-08-01 ~ 2025-08-23
+[13:00:14] [AgentTree] 기간 조회: 2025-09-19 ~ 2025-09-19
+[13:00:16] [AgentTree] 기간 조회: 2025-08-01 ~ 2025-09-19
+[13:00:19] [AgentTree] 기간 조회: 2025-11-15 ~ 2025-11-15
+[13:00:20] [AgentTree] 기간 조회: 2025-11-01 ~ 2025-11-15
+[13:02:52] [AgentTree] 기간 조회: 2025-11-22 ~ 2025-11-22
+[13:02:53] [AgentTree] 기간 조회: 2025-11-01 ~ 2025-11-22
+[13:02:55] [AgentTree] 기간 조회: 2026-04-11 ~ 2026-04-11
+[13:02:57] [AgentTree] 기간 조회: 2025-12-13 ~ 2026-04-11
+[13:03:00] [AgentTree] 기간 조회: 2026-05-01 ~ 2026-05-01
+[13:03:01] [AgentTree] 기간 조회: 2026-05-01 ~ 2026-10-16
+[13:03:14] [AgentTree] 기간 조회: 2026-05-01 ~ 2026-05-01
+[13:03:18] [AgentTree] 기간 조회: 2026-05-01 ~ 2026-08-15
+[13:03:49] [AgentTree] 기간 조회: 2026-05-15 ~ 2026-05-15
+[13:03:50] [AgentTree] 기간 조회: 2026-04-28 ~ 2026-05-15
+[13:03:52] [AgentTree] 기간 조회: 2026-04-16 ~ 2026-04-16
+[13:03:54] [AgentTree] 기간 조회: 2026-04-01 ~ 2026-04-16
+[13:03:56] [AgentTree] 기간 조회: 2026-02-03 ~ 2026-02-03
+[13:03:58] [AgentTree] 기간 조회: 2026-01-01 ~ 2026-02-03
+[13:04:01] [AgentTree] 기간 조회: 2026-01-13 ~ 2026-01-13
+[13:04:02] [AgentTree] 기간 조회: 2026-01-13 ~ 2026-03-12
+[13:05:42] [AgentTree] 기간 조회: 2026-04-01 ~ 2026-04-01
+[13:05:42] [AgentTree] 기간 조회: 2026-04-01 ~ 2026-04-16
+[13:07:42] [AgentTree] LoadData() 시작
+[13:07:42] [AgentTree] 로드 완료 → 14명
+[13:07:43] [AgentTree] 선택: 유경지
+[13:07:47] [AgentTree] 기간 조회: 2026-03-05 ~ 2026-03-05
+[13:07:49] [AgentTree] 기간 조회: 2026-03-05 ~ 2026-03-18
+[13:07:53] [AgentTree] 기간 조회: 2026-04-15 ~ 2026-04-15
+[13:07:54] [AgentTree] 기간 조회: 2026-04-15 ~ 2026-07-16
+[13:08:05] [AgentTree] 기간 조회: 2026-09-01 ~ 2026-09-01
+[13:08:06] [AgentTree] 기간 조회: 2026-09-01 ~ 2026-09-16
+[13:08:13] [AgentTree] 기간 조회: 2025-02-01 ~ 2025-02-01
+[13:08:15] [AgentTree] 기간 조회: 2025-02-01 ~ 2025-03-14
+[13:08:21] [AgentTree] 기간 조회: 2025-05-01 ~ 2025-05-01
+[13:08:22] [AgentTree] 기간 조회: 2025-04-29 ~ 2025-05-01
+[13:08:28] [AgentTree] 기간 조회: 2025-05-11 ~ 2025-05-11
+[13:08:30] [AgentTree] 기간 조회: 2025-05-11 ~ 2025-06-12
+[13:08:33] [AgentTree] 선택: 박은지
+[13:08:37] [AgentTree] 기간 조회: 2026-03-06 ~ 2026-03-06
+[13:08:39] [AgentTree] 기간 조회: 2025-12-04 ~ 2026-03-06
+[13:08:42] [AgentTree] 기간 조회: 2025-12-11 ~ 2025-12-11
+[13:08:44] [AgentTree] 기간 조회: 2025-12-11 ~ 2025-12-21
+[13:08:54] [AgentTree] 기간 조회: 2026-02-05 ~ 2026-02-05
+[13:08:55] [AgentTree] 기간 조회: 2026-02-05 ~ 2026-02-17
+[13:09:00] [AgentTree] 기간 조회: 2025-10-03 ~ 2025-10-03
+[13:09:01] [AgentTree] 기간 조회: 2025-10-03 ~ 2025-10-15
+[13:09:03] [AgentTree] 선택: 정준하
+[13:09:04] [AgentTree] 선택: 윤민영
+[13:09:05] [AgentTree] 선택: 송준우
+[13:09:06] [AgentTree] 선택: 유경지
+[13:09:10] [AgentTree] 선택: 이재휘
+[13:09:11] [AgentTree] 선택: 이재휘
+[13:09:12] [AgentTree] 선택: 이재휘
+[13:09:13] [AgentTree] 선택: 이예림
+[13:09:21] [AgentTree] 선택: 정준하
+[13:09:21] [AgentTree] 선택: 김청하
+[13:09:23] [AgentTree] 선택: 김가린
+[13:09:25] [AgentTree] 선택: 정승욱
+[13:22:16] [AgentTree] LoadData() 시작
+[13:22:16] [AgentTree] 로드 완료 → 14명
+[13:22:17] [AgentTree] 선택: 이예림
+[13:22:27] [AgentTree] 기간 조회: 2026-03-06 ~ 2026-03-06
+[13:22:28] [AgentTree] 기간 조회: 2026-03-06 ~ 2026-07-23
+[13:23:21] [AgentTree] ✅ 수정 저장: 이예림
+[13:23:26] [AgentTree] 분장 저장: 7개 (2026-03-06 ~ 2026-07-23)
+[13:27:17] [AgentTree] LoadData() 시작
+[13:27:17] [AgentTree] 로드 완료 → 14명
+[13:27:20] [AgentTree] 선택: 정승욱
+[13:27:33] [AgentTree] 분장 추가: 정승욱 ← 온도
+[13:27:41] [AgentTree] 기간 조회: 2026-03-01 ~ 2026-03-01
+[13:27:43] [AgentTree] 기간 조회: 2026-03-01 ~ 2026-07-22
+[13:27:46] [AgentTree] 분장 저장 완료: 1개 (2026-03-01 ~ 2026-07-22)
+[13:28:52] [AgentTree] 선택: 박은지
+[13:28:53] [AgentTree] 선택: 정승욱
+[13:29:02] [AgentTree] 선택: 김청하
+[13:30:33] [AgentTree] 드랍 취소: 화학적 산소요구량 → 중복
+[13:37:08] [AgentTree] LoadData() 시작
+[13:37:08] [AgentTree] 로드 완료 → 14명
+[13:41:11] [AgentTree] LoadData() 시작
+[13:41:12] [AgentTree] 로드 완료 → 14명
+[13:41:14] [AgentTree] 선택: 정승욱
+[13:41:43] [AgentTree] 분장 추가: 정승욱 ← 아크릴로니트릴
+[16:37:47] [AgentTree] LoadData() 시작
+[16:37:47] [AgentTree] 로드 완료 → 14명
+[17:09:53] [AgentTree] LoadData() 시작
+[17:09:54] [AgentTree] 로드 완료 → 14명
+[18:05:31] [AgentTree] LoadData() 시작
+[18:05:31] [AgentTree] 로드 완료 → 14명
+[18:24:54] [AgentTree] LoadData() 시작
+[18:24:54] [AgentTree] 로드 완료 → 14명
+[18:32:55] [AgentTree] LoadData() 시작
+[18:32:56] [AgentTree] 로드 완료 → 14명
+[14:23:51] [AgentTree] LoadData() 시작
+[14:23:51] [AgentTree] 로드 완료 → 14명
+[14:23:52] [AgentTree] 선택: 이재휘
+[14:23:53] [AgentTree] 선택: 유경지
+[14:23:53] [AgentTree] 선택: 윤민영
+[14:23:54] [AgentTree] 선택: 김청하
+[14:23:54] [AgentTree] 선택: 손현주
+[14:23:55] [AgentTree] 선택: 김가린
+[14:36:22] [AgentTree] LoadData() 시작
+[14:36:22] [AgentTree] 로드 완료 → 14명
+[14:36:25] [AgentTree] 선택: 정준하
+[14:36:25] [AgentTree] 선택: 윤민영
+[14:36:26] [AgentTree] 선택: 송준우
+[14:36:26] [AgentTree] 선택: 정대호
+[14:36:27] [AgentTree] 선택: 이예림
+[14:36:27] [AgentTree] 선택: 방찬미
+[14:36:28] [AgentTree] 선택: 정승욱
+[14:36:28] [AgentTree] 선택: 박은지
+[14:36:29] [AgentTree] 선택: 정대호
+[14:36:29] [AgentTree] 선택: 김지은
+[14:36:33] [AgentTree] 선택: 손현주
+[14:36:33] [AgentTree] 선택: 김가린
+[14:36:34] [AgentTree] 선택: 김지은
+[14:36:34] [AgentTree] 선택: 유경지
+[14:36:34] [AgentTree] 선택: 이예림
+[14:36:35] [AgentTree] 선택: 정승욱
+[14:39:05] [AgentTree] LoadData() 시작
+[14:39:05] [AgentTree] 로드 완료 → 14명
+[14:39:07] [AgentTree] LoadData() 시작
+[14:39:07] [AgentTree] 로드 완료 → 14명
+[14:39:17] [AgentTree] 선택: 박은지
+[14:47:07] [AgentTree] LoadData() 시작
+[14:47:07] [AgentTree] 로드 완료 → 14명
+[14:47:08] [AgentTree] LoadData() 시작
+[14:47:08] [AgentTree] 로드 완료 → 14명
+[14:49:14] [AgentTree] LoadData() 시작
+[14:49:14] [AgentTree] 로드 완료 → 14명
+[14:58:18] [AgentTree] LoadData() 시작
+[14:58:18] [AgentTree] 로드 완료 → 14명
+[15:58:08] [AgentTree] LoadData() 시작
+[15:58:08] [AgentTree] 로드 완료 → 14명
+[16:06:56] [AgentTree] LoadData() 시작
+[16:06:56] [AgentTree] 로드 완료 → 14명
+[17:02:16] LoadData() 시작
+[17:02:16] LoadData() 시작
+[23:11:52] [AgentTree] LoadData() 시작
+[23:11:52] [AgentTree] 로드 완료 → 14명
+[23:11:53] [AgentTree] 선택: 박은지
+[23:11:53] [AgentTree] 선택: 이예림
+[00:20:07] [AgentTree] LoadData() 시작
+[00:20:07] [AgentTree] 로드 완료 → 28명
+[00:20:09] [AgentTree] LoadData() 시작
+[00:20:09] [AgentTree] 로드 완료 → 28명
+[00:25:47] [AgentTree] LoadData() 시작
+[00:25:47] [AgentTree] 로드 완료 → 14명
+[00:58:21] [AgentTree] LoadData() 시작
+[00:58:21] [AgentTree] 로드 완료 → 14명
+[00:58:23] [AgentTree] 선택: 이예림
+[00:58:23] [AgentTree] 선택: 정대호
+[00:58:24] [AgentTree] 선택: 유경지
+[00:58:24] [AgentTree] 선택: 송준우
+[00:58:25] [AgentTree] 선택: 윤민영
+[00:58:25] [AgentTree] 선택: 김지은
+[00:58:26] [AgentTree] 선택: 김청하
+[00:58:26] [AgentTree] 선택: 손현주
+[00:58:27] [AgentTree] 선택: 송준우
+[00:58:27] [AgentTree] 선택: 박은지
+[03:06:05] [AgentTree] LoadData() 시작
+[03:06:05] [AgentTree] 로드 완료 → 14명
+[03:06:07] [AgentTree] 선택: 정승욱
+[03:06:07] [AgentTree] 선택: 박은지
+[03:06:08] [AgentTree] 선택: 방찬미
+[03:06:08] [AgentTree] 선택: 이재휘
+[03:06:08] [AgentTree] 선택: 유경지
+[03:06:10] [AgentTree] LoadData() 시작
+[03:06:11] [AgentTree] 로드 완료 → 14명
+[03:06:14] [AgentTree] LoadData() 시작
+[03:06:14] [AgentTree] 로드 완료 → 14명
+[03:10:39] [AgentTree] LoadData() 시작
+[03:10:39] [AgentTree] 로드 완료 → 14명
+[03:10:40] [AgentTree] 선택: 정승욱
+[03:10:41] [AgentTree] 선택: 박은지
+[03:10:41] [AgentTree] 선택: 방찬미
+[03:10:42] [AgentTree] 선택: 정대호
+[03:15:10] [AgentTree] LoadData() 시작
+[03:15:10] [AgentTree] 로드 완료 → 14명
+[10:26:11] [AgentTree] LoadData() 시작
+[10:26:11] [AgentTree] 로드 완료 → 14명
+[10:26:13] [AgentTree] 선택: 정승욱
+[10:26:13] [AgentTree] 선택: 박은지
+[10:26:14] [AgentTree] 선택: 박은지
+[10:26:14] [AgentTree] 선택: 방찬미
+[10:26:15] [AgentTree] 선택: 이예림
+[10:26:15] [AgentTree] 선택: 정대호
+[10:26:17] [AgentTree] LoadData() 시작
+[10:26:17] [AgentTree] 로드 완료 → 14명
+[10:43:55] [AgentTree] LoadData() 시작
+[10:43:55] [AgentTree] 로드 완료 → 14명
+[10:43:57] [AgentTree] LoadData() 시작
+[10:43:57] [AgentTree] 로드 완료 → 14명
+[10:43:58] [AgentTree] 선택: 정승욱
+[10:43:59] [AgentTree] 선택: 박은지
+[10:43:59] [AgentTree] 선택: 방찬미
+[10:44:00] [AgentTree] 선택: 이예림
+[10:44:00] [AgentTree] 선택: 유경지
+[10:44:01] [AgentTree] 선택: 송준우
+[10:44:01] [AgentTree] 선택: 윤민영
+[10:44:02] [AgentTree] 선택: 정준하
+[10:44:03] [AgentTree] 선택: 김청하
+[10:44:03] [AgentTree] 선택: 손현주
+[10:44:04] [AgentTree] 선택: 김가린
+[12:21:45] [AgentTree] LoadData() 시작
+[12:21:45] [AgentTree] 로드 완료 → 14명
+[14:13:30] [AgentTree] LoadData() 시작
+[14:13:30] [AgentTree] 로드 완료 → 14명
+[20:32:22] [AgentTree] LoadData() 시작
+[20:32:22] [AgentTree] 로드 완료 → 14명
+[11:02:37] [AgentTree] LoadData() 시작
+[11:02:38] [AgentTree] 로드 완료 → 14명
+[11:02:41] [AgentTree] 선택: 정승욱
+[11:02:42] [AgentTree] 선택: 박은지
+[11:02:42] [AgentTree] 선택: 방찬미
+[11:02:42] [AgentTree] 선택: 이재휘
+[11:02:43] [AgentTree] 선택: 정대호
+[11:02:43] [AgentTree] 선택: 윤민영
+[11:02:44] [AgentTree] 선택: 김지은
+[11:02:44] [AgentTree] 선택: 김청하
+[11:02:45] [AgentTree] 선택: 손현주
+[11:02:46] [AgentTree] 선택: 김가린
+[13:17:17] [AgentTree] LoadData() 시작
+[13:17:18] [AgentTree] 로드 완료 → 14명
+[13:17:20] [AgentTree] 선택: 정승욱
+[13:18:37] LoadData() 시작
+[13:18:37] LoadData() 시작
+[13:18:44] [AgentTree] LoadData() 시작
+[13:18:44] [AgentTree] 로드 완료 → 14명
+[14:55:07] [AgentTree] LoadData() 시작
+[14:55:07] [AgentTree] 로드 완료 → 14명
+[14:55:07] [AgentTree] LoadData() 시작
+[14:55:07] [AgentTree] 로드 완료 → 14명
+[14:55:08] [AgentTree] 선택: 정승욱
+[14:55:09] [AgentTree] 선택: 박은지
+[14:55:10] [AgentTree] 선택: 방찬미
+[14:55:10] [AgentTree] 선택: 이예림
+[14:55:11] [AgentTree] 선택: 정대호
+[14:55:11] [AgentTree] 선택: 유경지
+[14:55:12] [AgentTree] 선택: 송준우
+[14:55:13] [AgentTree] 선택: 윤민영
+[14:55:13] [AgentTree] 선택: 김지은
+[14:55:14] [AgentTree] 선택: 정준하
+[14:55:15] [AgentTree] 선택: 김청하
+[14:55:15] [AgentTree] 선택: 손현주
+[14:55:15] [AgentTree] 선택: 김가린
+[14:55:19] [AgentTree] 선택: 정승욱
+[14:55:37] [AgentTree] 선택: 박은지
+[14:55:38] [AgentTree] 선택: 방찬미
+[14:55:38] [AgentTree] 선택: 이예림
+[14:55:39] [AgentTree] 선택: 정대호
+[14:55:40] [AgentTree] 선택: 유경지
+[14:55:41] [AgentTree] 선택: 송준우
+[14:56:05] [AgentTree] 선택: 정승욱
+[15:20:15] [AgentTree] LoadData() 시작
+[15:20:16] [AgentTree] 로드 완료 → 14명
+[15:20:18] [AgentTree] 선택: 정승욱
+[15:57:31] [AgentTree] LoadData() 시작
+[15:57:31] [AgentTree] 로드 완료 → 14명
+[15:57:31] [AgentTree] LoadData() 시작
+[15:57:31] [AgentTree] 로드 완료 → 14명
+[15:57:31] [AgentTree] LoadData() 시작
+[15:57:31] [AgentTree] 로드 완료 → 14명
+[15:57:44] [AgentTree] 선택: 정승욱
+[15:57:51] [AgentTree] 선택: 방찬미
+[15:57:52] [AgentTree] 선택: 박은지
+[15:57:52] [AgentTree] 선택: 방찬미
+[15:57:53] [AgentTree] 선택: 이예림
+[15:57:53] [AgentTree] 선택: 이재휘
+[15:57:54] [AgentTree] 선택: 유경지
+[15:57:55] [AgentTree] 선택: 윤민영
+[15:57:55] [AgentTree] 선택: 김지은
+[15:57:56] [AgentTree] 선택: 정준하
+[15:57:57] [AgentTree] 선택: 김청하
+[15:57:57] [AgentTree] 선택: 손현주
+[15:57:58] [AgentTree] 선택: 김가린
+[15:57:59] [AgentTree] 선택: 김청하
+[15:57:59] [AgentTree] 선택: 김지은
+[15:58:00] [AgentTree] 선택: 윤민영
+[15:58:00] [AgentTree] 선택: 송준우
+[15:58:01] [AgentTree] 선택: 유경지
+[15:58:02] [AgentTree] 선택: 이재휘
+[15:58:02] [AgentTree] 선택: 방찬미
+[15:58:03] [AgentTree] 선택: 정승욱
+[16:02:20] [AgentTree] LoadData() 시작
+[16:02:20] [AgentTree] 로드 완료 → 14명
+[17:33:31] [AgentTree] LoadData() 시작
+[17:33:31] [AgentTree] 로드 완료 → 14명
+[17:51:38] [AgentTree] LoadData() 시작
+[17:51:38] [AgentTree] 로드 완료 → 14명
+[17:51:44] [AgentTree] 선택: 박은지
+[17:51:50] [AgentTree] 선택: 방찬미
+[17:51:51] [AgentTree] 선택: 이예림
+[17:51:52] [AgentTree] 선택: 정대호
+[17:51:52] [AgentTree] 선택: 송준우
+[17:51:53] [AgentTree] 선택: 윤민영
+[17:51:53] [AgentTree] 선택: 정준하
+[17:52:01] [AgentTree] 선택: 손현주
+[17:52:02] [AgentTree] 선택: 김청하
+[17:52:04] [AgentTree] 선택: 윤민영
+[17:52:05] [AgentTree] 선택: 유경지
+[17:52:06] [AgentTree] 선택: 이재휘
+[17:52:07] [AgentTree] 선택: 이예림
+[17:52:08] [AgentTree] 선택: 방찬미
+[17:52:08] [AgentTree] 선택: 박은지
+[17:52:09] [AgentTree] 선택: 정승욱
+[17:52:10] [AgentTree] 선택: 박은지
+[17:52:10] [AgentTree] 선택: 방찬미
+[17:52:11] [AgentTree] 선택: 이예림
+[17:52:12] [AgentTree] 선택: 이재휘
+[17:52:12] [AgentTree] 선택: 이재휘
+[17:52:13] [AgentTree] 선택: 정대호
+[17:52:14] [AgentTree] 선택: 유경지
+[17:52:14] [AgentTree] 선택: 유경지
+[17:52:15] [AgentTree] 선택: 송준우
+[18:00:11] [AgentTree] LoadData() 시작
+[18:00:11] [AgentTree] 로드 완료 → 14명
+[18:00:20] [AgentTree] 선택: 정승욱
+[18:00:38] [AgentTree] 선택: 박은지
+[18:00:38] [AgentTree] 선택: 방찬미
+[18:00:43] [AgentTree] 선택: 박은지
+[18:00:43] [AgentTree] 선택: 정승욱
+[18:44:05] [AgentTree] LoadData() 시작
+[18:44:05] [AgentTree] 로드 완료 → 14명
+[18:44:06] [AgentTree] 선택: 박은지
+[18:44:07] [AgentTree] 선택: 이예림
+[18:44:08] [AgentTree] 선택: 윤민영
+[18:44:09] [AgentTree] 선택: 김지은
+[18:44:09] [AgentTree] 선택: 김청하
+[18:44:09] [AgentTree] 선택: 김가린
+[18:44:10] [AgentTree] 선택: 김지은
+[18:44:14] [AgentTree] 드랍 취소: 탁도 → 중복
+[19:30:14] [AgentTree] LoadData() 시작
+[19:30:15] [AgentTree] 로드 완료 → 14명
+[19:30:16] [AgentTree] 선택: 정승욱
+[19:35:02] LoadData() 시작
+[19:35:02] LoadData() 시작
+[20:22:52] [AgentTree] LoadData() 시작
+[20:22:52] [AgentTree] 로드 완료 → 14명
+[20:22:54] [AgentTree] 선택: 정승욱
+[20:22:54] [AgentTree] 선택: 방찬미
+[20:22:55] [AgentTree] 선택: 이예림
+[20:36:01] [AgentTree] LoadData() 시작
+[20:36:01] [AgentTree] 로드 완료 → 14명
+[20:36:08] [AgentTree] 선택: 정승욱
+[20:36:09] [AgentTree] 선택: 박은지
+[20:36:20] [AgentTree] 선택: 이재휘
+[20:36:21] [AgentTree] 선택: 송준우
+[20:36:21] [AgentTree] 선택: 정준하
+[20:36:21] [AgentTree] 선택: 김청하
+[20:36:22] [AgentTree] 선택: 손현주
+[20:36:23] [AgentTree] 선택: 정준하
+[20:36:24] [AgentTree] 선택: 윤민영
+[20:36:24] [AgentTree] 선택: 송준우
+[20:41:10] [AgentTree] LoadData() 시작
+[20:41:10] [AgentTree] 로드 완료 → 14명
+[20:41:11] [AgentTree] 선택: 정승욱
+[20:41:12] [AgentTree] 선택: 박은지
+[20:41:13] [AgentTree] 선택: 방찬미
+[20:41:13] [AgentTree] 선택: 이예림
+[20:41:14] [AgentTree] 선택: 이재휘
+[20:41:25] [AgentTree] 선택: 이예림
+[20:41:52] [AgentTree] 분장 추가: 이예림 ← 현장측정 및 시료채취
+[20:42:03] [AgentTree] 선택: 박은지
+[20:44:11] [AgentTree] LoadData() 시작
+[20:44:11] [AgentTree] 로드 완료 → 14명
+[20:44:18] [AgentTree] 선택: 방찬미
+[20:44:19] [AgentTree] 선택: 이재휘
+[20:44:19] [AgentTree] 선택: 정승욱
+[20:44:30] [AgentTree] 선택: 유경지
+[20:44:30] [AgentTree] 선택: 윤민영
+[20:44:30] [AgentTree] 선택: 김지은
+[20:44:31] [AgentTree] 선택: 정준하
+[20:44:31] [AgentTree] 선택: 손현주
+[20:44:32] [AgentTree] 선택: 김가린
+[20:44:33] [AgentTree] LoadData() 시작
+[20:44:33] [AgentTree] 로드 완료 → 14명
+[20:44:36] [AgentTree] LoadData() 시작
+[20:44:36] [AgentTree] 로드 완료 → 14명
+[20:44:38] [AgentTree] LoadData() 시작
+[20:44:38] [AgentTree] 로드 완료 → 14명
+[20:45:47] [AgentTree] LoadData() 시작
+[20:45:47] [AgentTree] 로드 완료 → 14명
+[20:53:02] [AgentTree] LoadData() 시작
+[20:53:02] [AgentTree] 로드 완료 → 14명
+[20:53:08] [AgentTree] 선택: 김청하
+[20:53:09] [AgentTree] 선택: 김지은
+[20:53:09] [AgentTree] 선택: 윤민영
+[20:53:10] [AgentTree] 선택: 유경지
+[20:53:10] [AgentTree] 선택: 정대호
+[20:53:12] [AgentTree] 선택: 손현주
+[20:53:12] [AgentTree] 선택: 김가린
+[20:53:13] [AgentTree] 선택: 윤민영
+[20:53:13] [AgentTree] 선택: 정대호
+[20:53:13] [AgentTree] 선택: 이예림
+[20:53:14] [AgentTree] 선택: 정승욱
+[20:53:15] [AgentTree] 선택: 김가린
+[20:56:06] [AgentTree] LoadData() 시작
+[20:56:06] [AgentTree] 로드 완료 → 14명
+[20:56:08] [AgentTree] 선택: 정승욱
+[20:56:10] [AgentTree] 선택: 방찬미
+[20:56:14] [AgentTree] 선택: 유경지
+[20:56:14] [AgentTree] 선택: 송준우
+[20:56:15] [AgentTree] 선택: 윤민영
+[20:56:16] [AgentTree] 선택: 정준하
+[20:56:16] [AgentTree] 선택: 김청하
+[20:56:17] [AgentTree] 선택: 손현주
+[20:56:18] [AgentTree] 선택: 김가린
+[20:56:20] [AgentTree] 선택: 윤민영
+[20:56:21] [AgentTree] 선택: 김청하
+[20:56:52] [AgentTree] ✅ 수정 저장: 김청하
+[20:56:59] [AgentTree] LoadData() 시작
+[20:56:59] [AgentTree] 로드 완료 → 14명
+[20:57:12] [AgentTree] 선택: 김청하
+[20:58:19] [AgentTree] LoadData() 시작
+[20:58:19] [AgentTree] 로드 완료 → 14명
+[20:58:25] [AgentTree] 선택: 정승욱
+[20:58:25] [AgentTree] 선택: 박은지
+[20:58:26] [AgentTree] 선택: 방찬미
+[20:58:26] [AgentTree] 선택: 이예림
+[20:58:27] [AgentTree] 선택: 이재휘
+[20:58:27] [AgentTree] 선택: 정대호
+[20:58:28] [AgentTree] 선택: 송준우
+[20:58:28] [AgentTree] 선택: 김지은
+[20:58:29] [AgentTree] 선택: 정준하
+[20:58:30] [AgentTree] 선택: 손현주
+[20:58:30] [AgentTree] 선택: 김가린
+[20:58:31] [AgentTree] 선택: 김청하
+[20:58:32] [AgentTree] 선택: 김가린
+[20:58:35] [AgentTree] ✅ 수정 저장: 김가린
+[20:58:35] [AgentTree] 선택: 박은지
+[20:58:36] [AgentTree] 선택: 김가린
+[20:58:41] [AgentTree] ✅ 수정 저장: 김가린
+[20:58:41] [AgentTree] ✅ 수정 저장: 김가린
+[20:58:41] [AgentTree] ✅ 수정 저장: 김가린
+[20:58:41] [AgentTree] ✅ 수정 저장: 김가린
+[20:58:42] [AgentTree] ✅ 수정 저장: 김가린
+[20:58:42] [AgentTree] 선택: 박은지
+[20:58:42] [AgentTree] 선택: 정승욱
+[20:58:43] [AgentTree] 선택: 이예림
+[20:58:43] [AgentTree] 선택: 송준우
+[20:58:43] [AgentTree] 선택: 정준하
+[20:58:44] [AgentTree] 선택: 손현주
+[20:58:44] [AgentTree] 선택: 김가린
+[21:01:14] [AgentTree] 사진 선택: 파일명=202500323.png
+[21:01:33] [AgentTree] 사진 선택: 파일명=202500323.png
+[21:01:35] [AgentTree] ✅ 수정 저장: 김가린
+[21:01:36] [AgentTree] 선택: 김청하
+[21:01:37] [AgentTree] 선택: 김가린
+[21:01:37] [AgentTree] 선택: 김가린
+[21:01:38] [AgentTree] 선택: 손현주
+[21:01:39] [AgentTree] 선택: 정준하
+[21:01:40] [AgentTree] 선택: 김지은
+[21:01:40] [AgentTree] 선택: 윤민영
+[21:01:41] [AgentTree] 선택: 윤민영
+[21:01:41] [AgentTree] 선택: 송준우
+[21:01:42] [AgentTree] 선택: 유경지
+[21:01:42] [AgentTree] 선택: 이재휘
+[21:01:42] [AgentTree] 선택: 이예림
+[21:01:43] [AgentTree] 선택: 방찬미
+[21:01:43] [AgentTree] 선택: 박은지
+[21:01:43] [AgentTree] 선택: 정승욱
+[21:01:44] [AgentTree] 선택: 정승욱
+[21:01:57] [AgentTree] 선택: 정대호
+[21:02:02] [AgentTree] ✅ 수정 저장: 정대호
+[21:02:03] [AgentTree] 선택: 유경지
+[21:02:08] [AgentTree] ✅ 수정 저장: 유경지
+[21:02:08] [AgentTree] 선택: 송준우
+[21:02:14] [AgentTree] ✅ 수정 저장: 송준우
+[21:02:21] [AgentTree] ✅ 수정 저장: 송준우
+[21:02:23] [AgentTree] ✅ 수정 저장: 송준우
+[21:02:23] [AgentTree] 선택: 유경지
+[21:02:24] [AgentTree] 선택: 정대호
+[21:02:25] [AgentTree] 선택: 유경지
+[21:02:33] [AgentTree] ✅ 수정 저장: 유경지
+[21:02:34] [AgentTree] ✅ 수정 저장: 유경지
+[21:02:34] [AgentTree] ✅ 수정 저장: 유경지
+[21:02:41] [AgentTree] LoadData() 시작
+[21:02:41] [AgentTree] 로드 완료 → 14명
+[21:02:46] [AgentTree] 선택: 방찬미
+[21:02:46] [AgentTree] 선택: 이예림
+[21:02:47] [AgentTree] 선택: 이재휘
+[21:02:47] [AgentTree] 선택: 정대호
+[21:02:48] [AgentTree] 선택: 유경지
+[21:02:49] [AgentTree] 선택: 송준우
+[21:02:49] [AgentTree] 선택: 윤민영
+[21:02:51] [AgentTree] 선택: 송준우
+[21:05:29] [AgentTree] LoadData() 시작
+[21:05:29] [AgentTree] 로드 완료 → 14명
+[21:05:31] [AgentTree] 선택: 방찬미
+[21:15:37] LoadData() 시작
+[21:15:37] LoadData() 시작
+[21:18:06] LoadData() 시작
+[23:49:11] [AgentTree] LoadData() 시작
+[23:49:11] [AgentTree] 로드 완료 → 14명
+[00:32:53] [AgentTree] LoadData() 시작
+[00:32:53] [AgentTree] 로드 완료 → 14명
+[00:33:02] [AgentTree] 선택: 정승욱
+[00:33:19] [AgentTree] 오늘 조회: 2026-04-01
+[00:33:56] [AgentTree] ✅ 수정 저장: 정승욱
+[00:33:58] [AgentTree] 선택: 박은지
+[00:34:09] [AgentTree] ✅ 수정 저장: 박은지
+[00:34:11] [AgentTree] 선택: 방찬미
+[00:34:21] [AgentTree] ✅ 수정 저장: 방찬미
+[00:34:22] [AgentTree] ✅ 수정 저장: 방찬미
+[00:34:22] [AgentTree] ✅ 수정 저장: 방찬미
+[00:34:23] [AgentTree] 선택: 방찬미
+[00:34:25] [AgentTree] 선택: 이예림
+[00:34:36] [AgentTree] ✅ 수정 저장: 이예림
+[00:34:42] [AgentTree] LoadData() 시작
+[00:34:42] [AgentTree] 로드 완료 → 14명
+[00:34:58] [AgentTree] 선택: 이재휘
+[00:35:17] [AgentTree] 선택: 정대호
+[00:35:17] [AgentTree] 선택: 유경지
+[00:35:18] [AgentTree] 선택: 윤민영
+[00:35:18] [AgentTree] 선택: 김지은
+[00:35:19] [AgentTree] 선택: 손현주
+[00:35:19] [AgentTree] 선택: 김가린
+[00:35:20] [AgentTree] 선택: 김청하
+[00:35:21] [AgentTree] 선택: 김가린
+[00:35:23] [AgentTree] 선택: 김청하
+[00:35:24] [AgentTree] 선택: 김가린
+[00:35:26] [AgentTree] 선택: 정준하
+[00:35:26] [AgentTree] 선택: 손현주
+[00:35:27] [AgentTree] 선택: 김가린
+[00:35:42] [AgentTree] ✅ 수정 저장: 김가린
+[00:35:43] [AgentTree] 선택: 박은지
+[00:35:50] [AgentTree] ✅ 수정 저장: 박은지
+[00:35:52] [AgentTree] 선택: 이예림
+[00:36:03] [AgentTree] ✅ 수정 저장: 이예림
+[00:36:05] [AgentTree] 선택: 방찬미
+[00:36:05] [AgentTree] 선택: 박은지
+[00:36:06] [AgentTree] 선택: 박은지
+[00:36:07] [AgentTree] 선택: 정승욱
+[00:36:46] [AgentTree] ✅ 수정 저장: 정승욱
+[00:36:54] [AgentTree] 선택: 이예림
+[00:36:55] [AgentTree] 선택: 정대호
+[00:36:56] [AgentTree] 선택: 이재휘
+[00:36:57] [AgentTree] 선택: 유경지
+[00:36:57] [AgentTree] 선택: 유경지
+[00:36:58] [AgentTree] 선택: 송준우
+[00:36:58] [AgentTree] 선택: 윤민영
+[00:36:59] [AgentTree] 선택: 김지은
+[00:37:00] [AgentTree] 선택: 정준하
+[00:37:01] [AgentTree] 선택: 손현주
+[00:37:01] [AgentTree] 선택: 김가린
+[00:37:02] [AgentTree] 선택: 김청하
+[00:37:07] [AgentTree] 선택: 정승욱
+[00:37:54] [AgentTree] ✅ 수정 저장: 정승욱
+[00:38:12] [AgentTree] ✅ 수정 저장: 정승욱
+[00:41:34] [AgentTree] ✅ 수정 저장: 정승욱
+[00:42:27] [AgentTree] LoadData() 시작
+[00:42:28] [AgentTree] 로드 완료 → 14명
+[00:42:29] [AgentTree] 선택: 정승욱
+[00:42:36] [AgentTree] 선택: 박은지
+[00:42:37] [AgentTree] 선택: 이예림
+[00:42:37] [AgentTree] 선택: 방찬미
+[00:42:38] [AgentTree] 선택: 이예림
+[00:42:39] [AgentTree] 선택: 이재휘
+[00:42:40] [AgentTree] 선택: 이재휘
+[00:42:40] [AgentTree] 선택: 정대호
+[00:42:41] [AgentTree] 선택: 유경지
+[00:42:41] [AgentTree] 선택: 송준우
+[00:42:42] [AgentTree] 선택: 윤민영
+[00:42:43] [AgentTree] 선택: 김지은
+[00:42:43] [AgentTree] 선택: 김지은
+[00:42:44] [AgentTree] 선택: 정준하
+[00:42:44] [AgentTree] 선택: 손현주
+[00:42:45] [AgentTree] 선택: 손현주
+[00:42:45] [AgentTree] 선택: 김가린
+[00:42:46] [AgentTree] 선택: 김청하
+[00:42:59] [AgentTree] 선택: 정승욱
+[00:43:00] [AgentTree] 선택: 박은지
+[00:43:02] [AgentTree] 선택: 정승욱
+[00:45:10] [AgentTree] 선택: 박은지
+[00:45:12] [AgentTree] 선택: 방찬미
+[00:45:13] [AgentTree] 선택: 이예림
+[00:45:14] [AgentTree] 선택: 이재휘
+[00:45:15] [AgentTree] 선택: 정대호
+[00:45:47] [AgentTree] LoadData() 시작
+[00:45:47] [AgentTree] 로드 완료 → 14명
+[00:45:49] [AgentTree] 선택: 정승욱
+[00:45:50] [AgentTree] 선택: 박은지
+[00:45:50] [AgentTree] 선택: 방찬미
+[00:45:51] [AgentTree] 선택: 이예림
+[00:45:51] [AgentTree] 선택: 정대호
+[00:45:53] [AgentTree] 선택: 윤민영
+[00:45:53] [AgentTree] 선택: 정준하
+[00:45:54] [AgentTree] 선택: 손현주
+[00:45:54] [AgentTree] 선택: 김가린
+[00:45:55] [AgentTree] 선택: 김청하
+[00:45:56] [AgentTree] 선택: 김가린
+[00:45:57] [AgentTree] 선택: 정준하
+[00:46:00] [AgentTree] 선택: 송준우
+[00:46:00] [AgentTree] 선택: 이재휘
+[00:46:01] [AgentTree] 선택: 이예림
+[00:46:01] [AgentTree] 선택: 박은지
+[00:46:02] [AgentTree] 선택: 박은지
+[00:46:02] [AgentTree] 선택: 정승욱
+[00:55:40] [AgentTree] LoadData() 시작
+[00:55:40] [AgentTree] 로드 완료 → 14명
+[00:55:41] [AgentTree] 선택: 정승욱
+[00:55:42] [AgentTree] 선택: 박은지
+[00:55:43] [AgentTree] 선택: 방찬미
+[00:55:45] [AgentTree] 선택: 이예림
+[00:55:45] [AgentTree] 선택: 이재휘
+[00:55:46] [AgentTree] 선택: 정대호
+[00:55:47] [AgentTree] 선택: 유경지
+[00:55:48] [AgentTree] 선택: 윤민영
+[00:55:48] [AgentTree] 선택: 김지은
+[00:55:49] [AgentTree] 선택: 정준하
+[00:55:50] [AgentTree] 선택: 손현주
+[00:55:51] [AgentTree] 선택: 김가린
+[00:55:51] [AgentTree] 선택: 김청하

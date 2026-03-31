@@ -6,8 +6,14 @@ using Avalonia.Media;
 using Avalonia.Styling;
 using ETA.Models;
 using ETA.Services;
+using ETA.Services.SERVICE1;
+using ETA.Services.SERVICE2;
+using ETA.Services.Common;
 using ETA.ViewModels;
 using ETA.Views.Pages;
+using ETA.Views.Pages.PAGE1;
+using ETA.Views.Pages.PAGE2;
+using ETA.Views.Pages.Common;
 using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
@@ -107,7 +113,7 @@ public partial class MainPage : Window
             {
                 var fullPath = Path.IsPathRooted(me.PhotoPath)
                     ? me.PhotoPath
-                    : Path.Combine(ETA.Services.AgentService.GetPhotoDirectory(), me.PhotoPath);
+                    : Path.Combine(ETA.Services.SERVICE1.AgentService.GetPhotoDirectory(), me.PhotoPath);
                 if (File.Exists(fullPath))
                 {
                     profilePhoto.Source   = new Avalonia.Media.Imaging.Bitmap(fullPath);
@@ -776,10 +782,10 @@ public partial class MainPage : Window
 
         try
         {
-            var dates = ETA.Services.WasteSampleService.GetDates();   // 역순
+            var dates = ETA.Services.SERVICE2.WasteSampleService.GetDates();   // 역순
             foreach (var date in dates)
             {
-                var rows = ETA.Services.WasteSampleService.GetByDate(date);
+                var rows = ETA.Services.SERVICE2.WasteSampleService.GetByDate(date);
                 if (rows.Count == 0) continue;
 
                 // 날짜 헤더
@@ -886,7 +892,7 @@ public partial class MainPage : Window
         }
 
         List<ETA.Models.WasteAnalysisResult> results;
-        try { results = ETA.Services.WasteDataService.GetResults(company.업체명); }
+        try { results = ETA.Services.SERVICE2.WasteDataService.GetResults(company.업체명); }
         catch (Exception ex)
         {
             Show3.Content = new TextBlock
@@ -1051,7 +1057,7 @@ public partial class MainPage : Window
             _wasteDataQueryPage.CompanySelected += company =>
             {
                 List<ETA.Models.WasteAnalysisResult> results;
-                try { results = ETA.Services.WasteDataService.GetResults(company.업체명); }
+                try { results = ETA.Services.SERVICE2.WasteDataService.GetResults(company.업체명); }
                 catch (Exception ex)
                 {
                     Show3.Content = new TextBlock
@@ -1155,16 +1161,17 @@ public partial class MainPage : Window
         LogContentChange("Show2", null);
         Show3.Content = null;
         LogContentChange("Show3", null);
-        Show4.Content = null;
-        LogContentChange("Show4", null);
+        Show4.Content = _wasteSampleListPage.CompanyTreePanel;
+        LogContentChange("Show4", Show4.Content as Control);
         _wasteSampleListPage.LoadData();
+        _wasteSampleListPage.LoadCompanyTree();
         _bt1SaveAction = null;
 
         SetSubMenu("새로고침", "날짜 추가", "", "", "", "", "");
         SetLeftPanelWidth(260);
-        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 8, lowerStar: 2);
+        SetContentLayout(content2Star: 1, content4Star: 1, upperStar: 8, lowerStar: 2);
 
-        RestoreModeLayout("WasteSampleList");
+        RestoreModeLayout("WasteSampleList", minLowerStar: 2);
     }
 
     private void Analysis_Click(object? sender, RoutedEventArgs e)
@@ -1600,10 +1607,14 @@ public partial class MainPage : Window
     {
         switch (_currentMode)
         {
-            case "Purchase":   _purchasePage?.Refresh();    break;
-            case "TestReport": _testReportPage?.LoadData(); break;
-            case "Repair":     _repairPage?.Refresh();      break;
-            default: _bt1SaveAction?.Invoke();               break;
+            case "Purchase":        _purchasePage?.Refresh();           break;
+            case "TestReport":      _testReportPage?.LoadData();        break;
+            case "Repair":          _repairPage?.Refresh();             break;
+            case "WasteSampleList":
+                _wasteSampleListPage?.LoadData();
+                _wasteSampleListPage?.LoadCompanyTree();
+                break;
+            default: _bt1SaveAction?.Invoke();                          break;
         }
     }
 
@@ -1624,6 +1635,7 @@ public partial class MainPage : Window
                 _quotationCheckPanel?.ClearAll();
                 Show2.Content = _quotationNewPanel;
                 break;
+            case "WasteSampleList": _wasteSampleListPage?.AddNewDate(); break;
             case "Repair":       _repairPage?.ApproveSelected();  break;
             default: Debug.WriteLine($"[{_currentMode}] BT2");   break;
         }
@@ -1877,7 +1889,7 @@ public partial class MainPage : Window
         }
     }
 
-    private void OnAnalysisRecordSaved(ETA.Views.Pages.AnalysisRequestRecord rec)
+    private void OnAnalysisRecordSaved(ETA.Views.Pages.PAGE1.AnalysisRequestRecord rec)
     {
         // 저장(또는 취소) 후 DB에서 다시 불러와 Show2 갱신
         _analysisRequestDetailPanel?.ShowRecord(rec);

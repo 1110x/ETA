@@ -1,0 +1,111 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ETA.Views.Pages.PAGE1.QuotationCheckPanel">
+
+    <UserControl.Styles>
+        <!-- 컬럼 컨테이너 스타일 -->
+        <Style Selector="Border.column-container">
+            <Setter Property="Background" Value="#252530"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#3a3a45"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="Margin" Value="0,0,6,0"/>
+        </Style>
+
+        <!-- 컬럼 헤더 스타일 -->
+        <Style Selector="TextBlock.column-header">
+            <Setter Property="FontSize" Value="{DynamicResource FontSizeMD}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#a0d060"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+
+        <!-- 항목 체크박스 스타일 -->
+        <Style Selector="CheckBox">
+            <Setter Property="FontSize" Value="{DynamicResource FontSizeBase}"/>
+            <Setter Property="Foreground" Value="#ddd"/>
+            <Setter Property="Padding" Value="2,3"/>
+            <Setter Property="Margin" Value="0,0,0,4"/>
+            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+        </Style>
+    </UserControl.Styles>
+
+    <!-- 메인 컨테이너 -->
+    <Grid RowDefinitions="Auto,Auto,Auto,*">
+
+        <!-- 헤더: 제목 + 전체선택/해제 + 저장 영역 -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto,Auto" Margin="0,0,0,6">
+            <TextBlock Grid.Column="0"
+                       Text="분석 항목 (7개 카테고리)"
+                       FontSize="{DynamicResource FontSizeXL}" FontWeight="Bold"
+                       Foreground="#e0e0e0"
+                       VerticalAlignment="Center"
+                       FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+            <Button Grid.Column="1"
+                    Content="전체 선택"
+                    Height="24" Padding="10,0" FontSize="{DynamicResource FontSizeSM}"
+                    Background="#2a2a3a" Foreground="#aaa"
+                    BorderThickness="0" CornerRadius="3"
+                    Click="BtnSelectAll_Click"
+                    Margin="0,0,4,0" />
+            <Button Grid.Column="2"
+                    Content="전체 해제"
+                    Height="24" Padding="10,0" FontSize="{DynamicResource FontSizeSM}"
+                    Background="#2a2a3a" Foreground="#aaa"
+                    BorderThickness="0" CornerRadius="3"
+                    Click="BtnClearAll_Click"
+                    Margin="0,0,4,0" />
+
+            <!-- 저장 영역 (편집 모드일 때만 표시) -->
+            <Border Grid.Column="3" x:Name="saveBorder" IsVisible="False"
+                    Background="#1a2a1a" CornerRadius="4"
+                    Padding="8,2">
+                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                    <TextBlock x:Name="txbDirty"
+                               Text="● 변경사항 있음" IsVisible="False"
+                               FontSize="{DynamicResource FontSizeBase}"
+                               Foreground="#ffaa44"
+                               VerticalAlignment="Center"
+                               FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+                    <Button x:Name="btnCancelEdit"
+                            Content="취소"
+                            Height="24" Padding="10,0"
+                            FontSize="{DynamicResource FontSizeBase}"
+                            Background="#3a2a1a" Foreground="#ccc"
+                            BorderThickness="0" CornerRadius="4"
+                            Click="BtnCancelEdit_Click"/>
+                    <Button x:Name="btnSaveAnalytes"
+                            Content="💾 저장"
+                            Height="24" Padding="10,0"
+                            FontSize="{DynamicResource FontSizeBase}"
+                            Background="#2a5a2a" Foreground="#ddd"
+                            BorderThickness="0" CornerRadius="4"
+                            Click="BtnSaveAnalytes_Click"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- 구분선 -->
+        <Border Grid.Row="1" Height="1" Background="#333" Margin="0,0,0,6" />
+
+        <!-- 선택 카운트 -->
+        <TextBlock Grid.Row="2"
+                   x:Name="txbCount"
+                   Text="선택 0개 / 전체 0개"
+                   FontSize="{DynamicResource FontSizeBase}" Foreground="#777"
+                   Margin="2,0,0,6"
+                   FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+
+        <!-- 7개 컬럼 레이아웃 (각 컬럼은 코드비하인드에서 동적 생성) -->
+        <Grid Grid.Row="3" x:Name="ColumnsGrid"
+              ColumnDefinitions="*,*,*,*,*,*,*"
+              Margin="0"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Stretch">
+        </Grid>
+
+    </Grid>
+</UserControl>

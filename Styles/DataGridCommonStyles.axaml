@@ -7,7 +7,7 @@
         <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundBaseMediumBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
         <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
-        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeLG}" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="Padding" Value="1,1" />
         <Setter Property="BorderThickness" Value="0,0,1,1" />
@@ -18,7 +18,7 @@
     <Style Selector="DataGridCell TextBlock">
         <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
         <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R" />
-        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeMD}" />
     </Style>
 
     <!-- DataGrid 전체 공통 스타일 -->

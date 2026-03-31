@@ -43,21 +43,33 @@
                 HorizontalAlignment="Center">
             <Border.BoxShadow>0 8 32 0 #1A3B6FE8</Border.BoxShadow>
 
-            <StackPanel Spacing="20">
+            <StackPanel Spacing="10">
 
                 <!-- 타이틀 -->
-                <StackPanel Spacing="4" Margin="0,0,0,8">
-                    <TextBlock Text="ETA" FontSize="28" FontWeight="Bold"
-                               Foreground="#3B6FE8" HorizontalAlignment="Center"/>
-                    <TextBlock Text="Water Analysis Center" FontSize="12"
-                               Foreground="#9CA3AF" HorizontalAlignment="Center"/>
-                </StackPanel>
+                <Grid ColumnDefinitions="Auto,*" Margin="0,0,0,8">
+                    <!-- 로고 이미지 -->
+                    <Image Grid.Column="0"
+                           Source="avares://ETA/Assets/icons/ETA.ico"
+                           Width="64" Height="64"
+                           Stretch="Uniform"
+                           VerticalAlignment="Center"
+                           Margin="0,0,12,0"/>
+                    <!-- 텍스트 -->
+                    <StackPanel Grid.Column="1" Spacing="4" VerticalAlignment="Center">
+                        <TextBlock Text="RENEWUS ETA SYSTEM" FontSize="17" FontWeight="Bold"
+                                   Foreground="#3B6FE8"/>
+                        <TextBlock Text="TEAM Professional WATER ANALYSIS CENTER" FontSize="9"
+                                   Foreground="#9CA3AF" TextWrapping="Wrap"/>
+                        <TextBlock Text="Presented by JUNG SEUNG UK v1.0" FontSize="10" FontFamily="Assets/Fonts/KBIZ한마음명조 M.ttf"
+                                   Foreground="#f11313"/>
+                    </StackPanel>
+                </Grid>
 
                 <!-- 사번 입력 -->
                 <StackPanel Spacing="10">
-                    <TextBlock Text="사번" FontSize="13" FontWeight="SemiBold"
+                    <TextBlock Text="사번" FontSize="{DynamicResource FontSizeLG}" FontWeight="SemiBold"
                                Foreground="#374151"/>
-                    <TextBox x:Name="txtEmail" Watermark="202912345" FontSize="14"
+                    <TextBox x:Name="txtEmail" Watermark="202912345" FontSize="{DynamicResource FontSizeXL}"
                              Padding="12,12" CornerRadius="9"
                              BorderBrush="#D1D9FF" BorderThickness="1.5"
                              Background="#F8FAFF" Foreground="#111827"
@@ -66,18 +78,18 @@
 
                 <!-- 비밀번호 입력 -->
                 <StackPanel Spacing="10">
-                    <TextBlock Text="비밀번호" FontSize="13" FontWeight="SemiBold"
+                    <TextBlock Text="비밀번호" FontSize="{DynamicResource FontSizeLG}" FontWeight="SemiBold"
                                Foreground="#374151"/>
                     <TextBox x:Name="txtPassword"
                              Watermark="초기 비밀번호: 123456"
-                             FontSize="14" Padding="12,12" CornerRadius="9"
+                             FontSize="{DynamicResource FontSizeXL}" Padding="12,12" CornerRadius="9"
                              BorderBrush="#D1D9FF" BorderThickness="1.5"
                              Background="#F8FAFF" Foreground="#111827"
                              LetterSpacing="3"/>
                 </StackPanel>
 
                 <!-- 오류 메시지 -->
-                <TextBlock x:Name="txtError" Text="" FontSize="13"
+                <TextBlock x:Name="txtError" Text="" FontSize="{DynamicResource FontSizeLG}"
                            Foreground="#EF4444"
                            IsVisible="False" TextWrapping="Wrap"
                            HorizontalAlignment="Center"/>
@@ -85,7 +97,7 @@
                 <!-- 버튼들 -->
                 <StackPanel Spacing="10" Margin="0,8,0,0">
                     <Button Content="로그인" Click="Login_Click"
-                            FontSize="15" FontWeight="SemiBold"
+                            FontSize="{DynamicResource FontSizeLG}" FontWeight="SemiBold"
                             Padding="0,14" CornerRadius="10" BorderThickness="0"
                             HorizontalAlignment="Stretch"
                             HorizontalContentAlignment="Center"
@@ -104,7 +116,7 @@
                         <Button Grid.Column="0"
                                 Content="비밀번호 찾기"
                                 Click="ChangePassword_Click"
-                                FontSize="13" Padding="8,9"
+                                FontSize="{DynamicResource FontSizeLG}" Padding="8,9"
                                 CornerRadius="8" BorderThickness="1.5"
                                 BorderBrush="#D1D9FF"
                                 Background="White" Foreground="#374151"
@@ -119,7 +131,7 @@
 
                         <TextBlock Grid.Column="1"
                                    x:Name="lnkSignUp" Text="회원가입"
-                                   Foreground="#3B6FE8" FontSize="13"
+                                   Foreground="#3B6FE8" FontSize="{DynamicResource FontSizeLG}"
                                    FontWeight="SemiBold"
                                    Cursor="Hand"
                                    VerticalAlignment="Center"
@@ -134,10 +146,10 @@
                     <Grid ColumnDefinitions="*,Auto">
                         <StackPanel Grid.Column="0" Spacing="2" VerticalAlignment="Center">
                             <TextBlock x:Name="txtDbMode" Text="로컬 DB"
-                                       FontSize="12" FontWeight="SemiBold"
+                                       FontSize="{DynamicResource FontSizeMD}" FontWeight="SemiBold"
                                        Foreground="#374151"/>
                             <TextBlock x:Name="txtDbStatus" Text="SQLite (오프라인)"
-                                       FontSize="10" Foreground="#6B7280"/>
+                                       FontSize="{DynamicResource FontSizeSM}" Foreground="#6B7280"/>
                         </StackPanel>
                         <!-- Dark 테마에서도 보이도록 커스텀 토글 버튼으로 대체 -->
                         <Border Grid.Column="1"

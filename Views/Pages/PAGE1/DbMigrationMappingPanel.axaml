@@ -1,0 +1,111 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ETA.Views.Pages.PAGE1.DbMigrationMappingPanel">
+
+    <UserControl.Styles>
+        <Style Selector="Border.row-item">
+            <Setter Property="Background"   Value="Transparent"/>
+            <Setter Property="CornerRadius" Value="3"/>
+            <Setter Property="Margin"       Value="0,1"/>
+            <Setter Property="Cursor"       Value="Hand"/>
+        </Style>
+        <Style Selector="Border.row-item:pointerover">
+            <Setter Property="Background" Value="#1e2a35"/>
+        </Style>
+        <Style Selector="Border.row-selected">
+            <Setter Property="Background" Value="#1a3a4a"/>
+        </Style>
+        <Style Selector="TextBlock.col-header">
+            <Setter Property="FontSize"     Value="{DynamicResource FontSizeBase}"/>
+            <Setter Property="FontFamily"   Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+            <Setter Property="Foreground"   Value="#aaaacc"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style Selector="TextBlock.col-old">
+            <Setter Property="FontSize"     Value="{DynamicResource FontSizeBase}"/>
+            <Setter Property="FontFamily"   Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"/>
+            <Setter Property="Foreground"   Value="#cccccc"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+        </Style>
+        <Style Selector="TextBlock.col-new">
+            <Setter Property="FontSize"     Value="{DynamicResource FontSizeBase}"/>
+            <Setter Property="FontFamily"   Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"/>
+            <Setter Property="Foreground"   Value="#88ddaa"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
+
+        <!-- 업체명 헤더 -->
+        <Border Grid.Row="0"
+                Background="#1a1a28" CornerRadius="6,6,0,0" Padding="10,6">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="🔄  시료명 매핑"
+                           FontSize="{DynamicResource FontSizeLG}" FontWeight="Bold"
+                           FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                           Foreground="#e0e0ff" VerticalAlignment="Center"/>
+                <Border x:Name="bdgCompany"
+                        Background="#1a3060" CornerRadius="4"
+                        Padding="6,2" IsVisible="False">
+                    <TextBlock x:Name="txbCompanyBadge"
+                               FontSize="{DynamicResource FontSizeBase}" Foreground="#88aaff"
+                               FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+                </Border>
+                <TextBlock x:Name="txbRowCount"
+                           Text="" FontSize="{DynamicResource FontSizeBase}" Foreground="#888"
+                           VerticalAlignment="Center"
+                           FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"/>
+            </StackPanel>
+        </Border>
+
+        <!-- 안내 문구 -->
+        <TextBlock Grid.Row="1"
+                   x:Name="txbHint"
+                   Text="← Show4에서 채취지점을 클릭하면 선택된 행에 매핑됩니다."
+                   FontSize="{DynamicResource FontSizeSM}" Foreground="#666"
+                   FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"
+                   Margin="8,4,0,2"/>
+
+        <!-- 컬럼 헤더 행 -->
+        <Border Grid.Row="2" Background="#222233" Padding="6,4">
+            <Grid ColumnDefinitions="*,*">
+                <TextBlock Grid.Column="0" Classes="col-header" Text="기존 시료명" Margin="4,0"/>
+                <TextBlock Grid.Column="1" Classes="col-header" Text="→ 새 시료명 (채취지점)" Margin="4,0"/>
+            </Grid>
+        </Border>
+
+        <!-- 시료명 목록 (스크롤 가능) -->
+        <ScrollViewer Grid.Row="3"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+            <StackPanel x:Name="spRows" Spacing="0" Margin="4,2"/>
+        </ScrollViewer>
+
+        <!-- 저장 버튼 -->
+        <Border Grid.Row="4"
+                Background="#13131f" Padding="8,6"
+                CornerRadius="0,0,6,6">
+            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+                <TextBlock x:Name="txbSaveStatus"
+                           Text="" FontSize="{DynamicResource FontSizeBase}"
+                           Foreground="#88cc88"
+                           FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"
+                           VerticalAlignment="Center"/>
+                <Button x:Name="btnSave"
+                        Content="💾  저장"
+                        Height="28" Padding="12,0"
+                        FontSize="{DynamicResource FontSizeMD}"
+                        FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                        Background="#1a3a1a" Foreground="#88cc88"
+                        BorderBrush="#336633" BorderThickness="1"
+                        CornerRadius="4"
+                        IsEnabled="False"
+                        Click="BtnSave_Click"/>
+            </StackPanel>
+        </Border>
+
+    </Grid>
+</UserControl>

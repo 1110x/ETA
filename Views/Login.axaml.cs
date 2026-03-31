@@ -6,6 +6,9 @@ using System.IO;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using ETA.Services;
+using ETA.Services.SERVICE1;
+using ETA.Services.SERVICE2;
+using ETA.Services.Common;
 
 namespace ETA.Views;
 
@@ -14,7 +17,7 @@ public partial class Login : Window
     // ── 로그 경로 ─────────────────────────────────────────────────────────────
     private static readonly string LogPath = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-        "ETA", "eta_sync.log");
+        "ETA", "Logs", "Logs/eta_sync.log");
 
     private static void Log(string msg)
     {
@@ -91,7 +94,7 @@ public partial class Login : Window
         Log("[DoLogin] TodoService.SyncApprovalStatusAsync 시작");
         try
         {
-            await ETA.Services.TodoService.SyncApprovalStatusAsync();
+            await ETA.Services.SERVICE1.TodoService.SyncApprovalStatusAsync();
             Log("[DoLogin] TodoService.SyncApprovalStatusAsync 완료");
         }
         catch (Exception ex)
@@ -235,7 +238,7 @@ public partial class Login : Window
 
         // 텍스트
         if (txtDbMode   != null) txtDbMode.Text   = on ? "서버 DB"  : "로컬 DB";
-        if (txtDbStatus != null) txtDbStatus.Text = on ? "MariaDB (온라인)" : "SQLite (오프라인)";
+        if (txtDbStatus != null) txtDbStatus.Text = on ? "SEOHEE STARHILLS (온라인)" : "SQLite (오프라인)";
     }
 
     private void ShowError(string msg)

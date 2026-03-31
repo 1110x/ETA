@@ -3,6 +3,9 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Threading;
 using ETA.Services;
+using ETA.Services.SERVICE1;
+using ETA.Services.SERVICE2;
+using ETA.Services.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -1631,7 +1634,7 @@ public partial class MeasurerLoginWindow : Window
 
         Log($"인력 옵션 {pairs.Count}개 수집: {string.Join(", ", pairs.Take(5).Select(p => p.Name))}");
 
-        int updated = ETA.Services.AgentService.UpdateMeasurerEmployeeIds(pairs);
+        int updated = ETA.Services.SERVICE1.AgentService.UpdateMeasurerEmployeeIds(pairs);
         Log($"인력 고유번호 업데이트: {updated}명 / {pairs.Count}개 매칭");
         Post($"인력 {updated}명 고유번호 업데이트 완료", "#88cc88");
     }

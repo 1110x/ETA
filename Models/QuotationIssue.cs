@@ -14,6 +14,8 @@ public class QuotationIssue
     public string  견적번호 { get; set; } = "";
     public string  견적구분 { get; set; } = "";   // 적용구분
     public string  담당자   { get; set; } = "";   // 견적요청 담당자
+    public string  담당자연락처 { get; set; } = "";
+    public string  담당자이메일 { get; set; } = "";
     public decimal 총금액   { get; set; }         // 합계 금액
 
     /// <summary>트리 노드 표시 레이블</summary>

@@ -1,6 +1,9 @@
 namespace ETA.Models;
 using System;
 using ETA.Services;
+using ETA.Services.SERVICE1;
+using ETA.Services.SERVICE2;
+using ETA.Services.Common;
 
 public class Contract
 {

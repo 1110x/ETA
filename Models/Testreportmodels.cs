@@ -30,6 +30,16 @@ public class SampleRequest
     public string TreeLabel => $"【{채취일자}】 {시료명}";
 }
 
+// ── 첨부파일 ─────────────────────────────────────────────────────────────────
+public class SampleAttachment
+{
+    public int    Id        { get; set; }
+    public int    SampleId  { get; set; }
+    public string 원본파일명 { get; set; } = "";
+    public string 저장경로  { get; set; } = "";
+    public string 등록일시  { get; set; } = "";
+}
+
 // ── 분석 결과 행 (리스트 1행) ────────────────────────────────────────────────
 public class AnalysisResultRow
 {
