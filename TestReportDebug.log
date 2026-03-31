@@ -11263,3 +11263,947 @@
 [22:29:21] [TestReport] LoadData() 시작
 [22:29:21] [TestReport] 업체 27개
 [22:29:52] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[08:33:20] [TestReport] LoadData() 시작
+[08:33:20] [TestReport] 업체 27개
+[08:33:26] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[09:00:08] [TestReport] LoadData() 시작
+[09:00:08] [TestReport] 업체 27개
+[09:00:17] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[09:03:23] [TestReport] LoadData() 시작
+[09:03:23] [TestReport] 업체 27개
+[09:03:33] [TestReport] [Toast] 시료를 먼저 선택하세요.
+[09:03:36] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[09:03:39] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[09:03:44] [TestReport] 선택: 포스코리튬 / 비점-유역2 처리수조 (1항목)
+[09:03:44] [TestReport] 선택: 포스코리튬 / 비점-유역2 유입수조 (1항목)
+[09:03:45] [TestReport] 선택: 포스코리튬 / 비점-유역1 유입수조 (1항목)
+[09:03:46] [TestReport] 선택: DL / HDPE 원폐수 (50항목)
+[09:03:46] [TestReport] 선택: 롯데첨단소재 / EP 범핑펀드 (3항목)
+[09:03:47] [TestReport] 선택: 롯데첨단소재 / 남수천 4번 (5항목)
+[09:03:47] [TestReport] 선택: 롯데첨단소재 / 남수천 2번 (5항목)
+[09:03:48] [TestReport] 선택: GS / #W20. HOU SRU팀 C/W (616-E-301B, I-7WTS033) (28항목)
+[09:03:49] [TestReport] 선택: GS / #W14. 동력팀 C/W (216-E-201, I-4WTS021) (52항목)
+[09:03:50] [TestReport] 선택: GS / #W11. 동력팀 C/W (116-E-241, I-3WTS030) (28항목)
+[09:03:53] [TestReport] 선택: GS / #W16. 정유탈황2팀 C/W (85-E-901, I-4WTS023) (28항목)
+[09:17:22] [TestReport] LoadData() 시작
+[09:17:22] [TestReport] 업체 27개
+[09:17:28] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[09:17:32] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[09:17:33] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[09:31:00] [TestReport] LoadData() 시작
+[09:31:00] [TestReport] 업체 27개
+[09:31:05] [TestReport] 선택: 포스코리튬 / 비점-유역2 처리수조 (1항목)
+[09:31:08] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[09:35:09] [TestReport] LoadData() 시작
+[09:35:09] [TestReport] 업체 27개
+[09:35:29] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[09:35:36] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[09:35:38] [TestReport] 선택: 포스코리튬 / 비점-유역2 처리수조 (1항목)
+[09:35:38] [TestReport] 선택: 포스코리튬 / 비점-유역2 유입수조 (1항목)
+[09:35:39] [TestReport] 선택: 포스코리튬 / 비점-유역1 유입수조 (1항목)
+[09:35:39] [TestReport] 선택: DL / HDPE 냉각탑 (17항목)
+[09:35:40] [TestReport] 선택: 롯데첨단소재 / g-ABS 원폐수 (51항목)
+[09:35:41] [TestReport] 선택: 화치 / 수질관리p_ 탈기시설 후단 (1항목)
+[09:35:41] [TestReport] 선택: 롯데첨단소재 / 남수천 3번 (5항목)
+[09:35:42] [TestReport] 선택: GS / #W23. PE생산팀 C/W (716-E-303, I-8WTS036) (28항목)
+[09:35:42] [TestReport] 선택: GS / #W22. PE생산팀 C/W (716-E-302, I-8WTS035) (28항목)
+[09:35:43] [TestReport] 선택: GS / #W21. PE생산팀 C/W (716-E-301, I-8WTS034) (28항목)
+[09:35:44] [TestReport] 선택: GS / #W18. VDU팀 C/W (516-E-301, I-6WTS030) (28항목)
+[09:35:45] [TestReport] 선택: GS / #W10. 동력팀 C/W (116-E-231, I-3WTS029) (28항목)
+[09:35:48] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[09:35:49] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[09:35:50] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[09:47:15] [TestReport] LoadData() 시작
+[09:47:15] [TestReport] 업체 27개
+[09:47:20] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[09:47:32] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[09:47:35] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[09:52:08] [TestReport] LoadData() 시작
+[09:52:08] [TestReport] 업체 27개
+[09:52:16] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[09:57:58] [TestReport] LoadData() 시작
+[09:57:58] [TestReport] 업체 27개
+[09:58:04] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[10:16:55] [TestReport] LoadData() 시작
+[10:16:55] [TestReport] 업체 27개
+[10:17:13] [TestReport] [Toast] 시료를 먼저 선택하세요.
+[10:17:15] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[10:22:49] [TestReport] LoadData() 시작
+[10:22:49] [TestReport] 업체 27개
+[10:23:09] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[10:25:51] [TestReport] LoadData() 시작
+[10:25:52] [TestReport] 업체 27개
+[10:25:57] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[10:32:47] [TestReport] LoadData() 시작
+[10:32:47] [TestReport] 업체 27개
+[10:32:54] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[10:32:54] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[10:32:57] [TestReport] LoadData() 시작
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] [방류기준] _selectedSample null
+[10:32:58] [TestReport] 업체 27개
+[10:33:16] [TestReport] [Toast] 시료를 먼저 선택하세요.
+[10:33:18] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[10:36:51] [TestReport] LoadData() 시작
+[10:36:51] [TestReport] 업체 27개
+[10:36:58] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[10:37:06] [TestReport] 행 선택: 노말헥산추출물질(동·식물 유지류) = 1
+[10:42:43] [TestReport] LoadData() 시작
+[10:42:44] [TestReport] 업체 27개
+[10:42:54] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[10:46:01] [TestReport] LoadData() 시작
+[10:46:01] [TestReport] 업체 27개
+[10:46:06] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[10:49:49] [TestReport] LoadData() 시작
+[10:49:49] [TestReport] 업체 27개
+[10:49:57] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[11:02:45] [TestReport] LoadData() 시작
+[11:02:45] [TestReport] 업체 27개
+[11:02:53] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[11:02:56] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[11:05:31] [TestReport] LoadData() 시작
+[11:05:31] [TestReport] 업체 27개
+[11:05:36] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[11:07:31] [TestReport] LoadData() 시작
+[11:07:31] [TestReport] 업체 27개
+[11:07:37] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[11:09:18] [TestReport] LoadData() 시작
+[11:09:18] [TestReport] 업체 27개
+[11:10:08] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[11:15:56] [TestReport] LoadData() 시작
+[11:15:56] [TestReport] 업체 27개
+[11:16:03] [TestReport] [Toast] 시료를 먼저 선택하세요.
+[11:16:05] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[11:19:12] [TestReport] LoadData() 시작
+[11:19:12] [TestReport] 업체 27개
+[11:19:17] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[11:19:18] [TestReport] 행 선택: 노말헥산추출물질(동·식물 유지류) = 1
+[11:19:18] [TestReport] 행 선택: 노말헥산추출물질(동·식물 유지류) = 1
+[11:21:00] [TestReport] LoadData() 시작
+[11:21:00] [TestReport] 업체 27개
+[11:21:04] [TestReport] [Toast] 시료를 먼저 선택하세요.
+[11:21:07] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[11:26:39] [TestReport] LoadData() 시작
+[11:26:39] [TestReport] 업체 27개
+[11:26:46] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[11:42:38] [TestReport] LoadData() 시작
+[11:42:38] [TestReport] 업체 27개
+[11:42:44] [TestReport] LoadData() 시작
+[11:42:44] [TestReport] 업체 27개
+[11:42:49] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[11:52:13] [TestReport] LoadData() 시작
+[11:52:13] [TestReport] 업체 27개
+[11:52:21] [TestReport] LoadData() 시작
+[11:52:22] [TestReport] 업체 27개
+[11:52:25] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[12:03:07] [TestReport] LoadData() 시작
+[12:03:07] [TestReport] 업체 27개
+[12:03:14] [TestReport] LoadData() 시작
+[12:03:14] [TestReport] 업체 27개
+[12:03:33] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[12:09:51] [TestReport] LoadData() 시작
+[12:09:51] [TestReport] 업체 27개
+[12:10:00] [TestReport] LoadData() 시작
+[12:10:00] [TestReport] 업체 27개
+[12:10:08] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[12:10:27] [TestReport] 행 선택: 노말헥산추출물질(동·식물 유지류) = 1
+[12:17:24] [TestReport] LoadData() 시작
+[12:17:25] [TestReport] 업체 27개
+[12:17:30] [TestReport] LoadData() 시작
+[12:17:30] [TestReport] 업체 27개
+[12:17:36] [TestReport] LoadData() 시작
+[12:17:37] [TestReport] 업체 27개
+[12:17:41] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[12:23:58] [TestReport] LoadData() 시작
+[12:23:58] [TestReport] 업체 27개
+[12:24:05] [TestReport] LoadData() 시작
+[12:24:05] [TestReport] 업체 27개
+[12:24:12] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[12:24:19] [TestReport] 행 선택: 노말헥산추출물질(동·식물 유지류) = 1
+[12:33:32] [TestReport] LoadData() 시작
+[12:33:32] [TestReport] 업체 27개
+[12:33:39] [TestReport] LoadData() 시작
+[12:33:40] [TestReport] 업체 27개
+[12:33:45] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[12:41:25] [TestReport] LoadData() 시작
+[12:41:26] [TestReport] 업체 27개
+[12:41:35] [TestReport] LoadData() 시작
+[12:41:35] [TestReport] 업체 27개
+[12:41:50] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[12:44:43] [TestReport] LoadData() 시작
+[12:44:44] [TestReport] 업체 27개
+[12:44:49] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[13:03:08] [TestReport] LoadData() 시작
+[13:03:08] [TestReport] 업체 27개
+[13:03:16] [TestReport] [Toast] 시료를 먼저 선택하세요.
+[13:03:18] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[13:06:12] [TestReport] LoadData() 시작
+[13:06:12] [TestReport] 업체 27개
+[13:06:17] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[13:08:02] [TestReport] LoadData() 시작
+[13:08:03] [TestReport] 업체 27개
+[13:08:07] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[13:10:18] [TestReport] LoadData() 시작
+[13:10:18] [TestReport] 업체 27개
+[13:10:23] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[13:12:50] [TestReport] LoadData() 시작
+[13:12:50] [TestReport] 업체 27개
+[13:12:59] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[13:15:39] [TestReport] LoadData() 시작
+[13:15:39] [TestReport] 업체 27개
+[13:15:44] [TestReport] [Toast] 시료를 먼저 선택하세요.
+[13:15:46] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[13:18:11] [TestReport] LoadData() 시작
+[13:18:11] [TestReport] 업체 27개
+[13:18:16] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[13:20:31] [TestReport] LoadData() 시작
+[13:20:31] [TestReport] 업체 27개
+[13:20:37] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[13:23:47] [TestReport] LoadData() 시작
+[13:23:48] [TestReport] 업체 27개
+[13:23:53] [TestReport] 선택: 포스코리튬 / 비점-유역2 처리수조 (1항목)
+[13:23:58] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[13:25:10] [TestReport] LoadData() 시작
+[13:25:10] [TestReport] 업체 27개
+[13:25:15] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[13:31:42] [TestReport] LoadData() 시작
+[13:31:42] [TestReport] 업체 27개
+[13:31:48] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[13:33:11] [TestReport] LoadData() 시작
+[13:33:11] [TestReport] 업체 27개
+[13:33:16] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[13:33:16] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[13:34:48] [TestReport] LoadData() 시작
+[13:34:48] [TestReport] 업체 27개
+[13:34:54] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[13:38:48] [TestReport] LoadData() 시작
+[13:38:48] [TestReport] 업체 27개
+[13:38:55] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[13:58:58] [TestReport] LoadData() 시작
+[13:58:58] [TestReport] 업체 27개
+[13:59:06] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[14:01:29] [TestReport] LoadData() 시작
+[14:01:29] [TestReport] 업체 27개
+[14:01:35] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[14:03:07] [TestReport] LoadData() 시작
+[14:03:08] [TestReport] 업체 27개
+[14:03:12] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[14:07:22] [TestReport] LoadData() 시작
+[14:07:22] [TestReport] 업체 27개
+[14:07:27] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[14:09:47] [TestReport] LoadData() 시작
+[14:09:47] [TestReport] 업체 27개
+[14:09:53] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[14:12:47] [TestReport] LoadData() 시작
+[14:12:47] [TestReport] 업체 27개
+[14:12:52] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[14:15:08] [TestReport] LoadData() 시작
+[14:15:08] [TestReport] 업체 27개
+[14:15:14] [TestReport] [Toast] 시료를 먼저 선택하세요.
+[14:15:17] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[14:19:19] [TestReport] LoadData() 시작
+[14:19:19] [TestReport] 업체 27개
+[14:19:27] [TestReport] LoadData() 시작
+[14:19:28] [TestReport] 업체 27개
+[14:19:55] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[14:22:16] [TestReport] LoadData() 시작
+[14:22:16] [TestReport] 업체 27개
+[14:22:21] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[14:22:21] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[14:26:17] [TestReport] LoadData() 시작
+[14:26:17] [TestReport] 업체 27개
+[14:26:24] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[14:27:58] [TestReport] LoadData() 시작
+[14:27:58] [TestReport] 업체 27개
+[14:28:04] [TestReport] [Toast] 시료를 먼저 선택하세요.
+[14:28:06] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[14:38:20] [TestReport] LoadData() 시작
+[14:38:20] [TestReport] 업체 27개
+[14:46:20] [TestReport] LoadData() 시작
+[14:46:21] [TestReport] 업체 27개
+[14:51:24] [TestReport] LoadData() 시작
+[14:51:24] [TestReport] 업체 27개
+[14:57:42] [TestReport] LoadData() 시작
+[14:57:42] [TestReport] 업체 27개
+[15:15:59] [TestReport] LoadData() 시작
+[15:15:59] [TestReport] 업체 27개
+[15:16:22] [TestReport] 선택: 에코랩스 / 테스트 (65항목)
+[15:16:55] [TestReport] LoadData() 시작
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:55] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] 업체 27개
+[15:16:56] [TestReport] LoadData() 시작
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] [방류기준] _selectedSample null
+[15:16:56] [TestReport] 업체 27개
+[15:51:24] [TestReport] LoadData() 시작
+[15:51:24] [TestReport] 업체 27개
+[15:52:33] [TestReport] 선택: 화치 / #W17_ABS5_CT-3931 (47항목)
+[15:52:34] [TestReport] 선택: 화치 / #W16_ABS3-2_CT-5931 (47항목)
+[15:53:00] [TestReport] LoadData() 시작
+[15:53:00] [TestReport] 업체 27개
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:14] [TestReport] [방류기준] _selectedSample null
+[15:53:20] [TestReport] 선택: 화치 / #W24_수질관리p_CT-9901 (47항목)
+[15:53:22] [TestReport] 선택: 화치 / #W22_SBS_CT-5951 (47항목)
+[15:53:22] [TestReport] 선택: 화치 / #W18_LDPE_CT-3701 (47항목)
+[15:54:05] [TestReport] 선택: 화치 / #W19_IPA_CT-5800 (47항목)
+[15:54:05] [TestReport] 선택: 화치 / #W20_IPA_CT-1820 (47항목)
+[15:54:07] [TestReport] LoadData() 시작
+[15:54:08] [TestReport] 업체 27개
+[15:54:08] [TestReport] LoadData() 시작
+[15:54:09] [TestReport] 업체 27개
+[15:54:13] [TestReport] 선택: 화치 / #W25ABS재구축CT-9200 (47항목)
+[15:55:17] [TestReport] 선택: 화치 / #W25ABS재구축CT-9200 (47항목)
+[15:55:18] [TestReport] 선택: 화치 / #W24_수질관리p_CT-9901 (47항목)
+[15:55:19] [TestReport] 선택: 화치 / #W23_MBS_CT-5950 (47항목)
+[15:55:21] [TestReport] LoadData() 시작
+[15:55:21] [TestReport] [방류기준] _selectedSample null
+[15:55:21] [TestReport] [방류기준] _selectedSample null
+[15:55:21] [TestReport] [방류기준] _selectedSample null
+[15:55:21] [TestReport] [방류기준] _selectedSample null
+[15:55:21] [TestReport] [방류기준] _selectedSample null
+[15:55:21] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] [방류기준] _selectedSample null
+[15:55:22] [TestReport] 업체 27개
+[15:55:33] [TestReport] [방류기준] _selectedSample null
+[15:55:33] [TestReport] 행 선택: 수소이온농도 = O
+[15:55:36] [TestReport] 선택: 화치 / #W21_NBL_CT-3901 (47항목)
+[15:55:37] [TestReport] 선택: 화치 / #W15_ABS3-1_CT-7931 (47항목)
+[15:55:39] [TestReport] LoadData() 시작
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] [방류기준] _selectedSample null
+[15:55:39] [TestReport] 업체 27개
+[15:55:40] [TestReport] LoadData() 시작
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] [방류기준] _selectedSample null
+[15:55:40] [TestReport] 업체 27개
+[15:55:44] [TestReport] LoadData() 시작
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] [방류기준] _selectedSample null
+[15:55:44] [TestReport] 업체 27개
+[15:55:45] [TestReport] LoadData() 시작
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] [방류기준] _selectedSample null
+[15:55:45] [TestReport] 업체 27개
+[15:55:50] [TestReport] 선택: 화치 / #W25ABS재구축CT-9200 (47항목)
+[15:55:57] [TestReport] LoadData() 시작
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] [방류기준] _selectedSample null
+[15:55:57] [TestReport] 업체 27개
+[15:56:04] [TestReport] 선택: 화치 / #W25ABS재구축CT-9200 (47항목)
+[15:56:17] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[15:56:18] [TestReport] 선택: 화치 / #W1_수질관리p_처리수 (47항목)
+[15:56:21] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[15:56:22] [TestReport] 선택: GS / #W1 (제1폐수처리장/유입수) (65항목)
+[15:56:31] [TestReport] ✅ 삭제: #W1 (제1폐수처리장/유입수)
+[15:56:31] [TestReport] ✅ 삭제: #W1 (제1폐수처리장/유입수)
+[15:56:31] [TestReport] 삭제 완료 2/2건 — 트리 새로고침
+[15:56:31] [TestReport] LoadData() 시작
+[15:56:31] [TestReport] 업체 27개
+[15:56:36] [TestReport] 선택: 화치 / #W1_수질관리p_처리수 (47항목)
+[15:56:46] [TestReport] LoadData() 시작
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] [방류기준] _selectedSample null
+[15:56:46] [TestReport] 업체 27개
+[15:56:54] [TestReport] [방류기준] _selectedSample null
+[15:56:54] [TestReport] 행 선택: 1,1-다이클로로에틸렌 = O
+[15:57:07] [TestReport] [방류기준] _selectedSample null
+[15:57:07] [TestReport] 행 선택: 클로로폼 = O
+[15:57:08] [TestReport] [방류기준] _selectedSample null
+[15:57:08] [TestReport] 행 선택: 브로모포름 = O
+[16:00:39] [TestReport] LoadData() 시작
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] [방류기준] _selectedSample null
+[16:00:39] [TestReport] 업체 27개
+[16:00:47] [TestReport] 선택: 화치 / #W1_수질관리p_처리수 (47항목)
+[16:00:47] [TestReport] 선택: 화치 / #W2_UT1-1P_CT-9600 (47항목)

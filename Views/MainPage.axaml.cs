@@ -33,8 +33,11 @@ public partial class MainPage : Window
     private WasteCompanyPage?  _wasteCompanyPage;
     private PurchasePage?      _purchasePage;
     private RepairPage?       _repairPage;
-    private TestReportPage?    _testReportPage;
-    private ReportsPanel?      _reportsPanel;           // Content4: 출력 보관함
+    private TestReportPage?         _testReportPage;
+    private ReportsPanel?           _reportsPanel;           // Content4: 출력 보관함
+    private DbMigrationPage?           _dbMigrationPage;
+    private DbMigrationPointPanel?     _dbMigrationPointPanel;
+    private DbMigrationMappingPanel?   _dbMigrationMappingPanel;
 
     // ── 견적/의뢰서 전용 4-패널 ──────────────────────────────────────────
     // Content1: 발행내역 트리  Content2: 신규작성 폼
@@ -259,10 +262,10 @@ public partial class MainPage : Window
 
             var cardGrid = new Grid
             {
-                ColumnDefinitions = new ColumnDefinitions("*,Auto"),
+                ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto"),
             };
 
-            // Col 0: 항목명
+            // Col 1: 항목명
             var nameBlock = new TextBlock
             {
                 Text              = item.Analyte,
@@ -273,10 +276,8 @@ public partial class MainPage : Window
                 TextTrimming      = TextTrimming.CharacterEllipsis,
                 VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
             };
-            Grid.SetColumn(nameBlock, 0);
-            cardGrid.Children.Add(nameBlock);
 
-            // Col 1: 할당 배지 (UpdateAssignmentInfo에서 갱신)
+            // Col 2: 할당 배지 (UpdateAssignmentInfo에서 갱신)
             var assignBadge = new TextBlock
             {
                 Text              = "·",
@@ -286,7 +287,31 @@ public partial class MainPage : Window
                 VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
                 Margin            = new Thickness(4, 0, 0, 0),
             };
-            Grid.SetColumn(assignBadge, 1);
+
+            // Col 0: 항목구분 배지
+            if (!string.IsNullOrWhiteSpace(item.Category))
+            {
+                var catBadge = new Border
+                {
+                    Background        = new SolidColorBrush(Color.Parse(GetAgentCategoryBg(item.Category))),
+                    CornerRadius      = new CornerRadius(3),
+                    Padding           = new Thickness(3, 1),
+                    Margin            = new Thickness(0, 0, 4, 0),
+                    VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                    Child = new TextBlock
+                    {
+                        Text       = item.Category.Length > 3 ? item.Category[..3] : item.Category,
+                        FontSize   = 8,
+                        FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                        Foreground = new SolidColorBrush(Color.Parse(GetAgentCategoryFg(item.Category))),
+                    }
+                };
+                Grid.SetColumn(catBadge, 0);
+                cardGrid.Children.Add(catBadge);
+            }
+            Grid.SetColumn(nameBlock, 1);
+            Grid.SetColumn(assignBadge, 2);
+            cardGrid.Children.Add(nameBlock);
             cardGrid.Children.Add(assignBadge);
 
             cardBorder.Tag = item.Analyte;
@@ -324,6 +349,29 @@ public partial class MainPage : Window
         UpdateAssignmentInfo();
     }
 
+    private static string GetAgentCategoryBg(string cat) => cat.Trim() switch
+    {
+        var c when c.Contains("유기")                       => "#1a2a3a",
+        var c when c.Contains("무기")                       => "#2a1a3a",
+        var c when c.Contains("부유")                       => "#1a3a2a",
+        var c when c.Contains("질소") || c.Contains("인")   => "#3a2a1a",
+        var c when c.Contains("금속")                       => "#2a3a1a",
+        var c when c.Contains("대장") || c.Contains("세균") => "#3a1a1a",
+        var c when c.Contains("pH")  || c.Contains("수소") => "#1a3a3a",
+        _                                                   => "#2a2a3a"
+    };
+    private static string GetAgentCategoryFg(string cat) => cat.Trim() switch
+    {
+        var c when c.Contains("유기")                       => "#88aaff",
+        var c when c.Contains("무기")                       => "#cc88ff",
+        var c when c.Contains("부유")                       => "#88ccaa",
+        var c when c.Contains("질소") || c.Contains("인")   => "#ccaa88",
+        var c when c.Contains("금속")                       => "#aacc88",
+        var c when c.Contains("대장") || c.Contains("세균") => "#ff8888",
+        var c when c.Contains("pH")  || c.Contains("수소") => "#88ddcc",
+        _                                                   => "#aaaacc"
+    };
+
     /// <summary>각 카드에 할당 정보를 표시 (현재 선택된 기간 기준)</summary>
     private void UpdateAssignmentInfo()
     {
@@ -340,7 +388,9 @@ public partial class MainPage : Window
                     ? AnalysisRequestService.GetAssigneesForAnalyteOnDate(analyte, _content4QueryStart)
                     : AnalysisRequestService.GetAssigneesForAnalyteInRange(analyte, _content4QueryStart, _content4QueryEnd);
 
-                if (grid.Children.Count > 1 && grid.Children[1] is TextBlock assignBadge)
+                var assignBadge = grid.Children.OfType<TextBlock>()
+                    .FirstOrDefault(tb => Grid.GetColumn(tb) == 2);
+                if (assignBadge != null)
                 {
                     var baseTip = ToolTip.GetTip(border)?.ToString()?.Split('\n')[0] ?? "";
                     if (assignees.Count == 0)
@@ -843,6 +893,61 @@ public partial class MainPage : Window
 
         Avalonia.Threading.Dispatcher.UIThread.Post(
             () => _testReportPage.LoadData(),
+            Avalonia.Threading.DispatcherPriority.Render);
+    }
+
+    private void DbMigration_Click(object? sender, RoutedEventArgs e)
+    {
+        _currentMode = "DbMigration";
+
+        if (_dbMigrationPage == null)
+        {
+            _dbMigrationPage = new DbMigrationPage();
+            _dbMigrationPage.CompanySelected += company =>
+            {
+                _dbMigrationPointPanel?.SetSelectedCompany(company);
+
+                // Show2: 매핑 테이블 로드
+                if (company != null)
+                {
+                    _dbMigrationMappingPanel ??= new DbMigrationMappingPanel();
+                    _dbMigrationMappingPanel.LoadCompany(company);
+                    Show2.Content = _dbMigrationMappingPanel;
+                    LogContentChange("Show2", _dbMigrationMappingPanel);
+                }
+                else
+                {
+                    Show2.Content = null;
+                    LogContentChange("Show2", null);
+                }
+            };
+        }
+
+        if (_dbMigrationPointPanel == null)
+        {
+            _dbMigrationPointPanel = new DbMigrationPointPanel();
+            _dbMigrationPointPanel.SamplingPointSelected += pt =>
+            {
+                _dbMigrationMappingPanel?.SetMappingPoint(pt);
+            };
+        }
+
+        Show1.Content = _dbMigrationPage;
+        LogContentChange("Show1", _dbMigrationPage);
+        Show2.Content = null;
+        LogContentChange("Show2", null);
+        Show3.Content = null;
+        LogContentChange("Show3", null);
+        Show4.Content = _dbMigrationPointPanel;
+        LogContentChange("Show4", _dbMigrationPointPanel);
+        _bt1SaveAction = null;
+
+        SetSubMenu("새로고침", "", "", "", "", "");
+        SetContentLayout(content2Star: 0, content4Star: 5, upperStar: 8.5, lowerStar: 1.5);
+        RestoreModeLayout("DbMigration");
+
+        Avalonia.Threading.Dispatcher.UIThread.Post(
+            () => _dbMigrationPage.LoadData(),
             Avalonia.Threading.DispatcherPriority.Render);
     }
 

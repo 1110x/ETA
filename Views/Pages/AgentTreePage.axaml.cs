@@ -33,9 +33,17 @@ public partial class AgentTreePage : UserControl
     private string      _pendingPhotoPath = "";   // 선택했지만 아직 저장 안 된 경로
 
     // 업무 분장 저장 시 참조 (BuildAssignmentArea에서 설정)
-    private ListBox?    _assignmentListBox;
+    private ListBox?      _assignmentListBox;
+    private Canvas?       _timelineCanvas;
+    private ScrollViewer? _timelineScroll;
     private DateTime    _assignmentRangeStart = DateTime.Today;
     private DateTime    _assignmentRangeEnd   = DateTime.Today;
+
+    // ── 타임라인 상수 ───────────────────────────────────────────────────────
+    private const double TL_DAY_W    = 14.0;
+    private const double TL_ROW_H    = 22.0;
+    private const double TL_LABEL_W  = 110.0;
+    private const double TL_HEADER_H = 18.0;
 
     public AgentTreePage()
     {
@@ -77,27 +85,45 @@ public partial class AgentTreePage : UserControl
             "0" => "🥷", "1" => "👨‍💼", "2" => "👩‍⚖️", _ => "👤"
         };
 
+        var headerPanel = new StackPanel
+        {
+            Orientation       = Orientation.Horizontal,
+            Spacing           = 8,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        headerPanel.Children.Add(new TextBlock { Text = icon, FontSize = 20, VerticalAlignment = VerticalAlignment.Center });
+        headerPanel.Children.Add(new TextBlock
+        {
+            Text              = agent.성명,
+            FontSize          = 13,
+            FontFamily        = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R",
+            Foreground        = Brushes.WhiteSmoke,
+            VerticalAlignment = VerticalAlignment.Center
+        });
+
+        if (!string.IsNullOrWhiteSpace(agent.직급))
+        {
+            var (bg, fg) = BadgeColorHelper.GetBadgeColor(agent.직급);
+            headerPanel.Children.Add(new Border
+            {
+                Background   = new SolidColorBrush(Color.Parse(bg)),
+                CornerRadius = new CornerRadius(3),
+                Padding      = new Thickness(4, 1),
+                Margin       = new Thickness(4, 0, 0, 0),
+                Child        = new TextBlock
+                {
+                    Text       = agent.직급,
+                    FontSize   = 9,
+                    Foreground = new SolidColorBrush(Color.Parse(fg)),
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                }
+            });
+        }
+
         return new TreeViewItem
         {
             Tag    = agent,
-            Header = new StackPanel
-            {
-                Orientation       = Orientation.Horizontal,
-                Spacing           = 8,
-                VerticalAlignment = VerticalAlignment.Center,
-                Children =
-                {
-                    new TextBlock { Text = icon, FontSize = 20, VerticalAlignment = VerticalAlignment.Center },
-                    new TextBlock
-                    {
-                        Text              = agent.성명,
-                        FontSize          = 13,
-                        FontFamily        = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R",
-                        Foreground        = Brushes.WhiteSmoke,
-                        VerticalAlignment = VerticalAlignment.Center
-                    }
-                }
-            }
+            Header = headerPanel,
         };
     }
 
@@ -369,27 +395,29 @@ public partial class AgentTreePage : UserControl
         calendar.SelectedDates.Add(DateTime.Today);
         stack.Children.Add(calendar);
 
-        // ── 드랍 영역 ────────────────────────────────────────────────────
-        var dropListBox = new ListBox
-        {
-            Background      = new SolidColorBrush(Color.Parse("#2a2a3a")),
-            BorderThickness = new Thickness(1),
-            BorderBrush     = new SolidColorBrush(Color.Parse("#555")),
-            Height          = 130,
-            Margin          = new Thickness(0, 4, 0, 0)
-        };
+        // ── 타임라인 캔버스 ───────────────────────────────────────────────
+        var timelineCanvas = new Canvas { Width = 300, Height = 60 };
+        _timelineCanvas = timelineCanvas;
 
-        DragDrop.SetAllowDrop(dropListBox, true);
-        _assignmentListBox = dropListBox;
+        var timelineScroll = new ScrollViewer
+        {
+            HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+            VerticalScrollBarVisibility   = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+            Height  = 160,
+            Margin  = new Thickness(0, 4, 0, 0),
+            Content = timelineCanvas,
+        };
+        _timelineScroll = timelineScroll;
+        DragDrop.SetAllowDrop(timelineScroll, true);
+        _assignmentListBox = null; // no longer used
 
         // 날짜 범위 상태 (클로저로 공유)
         DateTime rangeStart = DateTime.Today;
         DateTime rangeEnd   = DateTime.Today;
 
         // 드래그 드랍 — 중복 체크 포함 async 핸들러
-        dropListBox.AddHandler(DragDrop.DropEvent, async (object? sender, DragEventArgs e) =>
+        timelineScroll.AddHandler(DragDrop.DropEvent, async (object? sender, DragEventArgs e) =>
         {
-            if (sender is not ListBox lb) return;
             if (!e.Data.Contains("analyte")) return;
 
             var analyte = e.Data.Get("analyte") as string;
@@ -407,14 +435,12 @@ public partial class AgentTreePage : UserControl
 
             AnalysisRequestService.AddAssignment(
                 agent.사번, analyte, rangeStart, rangeStart.AddMonths(1));
-            LoadAssignments(lb, agent, rangeStart, rangeEnd);
+            RefreshTimeline(timelineCanvas, agent, rangeStart, rangeEnd);
             Log($"분장 추가: {agent.성명} ← {analyte}");
         });
 
-        dropListBox.Tag = agent;
-
-        LoadAssignments(dropListBox, agent, rangeStart, rangeEnd);
-        stack.Children.Add(dropListBox);
+        RefreshTimeline(timelineCanvas, agent, rangeStart, rangeEnd);
+        stack.Children.Add(timelineScroll);
 
         // ── 저장 프로그래스 바 (저장 중에만 표시) ───────────────────────
         var saveProgress = new ProgressBar
@@ -456,7 +482,7 @@ public partial class AgentTreePage : UserControl
             _assignmentRangeStart = _assignmentRangeEnd = DateTime.Today;
             txbDateRange.Text  = rangeStart.ToString("yyyy-MM-dd");
             calendar.IsVisible = false;
-            LoadAssignments(dropListBox, agent, rangeStart, rangeEnd);
+            RefreshTimeline(timelineCanvas, agent, rangeStart, rangeEnd);
             Log($"오늘 조회: {rangeStart:yyyy-MM-dd}");
         };
 
@@ -471,7 +497,7 @@ public partial class AgentTreePage : UserControl
             txbDateRange.Text = rangeStart == rangeEnd
                 ? rangeStart.ToString("yyyy-MM-dd")
                 : $"{rangeStart:yyyy-MM-dd} ~ {rangeEnd:yyyy-MM-dd}";
-            LoadAssignments(dropListBox, agent, rangeStart, rangeEnd);
+            RefreshTimeline(timelineCanvas, agent, rangeStart, rangeEnd);
             // 시작·종료 날짜가 다르면 범위 선택 완료 → 달력 자동 닫기
             if (rangeStart != rangeEnd)
                 calendar.IsVisible = false;
@@ -480,27 +506,16 @@ public partial class AgentTreePage : UserControl
 
         btnAssignSave.Click += async (_, _) =>
         {
-            var analytes = dropListBox.Items
-                .OfType<ListBoxItem>()
-                .Select(i => i.Tag as string)
-                .Where(t => !string.IsNullOrEmpty(t))
-                .ToList();
-
             saveProgress.IsVisible  = true;
             btnAssignSave.IsEnabled = false;
 
-            await Task.Run(() =>
-            {
-                AnalysisRequestService.ClearAssignmentsForAgent(
-                    agent.사번, rangeStart, rangeEnd);
-                foreach (var a in analytes)
-                    AnalysisRequestService.AddAssignment(
-                        agent.사번, a!, rangeStart, rangeEnd);
-            });
+            // Assignments are already saved via drag-drop; refresh timeline
+            await Task.Run(() => { /* no-op: assignments saved on drop */ });
 
+            RefreshTimeline(timelineCanvas, agent, rangeStart, rangeEnd);
             saveProgress.IsVisible  = false;
             btnAssignSave.IsEnabled = true;
-            Log($"분장 저장 완료: {analytes.Count}개 ({rangeStart:yyyy-MM-dd} ~ {rangeEnd:yyyy-MM-dd})");
+            Log($"분장 새로고침 완료 ({rangeStart:yyyy-MM-dd} ~ {rangeEnd:yyyy-MM-dd})");
         };
 
         border.Child = stack;
@@ -637,6 +652,150 @@ public partial class AgentTreePage : UserControl
             });
         }
     }
+    private void RefreshTimeline(Canvas canvas, Agent agent, DateTime start, DateTime end)
+    {
+        canvas.Children.Clear();
+
+        var calendar = AnalysisRequestService.GetAssignmentCalendar(agent.사번, start, end);
+        if (calendar.Count == 0)
+        {
+            var noItem = new TextBlock
+            {
+                Text       = "할당된 항목 없음",
+                FontSize   = 11,
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                Foreground = new SolidColorBrush(Color.Parse("#666")),
+            };
+            Canvas.SetLeft(noItem, 8.0);
+            Canvas.SetTop(noItem, 8.0);
+            canvas.Children.Add(noItem);
+            canvas.Width  = 300;
+            canvas.Height = 40;
+            return;
+        }
+
+        int numDays    = (int)(end - start).TotalDays + 1;
+        double canvasW = TL_LABEL_W + numDays * TL_DAY_W + 4;
+        double canvasH = TL_HEADER_H + calendar.Count * TL_ROW_H + 4;
+        canvas.Width  = canvasW;
+        canvas.Height = canvasH;
+
+        // ── 날짜 헤더 ─────────────────────────────────────────────────────
+        for (int d = 0; d < numDays; d++)
+        {
+            var dt         = start.AddDays(d);
+            bool isMonStart = dt.Day == 1;
+            bool isSun      = dt.DayOfWeek == DayOfWeek.Sunday;
+            bool isSat      = dt.DayOfWeek == DayOfWeek.Saturday;
+            string label    = isMonStart ? $"{dt.Month}/{dt.Day}" : (dt.Day % 5 == 0 ? dt.Day.ToString() : "");
+            if (!string.IsNullOrEmpty(label) || isMonStart)
+            {
+                var lbl = new TextBlock
+                {
+                    Text       = label,
+                    FontSize   = 8,
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                    Foreground = new SolidColorBrush(Color.Parse(isMonStart ? "#aaccff" : "#888")),
+                };
+                Canvas.SetLeft(lbl, TL_LABEL_W + d * TL_DAY_W);
+                Canvas.SetTop(lbl, 1.0);
+                canvas.Children.Add(lbl);
+            }
+            if (isSat || isSun)
+            {
+                var tint = new Avalonia.Controls.Shapes.Rectangle
+                {
+                    Width  = TL_DAY_W,
+                    Height = canvasH - TL_HEADER_H,
+                    Fill   = new SolidColorBrush(Color.Parse(isSun ? "#1a1a10" : "#151520")),
+                };
+                Canvas.SetLeft(tint, TL_LABEL_W + d * TL_DAY_W);
+                Canvas.SetTop(tint, TL_HEADER_H);
+                canvas.Children.Add(tint);
+            }
+        }
+
+        // ── 항목 행 ────────────────────────────────────────────────────────
+        var allAnalytes = AnalysisService.GetAllItems()
+            .ToDictionary(a => a.Analyte, a => a.Category, StringComparer.OrdinalIgnoreCase);
+
+        int row = 0;
+        foreach (var entry in calendar.OrderBy(x => x.FullName))
+        {
+            double y = TL_HEADER_H + row * TL_ROW_H;
+
+            // Row separator
+            var sep = new Avalonia.Controls.Shapes.Rectangle
+            {
+                Width  = canvasW,
+                Height = 1,
+                Fill   = new SolidColorBrush(Color.Parse("#2a2a3a")),
+            };
+            Canvas.SetLeft(sep, 0.0);
+            Canvas.SetTop(sep, y);
+            canvas.Children.Add(sep);
+
+            // Label
+            allAnalytes.TryGetValue(entry.FullName, out var cat);
+            var (catBg, catFg) = GetCategoryColor(cat ?? "");
+            var labelBorder = new Border
+            {
+                Width        = TL_LABEL_W - 4,
+                Height       = TL_ROW_H - 2,
+                Background   = new SolidColorBrush(Color.Parse(catBg)),
+                CornerRadius = new CornerRadius(2),
+                Padding      = new Thickness(3, 1),
+                Child        = new TextBlock
+                {
+                    Text              = entry.ShortName,
+                    FontSize          = 9,
+                    FontFamily        = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                    Foreground        = new SolidColorBrush(Color.Parse(catFg)),
+                    TextTrimming      = TextTrimming.CharacterEllipsis,
+                    VerticalAlignment = VerticalAlignment.Center,
+                },
+            };
+            Canvas.SetLeft(labelBorder, 2.0);
+            Canvas.SetTop(labelBorder, y + 1);
+            canvas.Children.Add(labelBorder);
+
+            // Day bars
+            var dateSet = new HashSet<DateTime>(entry.Dates);
+            for (int d = 0; d < numDays; d++)
+            {
+                if (!dateSet.Contains(start.AddDays(d))) continue;
+                var bar = new Avalonia.Controls.Shapes.Rectangle
+                {
+                    Width   = TL_DAY_W - 1,
+                    Height  = TL_ROW_H - 4,
+                    Fill    = new SolidColorBrush(Color.Parse(catBg == "#2a2a2a" ? "#2a4a6a" : catBg)),
+                    RadiusX = 1,
+                    RadiusY = 1,
+                };
+                Canvas.SetLeft(bar, TL_LABEL_W + d * TL_DAY_W);
+                Canvas.SetTop(bar, y + 2);
+                canvas.Children.Add(bar);
+            }
+            row++;
+        }
+    }
+
+    // Category color helper (local, for timeline)
+    private static (string Bg, string Fg) GetCategoryColor(string category)
+    {
+        return category.Trim() switch
+        {
+            var c when c.Contains("유기")                       => ("#1a2a3a", "#88aaff"),
+            var c when c.Contains("무기")                       => ("#2a1a3a", "#cc88ff"),
+            var c when c.Contains("부유")                       => ("#1a3a2a", "#88ccaa"),
+            var c when c.Contains("질소") || c.Contains("인")   => ("#3a2a1a", "#ccaa88"),
+            var c when c.Contains("금속")                       => ("#2a3a1a", "#aacc88"),
+            var c when c.Contains("대장") || c.Contains("세균") => ("#3a1a1a", "#ff8888"),
+            var c when c.Contains("pH")  || c.Contains("수소") => ("#1a3a3a", "#88ddcc"),
+            _                                                   => ("#2a2a3a", "#aaaacc"),
+        };
+    }
+
     private StackPanel BuildPhotoArea(string photoPath)
     {
         var panel = new StackPanel
@@ -823,23 +982,10 @@ public partial class AgentTreePage : UserControl
         {
             _pendingPhotoPath = "";
 
-            // 업무 분장 동기화: 기간 내 기존 분장 초기화 후 현재 목록으로 재등록
-            if (_assignmentListBox != null)
+            // 업무 분장 타임라인 새로고침
+            if (_timelineCanvas != null && _selectedAgent != null)
             {
-                var analytes = _assignmentListBox.Items
-                    .OfType<ListBoxItem>()
-                    .Select(i => i.Tag as string)
-                    .Where(t => !string.IsNullOrEmpty(t))
-                    .ToList();
-
-                AnalysisRequestService.ClearAssignmentsForAgent(
-                    _selectedAgent.사번, _assignmentRangeStart, _assignmentRangeEnd);
-
-                foreach (var a in analytes)
-                    AnalysisRequestService.AddAssignment(
-                        _selectedAgent.사번, a!, _assignmentRangeStart, _assignmentRangeEnd);
-
-                Log($"분장 저장: {analytes.Count}개 ({_assignmentRangeStart:yyyy-MM-dd} ~ {_assignmentRangeEnd:yyyy-MM-dd})");
+                RefreshTimeline(_timelineCanvas, _selectedAgent, _assignmentRangeStart, _assignmentRangeEnd);
             }
         }
     }

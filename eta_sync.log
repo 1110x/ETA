@@ -3479,3 +3479,33 @@
 [2026-03-29 22:02:09] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
 [2026-03-29 22:02:09] [DoLogin] 로그인 성공 → Lottie 재생
 [2026-03-29 22:02:09] [Lottie] 재생 시작
+[2026-03-31 15:36:54] ========== 로그인 창 시작 ==========
+[2026-03-31 15:36:54] [Init] MigrateAccountColumns 시작
+[2026-03-31 15:36:55] [Init] MigrateAccountColumns 완료
+[2026-03-31 15:36:55] [Init] MigrateInitialPasswords 시작
+[2026-03-31 15:36:55] [Init] MigrateInitialPasswords 완료
+[2026-03-31 15:37:24] ========== 로그인 창 시작 ==========
+[2026-03-31 15:37:24] [Init] MigrateAccountColumns 시작
+[2026-03-31 15:37:25] [Init] MigrateAccountColumns 완료
+[2026-03-31 15:37:25] [Init] MigrateInitialPasswords 시작
+[2026-03-31 15:37:25] [Init] MigrateInitialPasswords 완료
+[2026-03-31 15:37:35] ---------- 로그인 시도 ----------
+[2026-03-31 15:37:35] [DoLogin] DB 모드: MariaDB
+[2026-03-31 15:37:35] [DoLogin] 사번 입력값: '201000308'
+[2026-03-31 15:37:35] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-03-31 15:37:35] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-03-31 15:37:35] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-03-31 15:37:35.067] === SyncApprovalStatusAsync() 시작 ===
+[2026-03-31 15:37:37.559] To Do ETA Task: 15개  DB 계정: 14개
+[2026-03-31 15:37:37.560] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-03-31 15:37:37] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-03-31 15:37:37] [DoLogin] DB 계정 상태 확인 시작
+[2026-03-31 15:37:37] [DebugCheck] DB 경로: C:\Users\ironu\Documents\ETA\Data\eta.db
+[2026-03-31 15:37:37] [DebugCheck] DB 존재: True
+[2026-03-31 15:37:37] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-03-31 15:37:37] [DebugCheck] 123456 해시=8d969eef...
+[2026-03-31 15:37:37] [DoLogin] ValidateLogin 호출
+[2026-03-31 15:37:37] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-03-31 15:37:37] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-03-31 15:37:37] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-03-31 15:37:37] [Lottie] 재생 시작

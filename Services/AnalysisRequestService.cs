@@ -132,6 +132,60 @@ public static class AnalysisRequestService
     }
 
     // =====================================================================
+    //  DB Migration — 약칭 기준 고유 시료명 조회 (4번째 컬럼 약칭, 6번째 컬럼 시료명)
+    // =====================================================================
+    public static List<string> GetDistinctSampleNames(string 약칭)
+    {
+        var list = new List<string>();
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"
+                SELECT DISTINCT `시료명`
+                FROM `분석의뢰및결과`
+                WHERE `약칭` = @abbr AND `시료명` IS NOT NULL AND `시료명` <> ''
+                ORDER BY `시료명` ASC";
+            cmd.Parameters.AddWithValue("@abbr", 약칭);
+            using var r = cmd.ExecuteReader();
+            while (r.Read()) list.Add(r.GetString(0));
+        }
+        catch (Exception ex) { Log($"GetDistinctSampleNames 오류: {ex.Message}"); }
+        return list;
+    }
+
+    // =====================================================================
+    //  DB Migration — 시료명 일괄 갱신
+    // =====================================================================
+    /// <summary>
+    /// 약칭이 일치하는 레코드 중 기존 시료명을 새 시료명으로 UPDATE한다.
+    /// </summary>
+    public static int RenameSampleName(string 약칭, string oldName, string newName)
+    {
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return 0;
+        if (string.IsNullOrWhiteSpace(newName)) return 0;
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"
+                UPDATE `분석의뢰및결과`
+                SET `시료명` = @newName
+                WHERE `약칭` = @abbr AND `시료명` = @oldName";
+            cmd.Parameters.AddWithValue("@newName", newName.Trim());
+            cmd.Parameters.AddWithValue("@abbr", 약칭);
+            cmd.Parameters.AddWithValue("@oldName", oldName);
+            int rows = cmd.ExecuteNonQuery();
+            Log($"RenameSampleName: {약칭} / '{oldName}' → '{newName}' ({rows}행)");
+            return rows;
+        }
+        catch (Exception ex) { Log($"RenameSampleName 오류: {ex.Message}"); return 0; }
+    }
+
+    // =====================================================================
     //  분장표준처리 — 항목 정보 조회
     //
     //  실제 테이블 구조:
@@ -617,5 +671,67 @@ public static class AnalysisRequestService
             Log($"AddAssignment: {employeeId}({managerName})에게 {analyte}({columnName}) 분장 추가 ({startDate:yyyy-MM-dd} ~ {endDate:yyyy-MM-dd})");
         }
         catch (Exception ex) { Log($"AddAssignment 오류: {ex.Message}"); }
+    }
+
+    // =====================================================================
+    //  타임라인 — 에이전트 분장 달력 (analyte → 날짜 리스트)
+    // =====================================================================
+    public record AssignmentCalendarEntry(string FullName, string ShortName, List<DateTime> Dates);
+
+    public static List<AssignmentCalendarEntry> GetAssignmentCalendar(
+        string employeeId, DateTime start, DateTime end)
+    {
+        var result = new Dictionary<string, AssignmentCalendarEntry>(StringComparer.OrdinalIgnoreCase);
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return [];
+
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+
+            string managerName = "";
+            using (var cmd2 = conn.CreateCommand())
+            {
+                cmd2.CommandText = "SELECT `성명` FROM `Agent` WHERE `사번` = @id";
+                cmd2.Parameters.AddWithValue("@id", employeeId);
+                var r = cmd2.ExecuteScalar();
+                if (r != null) managerName = r.ToString()?.Trim() ?? "";
+            }
+            if (string.IsNullOrEmpty(managerName)) return [];
+
+            var info = GetStandardDaysInfo();
+
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText =
+                "SELECT * FROM `분장표준처리` WHERE `항목명` BETWEEN @s AND @e ORDER BY `항목명`";
+            cmd.Parameters.AddWithValue("@s", start.ToString("yyyy-MM-dd"));
+            cmd.Parameters.AddWithValue("@e", end.ToString("yyyy-MM-dd"));
+
+            using var rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                string dateStr = rdr.IsDBNull(0) ? "" : rdr.GetValue(0)?.ToString() ?? "";
+                if (!DateTime.TryParse(dateStr, out var dt)) continue;
+
+                for (int i = 1; i < rdr.FieldCount; i++)
+                {
+                    string colName = rdr.GetName(i).Trim();
+                    string mgr     = rdr.IsDBNull(i) ? "" : rdr.GetValue(i)?.ToString()?.Trim() ?? "";
+                    if (mgr != managerName) continue;
+
+                    string shortName = info.TryGetValue(colName, out var meta) ? meta.shortName : colName;
+                    if (!result.TryGetValue(colName, out var entry))
+                    {
+                        entry = new AssignmentCalendarEntry(colName, shortName, []);
+                        result[colName] = entry;
+                    }
+                    entry.Dates.Add(dt);
+                }
+            }
+            Log($"GetAssignmentCalendar({employeeId}, {start:yyyy-MM-dd}~{end:yyyy-MM-dd}): {result.Count}개 항목");
+        }
+        catch (Exception ex) { Log($"GetAssignmentCalendar 오류: {ex.Message}"); }
+
+        return [.. result.Values];
     }
 }

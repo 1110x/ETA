@@ -256,7 +256,7 @@
                         <MenuItem Header="시험성적서"  Click="TestReport_Click"/>
                         <MenuItem Header="보수요청"    Click="Repair_Click"/>
                         <MenuItem Header="물품구매"    Click="Purchase_Click"/>
-                        <MenuItem Header="테스트"/>
+                        <MenuItem Header="DB Migration" Click="DbMigration_Click"/>
                     </MenuItem>
 
                     <MenuItem Header="비용부담금 관리">

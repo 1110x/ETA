@@ -200,7 +200,7 @@ public partial class TestReportPage : UserControl
         else if (sample.채취일자.Length >= 7)
             mmdd = sample.채취일자.Substring(5);
 
-        string icon = incomplete ? "🍶" : "🧪";
+        string icon = incomplete ? "🥑" : "🍬";
         string labelText = string.IsNullOrEmpty(mmdd)
             ? sample.시료명
             : $"{sample.시료명}  ({mmdd})";

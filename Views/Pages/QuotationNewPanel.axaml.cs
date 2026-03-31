@@ -395,6 +395,7 @@ public partial class QuotationNewPanel : UserControl
         var meta = TestReportService.GetAnalyteMeta();
         var fixedCols = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
+            "_id","rowid",
             "견적발행일자","업체명","약칭","대표자","견적요청담당",
             "담당자","담당자연락처","담당자 e-Mail","시료명","견적번호",
             "적용구분","견적작성","합계 금액",
