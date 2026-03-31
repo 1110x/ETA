@@ -14,6 +14,16 @@
          모든 색상은 DynamicResource 로 참조 → ApplyTheme() 한 번으로 전체 적용
     ════════════════════════════════════════════════════════════════════ -->
     <Window.Resources>
+        <!-- ── 글자 크기 단계 (슬라이더 ApplyFontScale 에서 동적 갱신, scale=1.0 기준) ── -->
+        <x:Double x:Key="FontSizeXS">9</x:Double>
+        <x:Double x:Key="FontSizeSM">10</x:Double>
+        <x:Double x:Key="FontSizeBase">11</x:Double>
+        <x:Double x:Key="FontSizeMD">12</x:Double>
+        <x:Double x:Key="FontSizeLG">13</x:Double>
+        <x:Double x:Key="FontSizeXL">14</x:Double>
+        <x:Double x:Key="FontSizeTitle">22</x:Double>
+        <x:Double x:Key="FontSizeHuge">28</x:Double>
+
         <!-- ── 다크 기본값 (코드에서 Light로 교체) ── -->
         <SolidColorBrush x:Key="AppBg"            Color="#1e1e26"/>
         <SolidColorBrush x:Key="PanelBg"          Color="#39383f"/>
@@ -47,7 +57,7 @@
         <Style Selector="TextBlock">
             <Setter Property="Foreground"  Value="{DynamicResource AppFg}"/>
             <Setter Property="FontFamily"  Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
-            <Setter Property="FontSize"    Value="13"/>
+            <Setter Property="FontSize"    Value="{DynamicResource FontSizeLG}"/>
         </Style>
 
         <!-- TextBox -->
@@ -56,7 +66,7 @@
             <Setter Property="Foreground"   Value="{DynamicResource InputFg}"/>
             <Setter Property="BorderBrush"  Value="{DynamicResource InputBorder}"/>
             <Setter Property="FontFamily"   Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
-            <Setter Property="FontSize"     Value="13"/>
+            <Setter Property="FontSize"     Value="{DynamicResource FontSizeLG}"/>
             <Setter Property="CornerRadius" Value="4"/>
             <Setter Property="Padding"      Value="6,4"/>
         </Style>
@@ -67,7 +77,7 @@
             <Setter Property="Foreground"  Value="{DynamicResource InputFg}"/>
             <Setter Property="BorderBrush" Value="{DynamicResource InputBorder}"/>
             <Setter Property="FontFamily"  Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
-            <Setter Property="FontSize"    Value="13"/>
+            <Setter Property="FontSize"    Value="{DynamicResource FontSizeLG}"/>
         </Style>
 
         <!-- DataGrid -->
@@ -77,7 +87,7 @@
             <Setter Property="Foreground"      Value="{DynamicResource AppFg}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="FontFamily"      Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
-            <Setter Property="FontSize"        Value="12"/>
+            <Setter Property="FontSize"        Value="{DynamicResource FontSizeMD}"/>
         </Style>
         <!-- 짝수 행 교대 색상 (Avalonia는 AlternatingRowBackground 없음) -->
         <Style Selector="DataGridRow:nth-child(even)">
@@ -95,7 +105,7 @@
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="{DynamicResource TreeFg}"/>
             <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
-            <Setter Property="FontSize"   Value="13"/>
+            <Setter Property="FontSize"   Value="{DynamicResource FontSizeLG}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="BorderBrush" Value="#444455"/>
             <Setter Property="CornerRadius" Value="4"/>
@@ -104,7 +114,7 @@
             <Setter Property="Padding"    Value="1,0" />
             <Setter Property="Margin"     Value="0" />
             <Setter Property="MinHeight"  Value="0" />
-            <Setter Property="FontSize"   Value="11" />
+            <Setter Property="FontSize"   Value="{DynamicResource FontSizeBase}" />
             <Setter Property="Foreground" Value="#cccccc" />
             <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
             <Setter Property="Background" Value="Transparent" />
@@ -126,12 +136,12 @@
         <Style Selector="CheckBox">
             <Setter Property="Foreground" Value="{DynamicResource AppFg}"/>
             <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
-            <Setter Property="FontSize"   Value="13"/>
+            <Setter Property="FontSize"   Value="{DynamicResource FontSizeLG}"/>
         </Style>
         <Style Selector="RadioButton">
             <Setter Property="Foreground" Value="{DynamicResource AppFg}"/>
             <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
-            <Setter Property="FontSize"   Value="13"/>
+            <Setter Property="FontSize"   Value="{DynamicResource FontSizeLG}"/>
         </Style>
 
         <!-- Label -->
@@ -142,7 +152,7 @@
 
         <!-- ══ 상단 메인 메뉴바 버튼(MenuItem) ══ -->
         <Style Selector="MenuItem">
-            <Setter Property="FontSize"    Value="13"/>
+            <Setter Property="FontSize"    Value="{DynamicResource FontSizeLG}"/>
             <Setter Property="FontFamily"  Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
             <Setter Property="Height"      Value="25"/>
             <Setter Property="Padding"     Value="18,0"/>
@@ -187,7 +197,7 @@
 
         <!-- ══ 서브메뉴 버튼 (SubMenu 툴바) ══ -->
         <Style Selector="StackPanel#SubMenu > Button">
-            <Setter Property="FontSize"                   Value="13"/>
+            <Setter Property="FontSize"                   Value="{DynamicResource FontSizeLG}"/>
             <Setter Property="FontFamily"                 Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
             <Setter Property="Height"                     Value="25"/>
             <Setter Property="CornerRadius"               Value="4"/>
@@ -207,7 +217,7 @@
         <Style Selector="ToggleSwitch">
             <Setter Property="Foreground" Value="{DynamicResource AppFg}"/>
             <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
-            <Setter Property="FontSize"   Value="12"/>
+            <Setter Property="FontSize"   Value="{DynamicResource FontSizeMD}"/>
         </Style>
 
         <!-- ScrollBar -->
@@ -254,14 +264,13 @@
                         <MenuItem Header="계약업체"    Click="Contract_Click"/>
                         <MenuItem Header="견적/의뢰서" Click="Quotation_Click"/>
                         <MenuItem Header="시험성적서"  Click="TestReport_Click"/>
-                        <MenuItem Header="보수요청"    Click="Repair_Click"/>
-                        <MenuItem Header="물품구매"    Click="Purchase_Click"/>
                         <MenuItem Header="DB Migration" Click="DbMigration_Click"/>
                     </MenuItem>
 
                     <MenuItem Header="비용부담금 관리">
                         <MenuItem Header="폐수배출업소"  Click="WasteCompany_Click"/>
-                        <MenuItem Header="분석의뢰리스트"/>
+                        <MenuItem Header="자료 조회"     Click="WasteDataQuery_Click"/>
+                        <MenuItem Header="분석의뢰리스트" Click="WasteSampleList_Click"/>
                         <MenuItem Header="분석결과입력"/>
                         <MenuItem Header="Uipath ERP"/>
                         <MenuItem Header="시험기록부"/>
@@ -275,24 +284,70 @@
                     </MenuItem>
 
                     <MenuItem Header="일반업무관리" Click="Admin_Click">
+                        <MenuItem Header="보수요청"    Click="Repair_Click"/>
+                        <MenuItem Header="물품구매"    Click="Purchase_Click"/>
                         <MenuItem Header="계약업체 채수"/>
                         <MenuItem Header="출장관리"/>
                         <MenuItem Header="휴일근무"/>
                     </MenuItem>
 
-                    <MenuItem Header="권한관리" x:Name="PermissionMenu" Click="Permission_Click"/>
+                    <MenuItem Header="권한관리" x:Name="PermissionMenu">
+                        <MenuItem Header="센터명칭"         Click="WaterQualityNameReconcile_Click"/>
+                        <MenuItem Header="폐수배출업소명칭"  Click="WasteNameReconcile_Click"/>
+                    </MenuItem>
                 </Menu>
 
-                <!-- 오른쪽: 테마 토글 -->
-                <ToggleSwitch Grid.Column="2"
-                              x:Name="tglShowPassword"
-                              HorizontalAlignment="Right"
-                              Margin="0,-5,20,0"
-                              VerticalAlignment="Center"
-                              OnContent="🌙 다크 템플러"
-                              OffContent="☀️ 하이 템플러"
-                              IsChecked="True"
-                              IsCheckedChanged="OnShowPasswordChanged"/>
+                <!-- 오른쪽: 글자 크기 슬라이더 + 테마 토글 -->
+                <StackPanel Grid.Column="2"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Spacing="4"
+                            Margin="0,0,12,0">
+
+                    <!-- 글자 크기 슬라이더 (주변 요소 고정 폭 → 슬라이더 위치 고정) -->
+                    <TextBlock Text="가"
+                               FontSize="{DynamicResource FontSizeXS}"
+                               Width="14" TextAlignment="Center"
+                               VerticalAlignment="Center"
+                               Foreground="{DynamicResource FgMuted}"/>
+                    <Slider x:Name="sldFontSize"
+                            Minimum="0.9" Maximum="1.1" Value="1.0"
+                            SmallChange="0.01" LargeChange="0.05"
+                            TickFrequency="0.01" IsSnapToTickEnabled="True"
+                            Width="100" Height="18"
+                            VerticalAlignment="Center"
+                            ValueChanged="SldFontSize_ValueChanged"/>
+                    <TextBlock Text="가"
+                               FontSize="{DynamicResource FontSizeLG}"
+                               Width="18" TextAlignment="Center"
+                               VerticalAlignment="Center"
+                               Foreground="{DynamicResource FgMuted}"/>
+                    <TextBlock x:Name="txbFontScale"
+                               Text="100%"
+                               FontSize="{DynamicResource FontSizeXS}"
+                               Width="30"
+                               TextAlignment="Center"
+                               VerticalAlignment="Center"
+                               Foreground="{DynamicResource FgMuted}"
+                               Margin="0,0,6,0"/>
+
+                    <!-- 구분선 -->
+                    <Border Width="1" Height="14"
+                            Background="{DynamicResource FgMuted}"
+                            Opacity="0.35"
+                            VerticalAlignment="Center"
+                            Margin="0,0,6,0"/>
+
+                    <!-- 테마 토글 -->
+                    <ToggleSwitch x:Name="tglShowPassword"
+                                  Margin="0,-5,0,0"
+                                  VerticalAlignment="Center"
+                                  OnContent="🌙 다크 템플러"
+                                  OffContent="☀️ 하이 템플러"
+                                  IsChecked="True"
+                                  IsCheckedChanged="OnShowPasswordChanged"/>
+                </StackPanel>
             </Grid>
         </Border>
 

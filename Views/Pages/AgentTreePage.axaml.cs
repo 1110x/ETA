@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Ellipse = Avalonia.Controls.Shapes.Ellipse;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
@@ -27,6 +28,9 @@ public partial class AgentTreePage : UserControl
     private Agent?      _selectedAgent;
     private StackPanel? _detailPanel;
     private bool        _isAddMode  = false;
+
+    private static bool CanEdit =>
+        MainPage.CurrentEmployeeId == "201000308";
 
     // 사진 미리보기 Image 컨트롤 (저장 시 PhotoPath 접근용)
     private Image?      _photoImage;
@@ -80,50 +84,100 @@ public partial class AgentTreePage : UserControl
     // =========================================================================
     private TreeViewItem CreateTreeItem(Agent agent)
     {
-        string icon = agent.기타 switch
-        {
-            "0" => "🥷", "1" => "👨‍💼", "2" => "👩‍⚖️", _ => "👤"
-        };
-
         var headerPanel = new StackPanel
         {
             Orientation       = Orientation.Horizontal,
-            Spacing           = 8,
+            Spacing           = 9,
             VerticalAlignment = VerticalAlignment.Center,
         };
-        headerPanel.Children.Add(new TextBlock { Text = icon, FontSize = 20, VerticalAlignment = VerticalAlignment.Center });
+
+        // 원형 사진 (또는 이니셜 원)
+        headerPanel.Children.Add(MakePhotoCircle(agent, 30));
+
+        // 직급 배지 — 이름 앞에 배치
+        if (!string.IsNullOrWhiteSpace(agent.직급))
+        {
+            var (bg, fg) = BadgeColorHelper.GetBadgeColor(agent.직급);
+            headerPanel.Children.Add(new Border
+            {
+                Background        = new SolidColorBrush(Color.Parse(bg)),
+                CornerRadius      = new CornerRadius(3),
+                Padding           = new Thickness(5, 2),
+                VerticalAlignment = VerticalAlignment.Center,
+                Child             = new TextBlock
+                {
+                    Text              = agent.직급,
+                    FontSize          = 10,
+                    Foreground        = new SolidColorBrush(Color.Parse(fg)),
+                    FontFamily        = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                    VerticalAlignment = VerticalAlignment.Center,
+                }
+            });
+        }
+
+        // 이름
         headerPanel.Children.Add(new TextBlock
         {
             Text              = agent.성명,
             FontSize          = 13,
             FontFamily        = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R",
             Foreground        = Brushes.WhiteSmoke,
-            VerticalAlignment = VerticalAlignment.Center
+            VerticalAlignment = VerticalAlignment.Center,
         });
-
-        if (!string.IsNullOrWhiteSpace(agent.직급))
-        {
-            var (bg, fg) = BadgeColorHelper.GetBadgeColor(agent.직급);
-            headerPanel.Children.Add(new Border
-            {
-                Background   = new SolidColorBrush(Color.Parse(bg)),
-                CornerRadius = new CornerRadius(3),
-                Padding      = new Thickness(4, 1),
-                Margin       = new Thickness(4, 0, 0, 0),
-                Child        = new TextBlock
-                {
-                    Text       = agent.직급,
-                    FontSize   = 9,
-                    Foreground = new SolidColorBrush(Color.Parse(fg)),
-                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
-                }
-            });
-        }
 
         return new TreeViewItem
         {
             Tag    = agent,
             Header = headerPanel,
+        };
+    }
+
+    // 원형 사진 또는 이니셜 원 헬퍼
+    private static Control MakePhotoCircle(Agent agent, double size)
+    {
+        var photoDir = AgentService.GetPhotoDirectory();
+        if (!string.IsNullOrEmpty(agent.PhotoPath))
+        {
+            var fullPath = Path.IsPathRooted(agent.PhotoPath)
+                ? agent.PhotoPath
+                : Path.Combine(photoDir, agent.PhotoPath);
+            if (File.Exists(fullPath))
+            {
+                try
+                {
+                    using var stream = File.OpenRead(fullPath);
+                    var bmp = new Bitmap(stream);
+                    return new Ellipse
+                    {
+                        Width  = size*0.7,
+                        Height = size*0.7,
+                        Fill   = new ImageBrush(bmp) { Stretch = Stretch.UniformToFill },
+                    };
+                }
+                catch { }
+            }
+        }
+
+        // 이니셜 원
+        var initial = agent.성명.Length > 0 ? agent.성명[0].ToString() : "?";
+        var key     = !string.IsNullOrWhiteSpace(agent.직급) ? agent.직급 : agent.성명;
+        var (ibg, ifg) = BadgeColorHelper.GetBadgeColor(key);
+        return new Border
+        {
+            Width        = size,
+            Height       = size,
+            CornerRadius = new CornerRadius(size / 2),
+            Background   = new SolidColorBrush(Color.Parse(ibg)),
+            ClipToBounds = true,
+            Child        = new TextBlock
+            {
+                Text                = initial,
+                FontSize            = size * 0.45,
+                Foreground          = new SolidColorBrush(Color.Parse(ifg)),
+                FontFamily          = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment   = VerticalAlignment.Center,
+            }
         };
     }
 
@@ -153,6 +207,7 @@ public partial class AgentTreePage : UserControl
     // =========================================================================
     public void ShowAddPanel()
     {
+        if (!CanEdit) return;
         _selectedAgent           = null;
         _isAddMode               = true;
         _pendingPhotoPath        = "";
@@ -167,6 +222,7 @@ public partial class AgentTreePage : UserControl
     // =========================================================================
     public void SaveSelected()
     {
+        if (!CanEdit) return;
         if (_isAddMode) SaveAdd();
         else            SaveEdit();
     }
@@ -176,6 +232,7 @@ public partial class AgentTreePage : UserControl
     // =========================================================================
     public async Task DeleteSelectedAsync()
     {
+        if (!CanEdit) return;
         if (_selectedAgent == null)
         {
             Log("삭제 스킵: 선택 없음");
@@ -268,19 +325,22 @@ public partial class AgentTreePage : UserControl
     // =========================================================================
     private StackPanel BuildEditPanel(Agent agent)
     {
-        var root = MakeRootPanel($"✏️  {agent.성명} — 정보 수정");
+        bool ro = !CanEdit;
+        var root = MakeRootPanel(ro
+            ? $"👁  {agent.성명} — 정보 조회 (읽기 전용)"
+            : $"✏️  {agent.성명} — 정보 수정");
 
         // 사진 영역
         root.Children.Add(BuildPhotoArea(agent.PhotoPath));
 
         root.Children.Add(BuildFieldRow("성명",           agent.성명,           isReadOnly: true, isLocked: true));
-        root.Children.Add(BuildFieldRow("직급",           agent.직급));
-        root.Children.Add(BuildFieldRow("직무",           agent.직무));
-        root.Children.Add(BuildFieldRow("사번",           agent.사번));
+        root.Children.Add(BuildFieldRow("직급",           agent.직급,           isReadOnly: ro));
+        root.Children.Add(BuildFieldRow("직무",           agent.직무,           isReadOnly: ro));
+        root.Children.Add(BuildFieldRow("사번",           agent.사번,           isReadOnly: ro));
         root.Children.Add(BuildFieldRow("입사일",         agent.입사일표시,     isReadOnly: true));
-        root.Children.Add(BuildFieldRow("자격사항",       agent.자격사항));
-        root.Children.Add(BuildFieldRow("Email",          agent.Email));
-        root.Children.Add(BuildFieldRow("측정인고유번호", agent.측정인고유번호));
+        root.Children.Add(BuildFieldRow("자격사항",       agent.자격사항,       isReadOnly: ro));
+        root.Children.Add(BuildFieldRow("Email",          agent.Email,          isReadOnly: ro));
+        root.Children.Add(BuildFieldRow("측정인고유번호", agent.측정인고유번호, isReadOnly: ro));
 
         // 분장 영역
         root.Children.Add(BuildAssignmentArea(agent));

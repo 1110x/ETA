@@ -1,0 +1,27 @@
+namespace ETA.Models;
+
+public class WasteSample
+{
+    public int    Id        { get; set; }
+    public string 채수일    { get; set; } = "";   // YYYY-MM-DD
+    public string 구분      { get; set; } = "여수"; // 여수 / 세풍 / 율촌
+    public int    순서      { get; set; }
+    public string SN        { get; set; } = "";   // 03-31-01 / [세풍]03-31-01
+    public string 업체명    { get; set; } = "";
+    public string 관리번호  { get; set; } = "";
+    public string 비고      { get; set; } = "";
+    public string 확인자    { get; set; } = "";
+
+    // SN 자동 생성: 채수일 + 구분 + 순서
+    public static string BuildSN(string 채수일, string 구분, int 순서)
+    {
+        if (!System.DateTime.TryParse(채수일, out var d)) return "";
+        string base_ = $"{d.Month:D2}-{d.Day:D2}-{순서:D2}";
+        return 구분 switch
+        {
+            "세풍" => $"[세풍]{base_}",
+            "율촌" => $"[율촌]{base_}",
+            _      => base_,   // 여수
+        };
+    }
+}

@@ -112,6 +112,155 @@ public static class AnalysisRequestService
     }
 
     // =====================================================================
+    //  분석의뢰 항목 일괄 갱신 — 체크된 항목은 'O', 해제된 항목은 NULL
+    // =====================================================================
+    public static bool UpdateAnalyteValues(
+        int rowId,
+        IEnumerable<string> allAnalytes,
+        IEnumerable<string> checkedAnalytes)
+    {
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return false;
+        var all        = allAnalytes.Select(a => a.Trim()).Where(a => a.Length > 0).ToList();
+        var checkedSet = new HashSet<string>(checkedAnalytes.Select(a => a.Trim()),
+                             StringComparer.OrdinalIgnoreCase);
+        if (all.Count == 0) return true;
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            var setParts = all.Select((a, i) => $"`{a}` = @v{i}");
+            cmd.CommandText =
+                $"UPDATE `분석의뢰및결과` SET {string.Join(", ", setParts)} " +
+                $"WHERE {DbConnectionFactory.RowId} = @id";
+            for (int i = 0; i < all.Count; i++)
+                cmd.Parameters.AddWithValue($"@v{i}",
+                    checkedSet.Contains(all[i]) ? (object)"O" : DBNull.Value);
+            cmd.Parameters.AddWithValue("@id", rowId);
+            int rows = cmd.ExecuteNonQuery();
+            Log($"UpdateAnalyteValues: rowId={rowId} → 체크={checkedSet.Count}, 해제={all.Count - checkedSet.Count}, {rows}행");
+        }
+        catch (Exception ex) { Log($"UpdateAnalyteValues 오류: {ex.Message}"); return false; }
+
+        // 연결된 견적서 수량 재계산 (실패해도 기본 저장은 성공으로 처리)
+        try { RecalcQuotationQuantities(rowId, all); }
+        catch (Exception ex) { Log($"RecalcQuotationQuantities 오류: {ex.Message}"); }
+        return true;
+    }
+
+    // =====================================================================
+    //  견적서 수량 재계산
+    //  같은 견적번호를 가진 분석의뢰및결과 행들에서 각 항목이 'O'인 횟수를 집계해
+    //  견적발행내역의 수량과 소계를 갱신
+    // =====================================================================
+    private static void RecalcQuotationQuantities(int rowId, List<string> analyteNames)
+    {
+        var allSet = new HashSet<string>(analyteNames, StringComparer.OrdinalIgnoreCase);
+
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+
+        // 1. 이 레코드의 견적번호 조회
+        string quotationNo;
+        using (var c = conn.CreateCommand())
+        {
+            c.CommandText = $"SELECT COALESCE(`견적번호`, '') FROM `분석의뢰및결과` WHERE {DbConnectionFactory.RowId} = @id";
+            c.Parameters.AddWithValue("@id", rowId);
+            quotationNo = c.ExecuteScalar()?.ToString()?.Trim() ?? "";
+        }
+        if (string.IsNullOrWhiteSpace(quotationNo))
+        {
+            Log($"RecalcQuotationQuantities: 견적번호 없음 (rowId={rowId})");
+            return;
+        }
+
+        // 2. 견적발행내역 행 ID 조회
+        int quotRowId;
+        using (var c = conn.CreateCommand())
+        {
+            c.CommandText = $"SELECT {DbConnectionFactory.RowId} FROM `견적발행내역` WHERE `견적번호` = @no LIMIT 1";
+            c.Parameters.AddWithValue("@no", quotationNo);
+            var r = c.ExecuteScalar();
+            if (r == null)
+            {
+                Log($"RecalcQuotationQuantities: 견적발행내역 없음 (견적번호={quotationNo})");
+                return;
+            }
+            quotRowId = Convert.ToInt32(r);
+        }
+
+        // 3. 같은 견적번호의 모든 분석의뢰 행에서 항목별 'O' 개수 집계
+        var counts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        using (var c = conn.CreateCommand())
+        {
+            c.CommandText = "SELECT * FROM `분석의뢰및결과` WHERE `견적번호` = @no";
+            c.Parameters.AddWithValue("@no", quotationNo);
+            using var rdr = c.ExecuteReader();
+            while (rdr.Read())
+            {
+                for (int i = 0; i < rdr.FieldCount; i++)
+                {
+                    var col = rdr.GetName(i).Trim();
+                    if (!allSet.Contains(col)) continue;
+                    var val = rdr.IsDBNull(i) ? "" : rdr.GetValue(i)?.ToString()?.Trim() ?? "";
+                    if (string.Equals(val, "O", StringComparison.OrdinalIgnoreCase))
+                        counts[col] = counts.TryGetValue(col, out var n) ? n + 1 : 1;
+                }
+            }
+        }
+
+        // 4. 견적발행내역의 현재 단가 조회
+        var quotRow  = QuotationService.GetIssueRow(quotRowId);
+        var quotCols = new HashSet<string>(
+            DbConnectionFactory.GetColumnNames(conn, "견적발행내역"),
+            StringComparer.OrdinalIgnoreCase);
+
+        // 5. 수량·소계 UPDATE 빌드
+        var setParts = new List<string>();
+        var pvals    = new List<(string p, object v)>();
+        int idx = 0;
+
+        foreach (var a in analyteNames)
+        {
+            if (!quotCols.Contains(a)) continue;
+            int qty = counts.TryGetValue(a, out var c2) ? c2 : 0;
+
+            setParts.Add($"`{a}` = @p{idx}");
+            pvals.Add(($"@p{idx}", qty > 0 ? (object)qty : DBNull.Value)); idx++;
+
+            if (quotCols.Contains(a + "소계"))
+            {
+                object subVal;
+                if (qty > 0)
+                {
+                    var priceStr = quotRow.TryGetValue(a + "단가", out var ep) ? ep ?? "0" : "0";
+                    decimal.TryParse(
+                        priceStr.Replace("\u20a9", "").Replace(",", "").Trim(),
+                        System.Globalization.NumberStyles.Any,
+                        System.Globalization.CultureInfo.InvariantCulture, out var price);
+                    subVal = qty * price;
+                }
+                else subVal = DBNull.Value;
+
+                setParts.Add($"`{a}소계` = @p{idx}");
+                pvals.Add(($"@p{idx}", subVal)); idx++;
+            }
+        }
+
+        if (setParts.Count == 0) return;
+
+        using var upd = conn.CreateCommand();
+        upd.CommandText =
+            $"UPDATE `견적발행내역` SET {string.Join(", ", setParts)} " +
+            $"WHERE {DbConnectionFactory.RowId} = @id";
+        foreach (var (p, v) in pvals)
+            upd.Parameters.AddWithValue(p, v);
+        upd.Parameters.AddWithValue("@id", quotRowId);
+        int updRows = upd.ExecuteNonQuery();
+        Log($"RecalcQuotationQuantities: 견적번호={quotationNo} → {updRows}행 갱신 ({counts.Count}개 항목 집계)");
+    }
+
+    // =====================================================================
     //  레코드 삭제
     // =====================================================================
     public static bool DeleteRecord(int id)
@@ -183,6 +332,64 @@ public static class AnalysisRequestService
             return rows;
         }
         catch (Exception ex) { Log($"RenameSampleName 오류: {ex.Message}"); return 0; }
+    }
+
+    // =====================================================================
+    //  명칭 정리 — 전체 약칭 목록
+    // =====================================================================
+    public static List<string> GetDistinctAbbreviations()
+    {
+        var list = new List<string>();
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"
+                SELECT DISTINCT `약칭`
+                FROM `분석의뢰및결과`
+                WHERE `약칭` IS NOT NULL AND `약칭` <> ''
+                ORDER BY `약칭` ASC";
+            using var r = cmd.ExecuteReader();
+            while (r.Read()) list.Add(r.GetString(0));
+        }
+        catch (Exception ex) { Log($"GetDistinctAbbreviations 오류: {ex.Message}"); }
+        return list;
+    }
+
+    // =====================================================================
+    //  명칭 정리 — 분장표준처리 — 약칭 직접 조회
+    //    항목명='약칭' 행을 찾아 컬럼헤드 → 약칭 매핑 반환
+    //    예: "생물화학적 산소요구량" → "BOD", "수소이온농도" → "pH"
+    // =====================================================================
+    public static Dictionary<string, string> GetShortNames()
+    {
+        var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return result;
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            if (!DbConnectionFactory.TableExists(conn, "분장표준처리")) return result;
+
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT * FROM `분장표준처리` WHERE `항목명` = '약칭' LIMIT 1";
+            using var rdr = cmd.ExecuteReader();
+            if (rdr.Read())
+            {
+                for (int i = 1; i < rdr.FieldCount; i++)
+                {
+                    string colHeader = rdr.GetName(i).Trim();
+                    string abbr      = rdr.IsDBNull(i) ? "" : rdr.GetValue(i)?.ToString()?.Trim() ?? "";
+                    if (!string.IsNullOrEmpty(colHeader) && !string.IsNullOrEmpty(abbr))
+                        result[colHeader] = abbr;
+                }
+            }
+            Log($"GetShortNames: {result.Count}개 로드");
+        }
+        catch (Exception ex) { Log($"GetShortNames 오류: {ex.Message}"); }
+        return result;
     }
 
     // =====================================================================

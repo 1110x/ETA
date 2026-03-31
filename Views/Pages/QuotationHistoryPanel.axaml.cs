@@ -1,8 +1,10 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Threading;
 using ETA.Models;
 using ETA.Services;
 using System;
@@ -47,6 +49,14 @@ public partial class QuotationHistoryPanel : UserControl
 
     private bool _isAnalysisTab = false;
 
+    // 검색 디바운스 타이머 (한글 IME 조합 완료 후 검색)
+    private readonly DispatcherTimer _searchTimer = new() { Interval = TimeSpan.FromMilliseconds(250) };
+    private string _pendingSearchText = "";
+
+    // 검색용 전체 데이터 캐시
+    private List<QuotationIssue>          _allIssues  = [];
+    private List<AnalysisRequestRecord>   _allAnalysisRecords = [];
+
     // 분석의뢰 지연 로딩용 캐시
     private Dictionary<string, List<AnalysisRequestRecord>> _analysisByMonth = new();
     private readonly HashSet<string> _loadedMonths = new();
@@ -64,17 +74,26 @@ public partial class QuotationHistoryPanel : UserControl
             BorderThickness = new Thickness(0),
         };
         _treeQuotation.SelectionChanged += OnQuotationNodeSelected;
+        _treeQuotation.KeyDown         += (_, e) => HandleTreeKeyDown(_treeQuotation, e);
 
         _treeAnalysis = new TreeView
         {
             Background = Brushes.Transparent,
             BorderThickness = new Thickness(0),
             IsVisible = false,
+            SelectionMode = SelectionMode.Multiple,
         };
         _treeAnalysis.SelectionChanged += OnAnalysisNodeSelected;
+        _treeAnalysis.KeyDown          += (_, e) => HandleTreeKeyDown(_treeAnalysis, e);
 
         treeHost.Children.Add(_treeQuotation);
         treeHost.Children.Add(_treeAnalysis);
+
+        _searchTimer.Tick += (_, _) =>
+        {
+            _searchTimer.Stop();
+            ApplySearch(_pendingSearchText);
+        };
 
         Log("QuotationHistoryPanel 초기화 완료");
     }
@@ -108,6 +127,7 @@ public partial class QuotationHistoryPanel : UserControl
         Log("LoadData() 시작");
 
         var issues = QuotationService.GetAllIssues();
+        _allIssues = issues;
         Log($"견적 발행건수={issues.Count}");
 
         var today      = DateTime.Today;
@@ -176,6 +196,100 @@ public partial class QuotationHistoryPanel : UserControl
 
     private void TvHistory_SelectionChanged(object? sender, SelectionChangedEventArgs e) { }
 
+    // ══════════════════════════════════════════════════════════════════════
+    //  키보드 상하 이동 — 펼쳐진 리프 노드만 순환
+    // ══════════════════════════════════════════════════════════════════════
+    private void HandleTreeKeyDown(TreeView tree, KeyEventArgs e)
+    {
+        if (e.Key != Key.Up && e.Key != Key.Down) return;
+
+        var leaves = CollectVisibleLeaves(tree);
+        if (leaves.Count == 0) return;
+
+        var current = tree.SelectedItem as TreeViewItem;
+        int idx     = current != null ? leaves.IndexOf(current) : -1;
+
+        int next = e.Key == Key.Down
+            ? (idx < 0 ? 0 : Math.Min(idx + 1, leaves.Count - 1))
+            : (idx < 0 ? leaves.Count - 1 : Math.Max(idx - 1, 0));
+
+        if (next == idx) { e.Handled = true; return; }
+
+        var target = leaves[next];
+        tree.SelectedItem = target;
+        target.BringIntoView();
+        e.Handled = true;
+    }
+
+    /// <summary>현재 펼쳐진 상태 기준으로 리프 노드(QuotationIssue/AnalysisRequestRecord 태그)만 수집</summary>
+    private static List<TreeViewItem> CollectVisibleLeaves(ItemsControl parent)
+    {
+        var result = new List<TreeViewItem>();
+        foreach (var obj in parent.Items)
+        {
+            if (obj is not TreeViewItem node) continue;
+            if (node.Tag is QuotationIssue || node.Tag is AnalysisRequestRecord)
+                result.Add(node);
+            else if (node.IsExpanded)
+                result.AddRange(CollectVisibleLeaves(node));
+        }
+        return result;
+    }
+
+    private void TxbSearch_TextChanged(object? sender, TextChangedEventArgs e)
+    {
+        _pendingSearchText = sender is TextBox tb ? tb.Text ?? "" : "";
+        _searchTimer.Stop();
+        _searchTimer.Start();
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  검색 필터 — 키워드 있으면 평면 결과, 없으면 원래 트리 복원
+    // ══════════════════════════════════════════════════════════════════════
+    private void ApplySearch(string keyword)
+    {
+        if (string.IsNullOrWhiteSpace(keyword))
+        {
+            // 검색어 없음 → 원래 트리 복원
+            if (_isAnalysisTab) _ = LoadAnalysisTreeAsync();
+            else                LoadData();
+            return;
+        }
+
+        var kw = keyword.Trim();
+
+        if (_isAnalysisTab)
+        {
+            var matched = _allAnalysisRecords
+                .Where(r =>
+                    r.약칭    .Contains(kw, StringComparison.OrdinalIgnoreCase) ||
+                    r.시료명  .Contains(kw, StringComparison.OrdinalIgnoreCase) ||
+                    r.접수번호.Contains(kw, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            _treeAnalysis.Items.Clear();
+            foreach (var rec in matched)
+                _treeAnalysis.Items.Add(MakeAnalysisLeaf(rec));
+
+            txbInfo.Text = $"검색 결과 {matched.Count}건";
+        }
+        else
+        {
+            var matched = _allIssues
+                .Where(i =>
+                    (i.약칭     ?? "").Contains(kw, StringComparison.OrdinalIgnoreCase) ||
+                    (i.시료명   ?? "").Contains(kw, StringComparison.OrdinalIgnoreCase) ||
+                    (i.견적번호 ?? "").Contains(kw, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            _treeQuotation.Items.Clear();
+            foreach (var issue in matched)
+                _treeQuotation.Items.Add(MakeIssueLeaf(issue));
+
+            txbInfo.Text = $"검색 결과 {matched.Count}건";
+        }
+    }
+
     private void OnQuotationNodeSelected(object? sender, SelectionChangedEventArgs e)
     {
         if (_treeQuotation.SelectedItem is TreeViewItem item &&
@@ -191,25 +305,35 @@ public partial class QuotationHistoryPanel : UserControl
     {
         var owner = TopLevel.GetTopLevel(this) as Window;
 
-        // ── 분析의뢰내역 탭 삭제 ─────────────────────────────────────────
+        // ── 분석의뢰내역 탭 삭제 (복수 선택 지원) ──────────────────────────
         if (_isAnalysisTab)
         {
-            if (!(_treeAnalysis.SelectedItem is TreeViewItem item &&
-                  item.Tag is AnalysisRequestRecord rec)) return;
+            var recs = GetSelectedAnalysisRecords();
+            if (recs.Count == 0) return;
 
-            bool confirmed = await ShowConfirmDialogAsync(owner,
-                $"아래 분析의뢰를 DB에서 삭제하시겠습니까?\n\n{rec.약칭}  {rec.시료명}\n{rec.접수번호}");
+            string msg = recs.Count == 1
+                ? $"아래 분석의뢰를 DB에서 삭제하시겠습니까?\n\n{recs[0].약칭}  {recs[0].시료명}\n{recs[0].접수번호}"
+                : $"선택된 {recs.Count}건을 DB에서 삭제하시겠습니까?\n\n"
+                  + string.Join("\n", recs.Take(5).Select(r => $"  {r.약칭}  {r.시료명}"))
+                  + (recs.Count > 5 ? $"\n  … 외 {recs.Count - 5}건" : "");
+
+            bool confirmed = await ShowConfirmDialogAsync(owner, msg);
             if (!confirmed) return;
 
-            Log($"분析의뢰 삭제: {rec.접수번호} id={rec.Id}");
-            bool ok = await Task.Run(() => AnalysisRequestService.DeleteRecord(rec.Id));
-            if (ok)
+            int deleted = 0;
+            await Task.Run(() =>
             {
-                _loadedMonths.Clear();
-                _analysisByMonth.Clear();
-                await LoadAnalysisTreeAsync();
-                await ShowAlertDialogAsync(owner, "삭제되었습니다.");
-            }
+                foreach (var r in recs)
+                {
+                    Log($"분석의뢰 삭제: {r.접수번호} id={r.Id}");
+                    if (AnalysisRequestService.DeleteRecord(r.Id)) deleted++;
+                }
+            });
+
+            _loadedMonths.Clear();
+            _analysisByMonth.Clear();
+            await LoadAnalysisTreeAsync();
+            await ShowAlertDialogAsync(owner, $"{deleted}건 삭제되었습니다.");
             return;
         }
 
@@ -252,7 +376,7 @@ public partial class QuotationHistoryPanel : UserControl
             Background          = new SolidColorBrush(Color.Parse("#4a1a1a")),
             Foreground          = new SolidColorBrush(Color.Parse("#ff8888")),
             FontFamily          = Font,
-            FontSize            = 11,
+            FontSize            = AppFonts.Base,
             HorizontalContentAlignment = HorizontalAlignment.Center,
         };
         var noBtn = new Button
@@ -262,7 +386,7 @@ public partial class QuotationHistoryPanel : UserControl
             Background          = new SolidColorBrush(Color.Parse("#2a2a3a")),
             Foreground          = new SolidColorBrush(Color.Parse("#aaaaaa")),
             FontFamily          = Font,
-            FontSize            = 11,
+            FontSize            = AppFonts.Base,
             HorizontalContentAlignment = HorizontalAlignment.Center,
         };
 
@@ -280,7 +404,7 @@ public partial class QuotationHistoryPanel : UserControl
                 {
                     Text         = message,
                     Foreground   = new SolidColorBrush(Color.Parse("#dddddd")),
-                    FontSize     = 12,
+                    FontSize     = AppFonts.MD,
                     FontFamily   = Font,
                     TextWrapping = Avalonia.Media.TextWrapping.Wrap,
                 },
@@ -321,7 +445,7 @@ public partial class QuotationHistoryPanel : UserControl
             Background          = new SolidColorBrush(Color.Parse("#2a4a2a")),
             Foreground          = new SolidColorBrush(Color.Parse("#aef0ae")),
             FontFamily          = Font,
-            FontSize            = 11,
+            FontSize            = AppFonts.Base,
             HorizontalContentAlignment = HorizontalAlignment.Center,
         };
 
@@ -338,7 +462,7 @@ public partial class QuotationHistoryPanel : UserControl
                 {
                     Text       = message,
                     Foreground = new SolidColorBrush(Color.Parse("#dddddd")),
-                    FontSize   = 12,
+                    FontSize   = AppFonts.MD,
                     FontFamily = Font,
                     TextWrapping = Avalonia.Media.TextWrapping.Wrap,
                 },
@@ -387,6 +511,7 @@ public partial class QuotationHistoryPanel : UserControl
         }
 
         if (records.Count == 0) { txbInfo.Text = "분석의뢰 데이터 없음"; return; }
+        _allAnalysisRecords = records;
 
         var today     = DateTime.Today;
         var thisYear  = today.Year.ToString();
@@ -432,11 +557,11 @@ public partial class QuotationHistoryPanel : UserControl
                     // 플레이스홀더 + 지연 로딩
                     monthNode.Items.Add(new TreeViewItem
                     {
-                        Header = new TextBlock
+                        Header = Fs(new TextBlock
                         {
-                            Text = "...", FontSize = 9, FontFamily = Font,
+                            FontFamily = Font, Text = "...",
                             Foreground = Brush.Parse("#444455"),
-                        },
+                        }, "FontSizeXS"),
                         Tag = "__placeholder__",
                     });
                     var capturedKey  = monthKey;
@@ -498,28 +623,50 @@ public partial class QuotationHistoryPanel : UserControl
 
     private void OnAnalysisNodeSelected(object? sender, SelectionChangedEventArgs e)
     {
-        if (_treeAnalysis.SelectedItem is TreeViewItem item &&
-            item.Tag is AnalysisRequestRecord rec)
+        var selected = GetSelectedAnalysisRecords();
+
+        if (selected.Count == 1)
         {
+            var rec = selected[0];
             txbInfo.Text = $"{rec.약칭}  {rec.시료명}  |  {rec.접수번호}";
             Log($"의뢰 선택: {rec.약칭} {rec.시료명} [{rec.접수번호}]");
             AnalysisRequestSelected?.Invoke(rec);
         }
+        else if (selected.Count > 1)
+        {
+            txbInfo.Text = $"{selected.Count}건 선택됨";
+        }
     }
+
+    private List<AnalysisRequestRecord> GetSelectedAnalysisRecords()
+        => _treeAnalysis.SelectedItems
+            .OfType<TreeViewItem>()
+            .Where(item => item.Tag is AnalysisRequestRecord)
+            .Select(item => (AnalysisRequestRecord)item.Tag!)
+            .ToList();
 
     // ══════════════════════════════════════════════════════════════════════
     //  노드 헬퍼
     // ══════════════════════════════════════════════════════════════════════
-    private TreeViewItem MakeParentNode(string header) => new()
+
+    /// <summary>TextBlock 의 FontSize 를 DynamicResource 에 바인딩한다 (슬라이더 실시간 반영)</summary>
+    private TextBlock Fs(TextBlock tb, string resourceKey)
     {
-        Header = new TextBlock
+        tb.Bind(TextBlock.FontSizeProperty, this.GetResourceObservable(resourceKey));
+        return tb;
+    }
+
+    private TreeViewItem MakeParentNode(string header)
+    {
+        var tb = new TextBlock
         {
-            Text = header, FontSize = 11, FontFamily = Font,
+            Text = header, FontFamily = Font,
             Foreground = Brush.Parse("#aaaacc"),
             Margin = new Thickness(2, 1),
-        },
-        IsExpanded = false,
-    };
+        };
+        Fs(tb, "FontSizeBase");
+        return new TreeViewItem { Header = tb, IsExpanded = false };
+    }
 
     private TreeViewItem MakeIssueLeaf(QuotationIssue issue)
     {
@@ -531,23 +678,36 @@ public partial class QuotationHistoryPanel : UserControl
             Background = Brush.Parse(ibg), CornerRadius = new CornerRadius(3),
             Padding = new Thickness(4, 1), Margin = new Thickness(0, 0, 5, 0),
             [Grid.ColumnProperty] = 0,
-            Child = new TextBlock { Text = issue.약칭, FontSize = 9, FontFamily = Font,
-                                    Foreground = Brush.Parse(ifg) },
+            Child = Fs(new TextBlock { Text = issue.약칭, FontFamily = Font,
+                                    Foreground = Brush.Parse(ifg) }, "FontSizeXS"),
         });
-        topRow.Children.Add(new TextBlock
+        topRow.Children.Add(Fs(new TextBlock
         {
-            Text = issue.시료명, FontSize = 11, FontFamily = Font,
+            Text = issue.시료명, FontFamily = Font,
             Foreground = Brush.Parse("#dddddd"),
             TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
             VerticalAlignment = VerticalAlignment.Center,
             [Grid.ColumnProperty] = 1,
-        });
+        }, "FontSizeBase"));
         sp.Children.Add(topRow);
-        sp.Children.Add(new TextBlock
+        var bottomRow = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
+        bottomRow.Children.Add(Fs(new TextBlock
         {
-            Text = issue.견적번호, FontSize = 9, FontFamily = Font,
-            Foreground = Brush.Parse("#445566"), Margin = new Thickness(0, 0, 0, 1),
-        });
+            Text = issue.견적번호, FontFamily = Font,
+            Foreground = Brush.Parse("#445566"),
+            VerticalAlignment = VerticalAlignment.Center,
+            [Grid.ColumnProperty] = 0,
+        }, "FontSizeXS"));
+        if (!string.IsNullOrEmpty(issue.담당자))
+            bottomRow.Children.Add(Fs(new TextBlock
+            {
+                Text = issue.담당자, FontFamily = Font,
+                Foreground = Brush.Parse("#778899"),
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(4, 0, 0, 0),
+                [Grid.ColumnProperty] = 1,
+            }, "FontSizeXS"));
+        sp.Children.Add(bottomRow);
         return new TreeViewItem { Header = sp, Tag = issue };
     }
 
@@ -561,23 +721,23 @@ public partial class QuotationHistoryPanel : UserControl
             Background = Brush.Parse(rbg), CornerRadius = new CornerRadius(3),
             Padding = new Thickness(4, 1), Margin = new Thickness(0, 0, 5, 0),
             [Grid.ColumnProperty] = 0,
-            Child = new TextBlock { Text = rec.약칭, FontSize = 9, FontFamily = Font,
-                                    Foreground = Brush.Parse(rfg) },
+            Child = Fs(new TextBlock { Text = rec.약칭, FontFamily = Font,
+                                    Foreground = Brush.Parse(rfg) }, "FontSizeXS"),
         });
-        topRow.Children.Add(new TextBlock
+        topRow.Children.Add(Fs(new TextBlock
         {
-            Text = rec.시료명, FontSize = 11, FontFamily = Font,
+            Text = rec.시료명, FontFamily = Font,
             Foreground = Brush.Parse("#dddddd"),
             TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
             VerticalAlignment = VerticalAlignment.Center,
             [Grid.ColumnProperty] = 1,
-        });
+        }, "FontSizeBase"));
         sp.Children.Add(topRow);
-        sp.Children.Add(new TextBlock
+        sp.Children.Add(Fs(new TextBlock
         {
-            Text = rec.접수번호, FontSize = 9, FontFamily = Font,
+            Text = rec.접수번호, FontFamily = Font,
             Foreground = Brush.Parse("#445566"), Margin = new Thickness(0, 0, 0, 1),
-        });
+        }, "FontSizeXS"));
 
         var node = new TreeViewItem { Header = sp, Tag = rec };
 
@@ -586,7 +746,7 @@ public partial class QuotationHistoryPanel : UserControl
         {
             var owner = TopLevel.GetTopLevel(node) as Window;
             bool confirmed = await ShowConfirmDialogAsync(owner,
-                $"아래 분析의뢰를 DB에서 삭제하시겠습니까?\n\n{rec.약칭}  {rec.시료명}\n{rec.접수번호}");
+                $"아래 분석의뢰를 DB에서 삭제하시겠습니까?\n\n{rec.약칭}  {rec.시료명}\n{rec.접수번호}");
             if (!confirmed) return;
             bool ok = await Task.Run(() => AnalysisRequestService.DeleteRecord(rec.Id));
             if (ok)

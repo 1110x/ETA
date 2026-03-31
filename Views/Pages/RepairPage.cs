@@ -32,6 +32,7 @@ public class RepairPage
     private readonly TreeView  _tree    = new() { Background = Brushes.Transparent, BorderThickness = new Thickness(0) };
     private readonly StackPanel _listPanel = new() { Spacing = 2 };
     private readonly TextBlock  _listTitle = new() { FontSize = 11, FontFamily = Font, Foreground = new SolidColorBrush(Color.Parse("#777")), Margin = new Thickness(4, 0, 0, 6) };
+    private Border? _selectedRowBorder;
 
     // 폼 필드
     private readonly ComboBox  _cmbCategory;
@@ -149,6 +150,7 @@ public class RepairPage
     private void LoadList(int year, int month)
     {
         _listPanel.Children.Clear();
+        _selectedRowBorder = null;
         var items = RepairService.GetByMonth(year, month);
         _listTitle.Text = $"{year}년 {month:D2}월  —  {items.Count}건";
 
@@ -202,15 +204,33 @@ public class RepairPage
             Child = grid,
         };
 
-        border.PointerEntered += (_, _) => border.Background = new SolidColorBrush(Color.Parse("#252535"));
-        border.PointerExited  += (_, _) => border.Background = new SolidColorBrush(Color.Parse("#1e1e2e"));
-
-        // ★ 클릭 → 폼에 내용 로드 (수정 모드)
-        border.PointerPressed += (_, e) =>
+        border.PointerEntered += (_, _) =>
         {
-            if (e.GetCurrentPoint(border).Properties.IsLeftButtonPressed)
-                LoadToForm(item);
+            if (border != _selectedRowBorder)
+                border.Background = new SolidColorBrush(Color.Parse("#252535"));
         };
+        border.PointerExited += (_, _) =>
+        {
+            if (border != _selectedRowBorder)
+                border.Background = new SolidColorBrush(Color.Parse("#1e1e2e"));
+        };
+
+        // ★ 클릭 → 폼에 내용 로드 (터널링: 자식이 이벤트를 소비해도 받음)
+        border.AddHandler(
+            Avalonia.Input.InputElement.PointerPressedEvent,
+            (object? _, Avalonia.Input.PointerPressedEventArgs ev) =>
+            {
+                if (ev.GetCurrentPoint(border).Properties.IsLeftButtonPressed)
+                {
+                    // 이전 선택 해제
+                    if (_selectedRowBorder != null)
+                        _selectedRowBorder.Background = new SolidColorBrush(Color.Parse("#1e1e2e"));
+                    _selectedRowBorder = border;
+                    border.Background = new SolidColorBrush(Color.Parse("#2a3a5a"));
+                    LoadToForm(item);
+                }
+            },
+            Avalonia.Interactivity.RoutingStrategies.Tunnel);
 
         return border;
     }
