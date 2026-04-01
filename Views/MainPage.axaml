@@ -449,6 +449,8 @@
                             <!-- Content2 -->
                             <Border Grid.Column="0"
                                     Background="{DynamicResource PanelInnerBg}"
+                                    BorderBrush="{DynamicResource InputBorder}"
+                                    BorderThickness="1"
                                     CornerRadius="4" Padding="8" Margin="0,0,4,0">
                                 <TransitioningContentControl x:Name="Show2"
                                                 HorizontalAlignment="Stretch"
@@ -479,6 +481,8 @@
                             <Border x:Name="Content4Border"
                                     Grid.Column="2"
                                     Background="{DynamicResource Panel4Bg}"
+                                    BorderBrush="{DynamicResource InputBorder}"
+                                    BorderThickness="1"
                                     CornerRadius="4" Padding="8" Margin="4,0,0,0">
                                 <TransitioningContentControl x:Name="Show4"
                                                 HorizontalAlignment="Stretch"
@@ -510,6 +514,8 @@
                     <Border x:Name="LowerBorder"
                             Grid.Row="2"
                             Background="{DynamicResource PanelBg}"
+                            BorderBrush="{DynamicResource InputBorder}"
+                            BorderThickness="1"
                             CornerRadius="6" Padding="12">
                         <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                                       VerticalScrollBarVisibility="Auto">
