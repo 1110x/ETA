@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -15,6 +16,12 @@ namespace ETA.Views.Pages.PAGE1;
 /// <summary>Content4 — Data/Reports 폴더 파일 목록. 체크박스 + 우클릭 삭제.</summary>
 public class ReportsPanel : UserControl
 {
+    private static Brush AppRes(string key, string fallback = "#888888")
+    {
+        if (Application.Current?.Resources.TryGetResource(key, null, out var v) == true && v is Brush b) return b;
+        return new SolidColorBrush(Color.Parse(fallback));
+    }
+
     private static readonly FontFamily Font =
         new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
 
@@ -375,7 +382,7 @@ public class ReportsPanel : UserControl
             Margin = new Avalonia.Thickness(20), Spacing = 16,
             Children =
             {
-                new TextBlock { Text = $"{target}\n삭제하시겠습니까?", FontFamily = Font, FontSize = 12, Foreground = Brushes.WhiteSmoke, TextWrapping = Avalonia.Media.TextWrapping.Wrap },
+                new TextBlock { Text = $"{target}\n삭제하시겠습니까?", FontFamily = Font, FontSize = 12, Foreground = AppRes("AppFg"), TextWrapping = Avalonia.Media.TextWrapping.Wrap },
                 new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Spacing = 8, Children = { no, yes } }
             }
         };

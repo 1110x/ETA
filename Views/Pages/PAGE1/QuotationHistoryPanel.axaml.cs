@@ -51,8 +51,23 @@ public partial class QuotationHistoryPanel : UserControl
     public event Action?                        AnalysisTabActivated;
     public event Action?                        QuotationTabActivated;
 
-    /// <summary>true이면 노드 클릭 시 IssueAddedToList 이벤트를 발생시키고 Show2 상세표시 안 함</summary>
-    public bool IssuingMode { get; set; } = false;
+    /// <summary>true이면 노드 클릭 시 IssueAddedToList 이벤트를 발생시키고 Show2 상세표시 안 함.
+    /// false=견적/의뢰서(보라색), true=거래명세서 발행(청색)</summary>
+    private bool _issuingMode = false;
+    public bool IssuingMode
+    {
+        get => _issuingMode;
+        set { _issuingMode = value; ApplyTheme(); }
+    }
+
+    private void ApplyTheme()
+    {
+        bool blue = _issuingMode;
+        headerBorder.Background    = Brush.Parse(blue ? "#181e28" : "#1e1828");
+        separatorBorder.Background = Brush.Parse(blue ? "#2a3a5a" : "#3a2a5a");
+        treeHostBorder.Background  = Brush.Parse(blue ? "#0e1322" : "#130e1e");
+        this.Resources["TreeItemSelectedBg"] = Brush.Parse(blue ? "#1a2a4a" : "#2a1a4a");
+    }
 
     private bool _isAnalysisTab = false;
 
@@ -73,7 +88,10 @@ public partial class QuotationHistoryPanel : UserControl
 
     public QuotationHistoryPanel()
     {
+        // DynamicResource 초기값 설정 (InitializeComponent 전에 필요)
+        this.Resources["TreeItemSelectedBg"] = Brush.Parse("#2a1a4a");
         InitializeComponent();
+        ApplyTheme();
 
         _treeQuotation = new TreeView
         {

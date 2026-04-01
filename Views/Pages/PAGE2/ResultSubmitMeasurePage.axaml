@@ -1,0 +1,22 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ETA.Views.Pages.PAGE2.ResultSubmitMeasurePage">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <Border Grid.Row="0"
+                Background="{DynamicResource PanelBg}"
+                CornerRadius="6,6,0,0"
+                Padding="10,6">
+            <TextBlock Text="결과 제출 — 측정인"
+                       FontSize="{DynamicResource FontSizeBase}" FontWeight="SemiBold"
+                       Foreground="{DynamicResource FgMuted}"
+                       FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+        </Border>
+
+        <Border Grid.Row="1" Background="{DynamicResource PanelInnerBg}" CornerRadius="0,0,6,6" Padding="16">
+            <StackPanel x:Name="ContentPanel" Spacing="10"/>
+        </Border>
+
+    </Grid>
+</UserControl>

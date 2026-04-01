@@ -243,7 +243,7 @@ public sealed class TestReportPrintWindow : Window
                 Padding    = new Thickness(8, 0),
                 Child      = new TextBlock
                 {
-                    Text = $"품질책임 수질분야 환경측정분析사       {_qualityMgr}       (서명)",
+                    Text = $"품질책임 수질분야 환경측정분석사       {_qualityMgr}       (서명)",
                     FontSize = 9, FontFamily = FM, Foreground = FgDark,
                     VerticalAlignment = VerticalAlignment.Center,
                     HorizontalAlignment = HorizontalAlignment.Center,
@@ -260,8 +260,8 @@ public sealed class TestReportPrintWindow : Window
             Child      = new TextBlock
             {
                 Text = isQC
-                    ? "▩ 이 시험성적서는 ES 04001.b(정도보증/관리) 등 국립환경과학원고시 『수질오염공정시험기준』을 적용한 분析결과 입니다."
-                    : "▩ 이 시험성적서는 ES 04001.b/04130.1e 등 일부가 적용되지 않는 참고용 분析결과입니다.",
+                    ? "▩ 이 시험성적서는 ES 04001.b(정도보증/관리) 등 국립환경과학원고시 『수질오염공정시험기준』을 적용한 분석결과 입니다."
+                    : "▩ 이 시험성적서는 ES 04001.b/04130.1e 등 일부가 적용되지 않는 참고용 분석결과입니다.",
                 FontSize = 8, FontFamily = FM, Foreground = FgGray,
                 TextWrapping = Avalonia.Media.TextWrapping.Wrap,
             },
@@ -274,7 +274,7 @@ public sealed class TestReportPrintWindow : Window
             Background = BgPage,
             Child      = new TextBlock
             {
-                Text = "리뉴어스주식회사 - 수질분析센터",
+                Text = "리뉴어스주식회사 - 수질분석센터",
                 FontSize = 14, FontWeight = FontWeight.Bold,
                 FontFamily = FM, Foreground = FgDark,
                 HorizontalAlignment = HorizontalAlignment.Center,
@@ -287,6 +287,7 @@ public sealed class TestReportPrintWindow : Window
             BorderBrush     = new SolidColorBrush(Color.Parse("#888888")),
             BorderThickness = new Thickness(1),
             CornerRadius    = new CornerRadius(2),
+            Padding         = new Thickness(36, 44, 36, 36),
             Child           = sp,
             MaxWidth        = 900,
         };
@@ -380,12 +381,8 @@ public sealed class TestReportPrintWindow : Window
         return g;
     }
 
-    private Grid MakeEmptyDataRow()
-    {
-        var g = new Grid { ColumnDefinitions = new ColumnDefinitions(DataCols), Height = RowH };
-        for (int i = 0; i < 7; i++) g.Children.Add(Cell("", i, false, TA.Left));
-        return g;
-    }
+    private static Border MakeEmptyDataRow() =>
+        new() { Height = RowH, Background = BgPage };
 
     // ═══════════════════════════════════════════════════════════════════════
     // 셀 빌더
@@ -426,6 +423,7 @@ public sealed class TestReportPrintWindow : Window
     // ═══════════════════════════════════════════════════════════════════════
     private async Task DoPrintAsync()
     {
+#if WINDOWS
         SetStatus("⏳ 인쇄 준비 중...");
         try
         {
@@ -444,6 +442,10 @@ public sealed class TestReportPrintWindow : Window
             SetStatus("✅ 인쇄 완료");
         }
         catch (Exception ex) { SetStatus($"❌ 오류: {ex.Message}"); }
+#else
+        // macOS: PDF로 저장 후 시스템 뷰어(Preview.app)에서 인쇄
+        await DoSaveAsync(toPdf: true);
+#endif
     }
 
     private async Task DoSaveAsync(bool toPdf)

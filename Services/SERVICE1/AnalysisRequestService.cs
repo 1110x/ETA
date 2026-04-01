@@ -330,7 +330,7 @@ public static class AnalysisRequestService
         return list;
     }
 
-    /// <summary>분析의뢰및결과의 방류허용기준 적용유무 업데이트</summary>
+    /// <summary>분석의뢰및결과의 방류허용기준 적용유무 업데이트</summary>
     public static bool UpdateDischargeStandard(int rowId, string standardName)
     {
         if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return false;

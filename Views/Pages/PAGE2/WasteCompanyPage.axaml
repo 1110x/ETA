@@ -7,8 +7,8 @@
             <Setter Property="Padding"    Value="1,4" />
             <Setter Property="Margin"     Value="0,1" />
             <Setter Property="MinHeight"  Value="0" />
-            <Setter Property="FontSize"   Value="11" />
-            <Setter Property="Foreground" Value="#cccccc" />
+            <Setter Property="FontSize"   Value="{DynamicResource FontSizeBase}" />
+            <Setter Property="Foreground" Value="{DynamicResource TreeFg}" />
             <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
             <Setter Property="Background" Value="Transparent" />
         </Style>
@@ -17,25 +17,25 @@
             <Setter Property="Background" Value="Transparent" />
         </Style>
         <Style Selector="TreeViewItem:selected /template/ ContentPresenter#PART_HeaderPresenter">
-            <Setter Property="Background"   Value="#1a4a1a" />
+            <Setter Property="Background"   Value="{DynamicResource TreeSelBg}" />
             <Setter Property="CornerRadius" Value="3" />
         </Style>
         <Style Selector="TreeViewItem:pointerover /template/ ContentPresenter#PART_HeaderPresenter">
-            <Setter Property="Background"   Value="#252535" />
+            <Setter Property="Background"   Value="{DynamicResource TreeHoverBg}" />
             <Setter Property="CornerRadius" Value="3" />
         </Style>
     </UserControl.Styles>
 
     <Grid RowDefinitions="Auto,*">
         <Border Grid.Row="0"
-                Background="#1a1a28"
+                Background="{DynamicResource PanelBg}"
                 CornerRadius="6,6,0,0"
                 Padding="8,4">
             <Grid ColumnDefinitions="*,Auto">
                 <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
                     <TextBlock Text="폐수배출업소"
-                               FontSize="11" FontWeight="SemiBold"
-                               Foreground="#8899bb"
+                               FontSize="{DynamicResource FontSizeBase}" FontWeight="SemiBold"
+                               Foreground="{DynamicResource FgMuted}"
                                FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
                                VerticalAlignment="Center"
                                Margin="0,0,8,0"/>
@@ -43,7 +43,7 @@
                             Content="🌊 여수"
                             Click="GroupTab_Click"
                             Tag="여수"
-                            FontSize="10"
+                            FontSize="{DynamicResource FontSizeSM}"
                             FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
                             Padding="8,3"
                             CornerRadius="10"
@@ -55,39 +55,39 @@
                             Content="🏗 율촌"
                             Click="GroupTab_Click"
                             Tag="율촌"
-                            FontSize="10"
+                            FontSize="{DynamicResource FontSizeSM}"
                             FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
                             Padding="8,3"
                             CornerRadius="10"
-                            Background="#222222"
-                            Foreground="#666666"
+                            Background="{DynamicResource SubBtnBg}"
+                            Foreground="{DynamicResource FgMuted}"
                             BorderThickness="1"
-                            BorderBrush="#444444"/>
+                            BorderBrush="{DynamicResource InputBorder}"/>
                     <Button x:Name="BtnSepung"
                             Content="🏭 세풍"
                             Click="GroupTab_Click"
                             Tag="세풍"
-                            FontSize="10"
+                            FontSize="{DynamicResource FontSizeSM}"
                             FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
                             Padding="8,3"
                             CornerRadius="10"
-                            Background="#222222"
-                            Foreground="#666666"
+                            Background="{DynamicResource SubBtnBg}"
+                            Foreground="{DynamicResource FgMuted}"
                             BorderThickness="1"
-                            BorderBrush="#444444"/>
+                            BorderBrush="{DynamicResource InputBorder}"/>
                 </StackPanel>
                 <Button x:Name="BtnOrder"
                         Grid.Column="1"
                         Content="📋 의뢰등록"
                         Click="OrderBtn_Click"
-                        FontSize="10"
+                        FontSize="{DynamicResource FontSizeSM}"
                         FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
                         Padding="8,3"
                         CornerRadius="10"
-                        Background="#222222"
-                        Foreground="#666666"
+                        Background="{DynamicResource SubBtnBg}"
+                        Foreground="{DynamicResource FgMuted}"
                         BorderThickness="1"
-                        BorderBrush="#444444"/>
+                        BorderBrush="{DynamicResource InputBorder}"/>
             </Grid>
         </Border>
         <TreeView Grid.Row="1"

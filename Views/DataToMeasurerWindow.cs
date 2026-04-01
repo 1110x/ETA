@@ -30,6 +30,12 @@ namespace ETA.Views;
 /// </summary>
 public class DataToMeasurerWindow : Window
 {
+    private static Brush AppRes(string key, string fallback = "#888888")
+    {
+        if (Application.Current?.Resources.TryGetResource(key, null, out var v) == true && v is Brush b) return b;
+        return new SolidColorBrush(Color.Parse(fallback));
+    }
+
     private static readonly FontFamily Font =
         new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
     private static readonly object LogLock = new();
@@ -105,7 +111,7 @@ public class DataToMeasurerWindow : Window
         Height = 760;
         CanResize = true;
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
-        Background = new SolidColorBrush(Color.Parse("#1e1e2e"));
+        Background = AppRes("PanelBg");
 
         BuildUi();
         Loaded += OnLoaded;
@@ -124,7 +130,7 @@ public class DataToMeasurerWindow : Window
             FontFamily = Font,
             FontSize   = 16,
             FontWeight = FontWeight.Bold,
-            Foreground = Brushes.WhiteSmoke,
+            Foreground = AppRes("AppFg"),
             Margin     = new Thickness(12, 10, 0, 4),
         };
 
@@ -135,7 +141,7 @@ public class DataToMeasurerWindow : Window
                 : "데이터공유를 통해 시험성적서의 분석 결과를 측정인 사이트에 입력할 수 있도록 정리합니다. 항목을 확인 후 [측정인에 입력] 버튼을 클릭하세요.",
             FontFamily = Font,
             FontSize   = 11,
-            Foreground = new SolidColorBrush(Color.Parse("#8888bb")),
+            Foreground = AppRes("FgMuted"),
             Margin     = new Thickness(12, 0, 0, 6),
             TextWrapping = TextWrapping.Wrap,
         };
@@ -150,8 +156,8 @@ public class DataToMeasurerWindow : Window
         // ── DataGrid ───────────────────────────────────────────────────────
         _grid.IsReadOnly           = false;
         _grid.CanUserResizeColumns = true;
-        _grid.Background           = new SolidColorBrush(Color.Parse("#1e1e2e"));
-        _grid.Foreground           = Brushes.WhiteSmoke;
+        _grid.Background           = AppRes("PanelBg");
+        _grid.Foreground           = AppRes("AppFg");
         _grid.GridLinesVisibility  = DataGridGridLinesVisibility.All;
         _grid.HorizontalGridLinesBrush = new SolidColorBrush(Color.Parse("#333355"));
         _grid.VerticalGridLinesBrush   = new SolidColorBrush(Color.Parse("#333355"));
@@ -165,7 +171,7 @@ public class DataToMeasurerWindow : Window
         // ── 측정인 페이지 확인 영역 ─────────────────────────────────────
         _matchTb.FontFamily  = Font;
         _matchTb.FontSize    = 11;
-        _matchTb.Foreground  = new SolidColorBrush(Color.Parse("#8888bb"));
+        _matchTb.Foreground  = AppRes("FgMuted");
         _matchTb.Margin      = new Thickness(12, 2, 12, 2);
         _matchTb.Text        = "▶ [측정값 입력 진행] 버튼: 현재 브라우저의 측정인 페이지와 로드된 시료를 확인한 뒤 입력을 진행합니다.";
         _matchTb.TextWrapping = TextWrapping.Wrap;
@@ -250,7 +256,7 @@ public class DataToMeasurerWindow : Window
         btn.FontFamily      = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
         btn.FontSize        = 12;
         btn.Background      = new SolidColorBrush(Color.Parse(bg));
-        btn.Foreground      = Brushes.WhiteSmoke;
+        btn.Foreground      = AppRes("AppFg");
         btn.BorderThickness = new Thickness(0);
         btn.Padding         = new Thickness(0);
         btn.Cursor          = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand);
@@ -396,7 +402,7 @@ public class DataToMeasurerWindow : Window
 
     private async Task CheckMeasurerPageAsync()
     {
-        _matchTb.Foreground = new SolidColorBrush(Color.Parse("#aaaacc"));
+        _matchTb.Foreground = AppRes("FgMuted");
         _matchTb.Text = "페이지 확인 중...";
         try
         {

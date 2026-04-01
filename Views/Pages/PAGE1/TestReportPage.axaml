@@ -8,8 +8,8 @@
             <Setter Property="Padding"    Value="1,0" />
             <Setter Property="Margin"     Value="0" />
             <Setter Property="MinHeight"  Value="0" />
-            <Setter Property="FontSize"   Value="11" />
-            <Setter Property="Foreground" Value="#cccccc" />
+            <Setter Property="FontSize"   Value="{DynamicResource FontSizeBase}" />
+            <Setter Property="Foreground" Value="{DynamicResource TreeFg}" />
             <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
             <Setter Property="Background" Value="Transparent" />
         </Style>
@@ -18,11 +18,11 @@
             <Setter Property="Background" Value="Transparent" />
         </Style>
         <Style Selector="TreeViewItem:selected /template/ ContentPresenter#PART_HeaderPresenter">
-            <Setter Property="Background"   Value="#1a4a1a" />
+            <Setter Property="Background"   Value="{DynamicResource TreeSelBg}" />
             <Setter Property="CornerRadius" Value="3" />
         </Style>
         <Style Selector="TreeViewItem:pointerover /template/ ContentPresenter#PART_HeaderPresenter">
-            <Setter Property="Background"   Value="#252535" />
+            <Setter Property="Background"   Value="{DynamicResource TreeHoverBg}" />
             <Setter Property="CornerRadius" Value="3" />
         </Style>
     </UserControl.Styles>
@@ -31,7 +31,7 @@
 
         <!-- 정렬 토글 헤더 + 검색창 -->
         <Border Grid.Row="0"
-                Background="#1a1a28"
+                Background="{DynamicResource PanelBg}"
                 CornerRadius="6,6,0,0"
                 Padding="8,4">
             <Grid ColumnDefinitions="Auto,*">
@@ -47,8 +47,8 @@
                          x:Name="txbSearch"
                          Watermark="🔍 검색..."
                          Height="22" FontSize="{DynamicResource FontSizeBase}"
-                         Background="#252535" Foreground="#ddd"
-                         BorderBrush="#444" Padding="6,0" CornerRadius="4"
+                         Background="{DynamicResource InputBg}" Foreground="{DynamicResource InputFg}"
+                         BorderBrush="{DynamicResource InputBorder}" Padding="6,0" CornerRadius="4"
                          Margin="6,0,0,0"
                          VerticalAlignment="Center"
                          FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"
@@ -58,7 +58,7 @@
 
         <!-- 트리뷰 영역 -->
         <Border Grid.Row="1"
-                Background="#13131f"
+                Background="{DynamicResource PanelInnerBg}"
                 CornerRadius="0,0,6,6"
                 Padding="2,2">
             <TreeView x:Name="ReportTreeView"

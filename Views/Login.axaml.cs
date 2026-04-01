@@ -150,17 +150,60 @@ public partial class Login : Window
 
     private async void PlayLottieAndNavigate(string empId)
     {
+        // Lottie 재생 시작 (RepeatCount=-1 → 완료까지 반복 재생)
         try
         {
-            // Path 재할당으로 AutoPlay=True 상태에서 재로드 → 재생 트리거
             var path = lottieView.Path;
             lottieView.AutoPlay = true;
             lottieView.Path = null;
             lottieView.Path = path;
             Log("[Lottie] 재생 시작");
-            await Task.Delay(4000);
         }
-        catch (Exception ex) { Log($"[Lottie] 오류: {ex.Message}"); }
+        catch (Exception ex) { Log($"[Lottie] 시작 오류: {ex.Message}"); }
+
+        // 진행 오버레이 표시
+        connectOverlay.IsVisible = true;
+
+        try
+        {
+            // ── Step 1: DB 연결 확인 (서버 지연 시 Lottie 계속 반복) ──────────
+            SetProgress("DB 연결 중...", 0);
+            await Task.Run(() =>
+            {
+                using var conn = DbConnectionFactory.CreateConnection();
+                conn.Open();
+            });
+            SetProgress("DB 연결 완료", 22);
+            await Task.Delay(150);
+
+            // ── Step 2: 처리시설 / 폐수 테이블 마이그레이션 ───────────────────
+            SetProgress("테이블 초기화 중...", 22);
+            await Task.Run(() => FacilityDbMigration.EnsureTables());
+            SetProgress("테이블 준비 완료", 55);
+            await Task.Delay(150);
+
+            // ── Step 3: 견적 테이블 초기화 ────────────────────────────────────
+            SetProgress("견적 데이터 준비 중...", 55);
+            await Task.Run(() => QuotationService.EnsureQuotationIssueTable());
+            SetProgress("데이터 준비 완료", 82);
+            await Task.Delay(150);
+
+            // ── Step 4: 완료 ──────────────────────────────────────────────────
+            SetProgress("시스템 준비 완료", 96);
+            await Task.Delay(300);
+            SetProgress("✓ 완료!", 100);
+            await Task.Delay(250);
+        }
+        catch (Exception ex)
+        {
+            Log($"[Init] 초기화 오류: {ex.Message}");
+            SetProgress("⚠ 일부 항목 로드 실패 — 계속 진행", 100);
+            await Task.Delay(700);
+        }
+
+        // Lottie 중단 후 메인 페이지 이동
+        try { lottieView.AutoPlay = false; lottieView.Path = null; }
+        catch { }
 
         CurrentUserManager.Instance.SetCurrentUser(empId);
         MainPage.CurrentEmployeeId = empId;
@@ -168,6 +211,14 @@ public partial class Login : Window
         var main = new MainPage();
         main.Show();
         Close();
+    }
+
+    private void SetProgress(string status, int value)
+    {
+        txtConnectStatus.Text = status;
+        pbConnect.Value       = value;
+        txtConnectPct.Text    = $"{value}%";
+        Log($"[Progress] {value}% — {status}");
     }
 
     private async void ChangePassword_Click(object? sender, RoutedEventArgs e)

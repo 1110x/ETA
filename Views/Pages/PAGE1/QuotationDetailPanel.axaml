@@ -5,13 +5,13 @@
     <UserControl.Styles>
         <Style Selector="TextBlock.lbl">
             <Setter Property="FontSize"          Value="{DynamicResource FontSizeBase}" />
-            <Setter Property="Foreground"        Value="#666" />
+            <Setter Property="Foreground"        Value="{DynamicResource FgMuted}" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="FontFamily"        Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
         </Style>
         <Style Selector="TextBlock.val">
             <Setter Property="FontSize"          Value="{DynamicResource FontSizeMD}" />
-            <Setter Property="Foreground"        Value="#ddd" />
+            <Setter Property="Foreground"        Value="{DynamicResource AppFg}" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="FontFamily"        Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
             <Setter Property="TextWrapping"      Value="Wrap" />
@@ -44,11 +44,11 @@
         <TextBlock Grid.Row="0"
                    Text="발행 세부내역"
                    FontSize="{DynamicResource FontSizeLG}" FontWeight="Bold"
-                   Foreground="#e0e0e0"
+                   Foreground="{DynamicResource AppFg}"
                    FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
                    Margin="0,0,0,6"/>
 
-        <Border Grid.Row="1" Height="1" Background="#333" Margin="0,0,0,8" />
+        <Border Grid.Row="1" Height="1" Background="{DynamicResource InputBorder}" Margin="0,0,0,8" />
 
         <!-- 내용 -->
         <ScrollViewer Grid.Row="2"
@@ -61,7 +61,7 @@
                            Text="왼쪽 트리에서 발행건을 선택하세요."
                            FontSize="{DynamicResource FontSizeMD}"
                            FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
-                           Foreground="#555"
+                           Foreground="{DynamicResource FgMuted}"
                            HorizontalAlignment="Center"
                            Margin="0,30,0,0" />
 
@@ -69,7 +69,7 @@
                 <StackPanel x:Name="spContent" IsVisible="False" Spacing="6">
 
                     <!-- 기본 정보 (좌: 견적 정보 / 우: 담당자 정보) -->
-                    <Border Background="#1e2530" CornerRadius="5" Padding="12,8">
+                    <Border Background="{DynamicResource PanelInnerBg}" CornerRadius="5" Padding="12,8">
                         <Grid ColumnDefinitions="*,Auto,*">
 
                             <!-- 좌: 견적 정보 -->
@@ -94,7 +94,7 @@
                             </Grid>
 
                             <!-- 구분선 -->
-                            <Border Grid.Column="1" Width="1" Background="#333" Margin="12,0"/>
+                            <Border Grid.Column="1" Width="1" Background="{DynamicResource InputBorder}" Margin="12,0"/>
 
                             <!-- 우: 담당자 정보 -->
                             <StackPanel Grid.Column="2" Spacing="0" VerticalAlignment="Center">
@@ -109,21 +109,21 @@
                                 <Grid ColumnDefinitions="52,*" Margin="0,0,0,4">
                                     <TextBlock Grid.Column="0" Classes="lbl" Text="이름" VerticalAlignment="Center"/>
                                     <TextBlock Grid.Column="1" Classes="val" x:Name="txbManagerName"
-                                               FontWeight="SemiBold" Foreground="#eeeeee"/>
+                                               FontWeight="SemiBold" Foreground="{DynamicResource AppFg}"/>
                                 </Grid>
 
                                 <!-- 연락처 -->
                                 <Grid ColumnDefinitions="52,*" Margin="0,0,0,4">
                                     <TextBlock Grid.Column="0" Classes="lbl" Text="연락처" VerticalAlignment="Center"/>
                                     <TextBlock Grid.Column="1" Classes="val" x:Name="txbManagerPhone"
-                                               Foreground="#ccddee"/>
+                                               Foreground="{DynamicResource AppFg}"/>
                                 </Grid>
 
                                 <!-- 이메일 -->
                                 <Grid ColumnDefinitions="52,*">
                                     <TextBlock Grid.Column="0" Classes="lbl" Text="이메일" VerticalAlignment="Center"/>
                                     <TextBlock Grid.Column="1" Classes="val" x:Name="txbManagerEmail"
-                                               Foreground="#ccddee" TextWrapping="Wrap"/>
+                                               Foreground="{DynamicResource AppFg}" TextWrapping="Wrap"/>
                                 </Grid>
                             </StackPanel>
 
@@ -142,7 +142,7 @@
                     </Border>
 
                     <!-- 항목 라인 목록 (동적 생성) -->
-                    <Border Background="#1e2030" CornerRadius="5" Padding="0">
+                    <Border Background="{DynamicResource PanelInnerBg}" CornerRadius="5" Padding="0">
                         <StackPanel>
                             <!-- 컬럼 헤더 -->
                             <Grid ColumnDefinitions="*,60,80,80"
@@ -155,7 +155,7 @@
                                 <TextBlock Grid.Column="3" Classes="lbl" Text="소계"
                                            HorizontalAlignment="Right"/>
                             </Grid>
-                            <Border Height="1" Background="#2a2a3a" Margin="8,0"/>
+                            <Border Height="1" Background="{DynamicResource InputBorder}" Margin="8,0"/>
                             <!-- 항목 행 컨테이너 -->
                             <StackPanel x:Name="spItems" Spacing="0" Margin="0,2,0,4"/>
                         </StackPanel>
@@ -169,7 +169,7 @@
         <StackPanel Grid.Row="3" x:Name="spButtons"
                     Orientation="Horizontal" Spacing="8"
                     Margin="0,6,0,0" IsVisible="False">
-            <Button Classes="action-btn" Content="🥕  당근"        Click="BtnCarrot_Click"  ToolTip.Tip="이 건을 재활용해서 신규 작성" />
+            <Button Classes="action-btn" Content="🔄  ReCyle"     Click="BtnCarrot_Click"  ToolTip.Tip="이 건을 재활용해서 신규 작성" />
             <Button Classes="action-btn" Content="✏️  오작성 수정" Click="BtnCorrect_Click" ToolTip.Tip="시료명·견적번호·발행일·적용구분·업체명 등 잘못된 항목 수정" />
             <Button Classes="action-btn" Content="📋  의뢰서 작성" Click="BtnOrderRequest_Click" ToolTip.Tip="분석 의뢰서 작성" />
             <Button Classes="action-btn" Content="🖨  인쇄"        Click="BtnPrint_Click" />

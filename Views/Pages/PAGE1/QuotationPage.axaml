@@ -7,16 +7,16 @@
         <Style Selector="ListBoxItem">
             <Setter Property="Padding"      Value="8,4" />
             <Setter Property="Background"   Value="Transparent" />
-            <Setter Property="Foreground"   Value="#ddd" />
+            <Setter Property="Foreground"   Value="{DynamicResource AppFg}" />
             <Setter Property="FontSize"     Value="{DynamicResource FontSizeMD}" />
             <Setter Property="CornerRadius" Value="3" />
             <Setter Property="FontFamily"   Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
         </Style>
         <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
-            <Setter Property="Background" Value="#1a4a1a" />
+            <Setter Property="Background" Value="{DynamicResource TreeSelBg}" />
         </Style>
         <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="#1e3a2e" />
+            <Setter Property="Background" Value="{DynamicResource TreeHoverBg}" />
         </Style>
     </UserControl.Styles>
 
@@ -27,7 +27,7 @@
                    x:Name="txbHeader"
                    Text="측정인 업체"
                    FontSize="{DynamicResource FontSizeMD}" FontWeight="Bold"
-                   Foreground="#e0e0e0"
+                   Foreground="{DynamicResource AppFg}"
                    FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
                    Margin="0,0,0,6"/>
 
@@ -48,13 +48,13 @@
             <TextBox x:Name="txbSearch"
                      Watermark="업체명 검색..."
                      Height="26" FontSize="{DynamicResource FontSizeBase}"
-                     Background="#2a2a35" Foreground="#ddd"
-                     BorderBrush="#444" Padding="8,0" CornerRadius="4"
+                     Background="{DynamicResource InputBg}" Foreground="{DynamicResource InputFg}"
+                     BorderBrush="{DynamicResource InputBorder}" Padding="8,0" CornerRadius="4"
                      FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"
                      TextChanged="TxbSearch_TextChanged" />
             <TextBlock x:Name="txbCompanyCount"
                        Text="0개 업체"
-                       FontSize="{DynamicResource FontSizeBase}" Foreground="#666"
+                       FontSize="{DynamicResource FontSizeBase}" Foreground="{DynamicResource FgMuted}"
                        Margin="2,0,0,0"
                        FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R" />
         </StackPanel>

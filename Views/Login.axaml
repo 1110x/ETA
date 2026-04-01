@@ -33,6 +33,46 @@
                        RepeatCount="-1"
                        Stretch="UniformToFill" />
 
+        <!-- 서버 연결 진행 오버레이 (로그인 성공 후 표시) -->
+        <Border x:Name="connectOverlay"
+                IsVisible="False"
+                VerticalAlignment="Bottom"
+                HorizontalAlignment="Stretch"
+                Padding="40,0,40,32">
+            <Border Background="#CC0a0a18"
+                    CornerRadius="12"
+                    Padding="24,16">
+                <StackPanel Spacing="8">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock x:Name="txtConnectStatus"
+                                   Grid.Column="0"
+                                   Text="서버 연결 중..."
+                                   Foreground="White"
+                                   FontSize="13"
+                                   VerticalAlignment="Center"
+                                   FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+                        <TextBlock x:Name="txtConnectPct"
+                                   Grid.Column="1"
+                                   Text="0%"
+                                   Foreground="#88ffffff"
+                                   FontSize="11"
+                                   VerticalAlignment="Center"
+                                   FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+                    </Grid>
+                    <ProgressBar x:Name="pbConnect"
+                                 Minimum="0" Maximum="100" Value="0"
+                                 Height="7"
+                                 CornerRadius="4">
+                        <ProgressBar.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Value" Duration="0:0:0.35" Easing="CubicEaseOut"/>
+                            </Transitions>
+                        </ProgressBar.Transitions>
+                    </ProgressBar>
+                </StackPanel>
+            </Border>
+        </Border>
+
         <!-- 로그인 카드 -->
         <Border x:Name="loginForm"
                 Background="White"

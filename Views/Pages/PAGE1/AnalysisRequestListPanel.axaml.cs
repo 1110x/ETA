@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -32,14 +33,18 @@ namespace ETA.Views.Pages.PAGE1;
 /// </summary>
 public class AnalysisRequestListPanel : UserControl
 {
+    private static Brush AppRes(string key, string fallback = "#888888")
+    {
+        if (Application.Current?.Resources.TryGetResource(key, null, out var v) == true && v is Brush b) return b;
+        return new SolidColorBrush(Color.Parse(fallback));
+    }
+
     private static readonly FontFamily Font =
         new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
 
-    private static readonly IBrush BrushChildBg  = Brush.Parse("#1e1e2e");
-    private static readonly IBrush BrushChildFg  = Brush.Parse("#aaaacc");
+    private static readonly IBrush BrushChildFg  = AppRes("FgMuted");
     private static readonly IBrush BrushAbbrBg   = Brush.Parse("#3a1a1a");
     private static readonly IBrush BrushAbbrFg   = Brush.Parse("#cc8888");
-    private static readonly IBrush BrushAccNo    = Brush.Parse("#445566");
     private static readonly IBrush BrushParentFg = Brush.Parse("#88ee88");
 
     private readonly TreeView _tree = new();
@@ -79,7 +84,7 @@ public class AnalysisRequestListPanel : UserControl
         {
             Text = "📋  분석의뢰 선택 목록",
             FontSize = 12, FontWeight = FontWeight.Bold,
-            FontFamily = Font, Foreground = Brush.Parse("#e0e0e0"),
+            FontFamily = Font, Foreground = AppRes("AppFg"),
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Avalonia.Thickness(0, 0, 0, 4),
         };
@@ -116,7 +121,7 @@ public class AnalysisRequestListPanel : UserControl
         {
             Text = "",
             FontSize = 9, FontFamily = Font,
-            Foreground = Brush.Parse("#88aa88"),
+            Foreground = AppRes("TreeFg"),
             Margin = new Avalonia.Thickness(0, 2, 0, 2),
             [Grid.RowProperty] = 3,
         };
@@ -134,7 +139,7 @@ public class AnalysisRequestListPanel : UserControl
                 {
                     headerPanel,
                     new Border { [Grid.RowProperty]=1, Height=1,
-                                 Background=Brush.Parse("#333"),
+                                 Background=AppRes("InputBorder"),
                                  Margin=new Avalonia.Thickness(0,0,0,3) },
                     new ScrollViewer
                     {
@@ -191,7 +196,7 @@ public class AnalysisRequestListPanel : UserControl
             var childGrid = new Grid
             {
                 ColumnDefinitions = new ColumnDefinitions("*,60"),
-                Background        = BrushChildBg,
+                Background        = AppRes("PanelInnerBg"),
             };
             childGrid.Children.Add(new TextBlock
             {
@@ -345,7 +350,7 @@ public class AnalysisRequestListPanel : UserControl
             Height = 160,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
             CanResize = false,
-            Background = Brush.Parse("#1a1a2a"),
+            Background = AppRes("PanelBg"),
             SystemDecorations = Avalonia.Controls.SystemDecorations.Full,
         };
 
@@ -353,14 +358,14 @@ public class AnalysisRequestListPanel : UserControl
         {
             Minimum = 0, Maximum = 100, Value = 0,
             Height = 14, IsIndeterminate = true,
-            Foreground = Brush.Parse("#4a8a4a"),
-            Background = Brush.Parse("#2a2a3a"),
+            Foreground = AppRes("TreeFg"),
+            Background = AppRes("SubBtnBg"),
         };
         var statusLbl = new TextBlock
         {
             Text = $"분장 조회 중... ({today:yyyy-MM-dd} 기준)",
             FontSize = 10, FontFamily = Font,
-            Foreground = Brush.Parse("#8888aa"),
+            Foreground = AppRes("FgMuted"),
             Margin = new Avalonia.Thickness(0, 4, 0, 0),
         };
 
@@ -374,7 +379,7 @@ public class AnalysisRequestListPanel : UserControl
                 {
                     Text = $"분석항목 {groups.Count}개 — 분석자별 기록부 생성",
                     FontSize = 11, FontFamily = Font,
-                    Foreground = Brush.Parse("#ccccee"),
+                    Foreground = AppRes("AppFg"),
                 },
                 overallBar,
                 statusLbl,
@@ -459,7 +464,7 @@ public class AnalysisRequestListPanel : UserControl
         {
             Title = "삭제 확인", Width = 320, Height = 140,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            CanResize = false, Background = Brush.Parse("#1a1a2a"),
+            CanResize = false, Background = AppRes("PanelBg"),
             SystemDecorations = Avalonia.Controls.SystemDecorations.Full,
         };
 
@@ -477,7 +482,7 @@ public class AnalysisRequestListPanel : UserControl
         var btnCancel = new Button
         {
             Content = "취소", Width = 80, Height = 28, FontSize = 11, FontFamily = Font,
-            Background = Brush.Parse("#2a2a3a"), Foreground = Brush.Parse("#aaa"),
+            Background = AppRes("SubBtnBg"), Foreground = AppRes("FgMuted"),
             BorderThickness = new Avalonia.Thickness(0), CornerRadius = new Avalonia.CornerRadius(4),
             HorizontalContentAlignment = HorizontalAlignment.Center,
             Margin = new Avalonia.Thickness(10, 0, 0, 0),
@@ -493,7 +498,7 @@ public class AnalysisRequestListPanel : UserControl
             Children =
             {
                 new TextBlock { Text = msg, FontSize = 11, FontFamily = Font,
-                    Foreground = Brush.Parse("#dddddd"),
+                    Foreground = AppRes("AppFg"),
                     TextWrapping = Avalonia.Media.TextWrapping.Wrap },
                 new StackPanel
                 {
@@ -567,7 +572,7 @@ public class AnalysisRequestListPanel : UserControl
         topRow.Children.Add(new TextBlock
         {
             Text = rec.의뢰일.Length >= 10 ? rec.의뢰일[..10] : rec.의뢰일,
-            FontSize = 9, FontFamily = Font, Foreground = BrushAccNo,
+            FontSize = 9, FontFamily = Font, Foreground = AppRes("FgMuted"),
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Avalonia.Thickness(6, 0),
             [Grid.ColumnProperty] = 2,
@@ -579,14 +584,14 @@ public class AnalysisRequestListPanel : UserControl
         subRow.Children.Add(new TextBlock
         {
             Text = rec.접수번호, FontSize = 9, FontFamily = Font,
-            Foreground = BrushAccNo, Margin = new Avalonia.Thickness(0, 0, 8, 1),
+            Foreground = AppRes("FgMuted"), Margin = new Avalonia.Thickness(0, 0, 8, 1),
             [Grid.ColumnProperty] = 0,
         });
         if (!string.IsNullOrEmpty(sampleDisp))
             subRow.Children.Add(new TextBlock
             {
                 Text = $"채취 {sampleDisp}", FontSize = 9, FontFamily = Font,
-                Foreground = Brush.Parse("#8888cc"),
+                Foreground = AppRes("FgMuted"),
                 Margin = new Avalonia.Thickness(0, 0, 8, 1),
                 [Grid.ColumnProperty] = 1,
             });
@@ -594,7 +599,7 @@ public class AnalysisRequestListPanel : UserControl
             subRow.Children.Add(new TextBlock
             {
                 Text = manager, FontSize = 9, FontFamily = Font,
-                Foreground = Brush.Parse("#88aa88"),
+                Foreground = AppRes("TreeFg"),
                 Margin = new Avalonia.Thickness(0, 0, 0, 1),
                 [Grid.ColumnProperty] = 2,
             });
@@ -1263,7 +1268,7 @@ public class AnalysisRequestListPanel : UserControl
         {
             Title = title, Width = 360, Height = 220,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            CanResize = false, Background = Brush.Parse("#1a1a2a"),
+            CanResize = false, Background = AppRes("PanelBg"),
             SystemDecorations = Avalonia.Controls.SystemDecorations.Full,
         };
         var btnOk = new Button
@@ -1280,7 +1285,7 @@ public class AnalysisRequestListPanel : UserControl
             Children =
             {
                 new TextBlock { Text = message, FontSize = 11, FontFamily = Font,
-                    Foreground = Brush.Parse("#dddddd"),
+                    Foreground = AppRes("AppFg"),
                     TextWrapping = Avalonia.Media.TextWrapping.Wrap },
                 new StackPanel
                 {

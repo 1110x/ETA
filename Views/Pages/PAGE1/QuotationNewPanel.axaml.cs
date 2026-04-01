@@ -20,6 +20,12 @@ namespace ETA.Views.Pages.PAGE1;
 
 public partial class QuotationNewPanel : UserControl
 {
+    private static Brush AppRes(string key, string fallback = "#888888")
+    {
+        if (Application.Current?.Resources.TryGetResource(key, null, out var v) == true && v is Brush b) return b;
+        return new SolidColorBrush(Color.Parse(fallback));
+    }
+
     private static readonly FontFamily Font =
         new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
 
@@ -207,7 +213,7 @@ public partial class QuotationNewPanel : UserControl
         _carrotCompanyName = issue.업체명;
         _carrotAbbr        = issue.약칭;
 
-        txbTitle.Text       = "🥕  당근 (재활용)";
+        txbTitle.Text       = "🔄  ReCyle (재활용)";
         txbMode.Text        = "재활용 모드";
         ShowCompanyBadge(issue.업체명, issue.약칭);
         txbQuotationNo.Text = GenerateNo();
@@ -242,9 +248,14 @@ public partial class QuotationNewPanel : UserControl
         txbIssueDate.Text   = issue.발행일;     // 기존 날짜 유지 (수정 가능)
         txbSampleName.Text  = issue.시료명;     // 기존 시료명 유지 (수정 가능)
         acbManager.Text     = issue.담당자;     // 담당자 유지
-        pnlContactInfo.IsVisible = false;
-        txbManagerPhone.Text = "";
-        txbManagerEmail.Text = "";
+
+        // 기존 연락처/이메일 — DB 최신값 우선, 없으면 issue에 저장된 값 사용
+        var (dbPhone, dbEmail) = !string.IsNullOrEmpty(issue.담당자)
+            ? QuotationService.GetManagerContactInfo(issue.업체명, issue.담당자)
+            : ("", "");
+        txbManagerPhone.Text = !string.IsNullOrEmpty(dbPhone) ? dbPhone : issue.담당자연락처;
+        txbManagerEmail.Text = !string.IsNullOrEmpty(dbEmail) ? dbEmail : issue.담당자이메일;
+        pnlContactInfo.IsVisible = !string.IsNullOrEmpty(issue.담당자);
 
         var row = QuotationService.GetIssueRow(issue.Id);
         LoadItemsFromRow(row);
@@ -699,7 +710,7 @@ public partial class QuotationNewPanel : UserControl
                 Spacing = 4,
                 Children =
                 {
-                    new TextBlock { Text = label, FontFamily = f, FontSize = 11, Foreground = Brushes.LightGray },
+                    new TextBlock { Text = label, FontFamily = f, FontSize = 11, Foreground = AppRes("FgMuted") },
                     box,
                 }
             }
@@ -722,7 +733,7 @@ public partial class QuotationNewPanel : UserControl
             FontSize   = 13,
             Padding    = new Thickness(12, 6),
             Background = new SolidColorBrush(Color.Parse("#333355")),
-            Foreground = Brushes.LightGray,
+            Foreground = AppRes("FgMuted"),
             HorizontalAlignment = HorizontalAlignment.Right,
         };
 
@@ -745,7 +756,7 @@ public partial class QuotationNewPanel : UserControl
                         Text       = "견적 발행 전 담당자 정보를 확인하세요.",
                         FontFamily = font,
                         FontSize   = 12,
-                        Foreground = Brushes.LightCyan,
+                        Foreground = AppRes("AppFg"),
                         Margin     = new Thickness(0, 0, 0, 8),
                     },
                     MakeRow("견적요청담당자 *", txName,  font),

@@ -21,6 +21,12 @@ namespace ETA.Views.Pages.PAGE2;
 /// </summary>
 public sealed class WasteNameReconcilePage
 {
+    private static Brush AppRes(string key, string fallback = "#888888")
+    {
+        if (Application.Current?.Resources.TryGetResource(key, null, out var v) == true && v is Brush b) return b;
+        return new SolidColorBrush(Color.Parse(fallback));
+    }
+
     // ── 3개 패널 (MainPage → Show1 / Show2 / Show4) ──────────────────────────
     public Control LeftPanel   { get; }
     public Control CenterPanel { get; }
@@ -143,7 +149,7 @@ public sealed class WasteNameReconcilePage
                 sp.Children.Add(new TextBlock
                 {
                     Text = c.업체명, FontSize = 12, FontFamily = Font,
-                    Foreground = Brushes.WhiteSmoke,
+                    Foreground = AppRes("AppFg"),
                     VerticalAlignment = VerticalAlignment.Center,
                 });
                 sp.Children.Add(new TextBlock
@@ -429,7 +435,7 @@ public sealed class WasteNameReconcilePage
                 sp.Children.Add(new TextBlock
                 {
                     Text = name, FontSize = 11, FontFamily = Font,
-                    Foreground = Brushes.WhiteSmoke,
+                    Foreground = AppRes("AppFg"),
                 });
                 _dataTree.Items.Add(new TreeViewItem { Tag = name, Header = sp });
             }

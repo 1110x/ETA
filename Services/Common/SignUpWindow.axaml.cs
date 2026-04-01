@@ -15,6 +15,12 @@ namespace ETA.Views;
 
 public class SignUpWindow : Window
 {
+    private static Brush AppRes(string key, string fallback = "#888888")
+    {
+        if (Application.Current?.Resources.TryGetResource(key, null, out var v) == true && v is Brush b) return b;
+        return new SolidColorBrush(Color.Parse(fallback));
+    }
+
     private readonly TextBox  _tbName;
     private readonly TextBox  _tbEmployeeId;
     private readonly TextBox  _tbPassword;
@@ -34,7 +40,7 @@ public class SignUpWindow : Window
         CanResize         = false;
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
         SystemDecorations = SystemDecorations.BorderOnly;
-        Background        = new SolidColorBrush(Color.Parse("#1e1e2a"));
+        Background        = AppRes("PanelBg");
 
         _tbName            = MakeTb("이름");
         _tbEmployeeId      = MakeTb("사번 (예: 2024001)");
@@ -47,9 +53,9 @@ public class SignUpWindow : Window
             FontFamily    = Font,
             FontSize      = 13,
             HorizontalAlignment = HorizontalAlignment.Stretch,
-            Background    = new SolidColorBrush(Color.Parse("#2a2a3a")),
-            Foreground    = Brushes.WhiteSmoke,
-            BorderBrush   = new SolidColorBrush(Color.Parse("#444466")),
+            Background    = AppRes("InputBg"),
+            Foreground    = AppRes("AppFg"),
+            BorderBrush   = AppRes("InputBorder"),
         };
 
         _tbError = new TextBlock
@@ -82,7 +88,7 @@ public class SignUpWindow : Window
             Height              = 36,
             FontFamily          = Font,
             FontSize            = 12,
-            Foreground          = new SolidColorBrush(Color.Parse("#888888")),
+            Foreground          = AppRes("FgMuted"),
             BorderThickness     = new Thickness(0),
             Background          = Brushes.Transparent,
         };
@@ -102,7 +108,7 @@ public class SignUpWindow : Window
                         FontFamily = Font,
                         FontSize   = 22,
                         FontWeight = FontWeight.SemiBold,
-                        Foreground = Brushes.WhiteSmoke,
+                        Foreground = AppRes("AppFg"),
                         Margin     = new Thickness(0, 0, 0, 4),
                     },
                     new TextBlock
@@ -110,7 +116,7 @@ public class SignUpWindow : Window
                         Text       = "관리자 승인 후 로그인이 가능합니다",
                         FontFamily = Font,
                         FontSize   = 11,
-                        Foreground = new SolidColorBrush(Color.Parse("#888888")),
+                        Foreground = AppRes("FgMuted"),
                         Margin     = new Thickness(0, 0, 0, 8),
                     },
                     LabeledField("이  름", _tbName),
@@ -175,7 +181,7 @@ public class SignUpWindow : Window
             Height  = 180,
             CanResize = false,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            Background = new SolidColorBrush(Color.Parse("#1e1e2a")),
+            Background = AppRes("PanelBg"),
         };
         var okBtn = new Button
         {
@@ -196,7 +202,7 @@ public class SignUpWindow : Window
                 {
                     Text = "✅  가입 신청이 완료되었습니다.\n관리자 승인 후 로그인 가능합니다.",
                     FontFamily = Font, FontSize = 12,
-                    Foreground = Brushes.WhiteSmoke,
+                    Foreground = AppRes("AppFg"),
                     TextWrapping = TextWrapping.Wrap,
                     TextAlignment = TextAlignment.Center,
                 },
@@ -227,7 +233,7 @@ public class SignUpWindow : Window
                     Text       = label,
                     FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
                     FontSize   = 11,
-                    Foreground = new SolidColorBrush(Color.Parse("#aaaaaa")),
+                    Foreground = AppRes("FgMuted"),
                 },
                 input
             }
@@ -239,9 +245,9 @@ public class SignUpWindow : Window
         Watermark       = hint,
         FontFamily      = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
         FontSize        = 13,
-        Background      = new SolidColorBrush(Color.Parse("#2a2a3a")),
-        Foreground      = Brushes.WhiteSmoke,
-        BorderBrush     = new SolidColorBrush(Color.Parse("#444466")),
+        Background      = AppRes("InputBg"),
+        Foreground      = AppRes("AppFg"),
+        BorderBrush     = AppRes("InputBorder"),
         BorderThickness = new Thickness(1),
         CornerRadius    = new CornerRadius(6),
         Padding         = new Thickness(10, 8),

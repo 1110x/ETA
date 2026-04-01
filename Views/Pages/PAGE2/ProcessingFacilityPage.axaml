@@ -1,0 +1,85 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ETA.Views.Pages.PAGE2.ProcessingFacilityPage">
+
+    <UserControl.Styles>
+        <Style Selector="Button.FacBtn">
+            <Setter Property="Height"          Value="26"/>
+            <Setter Property="FontSize"        Value="{DynamicResource FontSizeBase}"/>
+            <Setter Property="FontFamily"      Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+            <Setter Property="Background"      Value="{DynamicResource SubBtnBg}"/>
+            <Setter Property="Foreground"      Value="{DynamicResource FgMuted}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush"     Value="{DynamicResource InputBorder}"/>
+            <Setter Property="CornerRadius"    Value="4"/>
+            <Setter Property="Padding"         Value="8,0"/>
+        </Style>
+        <Style Selector="Button.FacBtn:pointerover">
+            <Setter Property="Background" Value="#2a3a2a"/>
+            <Setter Property="Foreground" Value="#88ee88"/>
+        </Style>
+        <Style Selector="Button.FacBtn.selected">
+            <Setter Property="Background"   Value="#1a3a1a"/>
+            <Setter Property="Foreground"   Value="#88ff88"/>
+            <Setter Property="BorderBrush"  Value="#2a6a2a"/>
+            <Setter Property="FontWeight"   Value="SemiBold"/>
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- 헤더 -->
+        <Border Grid.Row="0"
+                Background="{DynamicResource PanelBg}"
+                CornerRadius="6,6,0,0"
+                Padding="10,6">
+            <TextBlock Text="처리시설 측정결과 입력"
+                       FontSize="{DynamicResource FontSizeBase}" FontWeight="SemiBold"
+                       Foreground="{DynamicResource FgMuted}"
+                       FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+        </Border>
+
+        <!-- 좌측 선택 패널 (스크롤) -->
+        <ScrollViewer Grid.Row="1"
+                      x:Name="svLeft"
+                      VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="8,8,8,8" Spacing="8">
+
+                <!-- 시설 선택 -->
+                <TextBlock Text="시설 선택"
+                           FontSize="{DynamicResource FontSizeSM}" Foreground="{DynamicResource FgMuted}"
+                           FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+                <WrapPanel x:Name="FacilityButtonPanel"
+                           Orientation="Horizontal"
+                           HorizontalAlignment="Stretch"/>
+
+                <!-- 채취일 -->
+                <TextBlock Text="채취일"
+                           FontSize="{DynamicResource FontSizeSM}" Foreground="{DynamicResource FgMuted}"
+                           Margin="0,6,0,0"
+                           FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+                <CalendarDatePicker x:Name="dpDate"
+                                    FontSize="{DynamicResource FontSizeBase}" Height="30"
+                                    FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+
+                <!-- 조회 버튼 -->
+                <Button x:Name="btnLoad"
+                        Content="조회"
+                        Height="30" FontSize="{DynamicResource FontSizeBase}"
+                        FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                        Background="#1a3a2a" Foreground="#88ee88"
+                        BorderThickness="0" CornerRadius="4"
+                        Click="BtnLoad_Click"/>
+
+                <!-- 상태 텍스트 -->
+                <TextBlock x:Name="tbStatus"
+                           FontSize="{DynamicResource FontSizeSM}"
+                           Foreground="{DynamicResource FgMuted}"
+                           TextWrapping="Wrap"
+                           FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+
+            </StackPanel>
+        </ScrollViewer>
+
+    </Grid>
+</UserControl>

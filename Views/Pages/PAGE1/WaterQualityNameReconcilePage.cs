@@ -20,6 +20,12 @@ namespace ETA.Views.Pages.PAGE1;
 /// </summary>
 public sealed class WaterQualityNameReconcilePage
 {
+    private static Brush AppRes(string key, string fallback = "#888888")
+    {
+        if (Application.Current?.Resources.TryGetResource(key, null, out var v) == true && v is Brush b) return b;
+        return new SolidColorBrush(Color.Parse(fallback));
+    }
+
     public Control LeftPanel   { get; }   // Show1: 약칭 트리
     public Control CenterPanel { get; }   // Show2: 매핑 편집기
     public Control RightPanel  { get; }   // Show4: 목표명 입력 + 시료명 목록
@@ -92,7 +98,7 @@ public sealed class WaterQualityNameReconcilePage
                     {
                         Text       = abbr, FontSize = 12, FontFamily = Font,
                         FontWeight = FontWeight.Regular,
-                        Foreground = Brushes.WhiteSmoke,
+                        Foreground = AppRes("AppFg"),
                     }
                 });
             }
@@ -394,7 +400,7 @@ public sealed class WaterQualityNameReconcilePage
                     {
                         Text       = name, FontSize = 11, FontFamily = Font,
                         FontWeight = FontWeight.Regular,
-                        Foreground = Brushes.WhiteSmoke,
+                        Foreground = AppRes("AppFg"),
                     }
                 });
             }

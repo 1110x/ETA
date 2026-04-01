@@ -49,6 +49,8 @@
         <SolidColorBrush x:Key="InputBg"          Color="#2d2d35"/>
         <SolidColorBrush x:Key="InputBorder"      Color="#555566"/>
         <SolidColorBrush x:Key="InputFg"          Color="#e8e8e8"/>
+        <SolidColorBrush x:Key="TreeHoverBg"      Color="#252535"/>
+        <SolidColorBrush x:Key="Panel4Bg"         Color="#252535"/>
     </Window.Resources>
 
     <!-- ── 전역 스타일 (모든 하위 컨트롤에 적용) ── -->
@@ -107,7 +109,7 @@
             <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
             <Setter Property="FontSize"   Value="{DynamicResource FontSizeLG}"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush" Value="#444455"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource InputBorder}"/>
             <Setter Property="CornerRadius" Value="4"/>
         </Style>
         <Style Selector="TreeViewItem">
@@ -115,7 +117,7 @@
             <Setter Property="Margin"     Value="0" />
             <Setter Property="MinHeight"  Value="0" />
             <Setter Property="FontSize"   Value="{DynamicResource FontSizeBase}" />
-            <Setter Property="Foreground" Value="#cccccc" />
+            <Setter Property="Foreground" Value="{DynamicResource TreeFg}" />
             <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
             <Setter Property="Background" Value="Transparent" />
         </Style>
@@ -123,12 +125,15 @@
             <Setter Property="Padding"    Value="2,1" />
             <Setter Property="Background" Value="Transparent" />
         </Style>
+        <Style Selector="TreeViewItem:selected">
+            <Setter Property="Foreground" Value="{DynamicResource TreeSelFg}" />
+        </Style>
         <Style Selector="TreeViewItem:selected /template/ ContentPresenter#PART_HeaderPresenter">
-            <Setter Property="Background"   Value="#1a4a1a" />
+            <Setter Property="Background"   Value="{DynamicResource TreeSelBg}" />
             <Setter Property="CornerRadius" Value="3" />
         </Style>
         <Style Selector="TreeViewItem:pointerover /template/ ContentPresenter#PART_HeaderPresenter">
-            <Setter Property="Background"   Value="#252535" />
+            <Setter Property="Background"   Value="{DynamicResource TreeHoverBg}" />
             <Setter Property="CornerRadius" Value="3" />
         </Style>
 
@@ -142,6 +147,13 @@
             <Setter Property="Foreground" Value="{DynamicResource AppFg}"/>
             <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
             <Setter Property="FontSize"   Value="{DynamicResource FontSizeLG}"/>
+        </Style>
+
+        <!-- Button 전역 기본값: 내용 수직·수평 가운데 정렬 -->
+        <Style Selector="Button">
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment"   Value="Center"/>
+            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
         </Style>
 
         <!-- Label -->
@@ -217,7 +229,8 @@
         <Style Selector="ToggleSwitch">
             <Setter Property="Foreground" Value="{DynamicResource AppFg}"/>
             <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
-            <Setter Property="FontSize"   Value="{DynamicResource FontSizeMD}"/>
+            <Setter Property="FontSize"   Value="10"/>
+            <Setter Property="MinWidth"   Value="110"/>
         </Style>
 
         <!-- ScrollBar -->
@@ -241,7 +254,7 @@
                     <Border x:Name="profilePhotoBorder"
                             Width="22" Height="22" CornerRadius="11"
                             ClipToBounds="True"
-                            Background="#555566"
+                            Background="{DynamicResource FgMuted}"
                             VerticalAlignment="Center">
                         <Image x:Name="profilePhoto"
                                Stretch="UniformToFill"
@@ -269,27 +282,36 @@
                     </MenuItem>
 
                     <MenuItem Header="비용부담금 관리">
-                        <MenuItem Header="폐수배출업소"  Click="WasteCompany_Click"/>
-                        <MenuItem Header="자료 조회"     Click="WasteDataQuery_Click"/>
+                        <MenuItem Header="폐수배출업소"   Click="WasteCompany_Click"/>
+                        <MenuItem Header="자료 조회"      Click="WasteDataQuery_Click"/>
                         <MenuItem Header="분석의뢰리스트" Click="WasteSampleList_Click"/>
-                        <MenuItem Header="분석결과입력"/>
-                        <MenuItem Header="Uipath ERP"/>
-                        <MenuItem Header="시험기록부"/>
-                        <MenuItem Header="자료검토"/>
-                        <MenuItem Header="테스트"/>
+                        <MenuItem Header="작업 배정"      Click="WasteAssignment_Click"/>
+                        <MenuItem Header="Uipath ERP"  IsEnabled="False" Opacity="0.4"/>
+                        <MenuItem Header="시험기록부"  IsEnabled="False" Opacity="0.4"/>
+                        <MenuItem Header="자료검토"    IsEnabled="False" Opacity="0.4"/>
+                        <MenuItem Header="테스트"      IsEnabled="False" Opacity="0.4"/>
                     </MenuItem>
+
+                    <MenuItem Header="분석결과입력" Click="WasteAnalysisInput_Click" IsEnabled="False" Opacity="0.4"/>
 
                     <MenuItem Header="처리시설">
-                        <MenuItem Header="시험기록부" Click="Agent_Click"/>
-                        <MenuItem Header="RDP for Zero4"/>
+                        <MenuItem Header="RDP for Zero4" IsEnabled="False" Opacity="0.4"/>
                     </MenuItem>
 
-                    <MenuItem Header="일반업무관리" Click="Admin_Click">
+                    <MenuItem Header="측정결과 입력" Click="ProcessingFacility_Click" IsEnabled="False" Opacity="0.4"/>
+
+                    <MenuItem Header="결과 제출" Opacity="0.4">
+                        <MenuItem Header="측정인" Click="ResultSubmitMeasure_Click" IsEnabled="False" Opacity="0.4"/>
+                        <MenuItem Header="ERP"    Click="ResultSubmitErp_Click"    IsEnabled="False" Opacity="0.4"/>
+                        <MenuItem Header="Zero4"  Click="ResultSubmitZero4_Click"  IsEnabled="False" Opacity="0.4"/>
+                    </MenuItem>
+
+                    <MenuItem Header="일반업무관리">
                         <MenuItem Header="보수요청"    Click="Repair_Click"/>
                         <MenuItem Header="물품구매"    Click="Purchase_Click"/>
-                        <MenuItem Header="계약업체 채수"/>
-                        <MenuItem Header="출장관리"/>
-                        <MenuItem Header="휴일근무"/>
+                        <MenuItem Header="계약업체 채수" IsEnabled="False" Opacity="0.4"/>
+                        <MenuItem Header="출장관리"     IsEnabled="False" Opacity="0.4"/>
+                        <MenuItem Header="휴일근무"     IsEnabled="False" Opacity="0.4"/>
                     </MenuItem>
 
                     <MenuItem Header="권한관리" x:Name="PermissionMenu">
@@ -306,9 +328,9 @@
                             Spacing="4"
                             Margin="0,0,12,0">
 
-                    <!-- 글자 크기 슬라이더 (주변 요소 고정 폭 → 슬라이더 위치 고정) -->
+                    <!-- 글자 크기 슬라이더 (주변 요소 고정폭/고정 크기 → 슬라이더 위치 고정) -->
                     <TextBlock Text="가"
-                               FontSize="{DynamicResource FontSizeXS}"
+                               FontSize="9"
                                Width="14" TextAlignment="Center"
                                VerticalAlignment="Center"
                                Foreground="{DynamicResource FgMuted}"/>
@@ -320,13 +342,13 @@
                             VerticalAlignment="Center"
                             ValueChanged="SldFontSize_ValueChanged"/>
                     <TextBlock Text="가"
-                               FontSize="{DynamicResource FontSizeLG}"
+                               FontSize="13"
                                Width="18" TextAlignment="Center"
                                VerticalAlignment="Center"
                                Foreground="{DynamicResource FgMuted}"/>
                     <TextBlock x:Name="txbFontScale"
                                Text="100%"
-                               FontSize="{DynamicResource FontSizeXS}"
+                               FontSize="9"
                                Width="30"
                                TextAlignment="Center"
                                VerticalAlignment="Center"
@@ -341,13 +363,13 @@
                             Margin="0,0,6,0"/>
 
                     <!-- 테마 토글 -->
-                    <ToggleSwitch x:Name="tglShowPassword"
+                    <ToggleSwitch x:Name="tglTheme"
                                   Margin="0,-5,0,0"
                                   VerticalAlignment="Center"
-                                  OnContent="🌙 다크 템플러"
-                                  OffContent="☀️ 하이 템플러"
+                                  OnContent="🌙 다크모드"
+                                  OffContent="☀️ 라이트모드"
                                   IsChecked="True"
-                                  IsCheckedChanged="OnShowPasswordChanged"/>
+                                  IsCheckedChanged="OnThemeChanged"/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -362,7 +384,6 @@
                         VerticalAlignment="Center"
                         Orientation="Horizontal"
                         Spacing="8" Margin="12,10,0,0">
-                <ComboBox x:Name="cmbCategory"/>
                 <Button x:Name="BT1" Content="항목1" Click="BT1_Click"/>
                 <Button x:Name="BT2" Content="항목2" Click="BT2_Click"/>
                 <Button x:Name="BT3" Content="항목3" Click="BT3_Click"/>
@@ -371,7 +392,6 @@
                 <Button x:Name="BT6" Content="항목6" Click="BT6_Click"/>
                 <Button x:Name="BT7" Content="항목7" Click="BT7_Click"/>
                 <Button x:Name="BT8" Content="항목8" Click="BT8_Click"/>
-                <Button x:Name="BT1110"/>
             </StackPanel>
 
             <!-- ── 4분할 레이아웃 ── -->
@@ -391,11 +411,15 @@
                 <Border Grid.Column="0"
                         Background="{DynamicResource PanelBg}"
                         CornerRadius="6" Padding="16" Margin="0,0,1,0">
-                    <ContentControl x:Name="Show1"
+                    <TransitioningContentControl x:Name="Show1"
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Stretch"
                                     HorizontalContentAlignment="Stretch"
-                                    VerticalContentAlignment="Stretch"/>
+                                    VerticalContentAlignment="Stretch">
+                        <TransitioningContentControl.PageTransition>
+                            <CrossFade Duration="0:0:0.18"/>
+                        </TransitioningContentControl.PageTransition>
+                    </TransitioningContentControl>
                 </Border>
 
                 <!-- 좌우 스플리터 -->
@@ -426,11 +450,15 @@
                             <Border Grid.Column="0"
                                     Background="{DynamicResource PanelInnerBg}"
                                     CornerRadius="4" Padding="8" Margin="0,0,4,0">
-                                <ContentControl x:Name="Show2"
+                                <TransitioningContentControl x:Name="Show2"
                                                 HorizontalAlignment="Stretch"
                                                 VerticalAlignment="Stretch"
                                                 HorizontalContentAlignment="Stretch"
-                                                VerticalContentAlignment="Stretch"/>
+                                                VerticalContentAlignment="Stretch">
+                                    <TransitioningContentControl.PageTransition>
+                                        <CrossFade Duration="0:0:0.18"/>
+                                    </TransitioningContentControl.PageTransition>
+                                </TransitioningContentControl>
                             </Border>
 
                             <!-- Content2↔4 스플리터 -->
@@ -441,22 +469,26 @@
                                           VerticalAlignment="Stretch"
                                           ResizeDirection="Columns"
                                           Cursor="SizeWestEast"/>
-                            <Border Grid.Column="1" Width="3"
+                            <Border Grid.Column="1" Width="1"
                                     Background="{DynamicResource SplitterColor}"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Stretch"
-                                    Margin="0,8,0,8"/>
+                                    Opacity="0.9"/>
 
                             <!-- Content4 -->
                             <Border x:Name="Content4Border"
                                     Grid.Column="2"
-                                    Background="{DynamicResource PanelInnerBg}"
+                                    Background="{DynamicResource Panel4Bg}"
                                     CornerRadius="4" Padding="8" Margin="4,0,0,0">
-                                <ContentControl x:Name="Show4"
+                                <TransitioningContentControl x:Name="Show4"
                                                 HorizontalAlignment="Stretch"
                                                 VerticalAlignment="Stretch"
                                                 HorizontalContentAlignment="Stretch"
-                                                VerticalContentAlignment="Stretch"/>
+                                                VerticalContentAlignment="Stretch">
+                                    <TransitioningContentControl.PageTransition>
+                                        <CrossFade Duration="0:0:0.18"/>
+                                    </TransitioningContentControl.PageTransition>
+                                </TransitioningContentControl>
                             </Border>
                         </Grid>
                     </Border>
@@ -481,9 +513,13 @@
                             CornerRadius="6" Padding="12">
                         <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                                       VerticalScrollBarVisibility="Auto">
-                            <ContentControl x:Name="Show3"
+                            <TransitioningContentControl x:Name="Show3"
                                             HorizontalAlignment="Stretch"
-                                            VerticalAlignment="Top"/>
+                                            VerticalAlignment="Top">
+                                <TransitioningContentControl.PageTransition>
+                                    <CrossFade Duration="0:0:0.18"/>
+                                </TransitioningContentControl.PageTransition>
+                            </TransitioningContentControl>
                         </ScrollViewer>
                     </Border>
 

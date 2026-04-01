@@ -18,6 +18,12 @@ namespace ETA.Views.Pages.PAGE2;
 
 public partial class WasteSampleListPage : UserControl
 {
+    private static Brush AppRes(string key, string fallback = "#888888")
+    {
+        if (Application.Current?.Resources.TryGetResource(key, null, out var v) == true && v is Brush b) return b;
+        return new SolidColorBrush(Color.Parse(fallback));
+    }
+
     // ── 외부 연결 ────────────────────────────────────────────────────────────
     public event Action<Control?>? DetailPanelChanged;
 
@@ -28,6 +34,11 @@ public partial class WasteSampleListPage : UserControl
     private Control?   _companyTreePanel;
     private TreeView?  _companyTreeView;
     private TextBlock? _companyTreeStatus;
+    private string     _companyActiveGroup = "여수";
+    private Button?    _btnCo여수;
+    private Button?    _btnCo율촌;
+    private Button?    _btnCo세풍;
+    private TextBox?   _companySearchBox;
 
     public Control CompanyTreePanel => _companyTreePanel ??= BuildCompanyTreePanel();
 
@@ -84,20 +95,20 @@ public partial class WasteSampleListPage : UserControl
                 {
                     new TextBlock
                     {
-                        Text = $"{d.Year}년 {d.Month}월",
-                        FontSize = 12, FontWeight = FontWeight.SemiBold,
+                        Text = $"📅  {d.Year}년 {d.Month}월",
+                        FontWeight = FontWeight.SemiBold,
                         FontFamily = Font, Foreground = Brush.Parse("#8899bb"),
                         VerticalAlignment = VerticalAlignment.Center,
-                    },
+                    }.BindMD(),
                     new Border
                     {
                         Background = Brush.Parse("#2a2a3a"), CornerRadius = new CornerRadius(8),
                         Padding = new Thickness(5,1),
                         Child = new TextBlock
                         {
-                            Text = count.ToString(), FontSize = 9,
+                            Text = count.ToString(),
                             FontFamily = Font, Foreground = Brush.Parse("#666"),
-                        }
+                        }.BindXS()
                     }
                 }
             }
@@ -107,15 +118,16 @@ public partial class WasteSampleListPage : UserControl
     private static TreeViewItem MakeDateNode(string dateStr)
     {
         DateTime.TryParse(dateStr, out var d);
-        string label = d == DateTime.MinValue ? dateStr : $"{d.Month}/{d.Day} ({DayOfWeekKr(d)})";
+        string dow   = d == DateTime.MinValue ? "" : $" ({DayOfWeekKr(d)})";
+        string label = d == DateTime.MinValue ? dateStr : $"🗓  {d.Month}/{d.Day}{dow}";
         return new TreeViewItem
         {
             Tag    = dateStr,
             Header = new TextBlock
             {
-                Text = label, FontSize = 12, FontFamily = Font,
+                Text = label, FontFamily = Font,
                 Foreground = Brush.Parse("#dddddd"),
-            }
+            }.BindMD()
         };
     }
 
@@ -143,15 +155,29 @@ public partial class WasteSampleListPage : UserControl
     }
 
     // =========================================================================
-    // + 날짜 추가
+    // + 날짜 추가 — Show1 인라인 캘린더 토글
     // =========================================================================
     public void AddNewDate() => BtnNewDate_Click(null, null!);
 
     private void BtnNewDate_Click(object? sender, RoutedEventArgs e)
     {
-        // 오늘 날짜로 신규 날짜 추가 패널 표시
-        _selectedDate = null;
-        DetailPanelChanged?.Invoke(BuildNewDatePanel());
+        bool nowVisible = !CalendarPickerBorder.IsVisible;
+        CalendarPickerBorder.IsVisible = nowVisible;
+        if (nowVisible)
+        {
+            InlineCalendar.SelectedDates.Clear();
+            InlineCalendar.DisplayDate = DateTime.Today;
+        }
+    }
+
+    private void InlineCalendar_DateChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (InlineCalendar?.SelectedDate == null) return;
+        string date = InlineCalendar.SelectedDate.Value.ToString("yyyy-MM-dd");
+        CalendarPickerBorder.IsVisible = false;
+        _selectedDate = date;
+        EnsureDateInTree(date);
+        RefreshDetail();
     }
 
     // =========================================================================
@@ -177,10 +203,10 @@ public partial class WasteSampleListPage : UserControl
         DateTime.TryParse(date, out var d);
         root.Children.Add(new TextBlock
         {
-            Text = $"채수일  {d:yyyy-MM-dd} ({DayOfWeekKr(d)})",
-            FontSize = 15, FontFamily = Font, FontWeight = FontWeight.SemiBold,
+            Text = $"🗓  채수일  {d:yyyy-MM-dd} ({DayOfWeekKr(d)})",
+            FontWeight = FontWeight.SemiBold, FontFamily = Font,
             Foreground = Brush.Parse("#e0e0e0"),
-        });
+        }.BindLG());
         root.Children.Add(new Border { Height = 1, Background = Brush.Parse("#333"), Margin = new Thickness(0,0,0,4) });
 
         // 그룹별 섹션
@@ -203,19 +229,17 @@ public partial class WasteSampleListPage : UserControl
                 Margin = new Thickness(0, 4, 0, 4),
                 Children =
                 {
-                    new TextBlock { Text = gIcon, FontSize = 13, VerticalAlignment = VerticalAlignment.Center },
+                    new TextBlock { Text = gIcon, VerticalAlignment = VerticalAlignment.Center }.BindLG(),
                     new TextBlock
                     {
-                        Text = groupKey, FontSize = 12, FontFamily = Font,
-                        FontWeight = FontWeight.SemiBold,
-                        Foreground = Brush.Parse(gColor),
-                        VerticalAlignment = VerticalAlignment.Center,
-                    },
+                        Text = groupKey, FontFamily = Font, FontWeight = FontWeight.SemiBold,
+                        Foreground = Brush.Parse(gColor), VerticalAlignment = VerticalAlignment.Center,
+                    }.BindMD(),
                     new TextBlock
                     {
-                        Text = $"({groupRows.Count}건)", FontSize = 10, FontFamily = Font,
+                        Text = $"({groupRows.Count}건)", FontFamily = Font,
                         Foreground = Brush.Parse("#666"), VerticalAlignment = VerticalAlignment.Center,
-                    }
+                    }.BindSM()
                 }
             };
             root.Children.Add(groupHeader);
@@ -259,22 +283,22 @@ public partial class WasteSampleListPage : UserControl
         // S/N
         row.Children.Add(new TextBlock
         {
-            Text = s.SN, FontSize = 11, FontFamily = Font,
+            Text = s.SN, FontFamily = Font,
             Foreground = Brush.Parse("#aaccff"),
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Thickness(8, 4),
             [Grid.ColumnProperty] = 0,
-        });
+        }.BindBase());
 
         // 업체명
         row.Children.Add(new TextBlock
         {
-            Text = s.업체명, FontSize = 12, FontFamily = Font,
+            Text = s.업체명, FontFamily = Font,
             Foreground = Brush.Parse("#e0e0e0"),
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Thickness(4, 4),
             [Grid.ColumnProperty] = 1,
-        });
+        }.BindMD());
 
         // ↑
         var btnUp = MakeIconBtn("▲", "#555");
@@ -340,11 +364,11 @@ public partial class WasteSampleListPage : UserControl
 
         // 날짜 선택 (기본값: 현재 선택된 날짜)
         DateTime.TryParse(date, out var parsedDate);
-        var dp = new DatePicker
+        var dp = new CalendarDatePicker
         {
             SelectedDate = parsedDate == DateTime.MinValue
-                ? DateTimeOffset.Now
-                : new DateTimeOffset(parsedDate),
+                ? DateTime.Today
+                : parsedDate,
             FontFamily = Font, FontSize = 12,
         };
 
@@ -377,7 +401,7 @@ public partial class WasteSampleListPage : UserControl
             if (string.IsNullOrEmpty(name)) return;
             if (dp.SelectedDate == null) return;
 
-            string selectedDate = dp.SelectedDate.Value.Date.ToString("yyyy-MM-dd");
+            string selectedDate = dp.SelectedDate.Value.ToString("yyyy-MM-dd");
 
             var comp = WasteCompanyService.GetAllItems()
                 .FirstOrDefault(c => c.업체명 == name);
@@ -428,9 +452,9 @@ public partial class WasteSampleListPage : UserControl
         });
         root.Children.Add(new Border { Height = 1, Background = Brush.Parse("#333") });
 
-        var dp = new DatePicker
+        var dp = new CalendarDatePicker
         {
-            SelectedDate = DateTimeOffset.Now,
+            SelectedDate = DateTime.Today,
             FontFamily = Font, FontSize = 12,
         };
 
@@ -445,7 +469,7 @@ public partial class WasteSampleListPage : UserControl
         btnCreate.Click += (_, _) =>
         {
             if (dp.SelectedDate == null) return;
-            string date = dp.SelectedDate.Value.Date.ToString("yyyy-MM-dd");
+            string date = dp.SelectedDate.Value.ToString("yyyy-MM-dd");
             _selectedDate = date;
             EnsureDateInTree(date);
             RefreshDetail();
@@ -501,37 +525,119 @@ public partial class WasteSampleListPage : UserControl
     // =========================================================================
     private Control BuildCompanyTreePanel()
     {
-        var root = new Grid { RowDefinitions = new RowDefinitions("Auto,Auto,*") };
+        var root = new Grid { RowDefinitions = new RowDefinitions("Auto,Auto,Auto,*") };
+
+        // Row 0: 헤더 (타이틀 + 그룹 탭 버튼)
+        var headerSp = new StackPanel
+        {
+            Orientation = Orientation.Horizontal, Spacing = 4,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        headerSp.Children.Add(new TextBlock
+        {
+            Text = "폐수배출업소", FontSize = 11, FontWeight = FontWeight.SemiBold,
+            FontFamily = Font, Foreground = Brush.Parse("#8899bb"),
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin = new Thickness(0, 0, 6, 0),
+        });
+        _btnCo여수 = MakeCompanyGroupBtn("🌊 여수", "여수");
+        _btnCo율촌 = MakeCompanyGroupBtn("🏗 율촌", "율촌");
+        _btnCo세풍 = MakeCompanyGroupBtn("🏭 세풍", "세풍");
+        headerSp.Children.Add(_btnCo여수);
+        headerSp.Children.Add(_btnCo율촌);
+        headerSp.Children.Add(_btnCo세풍);
 
         root.Children.Add(new Border
         {
             Background = Brush.Parse("#1a1a28"),
             CornerRadius = new CornerRadius(6, 6, 0, 0),
-            Padding = new Thickness(10, 6),
-            Child = new TextBlock
-            {
-                Text = "🏭  폐수배출업소",
-                FontSize = 11, FontWeight = FontWeight.SemiBold,
-                FontFamily = Font, Foreground = Brush.Parse("#8899bb"),
-            }
+            Padding = new Thickness(8, 4),
+            Child = headerSp,
         });
+        UpdateCompanyGroupTabStyles();
 
+        // Row 1: 검색창
+        _companySearchBox = new TextBox
+        {
+            Watermark = "🔍 업체명 검색",
+            FontFamily = Font, FontSize = 11,
+            Height = 28,
+            Background = Brush.Parse("#252535"),
+            Foreground = Brush.Parse("#cccccc"),
+            BorderBrush = Brush.Parse("#333355"),
+            BorderThickness = new Thickness(0, 0, 0, 1),
+            CornerRadius = new CornerRadius(0),
+            Padding = new Thickness(8, 4),
+        };
+        _companySearchBox.TextChanged += (_, _) => LoadCompanyTree();
+        Grid.SetRow(_companySearchBox, 1);
+        root.Children.Add(_companySearchBox);
+
+        // Row 2: 상태
         _companyTreeStatus = new TextBlock
         {
-            FontSize = 10, FontFamily = Font, FontWeight = FontWeight.Regular,
+            FontSize = 10, FontFamily = Font,
             Foreground = Brush.Parse("#666666"),
             Margin = new Thickness(8, 3),
         };
-        Grid.SetRow(_companyTreeStatus, 1);
+        Grid.SetRow(_companyTreeStatus, 2);
         root.Children.Add(_companyTreeStatus);
 
+        // Row 3: 트리뷰
         _companyTreeView = new TreeView { Margin = new Thickness(5) };
         _companyTreeView.SelectionChanged += CompanyTree_SelectionChanged;
-        Grid.SetRow(_companyTreeView, 2);
+        Grid.SetRow(_companyTreeView, 3);
         root.Children.Add(_companyTreeView);
 
         LoadCompanyTree();
         return root;
+    }
+
+    private static readonly Dictionary<string, (string Bg, string Fg, string Border)> _groupTabColors = new()
+    {
+        ["여수"] = ("#1e3a5a", "#88aacc", "#336699"),
+        ["율촌"] = ("#1a3a1a", "#aaccaa", "#336633"),
+        ["세풍"] = ("#3a2a1a", "#ccaa88", "#996633"),
+    };
+
+    private Button MakeCompanyGroupBtn(string content, string tag)
+    {
+        var btn = new Button
+        {
+            Content = content, Tag = tag,
+            FontSize = 10, FontFamily = Font,
+            Padding = new Thickness(8, 3),
+            CornerRadius = new CornerRadius(10),
+            BorderThickness = new Thickness(1),
+        };
+        btn.Click += (_, _) =>
+        {
+            _companyActiveGroup = tag;
+            UpdateCompanyGroupTabStyles();
+            LoadCompanyTree();
+        };
+        return btn;
+    }
+
+    private void UpdateCompanyGroupTabStyles()
+    {
+        foreach (var (btn, tag) in new[] { (_btnCo여수, "여수"), (_btnCo율촌, "율촌"), (_btnCo세풍, "세풍") })
+        {
+            if (btn == null) continue;
+            bool active = tag == _companyActiveGroup;
+            if (active && _groupTabColors.TryGetValue(tag, out var c))
+            {
+                btn.Background  = Brush.Parse(c.Bg);
+                btn.Foreground  = Brush.Parse(c.Fg);
+                btn.BorderBrush = Brush.Parse(c.Border);
+            }
+            else
+            {
+                btn.Background  = Brush.Parse("#222222");
+                btn.Foreground  = Brush.Parse("#666666");
+                btn.BorderBrush = Brush.Parse("#444444");
+            }
+        }
     }
 
     public void LoadCompanyTree()
@@ -539,29 +645,25 @@ public partial class WasteSampleListPage : UserControl
         if (_companyTreeView == null) return;
         _companyTreeView.Items.Clear();
 
+        var search = _companySearchBox?.Text?.Trim() ?? "";
+
         try
         {
-            var all = WasteCompanyService.GetAllItems();
-            int total = 0;
-            foreach (var g in new[] { "여수", "율촌", "세풍" })
-            {
-                var companies = all
-                    .Where(c => CompanyGroup(c) == g)
-                    .OrderBy(c => c.관리번호)
-                    .ToList();
-                if (companies.Count == 0) continue;
+            var companies = WasteCompanyService.GetAllItems()
+                .Where(c => CompanyGroup(c) == _companyActiveGroup)
+                .Where(c => string.IsNullOrEmpty(search) || c.업체명.Contains(search))
+                .OrderBy(c => c.관리번호)
+                .ToList();
 
-                var groupNode = MakeCompanyGroupNode(g, companies.Count);
-                foreach (var c in companies)
-                    groupNode.Items.Add(MakeCompanyLeafNode(c));
-                groupNode.IsExpanded = true;
-                _companyTreeView.Items.Add(groupNode);
-                total += companies.Count;
-            }
+            foreach (var c in companies)
+                _companyTreeView.Items.Add(MakeCompanyLeafNode(c));
+
             if (_companyTreeStatus != null)
             {
                 _companyTreeStatus.Foreground = Brush.Parse("#666666");
-                _companyTreeStatus.Text = $"전체 {total}개 — 클릭하면 목록에 추가";
+                string statusText = $"{_companyActiveGroup} {companies.Count}개";
+                if (!string.IsNullOrEmpty(search)) statusText += $"  (검색: \"{search}\")";
+                _companyTreeStatus.Text = statusText + " — 클릭하면 목록에 추가";
             }
         }
         catch (Exception ex)
@@ -634,7 +736,7 @@ public partial class WasteSampleListPage : UserControl
                 {
                     Text = c.업체명, FontSize = 12, FontFamily = Font,
                     FontWeight = FontWeight.Regular,
-                    Foreground = Brushes.WhiteSmoke,
+                    Foreground = AppRes("AppFg"),
                     VerticalAlignment = VerticalAlignment.Center,
                 },
                 new TextBlock

@@ -7,8 +7,8 @@
             <Setter Property="Padding"    Value="1,4" />
             <Setter Property="Margin"     Value="0,1" />
             <Setter Property="MinHeight"  Value="0" />
-            <Setter Property="FontSize"   Value="11" />
-            <Setter Property="Foreground" Value="#cccccc" />
+            <Setter Property="FontSize"   Value="{DynamicResource FontSizeBase}" />
+            <Setter Property="Foreground" Value="{DynamicResource TreeFg}" />
             <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
             <Setter Property="Background" Value="Transparent" />
         </Style>
@@ -17,31 +17,31 @@
             <Setter Property="Background" Value="Transparent" />
         </Style>
         <Style Selector="TreeViewItem:selected /template/ ContentPresenter#PART_HeaderPresenter">
-            <Setter Property="Background"   Value="#1a4a1a" />
+            <Setter Property="Background"   Value="{DynamicResource TreeSelBg}" />
             <Setter Property="CornerRadius" Value="3" />
         </Style>
         <Style Selector="TreeViewItem:pointerover /template/ ContentPresenter#PART_HeaderPresenter">
-            <Setter Property="Background"   Value="#252535" />
+            <Setter Property="Background"   Value="{DynamicResource TreeHoverBg}" />
             <Setter Property="CornerRadius" Value="3" />
         </Style>
     </UserControl.Styles>
 
-    <Grid RowDefinitions="Auto,*">
+    <Grid RowDefinitions="Auto,Auto,*">
 
-        <!-- 헤더 -->
+        <!-- Row 0: 헤더 -->
         <Border Grid.Row="0"
-                Background="#1a1a28"
+                Background="{DynamicResource PanelBg}"
                 CornerRadius="6,6,0,0"
                 Padding="10,6">
             <StackPanel Orientation="Horizontal" Spacing="8">
                 <TextBlock Text="채수 의뢰 목록"
-                           FontSize="11" FontWeight="SemiBold"
-                           Foreground="#8899bb"
+                           FontSize="{DynamicResource FontSizeBase}" FontWeight="SemiBold"
+                           Foreground="{DynamicResource FgMuted}"
                            FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
                            VerticalAlignment="Center"/>
                 <Button x:Name="btnNewDate"
                         Content="+ 날짜 추가"
-                        Height="20" FontSize="10"
+                        Height="20" FontSize="{DynamicResource FontSizeSM}"
                         FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
                         Background="#1a3a2a" Foreground="#88ee88"
                         BorderThickness="0" CornerRadius="3"
@@ -50,8 +50,23 @@
             </StackPanel>
         </Border>
 
-        <!-- 날짜 트리뷰 -->
-        <TreeView Grid.Row="1"
+        <!-- Row 1: 인라인 캘린더 (토글) -->
+        <Border Grid.Row="1"
+                x:Name="CalendarPickerBorder"
+                IsVisible="False"
+                Background="{DynamicResource PanelInnerBg}"
+                BorderBrush="{DynamicResource InputBorder}"
+                BorderThickness="0,0,0,1"
+                Padding="4,4">
+            <Calendar x:Name="InlineCalendar"
+                      SelectionMode="SingleDate"
+                      FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                      FontSize="{DynamicResource FontSizeMD}"
+                      SelectedDatesChanged="InlineCalendar_DateChanged" />
+        </Border>
+
+        <!-- Row 2: 날짜 트리뷰 -->
+        <TreeView Grid.Row="2"
                   x:Name="DateTreeView"
                   Margin="5"
                   HorizontalAlignment="Stretch"

@@ -19,6 +19,11 @@ namespace ETA.Views.Pages.PAGE2;
 
 public partial class WasteCompanyPage : UserControl
 {
+    private static Brush AppRes(string key, string fallback = "#888888")
+    {
+        if (Application.Current?.Resources.TryGetResource(key, null, out var v) == true && v is Brush b) return b;
+        return new SolidColorBrush(Color.Parse(fallback));
+    }
     // ── 외부(MainPage) 연결 ──────────────────────────────────────────────────
     public event Action<Control?>? DetailPanelChanged;
     public event Action?           OrderSaved;          // 의뢰 저장 완료 알림
@@ -77,10 +82,10 @@ public partial class WasteCompanyPage : UserControl
 
         if (_orderMode)
         {
-            // 모드 진입
-            BtnOrder.Background  = new SolidColorBrush(Color.Parse("#3a2a1a"));
-            BtnOrder.Foreground  = new SolidColorBrush(Color.Parse("#ffbb44"));
-            BtnOrder.BorderBrush = new SolidColorBrush(Color.Parse("#886622"));
+            // 모드 진입 (amber 강조 — 테마 무관)
+            BtnOrder.Background  = new SolidColorBrush(Color.Parse("#92400e"));
+            BtnOrder.Foreground  = new SolidColorBrush(Color.Parse("#fbbf24"));
+            BtnOrder.BorderBrush = new SolidColorBrush(Color.Parse("#d97706"));
             _orderDate     = DateTime.Today.ToString("yyyy-MM-dd");
             _orderSelected.Clear();
             _orderExisting = WasteSampleService.GetCompanyNamesForDate(_orderDate);
@@ -90,9 +95,9 @@ public partial class WasteCompanyPage : UserControl
         else
         {
             // 모드 해제
-            BtnOrder.Background  = new SolidColorBrush(Color.Parse("#222222"));
-            BtnOrder.Foreground  = new SolidColorBrush(Color.Parse("#666666"));
-            BtnOrder.BorderBrush = new SolidColorBrush(Color.Parse("#444444"));
+            BtnOrder.Background  = AppRes("SubBtnBg");
+            BtnOrder.Foreground  = AppRes("FgMuted");
+            BtnOrder.BorderBrush = AppRes("InputBorder");
             _orderSelected.Clear();
             _orderExisting.Clear();
             LoadData();
@@ -111,20 +116,20 @@ public partial class WasteCompanyPage : UserControl
         root.Children.Add(new TextBlock
         {
             Text = "채수일", FontSize = 11, FontFamily = Font,
-            Foreground = new SolidColorBrush(Color.Parse("#888888")),
+            Foreground = AppRes("FgMuted"),
         });
 
         DateTime.TryParse(_orderDate, out var initDate);
-        var dp = new DatePicker
+        var dp = new CalendarDatePicker
         {
-            SelectedDate = initDate == DateTime.MinValue ? DateTimeOffset.Now : new DateTimeOffset(initDate),
+            SelectedDate = initDate == DateTime.MinValue ? DateTime.Today : initDate,
             FontFamily = Font, FontSize = 12,
             Margin = new Thickness(0, 0, 0, 8),
         };
         dp.SelectedDateChanged += (_, _) =>
         {
             if (dp.SelectedDate == null) return;
-            _orderDate     = dp.SelectedDate.Value.Date.ToString("yyyy-MM-dd");
+            _orderDate     = dp.SelectedDate.Value.ToString("yyyy-MM-dd");
             _orderSelected.Clear();
             _orderExisting = WasteSampleService.GetCompanyNamesForDate(_orderDate);
             LoadData();
@@ -136,14 +141,14 @@ public partial class WasteCompanyPage : UserControl
         root.Children.Add(new TextBlock
         {
             Text = "확인자", FontSize = 11, FontFamily = Font,
-            Foreground = new SolidColorBrush(Color.Parse("#888888")),
+            Foreground = AppRes("FgMuted"),
         });
         _확인자Box = new TextBox
         {
             FontFamily = Font, FontSize = 12,
-            Background = new SolidColorBrush(Color.Parse("#3a3a4a")),
-            Foreground = Brushes.WhiteSmoke,
-            BorderBrush = new SolidColorBrush(Color.Parse("#555577")),
+            Background = AppRes("InputBg"),
+            Foreground = AppRes("InputFg"),
+            BorderBrush = AppRes("InputBorder"),
             CornerRadius = new CornerRadius(4),
             Padding = new Thickness(8, 4),
             Margin = new Thickness(0, 0, 0, 8),
@@ -154,7 +159,7 @@ public partial class WasteCompanyPage : UserControl
         root.Children.Add(new TextBlock
         {
             Text = "선택된 업체", FontSize = 11, FontFamily = Font,
-            Foreground = new SolidColorBrush(Color.Parse("#888888")),
+            Foreground = AppRes("FgMuted"),
         });
         _orderListPanel = new StackPanel { Spacing = 3, Margin = new Thickness(0, 4, 0, 8) };
         root.Children.Add(_orderListPanel);
@@ -163,16 +168,16 @@ public partial class WasteCompanyPage : UserControl
         var btnSave = new Button
         {
             Content = "저장", Width = 80, Height = 28,
-            Background = new SolidColorBrush(Color.Parse("#1a3a2a")),
-            Foreground = new SolidColorBrush(Color.Parse("#88ee88")),
+            Background = new SolidColorBrush(Color.Parse("#15803d")),
+            Foreground = Brushes.White,
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
             FontFamily = Font, FontSize = 12,
         };
         var btnCancel = new Button
         {
             Content = "취소", Width = 80, Height = 28,
-            Background = new SolidColorBrush(Color.Parse("#333333")),
-            Foreground = new SolidColorBrush(Color.Parse("#aaaaaa")),
+            Background = AppRes("SubBtnBg"),
+            Foreground = AppRes("FgMuted"),
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
             FontFamily = Font, FontSize = 12,
         };
@@ -191,9 +196,9 @@ public partial class WasteCompanyPage : UserControl
         btnCancel.Click += (_, _) =>
         {
             _orderMode = false;
-            BtnOrder.Background  = new SolidColorBrush(Color.Parse("#222222"));
-            BtnOrder.Foreground  = new SolidColorBrush(Color.Parse("#666666"));
-            BtnOrder.BorderBrush = new SolidColorBrush(Color.Parse("#444444"));
+            BtnOrder.Background  = AppRes("SubBtnBg");
+            BtnOrder.Foreground  = AppRes("FgMuted");
+            BtnOrder.BorderBrush = AppRes("InputBorder");
             _orderSelected.Clear();
             _orderExisting.Clear();
             LoadData();
@@ -226,7 +231,7 @@ public partial class WasteCompanyPage : UserControl
             row.Children.Add(new TextBlock
             {
                 Text = c.업체명, FontSize = 11, FontFamily = Font,
-                Foreground = new SolidColorBrush(Color.Parse("#ccffcc")),
+                Foreground = new SolidColorBrush(Color.Parse("#16a34a")),
                 VerticalAlignment = VerticalAlignment.Center,
             });
             _orderListPanel.Children.Add(row);
@@ -236,7 +241,7 @@ public partial class WasteCompanyPage : UserControl
             {
                 Text = "왼쪽 트리에서 업체를 선택하세요",
                 FontSize = 10, FontFamily = Font,
-                Foreground = new SolidColorBrush(Color.Parse("#555555")),
+                Foreground = AppRes("FgMuted"),
             });
     }
 
@@ -272,9 +277,9 @@ public partial class WasteCompanyPage : UserControl
             }
             else
             {
-                btn.Background  = new SolidColorBrush(Color.Parse("#222222"));
-                btn.Foreground  = new SolidColorBrush(Color.Parse("#666666"));
-                btn.BorderBrush = new SolidColorBrush(Color.Parse("#444444"));
+                btn.Background  = AppRes("SubBtnBg");
+                btn.Foreground  = AppRes("FgMuted");
+                btn.BorderBrush = AppRes("InputBorder");
             }
         }
     }
@@ -315,19 +320,16 @@ public partial class WasteCompanyPage : UserControl
                 {
                     new TextBlock
                     {
-                        Text     = icon,
-                        FontSize = 13,
+                        Text = icon,
                         VerticalAlignment = VerticalAlignment.Center,
-                    },
+                    }.BindLG(),
                     new TextBlock
                     {
-                        Text       = groupName,
-                        FontSize   = 13,
-                        FontWeight = FontWeight.SemiBold,
+                        Text = groupName, FontWeight = FontWeight.SemiBold,
                         FontFamily = Font,
                         Foreground = new SolidColorBrush(Color.Parse(color)),
                         VerticalAlignment = VerticalAlignment.Center,
-                    },
+                    }.BindLG(),
                     new Border
                     {
                         Background   = new SolidColorBrush(Color.Parse("#2a2a3a")),
@@ -336,11 +338,9 @@ public partial class WasteCompanyPage : UserControl
                         VerticalAlignment = VerticalAlignment.Center,
                         Child = new TextBlock
                         {
-                            Text       = count.ToString(),
-                            FontSize   = 9,
-                            FontFamily = Font,
+                            Text = count.ToString(), FontFamily = Font,
                             Foreground = new SolidColorBrush(Color.Parse("#888888")),
-                        }
+                        }.BindXS()
                     }
                 }
             }
@@ -370,29 +370,24 @@ public partial class WasteCompanyPage : UserControl
             sp.Children.Add(new TextBlock
             {
                 Text = indicator.Length > 0 ? indicator : "⬜",
-                FontSize = 11,
                 VerticalAlignment = VerticalAlignment.Center,
                 Width = 18,
-            });
+            }.BindBase());
 
         sp.Children.Add(new TextBlock
         {
-            Text       = company.업체명,
-            FontSize   = 12,
-            FontFamily = Font,
+            Text = company.업체명, FontFamily = Font,
             Foreground = selectedNow    ? new SolidColorBrush(Color.Parse("#aaffaa"))
                        : alreadyOrdered ? new SolidColorBrush(Color.Parse("#ff8888"))
-                       : Brushes.WhiteSmoke,
+                       : AppRes("AppFg"),
             VerticalAlignment = VerticalAlignment.Center,
-        });
+        }.BindMD());
         sp.Children.Add(new TextBlock
         {
-            Text       = company.관리번호,
-            FontSize   = 9,
-            FontFamily = Font,
+            Text = company.관리번호, FontFamily = Font,
             Foreground = new SolidColorBrush(Color.Parse("#666666")),
             VerticalAlignment = VerticalAlignment.Center,
-        });
+        }.BindXS());
 
         return new TreeViewItem { Tag = company, Header = sp };
     }
@@ -529,7 +524,7 @@ public partial class WasteCompanyPage : UserControl
             FontSize   = 15,
             FontFamily = Font,
             FontWeight = FontWeight.SemiBold,
-            Foreground = Brushes.WhiteSmoke,
+            Foreground = AppRes("AppFg"),
             Margin     = new Thickness(0, 0, 0, 4)
         });
         root.Children.Add(new Border
@@ -567,7 +562,7 @@ public partial class WasteCompanyPage : UserControl
             FontFamily        = Font,
             Foreground        = isLocked
                                     ? new SolidColorBrush(Color.Parse("#888888"))
-                                    : Brushes.LightGray,
+                                    : AppRes("FgMuted"),
             VerticalAlignment = VerticalAlignment.Center,
         });
 
@@ -583,7 +578,7 @@ public partial class WasteCompanyPage : UserControl
                                   : new SolidColorBrush(Color.Parse("#3a3a4a")),
             Foreground      = isReadOnly
                                   ? new SolidColorBrush(Color.Parse("#666666"))
-                                  : Brushes.WhiteSmoke,
+                                  : AppRes("AppFg"),
             BorderThickness = new Thickness(1),
             BorderBrush     = isReadOnly
                                   ? new SolidColorBrush(Color.Parse("#333333"))

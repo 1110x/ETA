@@ -1,3 +1,4 @@
+#if WINDOWS
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -266,9 +267,8 @@ public static class TestReportGdiPrinter
 
     private static void DrawEmptyRow(Graphics g, float y)
     {
-        float[] xs = { DX0, DX1, DX2, DX3, DX4, DX5, DX6, DX7 };
-        for (int i = 0; i < 7; i++)
-            DrawCell(g, xs[i], y, xs[i+1]-xs[i], RH, "", false, TA.Left);
+        using var b = new SolidBrush(BgWhite);
+        g.FillRectangle(b, DX0, y, DX7 - DX0, RH);
     }
 
     // ── 셀 기본 ─────────────────────────────────────────────────────────
@@ -333,3 +333,4 @@ public static class TestReportGdiPrinter
         return raw;
     }
 }
+#endif

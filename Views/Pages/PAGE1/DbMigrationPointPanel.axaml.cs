@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
@@ -18,6 +19,12 @@ namespace ETA.Views.Pages.PAGE1;
 /// </summary>
 public partial class DbMigrationPointPanel : UserControl
 {
+    private static Brush AppRes(string key, string fallback = "#888888")
+    {
+        if (Application.Current?.Resources.TryGetResource(key, null, out var v) == true && v is Brush b) return b;
+        return new SolidColorBrush(Color.Parse(fallback));
+    }
+
     private static readonly Avalonia.Media.FontFamily Font =
         new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
 
@@ -105,7 +112,7 @@ public partial class DbMigrationPointPanel : UserControl
         header.Children.Add(new TextBlock { Text = "🏭", FontSize = 14, VerticalAlignment = VerticalAlignment.Center });
         header.Children.Add(new TextBlock {
             Text = company, FontSize = 12, FontFamily = Font,
-            Foreground = Brushes.WhiteSmoke, VerticalAlignment = VerticalAlignment.Center
+            Foreground = AppRes("AppFg"), VerticalAlignment = VerticalAlignment.Center
         });
 
         if (!string.IsNullOrWhiteSpace(abbr))

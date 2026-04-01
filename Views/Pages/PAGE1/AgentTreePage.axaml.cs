@@ -23,6 +23,12 @@ namespace ETA.Views.Pages.PAGE1;
 
 public partial class AgentTreePage : UserControl
 {
+    private static Brush AppRes(string key, string fallback = "#888888")
+    {
+        if (Application.Current?.Resources.TryGetResource(key, null, out var v) == true && v is Brush b) return b;
+        return new SolidColorBrush(Color.Parse(fallback));
+    }
+
     // ── 외부(MainPage) 연결 ──────────────────────────────────────────────────
     public event Action<Control?>? DetailPanelChanged;
     public ListBox? AnalysisItemsListBox { get; set; }
@@ -124,7 +130,7 @@ public partial class AgentTreePage : UserControl
             Text              = agent.성명,
             FontSize          = 13,
             FontFamily        = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R",
-            Foreground        = Brushes.WhiteSmoke,
+            Foreground        = AppRes("AppFg"),
             VerticalAlignment = VerticalAlignment.Center,
         });
 
@@ -282,7 +288,7 @@ public partial class AgentTreePage : UserControl
                 new TextBlock
                 {
                     Text       = $"'{_selectedAgent.성명}' 직원을 삭제하시겠습니까?",
-                    Foreground = Brushes.WhiteSmoke,
+                    Foreground = AppRes("AppFg"),
                     FontSize   = 13,
                     TextWrapping = Avalonia.Media.TextWrapping.Wrap
                 },
@@ -525,7 +531,7 @@ public partial class AgentTreePage : UserControl
             FontSize            = 11,
             FontFamily          = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R",
             Background          = new SolidColorBrush(Color.Parse("#2a5a2a")),
-            Foreground          = Brushes.WhiteSmoke,
+            Foreground          = AppRes("AppFg"),
             BorderThickness     = new Thickness(1),
             BorderBrush         = new SolidColorBrush(Color.Parse("#4a8a4a")),
             CornerRadius        = new CornerRadius(4),
@@ -626,7 +632,7 @@ public partial class AgentTreePage : UserControl
                 new TextBlock
                 {
                     Text         = $"⚠️ '{analyte}'은(는) 이미 {names}에게 할당되어 있습니다.\n업데이트 하시겠습니까?",
-                    Foreground   = Brushes.WhiteSmoke,
+                    Foreground   = AppRes("AppFg"),
                     FontSize     = 12,
                     TextWrapping = Avalonia.Media.TextWrapping.Wrap,
                     FontFamily   = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R",
@@ -901,7 +907,7 @@ public partial class AgentTreePage : UserControl
             FontSize        = 11,
             FontFamily      = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R",
             Background      = new SolidColorBrush(Color.Parse("#3a4a6a")),
-            Foreground      = Brushes.WhiteSmoke,
+            Foreground      = AppRes("AppFg"),
             BorderThickness = new Thickness(0),
             CornerRadius    = new CornerRadius(4),
             Padding         = new Thickness(10, 4),
@@ -913,7 +919,7 @@ public partial class AgentTreePage : UserControl
             FontSize        = 11,
             FontFamily      = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R",
             Background      = new SolidColorBrush(Color.Parse("#4a3a3a")),
-            Foreground      = Brushes.WhiteSmoke,
+            Foreground      = AppRes("AppFg"),
             BorderThickness = new Thickness(0),
             CornerRadius    = new CornerRadius(4),
             Padding         = new Thickness(10, 4),
@@ -1128,7 +1134,7 @@ public partial class AgentTreePage : UserControl
             Text       = title,
             FontSize   = 15,
             FontFamily = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 M",
-            Foreground = Brushes.WhiteSmoke,
+            Foreground = AppRes("AppFg"),
             Margin     = new Thickness(0, 0, 0, 4)
         });
         root.Children.Add(new Border
@@ -1155,7 +1161,7 @@ public partial class AgentTreePage : UserControl
             FontFamily        = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R",
             Foreground        = isLocked
                                     ? new SolidColorBrush(Color.Parse("#888888"))
-                                    : Brushes.LightGray,
+                                    : AppRes("FgMuted"),
             VerticalAlignment = VerticalAlignment.Center
         });
 
@@ -1172,7 +1178,7 @@ public partial class AgentTreePage : UserControl
                                   : new SolidColorBrush(Color.Parse("#3a3a4a")),
             Foreground      = isReadOnly
                                   ? new SolidColorBrush(Color.Parse("#666666"))
-                                  : Brushes.WhiteSmoke,
+                                  : AppRes("AppFg"),
             BorderThickness = new Thickness(1),
             BorderBrush     = isReadOnly
                                   ? new SolidColorBrush(Color.Parse("#333333"))

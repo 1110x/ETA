@@ -1,4 +1,5 @@
 using ETA.Views;
+using ETA.Services.SERVICE2;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
@@ -21,10 +22,12 @@ public partial class App : Application
             // ── 테스트용: 로그인 스킵 ──────────────────
             var mainPage = new MainPage();
 #else */
-    var mainPage = new MainPage();  // 로그인 창
+    var mainPage = new Login();// 로그인 창
 /* #endif */
             desktop.MainWindow = mainPage;
             mainPage.Show();
+
+            FacilityDbMigration.EnsureTables();
 
             // ↓ 이 4줄만 추가
             Avalonia.Threading.Dispatcher.UIThread.Post(async () =>

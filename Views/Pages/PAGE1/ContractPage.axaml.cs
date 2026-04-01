@@ -25,6 +25,12 @@ namespace ETA.Views.Pages.PAGE1;
 
 public partial class ContractPage : UserControl
 {
+    private static Brush AppRes(string key, string fallback = "#888888")
+    {
+        if (Application.Current?.Resources.TryGetResource(key, null, out var v) == true && v is Brush b) return b;
+        return new SolidColorBrush(Color.Parse(fallback));
+    }
+
     // ── 외부(MainPage) 연결 ──────────────────────────────────────────────────
     public event Action<Control?>? DetailPanelChanged;
     public event Action<Control?>? PricePanelChanged;  // Show3 (현재 미사용)
@@ -137,7 +143,7 @@ public partial class ContractPage : UserControl
                                 Text       = contract.C_CompanyName,
                                 FontSize   = 13,
                                 FontFamily = Font,
-                                Foreground = Brushes.WhiteSmoke,
+                                Foreground = AppRes("AppFg"),
                             },
                             new StackPanel
                             {
@@ -440,7 +446,7 @@ public partial class ContractPage : UserControl
                         {
                             Text              = analyte,
                             FontSize          = 9, FontFamily = Font,
-                            Foreground        = Brushes.LightGray,
+                            Foreground        = AppRes("FgMuted"),
                             VerticalAlignment = VerticalAlignment.Center,
                             TextTrimming      = Avalonia.Media.TextTrimming.CharacterEllipsis,
                             Width             = 110,
@@ -613,7 +619,7 @@ public partial class ContractPage : UserControl
             FontSize   = 15,
             FontFamily = Font,
             FontWeight = FontWeight.SemiBold,
-            Foreground = Brushes.WhiteSmoke,
+            Foreground = AppRes("AppFg"),
             Margin     = new Thickness(0, 0, 0, 4)
         });
         root.Children.Add(new Border
@@ -652,7 +658,7 @@ public partial class ContractPage : UserControl
             FontFamily        = Font,
             Foreground        = isLocked
                                     ? new SolidColorBrush(Color.Parse("#888888"))
-                                    : Brushes.LightGray,
+                                    : AppRes("FgMuted"),
             VerticalAlignment = VerticalAlignment.Center,
         });
 
@@ -669,7 +675,7 @@ public partial class ContractPage : UserControl
                                   : new SolidColorBrush(Color.Parse("#3a3a4a")),
             Foreground      = isReadOnly
                                   ? new SolidColorBrush(Color.Parse("#666666"))
-                                  : Brushes.WhiteSmoke,
+                                  : AppRes("AppFg"),
             BorderThickness = new Thickness(1),
             BorderBrush     = isReadOnly
                                   ? new SolidColorBrush(Color.Parse("#333333"))
@@ -701,7 +707,7 @@ public partial class ContractPage : UserControl
             Width             = 130,
             FontSize          = 12,
             FontFamily        = Font,
-            Foreground        = Brushes.LightGray,
+            Foreground        = AppRes("FgMuted"),
             VerticalAlignment = VerticalAlignment.Center,
         });
 
@@ -722,7 +728,7 @@ public partial class ContractPage : UserControl
             FontSize        = 12,
             FontFamily      = Font,
             Background      = new SolidColorBrush(Color.Parse("#3a3a4a")),
-            Foreground      = Brushes.WhiteSmoke,
+            Foreground      = AppRes("AppFg"),
             BorderThickness = new Thickness(1),
             BorderBrush     = new SolidColorBrush(Color.Parse("#555577")),
             Padding         = new Thickness(8, 4),
@@ -782,7 +788,7 @@ public partial class ContractPage : UserControl
             Margin = new Thickness(20), Spacing = 16,
             Children =
             {
-                new TextBlock { Text = message, Foreground = Brushes.WhiteSmoke,
+                new TextBlock { Text = message, Foreground = AppRes("AppFg"),
                                 FontSize = 13, TextWrapping = Avalonia.Media.TextWrapping.Wrap },
                 new StackPanel { Orientation = Orientation.Horizontal, Spacing = 12,
                                  HorizontalAlignment = HorizontalAlignment.Right,
@@ -942,7 +948,7 @@ public partial class ContractPage : UserControl
         _cmbMeasQuotType = new ComboBox
         {
             Width = 200, FontSize = 12, FontFamily = Font,
-            Background = Brush.Parse("#3a3a4a"), Foreground = Brushes.WhiteSmoke,
+            Background = Brush.Parse("#3a3a4a"), Foreground = AppRes("AppFg"),
             BorderBrush = Brush.Parse("#555577"), BorderThickness = new Thickness(1),
             Padding = new Thickness(8, 4),
         };
@@ -1008,13 +1014,13 @@ public partial class ContractPage : UserControl
     private static TextBlock MakeLabel(string text) => new()
     {
         Text = text + " :", Width = 110, FontSize = 11, FontFamily = Font,
-        Foreground = Brushes.LightGray, VerticalAlignment = VerticalAlignment.Center,
+        Foreground = AppRes("FgMuted"), VerticalAlignment = VerticalAlignment.Center,
     };
 
     private static TextBox MakeTextBox(string value, string hint = "") => new()
     {
         Text = value, Width = 200, FontSize = 12, FontFamily = Font, Watermark = hint,
-        Background = Brush.Parse("#3a3a4a"), Foreground = Brushes.WhiteSmoke,
+        Background = Brush.Parse("#3a3a4a"), Foreground = AppRes("AppFg"),
         BorderBrush = Brush.Parse("#555577"), BorderThickness = new Thickness(1),
         CornerRadius = new CornerRadius(4), Padding = new Thickness(8, 4),
     };
@@ -1052,7 +1058,7 @@ public partial class ContractPage : UserControl
         {
             Text       = analyte,
             FontSize   = 12, FontFamily = Font, FontWeight = FontWeight.SemiBold,
-            Foreground = Brushes.WhiteSmoke,
+            Foreground = AppRes("AppFg"),
         });
 
         // 단가 입력
@@ -1062,7 +1068,7 @@ public partial class ContractPage : UserControl
             FontSize        = 14, FontFamily = Font,
             Watermark       = "단가 입력 (원)",
             Background      = new SolidColorBrush(Color.Parse("#3a3a4a")),
-            Foreground      = Brushes.WhiteSmoke,
+            Foreground      = AppRes("AppFg"),
             BorderBrush     = new SolidColorBrush(Color.Parse("#555577")),
             BorderThickness = new Thickness(1),
             CornerRadius    = new CornerRadius(4),

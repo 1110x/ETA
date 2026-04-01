@@ -67,7 +67,7 @@ public class OrderRequestEditPanel : UserControl
 
         var btnSubmit = new Button
         {
-            Content = "✅ 제출", Height = 26, FontSize = 11, FontFamily = Font,
+            Content = "🔄 업데이트", Height = 26, FontSize = 11, FontFamily = Font,
             Background = Brush.Parse("#1a4a2a"), Foreground = Brush.Parse("#88ee88"),
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
             Padding = new Thickness(12, 0), Margin = new Thickness(0, 0, 6, 0),

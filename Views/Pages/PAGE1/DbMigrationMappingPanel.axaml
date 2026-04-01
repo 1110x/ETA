@@ -10,21 +10,21 @@
             <Setter Property="Cursor"       Value="Hand"/>
         </Style>
         <Style Selector="Border.row-item:pointerover">
-            <Setter Property="Background" Value="#1e2a35"/>
+            <Setter Property="Background" Value="{DynamicResource TreeHoverBg}"/>
         </Style>
         <Style Selector="Border.row-selected">
-            <Setter Property="Background" Value="#1a3a4a"/>
+            <Setter Property="Background" Value="{DynamicResource TreeSelBg}"/>
         </Style>
         <Style Selector="TextBlock.col-header">
             <Setter Property="FontSize"     Value="{DynamicResource FontSizeBase}"/>
             <Setter Property="FontFamily"   Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
-            <Setter Property="Foreground"   Value="#aaaacc"/>
+            <Setter Property="Foreground"   Value="{DynamicResource FgMuted}"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
         <Style Selector="TextBlock.col-old">
             <Setter Property="FontSize"     Value="{DynamicResource FontSizeBase}"/>
             <Setter Property="FontFamily"   Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"/>
-            <Setter Property="Foreground"   Value="#cccccc"/>
+            <Setter Property="Foreground"   Value="{DynamicResource AppFg}"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
         </Style>
@@ -41,12 +41,12 @@
 
         <!-- 업체명 헤더 -->
         <Border Grid.Row="0"
-                Background="#1a1a28" CornerRadius="6,6,0,0" Padding="10,6">
+                Background="{DynamicResource PanelBg}" CornerRadius="6,6,0,0" Padding="10,6">
             <StackPanel Orientation="Horizontal" Spacing="8">
                 <TextBlock Text="🔄  시료명 매핑"
                            FontSize="{DynamicResource FontSizeLG}" FontWeight="Bold"
                            FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
-                           Foreground="#e0e0ff" VerticalAlignment="Center"/>
+                           Foreground="{DynamicResource AppFg}" VerticalAlignment="Center"/>
                 <Border x:Name="bdgCompany"
                         Background="#1a3060" CornerRadius="4"
                         Padding="6,2" IsVisible="False">
@@ -55,7 +55,7 @@
                                FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
                 </Border>
                 <TextBlock x:Name="txbRowCount"
-                           Text="" FontSize="{DynamicResource FontSizeBase}" Foreground="#888"
+                           Text="" FontSize="{DynamicResource FontSizeBase}" Foreground="{DynamicResource FgMuted}"
                            VerticalAlignment="Center"
                            FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"/>
             </StackPanel>
@@ -65,12 +65,12 @@
         <TextBlock Grid.Row="1"
                    x:Name="txbHint"
                    Text="← Show4에서 채취지점을 클릭하면 선택된 행에 매핑됩니다."
-                   FontSize="{DynamicResource FontSizeSM}" Foreground="#666"
+                   FontSize="{DynamicResource FontSizeSM}" Foreground="{DynamicResource FgMuted}"
                    FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"
                    Margin="8,4,0,2"/>
 
         <!-- 컬럼 헤더 행 -->
-        <Border Grid.Row="2" Background="#222233" Padding="6,4">
+        <Border Grid.Row="2" Background="{DynamicResource PanelInnerBg}" Padding="6,4">
             <Grid ColumnDefinitions="*,*">
                 <TextBlock Grid.Column="0" Classes="col-header" Text="기존 시료명" Margin="4,0"/>
                 <TextBlock Grid.Column="1" Classes="col-header" Text="→ 새 시료명 (채취지점)" Margin="4,0"/>
@@ -86,7 +86,7 @@
 
         <!-- 저장 버튼 -->
         <Border Grid.Row="4"
-                Background="#13131f" Padding="8,6"
+                Background="{DynamicResource PanelInnerBg}" Padding="8,6"
                 CornerRadius="0,0,6,6">
             <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
                 <TextBlock x:Name="txbSaveStatus"

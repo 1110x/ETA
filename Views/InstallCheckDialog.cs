@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
@@ -18,6 +19,12 @@ namespace ETA.Views;
 /// </summary>
 public class InstallCheckDialog : Window
 {
+    private static Brush AppRes(string key, string fallback = "#888888")
+    {
+        if (Application.Current?.Resources.TryGetResource(key, null, out var v) == true && v is Brush b) return b;
+        return new SolidColorBrush(Color.Parse(fallback));
+    }
+
     private static readonly FontFamily Font =
         new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
 
@@ -43,7 +50,7 @@ public class InstallCheckDialog : Window
         Content    = "나중에",
         Width      = 80,
         Height     = 32,
-        Background = new SolidColorBrush(Color.Parse("#3a3a3a")),
+        Background = AppRes("SubBtnBg"),
         Foreground = Brushes.White,
         BorderThickness = new Avalonia.Thickness(0),
     };
@@ -57,7 +64,7 @@ public class InstallCheckDialog : Window
         Height = 340;
         CanResize              = false;
         WindowStartupLocation  = WindowStartupLocation.CenterScreen;
-        Background             = new SolidColorBrush(Color.Parse("#1e1e2a"));
+        Background             = AppRes("PanelBg");
 
         BuildUI();
     }
@@ -72,7 +79,7 @@ public class InstallCheckDialog : Window
             FontFamily = Font,
             FontSize   = 16,
             FontWeight = FontWeight.Bold,
-            Foreground = Brushes.WhiteSmoke,
+            Foreground = AppRes("AppFg"),
             Margin     = new Avalonia.Thickness(0, 0, 0, 6),
         };
 
@@ -81,7 +88,7 @@ public class InstallCheckDialog : Window
             Text       = "아래 항목이 설치되어 있지 않습니다.\n지금 설치하시겠습니까?",
             FontFamily = Font,
             FontSize   = 12,
-            Foreground = Brushes.LightGray,
+            Foreground = AppRes("FgMuted"),
             Margin     = new Avalonia.Thickness(0, 0, 0, 12),
         };
 
@@ -112,14 +119,14 @@ public class InstallCheckDialog : Window
                                 FontFamily = Font,
                                 FontSize   = 13,
                                 FontWeight = FontWeight.SemiBold,
-                                Foreground = Brushes.WhiteSmoke,
+                                Foreground = AppRes("AppFg"),
                             },
                             new TextBlock
                             {
                                 Text       = item.Description,
                                 FontFamily = Font,
                                 FontSize   = 11,
-                                Foreground = new SolidColorBrush(Color.Parse("#888899")),
+                                Foreground = AppRes("FgMuted"),
                             },
                         }
                     }
@@ -127,7 +134,7 @@ public class InstallCheckDialog : Window
             };
             _itemPanel.Children.Add(new Border
             {
-                Background    = new SolidColorBrush(Color.Parse("#252535")),
+                Background    = AppRes("PanelInnerBg"),
                 CornerRadius  = new Avalonia.CornerRadius(4),
                 Padding       = new Avalonia.Thickness(10, 8),
                 Child         = row,

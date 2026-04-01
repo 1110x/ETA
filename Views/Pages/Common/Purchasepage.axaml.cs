@@ -22,6 +22,12 @@ namespace ETA.Views.Pages.Common;
 /// </summary>
 public class PurchasePage
 {
+    private static Brush AppRes(string key, string fallback = "#888888")
+    {
+        if (Application.Current?.Resources.TryGetResource(key, null, out var v) == true && v is Brush b) return b;
+        return new SolidColorBrush(Color.Parse(fallback));
+    }
+
     // ── MainPage 에서 각 영역에 꽂을 컨트롤 ─────────────────────────────────
     public Control TreeControl { get; }
     public Control ListControl { get; }
@@ -124,7 +130,7 @@ public class PurchasePage
             FontFamily      = Font,
             FontSize        = 12,
             Background      = new SolidColorBrush(Color.Parse("#2a5a2a")),
-            Foreground      = Brushes.WhiteSmoke,
+            Foreground      = AppRes("AppFg"),
             BorderThickness = new Thickness(0),
             CornerRadius    = new CornerRadius(4),
             Padding         = new Thickness(14, 6),
@@ -146,7 +152,7 @@ public class PurchasePage
                         FontFamily = Font,
                         FontSize   = 14,
                         FontWeight = FontWeight.SemiBold,
-                        Foreground = Brushes.WhiteSmoke,
+                        Foreground = AppRes("AppFg"),
                     },
                     new Border { Height = 1, Background = new SolidColorBrush(Color.Parse("#555555")) },
                     new WrapPanel
@@ -290,7 +296,7 @@ public class PurchasePage
                                 Text       = $"{m:D2}월",
                                 FontFamily = Font,
                                 FontSize   = 12,
-                                Foreground = Brushes.WhiteSmoke,
+                                Foreground = AppRes("AppFg"),
                                 Width      = 36,
                                 VerticalAlignment = VerticalAlignment.Center,
                             },
@@ -449,12 +455,12 @@ public class PurchasePage
                 {
                     DataCell($"{seq}",                      0, Brushes.Gray),
                     DataCell(item.구분,                     1),
-                    DataCell(item.품목,                     2, Brushes.WhiteSmoke, bold: true),
+                    DataCell(item.품목,                     2, AppRes("AppFg"), bold: true),
                     DataCell($"{item.수량}",                3),
                     DataCell(item.요청자,                   4),
-                    DataCell(item.요청일.ToString("MM-dd"), 5, Brushes.LightGray),
+                    DataCell(item.요청일.ToString("MM-dd"), 5, AppRes("FgMuted")),
                     BuildStatusBadge(item.상태, statusColor,6),
-                    DataCell(item.비고,                     7, Brushes.LightGray),
+                    DataCell(item.비고,                     7, AppRes("FgMuted")),
                 }
             }
         };
@@ -493,7 +499,7 @@ public class PurchasePage
             VerticalAlignment   = VerticalAlignment.Center,
             Child               = new TextBlock
             {
-                Text = status, FontFamily = Font, FontSize = 10, Foreground = Brushes.WhiteSmoke
+                Text = status, FontFamily = Font, FontSize = 10, Foreground = AppRes("AppFg")
             }
         };
         Grid.SetColumn(b, col);
@@ -766,7 +772,7 @@ public class PurchasePage
                     FontFamily   = Font,
                     FontSize     = 14,
                     FontWeight   = FontWeight.SemiBold,
-                    Foreground   = Brushes.WhiteSmoke,
+                    Foreground   = AppRes("AppFg"),
                 },
                 new Avalonia.Controls.Border
                 {
@@ -845,7 +851,7 @@ public class PurchasePage
     {
         Watermark = hint, Width = w, FontFamily = Font, FontSize = 12,
         Background      = new SolidColorBrush(Color.Parse("#3a3a4a")),
-        Foreground      = Brushes.WhiteSmoke,
+        Foreground      = AppRes("AppFg"),
         BorderThickness = new Thickness(1),
         BorderBrush     = new SolidColorBrush(Color.Parse("#555577")),
         CornerRadius    = new CornerRadius(4),

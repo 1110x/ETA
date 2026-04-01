@@ -21,6 +21,12 @@ namespace ETA.Views.Pages.PAGE1;
 
 public partial class TestReportPage : UserControl
 {
+    private static Brush AppRes(string key, string fallback = "#888888")
+    {
+        if (Application.Current?.Resources.TryGetResource(key, null, out var v) == true && v is Brush b) return b;
+        return new SolidColorBrush(Color.Parse(fallback));
+    }
+
     // ── 외부(MainPage) 연결 ──────────────────────────────────────────────────
     /// Show2 에 넣을 결과 리스트 컨트롤
     public event Action<Control?>? ResultListChanged;
@@ -144,7 +150,7 @@ public partial class TestReportPage : UserControl
                     Children = {
                         new TextBlock { Text = "🏭", FontSize = 16, VerticalAlignment = VerticalAlignment.Center },
                         new TextBlock { Text = company, FontSize = 13, FontFamily = Font,
-                                        Foreground = Brushes.WhiteSmoke, VerticalAlignment = VerticalAlignment.Center }
+                                        Foreground = AppRes("AppFg"), VerticalAlignment = VerticalAlignment.Center }
                     }
                 }
             };
@@ -179,7 +185,7 @@ public partial class TestReportPage : UserControl
                     Children = {
                         new TextBlock { Text = "📆", FontSize = 15, VerticalAlignment = VerticalAlignment.Center },
                         new TextBlock { Text = $"{yg.Key}년  ({yg.Count()}건)", FontSize = 13, FontFamily = Font,
-                                        Foreground = Brushes.WhiteSmoke, VerticalAlignment = VerticalAlignment.Center }
+                                        Foreground = AppRes("AppFg"), VerticalAlignment = VerticalAlignment.Center }
                     }
                 }
             };
@@ -534,7 +540,7 @@ public partial class TestReportPage : UserControl
                     new TextBlock { Text = l + ":", FontFamily = Font, FontSize = 11,
                                    Foreground = new SolidColorBrush(Color.Parse("#888899")) },
                     new TextBlock { Text = v,       FontFamily = Font, FontSize = 11,
-                                   Foreground = Brushes.WhiteSmoke }
+                                   Foreground = AppRes("AppFg") }
                 }
             });
         }
@@ -594,7 +600,7 @@ public partial class TestReportPage : UserControl
             ? new SolidColorBrush(Color.Parse("#ff4444"))
             : string.IsNullOrEmpty(row.결과값)
                 ? new SolidColorBrush(Color.Parse("#555555"))
-                : (IBrush)Brushes.WhiteSmoke;
+                : (IBrush)AppRes("AppFg");
 
         var rowBorder = new Border
         {
@@ -608,7 +614,7 @@ public partial class TestReportPage : UserControl
                 {
                     DataCell($"{no}",       0, Brushes.Gray),
                     DataCell(row.Category,  1),
-                    DataCell(row.항목명,    2, Brushes.WhiteSmoke, bold: true),
+                    DataCell(row.항목명,    2, AppRes("AppFg"), bold: true),
                     DataCell(row.결과값,    3, (IBrush)valColor, bold: true),
                     DataCell(row.단위,      4),
                     DataCell(row.분석방법,  5),
@@ -693,7 +699,7 @@ public partial class TestReportPage : UserControl
             Content         = "💾 결과 일괄 저장",
             FontFamily      = Font, FontSize = 11,
             Background      = new SolidColorBrush(Color.Parse("#2a5a2a")),
-            Foreground      = Avalonia.Media.Brushes.WhiteSmoke,
+            Foreground      = AppRes("AppFg"),
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
             Padding         = new Thickness(12, 5),
             IsEnabled       = _importHasPending,
@@ -730,7 +736,7 @@ public partial class TestReportPage : UserControl
             Content         = "📂  Excel 결과 파일 선택",
             FontFamily      = Font, FontSize = 11,
             Background      = new SolidColorBrush(Color.Parse("#1a3a5a")),
-            Foreground      = Avalonia.Media.Brushes.WhiteSmoke,
+            Foreground      = AppRes("AppFg"),
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
             Padding         = new Thickness(12, 6),
         };
@@ -740,7 +746,7 @@ public partial class TestReportPage : UserControl
             Content         = "📎  파일 첨부",
             FontFamily      = Font, FontSize = 11,
             Background      = new SolidColorBrush(Color.Parse("#3a2a5a")),
-            Foreground      = Avalonia.Media.Brushes.WhiteSmoke,
+            Foreground      = AppRes("AppFg"),
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
             Padding         = new Thickness(12, 6),
         };
@@ -936,7 +942,7 @@ public partial class TestReportPage : UserControl
             Content         = "🗑  선택 삭제",
             FontFamily      = Font, FontSize = 11,
             Background      = new SolidColorBrush(Color.Parse("#5a1a1a")),
-            Foreground      = Avalonia.Media.Brushes.WhiteSmoke,
+            Foreground      = AppRes("AppFg"),
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
             Padding         = new Thickness(10, 4),
         };
@@ -976,7 +982,7 @@ public partial class TestReportPage : UserControl
                         Text       = "📊  Excel 결과 불러오기",
                         FontFamily = Font, FontSize = 13,
                         FontWeight = FontWeight.SemiBold,
-                        Foreground = Avalonia.Media.Brushes.WhiteSmoke,
+                        Foreground = AppRes("AppFg"),
                     },
                     new Border { Height = 1, Background = new SolidColorBrush(Color.Parse("#444")) },
                     // Excel 선택 + 파일 첨부 버튼 나란히
@@ -1060,7 +1066,7 @@ public partial class TestReportPage : UserControl
                 Content         = "↗",
                 FontSize        = 11, Padding = new Thickness(4, 1),
                 Background      = new SolidColorBrush(Color.Parse("#1a2a3a")),
-                Foreground      = Avalonia.Media.Brushes.WhiteSmoke,
+                Foreground      = AppRes("AppFg"),
                 BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(3),
                 VerticalAlignment = VerticalAlignment.Center,
                 [ToolTip.TipProperty] = "파일 열기",
@@ -1109,7 +1115,7 @@ public partial class TestReportPage : UserControl
             Content         = "🚫 충돌 항목 건너버림",
             FontFamily      = Font, FontSize = 11,
             Background      = new SolidColorBrush(Color.Parse("#4a2a10")),
-            Foreground      = Avalonia.Media.Brushes.WhiteSmoke,
+            Foreground      = AppRes("AppFg"),
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
             Padding         = new Thickness(10, 4),
         };
@@ -1118,7 +1124,7 @@ public partial class TestReportPage : UserControl
             Content         = "✏ 덮어쓰기",
             FontFamily      = Font, FontSize = 11,
             Background      = new SolidColorBrush(Color.Parse("#2a3a5a")),
-            Foreground      = Avalonia.Media.Brushes.WhiteSmoke,
+            Foreground      = AppRes("AppFg"),
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
             Padding         = new Thickness(10, 4),
         };
@@ -1266,7 +1272,7 @@ public partial class TestReportPage : UserControl
         var valueTb = new TextBox
         {
             Text = row.결과값, Width = 120, FontFamily = Font, FontSize = 12,
-            Background = new SolidColorBrush(Color.Parse("#3a3a4a")), Foreground = Brushes.WhiteSmoke,
+            Background = new SolidColorBrush(Color.Parse("#3a3a4a")), Foreground = AppRes("AppFg"),
             BorderThickness = new Thickness(1), BorderBrush = new SolidColorBrush(Color.Parse("#5555aa")),
             CornerRadius = new CornerRadius(4), Padding = new Thickness(8, 4),
         };
@@ -1299,7 +1305,7 @@ public partial class TestReportPage : UserControl
             Child = new StackPanel { Spacing = 8, Children =
             {
                 new TextBlock { Text = "✏️  결과값 수정", FontFamily = Font, FontSize = 13,
-                               FontWeight = FontWeight.SemiBold, Foreground = Brushes.WhiteSmoke },
+                               FontWeight = FontWeight.SemiBold, Foreground = AppRes("AppFg") },
                 new Border { Height = 1, Background = new SolidColorBrush(Color.Parse("#555")) },
                 new WrapPanel { Orientation = Orientation.Horizontal, Children =
                 {
@@ -1332,7 +1338,7 @@ public partial class TestReportPage : UserControl
                 new TextBlock { Text = value, FontFamily = Font, FontSize = 12,
                                Foreground = highlight
                                    ? new SolidColorBrush(Color.Parse("#ffaa44"))
-                                   : (IBrush)Brushes.LightGray }
+                                   : (IBrush)AppRes("FgMuted") }
             }
         };
     }
@@ -1340,7 +1346,7 @@ public partial class TestReportPage : UserControl
     private static Button MakeBtn(string text, string bg) => new Button
     {
         Content = text, FontFamily = Font, FontSize = 12,
-        Background = new SolidColorBrush(Color.Parse(bg)), Foreground = Brushes.WhiteSmoke,
+        Background = new SolidColorBrush(Color.Parse(bg)), Foreground = AppRes("AppFg"),
         BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
         Padding = new Thickness(12, 5), VerticalAlignment = VerticalAlignment.Center,
     };
@@ -1372,7 +1378,7 @@ public partial class TestReportPage : UserControl
             Content         = "◀ 결과 목록으로",
             FontFamily      = Font, FontSize = 11,
             Background      = new SolidColorBrush(Color.Parse("#2a2a3a")),
-            Foreground      = Brushes.WhiteSmoke,
+            Foreground      = AppRes("AppFg"),
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
             Padding         = new Thickness(10, 4),
             Margin          = new Thickness(8, 6),
@@ -1452,7 +1458,7 @@ public partial class TestReportPage : UserControl
                         ColumnDefinitions = new ColumnDefinitions(MeasurerColStr),
                         Children =
                         {
-                            MeasurerDataCell(row.항목명,   0, Brushes.WhiteSmoke, bold: true),
+                            MeasurerDataCell(row.항목명,   0, AppRes("AppFg"), bold: true),
                             MeasurerDataCell(row.법적기준, 1),
                             MeasurerDataCell(row.결과값, 2, new SolidColorBrush(Color.Parse("#88ee88")), bold: true),
                             MeasurerDataCell(row.측정방법, 3),
@@ -1509,7 +1515,7 @@ public partial class TestReportPage : UserControl
             Content         = "페이지 확인",
             FontFamily      = Font, FontSize = 11,
             Background      = new SolidColorBrush(Color.Parse("#1a3a5a")),
-            Foreground      = Brushes.WhiteSmoke,
+            Foreground      = AppRes("AppFg"),
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
             Padding         = new Thickness(12, 5),
         };
@@ -1519,7 +1525,7 @@ public partial class TestReportPage : UserControl
             Content         = "측정값 입력 진행",
             FontFamily      = Font, FontSize = 12,
             Background      = new SolidColorBrush(Color.Parse("#264026")),
-            Foreground      = Brushes.WhiteSmoke,
+            Foreground      = AppRes("AppFg"),
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
             Padding         = new Thickness(16, 6),
         };
@@ -1903,7 +1909,7 @@ public partial class TestReportPage : UserControl
                                 Foreground = new SolidColorBrush(Color.Parse("#888888")),
                                 VerticalAlignment = VerticalAlignment.Center },
                 new TextBlock { Text = value, FontFamily = Font, FontSize = 11,
-                                Foreground = Brushes.LightGray,
+                                Foreground = AppRes("FgMuted"),
                                 VerticalAlignment = VerticalAlignment.Center },
             }
         };
@@ -1929,7 +1935,7 @@ public partial class TestReportPage : UserControl
             Children =
             {
                 new TextBlock { Text = msg, FontFamily = Font, FontSize = 12,
-                                Foreground = Brushes.WhiteSmoke,
+                                Foreground = AppRes("AppFg"),
                                 TextWrapping = Avalonia.Media.TextWrapping.Wrap },
                 new StackPanel { Orientation = Orientation.Horizontal,
                                  HorizontalAlignment = HorizontalAlignment.Right,
@@ -1965,7 +1971,7 @@ public partial class TestReportPage : UserControl
             Children =
             {
                 new TextBlock { Text = msg, FontFamily = Font, FontSize = 12,
-                                Foreground = Brushes.WhiteSmoke,
+                                Foreground = AppRes("AppFg"),
                                 TextWrapping = Avalonia.Media.TextWrapping.Wrap },
                 new StackPanel { Orientation = Orientation.Horizontal, Spacing = 10,
                                  HorizontalAlignment = HorizontalAlignment.Right,

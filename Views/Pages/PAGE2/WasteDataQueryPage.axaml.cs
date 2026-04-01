@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
@@ -15,6 +16,12 @@ namespace ETA.Views.Pages.PAGE2;
 
 public partial class WasteDataQueryPage : UserControl
 {
+    private static Brush AppRes(string key, string fallback = "#888888")
+    {
+        if (Application.Current?.Resources.TryGetResource(key, null, out var v) == true && v is Brush b) return b;
+        return new SolidColorBrush(Color.Parse(fallback));
+    }
+
     // ── 외부 이벤트 ─────────────────────────────────────────────────────────
     public event Action<WasteCompany>? CompanySelected;
 
@@ -78,7 +85,7 @@ public partial class WasteDataQueryPage : UserControl
             Text      = company.업체명,
             FontSize  = 12,
             FontFamily = Font,
-            Foreground = Brushes.WhiteSmoke,
+            Foreground = AppRes("AppFg"),
             VerticalAlignment = VerticalAlignment.Center,
         });
         sp.Children.Add(new TextBlock

@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
@@ -23,16 +24,19 @@ namespace ETA.Views.Pages.PAGE1;
 /// </summary>
 public class AnalysisRequestDetailPanel : UserControl
 {
+    private static Brush AppRes(string key, string fallback = "#888888")
+    {
+        if (Application.Current?.Resources.TryGetResource(key, null, out var v) == true && v is Brush b) return b;
+        return new SolidColorBrush(Color.Parse(fallback));
+    }
+
     private static readonly FontFamily Font =
         new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
 
     // 미리 파싱해 둔 브러시 (매 행마다 Brush.Parse 호출 비용 제거)
-    private static readonly IBrush BrushOdd      = Brush.Parse("#1a1a28");
-    private static readonly IBrush BrushEven     = Brush.Parse("#1e1e30");
-    private static readonly IBrush BrushItemName = Brush.Parse("#cccccc");
     private static readonly IBrush BrushAnalyzing= Brush.Parse("#ff6666");
     private static readonly IBrush BrushResult   = Brush.Parse("#88cc88");
-    private static readonly IBrush BrushEmpty    = Brush.Parse("#555");
+    private static readonly IBrush BrushEmpty    = AppRes("FgMuted");
 
     public QuotationCheckPanel? CheckPanel { get; set; }
 
@@ -90,7 +94,7 @@ public class AnalysisRequestDetailPanel : UserControl
         {
             Text = "🧪  분석의뢰 상세",
             FontSize = 13, FontWeight = FontWeight.Bold,
-            FontFamily = Font, Foreground = Brush.Parse("#e0e0e0"),
+            FontFamily = Font, Foreground = AppRes("AppFg"),
             Margin = new Avalonia.Thickness(0, 0, 0, 4),
         };
 
@@ -138,7 +142,7 @@ public class AnalysisRequestDetailPanel : UserControl
             Text              = "법정방류기준",
             FontFamily        = Font,
             FontSize          = 11,
-            Foreground        = Brush.Parse("#aaaacc"),
+            Foreground        = AppRes("FgMuted"),
             VerticalAlignment = VerticalAlignment.Center,
             Margin            = new Avalonia.Thickness(0, 0, 8, 0),
             [Grid.ColumnProperty] = 0,
@@ -157,7 +161,7 @@ public class AnalysisRequestDetailPanel : UserControl
             {
                 metaGrid,
                 dischargeRow,
-                new Border { Height=1, Background=Brush.Parse("#333"),
+                new Border { Height=1, Background=AppRes("InputBorder"),
                              Margin=new Avalonia.Thickness(0,6,0,6) },
                 colHeader,
                 _spItems,
@@ -168,7 +172,7 @@ public class AnalysisRequestDetailPanel : UserControl
         {
             Text       = "좌측에서 분석의뢰 항목을 선택하세요.",
             FontSize   = 11, FontFamily = Font,
-            Foreground = Brush.Parse("#555"),
+            Foreground = AppRes("FgMuted"),
             Margin     = new Avalonia.Thickness(12, 20),
         };
 
@@ -182,7 +186,7 @@ public class AnalysisRequestDetailPanel : UserControl
                 {
                     header,
                     new Border { [Grid.RowProperty]=1, Height=1,
-                                 Background=Brush.Parse("#333"),
+                                 Background=AppRes("InputBorder"),
                                  Margin=new Avalonia.Thickness(0,0,0,6) },
                     new ScrollViewer
                     {
@@ -320,7 +324,7 @@ public class AnalysisRequestDetailPanel : UserControl
             var grid = new Grid
             {
                 ColumnDefinitions = new ColumnDefinitions("64,*,80"),
-                Background        = odd ? BrushOdd : BrushEven,
+                Background        = AppRes(odd ? "GridRowBg" : "GridRowAltBg"),
             };
 
             // Col 0 — 카테고리 배지
@@ -347,7 +351,7 @@ public class AnalysisRequestDetailPanel : UserControl
             {
                 Text              = col,
                 FontSize          = 11, FontFamily = Font,
-                Foreground        = BrushItemName,
+                Foreground        = AppRes("AppFg"),
                 Margin            = new Avalonia.Thickness(4, 3),
                 VerticalAlignment = VerticalAlignment.Center,
                 TextTrimming      = Avalonia.Media.TextTrimming.CharacterEllipsis,
@@ -408,7 +412,7 @@ public class AnalysisRequestDetailPanel : UserControl
     {
         FontSize   = 11,
         FontFamily = new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
-        Foreground = Brush.Parse("#dddddd"),
+        Foreground = AppRes("AppFg"),
         VerticalAlignment = VerticalAlignment.Center,
     };
 
