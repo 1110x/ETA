@@ -439,63 +439,55 @@
                       Margin="1,0,0,0"
                       RowDefinitions="808*,8,192*">
 
-                    <!-- 상단: Content2 + Content4 (좌우 분할) -->
-                    <Border Grid.Row="0"
-                            Background="{DynamicResource PanelBg}"
-                            CornerRadius="6" Padding="12">
-                        <Grid x:Name="UpperContentGrid"
-                              ColumnDefinitions="*,8,*">
+                    <!-- 상단: Content2 + Content4 (좌우 분할) — Show1/2 경계와 동일 패턴 -->
+                    <Grid Grid.Row="0" x:Name="UpperContentGrid"
+                          ColumnDefinitions="*,8,*">
 
-                            <!-- Content2 -->
-                            <Border Grid.Column="0"
-                                    Background="{DynamicResource PanelInnerBg}"
-                                    BorderBrush="{DynamicResource InputBorder}"
-                                    BorderThickness="1"
-                                    CornerRadius="4" Padding="8" Margin="0,0,4,0">
-                                <TransitioningContentControl x:Name="Show2"
-                                                HorizontalAlignment="Stretch"
-                                                VerticalAlignment="Stretch"
-                                                HorizontalContentAlignment="Stretch"
-                                                VerticalContentAlignment="Stretch">
-                                    <TransitioningContentControl.PageTransition>
-                                        <CrossFade Duration="0:0:0.18"/>
-                                    </TransitioningContentControl.PageTransition>
-                                </TransitioningContentControl>
-                            </Border>
+                        <!-- Content2 -->
+                        <Border Grid.Column="0"
+                                Background="{DynamicResource PanelBg}"
+                                CornerRadius="6" Padding="12" Margin="0,0,1,0">
+                            <TransitioningContentControl x:Name="Show2"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Stretch"
+                                            HorizontalContentAlignment="Stretch"
+                                            VerticalContentAlignment="Stretch">
+                                <TransitioningContentControl.PageTransition>
+                                    <CrossFade Duration="0:0:0.18"/>
+                                </TransitioningContentControl.PageTransition>
+                            </TransitioningContentControl>
+                        </Border>
 
-                            <!-- Content2↔4 스플리터 -->
-                            <GridSplitter x:Name="HorizontalSplitter"
-                                          Grid.Column="1" Width="8"
-                                          Background="Transparent"
-                                          HorizontalAlignment="Stretch"
-                                          VerticalAlignment="Stretch"
-                                          ResizeDirection="Columns"
-                                          Cursor="SizeWestEast"/>
-                            <Border Grid.Column="1" Width="1"
-                                    Background="{DynamicResource SplitterColor}"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Stretch"
-                                    Opacity="0.9"/>
+                        <!-- Content2↔4 스플리터 -->
+                        <GridSplitter x:Name="HorizontalSplitter"
+                                      Grid.Column="1" Width="8"
+                                      Background="Transparent"
+                                      HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Stretch"
+                                      ResizeDirection="Columns"
+                                      Cursor="SizeWestEast"/>
+                        <Border Grid.Column="1" Width="1"
+                                Background="{DynamicResource SplitterColor}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Stretch"
+                                Opacity="0.9"/>
 
-                            <!-- Content4 -->
-                            <Border x:Name="Content4Border"
-                                    Grid.Column="2"
-                                    Background="{DynamicResource Panel4Bg}"
-                                    BorderBrush="{DynamicResource InputBorder}"
-                                    BorderThickness="1"
-                                    CornerRadius="4" Padding="8" Margin="4,0,0,0">
-                                <TransitioningContentControl x:Name="Show4"
-                                                HorizontalAlignment="Stretch"
-                                                VerticalAlignment="Stretch"
-                                                HorizontalContentAlignment="Stretch"
-                                                VerticalContentAlignment="Stretch">
-                                    <TransitioningContentControl.PageTransition>
-                                        <CrossFade Duration="0:0:0.18"/>
-                                    </TransitioningContentControl.PageTransition>
-                                </TransitioningContentControl>
-                            </Border>
-                        </Grid>
-                    </Border>
+                        <!-- Content4 -->
+                        <Border x:Name="Content4Border"
+                                Grid.Column="2"
+                                Background="{DynamicResource Panel4Bg}"
+                                CornerRadius="6" Padding="12" Margin="1,0,0,0">
+                            <TransitioningContentControl x:Name="Show4"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Stretch"
+                                            HorizontalContentAlignment="Stretch"
+                                            VerticalContentAlignment="Stretch">
+                                <TransitioningContentControl.PageTransition>
+                                    <CrossFade Duration="0:0:0.18"/>
+                                </TransitioningContentControl.PageTransition>
+                            </TransitioningContentControl>
+                        </Border>
+                    </Grid>
 
                     <!-- 상하 스플리터 -->
                     <GridSplitter x:Name="VerticalSplitter"
@@ -514,8 +506,6 @@
                     <Border x:Name="LowerBorder"
                             Grid.Row="2"
                             Background="{DynamicResource PanelBg}"
-                            BorderBrush="{DynamicResource InputBorder}"
-                            BorderThickness="1"
                             CornerRadius="6" Padding="12">
                         <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                                       VerticalScrollBarVisibility="Auto">
