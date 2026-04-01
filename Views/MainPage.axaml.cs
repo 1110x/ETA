@@ -51,6 +51,7 @@ public partial class MainPage : Window
     private ResultSubmitZero4Page?       _resultSubmitZero4Page;
     private PurchasePage?      _purchasePage;
     private RepairPage?       _repairPage;
+    private SchedulePage?     _schedulePage;
     private TestReportPage?         _testReportPage;
     private ReportsPanel?           _reportsPanel;           // Content4: 출력 보관함
     private DbMigrationPage?           _dbMigrationPage;
@@ -1846,6 +1847,26 @@ public partial class MainPage : Window
     }
 
 
+    // ── 출장/일정 관리 ────────────────────────────────────────────────────────
+    private void Schedule_Click(object? sender, RoutedEventArgs e)
+    {
+        _currentMode = "Schedule";
+        _schedulePage ??= new SchedulePage();
+
+        Show1.Content = _schedulePage.TreeControl;
+        Show2.Content = _schedulePage.CalendarControl;
+        Show3.Content = _schedulePage.FormControl;
+        Show4.Content = null;
+
+        LogContentChange("Show1", _schedulePage.TreeControl);
+        SetSubMenu("저장", "새로고침", "", "", "", "", "");
+        SetLeftPanelWidth(250);
+        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 6, lowerStar: 4);
+        RestoreModeLayout("Schedule");
+
+        Avalonia.Threading.Dispatcher.UIThread.Post(() => _schedulePage.LoadData());
+    }
+
     private void TestReport_Click(object? sender, RoutedEventArgs e)
     {
         _currentMode = "TestReport";
@@ -2123,6 +2144,7 @@ public partial class MainPage : Window
     {
         switch (_currentMode)
         {
+            case "Schedule":        _schedulePage?.SaveEntry();         break;
             case "Purchase":        _purchasePage?.Refresh();           break;
             case "TestReport":      _testReportPage?.LoadData();        break;
             case "Repair":          _repairPage?.Refresh();             break;
@@ -2142,6 +2164,7 @@ public partial class MainPage : Window
             case "WasteCompany":      _wasteCompanyPage?.LoadData();    break;
             case "WasteDataQuery":    _wasteDataQueryPage?.LoadData(); break;
             case "WasteNameReconcile": _wasteNameReconcilePage?.Reload(); break;
+            case "Schedule":     _schedulePage?.LoadData();        break;
             case "Contract":     _contractPage?.LoadData();       break;
             case "Purchase":     _purchasePage?.ExportCsv();      break;
             case "TestReport":   _testReportPage?.SaveCsv();      break;

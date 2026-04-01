@@ -310,8 +310,7 @@
                         <MenuItem Header="보수요청"    Click="Repair_Click"/>
                         <MenuItem Header="물품구매"    Click="Purchase_Click"/>
                         <MenuItem Header="계약업체 채수" IsEnabled="False" Opacity="0.4"/>
-                        <MenuItem Header="출장관리"     IsEnabled="False" Opacity="0.4"/>
-                        <MenuItem Header="휴일근무"     IsEnabled="False" Opacity="0.4"/>
+                        <MenuItem Header="출장/일정 관리" Click="Schedule_Click"/>
                     </MenuItem>
 
                     <MenuItem Header="권한관리" x:Name="PermissionMenu">
