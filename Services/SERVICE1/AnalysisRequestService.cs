@@ -285,6 +285,71 @@ public static class AnalysisRequestService
     }
 
     // =====================================================================
+    //  방류기준 — 목록 조회 + 적용유무 갱신
+    // =====================================================================
+
+    /// <summary>방류기준표의 구분값(기준 이름) 목록 반환</summary>
+    public static List<string> GetDischargeStandardNames()
+    {
+        var list = new List<string>();
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            if (!DbConnectionFactory.TableExists(conn, "방류기준표")) return list;
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT DISTINCT `구분` FROM `방류기준표` ORDER BY `구분`";
+            using var rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                var v = rdr.IsDBNull(0) ? "" : rdr.GetValue(0)?.ToString()?.Trim() ?? "";
+                if (!string.IsNullOrEmpty(v)) list.Add(v);
+            }
+        }
+        catch
+        {
+            // 구분 컬럼명이 다를 수 있으므로 첫 번째 컬럼으로 재시도
+            try
+            {
+                using var conn = DbConnectionFactory.CreateConnection();
+                conn.Open();
+                var cols = DbConnectionFactory.GetColumnNames(conn, "방류기준표");
+                if (cols.Count == 0) return list;
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = $"SELECT DISTINCT `{cols[0]}` FROM `방류기준표` ORDER BY `{cols[0]}`";
+                using var rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    var v = rdr.IsDBNull(0) ? "" : rdr.GetValue(0)?.ToString()?.Trim() ?? "";
+                    if (!string.IsNullOrEmpty(v)) list.Add(v);
+                }
+            }
+            catch { }
+        }
+        return list;
+    }
+
+    /// <summary>분析의뢰및결과의 방류허용기준 적용유무 업데이트</summary>
+    public static bool UpdateDischargeStandard(int rowId, string standardName)
+    {
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return false;
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText =
+                $"UPDATE `분석의뢰및결과` SET `방류허용기준 적용유무` = @val " +
+                $"WHERE {DbConnectionFactory.RowId} = @id";
+            cmd.Parameters.AddWithValue("@val", standardName);
+            cmd.Parameters.AddWithValue("@id",  rowId);
+            return cmd.ExecuteNonQuery() > 0;
+        }
+        catch (Exception ex) { Log($"UpdateDischargeStandard 오류: {ex.Message}"); return false; }
+    }
+
+    // =====================================================================
     //  DB Migration — 약칭 기준 고유 시료명 조회 (4번째 컬럼 약칭, 6번째 컬럼 시료명)
     // =====================================================================
     public static List<string> GetDistinctSampleNames(string 약칭)

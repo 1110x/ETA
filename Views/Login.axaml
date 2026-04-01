@@ -57,11 +57,11 @@
                     <!-- 텍스트 -->
                     <StackPanel Grid.Column="1" Spacing="4" VerticalAlignment="Center">
                         <TextBlock Text="RENEWUS ETA SYSTEM" FontSize="17" FontWeight="Bold"
-                                   Foreground="#3B6FE8"/>
+                                   Foreground="#003cc9"/>
                         <TextBlock Text="TEAM Professional WATER ANALYSIS CENTER" FontSize="9"
                                    Foreground="#9CA3AF" TextWrapping="Wrap"/>
-                        <TextBlock Text="Presented by JUNG SEUNG UK v1.0" FontSize="10" FontFamily="Assets/Fonts/KBIZ한마음명조 M.ttf"
-                                   Foreground="#f11313"/>
+                        <TextBlock Text="Presented by 1110x v1.0" FontSize="10" FontFamily="Assets/Fonts/KBIZ한마음명조 M.ttf"
+                                   Foreground="#5a2da1"/>
                     </StackPanel>
                 </Grid>
 

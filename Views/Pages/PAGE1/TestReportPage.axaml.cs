@@ -1617,37 +1617,33 @@ public partial class TestReportPage : UserControl
     }
 
     // =========================================================================
-    // ── 일괄 엑셀 출력 ────────────────────────────────────────────────────────
-    public void BatchPrintExcel() => BatchPrint(toPdf: false);
-
-    // ── 일괄 PDF 출력 ─────────────────────────────────────────────────────────
-    public void BatchPrintPdf() => BatchPrint(toPdf: true);
-
-    private void BatchPrint(bool toPdf)
+    // ── 일괄 엑셀 — 시험성적서통합.xlsm 자료 시트에 선택 시료 입력 ────────────
+    public async void BatchPrintExcel()
     {
         if (_checkedSamples.Count == 0)
         {
             ShowToast("선택된 시료가 없습니다.\n시료 옆 체크박스를 선택해 주세요.");
             return;
         }
-        int ok = 0, fail = 0;
-        foreach (var sample in _checkedSamples.ToList())
+
+        var progressDlg = ShowToast($"⏳ 통합 엑셀 생성 중… ({_checkedSamples.Count}건)");
+
+        try
         {
-            try
-            {
-                var rows = BuildResultRowsForSample(sample);
-                TestReportPrintService.FillAndSave(
-                    sample: sample, rows: rows, meta: _meta,
-                    toPdf: toPdf, openAfter: false);
-                ok++;
-                Log($"[일괄] ✅ {sample.시료명}");
-            }
-            catch (Exception ex) { fail++; Log($"[일괄] ❌ {sample.시료명}: {ex.Message}"); }
+            var samples = _checkedSamples.ToList();
+            var path = await System.Threading.Tasks.Task.Run(
+                () => TestReportPrintService.ExportToIntegratedTemplate(samples, _meta));
+
+            progressDlg.Close();
+            ShowToast($"✅ 통합 엑셀 저장 완료\n{System.IO.Path.GetFileName(path)}");
+            TestReportPrintService.OpenFile(path);
         }
-        ShowToast($"✅ 일괄 {(toPdf ? "PDF" : "엑셀")} 완료\n성공: {ok}개  실패: {fail}개");
-        var dir = System.IO.Path.GetFullPath(System.IO.Path.Combine(
-            AppContext.BaseDirectory, "..", "..", "..", "Data", "Reports"));
-        TestReportPrintService.OpenFile(dir);
+        catch (Exception ex)
+        {
+            progressDlg.Close();
+            ShowToast($"❌ 오류: {ex.Message}");
+            Log($"[일괄통합] 오류: {ex.Message}");
+        }
     }
 
     // ── 전체 선택 / 해제 ─────────────────────────────────────────────────────
@@ -1696,10 +1692,30 @@ public partial class TestReportPage : UserControl
         return rows;
     }
 
-    /// BT1 — 출력
-    public void Print() => PrintExcel();
+    /// BT1 — 출력 (미리보기 윈도우)
+    public void Print() => OpenPrintWindow();
 
-    // ── 엑셀 출력 ─────────────────────────────────────────────────────────────
+    public void OpenPrintWindow()
+    {
+        if (_selectedSample == null) { ShowToast("시료를 먼저 선택하세요."); return; }
+        if (!TestReportPrintService.TemplateExists())
+        {
+            ShowToast($"템플릿 없음\nData\\Templates\\ 폴더에 템플릿 파일을 넣어주세요.");
+            TestReportPrintService.OpenTemplateFolder();
+            return;
+        }
+        try
+        {
+            var rows = BuildResultRowsForSample(_selectedSample);
+            var owner = Avalonia.Controls.TopLevel.GetTopLevel(this) as Avalonia.Controls.Window;
+            var win = new TestReportPrintWindow(_selectedSample, rows);
+            if (owner != null) win.ShowDialog(owner);
+            else               win.Show();
+        }
+        catch (Exception ex) { Log($"❌ 미리보기 오류: {ex.Message}"); ShowToast($"❌ 오류: {ex.Message}"); }
+    }
+
+    // ── 엑셀 직접 저장 (레거시 — 미리보기 윈도우의 Excel 버튼으로 대체됨)
     public void PrintExcel()
     {
         if (_selectedSample == null) { ShowToast("시료를 먼저 선택하세요."); return; }
@@ -1893,7 +1909,7 @@ public partial class TestReportPage : UserControl
         };
     }
 
-    private void ShowToast(string msg)
+    private Window ShowToast(string msg)
     {
         Log($"[Toast] {msg}");
         // 간단한 팝업 (향후 Toast UI 교체 가능)
@@ -1923,6 +1939,7 @@ public partial class TestReportPage : UserControl
         var owner = TopLevel.GetTopLevel(this) as Window;
         if (owner != null) dlg.ShowDialog(owner);
         else dlg.Show();
+        return dlg;
     }
 
     private async Task<bool> ShowConfirmAsync(string msg)

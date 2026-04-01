@@ -3,6 +3,11 @@
              x:Class="ETA.Views.Pages.PAGE1.ContractPage">
 
     <UserControl.Styles>
+        <!-- ToggleSwitch -->
+        <Style Selector="ToggleSwitch">
+            <Setter Property="FontSize"   Value="11" />
+            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+        </Style>
         <!-- TreeViewItem -->
         <Style Selector="TreeViewItem">
             <Setter Property="Padding"    Value="1,0" />
@@ -27,7 +32,7 @@
         </Style>
     </UserControl.Styles>
 
-    <Grid RowDefinitions="Auto,*">
+    <Grid RowDefinitions="Auto,Auto,*">
         <Border Grid.Row="0"
                 Background="#1a1a28"
                 CornerRadius="6,6,0,0"
@@ -38,7 +43,16 @@
                        FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
                        VerticalAlignment="Center"/>
         </Border>
-        <TreeView Grid.Row="1"
+        <Border Grid.Row="1"
+                Background="#13131f"
+                Padding="8,4">
+            <ToggleSwitch x:Name="tglContractStatus"
+                          IsChecked="True"
+                          OnContent="✅ 현행계약"
+                          OffContent="📁 종료계약"
+                          IsCheckedChanged="TglContractStatus_Changed" />
+        </Border>
+        <TreeView Grid.Row="2"
                   x:Name="ContractTreeView"
                   Margin="5"
                   HorizontalAlignment="Stretch"

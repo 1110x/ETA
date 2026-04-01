@@ -11,12 +11,12 @@ namespace ETA.Services.Common;
 public static class AppFonts
 {
     // ── 기본 크기 (scale=1.0 기준) ────────────────────────────────────────
-    public const double BaseXS    =  9.0;
-    public const double BaseSM    = 10.0;
-    public const double BaseBase  = 11.0;
-    public const double BaseMD    = 12.0;
-    public const double BaseLG    = 13.0;
-    public const double BaseXL    = 14.0;
+    public const double BaseXS    =  10.0;
+    public const double BaseSM    = 11.0;
+    public const double BaseBase  = 12.0;
+    public const double BaseMD    = 13.0;
+    public const double BaseLG    = 14.0;
+    public const double BaseXL    = 15.0;
     public const double BaseTitle = 22.0;
     public const double BaseHuge  = 28.0;
 

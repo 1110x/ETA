@@ -2,7 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using ClosedXML.Excel;
 using ETA.Models;
 using System.Data;
@@ -21,6 +24,9 @@ public static class TestReportPrintService
 
     public static string Template2Path =>
         Path.Combine(RootPath, "Data", "Templates", "시험성적서2_template.xlsx");
+
+    private static string IntegratedTemplatePath =>
+        Path.Combine(RootPath, "Data", "Templates", "시험성적서통합.xlsm");
 
     private static string OutputDir =>
         Path.Combine(RootPath, "Data", "Reports");
@@ -542,4 +548,265 @@ public static class TestReportPrintService
         }
         catch { }
     }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  일괄 엑셀 — 시험성적서통합.xlsm 의 자료 시트에 횡으로 입력
+    //  ClosedXML 저장 없이 ZIP XML 직접 조작 → 스타일/매크로 완전 보존
+    // ══════════════════════════════════════════════════════════════════════
+    public static string ExportToIntegratedTemplate(
+        IEnumerable<SampleRequest>       samples,
+        Dictionary<string, AnalysisItem> meta)
+    {
+        string tplPath = IntegratedTemplatePath;
+        if (!File.Exists(tplPath))
+            throw new FileNotFoundException($"통합 템플릿 없음: {tplPath}");
+
+        Directory.CreateDirectory(OutputDir);
+        string savePath = Path.Combine(OutputDir,
+            $"시험성적서통합_{DateTime.Now:yyyyMMdd_HHmmss}.xlsm");
+        File.Copy(tplPath, savePath, overwrite: true);
+
+        // ── 1. ZIP에서 sharedStrings + sheet3 row1 직접 파싱으로 헤더 맵 구성 ──
+        var colMap = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        string ssXmlOrig  = "";
+        string[] ssArr    = Array.Empty<string>();
+
+        using (var zipR = ZipFile.OpenRead(savePath))
+        {
+            // sharedStrings.xml → ssArr[] 배열
+            var ssEntry = zipR.GetEntry("xl/sharedStrings.xml");
+            if (ssEntry != null)
+            {
+                using var sr = new StreamReader(ssEntry.Open(), Encoding.UTF8);
+                ssXmlOrig = sr.ReadToEnd();
+                var siMatches = Regex.Matches(ssXmlOrig, @"<si>.*?</si>", RegexOptions.Singleline);
+                ssArr = new string[siMatches.Count];
+                for (int k = 0; k < siMatches.Count; k++)
+                {
+                    var tm = Regex.Match(siMatches[k].Value, @"<t[^>]*>([^<]*)</t>");
+                    ssArr[k] = tm.Success ? System.Net.WebUtility.HtmlDecode(tm.Groups[1].Value) : "";
+                }
+            }
+
+            // sheet3.xml row r="1" 파싱 → colMap
+            var shEntry = zipR.GetEntry("xl/worksheets/sheet3.xml");
+            if (shEntry != null)
+            {
+                using var sr2 = new StreamReader(shEntry.Open(), Encoding.UTF8);
+                string shXml = sr2.ReadToEnd();
+                var row1m = Regex.Match(shXml, @"<row r=""1""[^>]*>(.*?)</row>", RegexOptions.Singleline);
+                if (row1m.Success)
+                {
+                    foreach (Match cm in Regex.Matches(row1m.Groups[1].Value,
+                        @"<c r=""([A-Z]+)1""[^>]*>(.*?)</c>", RegexOptions.Singleline))
+                    {
+                        int colNum = ColLetterToNum(cm.Groups[1].Value);
+                        string inner = cm.Groups[2].Value;
+                        string hdr = "";
+                        var vm = Regex.Match(inner, @"<v>(\d+)</v>");
+                        if (vm.Success && int.TryParse(vm.Groups[1].Value, out int idx) && idx < ssArr.Length)
+                            hdr = ssArr[idx].Trim();
+                        else
+                        {
+                            var tm2 = Regex.Match(inner, @"<t[^>]*>([^<]*)</t>");
+                            if (tm2.Success) hdr = System.Net.WebUtility.HtmlDecode(tm2.Groups[1].Value).Trim();
+                        }
+                        if (!string.IsNullOrEmpty(hdr) && !colMap.ContainsKey(hdr))
+                            colMap[hdr] = colNum;
+                    }
+                }
+            }
+        }
+
+        int ColOf(params string[] candidates)
+        {
+            foreach (var c in candidates)
+                if (colMap.TryGetValue(c, out int n)) return n;
+            return 0;
+        }
+        int colCompany  = ColOf("업체명", "사업장명", "의뢰사업장");
+        int colDiv      = ColOf("구분", "시료구분");
+        int colReportNo = ColOf("시험성적번호", "성적서 번호", "성적서번호", "견적번호");
+        int colDate     = ColOf("채수일자", "채취일자");
+        int colSampler   = ColOf("시료채취1", "채수담당자", "시료채취자1", "시료채취자-1");
+        int colSampler2  = ColOf("시료채취2", "시료채취자2", "시료채취자-2");
+        int colSampleNm  = ColOf("시료명", "시료명칭");
+        int colZone     = ColOf("특례지역", "방류기준");
+        int colWitness  = ColOf("채수입회자", "입회자");
+        int colEndDate   = ColOf("분석완료일", "분석완료일자", "분석종료일");
+        int colPurpose  = ColOf("의뢰용도");
+        int colQuality  = ColOf("정도보증 적용", "정도보증");
+        int colRepresentative = ColOf("대표자");
+
+        // ── 2. 모든 셀 값을 sharedStrings 에 추가, t="s" 참조 방식으로 행 XML 생성 ──
+        var sampleList = samples.ToList();
+
+        // 약칭별 대표자 캐시 (계약 DB 조회)
+        var representativeCache = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        // 기존 SS 목록 끝에 새 문자열 추가 (중복 제거)
+        var ssList = new List<string>(ssArr);
+        int GetOrAddSs(string val)
+        {
+            int existing = ssList.IndexOf(val);
+            if (existing >= 0) return existing;
+            ssList.Add(val);
+            return ssList.Count - 1;
+        }
+
+        // 먼저 모든 셀 데이터 구성
+        // 견적번호별 A,B,C... suffix 카운터
+        var reportNoCounter = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        string NextSuffix(string reportNo)
+        {
+            if (string.IsNullOrWhiteSpace(reportNo)) return "A";
+            if (!reportNoCounter.TryGetValue(reportNo, out int n)) n = 0;
+            reportNoCounter[reportNo] = n + 1;
+            if (n < 26) return ((char)('A' + n)).ToString();
+            return ((char)('A' + (n / 26) - 1)).ToString() + ((char)('A' + n % 26)).ToString();
+        }
+
+        var allRows = new List<(int rowNum, SortedDictionary<int, int> cells)>();
+        for (int i = 0; i < sampleList.Count; i++)
+        {
+            var s      = sampleList[i];
+            int rowNum = i + 2;
+            string suffix = NextSuffix(s.견적번호);
+            // 대표자: 약칭으로 계약 DB 조회 (캐시)
+            if (!representativeCache.TryGetValue(s.의뢰사업장, out string? repVal))
+            {
+                repVal = ContractService.GetRepresentativeByCompany(s.의뢰사업장);
+                representativeCache[s.의뢰사업장] = repVal;
+            }
+            var cells  = new SortedDictionary<int, int>(); // col → ssIndex
+
+            void Add(int col, string val)
+            {
+                if (col > 0 && !string.IsNullOrWhiteSpace(val))
+                    cells[col] = GetOrAddSs(val);
+            }
+
+            Add(colCompany,  s.의뢰사업장);
+            Add(colDiv,      s.방류허용기준);
+            Add(colReportNo, string.IsNullOrWhiteSpace(s.견적번호) ? "" : s.견적번호 + suffix);
+            Add(colDate,     s.채취일자);
+            Add(colSampler,  s.시료채취자1);
+            Add(colSampleNm, s.시료명);
+            Add(colSampler2, s.시료채취자2);
+            Add(colZone,     s.견적구분);
+            Add(colWitness,  s.입회자);
+            Add(colEndDate,  s.분석종료일);
+            Add(colPurpose,  s.약칭);
+            Add(colQuality,  s.정도보증);
+            Add(colRepresentative, repVal ?? "");
+
+            foreach (var kv in s.분석결과)
+            {
+                if (string.IsNullOrWhiteSpace(kv.Value)) continue;
+                if (colMap.TryGetValue(kv.Key, out int ac))
+                    cells[ac] = GetOrAddSs(kv.Value);
+            }
+
+            allRows.Add((rowNum, cells));
+        }
+
+        // 행 XML 빌드
+        var rowsXml = new StringBuilder();
+        foreach (var (rowNum, cells) in allRows)
+        {
+            if (cells.Count == 0) continue;
+            int minCol = cells.Keys.Min();
+            int maxCol = cells.Keys.Max();
+            rowsXml.Append($"<row r=\"{rowNum}\" spans=\"{minCol}:{maxCol}\">");
+            foreach (var kv in cells)
+            {
+                string cellRef = ColNumToLetter(kv.Key) + rowNum;
+                rowsXml.Append($"<c r=\"{cellRef}\" t=\"s\"><v>{kv.Value}</v></c>");
+            }
+            rowsXml.Append("</row>");
+        }
+
+        // ── 3. ZIP 안의 sharedStrings.xml + sheet3.xml 교체, calcChain 삭제 ──
+        const string sheetEntry = "xl/worksheets/sheet3.xml";
+        const string ssEntry2   = "xl/sharedStrings.xml";
+        using (var zip = ZipFile.Open(savePath, ZipArchiveMode.Update))
+        {
+            // calcChain.xml 삭제
+            zip.GetEntry("xl/calcChain.xml")?.Delete();
+
+            // sharedStrings.xml 갱신
+            {
+                var ssZipEntry = zip.GetEntry(ssEntry2)
+                    ?? throw new InvalidOperationException("sharedStrings.xml 을 찾을 수 없습니다.");
+                int totalCount = ssList.Count;
+                var newSsXml = new StringBuilder();
+                newSsXml.Append($"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+                newSsXml.Append($"<sst xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" count=\"{totalCount}\" uniqueCount=\"{totalCount}\">");
+                foreach (var sv in ssList)
+                    newSsXml.Append($"<si><t>{XmlEscape(sv)}</t></si>");
+                newSsXml.Append("</sst>");
+                ssZipEntry.Delete();
+                var newSsEntry = zip.CreateEntry(ssEntry2, CompressionLevel.Optimal);
+                using var ssw = new StreamWriter(newSsEntry.Open(), new UTF8Encoding(false));
+                ssw.Write(newSsXml.ToString());
+            }
+
+            // sheet3.xml 갱신
+            {
+                var entry = zip.GetEntry(sheetEntry)
+                    ?? throw new InvalidOperationException($"{sheetEntry} 를 찾을 수 없습니다.");
+                string sheetXml;
+                using (var sr = new StreamReader(entry.Open(), Encoding.UTF8))
+                    sheetXml = sr.ReadToEnd();
+
+                // 기존 Row2 이상 모두 제거 (r="2"~r="9", r="10" 이상 모두 포함)
+                sheetXml = Regex.Replace(sheetXml,
+                    @"<row r=""(?:[2-9]|\d{2,})""[^>]*>.*?</row>",
+                    "", RegexOptions.Singleline);
+
+                // 새 행 삽입
+                sheetXml = sheetXml.Replace("</sheetData>", rowsXml.ToString() + "</sheetData>");
+
+                // dimension 갱신
+                int newLastRow = Math.Max(1, sampleList.Count + 1);
+                sheetXml = Regex.Replace(sheetXml,
+                    @"ref=""A1:[A-Z]+\d+""",
+                    $@"ref=""A1:BX{newLastRow}""");
+
+                entry.Delete();
+                var newEntry = zip.CreateEntry(sheetEntry, CompressionLevel.Optimal);
+                using var sw = new StreamWriter(newEntry.Open(), new UTF8Encoding(false));
+                sw.Write(sheetXml);
+            }
+        }
+
+        Log($"일괄 통합 저장: {savePath}  ({sampleList.Count}건)");
+        return savePath;
+    }
+
+    private static int ColLetterToNum(string col)
+    {
+        int n = 0;
+        foreach (char ch in col.ToUpperInvariant())
+            n = n * 26 + (ch - 'A' + 1);
+        return n;
+    }
+
+    private static string ColNumToLetter(int col)
+    {
+        var sb = new StringBuilder();
+        while (col > 0)
+        {
+            col--;
+            sb.Insert(0, (char)('A' + col % 26));
+            col /= 26;
+        }
+        return sb.ToString();
+    }
+
+    private static string XmlEscape(string val) =>
+        val.Replace("&", "&amp;")
+           .Replace("<", "&lt;")
+           .Replace(">", "&gt;")
+           .Replace("\"", "&quot;");
 }

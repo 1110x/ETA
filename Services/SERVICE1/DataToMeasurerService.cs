@@ -7,7 +7,7 @@ using ETA.Services.Common;
 namespace ETA.Services.SERVICE1;
 
 /// <summary>
-/// 자료TO측정인 — 분析결과 행 구성 및 날짜 계산 서비스
+/// 자료TO측정인 — 분석결과 행 구성 및 날짜 계산 서비스
 /// CDP 자동입력은 DataToMeasurerWindow 가 담당.
 /// </summary>
 public static class DataToMeasurerService

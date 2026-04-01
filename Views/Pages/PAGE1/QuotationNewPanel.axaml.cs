@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -37,12 +38,10 @@ public partial class QuotationNewPanel : UserControl
     private readonly Dictionary<string, (int Qty, decimal Price)> _itemData = new();
     private readonly Dictionary<string, AnalysisItem>             _analyteMap = new();
 
-    // 단가표: 적용구분 컬럼 → { Analyte → 단가 }
     private Dictionary<string, decimal> _priceMap = new();
 
     // 경고 상태
     private bool _sampleDuplicated = false;
-    private bool _typeWarning      = false;
 
     // 최근 발행건 (중복/적용구분 비교용)
     private List<QuotationIssue> _allIssues = [];
@@ -52,7 +51,6 @@ public partial class QuotationNewPanel : UserControl
         InitializeComponent();
         txbIssueDate.Text   = DateTime.Today.ToString("yyyy-MM-dd");
         txbQuotationNo.Text = GenerateNo();
-        LoadContractTypes();
         _allIssues = QuotationService.GetAllIssues();
 
         // ESC 키 → 당근/오작성 수정 모드일 때 취소
@@ -133,32 +131,6 @@ public partial class QuotationNewPanel : UserControl
     }
 
     // ══════════════════════════════════════════════════════════════════════
-    //  적용구분 콤보박스 — DB C_ContractType 로드
-    // ══════════════════════════════════════════════════════════════════════
-    private void LoadContractTypes()
-    {
-        cmbType.Items.Clear();
-        // DB 에서 C_ContractType 컬럼 고유값 가져오기
-        var types = QuotationService.GetContractTypes();
-
-        if (types.Count == 0)
-        {
-            // DB 업데이트 전이면 기본값 사용
-            types = new List<string>
-            {
-                "FS100","FS100+","FS56","NFS56","FS55","FS52",
-                "FSHN52","NFS50","NFS45","NFS39","NFS36","NFS36RE","FS25"
-            };
-        }
-
-        foreach (var t in types)
-            cmbType.Items.Add(new ComboBoxItem { Content = t });
-
-        if (cmbType.Items.Count > 0)
-            cmbType.SelectedIndex = 0;
-    }
-
-    // ══════════════════════════════════════════════════════════════════════
     //  외부 API
     // ══════════════════════════════════════════════════════════════════════
     // ── 업체 블록 표시 헬퍼 ──────────────────────────────────────────────────
@@ -184,17 +156,13 @@ public partial class QuotationNewPanel : UserControl
         _company = company;
         ShowCompanyBadge(company.C_CompanyName, company.C_Abbreviation);
 
-        // 해당 업체의 최근 발행건 적용구분을 콤보박스에 자동 선택
         var latest = _allIssues
             .Where(i => i.업체명 == company.C_CompanyName)
             .OrderByDescending(i => i.발행일)
             .FirstOrDefault();
 
-        if (latest != null && !string.IsNullOrEmpty(latest.견적구분))
-        {
-            SelectCombo(cmbType, latest.견적구분);
-            Log($"업체 최근 적용구분 자동선택: {latest.견적구분} ({latest.발행일})");
-        }
+        // 업체 단가 로드
+        RefreshPrices();
 
         // 담당자 목록 로드
         _knownManagers = QuotationService.GetDistinctManagersForCompany(company.C_CompanyName);
@@ -206,8 +174,6 @@ public partial class QuotationNewPanel : UserControl
             acbManager.Text = latest.담당자;
             Log($"업체 최근 담당자 자동설정: {latest.담당자}");
         }
-
-        CheckTypeWarning();
     }
 
     public void SetSelectedAnalytes(List<AnalysisItem> items)
@@ -252,16 +218,13 @@ public partial class QuotationNewPanel : UserControl
         txbManagerPhone.Text = "";
         txbManagerEmail.Text = "";
 
-        SelectCombo(cmbType, issue.견적구분);
-
         var row = QuotationService.GetIssueRow(issue.Id);
         LoadItemsFromRow(row);
 
         CheckSampleDuplicate();
-        CheckTypeWarning();
     }
 
-    // ✏️ 오작성 수정: 같은 Id 덮어쓰기 — 시료명·번호·날짜·적용구분·업체명 수정 가능
+    // ✏️ 오작성 수정: 같은 Id 덮어쓰기 — 시료명·번호·날짜·업체명 수정 가능
     public void LoadFromIssueCorrect(QuotationIssue issue)
     {
         _editingIssue      = issue;
@@ -283,14 +246,11 @@ public partial class QuotationNewPanel : UserControl
         txbManagerPhone.Text = "";
         txbManagerEmail.Text = "";
 
-        SelectCombo(cmbType, issue.견적구분);
-
         var row = QuotationService.GetIssueRow(issue.Id);
         LoadItemsFromRow(row);
 
         // 오작성 수정 모드: 동일 시료명 중복 경고 제외 (자기 자신이므로)
         CheckSampleDuplicate();
-        CheckTypeWarning();
     }
 
     public void Clear()
@@ -304,7 +264,6 @@ public partial class QuotationNewPanel : UserControl
         _analyteMap.Clear();
         _priceMap.Clear();
         _sampleDuplicated = false;
-        _typeWarning      = false;
 
         txbTitle.Text       = "📝  신규 견적 작성";
         txbMode.Text        = "";
@@ -317,8 +276,6 @@ public partial class QuotationNewPanel : UserControl
         txbManagerPhone.Text = "";
         txbManagerEmail.Text = "";
         pnlContactInfo.IsVisible = false;
-        if (cmbType.Items.Count > 0) cmbType.SelectedIndex = 0;
-
         spItems.Children.Clear();
         txbNoItems.IsVisible = true;
         pnlQtyEdit.IsVisible = false;
@@ -331,17 +288,20 @@ public partial class QuotationNewPanel : UserControl
     }
 
     // ══════════════════════════════════════════════════════════════════════
-    //  단가 로드 (적용구분 컬럼 기준)
+    //  단가 로드 (업체별 계약 DB 기준)
     // ══════════════════════════════════════════════════════════════════════
+    private string GetCurrentCompanyName() =>
+        _company?.C_CompanyName ??
+        (_carrotCompanyName.Length > 0 ? _carrotCompanyName : "");
+
     private void RefreshPrices()
     {
-        var colName = (cmbType.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "";
-        if (string.IsNullOrEmpty(colName)) return;
+        var company = GetCurrentCompanyName();
+        if (string.IsNullOrEmpty(company)) return;
 
-        _priceMap = QuotationService.GetPricesByColumn(colName);
-        Log($"단가 로드: {colName} → {_priceMap.Count}개");
+        _priceMap = QuotationService.GetPricesByCompany(company);
+        Log($"단가 로드: {company} → {_priceMap.Count}개");
 
-        // 기존 itemData 의 단가 갱신
         foreach (var key in _itemData.Keys.ToList())
         {
             var price = _priceMap.TryGetValue(key, out var p) ? p : 0;
@@ -450,11 +410,11 @@ public partial class QuotationNewPanel : UserControl
             "수량","단가","소계","수량2","단가3","소계4",
         };
 
-        // 현재 적용구분으로 단가 로드
-        var colName = (cmbType.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "";
-        var prices  = string.IsNullOrEmpty(colName)
+        // 업체별 계약 DB 단가 로드
+        var companyForPrices = GetCurrentCompanyName();
+        var prices = string.IsNullOrEmpty(companyForPrices)
             ? new Dictionary<string, decimal>()
-            : QuotationService.GetPricesByColumn(colName);
+            : QuotationService.GetPricesByCompany(companyForPrices);
 
         foreach (var kv in row)
         {
@@ -496,53 +456,10 @@ public partial class QuotationNewPanel : UserControl
         UpdateSaveButton();
     }
 
-    private void CheckTypeWarning()
-    {
-        if (_company == null && _editingIssue == null) return;
-
-        var companyName = _company?.C_CompanyName
-                       ?? _editingIssue?.업체명
-                       ?? (_carrotCompanyName.Length > 0 ? _carrotCompanyName : null)
-                       ?? "";
-        var latest = _allIssues
-            .Where(i => i.업체명 == companyName)
-            .OrderByDescending(i => i.발행일)
-            .FirstOrDefault();
-
-        var curType = (cmbType.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "";
-        _typeWarning = latest != null &&
-                       !string.IsNullOrEmpty(latest.견적구분) &&
-                       latest.견적구분 != curType;
-
-        // 노란색 테두리
-        cmbType.BorderBrush = _typeWarning
-            ? Brush.Parse("#f0c040")
-            : Brush.Parse("#444");
-
-        // 경고 메시지에 최근 적용구분 값 포함
-        _latestType = latest?.견적구분 ?? "";
-        UpdateWarning();
-    }
-
-    private string _latestType = "";
-
     private void UpdateWarning()
     {
-        var msgs = new List<string>();
-        if (_sampleDuplicated)
-            msgs.Add("⚠️ 동일한 시료명의 발행내역이 이미 존재합니다.");
-        if (_typeWarning)
-            msgs.Add($"⚠️ 최근 발행건의 적용구분과 다릅니다. (최근: {_latestType})");
-
-        if (msgs.Count > 0)
-        {
-            txbWarning.Text      = string.Join("\n", msgs);
-            txbWarning.IsVisible = true;
-        }
-        else
-        {
-            txbWarning.IsVisible = false;
-        }
+        txbWarning.Text      = "⚠️ 동일한 시료명의 발행내역이 이미 존재합니다.";
+        txbWarning.IsVisible = _sampleDuplicated;
     }
 
     private void UpdateSaveButton()
@@ -561,14 +478,6 @@ public partial class QuotationNewPanel : UserControl
     // 시료명 변경 → 중복 체크
     private void TxbSampleName_Changed(object? sender, TextChangedEventArgs e)
         => CheckSampleDuplicate();
-
-    // 적용구분 변경 → 단가 갱신
-    private void CmbType_Changed(object? sender, SelectionChangedEventArgs e)
-    {
-        RefreshPrices();
-        RebuildItemList();
-        CheckTypeWarning();
-    }
 
     // 일괄 수량 적용
     private void BtnBulkQty_Click(object? sender, RoutedEventArgs e)
@@ -645,12 +554,26 @@ public partial class QuotationNewPanel : UserControl
         Log($"  companyName='{companyName}'  abbr='{abbr}'");
         Log($"  _itemData.Count={_itemData.Count}");
         Log($"  발행일={txbIssueDate.Text}  시료명={txbSampleName.Text}  번호={txbQuotationNo.Text}");
-        Log($"  견적구분={(cmbType.SelectedItem as ComboBoxItem)?.Content}  담당자={acbManager.Text}");
+        Log($"  담당자={acbManager.Text}");
 
         if (string.IsNullOrEmpty(companyName)) { Log("  → 업체 미선택으로 중단"); return; }
 
         decimal total = _itemData.Values.Sum(d => d.Qty * d.Price);
         Log($"  total={total:N0}  editingIssue={_editingIssue?.Id.ToString() ?? "null"}");
+
+        // ── 담당자 정보 확인창 ───────────────────────────────────────────
+        var owner = TopLevel.GetTopLevel(this) as Window;
+        var mgr = await ShowManagerConfirmAsync(
+            owner,
+            acbManager.Text     ?? "",
+            txbManagerPhone.Text ?? "",
+            txbManagerEmail.Text ?? "");
+        if (mgr == null) { Log("  → 담당자 확인 취소"); return; }
+
+        // 확인창에서 수정된 값으로 패널 필드도 갱신
+        acbManager.Text      = mgr.Value.name;
+        txbManagerPhone.Text = mgr.Value.phone;
+        txbManagerEmail.Text = mgr.Value.email;
 
         var issue = new QuotationIssue
         {
@@ -659,10 +582,10 @@ public partial class QuotationNewPanel : UserControl
             약칭     = abbr,
             시료명   = txbSampleName.Text  ?? "",
             견적번호 = txbQuotationNo.Text ?? GenerateNo(),
-            견적구분 = (cmbType.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "",
-            담당자   = acbManager.Text     ?? "",
-            담당자연락처 = txbManagerPhone.Text ?? "",
-            담당자이메일 = txbManagerEmail.Text ?? "",
+            견적구분 = "",
+            담당자       = mgr.Value.name,
+            담당자연락처 = mgr.Value.phone,
+            담당자이메일 = mgr.Value.email,
             총금액   = total,
         };
 
@@ -731,14 +654,6 @@ public partial class QuotationNewPanel : UserControl
     private static string GenerateNo()
         => DateTime.Now.ToString("yyyyMMdd-HHmmss");
 
-    private static void SelectCombo(ComboBox cb, string value)
-    {
-        for (int i = 0; i < cb.Items.Count; i++)
-            if ((cb.Items[i] as ComboBoxItem)?.Content?.ToString() == value)
-            { cb.SelectedIndex = i; return; }
-        if (cb.Items.Count > 0) cb.SelectedIndex = 0;
-    }
-
     private static readonly string LogPath = Path.GetFullPath(
         Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "Logs", "Quotation.log"));
 
@@ -747,5 +662,124 @@ public partial class QuotationNewPanel : UserControl
         var line = $"[{DateTime.Now:HH:mm:ss}] [NewPanel] {msg}";
         Debug.WriteLine(line);
         try { File.AppendAllText(LogPath, line + Environment.NewLine); } catch { }
+    }
+
+    // ── 담당자 확인창 ─────────────────────────────────────────────────────
+    /// <summary>
+    /// 저장 전 담당자/연락처/이메일 확인창.
+    /// 확인 → (name, phone, email) 반환, 취소 → null 반환
+    /// </summary>
+    private static System.Threading.Tasks.Task<(string name, string phone, string email)?> ShowManagerConfirmAsync(
+        Window? owner, string initName, string initPhone, string initEmail)
+    {
+        var tcs = new System.Threading.Tasks.TaskCompletionSource<(string, string, string)?>();
+
+        var font = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
+
+        // 입력 필드
+        var txName  = new TextBox { Text = initName,  Watermark = "담당자 이름",  FontFamily = font, FontSize = 13 };
+        var txPhone = new TextBox { Text = initPhone, Watermark = "연락처",        FontFamily = font, FontSize = 13 };
+        var txEmail = new TextBox { Text = initEmail, Watermark = "이메일",        FontFamily = font, FontSize = 13 };
+
+        // 경고 레이블
+        var txWarn = new TextBlock
+        {
+            FontFamily = font, FontSize = 11,
+            Foreground = Brushes.OrangeRed,
+            IsVisible  = false,
+            Text       = "담당자 이름과 연락처는 필수입니다.",
+            Margin     = new Thickness(0, 4, 0, 0),
+        };
+
+        static Border MakeRow(string label, TextBox box, FontFamily f) => new()
+        {
+            Margin = new Thickness(0, 6, 0, 0),
+            Child  = new StackPanel
+            {
+                Spacing = 4,
+                Children =
+                {
+                    new TextBlock { Text = label, FontFamily = f, FontSize = 11, Foreground = Brushes.LightGray },
+                    box,
+                }
+            }
+        };
+
+        var confirmBtn = new Button
+        {
+            Content     = "저장 확인",
+            FontFamily  = font,
+            FontSize    = 13,
+            Padding     = new Thickness(20, 6),
+            Background  = new SolidColorBrush(Color.Parse("#3a6ea5")),
+            Foreground  = Brushes.White,
+            HorizontalAlignment = HorizontalAlignment.Right,
+        };
+        var cancelBtn = new Button
+        {
+            Content    = "취소",
+            FontFamily = font,
+            FontSize   = 13,
+            Padding    = new Thickness(12, 6),
+            Background = new SolidColorBrush(Color.Parse("#333355")),
+            Foreground = Brushes.LightGray,
+            HorizontalAlignment = HorizontalAlignment.Right,
+        };
+
+        var dlg = new Window
+        {
+            Title                 = "담당자 정보 확인",
+            Width                 = 340,
+            SizeToContent         = SizeToContent.Height,
+            CanResize             = false,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            Background            = new SolidColorBrush(Color.Parse("#1e1e2e")),
+            Content               = new StackPanel
+            {
+                Margin  = new Thickness(20, 16),
+                Spacing = 0,
+                Children =
+                {
+                    new TextBlock
+                    {
+                        Text       = "견적 발행 전 담당자 정보를 확인하세요.",
+                        FontFamily = font,
+                        FontSize   = 12,
+                        Foreground = Brushes.LightCyan,
+                        Margin     = new Thickness(0, 0, 0, 8),
+                    },
+                    MakeRow("견적요청담당자 *", txName,  font),
+                    MakeRow("연락처 *",         txPhone, font),
+                    MakeRow("이메일",            txEmail, font),
+                    txWarn,
+                    new StackPanel
+                    {
+                        Orientation = Orientation.Horizontal,
+                        HorizontalAlignment = HorizontalAlignment.Right,
+                        Spacing = 8,
+                        Margin  = new Thickness(0, 16, 0, 0),
+                        Children = { cancelBtn, confirmBtn },
+                    }
+                }
+            }
+        };
+
+        confirmBtn.Click += (_, _) =>
+        {
+            if (string.IsNullOrWhiteSpace(txName.Text) || string.IsNullOrWhiteSpace(txPhone.Text))
+            {
+                txWarn.IsVisible = true;
+                return;
+            }
+            tcs.TrySetResult((txName.Text.Trim(), txPhone.Text.Trim(), txEmail.Text?.Trim() ?? ""));
+            dlg.Close();
+        };
+        cancelBtn.Click += (_, _) => { tcs.TrySetResult(null); dlg.Close(); };
+        dlg.Closed      += (_, _) => tcs.TrySetResult(null);
+
+        if (owner != null) dlg.ShowDialog(owner);
+        else               dlg.Show();
+
+        return tcs.Task;
     }
 }

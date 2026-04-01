@@ -27,6 +27,12 @@ public partial class DbMigrationPage : UserControl
         InitializeComponent();
     }
 
+    /// <summary>패널 상단 타이틀 텍스트를 설정합니다.</summary>
+    public string PanelTitle
+    {
+        set => txbPanelTitle.Text = value;
+    }
+
     public void LoadData()
     {
         _allCompanies = QuotationService.GetContractCompanies(activeOnly: _activeOnly);

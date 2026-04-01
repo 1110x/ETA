@@ -63,6 +63,11 @@ public class AnalysisRequestDetailPanel : UserControl
     // 분석항목 약칭 (전체명 → 약칭): "생물화학적 산소요구량" → "BOD"
     private Dictionary<string, string> _shortNames = new(StringComparer.OrdinalIgnoreCase);
 
+    // -- 방류기준 콤보박스 -----------------------------------------------
+    private ComboBox _cmbDischarge = new();
+    private int      _currentRecId = -1;
+    private bool     _suppressDischargeEvent = false;
+
     public AnalysisRequestDetailPanel()
     {
         Content = BuildUI();
@@ -112,6 +117,38 @@ public class AnalysisRequestDetailPanel : UserControl
         colHeader.Children.Add(ColLbl("항목명",   1));
         colHeader.Children.Add(ColLbl("결과/상태",2, HorizontalAlignment.Right));
 
+        // ── 방류기준 콤보박스 ────────────────────────────────────────────
+        _cmbDischarge = new ComboBox
+        {
+            FontFamily            = Font,
+            FontSize              = 12,
+            HorizontalAlignment   = HorizontalAlignment.Stretch,
+            PlaceholderText       = "방류기준 선택...",
+            Margin                = new Avalonia.Thickness(0, 0, 0, 6),
+        };
+        _cmbDischarge.SelectionChanged += OnDischargeSelectionChanged;
+
+        var dischargeRow = new Grid
+        {
+            ColumnDefinitions = new ColumnDefinitions("Auto,*"),
+            Margin = new Avalonia.Thickness(0, 0, 0, 0),
+        };
+        dischargeRow.Children.Add(new TextBlock
+        {
+            Text              = "법정방류기준",
+            FontFamily        = Font,
+            FontSize          = 11,
+            Foreground        = Brush.Parse("#aaaacc"),
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin            = new Avalonia.Thickness(0, 0, 8, 0),
+            [Grid.ColumnProperty] = 0,
+        });
+        dischargeRow.Children.Add(new Border
+        {
+            [Grid.ColumnProperty] = 1,
+            Child = _cmbDischarge,
+        });
+
         _spItems   = new StackPanel { Spacing = 0 };
         _spContent = new StackPanel
         {
@@ -119,8 +156,9 @@ public class AnalysisRequestDetailPanel : UserControl
             Children =
             {
                 metaGrid,
+                dischargeRow,
                 new Border { Height=1, Background=Brush.Parse("#333"),
-                             Margin=new Avalonia.Thickness(0,0,0,6) },
+                             Margin=new Avalonia.Thickness(0,6,0,6) },
                 colHeader,
                 _spItems,
             },
@@ -166,6 +204,7 @@ public class AnalysisRequestDetailPanel : UserControl
     // ══════════════════════════════════════════════════════════════════════
     public async void ShowRecord(AnalysisRequestRecord rec)
     {
+        _currentRecId = rec.Id;
         _txbEmpty.IsVisible  = false;
         _spContent.IsVisible = true;
 
@@ -176,14 +215,30 @@ public class AnalysisRequestDetailPanel : UserControl
 
         // [1] DB 조회를 백그라운드 스레드에서 실행
         Dictionary<string, string> row;
+        List<string> dischargeNames;
         try
         {
-            row = await Task.Run(() => AnalysisRequestService.GetRecordRow(rec.Id));
+            (row, dischargeNames) = await Task.Run(() =>
+            (
+                AnalysisRequestService.GetRecordRow(rec.Id),
+                AnalysisRequestService.GetDischargeStandardNames()
+            ));
         }
         catch
         {
-            row = new Dictionary<string, string>();
+            row           = new Dictionary<string, string>();
+            dischargeNames = new List<string>();
         }
+
+        // [1-1] 방류기준 콤보박스 채우기
+        _suppressDischargeEvent = true;
+        _cmbDischarge.Items.Clear();
+        foreach (var name in dischargeNames)
+            _cmbDischarge.Items.Add(name);
+        row.TryGetValue("방류허용기준 적용유무", out var currentStd);
+        _cmbDischarge.SelectedItem = dischargeNames.FirstOrDefault(
+            n => string.Equals(n, currentStd, StringComparison.OrdinalIgnoreCase));
+        _suppressDischargeEvent = false;
 
         // [2] 항목 라인 갱신 (행 풀 재사용)
         BuildItemLines(row);
@@ -193,8 +248,18 @@ public class AnalysisRequestDetailPanel : UserControl
             await ApplyCheckStatesAsync(row);
     }
 
+    private void OnDischargeSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (_suppressDischargeEvent) return;
+        if (_currentRecId < 0) return;
+        var selected = _cmbDischarge.SelectedItem as string;
+        if (selected == null) return;
+        _ = Task.Run(() => AnalysisRequestService.UpdateDischargeStandard(_currentRecId, selected));
+    }
+
     public void Clear()
     {
+        _currentRecId        = -1;
         _txbEmpty.IsVisible  = true;
         _spContent.IsVisible = false;
         _spItems.Children.Clear();

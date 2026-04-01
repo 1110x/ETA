@@ -16,7 +16,8 @@ public class QuotationIssue
     public string  담당자   { get; set; } = "";   // 견적요청 담당자
     public string  담당자연락처 { get; set; } = "";
     public string  담당자이메일 { get; set; } = "";
-    public decimal 총금액   { get; set; }         // 합계 금액
+    public decimal 총금액          { get; set; }   // 합계 금액
+    public string  거래명세서번호  { get; set; } = "";  // 거래명세서 발행 시 설정
 
     /// <summary>트리 노드 표시 레이블</summary>
     public string DisplayLabel =>

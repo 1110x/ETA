@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Styling;
 using ETA.Models;
@@ -20,6 +21,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ETA.Views;
 
@@ -49,11 +51,20 @@ public partial class MainPage : Window
     private DbMigrationPage?           _dbMigrationPage;
     private DbMigrationPointPanel?     _dbMigrationPointPanel;
     private DbMigrationMappingPanel?   _dbMigrationMappingPanel;
+    private DbMigrationPage?           _dbMigrationTargetPage;  // Show4: 변경 후 업체 선택
+    private string?                    _migrationOldName;
+    private string?                    _migrationNewName;
 
     // ── 견적/의뢰서 전용 4-패널 ──────────────────────────────────────────
     // Content1: 발행내역 트리  Content2: 신규작성 폼
     // Content3: 분석항목 체크  Content4: 계약업체 목록
     private QuotationHistoryPanel? _quotationHistoryPanel;
+
+    // ── 견적발행 전용 패널 ────────────────────────────────────────────────
+    private QuotationHistoryPanel?                    _issuingHistoryPanel;
+    private StackPanel?                               _issuingChecklistPanel;  // Show4
+    private readonly List<ETA.Models.QuotationIssue> _issuingChecklist = [];   // 추가된 항목
+    private ScrollViewer?                             _issuingChecklistScroll;
     private QuotationDetailPanel?  _quotationDetailPanel;   // Content2: 세부내역
     private QuotationNewPanel?     _quotationNewPanel;      // Content2: 신규작성
     private QuotationCheckPanel?   _quotationCheckPanel;
@@ -1204,7 +1215,16 @@ public partial class MainPage : Window
                 Show2.Content = panel;
                 LogContentChange("Show2", panel);
             };
+            _contractPage.PricePanelChanged += panel =>
+            {
+                Show3.Content = panel;
+                LogContentChange("Show3", panel);
+            };
         }
+
+        // 최초 진입 시 분석단가 컬럼 보장 (없는 컬럼 자동 추가)
+        try { ContractService.EnsureContractPriceColumns(); }
+        catch (Exception ex) { Debug.WriteLine($"[Contract] EnsureContractPriceColumns 오류: {ex.Message}"); }
 
         Show1.Content = _contractPage;
         LogContentChange("Show1", _contractPage);
@@ -1217,9 +1237,10 @@ public partial class MainPage : Window
         _contractPage.LoadData();
         _bt1SaveAction = _contractPage.SaveSelected;
 
-        SetSubMenu("저장", "새로고침", "업체 추가", "선택 삭제", "엑셀 내보내기", "인쇄", "설정");
+        SetSubMenu("저장", "새로고침", "업체 추가", "선택 삭제", "Excel 가져오기", "인쇄", "설정");
         SetLeftPanelWidth(350);
-        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 8, lowerStar: 2);
+        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 7, lowerStar: 3);
+        // Show3: 단가 항목 편집 폼 영역 (계약 선택 후 항목 클릭 시 로드)
         
         // 저장된 레이아웃 복원
         RestoreModeLayout("Contract");
@@ -1262,6 +1283,7 @@ public partial class MainPage : Window
     private void Quotation_Click(object? sender, RoutedEventArgs e)
     {
         _currentMode = "Quotation";
+        try { ETA.Services.SERVICE1.QuotationService.EnsureTradeStatementColumn(); } catch { }
 
         // ── 초기화 순서 중요: CheckPanel → Page → NewPanel → DetailPanel → HistoryPanel
 
@@ -1434,6 +1456,249 @@ public partial class MainPage : Window
         RestoreModeLayout("Quotation", minLowerStar: 4);
     }
 
+    // ── 견적발행 ──────────────────────────────────────────────────────────
+    private void QuotationIssuing_Click(object? sender, RoutedEventArgs e)
+    {
+        _currentMode = "QuotationIssue";
+        try { ETA.Services.SERVICE1.QuotationService.EnsureQuotationIssueTable(); } catch { }
+        try { ETA.Services.SERVICE1.QuotationService.EnsureTradeStatementColumn(); } catch { }
+
+        // Show1: 견적발행내역 트리 (IssuingMode = true → 클릭 시 Show4 체크리스트에 추가)
+        if (_issuingHistoryPanel == null)
+        {
+            _issuingHistoryPanel = new QuotationHistoryPanel { IssuingMode = true };
+            _issuingHistoryPanel.IssueAddedToList += issue =>
+            {
+                AddToIssuingChecklist(issue);
+            };
+        }
+
+        // Show4: 체크리스트 컨테이너
+        _issuingChecklist.Clear();
+
+        Show1.Content = _issuingHistoryPanel;
+        LogContentChange("Show1", _issuingHistoryPanel);
+        Show2.Content = null;
+        Show3.Content = null;
+        Show4.Content = BuildIssuingChecklistContainer();
+        _bt1SaveAction = null;
+
+        _issuingHistoryPanel.LoadData();
+
+        SetSubMenu("새로고침", "", "", "", "", "거래명세서 발행", "");
+        SetLeftPanelWidth(430);
+        SetContentLayout(content2Star: 7, content4Star: 3, upperStar: 13, lowerStar: 4);
+        RestoreModeLayout("QuotationIssue", minLowerStar: 4);
+    }
+
+    private Border BuildIssuingChecklistContainer()
+    {
+        _issuingChecklistPanel = new StackPanel { Spacing = 4 };
+        _issuingChecklistScroll = new ScrollViewer
+        {
+            Content = _issuingChecklistPanel,
+            HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
+        };
+
+        var header = new TextBlock
+        {
+            Text = "발행 대상 목록",
+            FontFamily = _tradeFont,
+            FontSize = 14,
+            Foreground = Brushes.LightCyan,
+            Margin = new Thickness(8, 6, 0, 4),
+        };
+
+        var clearBtn = new Button
+        {
+            Content = "전체 지우기",
+            FontFamily = _tradeFont,
+            FontSize = 11,
+            Padding = new Thickness(6, 2),
+            Background = new SolidColorBrush(Color.Parse("#333355")),
+            Foreground = Brushes.LightGray,
+            Margin = new Thickness(0, 0, 8, 0),
+            HorizontalAlignment = HorizontalAlignment.Right,
+        };
+        clearBtn.Click += (_, _) =>
+        {
+            _issuingChecklist.Clear();
+            _issuingChecklistPanel!.Children.Clear();
+            Show2.Content = null;
+        };
+
+        var headerRow = new Grid();
+        headerRow.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
+        headerRow.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
+        Grid.SetColumn(header, 0);
+        Grid.SetColumn(clearBtn, 1);
+        headerRow.Children.Add(header);
+        headerRow.Children.Add(clearBtn);
+
+        var root = new StackPanel { Spacing = 0 };
+        root.Children.Add(headerRow);
+        root.Children.Add(new Border
+        {
+            BorderBrush = new SolidColorBrush(Color.Parse("#444466")),
+            BorderThickness = new Thickness(0, 1, 0, 0),
+            Margin = new Thickness(0, 0, 0, 4),
+        });
+        root.Children.Add(_issuingChecklistScroll);
+
+        return new Border
+        {
+            Background = new SolidColorBrush(Color.Parse("#12122a")),
+            Child = root,
+        };
+    }
+
+    private void AddToIssuingChecklist(ETA.Models.QuotationIssue issue)
+    {
+        // 중복 방지
+        if (_issuingChecklist.Any(x => x.Id == issue.Id)) return;
+        _issuingChecklist.Add(issue);
+
+        if (_issuingChecklistPanel == null) return;
+
+        var cb = new CheckBox
+        {
+            IsChecked = true,
+            FontFamily = _tradeFont,
+            FontSize = 12,
+            Foreground = Brushes.WhiteSmoke,
+            Content = $"{issue.약칭}  {issue.시료명}  [{issue.견적번호}]",
+            Tag = issue,
+            Margin = new Thickness(4, 2),
+        };
+        cb.IsCheckedChanged += (_, _) => RefreshIssuingPreview();
+        _issuingChecklistPanel.Children.Add(cb);
+
+        RefreshIssuingPreview();
+    }
+
+    private void RefreshIssuingPreview()
+    {
+        // 체크된 항목 수집
+        var checkedIssues = _issuingChecklistPanel?.Children
+            .OfType<CheckBox>()
+            .Where(cb => cb.IsChecked == true && cb.Tag is ETA.Models.QuotationIssue)
+            .Select(cb => (ETA.Models.QuotationIssue)cb.Tag!)
+            .ToList() ?? new List<ETA.Models.QuotationIssue>();
+
+        if (checkedIssues.Count == 0)
+        {
+            Show2.Content = new TextBlock
+            {
+                Text = "체크된 항목이 없습니다.",
+                FontFamily = _tradeFont,
+                FontSize = 13,
+                Foreground = Brushes.Gray,
+                Margin = new Thickness(16),
+            };
+            return;
+        }
+
+        // 항목별 수량/금액 집계
+        var aggData = Task.Run(() =>
+        {
+            return ETA.Services.SERVICE1.QuotationService.AggregateIssueItems(checkedIssues);
+        });
+
+        aggData.ContinueWith(t =>
+        {
+            Avalonia.Threading.Dispatcher.UIThread.Post(() => BuildIssuingPreviewPanel(checkedIssues, t.Result));
+        });
+    }
+
+    private void BuildIssuingPreviewPanel(
+        List<ETA.Models.QuotationIssue> issues,
+        List<(string 항목, int 수량, decimal 금액)> rows)
+    {
+        var root = new StackPanel { Spacing = 8, Margin = new Thickness(12) };
+
+        // 헤더
+        var companies = string.Join(", ", issues.Select(i => i.약칭).Distinct());
+        root.Children.Add(new TextBlock
+        {
+            Text = $"업체: {companies}",
+            FontFamily = _tradeFont,
+            FontSize = 13,
+            Foreground = Brushes.LightCyan,
+        });
+        root.Children.Add(new TextBlock
+        {
+            Text = $"견적번호: {string.Join(", ", issues.Select(i => i.견적번호))}",
+            FontFamily = _tradeFont,
+            FontSize = 11,
+            Foreground = Brushes.Gray,
+        });
+        root.Children.Add(new Border
+        {
+            BorderBrush = new SolidColorBrush(Color.Parse("#444466")),
+            BorderThickness = new Thickness(0, 1, 0, 0),
+            Margin = new Thickness(0, 4, 0, 4),
+        });
+
+        // 테이블 헤더
+        var grid = new Grid();
+        grid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
+        grid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
+        grid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
+
+        static TextBlock Cell(string text, bool isHeader = false) => new()
+        {
+            Text = text,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+            FontSize = isHeader ? 12 : 11,
+            Foreground = isHeader ? Brushes.LightYellow : Brushes.WhiteSmoke,
+            Margin = new Thickness(4, 2),
+            TextAlignment = TextAlignment.Right,
+        };
+
+        var hItem   = Cell("항목", true);
+        var hQty    = Cell("수량", true);
+        var hAmt    = Cell("금액", true);
+        hItem.TextAlignment = TextAlignment.Left;
+        grid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+        Grid.SetRow(hItem, 0); Grid.SetColumn(hItem, 0);
+        Grid.SetRow(hQty,  0); Grid.SetColumn(hQty,  1);
+        Grid.SetRow(hAmt,  0); Grid.SetColumn(hAmt,  2);
+        grid.Children.Add(hItem);
+        grid.Children.Add(hQty);
+        grid.Children.Add(hAmt);
+
+        decimal totalAmt = 0;
+        for (int i = 0; i < rows.Count; i++)
+        {
+            var (항목, 수량, 금액) = rows[i];
+            totalAmt += 금액;
+            grid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+            int row = i + 1;
+            var cItem = Cell(항목);    cItem.TextAlignment = TextAlignment.Left;
+            var cQty  = Cell(수량.ToString("N0"));
+            var cAmt  = Cell(금액.ToString("N0"));
+            Grid.SetRow(cItem, row); Grid.SetColumn(cItem, 0); grid.Children.Add(cItem);
+            Grid.SetRow(cQty,  row); Grid.SetColumn(cQty,  1); grid.Children.Add(cQty);
+            Grid.SetRow(cAmt,  row); Grid.SetColumn(cAmt,  2); grid.Children.Add(cAmt);
+        }
+
+        // 합계
+        grid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+        int totalRow = rows.Count + 1;
+        var tLabel = Cell("합계", true); tLabel.TextAlignment = TextAlignment.Left;
+        var tAmt   = Cell(totalAmt.ToString("N0"), true);
+        Grid.SetRow(tLabel, totalRow); Grid.SetColumn(tLabel, 0); grid.Children.Add(tLabel);
+        Grid.SetRow(tAmt,   totalRow); Grid.SetColumn(tAmt,   2); grid.Children.Add(tAmt);
+
+        root.Children.Add(grid);
+
+        Show2.Content = new ScrollViewer
+        {
+            Content = root,
+            HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
+        };
+    }
+
     private void Purchase_Click(object? sender, RoutedEventArgs e)
     {
         _currentMode = "Purchase";
@@ -1491,7 +1756,7 @@ public partial class MainPage : Window
         LogContentChange("Show4", _reportsPanel);
         _bt1SaveAction = null;
 
-        SetSubMenu("새로고침", "CSV 저장", "삭제", "엑셀 출력", "PDF 출력", "일괄 엑셀", "측정인 LOGIN", "자료TO측정인");
+        SetSubMenu("새로고침", "", "삭제", "엑셀 출력", "", "일괄 엑셀", "측정인 LOGIN", "자료TO측정인");
 
         SetContentLayout(content2Star: 8, content4Star: 2, upperStar: 8.5, lowerStar: 1.5);
         
@@ -1507,37 +1772,30 @@ public partial class MainPage : Window
     {
         _currentMode = "DbMigration";
 
+        // Show1: 변경 전 업체 선택 (구 이름)
         if (_dbMigrationPage == null)
         {
-            _dbMigrationPage = new DbMigrationPage();
+            _dbMigrationPage = new DbMigrationPage { PanelTitle = "🔴 변경 전 업체 (구 이름)" };
             _dbMigrationPage.CompanySelected += company =>
             {
-                _dbMigrationPointPanel?.SetSelectedCompany(company);
-
-                // Show2: 매핑 테이블 로드
-                if (company != null)
-                {
-                    _dbMigrationMappingPanel ??= new DbMigrationMappingPanel();
-                    _dbMigrationMappingPanel.LoadCompany(company);
-                    Show2.Content = _dbMigrationMappingPanel;
-                    LogContentChange("Show2", _dbMigrationMappingPanel);
-                }
-                else
-                {
-                    Show2.Content = null;
-                    LogContentChange("Show2", null);
-                }
+                _migrationOldName = company?.C_CompanyName;
+                RefreshMigrationShow2();
             };
         }
 
-        if (_dbMigrationPointPanel == null)
+        // Show4: 변경 후 업체 선택 (새 이름)
+        if (_dbMigrationTargetPage == null)
         {
-            _dbMigrationPointPanel = new DbMigrationPointPanel();
-            _dbMigrationPointPanel.SamplingPointSelected += pt =>
+            _dbMigrationTargetPage = new DbMigrationPage { PanelTitle = "🟢 변경 후 업체 (새 이름)" };
+            _dbMigrationTargetPage.CompanySelected += company =>
             {
-                _dbMigrationMappingPanel?.SetMappingPoint(pt);
+                _migrationNewName = company?.C_CompanyName;
+                RefreshMigrationShow2();
             };
         }
+
+        _migrationOldName = null;
+        _migrationNewName = null;
 
         Show1.Content = _dbMigrationPage;
         LogContentChange("Show1", _dbMigrationPage);
@@ -1545,17 +1803,150 @@ public partial class MainPage : Window
         LogContentChange("Show2", null);
         Show3.Content = null;
         LogContentChange("Show3", null);
-        Show4.Content = _dbMigrationPointPanel;
-        LogContentChange("Show4", _dbMigrationPointPanel);
+        Show4.Content = _dbMigrationTargetPage;
+        LogContentChange("Show4", _dbMigrationTargetPage);
         _bt1SaveAction = null;
 
         SetSubMenu("새로고침", "", "", "", "", "");
-        SetContentLayout(content2Star: 0, content4Star: 5, upperStar: 8.5, lowerStar: 1.5);
+        SetContentLayout(content2Star: 4, content4Star: 5, upperStar: 8.5, lowerStar: 1.5);
         RestoreModeLayout("DbMigration");
 
-        Avalonia.Threading.Dispatcher.UIThread.Post(
-            () => _dbMigrationPage.LoadData(),
-            Avalonia.Threading.DispatcherPriority.Render);
+        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+        {
+            _dbMigrationPage.LoadData();
+            _dbMigrationTargetPage.LoadData();
+        }, Avalonia.Threading.DispatcherPriority.Render);
+    }
+
+    private void RefreshMigrationShow2()
+    {
+        if (string.IsNullOrWhiteSpace(_migrationOldName) || string.IsNullOrWhiteSpace(_migrationNewName))
+        {
+            Show2.Content = null;
+            LogContentChange("Show2", null);
+            return;
+        }
+        var panel = BuildMigrationConfirmPanel(_migrationOldName, _migrationNewName);
+        Show2.Content = panel;
+        LogContentChange("Show2", panel);
+    }
+
+    private Border BuildMigrationConfirmPanel(string oldName, string newName)
+    {
+        var font  = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
+        var fontR = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R");
+
+        // 결과 메시지 TextBlock (나중에 버튼 핸들러에서 참조)
+        var txbMigResult = new TextBlock
+        {
+            Text       = "",
+            FontSize   = 13,
+            FontFamily = fontR,
+            Foreground = Brush.Parse("#aaddaa"),
+            Margin     = new Thickness(0, 12, 0, 0),
+            TextWrapping = TextWrapping.Wrap,
+        };
+
+        var btnExecute = new Button
+        {
+            Content    = "▶ 변경 실행",
+            FontSize   = 14,
+            FontFamily = font,
+            FontWeight = FontWeight.Bold,
+            Background = Brush.Parse("#2a4a2a"),
+            Foreground = Brush.Parse("#88ff88"),
+            BorderBrush = Brush.Parse("#448844"),
+            BorderThickness = new Thickness(1),
+            Padding    = new Thickness(16, 8),
+            CornerRadius = new CornerRadius(5),
+            Margin     = new Thickness(0, 16, 0, 0),
+            HorizontalAlignment = HorizontalAlignment.Left,
+        };
+
+        // 캡처용 로컬 변수 (클로저)
+        var capturedOld = oldName;
+        var capturedNew = newName;
+
+        btnExecute.Click += (_, _) =>
+        {
+            btnExecute.IsEnabled = false;
+            txbMigResult.Text    = "처리 중...";
+            txbMigResult.Foreground = Brush.Parse("#eeeeaa");
+
+            var (updatedRows, error) = ETA.Services.SERVICE1.CompanyRenameService.RenameCompany(capturedOld, capturedNew);
+
+            if (string.IsNullOrEmpty(error))
+            {
+                txbMigResult.Text       = $"✅ 완료! {updatedRows}건 변경";
+                txbMigResult.Foreground = Brush.Parse("#aaddaa");
+                _dbMigrationPage?.LoadData();
+                _dbMigrationTargetPage?.LoadData();
+            }
+            else
+            {
+                txbMigResult.Text       = $"❌ 오류: {error}";
+                txbMigResult.Foreground = Brush.Parse("#ff8888");
+                btnExecute.IsEnabled    = true;
+            }
+        };
+
+        var content = new StackPanel
+        {
+            Spacing = 6,
+            Margin  = new Thickness(16),
+            Children =
+            {
+                new TextBlock
+                {
+                    Text       = "업체명 변경 확인",
+                    FontSize   = 16, FontWeight = FontWeight.Bold,
+                    FontFamily = font,
+                    Foreground = Brush.Parse("#e0e0e0"),
+                    Margin     = new Thickness(0, 0, 0, 8),
+                },
+                new TextBlock
+                {
+                    Text       = $"변경 전:  {oldName}",
+                    FontSize   = 13, FontFamily = fontR,
+                    Foreground = Brush.Parse("#ff9999"),
+                },
+                new TextBlock
+                {
+                    Text       = $"변경 후:  {newName}",
+                    FontSize   = 13, FontFamily = fontR,
+                    Foreground = Brush.Parse("#99ff99"),
+                },
+                new TextBlock
+                {
+                    Text       = "아래 테이블의 업체명이 일괄 변경됩니다:",
+                    FontSize   = 12, FontFamily = fontR,
+                    Foreground = Brush.Parse("#aaaaaa"),
+                    Margin     = new Thickness(0, 10, 0, 0),
+                },
+                new TextBlock
+                {
+                    Text       = "  • 견적발행내역\n  • 거래명세서발행내역\n  • 계약 DB\n  • 분석의뢰및결과\n  • 시료명칭(컬럼명)",
+                    FontSize   = 12, FontFamily = fontR,
+                    Foreground = Brush.Parse("#cccccc"),
+                    LineHeight = 20,
+                },
+                btnExecute,
+                txbMigResult,
+            },
+        };
+
+        return new Border
+        {
+            Background   = Brush.Parse("#1a1e2a"),
+            BorderBrush  = Brush.Parse("#334466"),
+            BorderThickness = new Thickness(1),
+            CornerRadius = new CornerRadius(6),
+            Child        = new ScrollViewer
+            {
+                VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+                Content = content,
+            },
+        };
     }
 
     private void Admin_Click(object? sender, RoutedEventArgs e)
@@ -1633,6 +2024,11 @@ public partial class MainPage : Window
                 // BT2 = 신규 작성 → Content2 를 NewPanel 로 교체
                 _quotationNewPanel?.Clear();
                 _quotationCheckPanel?.ClearAll();
+                if (_quotationCheckPanel != null)
+                {
+                    _quotationCheckPanel.CurrentAnalysisRecord = null;
+                    _quotationCheckPanel.CurrentIssue = null;
+                }
                 Show2.Content = _quotationNewPanel;
                 break;
             case "WasteSampleList": _wasteSampleListPage?.AddNewDate(); break;
@@ -1662,8 +2058,9 @@ public partial class MainPage : Window
             case "Agent":    if (_agentTreePage  != null) await _agentTreePage.DeleteSelectedAsync();  break;
             case "Contract": if (_contractPage   != null) await _contractPage.DeleteSelectedAsync();   break;
             case "Purchase": _purchasePage?.RejectSelected();   break;
-            case "TestReport": _testReportPage?.PrintExcel();   break;
+            case "TestReport": _testReportPage?.OpenPrintWindow();   break;
             case "Repair":   _repairPage?.CompleteSelected();   break;
+            case "Quotation": await ExportQuotationAsync(); break;
             default: Debug.WriteLine($"[{_currentMode}] BT4"); break;
         }
     }
@@ -1672,12 +2069,63 @@ public partial class MainPage : Window
     {
         switch (_currentMode)
         {
-            case "WasteCompany": ShowWasteCompanyData();           break;
-            case "Purchase":     _purchasePage?.CompleteSelected(); break;
-            case "TestReport":   _testReportPage?.PrintPdf();       break;
-            case "Repair":       _repairPage?.DeleteSelected();     break;
-            default: Debug.WriteLine($"[{_currentMode}] BT5");     break;
+            case "WasteCompany": ShowWasteCompanyData();            break;
+            case "Purchase":     _purchasePage?.CompleteSelected();  break;
+            case "TestReport":   _testReportPage?.OpenPrintWindow();   break;
+            case "Repair":       _repairPage?.DeleteSelected();      break;
+            case "Contract":     _ = ImportContractFromExcelAsync(); break;
+            default: Debug.WriteLine($"[{_currentMode}] BT5");      break;
         }
+    }
+
+    private async Task ImportContractFromExcelAsync()
+    {
+        // 파일 선택
+        var dialog = new Avalonia.Platform.Storage.FilePickerOpenOptions
+        {
+            Title            = "ETA DB Excel 파일 선택",
+            AllowMultiple    = false,
+            FileTypeFilter   = new[]
+            {
+                new Avalonia.Platform.Storage.FilePickerFileType("Excel 파일")
+                {
+                    Patterns = new[] { "*.xlsm", "*.xlsx" }
+                }
+            }
+        };
+
+        var topLevel = TopLevel.GetTopLevel(this);
+        if (topLevel == null) return;
+
+        var files = await topLevel.StorageProvider.OpenFilePickerAsync(dialog);
+        if (files.Count == 0) return;
+
+        var filePath = files[0].Path.LocalPath;
+
+        // 진행 표시 (Show2 임시 메시지)
+        Show2.Content = new TextBlock
+        {
+            Text              = "⏳  Excel 가져오는 중...",
+            FontSize          = 13, Foreground = Brushes.LightGray,
+            Margin            = new Thickness(12),
+            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+        };
+
+        var (ok, errCount) = await Task.Run(() => ContractService.ImportFromExcel(filePath));
+
+        Show2.Content = new TextBlock
+        {
+            Text              = errCount < 0
+                                    ? "❌  Excel 파일을 열 수 없습니다."
+                                    : $"✅  가져오기 완료 — 성공 {ok}건{(errCount > 0 ? $", 오류 {errCount}건" : "")}\n트리에서 업체를 선택하면 단가가 표시됩니다.",
+            FontSize          = 13,
+            Foreground        = errCount < 0 ? Brushes.OrangeRed : Brushes.LightGreen,
+            Margin            = new Thickness(12),
+            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+        };
+
+        // 트리 새로고침
+        _contractPage?.LoadData();
     }
 
     private void BT6_Click(object? sender, RoutedEventArgs e)
@@ -1686,7 +2134,532 @@ public partial class MainPage : Window
         {
             case "Purchase":   _purchasePage?.DeleteSelected();        break;
             case "TestReport": _testReportPage?.BatchPrintExcel();     break;
+            case "Quotation":       ShowTradeStatementEditor();    break;
+            case "QuotationIssue":  IssueTradeStatementFromChecklist(); break;
             default: Debug.WriteLine($"[{_currentMode}] BT6");        break;
+        }
+    }
+
+    private async Task ExportQuotationAsync()
+    {
+        var issue = _lastShownIssue;
+        if (issue == null)
+        {
+            Show2.Content = new TextBlock
+            {
+                Text = "견적서를 먼저 선택하세요.",
+                FontFamily = _tradeFont, FontSize = 13,
+                Foreground = Brushes.OrangeRed, Margin = new Thickness(16),
+            };
+            return;
+        }
+
+        var window = TopLevel.GetTopLevel(this) as Window;
+        var picker = new Avalonia.Platform.Storage.FilePickerSaveOptions
+        {
+            Title             = "견적서 저장",
+            SuggestedFileName = $"견적서_{issue.약칭}_{issue.견적번호}",
+            FileTypeChoices   = new[]
+            {
+                new Avalonia.Platform.Storage.FilePickerFileType("Excel")
+                    { Patterns = new[] { "*.xlsx" } }
+            }
+        };
+        var file = window != null ? await window.StorageProvider.SaveFilePickerAsync(picker) : null;
+        if (file == null) return;
+
+        var (ok, msg) = await Task.Run(() =>
+            ETA.Services.SERVICE1.QuotationService.ExportQuotation(issue, file.Path.LocalPath));
+
+        Show2.Content = new TextBlock
+        {
+            Text = ok ? $"견적서 저장 완료\n{file.Path.LocalPath}" : $"오류: {msg}",
+            FontFamily = _tradeFont, FontSize = 13,
+            Foreground = ok ? Brushes.LightGreen : Brushes.OrangeRed,
+            Margin = new Thickness(16),
+            TextWrapping = TextWrapping.Wrap,
+        };
+    }
+
+    private async void IssueTradeStatementFromChecklist()
+    {
+        var checkedIssues = _issuingChecklistPanel?.Children
+            .OfType<CheckBox>()
+            .Where(cb => cb.IsChecked == true && cb.Tag is ETA.Models.QuotationIssue)
+            .Select(cb => (ETA.Models.QuotationIssue)cb.Tag!)
+            .ToList() ?? new List<ETA.Models.QuotationIssue>();
+
+        if (checkedIssues.Count == 0)
+        {
+            Show2.Content = new TextBlock
+            {
+                Text = "발행할 항목을 체크리스트에서 선택하세요.",
+                FontFamily = _tradeFont,
+                FontSize = 13,
+                Foreground = Brushes.OrangeRed,
+                Margin = new Thickness(16),
+            };
+            return;
+        }
+
+        // 분석 미완료 항목 확인
+        var quotNos = checkedIssues.Select(i => i.견적번호).Distinct().ToList();
+        var incomplete = await Task.Run(() =>
+            ETA.Services.SERVICE1.AnalysisRecordService.GetIncompleteItems(quotNos));
+
+        if (incomplete.Count > 0)
+        {
+            bool proceed = await ShowIncompleteWarningAsync(incomplete);
+            if (!proceed) return;
+        }
+
+        // 기존 거래명세서 발행 플로우 재사용
+        _ = IssueTradeStatementAsync(checkedIssues);
+    }
+
+    private async Task<bool> ShowIncompleteWarningAsync(List<(string 시료명, string 항목)> items)
+    {
+        bool proceed = false;
+        var owner = TopLevel.GetTopLevel(this) as Window;
+        if (owner == null) return true;
+
+        var itemLines = string.Join("\n", items.Select(x => $"  • {x.시료명} : {x.항목}"));
+
+        var btnProceed = new Button
+        {
+            Content = "그래도 발행",
+            Padding = new Thickness(14, 6),
+            Margin = new Thickness(6, 0, 0, 0),
+            CornerRadius = new CornerRadius(4),
+            Background = new SolidColorBrush(Color.Parse("#4a2020")),
+            Foreground = new SolidColorBrush(Color.Parse("#ff8080")),
+            BorderThickness = new Thickness(0),
+            FontFamily = _tradeFont,
+        };
+        var btnCancel = new Button
+        {
+            Content = "취소",
+            Padding = new Thickness(14, 6),
+            CornerRadius = new CornerRadius(4),
+            Background = new SolidColorBrush(Color.Parse("#2a2a3a")),
+            Foreground = new SolidColorBrush(Color.Parse("#aaaaaa")),
+            BorderThickness = new Thickness(0),
+            FontFamily = _tradeFont,
+        };
+
+        var dlg = new Window
+        {
+            Title = "분석 미완료 경고",
+            Width = 440,
+            SizeToContent = SizeToContent.Height,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            Background = new SolidColorBrush(Color.Parse("#1a1a2a")),
+            CanResize = false,
+            Content = new StackPanel
+            {
+                Margin = new Thickness(18, 16, 18, 18),
+                Spacing = 10,
+                Children =
+                {
+                    new TextBlock
+                    {
+                        Text = "⚠  분석이 완료되지 않았습니다",
+                        FontSize = 15,
+                        FontWeight = FontWeight.Bold,
+                        Foreground = new SolidColorBrush(Color.Parse("#f0c040")),
+                        FontFamily = _tradeFont,
+                    },
+                    new Border
+                    {
+                        Background = new SolidColorBrush(Color.Parse("#12121e")),
+                        CornerRadius = new CornerRadius(4),
+                        Padding = new Thickness(10, 8),
+                        MaxHeight = 260,
+                        Child = new ScrollViewer
+                        {
+                            Content = new TextBlock
+                            {
+                                Text = itemLines,
+                                FontSize = 12,
+                                Foreground = new SolidColorBrush(Color.Parse("#dddddd")),
+                                FontFamily = _tradeFont,
+                                TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+                            },
+                        },
+                    },
+                    new TextBlock
+                    {
+                        Text = "그래도 발행하시겠습니까?",
+                        FontSize = 13,
+                        Foreground = new SolidColorBrush(Color.Parse("#aaaaaa")),
+                        FontFamily = _tradeFont,
+                    },
+                    new StackPanel
+                    {
+                        Orientation = Orientation.Horizontal,
+                        HorizontalAlignment = HorizontalAlignment.Right,
+                        Children = { btnCancel, btnProceed },
+                    },
+                },
+            },
+        };
+
+        btnProceed.Click += (_, _) => { proceed = true; dlg.Close(); };
+        btnCancel.Click  += (_, _) => { proceed = false; dlg.Close(); };
+
+        await dlg.ShowDialog(owner);
+        return proceed;
+    }
+
+    private async Task IssueTradeStatementAsync(List<ETA.Models.QuotationIssue> issues)
+    {
+        var window = TopLevel.GetTopLevel(this) as Window;
+        var picker = new Avalonia.Platform.Storage.FilePickerSaveOptions
+        {
+            Title           = "거래명세서 저장",
+            SuggestedFileName = $"거래명세서_{DateTime.Today:yyyyMMdd}",
+            FileTypeChoices = new[]
+            {
+                new Avalonia.Platform.Storage.FilePickerFileType("Excel")
+                    { Patterns = new[] { "*.xlsx" } }
+            }
+        };
+
+        var file = window != null
+            ? await window.StorageProvider.SaveFilePickerAsync(picker)
+            : null;
+        if (file == null) return;
+
+        string path = file.Path.LocalPath;
+
+        Show2.Content = new TextBlock
+        {
+            Text = "거래명세서 생성 중...",
+            FontFamily = _tradeFont,
+            FontSize = 13,
+            Foreground = Brushes.LightYellow,
+            Margin = new Thickness(16),
+        };
+
+        var captured = issues;
+        var (ok, msg, supply, vat, total) = await Task.Run(() =>
+            ETA.Services.SERVICE1.QuotationService.ExportTradingStatement(captured, path));
+
+        if (!ok)
+        {
+            Show2.Content = new TextBlock
+            {
+                Text = $"오류: {msg}",
+                FontFamily = _tradeFont,
+                FontSize = 13,
+                Foreground = Brushes.OrangeRed,
+                Margin = new Thickness(16),
+            };
+            return;
+        }
+
+        // DB 저장
+        string statementNo = await Task.Run(() =>
+        {
+            ETA.Services.SERVICE1.QuotationService.EnsureTradeStatementTable();
+            string no = $"MS-{DateTime.Today:yyyyMMdd}-{DateTime.Now:HHmmss}";
+            var quotNos     = captured.Select(i => i.견적번호);
+            var abbr        = captured.First().약칭;
+            var itemDataDict = ETA.Services.SERVICE1.QuotationService.BuildTradeStatementItemData(captured);
+            ETA.Services.SERVICE1.QuotationService.InsertTradeStatement(
+                captured.First().업체명, abbr, no, quotNos, supply, vat, total, itemDataDict);
+            ETA.Services.SERVICE1.QuotationService.SetTradeStatementNo(
+                captured.Select(i => i.Id).ToList(), no);
+            return no;
+        });
+
+        // 트리 아이콘 갱신
+        _issuingHistoryPanel?.RefreshIssueIcons(captured.Select(i => i.Id).ToHashSet());
+
+        Show2.Content = new TextBlock
+        {
+            Text = $"발행 완료\n거래명세서번호: {statementNo}\n공급가액: {supply:N0}\n부가세: {vat:N0}\n합계: {total:N0}",
+            FontFamily = _tradeFont,
+            FontSize = 13,
+            Foreground = Brushes.LightGreen,
+            Margin = new Thickness(16),
+        };
+    }
+
+    // =========================================================================
+    // 거래명세서 편집 패널 (BT6)
+    // =========================================================================
+    private static readonly FontFamily _tradeFont =
+        new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R");
+
+    private void ShowTradeStatementEditor()
+    {
+        var selected = _quotationHistoryPanel?.GetSelectedIssues()
+                       ?? new List<ETA.Models.QuotationIssue>();
+
+        if (selected.Count == 0)
+        {
+            Show4.Content = new TextBlock
+            {
+                Text = "⚠️  Show1에서 Ctrl+클릭으로\n견적서를 먼저 선택하세요.",
+                FontSize = 12, Foreground = Brushes.Orange, FontFamily = _tradeFont,
+                Margin = new Thickness(12), TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+            };
+            return;
+        }
+
+        // ── 체크박스별 상태 ──────────────────────────────────────────────────
+        var checkBoxes = new List<(ETA.Models.QuotationIssue Issue, CheckBox CB)>();
+
+        // ── Show2 미리보기 갱신 함수 ─────────────────────────────────────────
+        void RefreshPreview()
+        {
+            var checked_ = checkBoxes
+                .Where(x => x.CB.IsChecked == true)
+                .Select(x => x.Issue)
+                .ToList();
+
+            if (checked_.Count == 0)
+            {
+                Show2.Content = new TextBlock
+                {
+                    Text = "체크된 항목이 없습니다.",
+                    FontSize = 12, Foreground = Brushes.Gray, FontFamily = _tradeFont,
+                    Margin = new Thickness(12),
+                };
+                return;
+            }
+
+            decimal supplyTotal = checked_.Sum(i => i.총금액);
+            decimal vat         = Math.Round(supplyTotal * 0.1m, 0);
+            decimal grand       = supplyTotal + vat;
+            string  company     = checked_.First().업체명;
+
+            var preview = new StackPanel { Spacing = 6, Margin = new Thickness(12) };
+
+            preview.Children.Add(new TextBlock
+            {
+                Text = "📄  거래명세서 미리보기",
+                FontSize = 14, FontFamily = _tradeFont, FontWeight = FontWeight.SemiBold,
+                Foreground = new SolidColorBrush(Color.Parse("#8899bb")),
+            });
+            preview.Children.Add(new Border { Height = 1, Background = new SolidColorBrush(Color.Parse("#444")), Margin = new Thickness(0,2,0,4) });
+            preview.Children.Add(new TextBlock { Text = $"공급받는자 : {company}", FontSize = 11, FontFamily = _tradeFont, Foreground = Brushes.LightGray });
+            preview.Children.Add(new TextBlock { Text = $"발행일     : {DateTime.Today:yyyy-MM-dd}", FontSize = 11, FontFamily = _tradeFont, Foreground = Brushes.LightGray });
+            preview.Children.Add(new TextBlock { Text = $"건수       : {checked_.Count}건", FontSize = 11, FontFamily = _tradeFont, Foreground = Brushes.LightGray });
+
+            // 견적번호 목록
+            var noList = new TextBlock
+            {
+                Text = "견적번호 : " + string.Join(", ", checked_.Select(i => i.견적번호)),
+                FontSize = 10, FontFamily = _tradeFont,
+                Foreground = new SolidColorBrush(Color.Parse("#888888")),
+                TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+            };
+            preview.Children.Add(noList);
+
+            preview.Children.Add(new Border { Height = 1, Background = new SolidColorBrush(Color.Parse("#444")), Margin = new Thickness(0,6,0,4) });
+
+            // 금액 행
+            void AddAmtRow(string label, decimal amt, bool bold = false)
+            {
+                var row = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+                row.Children.Add(new TextBlock { Text = label, Width = 90, FontSize = 12, FontFamily = _tradeFont, Foreground = Brushes.LightGray });
+                var tb = new TextBlock
+                {
+                    Text = amt.ToString("N0") + " 원",
+                    FontSize = 13, FontFamily = _tradeFont,
+                    Foreground = bold ? new SolidColorBrush(Color.Parse("#ffdd88")) : Brushes.WhiteSmoke,
+                    FontWeight = bold ? FontWeight.SemiBold : FontWeight.Normal,
+                };
+                row.Children.Add(tb);
+                preview.Children.Add(row);
+            }
+
+            AddAmtRow("공급가액", supplyTotal);
+            AddAmtRow("부가세(10%)", vat);
+            AddAmtRow("합  계", grand, bold: true);
+
+            Show2.Content = new ScrollViewer { Content = preview, VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto };
+        }
+
+        // ── Show4 패널 구성 ──────────────────────────────────────────────────
+        var root = new Grid { RowDefinitions = new RowDefinitions("Auto,*,Auto") };
+
+        // 헤더
+        root.Children.Add(new Border
+        {
+            Background = new SolidColorBrush(Color.Parse("#1a1a2e")),
+            Padding = new Thickness(10, 8),
+            [Grid.RowProperty] = 0,
+            Child = new TextBlock
+            {
+                Text = "📋  거래명세서 항목 선택",
+                FontSize = 13, FontFamily = _tradeFont, FontWeight = FontWeight.SemiBold,
+                Foreground = new SolidColorBrush(Color.Parse("#8899bb")),
+            }
+        });
+
+        // 체크박스 리스트
+        var listPanel = new StackPanel { Spacing = 4, Margin = new Thickness(8, 6) };
+
+        foreach (var issue in selected)
+        {
+            var cb = new CheckBox
+            {
+                IsChecked = true,
+                Margin = new Thickness(0, 2),
+                Content = new StackPanel
+                {
+                    Orientation = Orientation.Vertical, Spacing = 2,
+                    Children =
+                    {
+                        new TextBlock
+                        {
+                            Text = $"{issue.약칭}  {issue.시료명}",
+                            FontSize = 11, FontFamily = _tradeFont, Foreground = Brushes.WhiteSmoke,
+                            TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
+                        },
+                        new TextBlock
+                        {
+                            Text = $"{issue.견적번호}  |  {issue.총금액:N0} 원",
+                            FontSize = 10, FontFamily = _tradeFont,
+                            Foreground = new SolidColorBrush(Color.Parse("#888888")),
+                        },
+                    }
+                },
+            };
+            cb.IsCheckedChanged += (_, _) => RefreshPreview();
+            checkBoxes.Add((issue, cb));
+            listPanel.Children.Add(cb);
+        }
+
+        var scroll = new ScrollViewer
+        {
+            Content = listPanel,
+            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+            [Grid.RowProperty] = 1,
+        };
+        root.Children.Add(scroll);
+
+        // 발행 버튼
+        var btnIssue = new Button
+        {
+            Content = "🖨  발행 (Excel + DB 저장)",
+            Height = 38, Margin = new Thickness(8, 6),
+            FontSize = 12, FontFamily = _tradeFont,
+            Background = new SolidColorBrush(Color.Parse("#1a3a5a")),
+            Foreground = new SolidColorBrush(Color.Parse("#88aaee")),
+            BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
+            [Grid.RowProperty] = 2,
+        };
+        btnIssue.Click += (_, _) => _ = IssueTradeStatementAsync(checkBoxes);
+        root.Children.Add(btnIssue);
+
+        Show4.Content = root;
+        // Show4 영역 표시
+        SetContentLayout(content2Star: 7, content4Star: 3, upperStar: 13, lowerStar: 4);
+
+        // 초기 미리보기
+        RefreshPreview();
+    }
+
+    private async Task IssueTradeStatementAsync(
+        List<(ETA.Models.QuotationIssue Issue, CheckBox CB)> checkBoxes)
+    {
+        var checkedIssues = checkBoxes
+            .Where(x => x.CB.IsChecked == true)
+            .Select(x => x.Issue)
+            .ToList();
+
+        if (checkedIssues.Count == 0)
+        {
+            Show2.Content = new TextBlock
+            {
+                Text = "⚠️  체크된 항목이 없습니다.",
+                FontSize = 13, Foreground = Brushes.Orange, FontFamily = _tradeFont,
+                Margin = new Thickness(12),
+            };
+            return;
+        }
+
+        // 분석 미완료 항목 확인
+        var incompleteQuotNos = checkedIssues.Select(i => i.견적번호).Distinct().ToList();
+        var incompleteItems = await Task.Run(() =>
+            ETA.Services.SERVICE1.AnalysisRecordService.GetIncompleteItems(incompleteQuotNos));
+        if (incompleteItems.Count > 0)
+        {
+            bool proceed = await ShowIncompleteWarningAsync(incompleteItems);
+            if (!proceed) return;
+        }
+
+        string companyName = checkedIssues.First().업체명;
+        string statementNo = $"TS-{companyName[..Math.Min(4, companyName.Length)]}-{DateTime.Today:yyyyMMdd}-{DateTime.Now:HHmm}";
+
+        // 파일 저장 경로 선택
+        var dialog = new Avalonia.Platform.Storage.FilePickerSaveOptions
+        {
+            Title             = "거래명세서 Excel 저장",
+            SuggestedFileName = $"거래명세서_{companyName}_{DateTime.Today:yyyyMMdd}.xlsx",
+            FileTypeChoices   = new[]
+            {
+                new Avalonia.Platform.Storage.FilePickerFileType("Excel") { Patterns = new[] { "*.xlsx" } }
+            }
+        };
+        var topLevel = TopLevel.GetTopLevel(this);
+        if (topLevel == null) return;
+        var file = await topLevel.StorageProvider.SaveFilePickerAsync(dialog);
+        if (file == null) return;
+
+        var savePath = file.Path.LocalPath;
+
+        Show2.Content = new TextBlock
+        {
+            Text = $"⏳  발행 중... ({checkedIssues.Count}건)",
+            FontSize = 13, Foreground = Brushes.LightGray, FontFamily = _tradeFont,
+            Margin = new Thickness(12),
+        };
+
+        var captured = checkedIssues.ToList();
+        var (ok, msg, supply, vat, total) = await Task.Run(
+            () => ETA.Services.SERVICE1.QuotationService.ExportTradingStatement(captured, savePath));
+
+        if (ok)
+        {
+            // 거래명세서발행내역 DB 저장
+            var quotNos      = captured.Select(i => i.견적번호);
+            var abbr         = captured.First().약칭;
+            var itemDataDict = ETA.Services.SERVICE1.QuotationService.BuildTradeStatementItemData(captured);
+            await Task.Run(() =>
+            {
+                ETA.Services.SERVICE1.QuotationService.EnsureTradeStatementTable();
+                ETA.Services.SERVICE1.QuotationService.InsertTradeStatement(
+                    companyName, abbr, statementNo, quotNos, supply, vat, total, itemDataDict);
+                ETA.Services.SERVICE1.QuotationService.SetTradeStatementNo(
+                    captured.Select(i => i.Id), statementNo);
+            });
+
+            // 트리 아이콘 갱신
+            _quotationHistoryPanel?.RefreshIssueIcons(captured.Select(i => i.Id).ToHashSet());
+
+            Show2.Content = new TextBlock
+            {
+                Text = $"✅  발행 완료!\n거래명세서번호: {statementNo}\n{checkedIssues.Count}건  합계: {total:N0} 원\n\n{savePath}",
+                FontSize = 13, Foreground = Brushes.LightGreen, FontFamily = _tradeFont,
+                Margin = new Thickness(12), TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+            };
+            try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(savePath) { UseShellExecute = true }); }
+            catch { }
+        }
+        else
+        {
+            Show2.Content = new TextBlock
+            {
+                Text = $"❌  {msg}",
+                FontSize = 13, Foreground = Brushes.OrangeRed, FontFamily = _tradeFont,
+                Margin = new Thickness(12),
+            };
         }
     }
 
@@ -1872,19 +2845,22 @@ public partial class MainPage : Window
     private void OnCheckSelectionChanged(System.Collections.Generic.List<ETA.Models.AnalysisItem> items)
     {
         var names = items.Select(a => a.Analyte);
-        if (_quotationCheckPanel?.CurrentAnalysisRecord != null)
+
+        // Show2 가 신규/오작성수정 패널이면 항상 NewPanel 으로 라우팅
+        if (Show2.Content == _quotationNewPanel)
         {
-            // 분析의뢰 편집 모드 → Show2(상세) 실시간 미리보기
+            _quotationNewPanel?.SetSelectedAnalytes(items);
+        }
+        else if (_quotationCheckPanel?.CurrentAnalysisRecord != null)
+        {
             _analysisRequestDetailPanel?.PreviewCheckedItems(names);
         }
         else if (_quotationCheckPanel?.CurrentIssue != null)
         {
-            // 견적발행내역 편집 모드 → Show2(상세) 실시간 미리보기
             _quotationDetailPanel?.PreviewCheckedItems(names);
         }
         else
         {
-            // 견적 신규 작성 모드 (기존 동작)
             _quotationNewPanel?.SetSelectedAnalytes(items);
         }
     }

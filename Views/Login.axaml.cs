@@ -238,7 +238,7 @@ public partial class Login : Window
 
         // 텍스트
         if (txtDbMode   != null) txtDbMode.Text   = on ? "서버 DB"  : "로컬 DB";
-        if (txtDbStatus != null) txtDbStatus.Text = on ? "SEOHEE STARHILLS (온라인)" : "SQLite (오프라인)";
+        if (txtDbStatus != null) txtDbStatus.Text = on ? "CHUNGHA DB (온라인)" : "SQLite (오프라인)";
     }
 
     private void ShowError(string msg)

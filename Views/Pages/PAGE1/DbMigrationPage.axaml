@@ -24,6 +24,7 @@
 
         <!-- 헤더 -->
         <TextBlock Grid.Row="0"
+                   x:Name="txbPanelTitle"
                    Text="ETA 계약 DB 업체"
                    FontSize="{DynamicResource FontSizeMD}" FontWeight="Bold"
                    Foreground="#e0e0e0"

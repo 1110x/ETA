@@ -55,6 +55,35 @@ public static class AnalysisRecordService
         return groups;
     }
 
+    /// <summary>여러 견적번호에 걸쳐 분석이 완료되지 않은 (시료명, 항목) 목록 반환</summary>
+    public static List<(string 시료명, string 항목)> GetIncompleteItems(IEnumerable<string> quotationNos)
+    {
+        var result = new List<(string, string)>();
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return result;
+        try
+        {
+            var analysisCols = OrderRequestService.GetAnalysisColumns()
+                .Where(c => !c.Contains("시료채취", StringComparison.OrdinalIgnoreCase))
+                .ToList();
+            foreach (var no in quotationNos)
+            {
+                var rows = GetOrderRows(no);
+                foreach (var row in rows)
+                {
+                    row.TryGetValue("시료명", out var sampleName);
+                    sampleName ??= "";
+                    foreach (var col in analysisCols)
+                    {
+                        if (row.TryGetValue(col, out var val) && val == "O")
+                            result.Add((sampleName, col));
+                    }
+                }
+            }
+        }
+        catch (Exception ex) { Log($"GetIncompleteItems 오류: {ex.Message}"); }
+        return result;
+    }
+
     /// <summary>방류기준표 전체 로드: 항목명 → (기준유형 → 기준값)</summary>
     public static Dictionary<string, Dictionary<string, string>> Load방류기준표()
         => Get방류기준표Internal();

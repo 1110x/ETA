@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,6 +8,7 @@ using System.Data.Common;
 using ETA.Models;
 using System.Diagnostics;
 using ETA.Services.Common;
+using ClosedXML.Excel;
 
 namespace ETA.Services.SERVICE1;
 
@@ -80,7 +81,64 @@ public static class QuotationService
         return list;
     }
 
+    // ── 테이블 초기화 ─────────────────────────────────────────────────────
+    /// <summary>견적발행내역 테이블이 없으면 기본 컬럼으로 생성한다.</summary>
+    public static void EnsureQuotationIssueTable()
+    {
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
+
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = DbConnectionFactory.IsMariaDb
+            ? @"CREATE TABLE IF NOT EXISTS `견적발행내역` (
+                `견적발행일자`   VARCHAR(20)  NULL,
+                `업체명`         VARCHAR(200) NULL,
+                `약칭`           VARCHAR(100) NULL,
+                `시료명`         VARCHAR(200) NULL,
+                `견적번호`       VARCHAR(100) NULL,
+                `적용구분`       VARCHAR(50)  NULL,
+                `담당자`         VARCHAR(100) NULL,
+                `담당자연락처`   VARCHAR(100) NULL,
+                `담당자 e-Mail`  VARCHAR(200) NULL,
+                `합계 금액`      DECIMAL(18,2) NULL DEFAULT 0,
+                `거래명세서번호` VARCHAR(50)  NULL
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;"
+            : @"CREATE TABLE IF NOT EXISTS `견적발행내역` (
+                `견적발행일자`   TEXT,
+                `업체명`         TEXT,
+                `약칭`           TEXT,
+                `시료명`         TEXT,
+                `견적번호`       TEXT,
+                `적용구분`       TEXT,
+                `담당자`         TEXT,
+                `담당자연락처`   TEXT,
+                `담당자 e-Mail`  TEXT,
+                `합계 금액`      REAL DEFAULT 0,
+                `거래명세서번호` TEXT
+            )";
+        try { cmd.ExecuteNonQuery(); Log("EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)"); }
+        catch (Exception ex) { Log($"EnsureQuotationIssueTable 오류: {ex.Message}"); }
+    }
+
     // ── 견적발행내역 전체 조회 ────────────────────────────────────────────
+    /// <summary>견적발행내역에 거래명세서번호 컬럼이 없으면 추가</summary>
+    public static void EnsureTradeStatementColumn()
+    {
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+        if (!TableExists(conn, "견적발행내역")) return;
+        var cols = DbConnectionFactory.GetColumnNames(conn, "견적발행내역");
+        if (cols.Contains("거래명세서번호")) return;
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = DbConnectionFactory.IsMariaDb
+            ? "ALTER TABLE `견적발행내역` ADD COLUMN `거래명세서번호` VARCHAR(50) NULL DEFAULT NULL"
+            : "ALTER TABLE `견적발행내역` ADD COLUMN `거래명세서번호` TEXT";
+        try { cmd.ExecuteNonQuery(); } catch (Exception ex) { Debug.WriteLine($"[Quotation] 컬럼추가 오류: {ex.Message}"); }
+    }
+
     public static List<QuotationIssue> GetAllIssues()
     {
         var list   = new List<QuotationIssue>();
@@ -89,6 +147,10 @@ public static class QuotationService
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         if (!TableExists(conn, "견적발행내역")) return list;
+
+        // 거래명세서번호 컬럼 존재 여부 확인
+        var cols = DbConnectionFactory.GetColumnNames(conn, "견적발행내역");
+        bool hasTrade = cols.Contains("거래명세서번호");
 
         using var cmd = conn.CreateCommand();
         cmd.CommandText = $@"
@@ -101,6 +163,7 @@ public static class QuotationService
                    `적용구분`,
                    `담당자`,
                    `합계 금액`
+                   {(hasTrade ? ", `거래명세서번호`" : "")}
             FROM `견적발행내역`
             ORDER BY `견적발행일자` DESC, {DbConnectionFactory.RowId} DESC";
 
@@ -109,15 +172,16 @@ public static class QuotationService
         {
             list.Add(new QuotationIssue
             {
-                Id       = r.IsDBNull(0) ? 0 : Convert.ToInt32(r.GetValue(0)),
-                발행일   = S(r, 1),
-                업체명   = S(r, 2),
-                약칭     = S(r, 3),
-                시료명   = S(r, 4),
-                견적번호 = S(r, 5),
-                견적구분 = S(r, 6),
-                담당자   = S(r, 7),
-                총금액   = Dec(r, 8),
+                Id            = r.IsDBNull(0) ? 0 : Convert.ToInt32(r.GetValue(0)),
+                발행일        = S(r, 1),
+                업체명        = S(r, 2),
+                약칭          = S(r, 3),
+                시료명        = S(r, 4),
+                견적번호      = S(r, 5),
+                견적구분      = S(r, 6),
+                담당자        = S(r, 7),
+                총금액        = Dec(r, 8),
+                거래명세서번호 = hasTrade ? S(r, 9) : "",
             });
         }
         return list;
@@ -243,81 +307,57 @@ public static class QuotationService
         return dict;
     }
 
-    // ── 분석단가 테이블 컬럼헤더에서 적용구분 목록 조회 ─────────────────────
-    /// <summary>
-    /// 분석단가 테이블의 컬럼 중 Analyte, Category, ES 등 고정 컬럼을 제외한
-    /// 나머지 컬럼헤더 (FS100, FS100+, FS56 ...) 를 반환
-    /// </summary>
+    // ── 계약 DB 에서 적용구분(계약구분) 고유값 목록 조회 ──────────────────────
+    /// <summary>계약 DB 의 C_ContractType 고유값. 없으면 기본값 반환.</summary>
     public static List<string> GetContractTypes()
     {
-        var list   = new List<string>();
+        var list = new List<string>();
         if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
 
-        // 분석단가 테이블에서 제외할 고정 컬럼
-        var fixedCols = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-        {
-            "_id", "id",
-            "Analyte", "Category", "ES", "unit", "Unit", "Method", "방법",
-            "비고", "Note", "단위", "분류",
-        };
-
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
-
-            if (!TableExists(conn, "분석단가"))
-            {
-                Debug.WriteLine("[GetContractTypes] 분석단가 테이블 없음");
-                return list;
-            }
-
-            foreach (var col in DbConnectionFactory.GetColumnNames(conn, "분석단가"))
-            {
-                if (!fixedCols.Contains(col.Trim()))
-                    list.Add(col.Trim());
-            }
-
-            Debug.WriteLine($"[GetContractTypes] 분석단가 컬럼 → {list.Count}개: {string.Join(", ", list)}");
-        }
-        catch (Exception ex) { Debug.WriteLine($"[GetContractTypes] {ex.Message}"); }
-        return list;
-    }
-
-    // ── 분석단가 테이블에서 적용구분 컬럼 단가 조회 ──────────────────────────
-    public static Dictionary<string, decimal> GetPricesByColumn(string columnName)
-    {
-        var dict   = new Dictionary<string, decimal>(StringComparer.OrdinalIgnoreCase);
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return dict;
-        try
-        {
-            using var conn = DbConnectionFactory.CreateConnection();
-            conn.Open();
-            var cols = DbConnectionFactory.GetColumnNames(conn, "분석단가");
-
-            var match = cols.FirstOrDefault(c =>
-                string.Equals(c.Trim(), columnName.Trim(), StringComparison.OrdinalIgnoreCase));
-            if (match == null) { Debug.WriteLine($"[Prices] '{columnName}' 컬럼 없음"); return dict; }
-
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = $@"SELECT `Analyte`, `{match}` FROM `분석단가`";
+            cmd.CommandText = "SELECT DISTINCT C_ContractType FROM `계약 DB` " +
+                              "WHERE C_ContractType IS NOT NULL AND C_ContractType <> '' " +
+                              "ORDER BY C_ContractType ASC";
             using var dr = cmd.ExecuteReader();
             while (dr.Read())
             {
-                var analyte = dr.IsDBNull(0) ? "" : dr.GetValue(0)?.ToString() ?? "";
-                if (string.IsNullOrEmpty(analyte)) continue;
-                if (!dr.IsDBNull(1) && decimal.TryParse(
-                    dr.GetValue(1)?.ToString(),
-                    System.Globalization.NumberStyles.Any,
-                    System.Globalization.CultureInfo.InvariantCulture, out var p))
-                    dict[analyte] = p;
+                var v = dr.IsDBNull(0) ? "" : dr.GetString(0);
+                if (!string.IsNullOrWhiteSpace(v)) list.Add(v);
             }
-            Debug.WriteLine($"[Prices] {columnName} → {dict.Count}개");
         }
-        catch (Exception ex) { Debug.WriteLine($"[Prices] {ex.Message}"); }
-        return dict;
+        catch (Exception ex) { Debug.WriteLine($"[GetContractTypes] {ex.Message}"); }
+
+        if (list.Count == 0)
+            list.AddRange(new[] { "위탁", "용역", "구매", "기타" });
+
+        return list;
     }
 
+    // ── 계약 DB 에서 업체별 단가 조회 ────────────────────────────────────────
+    /// <summary>계약 DB 에서 특정 업체의 분석항목 단가를 반환합니다.</summary>
+    public static Dictionary<string, decimal> GetPricesByCompany(string companyName)
+    {
+        var dict = new Dictionary<string, decimal>(StringComparer.OrdinalIgnoreCase);
+        if (string.IsNullOrWhiteSpace(companyName)) return dict;
+
+        try
+        {
+            foreach (var (analyte, priceStr) in ContractService.GetContractPrices(companyName))
+            {
+                var clean = (priceStr ?? "").Replace(",", "").Trim();
+                if (decimal.TryParse(clean, System.Globalization.NumberStyles.Any,
+                        System.Globalization.CultureInfo.InvariantCulture, out var d) && d > 0)
+                    dict[analyte] = d;
+            }
+            Debug.WriteLine($"[Prices] {companyName} -> {dict.Count}건");
+        }
+        catch (Exception ex) { Debug.WriteLine($"[GetPricesByCompany] {ex.Message}"); }
+        return dict;
+    }
     // ── INSERT (분석항목 포함) ────────────────────────────────────────────
     public static bool Insert(QuotationIssue issue,
         Dictionary<string, (int Qty, decimal Price)>? itemData = null)
@@ -331,7 +371,11 @@ public static class QuotationService
 
         bool tableExists = TableExists(conn, "견적발행내역");
         Log($"  TableExists(견적발행내역)={tableExists}");
-        if (!tableExists) return false;
+        if (!tableExists)
+        {
+            Log("  테이블 없음 → EnsureQuotationIssueTable() 호출");
+            EnsureQuotationIssueTable();
+        }
 
         // ── 누락 컬럼 마이그레이션 ──────────────────────────────────────
         MigrateIssueColumns(conn);
@@ -557,11 +601,481 @@ public static class QuotationService
     private static decimal Dec(DbDataReader r, int i)
     {
         if (r.IsDBNull(i)) return 0;
-        // 통화기호(₩, ,) 제거 후 파싱
         var raw = r.GetValue(i)?.ToString() ?? "";
         raw = raw.Replace("₩","").Replace(",","").Trim();
         return decimal.TryParse(raw,
             System.Globalization.NumberStyles.Any,
             System.Globalization.CultureInfo.InvariantCulture, out var d) ? d : 0;
+    }
+
+    // ── 거래명세서 ────────────────────────────────────────────────────────
+
+    private const int MaxQuotationNoCols = 10;  // 견적번호1 ~ 견적번호10
+
+    /// <summary>거래명세서발행내역 기본 테이블 생성 보장 (견적발행내역과 유사한 구조)</summary>
+    public static void EnsureTradeStatementTable()
+    {
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+
+        // 1. 테이블 기본 생성
+        using (var cmd = conn.CreateCommand())
+        {
+            string quotNoCols = string.Concat(Enumerable.Range(1, MaxQuotationNoCols).Select(i =>
+                DbConnectionFactory.IsMariaDb
+                    ? $"\n                    `견적번호{i}`      VARCHAR(100) NULL,"
+                    : $"\n                    `견적번호{i}`      TEXT,"));
+
+            cmd.CommandText = DbConnectionFactory.IsMariaDb
+                ? $@"CREATE TABLE IF NOT EXISTS `거래명세서발행내역` (
+                    `발행일`         VARCHAR(20)   NULL,
+                    `업체명`         VARCHAR(200)  NULL,
+                    `약칭`           VARCHAR(100)  NULL,
+                    `거래명세서번호` VARCHAR(100)  NULL,{quotNoCols}
+                    `공급가액`       DECIMAL(20,2) NULL DEFAULT 0,
+                    `부가세`         DECIMAL(20,2) NULL DEFAULT 0,
+                    `합계금액`       DECIMAL(20,2) NULL DEFAULT 0
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
+                : $@"CREATE TABLE IF NOT EXISTS `거래명세서발행내역` (
+                    `발행일`         TEXT,
+                    `업체명`         TEXT,
+                    `약칭`           TEXT,
+                    `거래명세서번호` TEXT,{quotNoCols}
+                    `공급가액`       REAL DEFAULT 0,
+                    `부가세`         REAL DEFAULT 0,
+                    `합계금액`       REAL DEFAULT 0
+                )";
+            try { cmd.ExecuteNonQuery(); Log("EnsureTradeStatementTable: 생성(또는 이미 존재)"); }
+            catch (Exception ex) { Log($"EnsureTradeStatementTable 오류: {ex.Message}"); }
+        }
+
+        // 2. 기존 테이블에 누락된 고정 컬럼 마이그레이션
+        var existCols = new HashSet<string>(DbConnectionFactory.GetColumnNames(conn, "거래명세서발행내역"),
+                            StringComparer.OrdinalIgnoreCase);
+        var needed = new List<(string col, string type)>
+        {
+            ("약칭", DbConnectionFactory.IsMariaDb ? "VARCHAR(100)" : "TEXT"),
+        };
+        for (int i = 1; i <= MaxQuotationNoCols; i++)
+            needed.Add(($"견적번호{i}", DbConnectionFactory.IsMariaDb ? "VARCHAR(100)" : "TEXT"));
+
+        foreach (var (col, type) in needed)
+        {
+            if (existCols.Contains(col)) continue;
+            using var alt = conn.CreateCommand();
+            alt.CommandText = DbConnectionFactory.IsMariaDb
+                ? $"ALTER TABLE `거래명세서발행내역` ADD COLUMN `{col}` {type} NULL"
+                : $"ALTER TABLE `거래명세서발행내역` ADD COLUMN `{col}` {type}";
+            try { alt.ExecuteNonQuery(); Log($"  거래명세서 마이그레이션: '{col}' 추가"); }
+            catch { }
+        }
+    }
+
+    /// <summary>거래명세서발행내역에 분석항목 컬럼이 없으면 동적으로 추가 (수량/단가/소계)</summary>
+    private static void EnsureTradeStatementItemColumns(DbConnection conn,
+        IEnumerable<string> itemNames)
+    {
+        var existCols = new HashSet<string>(DbConnectionFactory.GetColumnNames(conn, "거래명세서발행내역"),
+                            StringComparer.OrdinalIgnoreCase);
+        foreach (var name in itemNames)
+        {
+            foreach (var suffix in new[] { "", "단가", "소계" })
+            {
+                var col = name + suffix;
+                if (existCols.Contains(col)) continue;
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = DbConnectionFactory.IsMariaDb
+                    ? $"ALTER TABLE `거래명세서발행내역` ADD COLUMN `{col}` DECIMAL(20,2) NULL DEFAULT 0"
+                    : $"ALTER TABLE `거래명세서발행내역` ADD COLUMN `{col}` REAL DEFAULT 0";
+                try { cmd.ExecuteNonQuery(); existCols.Add(col); }
+                catch { }
+            }
+        }
+    }
+
+    /// <summary>거래명세서발행내역에 레코드 삽입. 삽입된 rowid 반환 (-1=실패)</summary>
+    /// <param name="itemData">항목명 → (수량, 단가, 소계) — null이면 항목 컬럼 미삽입</param>
+    public static int InsertTradeStatement(string companyName, string abbreviation,
+        string statementNo, IEnumerable<string> quotationNos, decimal supplyAmt, decimal vat,
+        decimal total, Dictionary<string, (decimal qty, decimal unitPrice, decimal subtotal)>? itemData = null)
+    {
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return -1;
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+
+        if (!TableExists(conn, "거래명세서발행내역")) return -1;
+
+        // 항목 컬럼 보장
+        if (itemData != null && itemData.Count > 0)
+            EnsureTradeStatementItemColumns(conn, itemData.Keys);
+
+        var tableCols = new HashSet<string>(
+            DbConnectionFactory.GetColumnNames(conn, "거래명세서발행내역"),
+            StringComparer.OrdinalIgnoreCase);
+
+        // 고정 컬럼 구성
+        var quotNos = quotationNos.ToList();
+        var colList   = new List<string>();
+        var paramList = new List<string>();
+        var @params   = new Dictionary<string, object?>();
+
+        void Add(string col, string param, object? val)
+        {
+            if (!tableCols.Contains(col)) return;
+            colList.Add($"`{col}`");
+            paramList.Add(param);
+            @params[param] = val;
+        }
+
+        Add("발행일",         "@dt",   DateTime.Today.ToString("yyyy-MM-dd"));
+        Add("업체명",         "@co",   companyName);
+        Add("약칭",           "@abbr", abbreviation);
+        Add("거래명세서번호", "@no",   statementNo);
+        for (int i = 0; i < MaxQuotationNoCols; i++)
+            Add($"견적번호{i + 1}", $"@qno{i + 1}", i < quotNos.Count ? quotNos[i] : (object?)DBNull.Value);
+        Add("공급가액", "@sup", supplyAmt);
+        Add("부가세",   "@vat", vat);
+        Add("합계금액", "@tot", total);
+
+        // 항목 컬럼 구성
+        if (itemData != null)
+        {
+            foreach (var kv in itemData)
+            {
+                var n = kv.Key;
+                if (tableCols.Contains(n))          { colList.Add($"`{n}`");      paramList.Add($"@q_{ToParamName(n)}");   @params[$"@q_{ToParamName(n)}"]   = kv.Value.qty; }
+                if (tableCols.Contains(n + "단가")) { colList.Add($"`{n}단가`"); paramList.Add($"@up_{ToParamName(n)}"); @params[$"@up_{ToParamName(n)}"] = kv.Value.unitPrice; }
+                if (tableCols.Contains(n + "소계")) { colList.Add($"`{n}소계`"); paramList.Add($"@sub_{ToParamName(n)}"); @params[$"@sub_{ToParamName(n)}"] = kv.Value.subtotal; }
+            }
+        }
+
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = $@"
+            INSERT INTO `거래명세서발행내역`
+                ({string.Join(", ", colList)})
+            VALUES
+                ({string.Join(", ", paramList)})";
+        foreach (var kv in @params)
+            cmd.Parameters.AddWithValue(kv.Key, kv.Value ?? DBNull.Value);
+
+        try
+        {
+            cmd.ExecuteNonQuery();
+            using var idCmd = conn.CreateCommand();
+            idCmd.CommandText = DbConnectionFactory.IsMariaDb
+                ? "SELECT LAST_INSERT_ID()" : "SELECT last_insert_rowid()";
+            return Convert.ToInt32(idCmd.ExecuteScalar());
+        }
+        catch (Exception ex) { Debug.WriteLine($"[거래명세서] Insert 오류: {ex.Message}"); return -1; }
+    }
+
+    /// <summary>선택된 견적 목록의 거래명세서번호를 DB에 설정</summary>
+    public static void SetTradeStatementNo(IEnumerable<int> rowids, string statementNo)
+    {
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+        foreach (var id in rowids)
+        {
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = $"UPDATE `견적발행내역` SET `거래명세서번호`=@no WHERE {DbConnectionFactory.RowId}=@id";
+            cmd.Parameters.AddWithValue("@no", statementNo);
+            cmd.Parameters.AddWithValue("@id", id);
+            try { cmd.ExecuteNonQuery(); } catch (Exception ex) { Debug.WriteLine($"[거래명세서] SetNo 오류: {ex.Message}"); }
+        }
+    }
+
+    /// <summary>
+    /// 선택된 견적들의 항목별 합산 데이터를 거래명세서 INSERT용 dict로 반환한다.
+    /// key: 항목명, value: (합산수량, 단가, 합산소계)
+    /// </summary>
+    public static Dictionary<string, (decimal qty, decimal unitPrice, decimal subtotal)>
+        BuildTradeStatementItemData(IEnumerable<QuotationIssue> issues)
+    {
+        var fixedCols = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "_id","rowid","견적발행일자","업체명","약칭","대표자",
+            "견적요청담당","담당자","담당자연락처","담당자 e-Mail",
+            "시료명","견적번호","적용구분","적용구분_코드",
+            "합계 금액","부가세","총합계","비고","거래명세서번호"
+        };
+
+        var map = new Dictionary<string, (decimal qty, decimal unitPrice, decimal subtotal)>(
+            StringComparer.OrdinalIgnoreCase);
+
+        foreach (var issue in issues)
+        {
+            var row = GetIssueRow(issue.Id);
+            foreach (var kv in row)
+            {
+                var col = kv.Key.Trim();
+                if (fixedCols.Contains(col)) continue;
+                if (col.EndsWith("단가") || col.EndsWith("소계")) continue;
+                if (!decimal.TryParse(kv.Value.Replace(",",""), out var qty) || qty == 0) continue;
+
+                decimal up = 0;
+                if (row.TryGetValue(col + "단가", out var upStr))
+                    decimal.TryParse(upStr.Replace(",",""), out up);
+                decimal sub = qty * up;
+
+                if (map.ContainsKey(col))
+                    map[col] = (map[col].qty + qty, up, map[col].subtotal + sub);
+                else
+                    map[col] = (qty, up, sub);
+            }
+        }
+        return map;
+    }
+
+    /// <summary>선택된 견적들의 항목별 합산 수량/금액 목록을 반환한다 (Show2 미리보기용).</summary>
+    public static List<(string 항목, int 수량, decimal 금액)> AggregateIssueItems(
+        IEnumerable<QuotationIssue> issues)
+    {
+        var fixedCols = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "_id","rowid","견적발행일자","업체명","약칭","대표자",
+            "견적요청담당","담당자","담당자연락처","담당자 e-Mail",
+            "시료명","견적번호","적용구분","적용구분_코드",
+            "합계 금액","부가세","총합계","비고","거래명세서번호"
+        };
+
+        var itemMap = new Dictionary<string, (decimal qty, decimal unitPrice, decimal subtotal)>(
+            StringComparer.OrdinalIgnoreCase);
+
+        foreach (var issue in issues)
+        {
+            var row = GetIssueRow(issue.Id);
+            foreach (var kv in row)
+            {
+                var col = kv.Key.Trim();
+                if (fixedCols.Contains(col)) continue;
+                if (col.EndsWith("단가") || col.EndsWith("소계")) continue;
+
+                if (!decimal.TryParse(kv.Value.Replace(",",""), out var qty) || qty == 0) continue;
+
+                decimal up = 0;
+                if (row.TryGetValue(col + "단가", out var upStr))
+                    decimal.TryParse(upStr.Replace(",",""), out up);
+                decimal sub = qty * up;
+
+                if (itemMap.ContainsKey(col))
+                    itemMap[col] = (itemMap[col].qty + qty, up, itemMap[col].subtotal + sub);
+                else
+                    itemMap[col] = (qty, up, sub);
+            }
+        }
+
+        return itemMap
+            .Where(kv => kv.Value.qty > 0)
+            .Select(kv => (항목: kv.Key, 수량: (int)kv.Value.qty, 금액: kv.Value.subtotal))
+            .OrderBy(x => x.항목)
+            .ToList();
+    }
+
+    /// <summary>견적서 1건을 템플릿 기반으로 Excel 파일에 출력한다.</summary>
+    /// <returns>(성공 여부, 오류 메시지)</returns>
+    public static (bool ok, string msg) ExportQuotation(QuotationIssue issue, string savePath)
+    {
+        try
+        {
+            // 항목 데이터 로드
+            var row = GetIssueRow(issue.Id);
+            var fixedCols = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "_id","rowid","견적발행일자","업체명","약칭","대표자",
+                "견적요청담당","담당자","담당자연락처","담당자 e-Mail",
+                "시료명","견적번호","적용구분","적용구분_코드",
+                "합계 금액","부가세","총합계","비고","거래명세서번호"
+            };
+
+            var items = new List<(string name, decimal qty, decimal unitPrice)>();
+            foreach (var kv in row)
+            {
+                var col = kv.Key.Trim();
+                if (fixedCols.Contains(col)) continue;
+                if (col.EndsWith("단가") || col.EndsWith("소계")) continue;
+                if (!decimal.TryParse(kv.Value.Replace(",",""), out var qty) || qty == 0) continue;
+                decimal up = 0;
+                if (row.TryGetValue(col + "단가", out var upStr))
+                    decimal.TryParse(upStr.Replace(",",""), out up);
+                items.Add((col, qty, up));
+            }
+            items.Sort((a, b) => string.Compare(a.name, b.name, StringComparison.OrdinalIgnoreCase));
+
+            // 템플릿 선택 (33개 이하 → 견적서1, 34개 이상 → 견적서2)
+            bool useTemplate2 = items.Count > 33;
+            string tplPath = TemplatePath(useTemplate2 ? "견적서2.xlsx" : "견적서1.xlsx");
+            if (!File.Exists(tplPath))
+                return (false, $"템플릿 파일을 찾을 수 없습니다: {tplPath}");
+
+            using var wb = new XLWorkbook(tplPath);
+            var ws = wb.Worksheet("견적서");
+
+            // ── 헤더 입력 ────────────────────────────────────────────────
+            ws.Cell(3, 3).Value = issue.업체명;
+            ws.Cell(4, 3).Value = "";
+            ws.Cell(5, 3).Value = issue.담당자;
+            ws.Cell(6, 3).Value = issue.담당자연락처;
+            ws.Cell(7, 3).Value = issue.담당자이메일;
+            ws.Cell(8, 3).Value = issue.시료명;
+            ws.Cell(3, 8).Value = issue.견적번호;
+            ws.Cell(4, 8).Value = issue.발행일;
+
+            // ── 항목 입력 ────────────────────────────────────────────────
+            if (!useTemplate2)
+            {
+                for (int i = 0; i < Math.Min(items.Count, 33); i++)
+                {
+                    int r = 11 + i;
+                    ws.Cell(r, 1).Value = i + 1;
+                    ws.Cell(r, 4).Value = items[i].name;
+                    ws.Cell(r, 8).Value = (double)items[i].qty;
+                    ws.Cell(r, 9).Value = (double)items[i].unitPrice;
+                }
+            }
+            else
+            {
+                int leftCount  = Math.Min(items.Count, 33);
+                int rightCount = Math.Min(items.Count - leftCount, 36);
+                for (int i = 0; i < leftCount; i++)
+                {
+                    int r = 11 + i;
+                    ws.Cell(r, 1).Value = i + 1;
+                    ws.Cell(r, 4).Value = items[i].name;
+                    ws.Cell(r, 8).Value = (double)items[i].qty;
+                    ws.Cell(r, 9).Value = (double)items[i].unitPrice;
+                }
+                for (int i = 0; i < rightCount; i++)
+                {
+                    int r = 4 + i;
+                    ws.Cell(r, 11).Value = leftCount + i + 1;
+                    ws.Cell(r, 14).Value = items[leftCount + i].name;
+                    ws.Cell(r, 18).Value = (double)items[leftCount + i].qty;
+                    ws.Cell(r, 19).Value = (double)items[leftCount + i].unitPrice;
+                }
+            }
+
+            wb.SaveAs(savePath);
+            Log($"ExportQuotation: {(useTemplate2 ? "견적서2" : "견적서1")}, 항목={items.Count}개, 저장={savePath}");
+            return (true, "");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[ExportQuotation] 오류: {ex.Message}");
+            return (false, ex.Message);
+        }
+    }
+
+    private static string TemplatePath(string fileName)
+    {
+        var root = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", ".."));
+        return Path.Combine(root, "Data", "Templates", fileName);
+    }
+
+    /// <summary>선택된 견적들의 데이터를 합산해 거래명세서 Excel을 생성한다 (템플릿 사용).</summary>
+    /// <returns>(성공 여부, 오류 메시지, 공급가액, 부가세, 합계)</returns>
+    public static (bool ok, string msg, decimal supply, decimal vat, decimal total) ExportTradingStatement(
+        IEnumerable<QuotationIssue> issues, string savePath)
+    {
+        var issueList = issues.ToList();
+        if (issueList.Count == 0) return (false, "선택된 견적이 없습니다.", 0, 0, 0);
+
+        try
+        {
+            // ── 항목 집계 ────────────────────────────────────────────────────
+            var itemMap = BuildTradeStatementItemData(issueList);
+            var items   = itemMap
+                .Where(kv => kv.Value.qty > 0)
+                .OrderBy(kv => kv.Key)
+                .ToList();
+
+            decimal supply     = items.Sum(kv => kv.Value.subtotal);
+            decimal vat        = Math.Round(supply * 0.1m, 0);
+            decimal grandTotal = supply + vat;
+
+            var first = issueList.First();
+            string companyName = first.업체명;
+            string abbr        = first.약칭;
+            string manager     = first.담당자;
+            string phone       = first.담당자연락처;
+            string email       = first.담당자이메일;
+            string sampleNames = string.Join(", ", issueList.Select(i => i.시료명).Where(s => !string.IsNullOrEmpty(s)).Distinct());
+            string quotNos     = string.Join(", ", issueList.Select(i => i.견적번호));
+
+            // ── 템플릿 선택 ──────────────────────────────────────────────────
+            // 템플릿1: 항목 33개 이하 (항목행 11~43, J열 소계)
+            // 템플릿2: 항목 34개 이상 (좌: 11~43 / 우: 4~39, 최대 69개)
+            bool useTemplate2 = items.Count > 33;
+            string tplFile    = useTemplate2 ? "거래명세서2.xlsx" : "거래명세서1.xlsx";
+            string tplPath    = TemplatePath(tplFile);
+            if (!File.Exists(tplPath))
+                return (false, $"템플릿 파일을 찾을 수 없습니다: {tplPath}", 0, 0, 0);
+
+            using var wb = new XLWorkbook(tplPath);
+            var ws = wb.Worksheet("거래명세서");
+
+            // ── 헤더 입력 ────────────────────────────────────────────────────
+            // 좌측 헤더 (거래명세서1/2 공통, A~J 섹션)
+            ws.Cell(3, 3).Value = companyName;    // 업체명
+            ws.Cell(4, 3).Value = "";              // 대표자 (정보 없음)
+            ws.Cell(5, 3).Value = manager;         // 견적요청담당자
+            ws.Cell(6, 3).Value = phone;           // 담당자연락처
+            ws.Cell(7, 3).Value = email;           // 담당자 e-Mail
+            ws.Cell(8, 3).Value = sampleNames;     // 시료명
+
+            // 우측 헤더
+            ws.Cell(3, 8).Value = "";                                    // 거래명세서번호 — 발행 후 DB에서 채번되므로 빈값
+            ws.Cell(4, 8).Value = DateTime.Today.ToString("yyyy-MM-dd"); // 발행일자
+
+            // ── 항목 입력 ────────────────────────────────────────────────────
+            if (!useTemplate2)
+            {
+                // 템플릿1: 행 11~43 (최대 33행), H=수량, I=단가, J=수식(소계)
+                for (int i = 0; i < Math.Min(items.Count, 33); i++)
+                {
+                    int row = 11 + i;
+                    var (name, (qty, up, _)) = items[i];
+                    ws.Cell(row, 1).Value = i + 1;   // 번호
+                    ws.Cell(row, 4).Value = name;     // 시험항목 (D열, D:E 병합)
+                    ws.Cell(row, 8).Value = (double)qty;  // H 수량
+                    ws.Cell(row, 9).Value = (double)up;   // I 단가
+                }
+            }
+            else
+            {
+                // 템플릿2: 좌 11~43(33개), 우 4~39(36개)
+                int leftCount  = Math.Min(items.Count, 33);
+                int rightCount = Math.Min(items.Count - leftCount, 36);
+
+                for (int i = 0; i < leftCount; i++)
+                {
+                    int row = 11 + i;
+                    var (name, (qty, up, _)) = items[i];
+                    ws.Cell(row, 1).Value = i + 1;
+                    ws.Cell(row, 4).Value = name;
+                    ws.Cell(row, 8).Value = (double)qty;
+                    ws.Cell(row, 9).Value = (double)up;
+                }
+                for (int i = 0; i < rightCount; i++)
+                {
+                    int row = 4 + i;
+                    var (name, (qty, up, _)) = items[leftCount + i];
+                    ws.Cell(row, 11).Value = leftCount + i + 1;  // K 번호
+                    ws.Cell(row, 14).Value = name;                // N 시험항목 (N:O 병합)
+                    ws.Cell(row, 18).Value = (double)qty;         // R 수량
+                    ws.Cell(row, 19).Value = (double)up;          // S 단가
+                }
+            }
+
+            wb.SaveAs(savePath);
+            Log($"ExportTradingStatement: {tplFile} 사용, 항목={items.Count}개, 저장={savePath}");
+            return (true, "", supply, vat, grandTotal);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[거래명세서] Excel 생성 오류: {ex.Message}");
+            return (false, ex.Message, 0, 0, 0);
+        }
     }
 }

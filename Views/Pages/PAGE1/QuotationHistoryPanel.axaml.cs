@@ -46,9 +46,13 @@ public partial class QuotationHistoryPanel : UserControl
 
     // ── 공개 이벤트 ───────────────────────────────────────────────────────
     public event Action<QuotationIssue>?        IssueSelected;
+    public event Action<QuotationIssue>?        IssueAddedToList;   // 발행 모드: 노드 클릭 시
     public event Action<AnalysisRequestRecord>? AnalysisRequestSelected;
     public event Action?                        AnalysisTabActivated;
     public event Action?                        QuotationTabActivated;
+
+    /// <summary>true이면 노드 클릭 시 IssueAddedToList 이벤트를 발생시키고 Show2 상세표시 안 함</summary>
+    public bool IssuingMode { get; set; } = false;
 
     private bool _isAnalysisTab = false;
 
@@ -75,6 +79,7 @@ public partial class QuotationHistoryPanel : UserControl
         {
             Background = Brushes.Transparent,
             BorderThickness = new Thickness(0),
+            SelectionMode = SelectionMode.Multiple,  // Ctrl+클릭 다중선택
         };
         _treeQuotation.SelectionChanged += OnQuotationNodeSelected;
         _treeQuotation.KeyDown         += (_, e) => HandleTreeKeyDown(_treeQuotation, e);
@@ -122,7 +127,7 @@ public partial class QuotationHistoryPanel : UserControl
     }
 
     // ══════════════════════════════════════════════════════════════════════
-    //  [2][3] 견적발행내역 로드 — 년/월/일 3단계, Expanded 규칙 적용
+    //  [2][3] 견적발행내역 로드 — 년/월 2단계, 리프에 (MM/DD) 표시
     // ══════════════════════════════════════════════════════════════════════
     public void LoadData()
     {
@@ -133,25 +138,22 @@ public partial class QuotationHistoryPanel : UserControl
         _allIssues = issues;
         Log($"견적 발행건수={issues.Count}");
 
-        var today      = DateTime.Today;
-        var thisYear   = today.Year.ToString();
-        var thisMonth  = today.Month.ToString("D2");
-        var cutoff7    = today.AddDays(-6).ToString("yyyy-MM-dd");   // 최근 7일 기준
+        var today     = DateTime.Today;
+        var thisYear  = today.Year.ToString();
+        var thisMonth = today.Month.ToString("D2");
 
-        // 년 그룹
         var byYear = issues
             .GroupBy(i => i.발행일.Length >= 4 ? i.발행일[..4] : "기타")
             .OrderByDescending(g => g.Key);
 
         foreach (var yearGroup in byYear)
         {
-            string year      = yearGroup.Key;
+            string year       = yearGroup.Key;
             bool   isThisYear = year == thisYear;
 
             var yearNode = MakeParentNode($"📅  {year}년");
-            yearNode.IsExpanded = isThisYear;   // 올해만 펼침
+            yearNode.IsExpanded = isThisYear;
 
-            // 월 그룹
             var byMonth = yearGroup
                 .GroupBy(i => i.발행일.Length >= 7 ? i.발행일[5..7] : "??")
                 .OrderByDescending(g => g.Key);
@@ -162,30 +164,10 @@ public partial class QuotationHistoryPanel : UserControl
                 bool   isThisMonth = isThisYear && month == thisMonth;
 
                 var monthNode = MakeParentNode($"  {month}월  ({monthGroup.Count()}건)");
-                monthNode.IsExpanded = isThisMonth;  // 올해 이번 달만 펼침
+                monthNode.IsExpanded = isThisMonth;
 
-                // 일 그룹
-                var byDay = monthGroup
-                    .GroupBy(i => i.발행일.Length >= 10 ? i.발행일[8..10] : "??")
-                    .OrderByDescending(g => g.Key);
-
-                foreach (var dayGroup in byDay)
-                {
-                    string day     = dayGroup.Key;
-                    string dateStr = $"{year}-{month}-{day}";
-
-                    // 최근 7일 이내 여부
-                    bool isRecent = string.Compare(dateStr, cutoff7,
-                                       StringComparison.Ordinal) >= 0;
-
-                    var dayNode = MakeParentNode($"    {day}일  ({dayGroup.Count()}건)");
-                    dayNode.IsExpanded = isRecent;   // 최근 7일만 펼침
-
-                    foreach (var issue in dayGroup.OrderByDescending(i => i.발행일))
-                        dayNode.Items.Add(MakeIssueLeaf(issue));
-
-                    monthNode.Items.Add(dayNode);
-                }
+                foreach (var issue in monthGroup.OrderByDescending(i => i.발행일))
+                    monthNode.Items.Add(MakeIssueLeaf(issue));
 
                 yearNode.Items.Add(monthNode);
             }
@@ -198,6 +180,48 @@ public partial class QuotationHistoryPanel : UserControl
     }
 
     private void TvHistory_SelectionChanged(object? sender, SelectionChangedEventArgs e) { }
+
+    /// <summary>현재 Ctrl+클릭으로 선택된 QuotationIssue 목록 반환</summary>
+    public List<QuotationIssue> GetSelectedIssues()
+    {
+        var result = new List<QuotationIssue>();
+        foreach (var item in _treeQuotation.SelectedItems)
+        {
+            if (item is TreeViewItem tvi && tvi.Tag is QuotationIssue issue)
+                result.Add(issue);
+        }
+        return result;
+    }
+
+    /// <summary>특정 견적 목록의 트리 아이콘을 파란색으로 갱신</summary>
+    public void RefreshIssueIcons(HashSet<int> issuedIds)
+    {
+        RefreshIconsInTree(_treeQuotation, issuedIds);
+    }
+
+    private static void RefreshIconsInTree(ItemsControl parent, HashSet<int> issuedIds)
+    {
+        foreach (var obj in parent.Items)
+        {
+            if (obj is not TreeViewItem node) continue;
+            if (node.Tag is QuotationIssue issue)
+            {
+                // 아이콘 TextBlock은 topRow의 첫 번째 자식
+                if (node.Header is StackPanel sp &&
+                    sp.Children.Count > 0 &&
+                    sp.Children[0] is Grid topRow &&
+                    topRow.Children.Count > 0 &&
+                    topRow.Children[0] is TextBlock iconBlock)
+                {
+                    iconBlock.Text = issuedIds.Contains(issue.Id) ? "🔵" : "🔴";
+                }
+            }
+            else
+            {
+                RefreshIconsInTree(node, issuedIds);
+            }
+        }
+    }
 
     // ══════════════════════════════════════════════════════════════════════
     //  키보드 상하 이동 — 펼쳐진 리프 노드만 순환
@@ -300,7 +324,8 @@ public partial class QuotationHistoryPanel : UserControl
         {
             txbInfo.Text = $"{issue.약칭}  {issue.시료명}  |  {issue.견적번호}";
             Log($"견적 선택: {issue.약칭} {issue.시료명} [{issue.견적번호}]");
-            IssueSelected?.Invoke(issue);
+            if (IssuingMode) IssueAddedToList?.Invoke(issue);
+            else             IssueSelected?.Invoke(issue);
         }
     }
 
@@ -492,7 +517,7 @@ public partial class QuotationHistoryPanel : UserControl
     }
 
     // ══════════════════════════════════════════════════════════════════════
-    //  분석의뢰내역 — 지연 로딩 (년/월/일 구조)
+    //  거래명세발행내역 — 년/월 2단계, 리프에 (MM/DD) 표시
     // ══════════════════════════════════════════════════════════════════════
     private async Task LoadAnalysisTreeAsync()
     {
@@ -513,21 +538,14 @@ public partial class QuotationHistoryPanel : UserControl
             Log($"DB 오류: {ex.Message}"); txbInfo.Text = "로드 실패"; return;
         }
 
-        if (records.Count == 0) { txbInfo.Text = "분석의뢰 데이터 없음"; return; }
+        if (records.Count == 0) { txbInfo.Text = "데이터 없음"; return; }
         _allAnalysisRecords = records;
 
         var today     = DateTime.Today;
         var thisYear  = today.Year.ToString();
         var thisMonth = today.Month.ToString("D2");
-        var cutoff7   = today.AddDays(-6).ToString("yyyy-MM-dd");
-
-        _analysisByMonth = records
-            .GroupBy(r => $"{r.연도}-{r.월}")
-            .ToDictionary(g => g.Key, g => g.OrderByDescending(r => r.의뢰일).ToList());
 
         var byYear = records.GroupBy(r => r.연도).OrderByDescending(g => g.Key).ToList();
-
-        bool isFirstMonth = true;
 
         foreach (var yearGroup in byYear)
         {
@@ -541,44 +559,12 @@ public partial class QuotationHistoryPanel : UserControl
 
             foreach (var monthGroup in byMonth)
             {
-                string monthKey    = $"{year}-{monthGroup.Key}";
-                int    count       = _analysisByMonth.TryGetValue(monthKey, out var ml)
-                                     ? ml.Count : monthGroup.Count();
-                bool   isThisMonth = isThisYear && monthGroup.Key == thisMonth;
+                bool isThisMonth = isThisYear && monthGroup.Key == thisMonth;
+                var monthNode = MakeParentNode($"  {monthGroup.Key}월  ({monthGroup.Count()}건)");
+                monthNode.IsExpanded = isThisMonth;
 
-                var monthNode = MakeParentNode($"  {monthGroup.Key}월  ({count}건)");
-                monthNode.Tag         = monthKey;
-                monthNode.IsExpanded  = isThisMonth;
-
-                if (isFirstMonth)
-                {
-                    FillMonthNodeWithDays(monthNode, monthKey, cutoff7);
-                    isFirstMonth = false;
-                }
-                else
-                {
-                    // 플레이스홀더 + 지연 로딩
-                    monthNode.Items.Add(new TreeViewItem
-                    {
-                        Header = Fs(new TextBlock
-                        {
-                            FontFamily = Font, Text = "...",
-                            Foreground = Brush.Parse("#444455"),
-                        }, "FontSizeXS"),
-                        Tag = "__placeholder__",
-                    });
-                    var capturedKey  = monthKey;
-                    var capturedNode = monthNode;
-                    IDisposable? sub = null;
-                    sub = monthNode.GetObservable(TreeViewItem.IsExpandedProperty)
-                        .Subscribe(expanded =>
-                        {
-                            if (!expanded) return;
-                            if (_loadedMonths.Contains(capturedKey)) return;
-                            FillMonthNodeWithDays(capturedNode, capturedKey, cutoff7);
-                            sub?.Dispose();
-                        });
-                }
+                foreach (var rec in monthGroup.OrderByDescending(r => r.의뢰일))
+                    monthNode.Items.Add(MakeAnalysisLeaf(rec));
 
                 yearNode.Items.Add(monthNode);
             }
@@ -590,39 +576,6 @@ public partial class QuotationHistoryPanel : UserControl
         Log($"트리 완료 — 년노드={_treeAnalysis.Items.Count}");
     }
 
-    // 월 노드 안에 일 노드 + 리프 생성
-    private void FillMonthNodeWithDays(TreeViewItem monthNode, string monthKey, string cutoff7)
-    {
-        monthNode.Items.Clear();
-        _loadedMonths.Add(monthKey);
-
-        if (!_analysisByMonth.TryGetValue(monthKey, out var recs)) return;
-
-        var byDay = recs
-            .GroupBy(r => r.의뢰일.Length >= 10 ? r.의뢰일[8..10] : "??")
-            .OrderByDescending(g => g.Key);
-
-        // monthKey = "YYYY-MM"
-        string yearMonth = monthKey;   // e.g. "2026-03"
-
-        foreach (var dayGroup in byDay)
-        {
-            string day     = dayGroup.Key;
-            string dateStr = $"{yearMonth}-{day}";
-            bool   isRecent = string.Compare(dateStr, cutoff7,
-                                  StringComparison.Ordinal) >= 0;
-
-            var dayNode = MakeParentNode($"    {day}일  ({dayGroup.Count()}건)");
-            dayNode.IsExpanded = isRecent;
-
-            foreach (var rec in dayGroup)
-                dayNode.Items.Add(MakeAnalysisLeaf(rec));
-
-            monthNode.Items.Add(dayNode);
-        }
-
-        Log($"FillMonthNodeWithDays: {monthKey} → {recs.Count}건");
-    }
 
     private void OnAnalysisNodeSelected(object? sender, SelectionChangedEventArgs e)
     {
@@ -675,25 +628,39 @@ public partial class QuotationHistoryPanel : UserControl
     {
         var (ibg, ifg) = BadgeColorHelper.GetBadgeColor(issue.약칭);
         var sp = new StackPanel { Spacing = 1, Margin = new Thickness(4, 2) };
-        var topRow = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*") };
+        var topRow = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,Auto,*") };
+
+        // 거래명세서 발행 여부 아이콘 (약칭 앞)
+        bool issued = !string.IsNullOrEmpty(issue.거래명세서번호);
+        topRow.Children.Add(Fs(new TextBlock
+        {
+            Text              = issued ? "🔵" : "🔴",
+            FontFamily        = Font,
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin            = new Thickness(0, 0, 3, 0),
+            [Grid.ColumnProperty] = 0,
+        }, "FontSizeXS"));
+
         topRow.Children.Add(new Border
         {
             Background = Brush.Parse(ibg), CornerRadius = new CornerRadius(3),
             Padding = new Thickness(4, 1), Margin = new Thickness(0, 0, 5, 0),
-            [Grid.ColumnProperty] = 0,
+            [Grid.ColumnProperty] = 1,
             Child = Fs(new TextBlock { Text = issue.약칭, FontFamily = Font,
                                     Foreground = Brush.Parse(ifg) }, "FontSizeXS"),
         });
+        // 시료명 + (MM/DD)
+        string mmdd = issue.발행일.Length >= 10 ? $"({issue.발행일[5..10].Replace("-","/")})" : "";
         topRow.Children.Add(Fs(new TextBlock
         {
             Text = issue.시료명, FontFamily = Font,
             Foreground = Brush.Parse("#dddddd"),
             TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
             VerticalAlignment = VerticalAlignment.Center,
-            [Grid.ColumnProperty] = 1,
+            [Grid.ColumnProperty] = 2,
         }, "FontSizeBase"));
         sp.Children.Add(topRow);
-        var bottomRow = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
+        var bottomRow = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto,Auto") };
         bottomRow.Children.Add(Fs(new TextBlock
         {
             Text = issue.견적번호, FontFamily = Font,
@@ -710,6 +677,14 @@ public partial class QuotationHistoryPanel : UserControl
                 Margin = new Thickness(4, 0, 0, 0),
                 [Grid.ColumnProperty] = 1,
             }, "FontSizeXS"));
+        bottomRow.Children.Add(Fs(new TextBlock
+        {
+            Text = mmdd, FontFamily = Font,
+            Foreground = Brush.Parse("#556677"),
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin = new Thickness(4, 0, 0, 0),
+            [Grid.ColumnProperty] = 2,
+        }, "FontSizeXS"));
         sp.Children.Add(bottomRow);
         return new TreeViewItem { Header = sp, Tag = issue };
     }
@@ -736,11 +711,24 @@ public partial class QuotationHistoryPanel : UserControl
             [Grid.ColumnProperty] = 1,
         }, "FontSizeBase"));
         sp.Children.Add(topRow);
-        sp.Children.Add(Fs(new TextBlock
+        string recMmdd = rec.의뢰일.Length >= 10 ? $"({rec.의뢰일[5..10].Replace("-","/")})" : "";
+        var bottomAnalysis = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
+        bottomAnalysis.Children.Add(Fs(new TextBlock
         {
             Text = rec.접수번호, FontFamily = Font,
-            Foreground = Brush.Parse("#445566"), Margin = new Thickness(0, 0, 0, 1),
+            Foreground = Brush.Parse("#445566"),
+            VerticalAlignment = VerticalAlignment.Center,
+            [Grid.ColumnProperty] = 0,
         }, "FontSizeXS"));
+        bottomAnalysis.Children.Add(Fs(new TextBlock
+        {
+            Text = recMmdd, FontFamily = Font,
+            Foreground = Brush.Parse("#556677"),
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin = new Thickness(4, 0, 0, 1),
+            [Grid.ColumnProperty] = 1,
+        }, "FontSizeXS"));
+        sp.Children.Add(bottomAnalysis);
 
         var node = new TreeViewItem { Header = sp, Tag = rec };
 

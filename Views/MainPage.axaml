@@ -263,6 +263,7 @@
                         <MenuItem Header="직원정보"    Click="Agent_Click"/>
                         <MenuItem Header="계약업체"    Click="Contract_Click"/>
                         <MenuItem Header="견적/의뢰서" Click="Quotation_Click"/>
+                        <MenuItem Header="거래명세발행"    Click="QuotationIssuing_Click"/>
                         <MenuItem Header="시험성적서"  Click="TestReport_Click"/>
                         <MenuItem Header="DB Migration" Click="DbMigration_Click"/>
                     </MenuItem>
