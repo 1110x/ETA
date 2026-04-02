@@ -404,7 +404,7 @@ public class SchedulePage
                     : !string.IsNullOrWhiteSpace(r.접수번호) ? r.접수번호
                     : r.시료명;
                 // Date: 채수담당자 배정된 경우에만 채취일자 저장 (캘린더 포커스용)
-                string tagDate = !string.IsNullOrWhiteSpace(r.채수담당자) ? r.채취일자 : "";
+                string tagDate = !string.IsNullOrWhiteSpace(r.채수담당자) ? NormalizeDate(r.채취일자) : "";
                 _tree.Items.Add(new TreeViewItem
                 {
                     Tag    = new TreeTag("request", displayAbbr, r.Id.ToString(), r.접수번호, tagDate),
@@ -415,11 +415,17 @@ public class SchedulePage
         }
     }
 
+    private bool _suppressSelection;
+
     private void OnTreeSelection(object? sender, SelectionChangedEventArgs e)
     {
+        if (_suppressSelection) return;
         if (e.AddedItems.Count == 0 || e.AddedItems[0] is not TreeViewItem tvi) return;
         if (tvi.Tag is not TreeTag tn) return;
+
+        _suppressSelection = true;
         _tree!.SelectedItem = null;
+        _suppressSelection = false;
 
         if (tn.Type == "request")
         {
@@ -428,44 +434,52 @@ public class SchedulePage
             int reqId = int.TryParse(tn.Id, out var rid) ? rid : -1;
             string reqAbbr = tn.Name;
 
+            // 날짜 포커스 정보를 LoadTree() 전에 저장
+            string rawDate = tn.Date;
+
             if (_lastClickCtrl)
             {
-                // Ctrl+클릭: 토글 (복수 선택)
                 int idx = _selReqs.FindIndex(r => r.Id == reqId);
                 if (idx >= 0) _selReqs.RemoveAt(idx);
                 else          _selReqs.Add((reqId, reqAbbr));
-                // 의뢰목록 탭 유지 + 체크 표시 갱신
+                _suppressSelection = true;
                 LoadTree();
+                _suppressSelection = false;
             }
             else
             {
-                // 일반 클릭: 단일 선택 + 직원 탭으로 전환
                 _selReqs.Clear();
                 _selReqs.Add((reqId, reqAbbr));
                 _showCon = false;
                 ApplyTabStyles();
+                _suppressSelection = true;
                 LoadTree();
+                _suppressSelection = false;
             }
 
-            // 선택된 약칭 중복 제거하여 업체약칭 설정
             _selCompanyAbbr = string.Join(",", _selReqs.Select(r => r.Abbr).Distinct());
             RefreshCompanyBadge();
             RefreshProgress();
 
             // 채수담당자 배정된 경우: 채취일자 캘린더 포커스 + 날짜 선택
-            if (!string.IsNullOrWhiteSpace(tn.Date)
-                && DateTime.TryParse(tn.Date, out var focusDt))
+            if (!string.IsNullOrWhiteSpace(rawDate))
             {
-                _focusDate = tn.Date;
-                _selDate   = tn.Date;
-                _month     = new DateTime(focusDt.Year, focusDt.Month, 1);
-                if (_dateLbl != null)
+                // 날짜 형식 정규화: "20240401" → "2024-04-01"
+                var normalized = NormalizeDate(rawDate);
+                if (DateTime.TryParse(normalized, out var focusDt))
                 {
-                    _dateLbl.Text       = $"📅 {focusDt:yyyy-MM-dd}  ({DowKr(focusDt)})";
-                    _dateLbl.Foreground = AppRes("AppFg");
+                    var isoDate = focusDt.ToString("yyyy-MM-dd");
+                    _focusDate = isoDate;
+                    _selDate   = isoDate;
+                    _month     = new DateTime(focusDt.Year, focusDt.Month, 1);
+                    if (_dateLbl != null)
+                    {
+                        _dateLbl.Text       = $"📅 {focusDt:yyyy-MM-dd}  ({DowKr(focusDt)})";
+                        _dateLbl.Foreground = AppRes("AppFg");
+                    }
+                    RefreshCalendar();
+                    RefreshEntries();
                 }
-                RefreshCalendar();
-                RefreshEntries();
             }
             else
             {
@@ -1464,4 +1478,14 @@ public class SchedulePage
         DayOfWeek.Saturday  => "토",
         _                   => "일",
     };
+
+    /// <summary>"20240401" → "2024-04-01", "2024/04/01" → "2024-04-01", 이미 하이픈이면 그대로</summary>
+    private static string NormalizeDate(string raw)
+    {
+        if (string.IsNullOrWhiteSpace(raw)) return raw;
+        raw = raw.Trim().Replace("/", "-");
+        if (raw.Length == 8 && !raw.Contains('-') && int.TryParse(raw, out _))
+            return $"{raw[..4]}-{raw[4..6]}-{raw[6..8]}";
+        return raw;
+    }
 }
