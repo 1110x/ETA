@@ -437,6 +437,8 @@ public class SchedulePage
             // 날짜 포커스 정보를 LoadTree() 전에 저장
             string rawDate = tn.Date;
 
+            bool hasSampler = !string.IsNullOrWhiteSpace(rawDate);
+
             if (_lastClickCtrl)
             {
                 int idx = _selReqs.FindIndex(r => r.Id == reqId);
@@ -450,8 +452,13 @@ public class SchedulePage
             {
                 _selReqs.Clear();
                 _selReqs.Add((reqId, reqAbbr));
-                _showCon = false;
-                ApplyTabStyles();
+                // 담당자 배정 없는 경우만 직원 탭으로 전환 (담당자 선택 유도)
+                // 담당자 배정 있으면 의뢰목록 유지 (날짜 포커스 확인용)
+                if (!hasSampler)
+                {
+                    _showCon = false;
+                    ApplyTabStyles();
+                }
                 _suppressSelection = true;
                 LoadTree();
                 _suppressSelection = false;
