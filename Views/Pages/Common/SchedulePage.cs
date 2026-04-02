@@ -433,7 +433,6 @@ public class SchedulePage
             string reqAbbr = tn.Name;
             string rawDate = tn.Date;
             bool hasSampler = !string.IsNullOrWhiteSpace(rawDate);
-
             if (hasSampler)
             {
                 // ── 담당자 배정 완료: 시퀀스 진입 안함, 캘린더 포커스만 ──

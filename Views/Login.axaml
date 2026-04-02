@@ -96,8 +96,9 @@
                            Margin="0,0,12,0"/>
                     <!-- 텍스트 -->
                     <StackPanel Grid.Column="1" Spacing="4" VerticalAlignment="Center">
-                        <TextBlock Text="RENEWUS ETA SYSTEM" FontSize="17" FontWeight="Bold"
-                                   Foreground="#003cc9"/>
+                        <TextBlock x:Name="txtTitle" Text="RENEWUS ETA SYSTEM" FontSize="17" FontWeight="Bold"
+                                   Foreground="#003cc9"
+                                   PointerPressed="Title_Click"/>
                         <TextBlock Text="TEAM Professional WATER ANALYSIS CENTER" FontSize="9"
                                    Foreground="#9CA3AF" TextWrapping="Wrap"/>
                         <TextBlock Text="Presented by 1110x v1.0" FontSize="10" FontFamily="Assets/Fonts/KBIZ한마음명조 M.ttf"
