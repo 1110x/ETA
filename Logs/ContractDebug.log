@@ -1062,3 +1062,37 @@
 [01:04:18] [Contract] 로드 완료 → 32건
 [01:04:19] [Contract] ✅ GetUnitPriceColumns → 11개 (컬럼 4부터 FS100~)
 [01:04:19] [Contract] 선택: ㈜에어레인
+[00:32:23] [Contract] LoadData() 시작
+[00:32:23] [Contract] 로드 완료 → 13건 (현행)
+[00:32:23] [Contract] LoadData() 시작
+[00:32:23] [Contract] 로드 완료 → 13건 (현행)
+[00:32:25] [Contract] 선택: ㈜LG화학 여수-용성
+[00:32:26] [Contract] 선택: ㈜LG화학 여수-적량
+[00:32:26] [Contract] 선택: ㈜LG화학 여수-확장
+[00:32:27] [Contract] 선택: 금호미쓰이화학㈜ 여수
+[00:32:28] [Contract] 선택: 롯데에너지머티리얼즈㈜
+[00:32:28] [Contract] 선택: 롯데케미칼㈜ 첨단소재 여수공장
+[00:32:34] [Contract] 선택: 지에스칼텍스㈜여수공장
+[00:32:35] [Contract] 선택: 보임열병합발전㈜
+[00:32:35] [Contract] 선택: ㈜LG화학 여수-확장
+[00:56:44] [Contract] LoadData() 시작
+[00:56:44] [Contract] 로드 완료 → 13건 (현행)
+[00:56:44] [Contract] LoadData() 시작
+[00:56:44] [Contract] 로드 완료 → 13건 (현행)
+[00:56:50] [Contract] 선택: ㈜LG화학 나주
+[00:56:51] [Contract] 선택: ㈜LG화학 여수-확장
+[01:03:27] [Contract] LoadData() 시작
+[01:03:27] [Contract] 로드 완료 → 13건 (현행)
+[01:03:27] [Contract] LoadData() 시작
+[01:03:27] [Contract] 로드 완료 → 13건 (현행)
+[01:03:28] [Contract] 선택: ㈜LG화학 여수-적량
+[01:03:29] [Contract] 선택: ㈜LG화학 여수-확장
+[01:03:29] [Contract] 선택: 디엘케미칼㈜ 여수
+[01:03:30] [Contract] 선택: 롯데에너지머티리얼즈㈜
+[01:03:31] [Contract] 선택: 보임열병합발전㈜
+[01:04:27] [Contract] LoadData() 시작
+[01:04:27] [Contract] 로드 완료 → 13건 (현행)
+[01:04:27] [Contract] LoadData() 시작
+[01:04:27] [Contract] 로드 완료 → 13건 (현행)
+[01:04:28] [Contract] 선택: ㈜LG화학 여수-적량
+[01:04:29] [Contract] 선택: ㈜LG화학 여수-확장

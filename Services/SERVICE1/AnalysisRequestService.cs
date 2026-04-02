@@ -544,6 +544,22 @@ public static class AnalysisRequestService
             if (!DbConnectionFactory.TableExists(conn, "분장표준처리"))
             { Log("GetStandardDaysInfo: 분장표준처리 테이블 없음"); return result; }
 
+            // 기타업무/담당계약업체 컬럼 자동 추가
+            foreach (var col in new[] { "기타업무", "담당계약업체" })
+            {
+                if (!DbConnectionFactory.ColumnExists(conn, "분장표준처리", col))
+                {
+                    try
+                    {
+                        using var alt = conn.CreateCommand();
+                        alt.CommandText = $"ALTER TABLE `분장표준처리` ADD COLUMN `{col}` TEXT DEFAULT ''";
+                        alt.ExecuteNonQuery();
+                        Log($"분장표준처리에 {col} 컬럼 추가");
+                    }
+                    catch { }
+                }
+            }
+
             // 처음 3행: 표준처리기한, 약칭, (날짜행)
             using var cmd = conn.CreateCommand();
             cmd.CommandText = "SELECT * FROM `분장표준처리` LIMIT 3";
@@ -1111,6 +1127,191 @@ public static class AnalysisRequestService
         catch (Exception ex) { Log($"GetAssignmentCalendar 오류: {ex.Message}"); }
 
         return [.. result.Values];
+    }
+
+    // =====================================================================
+    //  업무분장표 — 전체 분석항목의 담당자 변경 구간(span) 조회
+    //
+    //  반환: 항목별로 담당자가 연속된 날짜 구간 리스트
+    //    예: (BOD, "정준하", 2025-07-01, 2025-07-15), (BOD, "김지은", 2025-07-16, 2025-07-31)
+    // =====================================================================
+    public record AssignmentSpan(string FullName, string ShortName, string Manager, DateTime Start, DateTime End);
+
+    public static List<AssignmentSpan> GetAssignmentChartData(DateTime rangeStart, DateTime rangeEnd)
+    {
+        var spans = new List<AssignmentSpan>();
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return spans;
+
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            if (!DbConnectionFactory.TableExists(conn, "분장표준처리")) return spans;
+
+            var info = GetStandardDaysInfo();
+
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT * FROM `분장표준처리` WHERE `항목명` BETWEEN @s AND @e ORDER BY `항목명`";
+            cmd.Parameters.AddWithValue("@s", rangeStart.ToString("yyyy-MM-dd"));
+            cmd.Parameters.AddWithValue("@e", rangeEnd.ToString("yyyy-MM-dd"));
+
+            // date → column → manager
+            var dateRows = new List<(DateTime Date, Dictionary<string, string> Managers)>();
+            using var rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                string dateStr = rdr.IsDBNull(0) ? "" : rdr.GetValue(0)?.ToString() ?? "";
+                if (!DateTime.TryParse(dateStr, out var dt)) continue;
+
+                var managers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                for (int i = 1; i < rdr.FieldCount; i++)
+                {
+                    string col = rdr.GetName(i).Trim();
+                    string mgr = rdr.IsDBNull(i) ? "" : rdr.GetValue(i)?.ToString()?.Trim() ?? "";
+                    managers[col] = mgr;
+                }
+                dateRows.Add((dt, managers));
+            }
+
+            // 항목별 연속 구간 생성
+            foreach (var kv in info)
+            {
+                string col = kv.Key;
+                string shortName = kv.Value.shortName;
+                if (col.StartsWith("_") || col == "기타업무" || col == "담당계약업체") continue;
+
+                string currentMgr = "";
+                DateTime spanStart = rangeStart;
+
+                foreach (var (date, managers) in dateRows)
+                {
+                    string mgr = managers.TryGetValue(col, out var m) ? m : "";
+                    if (mgr != currentMgr)
+                    {
+                        if (!string.IsNullOrEmpty(currentMgr))
+                            spans.Add(new AssignmentSpan(col, shortName, currentMgr, spanStart, date.AddDays(-1)));
+                        currentMgr = mgr;
+                        spanStart = date;
+                    }
+                }
+                // 마지막 구간 닫기
+                if (!string.IsNullOrEmpty(currentMgr) && dateRows.Count > 0)
+                    spans.Add(new AssignmentSpan(col, shortName, currentMgr, spanStart, dateRows[^1].Date));
+            }
+
+            Log($"GetAssignmentChartData({rangeStart:yyyy-MM-dd}~{rangeEnd:yyyy-MM-dd}): {spans.Count}개 구간");
+        }
+        catch (Exception ex) { Log($"GetAssignmentChartData 오류: {ex.Message}"); }
+
+        return spans;
+    }
+
+    // =====================================================================
+    //  업무분장표 — 담당자 이름 직접 지정으로 분장 업데이트
+    //  드래그로 경계를 이동할 때 사용
+    // =====================================================================
+    public static void UpdateAssignmentByName(string analyteFullName, string managerName, DateTime start, DateTime end)
+    {
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+
+            for (DateTime date = start; date <= end; date = date.AddDays(1))
+            {
+                string dateKey = date.ToString("yyyy-MM-dd");
+
+                bool rowExists;
+                using (var chk = conn.CreateCommand())
+                {
+                    chk.CommandText = "SELECT COUNT(*) FROM `분장표준처리` WHERE `항목명` = @date";
+                    chk.Parameters.AddWithValue("@date", dateKey);
+                    rowExists = Convert.ToInt64(chk.ExecuteScalar()!) > 0;
+                }
+
+                if (rowExists)
+                {
+                    using var upd = conn.CreateCommand();
+                    upd.CommandText = $"UPDATE `분장표준처리` SET `{analyteFullName}` = @mgr WHERE `항목명` = @date";
+                    upd.Parameters.AddWithValue("@mgr", managerName);
+                    upd.Parameters.AddWithValue("@date", dateKey);
+                    upd.ExecuteNonQuery();
+                }
+                else
+                {
+                    var columns = DbConnectionFactory.GetColumnNames(conn, "분장표준처리");
+                    var insertCols = new List<string> { "`항목명`" };
+                    var vals = new List<string> { "@date" };
+                    foreach (var c in columns.Skip(1))
+                    {
+                        insertCols.Add($"`{c}`");
+                        if (string.Equals(c, analyteFullName, StringComparison.OrdinalIgnoreCase))
+                            vals.Add("@mgr");
+                        else
+                            vals.Add("NULL");
+                    }
+                    using var ins = conn.CreateCommand();
+                    ins.CommandText = $"INSERT INTO `분장표준처리` ({string.Join(", ", insertCols)}) VALUES ({string.Join(", ", vals)})";
+                    ins.Parameters.AddWithValue("@date", dateKey);
+                    ins.Parameters.AddWithValue("@mgr", managerName);
+                    ins.ExecuteNonQuery();
+                }
+            }
+
+            Log($"UpdateAssignmentByName: {analyteFullName} → {managerName} ({start:yyyy-MM-dd}~{end:yyyy-MM-dd})");
+        }
+        catch (Exception ex) { Log($"UpdateAssignmentByName 오류: {ex.Message}"); }
+    }
+
+    // =====================================================================
+    //  업무분장표 — 오늘까지 미배정 구간을 이전 담당자로 자동 연장
+    //
+    //  앱 시작 시 서버 연결 후 1회 실행.
+    //  각 분석항목의 마지막 배정 이후 ~ 오늘 사이 빈 구간을
+    //  직전 담당자로 채워 "오늘 미배정 항목 없음"을 보장.
+    // =====================================================================
+    public static void AutoExtendAssignmentsToToday()
+    {
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
+
+        var today = DateTime.Today;
+        var rangeStart = new DateTime(today.Year, today.Month, 1);
+        var rangeEnd   = rangeStart.AddMonths(1).AddDays(-1);
+
+        try
+        {
+            var spans    = GetAssignmentChartData(rangeStart, rangeEnd);
+            var analytes = GetOrderedAnalytes()
+                .Where(a => !a.fullName.StartsWith("_")
+                         && a.fullName != "기타업무"
+                         && a.fullName != "담당계약업체")
+                .ToList();
+
+            int extended = 0;
+            foreach (var (fullName, _) in analytes)
+            {
+                var itemSpans = spans
+                    .Where(s => string.Equals(s.FullName, fullName, StringComparison.OrdinalIgnoreCase))
+                    .OrderBy(s => s.Start)
+                    .ToList();
+
+                if (itemSpans.Count == 0) continue;
+
+                var lastSpan  = itemSpans[^1];
+                var gapStart  = lastSpan.End.AddDays(1);
+
+                if (gapStart <= today)
+                {
+                    UpdateAssignmentByName(fullName, lastSpan.Manager, gapStart, today);
+                    extended++;
+                }
+            }
+
+            if (extended > 0)
+                Log($"AutoExtendAssignmentsToToday: {extended}개 항목 오늘({today:yyyy-MM-dd})까지 자동 연장");
+        }
+        catch (Exception ex) { Log($"AutoExtendAssignmentsToToday 오류: {ex.Message}"); }
     }
 
     // =====================================================================

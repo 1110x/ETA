@@ -27,6 +27,68 @@ public static class AgentService
         }
     }
 
+    // ── PhotoData BLOB 컬럼 자동 마이그레이션 (사진 바이너리 동기화용) ──────
+    private static void EnsurePhotoDataColumn(DbConnection conn)
+    {
+        if (!DbConnectionFactory.ColumnExists(conn, "Agent", "PhotoData"))
+        {
+            using var alter = conn.CreateCommand();
+            alter.CommandText = @"ALTER TABLE `Agent` ADD COLUMN PhotoData LONGBLOB DEFAULT NULL";
+            try { alter.ExecuteNonQuery(); Debug.WriteLine("[DB] PhotoData 컬럼 추가"); } catch { }
+        }
+    }
+
+    // ── 사진 바이너리를 DB에 저장 ───────────────────────────────────────────
+    public static void SavePhotoToDb(string 사번, byte[] data)
+    {
+        if (string.IsNullOrEmpty(사번) || data == null || data.Length == 0) return;
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            EnsurePhotoDataColumn(conn);
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "UPDATE `Agent` SET PhotoData=@data WHERE 사번=@id";
+            cmd.Parameters.AddWithValue("@data", data);
+            cmd.Parameters.AddWithValue("@id", 사번);
+            cmd.ExecuteNonQuery();
+            Debug.WriteLine($"[Photo] DB에 사진 저장: {사번} ({data.Length} bytes)");
+        }
+        catch (Exception ex) { Debug.WriteLine($"[Photo] DB 저장 실패: {ex.Message}"); }
+    }
+
+    // ── DB에서 사진 바이너리 로드 → 로컬 캐시 ──────────────────────────────
+    /// <summary>로컬 파일이 없으면 DB에서 가져와 로컬에 캐시. 성공 시 true.</summary>
+    public static bool EnsurePhotoLocal(string 사번, string photoPath)
+    {
+        if (string.IsNullOrEmpty(사번) || string.IsNullOrEmpty(photoPath)) return false;
+
+        var dir = GetPhotoDirectory();
+        var fullPath = Path.IsPathRooted(photoPath) ? photoPath : Path.Combine(dir, photoPath);
+        if (File.Exists(fullPath)) return true;   // 이미 있음
+
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            EnsurePhotoDataColumn(conn);
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT PhotoData FROM `Agent` WHERE 사번=@id LIMIT 1";
+            cmd.Parameters.AddWithValue("@id", 사번);
+
+            var result = cmd.ExecuteScalar();
+            if (result is byte[] data && data.Length > 0)
+            {
+                Directory.CreateDirectory(dir);
+                File.WriteAllBytes(fullPath, data);
+                Debug.WriteLine($"[Photo] DB에서 로컬 캐시: {fullPath} ({data.Length} bytes)");
+                return true;
+            }
+        }
+        catch (Exception ex) { Debug.WriteLine($"[Photo] DB 로드 실패: {ex.Message}"); }
+        return false;
+    }
+
     // ── 담당항목/담당업체 컬럼 마이그레이션 ──────────────────────────────────
     private static void EnsureAssignColumns(DbConnection conn)
     {

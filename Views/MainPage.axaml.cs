@@ -107,6 +107,10 @@ public partial class MainPage : Window
         System.Diagnostics.Debug.WriteLine("[MainPage] Opened 이벤트");
         LoadProfileInfo();
 
+        // 서버 연결 시 오늘까지 업무분장 자동 연장
+        if (DbConnectionFactory.IsMariaDb)
+            AnalysisRequestService.AutoExtendAssignmentsToToday();
+
         // 저장된 글자 크기 복원
         var savedScale = LoadFontScale();
         ApplyFontScale(savedScale);
@@ -130,6 +134,9 @@ public partial class MainPage : Window
 
             if (profilePhoto != null && !string.IsNullOrEmpty(me.PhotoPath))
             {
+                // 로컬 파일 없으면 DB에서 가져와 캐시
+                ETA.Services.SERVICE1.AgentService.EnsurePhotoLocal(me.사번, me.PhotoPath);
+
                 var fullPath = Path.IsPathRooted(me.PhotoPath)
                     ? me.PhotoPath
                     : Path.Combine(ETA.Services.SERVICE1.AgentService.GetPhotoDirectory(), me.PhotoPath);
@@ -771,7 +778,7 @@ public partial class MainPage : Window
         _agentTreePage.LoadData();
         _bt1SaveAction = _agentTreePage.SaveSelected;
 
-        SetSubMenu("저장", "새로고침", "직원 추가", "선택 삭제", "엑셀 내보내기", "인쇄", "설정");
+        SetSubMenu("저장", "새로고침", "직원 추가", "선택 삭제", "엑셀 내보내기", "인쇄", "업무분장표");
         SetLeftPanelWidth(260);
         SetContentLayout(content2Star: 1, content4Star: 1, upperStar: 1, lowerStar: 0);
         
@@ -2871,6 +2878,10 @@ public partial class MainPage : Window
     {
         switch (_currentMode)
         {
+            case "Agent":
+                if (_agentTreePage != null)
+                    Show2.Content = _agentTreePage.BuildAssignmentChart();
+                break;
             case "Purchase":
                 _purchasePage?.ShowSettings(this);
                 break;

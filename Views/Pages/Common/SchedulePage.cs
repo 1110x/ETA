@@ -118,7 +118,7 @@ public class SchedulePage
     // =========================================================================
     private Control BuildTree()
     {
-        var root = new Grid { RowDefinitions = new RowDefinitions("Auto,Auto,Auto,Auto,Auto,*,Auto") };
+        var root = new Grid { RowDefinitions = new RowDefinitions("Auto,Auto,Auto,Auto,Auto,*") };
 
         // 헤더: 제목 + 탭 버튼
         var hdr = new Grid
@@ -216,39 +216,6 @@ public class SchedulePage
         _tree.SelectionChanged += OnTreeSelection;
         Grid.SetRow(_tree, 5);
         root.Children.Add(_tree);
-
-        // ── 등록된 일정 섹션 (Row 6) ──
-        var entryOuter = new StackPanel { Spacing = 2, Margin = new Thickness(0, 4, 0, 0) };
-        entryOuter.Children.Add(new Border { Height = 1, Background = AppRes("InputBorder") });
-
-        var entryHdrRow = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto"), Margin = new Thickness(0, 4, 0, 4) };
-        entryHdrRow.Children.Add(new TextBlock
-        {
-            Text = "📌 등록된 일정",
-            FontSize = 11, FontWeight = FontWeight.SemiBold,
-            FontFamily = Font, Foreground = AppRes("FgMuted"),
-            VerticalAlignment = VerticalAlignment.Center,
-        });
-        _entryDateLbl = new TextBlock
-        {
-            FontSize = 10, FontFamily = Font, Foreground = AppRes("FgMuted"),
-            VerticalAlignment = VerticalAlignment.Center,
-            [Grid.ColumnProperty] = 1,
-        };
-        entryHdrRow.Children.Add(_entryDateLbl);
-        entryOuter.Children.Add(entryHdrRow);
-
-        _entryList = new StackPanel { Spacing = 3 };
-        entryOuter.Children.Add(_entryList);
-
-        var entrySv = new ScrollViewer
-        {
-            Content = entryOuter,
-            MaxHeight = 220,
-            VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
-        };
-        Grid.SetRow(entrySv, 6);
-        root.Children.Add(entrySv);
 
         return root;
     }
@@ -997,17 +964,58 @@ public class SchedulePage
     // =========================================================================
     private Control BuildForm()
     {
-        var sv = new ScrollViewer { VerticalScrollBarVisibility = ScrollBarVisibility.Auto };
+        var outer = new Grid { RowDefinitions = new RowDefinitions("*,Auto") };
 
-        // 두 섹션: 왼쪽(정보) | 오른쪽(내용+버튼)
+        // ═══════════════════════════════════════════════════════════════
+        // Row 0: 등록된 일정 목록 (스크롤 가능, 공간 전체 사용)
+        // ═══════════════════════════════════════════════════════════════
+        var entrySection = new StackPanel { Spacing = 4, Margin = new Thickness(4) };
+
+        var entryHdrRow = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto"), Margin = new Thickness(0, 0, 0, 4) };
+        entryHdrRow.Children.Add(new TextBlock
+        {
+            Text = "📌 등록된 일정",
+            FontSize = 12, FontWeight = FontWeight.SemiBold,
+            FontFamily = Font, Foreground = AppRes("FgMuted"),
+            VerticalAlignment = VerticalAlignment.Center,
+        });
+        _entryDateLbl = new TextBlock
+        {
+            FontSize = 11, FontFamily = Font, Foreground = AppRes("FgMuted"),
+            VerticalAlignment = VerticalAlignment.Center,
+            [Grid.ColumnProperty] = 1,
+        };
+        entryHdrRow.Children.Add(_entryDateLbl);
+        entrySection.Children.Add(entryHdrRow);
+
+        _entryList = new StackPanel { Spacing = 4 };
+        entrySection.Children.Add(_entryList);
+
+        var entrySv = new ScrollViewer
+        {
+            Content = entrySection,
+            VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+        };
+        Grid.SetRow(entrySv, 0);
+        outer.Children.Add(entrySv);
+
+        // ═══════════════════════════════════════════════════════════════
+        // Row 1: 작성/수정 폼 (하단 고정)
+        // ═══════════════════════════════════════════════════════════════
+        var formPanel = new Border
+        {
+            BorderThickness = new Thickness(0, 1, 0, 0),
+            BorderBrush = AppRes("InputBorder"),
+            Padding = new Thickness(4, 6, 4, 4),
+        };
+
         var twoCol = new Grid
         {
             ColumnDefinitions = new ColumnDefinitions("160,1,*"),
-            Margin = new Thickness(4),
         };
 
         // ── 왼쪽: 날짜 / 업체 / 구성원 ──
-        var left = new StackPanel { Spacing = 8, Margin = new Thickness(0, 0, 8, 0) };
+        var left = new StackPanel { Spacing = 6, Margin = new Thickness(0, 0, 8, 0) };
 
         _dateLbl = new TextBlock
         {
@@ -1055,7 +1063,7 @@ public class SchedulePage
             Watermark     = "상세 내용",
             AcceptsReturn = true,
             TextWrapping  = TextWrapping.Wrap,
-            MinHeight     = 100,
+            MinHeight     = 60,
             FontFamily    = Font,
         };
         right.Children.Add(_contentBox);
@@ -1106,8 +1114,11 @@ public class SchedulePage
         Grid.SetColumn(right, 2);
         twoCol.Children.Add(right);
 
-        sv.Content = twoCol;
-        return sv;
+        formPanel.Child = twoCol;
+        Grid.SetRow(formPanel, 1);
+        outer.Children.Add(formPanel);
+
+        return outer;
     }
 
     // =========================================================================
@@ -1268,20 +1279,19 @@ public class SchedulePage
                 Background      = Brush.Parse(cs.Bg),
                 BorderBrush     = Brush.Parse(cs.Bd),
                 BorderThickness = new Thickness(1),
-                CornerRadius    = new CornerRadius(4),
-                Padding         = new Thickness(6, 3),
+                CornerRadius    = new CornerRadius(6),
+                Padding         = new Thickness(10, 6),
                 Margin          = new Thickness(0, 1),
-                Cursor          = new Cursor(StandardCursorType.Hand),
             };
-            var grid = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
-            var info = new StackPanel { Spacing = 1 };
+            var grid = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto,Auto") };
+            var info = new StackPanel { Spacing = 2 };
 
             // 첫 줄: 아이콘 + 분류 + 업체약칭/직원명
-            var firstLine = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4 };
+            var firstLine = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
             firstLine.Children.Add(new TextBlock
             {
                 Text = $"{cs.Icon} {en.분류}",
-                FontSize = 10, FontFamily = Font, FontWeight = FontWeight.SemiBold,
+                FontSize = 11, FontFamily = Font, FontWeight = FontWeight.SemiBold,
                 Foreground = Brush.Parse(cs.Fg),
                 VerticalAlignment = VerticalAlignment.Center,
             });
@@ -1291,33 +1301,63 @@ public class SchedulePage
             if (!string.IsNullOrEmpty(displayName))
                 firstLine.Children.Add(new TextBlock
                 {
-                    Text = displayName, FontSize = 10, FontFamily = Font,
+                    Text = displayName, FontSize = 11, FontFamily = Font,
                     Foreground = AppRes("AppFg"),
                     VerticalAlignment = VerticalAlignment.Center,
-                    TextTrimming = TextTrimming.CharacterEllipsis, MaxWidth = 110,
+                    TextTrimming = TextTrimming.CharacterEllipsis,
                 });
             info.Children.Add(firstLine);
 
-            // 제목
+            // 내용/제목
             if (!string.IsNullOrEmpty(en.제목))
                 info.Children.Add(new TextBlock
                 {
-                    Text = en.제목, FontSize = 9, FontFamily = Font,
+                    Text = en.제목, FontSize = 10, FontFamily = Font,
                     Foreground = AppRes("FgMuted"),
                     TextTrimming = TextTrimming.CharacterEllipsis,
                 });
+            if (!string.IsNullOrEmpty(en.내용))
+                info.Children.Add(new TextBlock
+                {
+                    Text = en.내용, FontSize = 10, FontFamily = Font,
+                    Foreground = AppRes("FgMuted"),
+                    TextTrimming = TextTrimming.CharacterEllipsis,
+                    MaxWidth = 300,
+                });
 
             grid.Children.Add(info);
+
+            // 수정 버튼
+            var capture = en;
+            var edit = new Button
+            {
+                Content = "✏️", Width = 28, Height = 28, Padding = new Thickness(0),
+                Background = Brush.Parse("#1a2a3a"), Foreground = Brush.Parse("#88aaee"),
+                BorderThickness = new Thickness(1), BorderBrush = Brush.Parse("#336699"),
+                CornerRadius = new CornerRadius(4),
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(4, 0, 2, 0),
+                Cursor = new Cursor(StandardCursorType.Hand),
+                [Grid.ColumnProperty] = 1,
+            };
+            edit.Click += (_, e2) =>
+            {
+                e2.Handled = true;
+                LoadEntryToForm(capture);
+            };
+            grid.Children.Add(edit);
 
             // 삭제 버튼
             var entryId = en.Id;
             var del = new Button
             {
-                Content = "✕", Width = 20, Height = 20, Padding = new Thickness(0),
-                Background = Brushes.Transparent, Foreground = Brush.Parse("#883333"),
-                BorderThickness = new Thickness(0),
-                VerticalAlignment = VerticalAlignment.Top,
-                [Grid.ColumnProperty] = 1,
+                Content = "🗑", Width = 28, Height = 28, Padding = new Thickness(0),
+                Background = Brush.Parse("#3a1a1a"), Foreground = Brush.Parse("#ee8888"),
+                BorderThickness = new Thickness(1), BorderBrush = Brush.Parse("#663333"),
+                CornerRadius = new CornerRadius(4),
+                VerticalAlignment = VerticalAlignment.Center,
+                Cursor = new Cursor(StandardCursorType.Hand),
+                [Grid.ColumnProperty] = 2,
             };
             del.Click += (_, e2) =>
             {
@@ -1328,10 +1368,6 @@ public class SchedulePage
             };
             grid.Children.Add(del);
             card.Child = grid;
-
-            // 클릭 → Show3에 수정 폼 로드
-            var capture = en;
-            card.PointerPressed += (_, _) => LoadEntryToForm(capture);
 
             _entryList.Children.Add(card);
         }

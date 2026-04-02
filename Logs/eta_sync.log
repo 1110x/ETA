@@ -6061,3 +6061,33 @@
 [2026-04-01 01:22:40] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
 [2026-04-01 01:22:40] [DoLogin] 로그인 성공 → Lottie 재생
 [2026-04-01 01:22:40] [Lottie] 재생 시작
+[2026-04-02 00:32:02.342] === SyncApprovalStatusAsync() 시작 ===
+[2026-04-02 00:32:04.572] To Do ETA Task: 15개  DB 계정: 14개
+[2026-04-02 00:32:04.576] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-04-02 00:56:30.502] === SyncApprovalStatusAsync() 시작 ===
+[2026-04-02 00:56:32.350] To Do ETA Task: 15개  DB 계정: 14개
+[2026-04-02 00:56:32.355] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-04-02 01:01:17.147] === SyncApprovalStatusAsync() 시작 ===
+[2026-04-02 01:01:19.169] To Do ETA Task: 15개  DB 계정: 14개
+[2026-04-02 01:01:19.171] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-04-02 21:42:00.780] === SyncApprovalStatusAsync() 시작 ===
+[2026-04-02 21:42:04.714] To Do ETA Task: 15개  DB 계정: 14개
+[2026-04-02 21:42:04.719] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-04-02 21:50:29.217] === SyncApprovalStatusAsync() 시작 ===
+[2026-04-02 21:50:31.236] To Do ETA Task: 15개  DB 계정: 14개
+[2026-04-02 21:50:31.239] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-04-02 21:53:54.664] === SyncApprovalStatusAsync() 시작 ===
+[2026-04-02 21:53:56.747] To Do ETA Task: 15개  DB 계정: 14개
+[2026-04-02 21:53:56.749] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-04-02 22:01:15.848] === SyncApprovalStatusAsync() 시작 ===
+[2026-04-02 22:01:17.879] To Do ETA Task: 15개  DB 계정: 14개
+[2026-04-02 22:01:17.880] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-04-02 22:04:56.739] === SyncApprovalStatusAsync() 시작 ===
+[2026-04-02 22:04:58.525] To Do ETA Task: 15개  DB 계정: 14개
+[2026-04-02 22:04:58.527] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-04-02 22:08:17.753] === SyncApprovalStatusAsync() 시작 ===
+[2026-04-02 22:08:19.509] To Do ETA Task: 15개  DB 계정: 14개
+[2026-04-02 22:08:19.511] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-04-02 22:11:38.222] === SyncApprovalStatusAsync() 시작 ===
+[2026-04-02 22:11:40.199] To Do ETA Task: 15개  DB 계정: 14개
+[2026-04-02 22:11:40.201] === Sync 완료 approved=0 pending=0 재생성=0 ===

@@ -127,9 +127,9 @@ public static class ErpUiAutoService
     private const string ProcessName = "neoweb";
 
     // ── 권한 확인 / 재실행 ────────────────────────────────────────────────────
-    [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     public static bool IsAdmin()
     {
+        if (!OperatingSystem.IsWindows()) return false;
         using var id = WindowsIdentity.GetCurrent();
         return new WindowsPrincipal(id).IsInRole(WindowsBuiltInRole.Administrator);
     }

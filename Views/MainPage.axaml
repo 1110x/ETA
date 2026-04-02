@@ -286,7 +286,6 @@
                         <MenuItem Header="자료 조회"      Click="WasteDataQuery_Click"/>
                         <MenuItem Header="분석의뢰리스트" Click="WasteSampleList_Click"/>
                         <MenuItem Header="작업 배정"      Click="WasteAssignment_Click"/>
-                        <MenuItem Header="Uipath ERP"  IsEnabled="False" Opacity="0.4"/>
                         <MenuItem Header="시험기록부"  IsEnabled="False" Opacity="0.4"/>
                         <MenuItem Header="자료검토"    IsEnabled="False" Opacity="0.4"/>
                         <MenuItem Header="테스트"      IsEnabled="False" Opacity="0.4"/>
