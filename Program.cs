@@ -78,6 +78,7 @@ class Program
 
     private static bool IsAdmin()
     {
+        if (!OperatingSystem.IsWindows()) return false;
         using var id = WindowsIdentity.GetCurrent();
         return new WindowsPrincipal(id).IsInRole(WindowsBuiltInRole.Administrator);
     }
