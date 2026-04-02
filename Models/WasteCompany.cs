@@ -11,6 +11,5 @@ public class WasteCompany
     public string 업체명 { get; set; } = string.Empty;
     public string Original업체명 { get; set; } = string.Empty;
     public string 사업자번호 { get; set; } = string.Empty;
-
-
+    public string 약칭       { get; set; } = string.Empty;
 }

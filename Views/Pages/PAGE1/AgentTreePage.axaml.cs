@@ -31,6 +31,8 @@ public partial class AgentTreePage : UserControl
 
     // ── 외부(MainPage) 연결 ──────────────────────────────────────────────────
     public event Action<Control?>? DetailPanelChanged;
+    public Action<Control?>? Show3ContentRequest { get; set; }
+    public Action<Control?>? Show4ContentRequest { get; set; }
     public ListBox? AnalysisItemsListBox { get; set; }
 
     // ── 상태 ────────────────────────────────────────────────────────────────
@@ -52,11 +54,16 @@ public partial class AgentTreePage : UserControl
     private DateTime    _assignmentRangeStart = DateTime.Today;
     private DateTime    _assignmentRangeEnd   = DateTime.Today;
 
+    // 담당항목/업체 칩 패널 (Show2)
+    private WrapPanel? _항목ChipsPanel;
+    private WrapPanel? _업체ChipsPanel;
+
     // ── 타임라인 상수 ───────────────────────────────────────────────────────
-    private const double TL_DAY_W    = 14.0;
-    private const double TL_ROW_H    = 22.0;
-    private const double TL_LABEL_W  = 110.0;
-    private const double TL_HEADER_H = 18.0;
+    private const double TL_DAY_W      = 14.0;
+    private const double TL_ROW_H      = 22.0;
+    private const double TL_LABEL_W    = 110.0;
+    private const double TL_HEADER_H   = 18.0;
+    private const double TL_MILESTONE_H = 60.0;
 
     public AgentTreePage()
     {
@@ -208,6 +215,7 @@ public partial class AgentTreePage : UserControl
         _pendingPhotoPath = "";
         _detailPanel      = BuildEditPanel(agent);
         DetailPanelChanged?.Invoke(_detailPanel);
+        Show3ContentRequest?.Invoke(BuildShow3Timeline(agent));
         Log($"선택: {agent.성명}");
     }
 
@@ -351,8 +359,23 @@ public partial class AgentTreePage : UserControl
         root.Children.Add(BuildFieldRow("Email",          agent.Email,          isReadOnly: ro));
         root.Children.Add(BuildFieldRow("측정인고유번호", agent.측정인고유번호, isReadOnly: ro));
 
-        // 분장 영역
-        root.Children.Add(BuildAssignmentArea(agent));
+        // ── 담당 분석항목 ──
+        root.Children.Add(BuildChipSectionHeader("담당 분석항목",
+            () => Show4ContentRequest?.Invoke(BuildShow4AnalyteList(agent)),
+            date => Show4ContentRequest?.Invoke(BuildAssignWithAttachPanel(agent, date))));
+        _항목ChipsPanel = new WrapPanel { Orientation = Orientation.Horizontal };
+        RefreshItemChips(agent);
+        root.Children.Add(_항목ChipsPanel);
+
+        // ── 담당 계약업체 ──
+        root.Children.Add(BuildChipSectionHeader("담당 계약업체",
+            () => Show4ContentRequest?.Invoke(BuildShow4ContractList(agent))));
+        _업체ChipsPanel = new WrapPanel { Orientation = Orientation.Horizontal };
+        RefreshContractChips(agent);
+        root.Children.Add(_업체ChipsPanel);
+
+        // ── 과거 분장이력 ──
+        root.Children.Add(BuildHistorySection(agent));
 
         return root;
     }
@@ -1188,6 +1211,843 @@ public partial class AgentTreePage : UserControl
         });
 
         return panel;
+    }
+
+    // =========================================================================
+    // 담당항목/업체 칩 섹션 헬퍼
+    // =========================================================================
+    private Control BuildChipSectionHeader(string title, Action? onAdd, Action<DateTime>? onAssignDate = null)
+    {
+        var row = new Grid
+        {
+            ColumnDefinitions = new ColumnDefinitions("*,Auto"),
+            Margin = new Thickness(0, 10, 0, 2),
+        };
+        row.Children.Add(new TextBlock
+        {
+            Text = title,
+            FontSize = 11, FontWeight = FontWeight.SemiBold,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+            Foreground = new SolidColorBrush(Color.Parse("#aaaacc")),
+            VerticalAlignment = VerticalAlignment.Center,
+        });
+        if (CanEdit)
+        {
+            var btnStack = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 3, [Grid.ColumnProperty] = 1 };
+
+            if (onAssignDate != null)
+            {
+                var calPicker = new CalendarDatePicker
+                {
+                    Width = 200,
+                    Watermark = "배정 날짜",
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                };
+                var flyout = new Flyout { Content = calPicker };
+                calPicker.SelectedDateChanged += (_, _) =>
+                {
+                    if (calPicker.SelectedDate.HasValue)
+                    {
+                        flyout.Hide();
+                        onAssignDate(calPicker.SelectedDate.Value);
+                        calPicker.SelectedDate = null;
+                    }
+                };
+                var btnCal = new Button
+                {
+                    Content = "📅", FontSize = 11, Width = 24, Height = 24,
+                    Padding = new Thickness(0),
+                    Background = new SolidColorBrush(Color.Parse("#2a3a2a")),
+                    Foreground = new SolidColorBrush(Color.Parse("#88cc88")),
+                    BorderThickness = new Thickness(1),
+                    BorderBrush = new SolidColorBrush(Color.Parse("#3a6a3a")),
+                    CornerRadius = new CornerRadius(4),
+                    HorizontalContentAlignment = HorizontalAlignment.Center,
+                    VerticalContentAlignment = VerticalAlignment.Center,
+                    Flyout = flyout,
+                };
+                btnStack.Children.Add(btnCal);
+            }
+
+            var btnAdd = new Button
+            {
+                Content = "+", FontSize = 13, Width = 24, Height = 24,
+                Padding = new Thickness(0),
+                Background = new SolidColorBrush(Color.Parse("#2a3a5a")),
+                Foreground = new SolidColorBrush(Color.Parse("#88aaee")),
+                BorderThickness = new Thickness(1),
+                BorderBrush = new SolidColorBrush(Color.Parse("#3a5a8a")),
+                CornerRadius = new CornerRadius(4),
+                HorizontalContentAlignment = HorizontalAlignment.Center,
+                VerticalContentAlignment = VerticalAlignment.Center,
+            };
+            btnAdd.Click += (_, _) => onAdd?.Invoke();
+            btnStack.Children.Add(btnAdd);
+            row.Children.Add(btnStack);
+        }
+        return row;
+    }
+
+    /// <summary>agent.담당항목목록의 모든 항목을 지정 날짜의 분장표준처리에 배정</summary>
+    private static void AssignItemsForDate(Agent agent, DateTime date)
+    {
+        if (agent.담당항목목록.Count == 0) return;
+        foreach (var item in agent.담당항목목록)
+            AnalysisRequestService.AddAssignment(agent.사번, item, date, date);
+        Debug.WriteLine($"[AssignItemsForDate] {agent.성명} → {agent.담당항목} @ {date:yyyy-MM-dd}");
+    }
+
+    // =========================================================================
+    // QAQC 첨부 파일 헬퍼
+    // =========================================================================
+    private static string GetQaqcDir(string yearMonth)
+    {
+        var dataDir = Path.GetDirectoryName(DbPathHelper.DbPath)!;
+        return Path.Combine(dataDir, "QAQC", yearMonth);
+    }
+
+    private static string GetShortForQaqc(string fullName)
+    {
+        var info = AnalysisRequestService.GetStandardDaysInfo();
+        if (info.TryGetValue(fullName, out var meta) && !string.IsNullOrEmpty(meta.shortName))
+            return meta.shortName;
+        // 파일명 안전 처리
+        var safe = string.Concat(fullName.Where(c => char.IsLetterOrDigit(c) || c == '_'));
+        return safe.Length > 0 ? safe[..Math.Min(safe.Length, 20)] : "item";
+    }
+
+    private static bool HasQaqcFile(string shortName)
+    {
+        var qaqcRoot = Path.Combine(Path.GetDirectoryName(DbPathHelper.DbPath)!, "QAQC");
+        if (!Directory.Exists(qaqcRoot)) return false;
+        // 전체 하위 폴더에서 패턴 검색 (월 무관)
+        return Directory.GetFiles(qaqcRoot, $"????-??-??_{shortName}_*", SearchOption.AllDirectories).Length > 0;
+    }
+
+    // =========================================================================
+    // 배정 + 첨부 패널 (Show4)
+    // =========================================================================
+    private Control BuildAssignWithAttachPanel(Agent agent, DateTime date)
+    {
+        var ym      = date.ToString("yyyy-MM");
+        var qaqcDir = GetQaqcDir(ym);
+        var font    = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R");
+
+        var root = new StackPanel { Spacing = 6, Margin = new Thickness(6) };
+
+        // 헤더
+        root.Children.Add(new TextBlock
+        {
+            Text = $"📅 {date:yyyy년 MM월} 배정 + 첨부",
+            FontSize = 12, FontWeight = FontWeight.SemiBold,
+            FontFamily = font, Foreground = new SolidColorBrush(Color.Parse("#aaccee")),
+        });
+        root.Children.Add(new Border { Height = 1, Background = new SolidColorBrush(Color.Parse("#333355")), Margin = new Thickness(0, 0, 0, 4) });
+
+        var listStack = new StackPanel { Spacing = 6 };
+
+        foreach (var fullName in agent.담당항목목록.ToList())
+        {
+            var capturedFull  = fullName;
+            var capturedShort = GetShortForQaqc(fullName);
+            var info     = AnalysisRequestService.GetStandardDaysInfo();
+            bool hasMeta = info.TryGetValue(fullName, out var meta);
+            string displayShort = hasMeta && !string.IsNullOrEmpty(meta.shortName) ? meta.shortName : capturedShort;
+            var (chipBg, chipFg) = BadgeColorHelper.GetBadgeColor(displayShort);
+
+            var itemBorder = new Border
+            {
+                Background      = new SolidColorBrush(Color.Parse("#1a1a2e")),
+                BorderBrush     = new SolidColorBrush(Color.Parse("#333355")),
+                BorderThickness = new Thickness(1),
+                CornerRadius    = new CornerRadius(4),
+                Padding         = new Thickness(6, 4),
+            };
+            var itemStack = new StackPanel { Spacing = 3 };
+
+            // 항목명 행
+            var nameRow = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto") };
+            nameRow.Children.Add(new Border
+            {
+                Background   = new SolidColorBrush(Color.Parse(chipBg)),
+                CornerRadius = new CornerRadius(3), Padding = new Thickness(5, 1),
+                Margin       = new Thickness(0, 0, 6, 0),
+                [Grid.ColumnProperty] = 0,
+                Child = new TextBlock
+                {
+                    Text = displayShort, FontSize = 9,
+                    FontFamily = font, Foreground = new SolidColorBrush(Color.Parse(chipFg)),
+                },
+            });
+            nameRow.Children.Add(new TextBlock
+            {
+                Text = capturedFull, FontSize = 10, FontFamily = font,
+                Foreground = new SolidColorBrush(Color.Parse("#ccccee")),
+                VerticalAlignment = VerticalAlignment.Center,
+                TextTrimming = TextTrimming.CharacterEllipsis,
+                [Grid.ColumnProperty] = 1,
+            });
+
+            // 📎 버튼
+            var btnAttach = new Button
+            {
+                Content = "📎", FontSize = 11, Width = 24, Height = 24,
+                Padding = new Thickness(0),
+                Background = new SolidColorBrush(Color.Parse("#2a3a5a")),
+                Foreground = new SolidColorBrush(Color.Parse("#88aaee")),
+                BorderThickness = new Thickness(1),
+                BorderBrush = new SolidColorBrush(Color.Parse("#3a5a8a")),
+                CornerRadius = new CornerRadius(4),
+                HorizontalContentAlignment = HorizontalAlignment.Center,
+                VerticalContentAlignment = VerticalAlignment.Center,
+                [Grid.ColumnProperty] = 2,
+            };
+            nameRow.Children.Add(btnAttach);
+            itemStack.Children.Add(nameRow);
+
+            // 첨부 파일 목록
+            var fileStack = new StackPanel { Spacing = 2, Margin = new Thickness(4, 2, 0, 0) };
+
+            void RefreshFiles()
+            {
+                fileStack.Children.Clear();
+                if (!Directory.Exists(qaqcDir)) return;
+                var files = Directory.GetFiles(qaqcDir, $"????-??-??_{capturedShort}_*");
+                foreach (var fPath in files)
+                {
+                    var fName   = Path.GetFileName(fPath);
+                    var display = fName;
+                    var fRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4 };
+                    fRow.Children.Add(new TextBlock
+                    {
+                        Text = "📄 " + display, FontSize = 9, FontFamily = font,
+                        Foreground = new SolidColorBrush(Color.Parse("#88ee88")),
+                        VerticalAlignment = VerticalAlignment.Center,
+                    });
+                    var capturedF = fPath;
+                    var delBtn = new Button
+                    {
+                        Content = "×", FontSize = 9, Width = 16, Height = 16, Padding = new Thickness(0),
+                        Background = new SolidColorBrush(Color.Parse("#3a1a1a")),
+                        Foreground = new SolidColorBrush(Color.Parse("#ee8888")),
+                        BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(2),
+                        HorizontalContentAlignment = HorizontalAlignment.Center,
+                        VerticalContentAlignment = VerticalAlignment.Center,
+                    };
+                    delBtn.Click += (_, _) =>
+                    {
+                        try { File.Delete(capturedF); } catch { }
+                        RefreshFiles();
+                        RefreshItemChips(agent);
+                    };
+                    fRow.Children.Add(delBtn);
+                    fileStack.Children.Add(fRow);
+                }
+                if (files.Length == 0)
+                    fileStack.Children.Add(new TextBlock
+                    {
+                        Text = "첨부 없음", FontSize = 9, FontFamily = font,
+                        Foreground = new SolidColorBrush(Color.Parse("#555577")),
+                    });
+            }
+            RefreshFiles();
+
+            btnAttach.Click += async (_, _) =>
+            {
+                var topLevel = TopLevel.GetTopLevel(btnAttach);
+                if (topLevel == null) return;
+                var picked = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+                {
+                    Title = $"{capturedFull} 첨부파일 선택",
+                    AllowMultiple = false,
+                });
+                if (picked.Count == 0) return;
+                Directory.CreateDirectory(qaqcDir);
+                var src  = picked[0].Path.LocalPath;
+                var ext      = Path.GetExtension(src);
+                var dateStr  = date.ToString("yyyy-MM-dd");
+                var dest     = Path.Combine(qaqcDir,
+                    $"{dateStr}_{capturedShort}_{agent.성명}{ext}");
+                File.Copy(src, dest, overwrite: true);
+                RefreshFiles();
+                RefreshItemChips(agent);
+            };
+
+            itemStack.Children.Add(fileStack);
+            itemBorder.Child = itemStack;
+            listStack.Children.Add(itemBorder);
+        }
+
+        root.Children.Add(new ScrollViewer
+        {
+            Content = listStack,
+            MaxHeight = 320,
+            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+        });
+
+        // 배정 완료 버튼
+        var btnDone = new Button
+        {
+            Content = "✅ 배정 완료",
+            Height = 32, Padding = new Thickness(16, 0),
+            FontFamily = font, FontSize = 11,
+            Background = new SolidColorBrush(Color.Parse("#1a3a2a")),
+            Foreground = new SolidColorBrush(Color.Parse("#88ee88")),
+            BorderThickness = new Thickness(1),
+            BorderBrush = new SolidColorBrush(Color.Parse("#2a6a3a")),
+            CornerRadius = new CornerRadius(4),
+            Margin = new Thickness(0, 4, 0, 0),
+        };
+        btnDone.Click += (_, _) =>
+        {
+            AssignItemsForDate(agent, date);
+            RefreshItemChips(agent);
+            Show4ContentRequest?.Invoke(BuildShow4AnalyteList(agent));
+        };
+        root.Children.Add(btnDone);
+
+        return new ScrollViewer
+        {
+            Content = root,
+            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+        };
+    }
+
+    private void RefreshItemChips(Agent agent)
+    {
+        if (_항목ChipsPanel == null) return;
+        _항목ChipsPanel.Children.Clear();
+        if (agent.담당항목목록.Count == 0)
+        {
+            _항목ChipsPanel.Children.Add(new TextBlock
+            {
+                Text = "없음", FontSize = 10,
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                Foreground = new SolidColorBrush(Color.Parse("#555")),
+                Margin = new Thickness(0, 2),
+            });
+            return;
+        }
+        foreach (var item in agent.담당항목목록.ToList())
+        {
+            var captured   = item;
+            var shortName  = GetShortForQaqc(item);
+            bool certified = HasQaqcFile(shortName);
+            string label   = certified ? $"🏅 {item}" : item;
+            string bg      = certified ? "#2a3a1a" : "#1a2a3a";
+            string fg      = certified ? "#aaccaa" : "#88aacc";
+            string bd      = certified ? "#4a8a2a" : "#3366aa";
+            _항목ChipsPanel.Children.Add(BuildRemovableChip(label, bg, fg, bd, () =>
+            {
+                var list = agent.담당항목목록.ToList();
+                list.Remove(captured);
+                agent.담당항목 = string.Join(",", list);
+                AgentService.Update(agent);
+                AssignItemsForDate(agent, DateTime.Today);
+                RefreshItemChips(agent);
+            }));
+        }
+    }
+
+    private void RefreshContractChips(Agent agent)
+    {
+        if (_업체ChipsPanel == null) return;
+        _업체ChipsPanel.Children.Clear();
+        if (agent.담당업체목록.Count == 0)
+        {
+            _업체ChipsPanel.Children.Add(new TextBlock
+            {
+                Text = "없음", FontSize = 10,
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                Foreground = new SolidColorBrush(Color.Parse("#555")),
+                Margin = new Thickness(0, 2),
+            });
+            return;
+        }
+        foreach (var abbr in agent.담당업체목록.ToList())
+        {
+            var captured = abbr;
+            _업체ChipsPanel.Children.Add(BuildRemovableChip(captured, "#1a3a2a", "#88ccaa", "#2a6633", () =>
+            {
+                var list = agent.담당업체목록.ToList();
+                list.Remove(captured);
+                agent.담당업체 = string.Join(",", list);
+                AgentService.Update(agent);
+                RefreshContractChips(agent);
+            }));
+        }
+    }
+
+    private static Border BuildRemovableChip(string label, string bg, string fg, string border, Action? onRemove)
+    {
+        var chip = new Border
+        {
+            Background      = new SolidColorBrush(Color.Parse(bg)),
+            BorderBrush     = new SolidColorBrush(Color.Parse(border)),
+            BorderThickness = new Thickness(1),
+            CornerRadius    = new CornerRadius(10),
+            Padding         = new Thickness(7, 2),
+            Margin          = new Thickness(0, 2, 4, 2),
+        };
+        var row = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 3 };
+        row.Children.Add(new TextBlock
+        {
+            Text = label, FontSize = 10,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+            Foreground = new SolidColorBrush(Color.Parse(fg)),
+            VerticalAlignment = VerticalAlignment.Center,
+        });
+        var btnX = new Button
+        {
+            Content = "×", FontSize = 11, Padding = new Thickness(2, 0),
+            Background = Brushes.Transparent, BorderThickness = new Thickness(0),
+            Foreground = new SolidColorBrush(Color.Parse("#886888")),
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        btnX.Click += (_, _) => onRemove?.Invoke();
+        row.Children.Add(btnX);
+        chip.Child = row;
+        return chip;
+    }
+
+    // =========================================================================
+    // 과거 분장이력 섹션
+    // =========================================================================
+    private Control BuildHistorySection(Agent agent)
+    {
+        var border = new Border
+        {
+            Background   = new SolidColorBrush(Color.Parse("#1a1a2a")),
+            CornerRadius = new CornerRadius(4),
+            Padding      = new Thickness(8, 6),
+            Margin       = new Thickness(0, 10, 0, 0),
+        };
+        var stack = new StackPanel { Spacing = 3 };
+        stack.Children.Add(new TextBlock
+        {
+            Text = "📊 과거 분장이력 (전체)",
+            FontSize = 11, FontWeight = FontWeight.SemiBold,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+            Foreground = new SolidColorBrush(Color.Parse("#aaaacc")),
+            Margin = new Thickness(0, 0, 0, 4),
+        });
+
+        var histStack = new StackPanel { Spacing = 2 };
+        try
+        {
+            var assignments = AnalysisRequestService.GetAssignmentDaysForAgentAll(agent.사번);
+            if (assignments.Count == 0)
+            {
+                histStack.Children.Add(new TextBlock
+                {
+                    Text = "이력 없음", FontSize = 9,
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                    Foreground = new SolidColorBrush(Color.Parse("#555")),
+                });
+            }
+            else
+            {
+                var allAnalytes = AnalysisService.GetAllItems()
+                    .ToDictionary(a => a.Analyte, a => a.Category, StringComparer.OrdinalIgnoreCase);
+                var groups = assignments
+                    .GroupBy(a => a.ShortName)
+                    .Select(g => (Short: g.Key, Full: g.First().FullName, Count: g.Count()))
+                    .OrderByDescending(x => x.Count);
+                foreach (var g in groups)
+                {
+                    allAnalytes.TryGetValue(g.Full, out var cat);
+                    var (catBg, catFg) = GetCategoryColor(cat ?? "");
+                    var row = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto") };
+                    row.Children.Add(new Border
+                    {
+                        Background   = new SolidColorBrush(Color.Parse(catBg)),
+                        CornerRadius = new CornerRadius(3),
+                        Padding      = new Thickness(4, 1), Margin = new Thickness(0, 0, 6, 0),
+                        [Grid.ColumnProperty] = 0,
+                        Child = new TextBlock
+                        {
+                            Text = g.Short, FontSize = 9,
+                            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                            Foreground = new SolidColorBrush(Color.Parse(catFg)),
+                        },
+                    });
+                    row.Children.Add(new TextBlock
+                    {
+                        Text = g.Full, FontSize = 9,
+                        FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                        Foreground = new SolidColorBrush(Color.Parse("#aaaaaa")),
+                        VerticalAlignment = VerticalAlignment.Center,
+                        TextTrimming = TextTrimming.CharacterEllipsis,
+                        [Grid.ColumnProperty] = 1,
+                    });
+                    row.Children.Add(new TextBlock
+                    {
+                        Text = $"{g.Count}일",
+                        FontSize = 9,
+                        FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                        Foreground = new SolidColorBrush(Color.Parse("#7ab4cc")),
+                        VerticalAlignment = VerticalAlignment.Center,
+                        HorizontalAlignment = HorizontalAlignment.Right,
+                        [Grid.ColumnProperty] = 2,
+                    });
+                    histStack.Children.Add(row);
+                }
+            }
+        }
+        catch (Exception ex) { Log("이력 로드 실패: " + ex.Message); }
+
+        stack.Children.Add(new ScrollViewer
+        {
+            Content = histStack,
+            MaxHeight = 120,
+            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+        });
+        border.Child = stack;
+        return border;
+    }
+
+    // =========================================================================
+    // Show3 — 타임라인 차트 (수평 간트)
+    // =========================================================================
+    private Control BuildShow3Timeline(Agent agent)
+    {
+        var root = new StackPanel { Spacing = 4, Margin = new Thickness(4) };
+
+        // ── 제목 ──────────────────────────────────────────────────────────────
+        root.Children.Add(new TextBlock
+        {
+            Text = $"📈 업무 분장 타임라인 — {agent.성명}",
+            FontSize = 13, FontWeight = FontWeight.Bold,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+            Foreground = new SolidColorBrush(Color.Parse("#aaccff")),
+            Margin = new Thickness(0, 0, 0, 2),
+        });
+
+        // ── 날짜 범위 행 ──────────────────────────────────────────────────────
+        var dateRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
+
+        var txbRange = new TextBlock
+        {
+            Text = $"{DateTime.Today:yyyy-MM-dd}",
+            FontSize = 11,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+            Foreground = new SolidColorBrush(Color.Parse("#aaa")),
+            VerticalAlignment = VerticalAlignment.Center,
+            MinWidth = 170,
+        };
+
+        var btnToday = new Button
+        {
+            Content = "오늘", Width = 48, Height = 24, FontSize = 10,
+            Padding = new Thickness(4, 0),
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+            Background = new SolidColorBrush(Color.Parse("#2a3a5a")),
+            Foreground = new SolidColorBrush(Color.Parse("#88aacc")),
+            BorderThickness = new Thickness(1),
+            BorderBrush = new SolidColorBrush(Color.Parse("#3a5a8a")),
+            CornerRadius = new CornerRadius(4),
+        };
+        var btnMonth = new Button
+        {
+            Content = "이번달", Width = 52, Height = 24, FontSize = 10,
+            Padding = new Thickness(4, 0),
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+            Background = new SolidColorBrush(Color.Parse("#2a3a2a")),
+            Foreground = new SolidColorBrush(Color.Parse("#88cc88")),
+            BorderThickness = new Thickness(1),
+            BorderBrush = new SolidColorBrush(Color.Parse("#3a6a3a")),
+            CornerRadius = new CornerRadius(4),
+        };
+
+        dateRow.Children.Add(txbRange);
+        dateRow.Children.Add(btnToday);
+        dateRow.Children.Add(btnMonth);
+        root.Children.Add(dateRow);
+
+        // ── 타임라인 캔버스 ──────────────────────────────────────────────────
+        var canvas = new Canvas { Width = 400, Height = 100 };
+        _timelineCanvas = canvas;
+
+        var scroll = new ScrollViewer
+        {
+            HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+            VerticalScrollBarVisibility   = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+            Height  = 300,
+            Margin  = new Thickness(0, 4, 0, 0),
+            Content = canvas,
+        };
+        _timelineScroll = scroll;
+        DragDrop.SetAllowDrop(scroll, true);
+
+        // ── 드래그 드랍 핸들러 ────────────────────────────────────────────────
+        DateTime rangeStart = DateTime.Today;
+        DateTime rangeEnd   = DateTime.Today;
+
+        scroll.AddHandler(DragDrop.DropEvent, async (object? sender, DragEventArgs e) =>
+        {
+            if (!e.Data.Contains("analyte")) return;
+            var analyte = e.Data.Get("analyte") as string;
+            if (string.IsNullOrEmpty(analyte)) return;
+
+            var existing = AnalysisRequestService.GetAssigneesForAnalyteOnDate(analyte, rangeStart);
+            if (existing.Count > 0 && !existing.Contains(agent.성명))
+            {
+                bool doUpdate = await ShowDuplicateWarningAsync(analyte, existing);
+                if (!doUpdate) return;
+            }
+
+            AnalysisRequestService.AddAssignment(agent.사번, analyte, rangeStart, rangeStart.AddMonths(1));
+            RefreshTimeline(canvas, agent, rangeStart, rangeEnd);
+        });
+
+        // ── 버튼 이벤트 ──────────────────────────────────────────────────────
+        btnToday.Click += (_, _) =>
+        {
+            rangeStart = rangeEnd = DateTime.Today;
+            _assignmentRangeStart = _assignmentRangeEnd = DateTime.Today;
+            txbRange.Text = rangeStart.ToString("yyyy-MM-dd");
+            RefreshTimeline(canvas, agent, rangeStart, rangeEnd);
+        };
+
+        btnMonth.Click += (_, _) =>
+        {
+            rangeStart = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+            rangeEnd   = rangeStart.AddMonths(1).AddDays(-1);
+            _assignmentRangeStart = rangeStart;
+            _assignmentRangeEnd   = rangeEnd;
+            txbRange.Text = $"{rangeStart:yyyy-MM-dd} ~ {rangeEnd:yyyy-MM-dd}";
+            RefreshTimeline(canvas, agent, rangeStart, rangeEnd);
+        };
+
+        RefreshTimeline(canvas, agent, rangeStart, rangeEnd);
+        root.Children.Add(scroll);
+        return root;
+    }
+
+    // =========================================================================
+    // Show4 — 분석항목 선택 리스트
+    // =========================================================================
+    private Control BuildShow4AnalyteList(Agent agent)
+    {
+        var root = new StackPanel { Spacing = 3, Margin = new Thickness(4) };
+
+        // 헤더
+        var hdr = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*"), Margin = new Thickness(0, 0, 0, 6) };
+        var btnBack = new Button
+        {
+            Content = "← 돌아가기", FontSize = 10,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+            Padding = new Thickness(8, 4),
+            Background = new SolidColorBrush(Color.Parse("#2a2a3a")),
+            Foreground = new SolidColorBrush(Color.Parse("#aaaaaa")),
+            BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
+        };
+        btnBack.Click += (_, _) => Show4ContentRequest?.Invoke(null);
+        hdr.Children.Add(btnBack);
+        hdr.Children.Add(new TextBlock
+        {
+            Text = "분석항목 선택", FontSize = 12, FontWeight = FontWeight.SemiBold,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+            Foreground = new SolidColorBrush(Color.Parse("#aaccff")),
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin = new Thickness(8, 0, 0, 0),
+            [Grid.ColumnProperty] = 1,
+        });
+        root.Children.Add(hdr);
+        root.Children.Add(new Border { Height = 1, Background = new SolidColorBrush(Color.Parse("#444")) });
+
+        // 분장표준처리 컬럼 순서대로 항목 목록
+        var analytes = AnalysisRequestService.GetOrderedAnalytes();
+        foreach (var (fullName, shortName) in analytes)
+        {
+            bool assigned = agent.담당항목목록.Contains(fullName);
+            var (badgeBg, badgeFg) = BadgeColorHelper.GetBadgeColor(shortName);
+
+            var row = new Border
+            {
+                Background   = assigned ? new SolidColorBrush(Color.Parse(badgeBg)) : Brushes.Transparent,
+                CornerRadius = new CornerRadius(4),
+                Padding      = new Thickness(6, 4),
+                Margin       = new Thickness(0, 1),
+                Cursor       = new Cursor(StandardCursorType.Hand),
+            };
+            var inner = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto") };
+
+            // 배지: 분장표준처리 약칭
+            inner.Children.Add(new Border
+            {
+                Background   = new SolidColorBrush(Color.Parse(badgeBg)),
+                CornerRadius = new CornerRadius(3),
+                Padding      = new Thickness(5, 1), Margin = new Thickness(0, 0, 8, 0),
+                [Grid.ColumnProperty] = 0,
+                Child = new TextBlock
+                {
+                    Text = shortName, FontSize = 9,
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                    Foreground = new SolidColorBrush(Color.Parse(badgeFg)),
+                },
+            });
+
+            // 전체 항목명
+            inner.Children.Add(new TextBlock
+            {
+                Text = fullName, FontSize = 10,
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                Foreground = assigned ? new SolidColorBrush(Color.Parse(badgeFg)) : AppRes("AppFg"),
+                VerticalAlignment = VerticalAlignment.Center,
+                [Grid.ColumnProperty] = 1,
+            });
+
+            if (assigned)
+                inner.Children.Add(new TextBlock
+                {
+                    Text = "✓", FontSize = 11,
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                    Foreground = new SolidColorBrush(Color.Parse("#88ee88")),
+                    VerticalAlignment = VerticalAlignment.Center,
+                    [Grid.ColumnProperty] = 2,
+                });
+
+            row.Child = inner;
+
+            var capturedFull  = fullName;
+            row.PointerPressed += (_, _) =>
+            {
+                var list = agent.담당항목목록.ToList();
+                if (list.Contains(capturedFull)) list.Remove(capturedFull);
+                else list.Add(capturedFull);
+                agent.담당항목 = string.Join(",", list);
+                AgentService.Update(agent);
+                AssignItemsForDate(agent, DateTime.Today);
+                RefreshItemChips(agent);
+                Show4ContentRequest?.Invoke(BuildShow4AnalyteList(agent));
+            };
+            root.Children.Add(row);
+        }
+
+        return new ScrollViewer
+        {
+            Content = root,
+            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+        };
+    }
+
+    // =========================================================================
+    // Show4 — 계약업체 선택 리스트 (현행 계약만)
+    // =========================================================================
+    private Control BuildShow4ContractList(Agent agent)
+    {
+        var root = new StackPanel { Spacing = 3, Margin = new Thickness(4) };
+
+        // 헤더
+        var hdr = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*"), Margin = new Thickness(0, 0, 0, 6) };
+        var btnBack = new Button
+        {
+            Content = "← 돌아가기", FontSize = 10,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+            Padding = new Thickness(8, 4),
+            Background = new SolidColorBrush(Color.Parse("#2a2a3a")),
+            Foreground = new SolidColorBrush(Color.Parse("#aaaaaa")),
+            BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
+        };
+        btnBack.Click += (_, _) => Show4ContentRequest?.Invoke(null);
+        hdr.Children.Add(btnBack);
+        hdr.Children.Add(new TextBlock
+        {
+            Text = "계약업체 선택 (현행 계약)", FontSize = 12, FontWeight = FontWeight.SemiBold,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+            Foreground = new SolidColorBrush(Color.Parse("#aaccaa")),
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin = new Thickness(8, 0, 0, 0),
+            [Grid.ColumnProperty] = 1,
+        });
+        root.Children.Add(hdr);
+        root.Children.Add(new Border { Height = 1, Background = new SolidColorBrush(Color.Parse("#444")) });
+
+        var contracts = ContractService.GetAllContracts()
+            .Where(c => c.DaysLeft == null || c.DaysLeft >= 0)
+            .OrderBy(c => c.C_CompanyName).ToList();
+
+        if (contracts.Count == 0)
+        {
+            root.Children.Add(new TextBlock
+            {
+                Text = "현행 계약 없음", FontSize = 10,
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                Foreground = new SolidColorBrush(Color.Parse("#666")),
+                Margin = new Thickness(0, 8),
+            });
+        }
+        else
+        {
+            foreach (var c in contracts)
+            {
+                string abbr = string.IsNullOrWhiteSpace(c.C_Abbreviation) ? c.C_CompanyName : c.C_Abbreviation;
+                bool assigned = agent.담당업체목록.Contains(abbr);
+                var (bg, fg) = BadgeColorHelper.GetBadgeColor(abbr);
+
+                var row = new Border
+                {
+                    Background   = assigned ? new SolidColorBrush(Color.Parse("#1a3a2a")) : Brushes.Transparent,
+                    CornerRadius = new CornerRadius(4),
+                    Padding      = new Thickness(6, 4),
+                    Margin       = new Thickness(0, 1),
+                    Cursor       = new Cursor(StandardCursorType.Hand),
+                };
+                var inner = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto") };
+                inner.Children.Add(new Border
+                {
+                    Background   = new SolidColorBrush(Color.Parse(bg)),
+                    CornerRadius = new CornerRadius(3),
+                    Padding      = new Thickness(5, 1), Margin = new Thickness(0, 0, 6, 0),
+                    [Grid.ColumnProperty] = 0,
+                    Child = new TextBlock
+                    {
+                        Text = abbr, FontSize = 9,
+                        FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                        Foreground = new SolidColorBrush(Color.Parse(fg)),
+                    },
+                });
+                inner.Children.Add(new TextBlock
+                {
+                    Text = c.C_CompanyName, FontSize = 10,
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                    Foreground = AppRes("AppFg"),
+                    VerticalAlignment = VerticalAlignment.Center,
+                    TextTrimming = TextTrimming.CharacterEllipsis,
+                    [Grid.ColumnProperty] = 1,
+                });
+                if (assigned)
+                    inner.Children.Add(new TextBlock
+                    {
+                        Text = "✓", FontSize = 11,
+                        FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                        Foreground = new SolidColorBrush(Color.Parse("#88ee88")),
+                        VerticalAlignment = VerticalAlignment.Center,
+                        [Grid.ColumnProperty] = 2,
+                    });
+                row.Child = inner;
+
+                var capturedAbbr = abbr;
+                row.PointerPressed += (_, _) =>
+                {
+                    var list = agent.담당업체목록.ToList();
+                    if (list.Contains(capturedAbbr)) list.Remove(capturedAbbr);
+                    else list.Add(capturedAbbr);
+                    agent.담당업체 = string.Join(",", list);
+                    AgentService.Update(agent);
+                    RefreshContractChips(agent);
+                    Show4ContentRequest?.Invoke(BuildShow4ContractList(agent));
+                };
+                root.Children.Add(row);
+            }
+        }
+
+        return new ScrollViewer
+        {
+            Content = root,
+            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+        };
     }
 
     private void Log(string msg)

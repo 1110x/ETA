@@ -51,6 +51,8 @@ public partial class WasteCompanyPage : UserControl
     // =========================================================================
     // 데이터 로드 (현재 _activeGroup 만 표시)
     // =========================================================================
+    private List<WasteCompany> _allItems = new();
+
     public void LoadData()
     {
         WasteCompanyTreeView.Items.Clear();
@@ -60,18 +62,30 @@ public partial class WasteCompanyPage : UserControl
 
         try
         {
-            var items = WasteCompanyService.GetAllItems()
+            _allItems = WasteCompanyService.GetAllItems()
                             .Where(c => GetGroupLabel(c) == _activeGroup)
                             .OrderBy(c => c.관리번호)
                             .ToList();
 
-            foreach (var item in items)
-                WasteCompanyTreeView.Items.Add(CreateCompanyNode(item));
-
-            Log($"로드 완료 → {_activeGroup} {items.Count}건");
+            ApplyFilter(SearchBox?.Text ?? "");
+            Log($"로드 완료 → {_activeGroup} {_allItems.Count}건");
         }
         catch (Exception ex) { Log("★ 크래시 ★ " + ex.Message); }
     }
+
+    private void ApplyFilter(string keyword)
+    {
+        WasteCompanyTreeView.Items.Clear();
+        var q = string.IsNullOrWhiteSpace(keyword) ? _allItems
+              : _allItems.Where(c =>
+                    c.업체명.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                    c.약칭.Contains(keyword,   StringComparison.OrdinalIgnoreCase));
+        foreach (var item in q)
+            WasteCompanyTreeView.Items.Add(CreateCompanyNode(item));
+    }
+
+    private void SearchBox_TextChanged(object? sender, Avalonia.Controls.TextChangedEventArgs e)
+        => ApplyFilter(SearchBox.Text ?? "");
 
     // =========================================================================
     // 의뢰등록 버튼 토글
@@ -374,6 +388,24 @@ public partial class WasteCompanyPage : UserControl
                 Width = 18,
             }.BindBase());
 
+        if (!string.IsNullOrWhiteSpace(company.약칭))
+        {
+            var (bg, fg, bd) = GetChosungBadgeColor(company.약칭);
+            sp.Children.Add(new Border
+            {
+                Background        = new SolidColorBrush(Color.Parse(bg)),
+                BorderBrush       = new SolidColorBrush(Color.Parse(bd)),
+                BorderThickness   = new Thickness(1),
+                CornerRadius      = new CornerRadius(8),
+                Padding           = new Thickness(5, 1),
+                VerticalAlignment = VerticalAlignment.Center,
+                Child = new TextBlock
+                {
+                    Text = company.약칭, FontFamily = Font,
+                    Foreground = new SolidColorBrush(Color.Parse(fg)),
+                }.BindXS(),
+            });
+        }
         sp.Children.Add(new TextBlock
         {
             Text = company.업체명, FontFamily = Font,
@@ -446,20 +478,7 @@ public partial class WasteCompanyPage : UserControl
                : $"❌ 수정 실패: {_selectedCompany.업체명}");
 
         if (ok)
-        {
-            // TreeView 표시 텍스트 갱신 (그룹 → 업체 노드 탐색)
-            var tvi = WasteCompanyTreeView.Items
-                .OfType<TreeViewItem>()
-                .SelectMany(g => g.Items.OfType<TreeViewItem>())
-                .FirstOrDefault(i => i.Tag == _selectedCompany);
-            if (tvi?.Header is StackPanel sp)
-            {
-                if (sp.Children.Count >= 1 && sp.Children[0] is TextBlock tb)
-                    tb.Text = _selectedCompany.업체명;
-                if (sp.Children.Count >= 2 && sp.Children[1] is TextBlock tb2)
-                    tb2.Text = _selectedCompany.관리번호;
-            }
-        }
+            LoadData();
     }
 
     // =========================================================================
@@ -468,13 +487,14 @@ public partial class WasteCompanyPage : UserControl
     private StackPanel BuildEditPanel(WasteCompany c)
     {
         var root = MakeRootPanel($"🏭  {c.업체명} — 업소 정보");
-        var grid = MakeTwoColumnGrid(3);
+        var grid = MakeTwoColumnGrid(6);
 
         AddGridRow(grid, 0, "관리번호",  c.관리번호,   isReadOnly: true, isLocked: true);
         AddGridRow(grid, 1, "업체명",    c.업체명);
-        AddGridRow(grid, 2, "프로젝트",  c.프로젝트);
-        AddGridRow(grid, 3, "프로젝트명", c.프로젝트명);
-        AddGridRow(grid, 4, "사업자번호", c.사업자번호);
+        AddAbbrevRow(grid, 2, c.약칭);
+        AddGridRow(grid, 3, "프로젝트",  c.프로젝트);
+        AddGridRow(grid, 4, "프로젝트명", c.프로젝트명);
+        AddGridRow(grid, 5, "사업자번호", c.사업자번호);
 
         root.Children.Add(grid);
         return root;
@@ -502,6 +522,7 @@ public partial class WasteCompanyPage : UserControl
             switch (label)
             {
                 case "업체명":     c.업체명     = tb.Text ?? ""; break;
+                case "약칭":       c.약칭       = tb.Text ?? ""; break;
                 case "프로젝트":   c.프로젝트   = tb.Text ?? ""; break;
                 case "프로젝트명": c.프로젝트명 = tb.Text ?? ""; break;
                 case "사업자번호": c.사업자번호 = tb.Text ?? ""; break;
@@ -583,6 +604,78 @@ public partial class WasteCompanyPage : UserControl
             BorderBrush     = isReadOnly
                                   ? new SolidColorBrush(Color.Parse("#333333"))
                                   : new SolidColorBrush(Color.Parse("#555577")),
+            CornerRadius    = new CornerRadius(4),
+            Padding         = new Thickness(8, 4),
+        });
+
+        int col     = row % 2;
+        int gridRow = row / 2;
+        Grid.SetColumn(panel, col);
+        Grid.SetRow(panel, gridRow);
+        grid.Children.Add(panel);
+    }
+
+    // ── 초성 추출 ──────────────────────────────────────────────────────────────
+    private static readonly char[] Chosungs =
+        { 'ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ' };
+
+    // 약칭 첫 글자의 초성으로 배지 색 결정
+    // ㄱ/ㄲ=파랑  ㄴ=청록  ㄷ/ㄸ=하늘  ㄹ=민트  ㅁ=초록  ㅂ/ㅃ=연두
+    // ㅅ/ㅆ=노랑  ㅇ=주황  ㅈ/ㅉ=분홍  ㅊ=빨강  ㅋ=자주  ㅌ=보라  ㅍ=남보라  ㅎ=회파랑
+    private static (string Bg, string Fg, string Bd) GetChosungBadgeColor(string 약칭)
+    {
+        if (string.IsNullOrEmpty(약칭)) return ("#2a2a3a", "#888888", "#444444");
+
+        char first = 약칭[0];
+        char cho = first;
+        if (first >= 0xAC00 && first <= 0xD7A3)
+            cho = Chosungs[(first - 0xAC00) / (21 * 28)];
+
+        return cho switch
+        {
+            'ㄱ' or 'ㄲ' => ("#1a2a4a", "#88aaee", "#2255bb"),
+            'ㄴ'         => ("#0f3030", "#55ddcc", "#1a8877"),
+            'ㄷ' or 'ㄸ' => ("#0f2a3a", "#66ccee", "#1a6688"),
+            'ㄹ'         => ("#0f3a2a", "#66ddaa", "#1a8855"),
+            'ㅁ'         => ("#1a3a1a", "#88cc77", "#336633"),
+            'ㅂ' or 'ㅃ' => ("#2a3a10", "#aabb55", "#556622"),
+            'ㅅ' or 'ㅆ' => ("#3a3010", "#ddcc55", "#886622"),
+            'ㅇ'         => ("#3a2010", "#ddaa55", "#885522"),
+            'ㅈ' or 'ㅉ' => ("#3a1a2a", "#dd88aa", "#882255"),
+            'ㅊ'         => ("#3a1010", "#ee7777", "#882222"),
+            'ㅋ'         => ("#3a1a3a", "#cc77cc", "#772277"),
+            'ㅌ'         => ("#2a1a3a", "#aa88dd", "#553388"),
+            'ㅍ'         => ("#1a1a3a", "#8899dd", "#222288"),
+            'ㅎ'         => ("#1a2a3a", "#7799bb", "#224466"),
+            _            => ("#2a2a3a", "#999999", "#555555"),
+        };
+    }
+
+    // 약칭 전용 행 — 초성 자동입력 버튼 포함
+    private static void AddAbbrevRow(Grid grid, int row, string value)
+    {
+        var panel = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
+
+        panel.Children.Add(new TextBlock
+        {
+            Text              = "    약칭 :",
+            Width             = 130,
+            FontSize          = 12,
+            FontFamily        = Font,
+            Foreground        = AppRes("FgMuted"),
+            VerticalAlignment = VerticalAlignment.Center,
+        });
+
+        panel.Children.Add(new TextBox
+        {
+            Text            = value ?? "",
+            Width           = 200,
+            FontSize        = 12,
+            FontFamily      = Font,
+            Background      = new SolidColorBrush(Color.Parse("#3a3a4a")),
+            Foreground      = AppRes("AppFg"),
+            BorderThickness = new Thickness(1),
+            BorderBrush     = new SolidColorBrush(Color.Parse("#555577")),
             CornerRadius    = new CornerRadius(4),
             Padding         = new Thickness(8, 4),
         });

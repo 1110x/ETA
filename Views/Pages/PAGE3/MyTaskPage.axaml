@@ -1,0 +1,130 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ETA.Views.Pages.PAGE3.MyTaskPage">
+
+    <UserControl.Styles>
+        <Style Selector="TreeViewItem">
+            <Setter Property="Padding"    Value="1,4" />
+            <Setter Property="Margin"     Value="0,1" />
+            <Setter Property="MinHeight"  Value="0" />
+            <Setter Property="FontSize"   Value="{DynamicResource FontSizeBase}" />
+            <Setter Property="Foreground" Value="{DynamicResource TreeFg}" />
+            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="TreeViewItem /template/ ContentPresenter#PART_HeaderPresenter">
+            <Setter Property="Padding"    Value="2,1" />
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="TreeViewItem:selected /template/ ContentPresenter#PART_HeaderPresenter">
+            <Setter Property="Background"   Value="{DynamicResource TreeSelBg}" />
+            <Setter Property="CornerRadius" Value="3" />
+        </Style>
+        <Style Selector="TreeViewItem:pointerover /template/ ContentPresenter#PART_HeaderPresenter">
+            <Setter Property="Background"   Value="{DynamicResource TreeHoverBg}" />
+            <Setter Property="CornerRadius" Value="3" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto,Auto,*">
+
+        <!-- Row 0: 날짜 선택 헤더 -->
+        <Border Grid.Row="0"
+                Background="{DynamicResource PanelBg}"
+                CornerRadius="6,6,0,0"
+                Padding="8,5">
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Grid.Column="0"
+                           Text="내 분석업무"
+                           FontSize="{DynamicResource FontSizeBase}"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource FgMuted}"
+                           FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                           VerticalAlignment="Center"/>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4">
+                    <DatePicker x:Name="dpDate"
+                                FontSize="{DynamicResource FontSizeSM}"
+                                FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                                SelectedDateChanged="DpDate_SelectedDateChanged"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Row 1: 카테고리 필터 버튼 -->
+        <Border Grid.Row="1"
+                Background="{DynamicResource PanelInnerBg}"
+                Padding="8,4">
+            <StackPanel Orientation="Horizontal" Spacing="4">
+                <Button x:Name="BtnMeokdae"
+                        Content="🔬 측대"
+                        Click="CategoryBtn_Click"
+                        Tag="측대"
+                        FontSize="{DynamicResource FontSizeSM}"
+                        FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                        Padding="8,3"
+                        CornerRadius="10"
+                        Background="#1a2a4a"
+                        Foreground="#88aaee"
+                        BorderThickness="1"
+                        BorderBrush="#336699"/>
+                <Button x:Name="BtnYeosoo"
+                        Content="🌊 여수"
+                        Click="CategoryBtn_Click"
+                        Tag="여수"
+                        FontSize="{DynamicResource FontSizeSM}"
+                        FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                        Padding="8,3"
+                        CornerRadius="10"
+                        Background="{DynamicResource SubBtnBg}"
+                        Foreground="{DynamicResource FgMuted}"
+                        BorderThickness="1"
+                        BorderBrush="{DynamicResource InputBorder}"/>
+                <Button x:Name="BtnYulchon"
+                        Content="🏗 율촌"
+                        Click="CategoryBtn_Click"
+                        Tag="율촌"
+                        FontSize="{DynamicResource FontSizeSM}"
+                        FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                        Padding="8,3"
+                        CornerRadius="10"
+                        Background="{DynamicResource SubBtnBg}"
+                        Foreground="{DynamicResource FgMuted}"
+                        BorderThickness="1"
+                        BorderBrush="{DynamicResource InputBorder}"/>
+                <Button x:Name="BtnSepung"
+                        Content="🏭 세풍"
+                        Click="CategoryBtn_Click"
+                        Tag="세풍"
+                        FontSize="{DynamicResource FontSizeSM}"
+                        FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                        Padding="8,3"
+                        CornerRadius="10"
+                        Background="{DynamicResource SubBtnBg}"
+                        Foreground="{DynamicResource FgMuted}"
+                        BorderThickness="1"
+                        BorderBrush="{DynamicResource InputBorder}"/>
+                <Button x:Name="BtnFacility"
+                        Content="⚙ 처리시설"
+                        Click="CategoryBtn_Click"
+                        Tag="처리시설"
+                        FontSize="{DynamicResource FontSizeSM}"
+                        FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                        Padding="8,3"
+                        CornerRadius="10"
+                        Background="{DynamicResource SubBtnBg}"
+                        Foreground="{DynamicResource FgMuted}"
+                        BorderThickness="1"
+                        BorderBrush="{DynamicResource InputBorder}"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Row 2: 트리뷰 -->
+        <TreeView Grid.Row="2"
+                  x:Name="TaskTreeView"
+                  Margin="5"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch"
+                  SelectionChanged="TaskTreeView_SelectionChanged"/>
+
+    </Grid>
+</UserControl>

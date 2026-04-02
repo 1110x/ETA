@@ -1,4 +1,5 @@
 #if WINDOWS
+#pragma warning disable CA1416   // 파일 전체가 WINDOWS 전용 — GDI+ API 경고 일괄 비활성화
 using System;
 using System.Collections.Generic;
 using System.Drawing;

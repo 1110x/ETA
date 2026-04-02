@@ -69,7 +69,11 @@ public partial class WasteSampleListPage : UserControl
             {
                 var monthNode = MakeMonthNode(month.Key, month.Count());
                 foreach (var d in month.OrderByDescending(x => x))
-                    monthNode.Items.Add(MakeDateNode(d));
+                {
+                    var samples   = WasteSampleService.GetByDate(d);
+                    var dateNode  = MakeDateNode(d, samples);
+                    monthNode.Items.Add(dateNode);
+                }
                 monthNode.IsExpanded = true;
                 DateTreeView.Items.Add(monthNode);
             }
@@ -115,20 +119,91 @@ public partial class WasteSampleListPage : UserControl
         };
     }
 
-    private static TreeViewItem MakeDateNode(string dateStr)
+    private static TreeViewItem MakeDateNode(string dateStr, List<WasteSample> samples)
     {
         DateTime.TryParse(dateStr, out var d);
         string dow   = d == DateTime.MinValue ? "" : $" ({DayOfWeekKr(d)})";
         string label = d == DateTime.MinValue ? dateStr : $"🗓  {d.Month}/{d.Day}{dow}";
-        return new TreeViewItem
+
+        var node = new TreeViewItem
         {
-            Tag    = dateStr,
-            Header = new TextBlock
+            Tag        = dateStr,
+            IsExpanded = true,
+            Header     = new StackPanel
             {
-                Text = label, FontFamily = Font,
-                Foreground = Brush.Parse("#dddddd"),
-            }.BindMD()
+                Orientation = Orientation.Horizontal, Spacing = 6,
+                Children =
+                {
+                    new TextBlock
+                    {
+                        Text = label, FontFamily = Font,
+                        Foreground = Brush.Parse("#dddddd"),
+                    }.BindMD(),
+                    new Border
+                    {
+                        Background = Brush.Parse("#2a2a3a"), CornerRadius = new CornerRadius(8),
+                        Padding = new Thickness(5, 1), VerticalAlignment = VerticalAlignment.Center,
+                        Child = new TextBlock
+                        {
+                            Text = samples.Count.ToString(),
+                            FontFamily = Font, Foreground = Brush.Parse("#666"),
+                        }.BindXS(),
+                    },
+                }
+            }
         };
+
+        foreach (var s in samples)
+            node.Items.Add(MakeSampleLeafNode(s, dateStr));
+
+        return node;
+    }
+
+    private static readonly Dictionary<string, (string Bg, string Fg)> _groupColors = new()
+    {
+        ["여수"] = ("#1e3a5a", "#88aacc"),
+        ["율촌"] = ("#1a3a1a", "#aaccaa"),
+        ["세풍"] = ("#3a2a1a", "#ccaa88"),
+    };
+
+    private static TreeViewItem MakeSampleLeafNode(WasteSample s, string dateStr)
+    {
+        var (bg, fg) = _groupColors.TryGetValue(s.구분, out var gc) ? gc : ("#2a2a3a", "#999");
+
+        var sp = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 5 };
+
+        // 구분 배지
+        sp.Children.Add(new Border
+        {
+            Background      = Brush.Parse(bg),
+            CornerRadius    = new CornerRadius(8),
+            Padding         = new Thickness(5, 1),
+            VerticalAlignment = VerticalAlignment.Center,
+            Child = new TextBlock
+            {
+                Text = s.구분, FontSize = 9, FontFamily = Font,
+                Foreground = Brush.Parse(fg),
+            },
+        });
+
+        // SN
+        if (!string.IsNullOrEmpty(s.SN))
+            sp.Children.Add(new TextBlock
+            {
+                Text = s.SN, FontSize = 9, FontFamily = Font,
+                Foreground = Brush.Parse("#666"),
+                VerticalAlignment = VerticalAlignment.Center,
+            });
+
+        // 업체명
+        sp.Children.Add(new TextBlock
+        {
+            Text = s.업체명, FontSize = 11, FontFamily = Font,
+            Foreground = AppRes("AppFg"),
+            VerticalAlignment = VerticalAlignment.Center,
+        });
+
+        return new TreeViewItem { Tag = dateStr, Header = sp };
     }
 
     private static string DayOfWeekKr(DateTime d) => d.DayOfWeek switch
@@ -506,7 +581,8 @@ public partial class WasteSampleListPage : UserControl
         bool exists = monthNode.Items.OfType<TreeViewItem>().Any(d => (string?)d.Tag == date);
         if (exists) return;
 
-        monthNode.Items.Insert(0, MakeDateNode(date));
+        var newSamples = WasteSampleService.GetByDate(date);
+        monthNode.Items.Insert(0, MakeDateNode(date, newSamples));
     }
 
     // =========================================================================
@@ -651,7 +727,8 @@ public partial class WasteSampleListPage : UserControl
         {
             var companies = WasteCompanyService.GetAllItems()
                 .Where(c => CompanyGroup(c) == _companyActiveGroup)
-                .Where(c => string.IsNullOrEmpty(search) || c.업체명.Contains(search))
+                .Where(c => string.IsNullOrEmpty(search) ||
+                            c.업체명.Contains(search) || c.약칭.Contains(search))
                 .OrderBy(c => c.관리번호)
                 .ToList();
 
@@ -724,31 +801,74 @@ public partial class WasteSampleListPage : UserControl
         };
     }
 
-    private static TreeViewItem MakeCompanyLeafNode(WasteCompany c) => new()
+    private static TreeViewItem MakeCompanyLeafNode(WasteCompany c)
     {
-        Tag = c,
-        Header = new StackPanel
+        var sp = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4 };
+
+        if (!string.IsNullOrWhiteSpace(c.약칭))
         {
-            Orientation = Orientation.Horizontal, Spacing = 4,
-            Children =
+            var (bg, fg, bd) = GetChosungBadgeColor(c.약칭);
+            sp.Children.Add(new Border
             {
-                new TextBlock
+                Background        = Brush.Parse(bg),
+                BorderBrush       = Brush.Parse(bd),
+                BorderThickness   = new Thickness(1),
+                CornerRadius      = new CornerRadius(8),
+                Padding           = new Thickness(5, 1),
+                VerticalAlignment = VerticalAlignment.Center,
+                Child = new TextBlock
                 {
-                    Text = c.업체명, FontSize = 12, FontFamily = Font,
-                    FontWeight = FontWeight.Regular,
-                    Foreground = AppRes("AppFg"),
-                    VerticalAlignment = VerticalAlignment.Center,
+                    Text = c.약칭, FontSize = 9, FontFamily = Font,
+                    Foreground = Brush.Parse(fg),
                 },
-                new TextBlock
-                {
-                    Text = c.관리번호, FontSize = 9, FontFamily = Font,
-                    FontWeight = FontWeight.Regular,
-                    Foreground = Brush.Parse("#666"),
-                    VerticalAlignment = VerticalAlignment.Center,
-                },
-            }
+            });
         }
-    };
+
+        sp.Children.Add(new TextBlock
+        {
+            Text = c.업체명, FontSize = 12, FontFamily = Font,
+            Foreground = AppRes("AppFg"),
+            VerticalAlignment = VerticalAlignment.Center,
+        });
+        sp.Children.Add(new TextBlock
+        {
+            Text = c.관리번호, FontSize = 9, FontFamily = Font,
+            Foreground = Brush.Parse("#666"),
+            VerticalAlignment = VerticalAlignment.Center,
+        });
+
+        return new TreeViewItem { Tag = c, Header = sp };
+    }
+
+    private static readonly char[] _chosungs =
+        { 'ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ' };
+
+    private static (string Bg, string Fg, string Bd) GetChosungBadgeColor(string 약칭)
+    {
+        if (string.IsNullOrEmpty(약칭)) return ("#2a2a3a", "#888888", "#444444");
+        char first = 약칭[0];
+        char cho = (first >= 0xAC00 && first <= 0xD7A3)
+            ? _chosungs[(first - 0xAC00) / (21 * 28)]
+            : first;
+        return cho switch
+        {
+            'ㄱ' or 'ㄲ' => ("#1a2a4a", "#88aaee", "#2255bb"),
+            'ㄴ'         => ("#0f3030", "#55ddcc", "#1a8877"),
+            'ㄷ' or 'ㄸ' => ("#0f2a3a", "#66ccee", "#1a6688"),
+            'ㄹ'         => ("#0f3a2a", "#66ddaa", "#1a8855"),
+            'ㅁ'         => ("#1a3a1a", "#88cc77", "#336633"),
+            'ㅂ' or 'ㅃ' => ("#2a3a10", "#aabb55", "#556622"),
+            'ㅅ' or 'ㅆ' => ("#3a3010", "#ddcc55", "#886622"),
+            'ㅇ'         => ("#3a2010", "#ddaa55", "#885522"),
+            'ㅈ' or 'ㅉ' => ("#3a1a2a", "#dd88aa", "#882255"),
+            'ㅊ'         => ("#3a1010", "#ee7777", "#882222"),
+            'ㅋ'         => ("#3a1a3a", "#cc77cc", "#772277"),
+            'ㅌ'         => ("#2a1a3a", "#aa88dd", "#553388"),
+            'ㅍ'         => ("#1a1a3a", "#8899dd", "#222288"),
+            'ㅎ'         => ("#1a2a3a", "#7799bb", "#224466"),
+            _            => ("#2a2a3a", "#999999", "#555555"),
+        };
+    }
 
     private void CompanyTree_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {

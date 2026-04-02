@@ -26,7 +26,7 @@
         </Style>
     </UserControl.Styles>
 
-    <Grid RowDefinitions="Auto,*">
+    <Grid RowDefinitions="Auto,Auto,*">
         <Border Grid.Row="0"
                 Background="{DynamicResource PanelBg}"
                 CornerRadius="6,6,0,0"
@@ -90,7 +90,20 @@
                         BorderBrush="{DynamicResource InputBorder}"/>
             </Grid>
         </Border>
-        <TreeView Grid.Row="1"
+        <!-- Row 1: 검색창 -->
+        <Border Grid.Row="1"
+                Background="{DynamicResource PanelInnerBg}"
+                Padding="6,4">
+            <TextBox x:Name="SearchBox"
+                     Watermark="🔍  업체명 / 약칭 검색..."
+                     FontSize="{DynamicResource FontSizeSM}"
+                     FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                     Background="Transparent"
+                     BorderThickness="0"
+                     TextChanged="SearchBox_TextChanged"/>
+        </Border>
+
+        <TreeView Grid.Row="2"
                   x:Name="WasteCompanyTreeView"
                   Margin="5"
                   HorizontalAlignment="Stretch"

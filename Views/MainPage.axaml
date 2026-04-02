@@ -300,9 +300,9 @@
 
                     <MenuItem Header="측정결과 입력" Click="ProcessingFacility_Click" IsEnabled="False" Opacity="0.4"/>
 
-                    <MenuItem Header="결과 제출" Opacity="0.4">
+                    <MenuItem Header="결과 제출">
                         <MenuItem Header="측정인" Click="ResultSubmitMeasure_Click" IsEnabled="False" Opacity="0.4"/>
-                        <MenuItem Header="ERP"    Click="ResultSubmitErp_Click"    IsEnabled="False" Opacity="0.4"/>
+                        <MenuItem Header="ERP"    Click="ResultSubmitErp_Click"/>
                         <MenuItem Header="Zero4"  Click="ResultSubmitZero4_Click"  IsEnabled="False" Opacity="0.4"/>
                     </MenuItem>
 

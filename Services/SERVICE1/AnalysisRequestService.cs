@@ -47,6 +47,10 @@ public static class AnalysisRequestService
         }
 
         // MariaDB: using var 중첩 시 커넥션 충돌 방지 — 단일 using 블록
+        bool has정도보증 = DbConnectionFactory.ColumnExists(conn, "분석의뢰및결과", "정도보증");
+        var samplerCandidates = new[] { "시료채취1", "채수담당자", "시료채취자1", "시료채취자-1" };
+        string? samplerCol = samplerCandidates.FirstOrDefault(c => DbConnectionFactory.ColumnExists(conn, "분석의뢰및결과", c));
+
         using (var cmd = conn.CreateCommand())
         {
             cmd.CommandText = $@"
@@ -54,7 +58,9 @@ public static class AnalysisRequestService
                        COALESCE(`약칭`,     ''),
                        COALESCE(`시료명`,   ''),
                        COALESCE(`견적번호`, ''),
-                       COALESCE(`채취일자`, '')
+                       COALESCE(`채취일자`, ''),
+                       {(has정도보증 ? "COALESCE(`정도보증`, '')" : "''")},
+                       {(samplerCol != null ? $"COALESCE(`{samplerCol}`, '')" : "''")}
                 FROM   `분석의뢰및결과`
                 ORDER  BY `채취일자` DESC";
 
@@ -73,13 +79,16 @@ public static class AnalysisRequestService
 
                     list.Add(new AnalysisRequestRecord
                     {
-                        Id       = Convert.ToInt32(rdr.GetValue(0)),
-                        약칭     = rdr.IsDBNull(1) ? "" : rdr.GetString(1),
-                        시료명   = rdr.IsDBNull(2) ? "" : rdr.GetString(2),
-                        접수번호 = rdr.IsDBNull(3) ? "" : rdr.GetString(3),
-                        의뢰일   = date,
-                        연도     = 연도,
-                        월       = 월,
+                        Id         = Convert.ToInt32(rdr.GetValue(0)),
+                        약칭       = rdr.IsDBNull(1) ? "" : rdr.GetString(1),
+                        시료명     = rdr.IsDBNull(2) ? "" : rdr.GetString(2),
+                        접수번호   = rdr.IsDBNull(3) ? "" : rdr.GetString(3),
+                        의뢰일     = date,
+                        채취일자   = date,
+                        연도       = 연도,
+                        월         = 월,
+                        정도보증   = rdr.IsDBNull(5) ? "" : rdr.GetString(5),
+                        채수담당자 = rdr.IsDBNull(6) ? "" : rdr.GetString(6),
                     });
                 }
             }
@@ -428,6 +437,54 @@ public static class AnalysisRequestService
     }
 
     // =====================================================================
+    //  분장표준처리 — 컬럼 순서대로 항목 목록 반환 (Show4 정렬용)
+    //    반환: (fullName, shortName) in DB column order, _id 제외
+    // =====================================================================
+    public static List<(string fullName, string shortName)> GetOrderedAnalytes()
+    {
+        var result = new List<(string, string)>();
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return result;
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            if (!DbConnectionFactory.TableExists(conn, "분장표준처리")) return result;
+
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT * FROM `분장표준처리` LIMIT 3";
+            using var rdr = cmd.ExecuteReader();
+
+            int      fc       = rdr.FieldCount;
+            string[] headers  = new string[fc];
+            string[] shortArr = new string[fc];
+
+            for (int i = 0; i < fc; i++)
+                headers[i] = rdr.GetName(i).Trim();
+
+            while (rdr.Read())
+            {
+                string label = rdr.IsDBNull(0) ? "" : rdr.GetValue(0)?.ToString()?.Trim() ?? "";
+                if (label == "약칭")
+                {
+                    for (int i = 1; i < fc; i++)
+                        shortArr[i] = rdr.IsDBNull(i) ? "" : rdr.GetValue(i)?.ToString()?.Trim() ?? "";
+                    break;
+                }
+            }
+
+            for (int i = 1; i < fc; i++)
+            {
+                string fullName = headers[i];
+                if (string.IsNullOrWhiteSpace(fullName) || fullName.StartsWith("_")) continue;
+                string shortName = string.IsNullOrWhiteSpace(shortArr[i]) ? fullName : shortArr[i];
+                result.Add((fullName, shortName));
+            }
+        }
+        catch (Exception ex) { Log($"GetOrderedAnalytes 오류: {ex.Message}"); }
+        return result;
+    }
+
+    // =====================================================================
     //  명칭 정리 — 분장표준처리 — 약칭 직접 조회
     //    항목명='약칭' 행을 찾아 컬럼헤드 → 약칭 매핑 반환
     //    예: "생물화학적 산소요구량" → "BOD", "수소이온농도" → "pH"
@@ -723,6 +780,51 @@ public static class AnalysisRequestService
     }
 
     // =====================================================================
+    //  분장표준처리 — 전체 기간, 중복 허용 (날짜별 1건씩 → 일수 집계용)
+    // =====================================================================
+    public static List<(string FullName, string ShortName)> GetAssignmentDaysForAgentAll(string employeeId)
+    {
+        var result = new List<(string, string)>();
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return result;
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            string managerName = "";
+            using (var cmd2 = conn.CreateCommand())
+            {
+                cmd2.CommandText = "SELECT `성명` FROM `Agent` WHERE `사번` = @id";
+                cmd2.Parameters.AddWithValue("@id", employeeId);
+                var r = cmd2.ExecuteScalar();
+                if (r != null) managerName = r.ToString()?.Trim() ?? "";
+            }
+            if (string.IsNullOrEmpty(managerName)) return result;
+
+            var info = GetStandardDaysInfo();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT * FROM `분장표준처리` ORDER BY `항목명`";
+            using var rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                for (int i = 1; i < rdr.FieldCount; i++)
+                {
+                    string colName = rdr.GetName(i).Trim();
+                    string manager = rdr.IsDBNull(i) ? "" : rdr.GetValue(i)?.ToString()?.Trim() ?? "";
+                    if (manager == managerName)
+                    {
+                        if (info.TryGetValue(colName, out var meta))
+                            result.Add((colName, meta.shortName));
+                        else
+                            result.Add((colName, colName));
+                    }
+                }
+            }
+        }
+        catch (Exception ex) { Log($"GetAssignmentDaysForAgentAll 오류: {ex.Message}"); }
+        return result;
+    }
+
+    // =====================================================================
     //  분장표준처리 — 기간 내 특정 항목을 담당하는 직원 목록 (중복 제거)
     // =====================================================================
     /// <summary>
@@ -1009,5 +1111,33 @@ public static class AnalysisRequestService
         catch (Exception ex) { Log($"GetAssignmentCalendar 오류: {ex.Message}"); }
 
         return [.. result.Values];
+    }
+
+    // =====================================================================
+    //  채수담당자 등록 — 시료채취1/채수담당자/시료채취자1 컬럼 중 존재하는 것에 저장
+    // =====================================================================
+    public static void UpdateSamplers(int rowId, IEnumerable<string> names)
+    {
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
+        var nameStr = string.Join(", ", names);
+
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+
+            // 여러 후보 컬럼 중 존재하는 첫 번째 컬럼에 저장
+            var candidates = new[] { "시료채취1", "채수담당자", "시료채취자1", "시료채취자-1" };
+            string? col = candidates.FirstOrDefault(c => DbConnectionFactory.ColumnExists(conn, "분석의뢰및결과", c));
+            if (col == null) { Log($"UpdateSamplers: 채수담당자 컬럼 없음 (rowId={rowId})"); return; }
+
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = $"UPDATE `분석의뢰및결과` SET `{col}` = @v WHERE {DbConnectionFactory.RowId} = @id";
+            cmd.Parameters.AddWithValue("@v", nameStr);
+            cmd.Parameters.AddWithValue("@id", rowId);
+            cmd.ExecuteNonQuery();
+            Log($"UpdateSamplers: rowId={rowId} {col}='{nameStr}'");
+        }
+        catch (Exception ex) { Log($"UpdateSamplers 오류: {ex.Message}"); }
     }
 }

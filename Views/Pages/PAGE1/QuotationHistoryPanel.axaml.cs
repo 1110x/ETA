@@ -27,6 +27,9 @@ public class AnalysisRequestRecord
     public string 의뢰일   { get; set; } = "";
     public string 연도     { get; set; } = "";
     public string 월       { get; set; } = "";
+    public string 채취일자   { get; set; } = "";
+    public string 정도보증   { get; set; } = "";
+    public string 채수담당자 { get; set; } = "";
 }
 
 public partial class QuotationHistoryPanel : UserControl

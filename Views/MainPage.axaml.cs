@@ -14,6 +14,7 @@ using ETA.ViewModels;
 using ETA.Views.Pages;
 using ETA.Views.Pages.PAGE1;
 using ETA.Views.Pages.PAGE2;
+using ETA.Views.Pages.PAGE3;
 using ETA.Views.Pages.Common;
 using Microsoft.Data.Sqlite;
 using System;
@@ -39,6 +40,7 @@ public partial class MainPage : Window
     private AnalysisPage?      _analysisPage;
     private ContractPage?      _contractPage;
     private AgentTreePage?     _agentTreePage;
+    private MyTaskPage?        _myTaskPage;
     private WasteCompanyPage?      _wasteCompanyPage;
     private WasteDataQueryPage?      _wasteDataQueryPage;
     private WasteNameReconcilePage?            _wasteNameReconcilePage;
@@ -145,7 +147,7 @@ public partial class MainPage : Window
     }
 
     private void ProfileName_Click(object? sender, PointerPressedEventArgs e)
-        => Agent_Click(sender, new RoutedEventArgs());
+        => MyTask_Click(sender, new RoutedEventArgs());
 
     private void MainPage_Closing(object? sender, WindowClosingEventArgs e)
     {
@@ -160,8 +162,9 @@ public partial class MainPage : Window
     //  분석항목 리스트 (드래그 앤 드랍용)
     // ══════════════════════════════════════════════════════════════════════
 
-    private ListBox?    _analysisItemsListBox;
-    private Control?    _content4Container;
+    private ListBox?        _analysisItemsListBox;
+    private Control?        _content4Container;
+    private ContentControl? _show4AgentWrapper;  // Show4 내부 스왑용 영구 wrapper
     private DateTime    _content4QueryStart = DateTime.Today;
     private DateTime    _content4QueryEnd   = DateTime.Today;
 
@@ -690,6 +693,36 @@ public partial class MainPage : Window
     //  메뉴 클릭
     // ══════════════════════════════════════════════════════════════════════
 
+    private void MyTask_Click(object? sender, RoutedEventArgs e)
+    {
+        _currentMode = "MyTask";
+
+        if (_myTaskPage == null)
+        {
+            _myTaskPage = new MyTaskPage();
+            _myTaskPage.DetailPanelChanged += panel =>
+            {
+                Show2.Content = panel;
+                LogContentChange("Show2", panel);
+            };
+        }
+
+        Show1.Content = _myTaskPage;
+        LogContentChange("Show1", _myTaskPage);
+        Show2.Content = null;
+        LogContentChange("Show2", null);
+        Show3.Content = null;
+        LogContentChange("Show3", null);
+        Show4.Content = null;
+        LogContentChange("Show4", null);
+
+        _myTaskPage.LoadData();
+        SetSubMenu("새로고침", "", "", "", "", "", "");
+        SetLeftPanelWidth(280);
+        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 1, lowerStar: 0);
+        RestoreModeLayout("MyTask");
+    }
+
     private void Agent_Click(object? sender, RoutedEventArgs e)
     {
         _currentMode = "Agent";
@@ -704,17 +737,34 @@ public partial class MainPage : Window
             };
         }
 
+        // Show3: 직원 선택 시 타임라인 차트
+        _agentTreePage.Show3ContentRequest = ctrl =>
+        {
+            Show3.Content = ctrl;
+            LogContentChange("Show3", ctrl);
+        };
+        // Show4: 영구 wrapper ContentControl 안에서 내용만 교체 (TransitioningContentControl 재사용 버그 방지)
+        if (_show4AgentWrapper == null)
+            _show4AgentWrapper = new ContentControl();
+        _show4AgentWrapper.Content = CreateAnalysisItemsListBox();  // 기본: 분석항목 컨테이너
+
+        _agentTreePage.Show4ContentRequest = ctrl =>
+        {
+            _show4AgentWrapper!.Content = ctrl ?? _content4Container;
+            LogContentChange("Show4", ctrl ?? _content4Container as Control);
+        };
+
         Show1.Content = _agentTreePage;
         LogContentChange("Show1", _agentTreePage);
         Show2.Content = null;
         LogContentChange("Show2", null);
         Show3.Content = null;
         LogContentChange("Show3", null);
-        
-        // ✅ Content4: 분석항목 카드 리스트 (드래그&드롭용)
-        Show4.Content = CreateAnalysisItemsListBox();
+
+        // ✅ Content4: wrapper를 Show4에 고정 (이후 내용은 wrapper.Content 교체)
+        Show4.Content = _show4AgentWrapper;
         LogContentChange("Show4", _analysisItemsListBox);
-        
+
         // AgentTreePage에 ListBox 참조 전달
         _agentTreePage.AnalysisItemsListBox = _analysisItemsListBox;
         
@@ -1251,13 +1301,18 @@ public partial class MainPage : Window
     private void ResultSubmitErp_Click(object? sender, RoutedEventArgs e)
     {
         _currentMode = "ResultSubmitErp";
-        _resultSubmitErpPage ??= new ResultSubmitErpPage();
+        if (_resultSubmitErpPage == null)
+        {
+            _resultSubmitErpPage = new ResultSubmitErpPage();
+            _resultSubmitErpPage.Show2ContentRequest = ctrl => Show2.Content = ctrl;
+        }
         Show1.Content = _resultSubmitErpPage;
         LogContentChange("Show1", _resultSubmitErpPage);
-        Show2.Content = null; Show3.Content = null; Show4.Content = null;
+        Show3.Content = null; Show4.Content = null;
+        _resultSubmitErpPage.RefreshShow2();         // Excel 테이블 → Show2
         SetSubMenu("저장", "새로고침", "", "", "", "", "");
         SetLeftPanelWidth(260);
-        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 8, lowerStar: 2);
+        SetContentLayout(content2Star: 5, content4Star: 0, upperStar: 8, lowerStar: 2);
         RestoreModeLayout("ResultSubmitErp");
     }
 
@@ -2152,6 +2207,7 @@ public partial class MainPage : Window
                 _wasteSampleListPage?.LoadData();
                 _wasteSampleListPage?.LoadCompanyTree();
                 break;
+            case "MyTask":          _myTaskPage?.LoadData();             break;
             default: _bt1SaveAction?.Invoke();                          break;
         }
     }

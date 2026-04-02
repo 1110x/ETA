@@ -27,6 +27,20 @@ public static class AgentService
         }
     }
 
+    // ── 담당항목/담당업체 컬럼 마이그레이션 ──────────────────────────────────
+    private static void EnsureAssignColumns(DbConnection conn)
+    {
+        foreach (var col in new[] { "담당항목", "담당업체" })
+        {
+            if (!DbConnectionFactory.ColumnExists(conn, "Agent", col))
+            {
+                using var alt = conn.CreateCommand();
+                alt.CommandText = $"ALTER TABLE `Agent` ADD COLUMN `{col}` TEXT DEFAULT ''";
+                try { alt.ExecuteNonQuery(); Debug.WriteLine($"[DB] {col} 컬럼 추가"); } catch { }
+            }
+        }
+    }
+
     // ── 계정 관련 컬럼 마이그레이션 (로그인 기능용) ──────────────────────────
     public static void MigrateAccountColumns()
     {
@@ -67,11 +81,13 @@ public static class AgentService
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         EnsurePhotoPathColumn(conn);
+        EnsureAssignColumns(conn);
 
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
             SELECT 성명, 직급, 직무, 입사일, 사번,
-                   자격사항, Email, 기타, 측정인고유번호, PhotoPath
+                   자격사항, Email, 기타, 측정인고유번호, PhotoPath,
+                   담당항목, 담당업체
             FROM `Agent`
             ORDER BY 사번 ASC";
 
@@ -91,6 +107,8 @@ public static class AgentService
                 측정인고유번호 = S(reader, "측정인고유번호"),
                 // 절대경로로 저장된 경우 파일명만 추출 (정규화)
                 PhotoPath      = NormalizePhotoPath(S(reader, "PhotoPath")),
+                담당항목       = S(reader, "담당항목"),
+                담당업체       = S(reader, "담당업체"),
             };
             if (DateOnly.TryParse(S(reader, "입사일"), out var d)) a.입사일 = d;
             items.Add(a);
@@ -108,13 +126,15 @@ public static class AgentService
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         EnsurePhotoPathColumn(conn);
+        EnsureAssignColumns(conn);
 
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
             UPDATE `Agent` SET
                 성명=@성명, 직급=@직급, 직무=@직무, 입사일=@입사일,
                 사번=@사번, 자격사항=@자격사항, Email=@Email,
-                기타=@기타, 측정인고유번호=@측정인고유번호, PhotoPath=@PhotoPath
+                기타=@기타, 측정인고유번호=@측정인고유번호, PhotoPath=@PhotoPath,
+                담당항목=@담당항목, 담당업체=@담당업체
             WHERE 성명=@Original성명";
 
         SetParams(cmd, agent);
@@ -640,6 +660,8 @@ public static class AgentService
         cmd.Parameters.AddWithValue("@기타",           a.기타           ?? "");
         cmd.Parameters.AddWithValue("@측정인고유번호", a.측정인고유번호 ?? "");
         cmd.Parameters.AddWithValue("@PhotoPath",      a.PhotoPath      ?? "");
+        cmd.Parameters.AddWithValue("@담당항목",       a.담당항목       ?? "");
+        cmd.Parameters.AddWithValue("@담당업체",       a.담당업체       ?? "");
     }
 
     // ── 헬퍼 ─────────────────────────────────────────────────────────────────

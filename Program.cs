@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.ReactiveUI;
@@ -8,12 +9,29 @@ namespace ETA;  // 네임스페이스 맞춰주세요
 
 class Program
 {
-    // Initialization code. Don't use any Avalonia, third-party APIs or any
-    // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
-    // yet and stuff might broke.
     [STAThread]
     public static void Main(string[] args)
     {
+        // ── 관리자 권한 자동 상승 ─────────────────────────────────────────
+        if (!IsAdmin())
+        {
+            try
+            {
+                var exe = Process.GetCurrentProcess().MainModule?.FileName;
+                if (exe != null)
+                {
+                    Process.Start(new ProcessStartInfo(exe)
+                    {
+                        UseShellExecute = true,
+                        Verb = "runas",
+                        Arguments = string.Join(" ", args),
+                    });
+                }
+            }
+            catch { /* 사용자가 UAC 거부 시 일반 권한으로 계속 실행 */ }
+            return;
+        }
+
         // ── 로그 파일 설정 ── (~/Documents/ETA/Data/측정인.log)
         var logDir  = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
@@ -56,6 +74,12 @@ class Program
 
         Debug.WriteLine($"========== ETA 종료 {DateTime.Now:yyyy-MM-dd HH:mm:ss} ==========");
         Debug.Flush();
+    }
+
+    private static bool IsAdmin()
+    {
+        using var id = WindowsIdentity.GetCurrent();
+        return new WindowsPrincipal(id).IsInRole(WindowsBuiltInRole.Administrator);
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.
