@@ -900,7 +900,7 @@ public class SchedulePage
             else if (pos == SpanPos.End)
                 chipText = string.IsNullOrEmpty(names) ? $"▸{label}" : $"▸{names}";
             else
-                chipText = string.IsNullOrEmpty(names) ? $"{cs.Icon}{label}" : $"{cs.Icon}{label} {names}";
+                chipText = string.IsNullOrEmpty(names) ? $"{cs.Icon} {label}" : $"{cs.Icon} {label} {names}";
 
             var radius = pos switch
             {
