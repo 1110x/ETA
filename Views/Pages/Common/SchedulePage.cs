@@ -676,6 +676,49 @@ public class SchedulePage
         HorizontalContentAlignment = HorizontalAlignment.Center,
     };
 
+    // ── 연속일 스팬 위치 ─────────────────────────────────────────────────
+    private enum SpanPos { Single, Start, Middle, End }
+
+    /// <summary>동일 직원+분류+업체약칭이 연속일에 걸쳐 있으면 스팬으로 묶는다.</summary>
+    private static Dictionary<(string date, string key), SpanPos> ComputeSpans(List<ScheduleEntry> entries)
+    {
+        var result = new Dictionary<(string, string), SpanPos>();
+        // 그룹키 = 직원id|분류|업체약칭
+        var groups = entries
+            .GroupBy(e => $"{e.직원id}|{e.분류}|{e.업체약칭}");
+
+        foreach (var g in groups)
+        {
+            var dates = g.Select(e => e.날짜).Distinct()
+                .Where(d => DateTime.TryParse(d, out _))
+                .OrderBy(d => d).ToList();
+            if (dates.Count < 2) { foreach (var d in dates) result[(d, g.Key)] = SpanPos.Single; continue; }
+
+            // 연속 구간 찾기
+            var runs = new List<List<string>> { new() { dates[0] } };
+            for (int i = 1; i < dates.Count; i++)
+            {
+                var prev = DateTime.Parse(dates[i - 1]);
+                var curr = DateTime.Parse(dates[i]);
+                if ((curr - prev).TotalDays == 1)
+                    runs[^1].Add(dates[i]);
+                else
+                    runs.Add(new List<string> { dates[i] });
+            }
+
+            foreach (var run in runs)
+            {
+                if (run.Count == 1) { result[(run[0], g.Key)] = SpanPos.Single; continue; }
+                for (int i = 0; i < run.Count; i++)
+                {
+                    var pos = i == 0 ? SpanPos.Start : i == run.Count - 1 ? SpanPos.End : SpanPos.Middle;
+                    result[(run[i], g.Key)] = pos;
+                }
+            }
+        }
+        return result;
+    }
+
     public void RefreshCalendar()
     {
         if (_monthLbl == null || _calGrid == null) return;
@@ -683,6 +726,7 @@ public class SchedulePage
         _calGrid.Children.Clear();
 
         var entries     = ScheduleService.GetByMonth(_month.Year, _month.Month);
+        var spans       = ComputeSpans(entries);
         int totalAgents = AgentService.GetAllItems().Count;
         int days        = DateTime.DaysInMonth(_month.Year, _month.Month);
         int startDow    = (int)_month.DayOfWeek;  // 일요일=0
@@ -692,7 +736,7 @@ public class SchedulePage
             for (int col = 0; col < 7; col++)
             {
                 int day  = row * 7 + col - startDow + 1;
-                var cell = BuildCell(day, col, days, entries, totalAgents);
+                var cell = BuildCell(day, col, days, entries, totalAgents, spans);
                 Grid.SetColumn(cell, col);
                 Grid.SetRow(cell, row);
                 _calGrid.Children.Add(cell);
@@ -700,7 +744,7 @@ public class SchedulePage
         }
     }
 
-    private Border BuildCell(int day, int col, int daysInMonth, List<ScheduleEntry> entries, int totalAgents)
+    private Border BuildCell(int day, int col, int daysInMonth, List<ScheduleEntry> entries, int totalAgents, Dictionary<(string date, string key), SpanPos> spans)
     {
         bool valid    = day >= 1 && day <= daysInMonth;
         bool isToday  = valid
@@ -781,8 +825,8 @@ public class SchedulePage
                     ColumnDefinitions = new ColumnDefinitions("*,1,*"),
                     Margin = new Thickness(0, 1),
                 };
-                var leftSp  = BuildEntryColumn(tripEntries,  2);
-                var rightSp = BuildEntryColumn(leaveEntries, 2);
+                var leftSp  = BuildEntryColumn(tripEntries,  2, dateStr, spans);
+                var rightSp = BuildEntryColumn(leaveEntries, 2, dateStr, spans);
                 halves.Children.Add(new Border
                 {
                     Background = Brushes.Transparent,
@@ -796,7 +840,7 @@ public class SchedulePage
             }
             else
             {
-                var all  = BuildEntryColumn(dayEntries, 3);
+                var all  = BuildEntryColumn(dayEntries, 3, dateStr, spans);
                 sp.Children.Add(all);
             }
 
@@ -823,33 +867,59 @@ public class SchedulePage
         return cell;
     }
 
-    private StackPanel BuildEntryColumn(List<ScheduleEntry> list, int maxShow)
+    private StackPanel BuildEntryColumn(List<ScheduleEntry> list, int maxShow,
+        string dateStr, Dictionary<(string date, string key), SpanPos> spans)
     {
         var col = new StackPanel { Spacing = 1 };
         foreach (var en in list.Take(maxShow))
         {
             var cs = GetCat(en.분류);
+            string spanKey = $"{en.직원id}|{en.분류}|{en.업체약칭}";
+            spans.TryGetValue((dateStr, spanKey), out var pos);
 
-            // 채수: 아이콘+업체약칭 사용자
-            // 그 외: 아이콘+종류 사용자
-            string label = en.분류 == "채수" && !string.IsNullOrEmpty(en.업체약칭)
-                ? en.업체약칭
-                : en.분류;
+            // 채수: 아이콘+업체약칭 사용자 / 그 외: 아이콘+종류 사용자
+            string label  = en.분류 == "채수" && !string.IsNullOrEmpty(en.업체약칭)
+                ? en.업체약칭 : en.분류;
             string person = !string.IsNullOrEmpty(en.직원명) ? en.직원명 : en.제목;
 
-            // 아이콘+라벨+인원 통합 배지
-            string chipText = string.IsNullOrEmpty(person)
-                ? $"{cs.Icon}{label}"
-                : $"{cs.Icon}{label} {person}";
+            // 스팬 위치별 텍스트
+            string chipText;
+            if (pos == SpanPos.Middle)
+                chipText = "━━";   // 연결 바
+            else if (pos == SpanPos.End)
+                chipText = string.IsNullOrEmpty(person) ? $"▸{label}" : $"▸{person}";
+            else
+                chipText = string.IsNullOrEmpty(person) ? $"{cs.Icon}{label}" : $"{cs.Icon}{label} {person}";
+
+            // 스팬 위치별 모서리: Start=왼쪽만 둥글게, End=오른쪽만, Middle=전부 직각
+            var radius = pos switch
+            {
+                SpanPos.Start  => new CornerRadius(3, 0, 0, 3),
+                SpanPos.Middle => new CornerRadius(0),
+                SpanPos.End    => new CornerRadius(0, 3, 3, 0),
+                _              => new CornerRadius(3),
+            };
+            // 스팬 위치별 마진: 셀 경계까지 확장
+            var margin = pos switch
+            {
+                SpanPos.Start  => new Thickness(0, 0, -4, 0),
+                SpanPos.Middle => new Thickness(-4, 0, -4, 0),
+                SpanPos.End    => new Thickness(-4, 0, 0, 0),
+                _              => new Thickness(0),
+            };
 
             col.Children.Add(new Border
             {
                 Background      = Brush.Parse(cs.Bg),
                 BorderBrush     = Brush.Parse(cs.Bd),
-                BorderThickness = new Thickness(1),
-                CornerRadius    = new CornerRadius(3),
+                BorderThickness = new Thickness(
+                    pos is SpanPos.Middle or SpanPos.End ? 0 : 1,   // left
+                    1,                                                // top
+                    pos is SpanPos.Start or SpanPos.Middle ? 0 : 1, // right
+                    1),                                               // bottom
+                CornerRadius    = radius,
                 Padding         = new Thickness(3, 0),
-                Margin          = new Thickness(0, 0, 0, 0),
+                Margin          = margin,
                 Child = new TextBlock
                 {
                     Text = chipText, FontFamily = Font,
