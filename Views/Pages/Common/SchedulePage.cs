@@ -429,49 +429,19 @@ public class SchedulePage
 
         if (tn.Type == "request")
         {
-            _selCat = "채수";
-            ApplyCatStyles();
             int reqId = int.TryParse(tn.Id, out var rid) ? rid : -1;
             string reqAbbr = tn.Name;
-
-            // 날짜 포커스 정보를 LoadTree() 전에 저장
             string rawDate = tn.Date;
-
             bool hasSampler = !string.IsNullOrWhiteSpace(rawDate);
 
-            if (_lastClickCtrl)
+            if (hasSampler)
             {
-                int idx = _selReqs.FindIndex(r => r.Id == reqId);
-                if (idx >= 0) _selReqs.RemoveAt(idx);
-                else          _selReqs.Add((reqId, reqAbbr));
-                _suppressSelection = true;
-                LoadTree();
-                _suppressSelection = false;
-            }
-            else
-            {
+                // ── 담당자 배정 완료: 시퀀스 진입 안함, 캘린더 포커스만 ──
                 _selReqs.Clear();
                 _selReqs.Add((reqId, reqAbbr));
-                // 담당자 배정 없는 경우만 직원 탭으로 전환 (담당자 선택 유도)
-                // 담당자 배정 있으면 의뢰목록 유지 (날짜 포커스 확인용)
-                if (!hasSampler)
-                {
-                    _showCon = false;
-                    ApplyTabStyles();
-                }
-                _suppressSelection = true;
-                LoadTree();
-                _suppressSelection = false;
-            }
+                _selCompanyAbbr = reqAbbr;
+                RefreshCompanyBadge();
 
-            _selCompanyAbbr = string.Join(",", _selReqs.Select(r => r.Abbr).Distinct());
-            RefreshCompanyBadge();
-            RefreshProgress();
-
-            // 채수담당자 배정된 경우: 채취일자 캘린더 포커스 + 날짜 선택
-            if (!string.IsNullOrWhiteSpace(rawDate))
-            {
-                // 날짜 형식 정규화: "20240401" → "2024-04-01"
                 var normalized = NormalizeDate(rawDate);
                 if (DateTime.TryParse(normalized, out var focusDt))
                 {
@@ -487,11 +457,37 @@ public class SchedulePage
                     RefreshCalendar();
                     RefreshEntries();
                 }
+                return;
+            }
+
+            // ── 담당자 미배정: 채수 시퀀스 시작 ──
+            _selCat = "채수";
+            ApplyCatStyles();
+            _focusDate = null;
+
+            if (_lastClickCtrl)
+            {
+                int idx = _selReqs.FindIndex(r => r.Id == reqId);
+                if (idx >= 0) _selReqs.RemoveAt(idx);
+                else          _selReqs.Add((reqId, reqAbbr));
+                _suppressSelection = true;
+                LoadTree();
+                _suppressSelection = false;
             }
             else
             {
-                _focusDate = null;
+                _selReqs.Clear();
+                _selReqs.Add((reqId, reqAbbr));
+                _showCon = false;
+                ApplyTabStyles();
+                _suppressSelection = true;
+                LoadTree();
+                _suppressSelection = false;
             }
+
+            _selCompanyAbbr = string.Join(",", _selReqs.Select(r => r.Abbr).Distinct());
+            RefreshCompanyBadge();
+            RefreshProgress();
             return;
         }
 
