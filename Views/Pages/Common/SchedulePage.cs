@@ -837,35 +837,26 @@ public class SchedulePage
                 : en.분류;
             string person = !string.IsNullOrEmpty(en.직원명) ? en.직원명 : en.제목;
 
-            var row = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 2 };
+            // 아이콘+라벨+인원 통합 배지
+            string chipText = string.IsNullOrEmpty(person)
+                ? $"{cs.Icon}{label}"
+                : $"{cs.Icon}{label} {person}";
 
-            // 아이콘+종류 배지
-            row.Children.Add(new Border
+            col.Children.Add(new Border
             {
                 Background      = Brush.Parse(cs.Bg),
                 BorderBrush     = Brush.Parse(cs.Bd),
                 BorderThickness = new Thickness(1),
                 CornerRadius    = new CornerRadius(3),
-                Padding         = new Thickness(2, 0),
+                Padding         = new Thickness(3, 0),
+                Margin          = new Thickness(0, 0, 0, 0),
                 Child = new TextBlock
                 {
-                    Text = $"{cs.Icon} {label}", FontFamily = Font,
+                    Text = chipText, FontFamily = Font,
                     Foreground = Brush.Parse(cs.Fg),
-                }.BindSM(),
-            });
-
-            // : 사용자명
-            if (!string.IsNullOrEmpty(person))
-                row.Children.Add(new TextBlock
-                {
-                    Text         = person,
-                    FontFamily   = Font,
-                    Foreground   = AppRes("AppFg"),
                     TextTrimming = TextTrimming.CharacterEllipsis,
-                    MaxWidth     = 44,
-                    VerticalAlignment = VerticalAlignment.Center,
-                }.BindSM());
-            col.Children.Add(row);
+                }.BindXS(),
+            });
         }
         if (list.Count > maxShow)
             col.Children.Add(new TextBlock
