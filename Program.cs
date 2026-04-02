@@ -12,8 +12,8 @@ class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        // ── 관리자 권한 자동 상승 ─────────────────────────────────────────
-        if (!IsAdmin())
+        // ── 관리자 권한 자동 상승 (Windows 전용) ─────────────────────────
+        if (OperatingSystem.IsWindows() && !IsAdmin())
         {
             try
             {
