@@ -830,33 +830,8 @@ public class SchedulePage
             }.BindSM());
             sp.Children.Add(hdrRow);
 
-            bool split = tripEntries.Count > 0 && leaveEntries.Count > 0;
-            if (split)
-            {
-                // 출장 | 구분선 | 연차/반차 등 두 섹션으로 분리
-                var halves = new Grid
-                {
-                    ColumnDefinitions = new ColumnDefinitions("*,1,*"),
-                    Margin = new Thickness(0, 1),
-                };
-                var leftSp  = BuildEntryColumn(tripEntries,  2, dateStr, spans);
-                var rightSp = BuildEntryColumn(leaveEntries, 2, dateStr, spans);
-                halves.Children.Add(new Border
-                {
-                    Background = Brushes.Transparent,
-                    [Grid.ColumnProperty] = 1,
-                });
-                Grid.SetColumn(leftSp,  0);
-                Grid.SetColumn(rightSp, 2);
-                halves.Children.Add(leftSp);
-                halves.Children.Add(rightSp);
-                sp.Children.Add(halves);
-            }
-            else
-            {
-                var all  = BuildEntryColumn(dayEntries, 3, dateStr, spans);
-                sp.Children.Add(all);
-            }
+            var all = BuildEntryColumn(dayEntries, 4, dateStr, spans);
+            sp.Children.Add(all);
 
             // 클릭 → 날짜 선택
             var ds = dateStr;
