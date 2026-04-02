@@ -735,13 +735,57 @@ public class SchedulePage
         return result;
     }
 
+    /// <summary>분석의뢰 채수담당자 배정 → ScheduleEntry로 변환하여 캘린더에 표시</summary>
+    private static List<ScheduleEntry> GetRequestEntriesForMonth(int year, int month)
+    {
+        var prefix = $"{year:D4}-{month:D2}";
+        var list = new List<ScheduleEntry>();
+        try
+        {
+            var records = AnalysisRequestService.GetAllRecords()
+                .Where(r => !string.IsNullOrWhiteSpace(r.채수담당자))
+                .ToList();
+
+            foreach (var r in records)
+            {
+                var normalized = NormalizeDate(r.채취일자);
+                if (!normalized.StartsWith(prefix)) continue;
+
+                // 채수담당자가 쉼표로 구분된 복수 인원일 수 있음
+                var names = r.채수담당자.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                foreach (var name in names)
+                {
+                    list.Add(new ScheduleEntry
+                    {
+                        날짜     = normalized,
+                        직원명   = name,
+                        직원id   = name,  // id 없음 → 이름으로 대체
+                        분류     = "채수",
+                        업체약칭 = !string.IsNullOrWhiteSpace(r.약칭) ? r.약칭 : r.시료명,
+                    });
+                }
+            }
+        }
+        catch { }
+        return list;
+    }
+
     public void RefreshCalendar()
     {
         if (_monthLbl == null || _calGrid == null) return;
         _monthLbl.Text = $"{_month.Year}년  {_month.Month}월";
         _calGrid.Children.Clear();
 
-        var entries     = ScheduleService.GetByMonth(_month.Year, _month.Month);
+        // 일정 테이블 + 분석의뢰 채수담당자 배정 병합
+        var entries = ScheduleService.GetByMonth(_month.Year, _month.Month);
+        var reqEntries = GetRequestEntriesForMonth(_month.Year, _month.Month);
+        // 중복 방지: 이미 일정에 같은 날짜+직원+약칭이 있으면 의뢰 엔트리 제외
+        foreach (var re in reqEntries)
+        {
+            bool dup = entries.Any(e =>
+                e.날짜 == re.날짜 && e.직원명 == re.직원명 && e.업체약칭 == re.업체약칭);
+            if (!dup) entries.Add(re);
+        }
         var spans       = ComputeSpans(entries);
         int totalAgents = AgentService.GetAllItems().Count;
         int days        = DateTime.DaysInMonth(_month.Year, _month.Month);
