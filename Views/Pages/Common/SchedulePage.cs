@@ -871,27 +871,48 @@ public class SchedulePage
         string dateStr, Dictionary<(string date, string key), SpanPos> spans)
     {
         var col = new StackPanel { Spacing = 1 };
-        foreach (var en in list.Take(maxShow))
+
+        // 같은 분류+업체약칭끼리 그룹핑 → 인원 합치기
+        var grouped = list
+            .GroupBy(e => $"{e.분류}|{e.업체약칭}")
+            .Select(g => (
+                First: g.First(),
+                Names: string.Join(", ", g
+                    .Select(e => !string.IsNullOrEmpty(e.직원명) ? e.직원명 : e.제목)
+                    .Where(n => !string.IsNullOrEmpty(n))
+                    .Distinct()),
+                // 스팬은 그룹 내 첫 엔트리 기준 (같은 분류+약칭이면 스팬 동일)
+                SpanKey: $"{g.First().직원id}|{g.First().분류}|{g.First().업체약칭}"
+            ))
+            .ToList();
+
+        foreach (var (en, names, spanKey) in grouped.Take(maxShow))
         {
             var cs = GetCat(en.분류);
-            string spanKey = $"{en.직원id}|{en.분류}|{en.업체약칭}";
-            spans.TryGetValue((dateStr, spanKey), out var pos);
 
-            // 채수: 아이콘+업체약칭 사용자 / 그 외: 아이콘+종류 사용자
-            string label  = en.분류 == "채수" && !string.IsNullOrEmpty(en.업체약칭)
+            // 다중 직원인 경우 스팬 키를 별도로 계산 (그룹 내 첫 번째만으로는 부족)
+            // → 그룹 내 모든 직원 스팬 중 가장 유의미한 것 사용
+            var groupEntries = list.Where(e => $"{e.분류}|{e.업체약칭}" == $"{en.분류}|{en.업체약칭}").ToList();
+            var pos = SpanPos.Single;
+            foreach (var ge in groupEntries)
+            {
+                var k = $"{ge.직원id}|{ge.분류}|{ge.업체약칭}";
+                if (spans.TryGetValue((dateStr, k), out var p) && p != SpanPos.Single)
+                { pos = p; break; }
+            }
+
+            string label = en.분류 == "채수" && !string.IsNullOrEmpty(en.업체약칭)
                 ? en.업체약칭 : en.분류;
-            string person = !string.IsNullOrEmpty(en.직원명) ? en.직원명 : en.제목;
 
             // 스팬 위치별 텍스트
             string chipText;
             if (pos == SpanPos.Middle)
-                chipText = "━━";   // 연결 바
+                chipText = "━━";
             else if (pos == SpanPos.End)
-                chipText = string.IsNullOrEmpty(person) ? $"▸{label}" : $"▸{person}";
+                chipText = string.IsNullOrEmpty(names) ? $"▸{label}" : $"▸{names}";
             else
-                chipText = string.IsNullOrEmpty(person) ? $"{cs.Icon}{label}" : $"{cs.Icon}{label} {person}";
+                chipText = string.IsNullOrEmpty(names) ? $"{cs.Icon}{label}" : $"{cs.Icon}{label} {names}";
 
-            // 스팬 위치별 모서리: Start=왼쪽만 둥글게, End=오른쪽만, Middle=전부 직각
             var radius = pos switch
             {
                 SpanPos.Start  => new CornerRadius(3, 0, 0, 3),
@@ -899,7 +920,6 @@ public class SchedulePage
                 SpanPos.End    => new CornerRadius(0, 3, 3, 0),
                 _              => new CornerRadius(3),
             };
-            // 스팬 위치별 마진: 셀 경계까지 확장
             var margin = pos switch
             {
                 SpanPos.Start  => new Thickness(0, 0, -4, 0),
@@ -913,10 +933,10 @@ public class SchedulePage
                 Background      = Brush.Parse(cs.Bg),
                 BorderBrush     = Brush.Parse(cs.Bd),
                 BorderThickness = new Thickness(
-                    pos is SpanPos.Middle or SpanPos.End ? 0 : 1,   // left
-                    1,                                                // top
-                    pos is SpanPos.Start or SpanPos.Middle ? 0 : 1, // right
-                    1),                                               // bottom
+                    pos is SpanPos.Middle or SpanPos.End ? 0 : 1,
+                    1,
+                    pos is SpanPos.Start or SpanPos.Middle ? 0 : 1,
+                    1),
                 CornerRadius    = radius,
                 Padding         = new Thickness(3, 0),
                 Margin          = margin,
@@ -928,10 +948,10 @@ public class SchedulePage
                 }.BindXS(),
             });
         }
-        if (list.Count > maxShow)
+        if (grouped.Count > maxShow)
             col.Children.Add(new TextBlock
             {
-                Text = $"+{list.Count - maxShow}",
+                Text = $"+{grouped.Count - maxShow}",
                 FontFamily = Font, Foreground = AppRes("FgMuted"),
             }.BindXS());
         return col;
