@@ -452,13 +452,20 @@ public class SchedulePage
             RefreshCompanyBadge();
             RefreshProgress();
 
-            // 채수담당자 배정된 경우: 채취일자 캘린더 포커스
+            // 채수담당자 배정된 경우: 채취일자 캘린더 포커스 + 날짜 선택
             if (!string.IsNullOrWhiteSpace(tn.Date)
                 && DateTime.TryParse(tn.Date, out var focusDt))
             {
                 _focusDate = tn.Date;
+                _selDate   = tn.Date;
                 _month     = new DateTime(focusDt.Year, focusDt.Month, 1);
+                if (_dateLbl != null)
+                {
+                    _dateLbl.Text       = $"📅 {focusDt:yyyy-MM-dd}  ({DowKr(focusDt)})";
+                    _dateLbl.Foreground = AppRes("AppFg");
+                }
                 RefreshCalendar();
+                RefreshEntries();
             }
             else
             {
