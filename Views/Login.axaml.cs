@@ -209,6 +209,12 @@ public partial class Login : Window
         MainPage.CurrentEmployeeId = empId;
 
         var main = new MainPage();
+        // 로그인 창과 같은 위치·크기로 열기
+        main.WindowStartupLocation = WindowStartupLocation.Manual;
+        main.Position = this.Position;
+        main.Width    = this.Width;
+        main.Height   = this.Height;
+        main.WindowState = this.WindowState;
         main.Show();
         Close();
     }

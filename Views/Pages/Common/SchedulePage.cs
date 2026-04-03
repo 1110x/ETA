@@ -372,14 +372,89 @@ public class SchedulePage
                     : r.시료명;
                 // Date: 채수담당자 배정된 경우에만 채취일자 저장 (캘린더 포커스용)
                 string tagDate = !string.IsNullOrWhiteSpace(r.채수담당자) ? NormalizeDate(r.채취일자) : "";
-                _tree.Items.Add(new TreeViewItem
+                var tvi = new TreeViewItem
                 {
                     Tag    = new TreeTag("request", displayAbbr, r.Id.ToString(), r.접수번호, tagDate),
                     Header = sp,
                     Background = reqSelected ? Brush.Parse("#1a2a1a") : null,
-                });
+                };
+
+                // 채수담당자 배정된 항목 → 우클릭 컨텍스트 메뉴
+                if (!string.IsNullOrWhiteSpace(r.채수담당자))
+                    tvi.ContextMenu = BuildSamplerContextMenu(r.Id, r.채수담당자);
+
+                _tree.Items.Add(tvi);
             }
         }
+    }
+
+    // ── 의뢰목록 우클릭 컨텍스트 메뉴 (채수담당자 삭제/변경) ─────────────
+    private ContextMenu BuildSamplerContextMenu(int reqId, string sampler)
+    {
+        var menu = new ContextMenu();
+        var names = sampler.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
+
+        // 개별 인원 삭제
+        if (names.Count > 1)
+        {
+            foreach (var name in names)
+            {
+                var n = name;
+                var mi = new MenuItem
+                {
+                    Header = $"❌ {n} 삭제",
+                    FontFamily = Font, FontSize = 12,
+                };
+                mi.Click += (_, _) =>
+                {
+                    var remaining = names.Where(x => x != n).ToList();
+                    AnalysisRequestService.UpdateSamplers(reqId, remaining);
+                    LoadTree(); RefreshCalendar(); RefreshEntries();
+                };
+                menu.Items.Add(mi);
+            }
+            menu.Items.Add(new Separator());
+        }
+
+        // 전체 삭제
+        var clearAll = new MenuItem
+        {
+            Header = "🗑 담당자 전체 삭제",
+            FontFamily = Font, FontSize = 12,
+        };
+        clearAll.Click += (_, _) =>
+        {
+            AnalysisRequestService.UpdateSamplers(reqId, Array.Empty<string>());
+            LoadTree(); RefreshCalendar(); RefreshEntries();
+        };
+        menu.Items.Add(clearAll);
+
+        // 담당자 변경 서브메뉴
+        menu.Items.Add(new Separator());
+        var changeMenu = new MenuItem
+        {
+            Header = "🔄 담당자 변경",
+            FontFamily = Font, FontSize = 12,
+        };
+        var agents = AgentService.GetAllItems().OrderBy(a => a.사번).ToList();
+        foreach (var a in agents)
+        {
+            var agentName = a.성명;
+            var mi = new MenuItem
+            {
+                Header = $"  {agentName} ({a.사번})",
+                FontFamily = Font, FontSize = 12,
+            };
+            mi.Click += (_, _) =>
+            {
+                AnalysisRequestService.UpdateSamplers(reqId, new[] { agentName });
+                LoadTree(); RefreshCalendar(); RefreshEntries();
+            };
+            changeMenu.Items.Add(mi);
+        }
+        menu.Items.Add(changeMenu);
+
+        return menu;
     }
 
     private bool _suppressSelection;
@@ -967,7 +1042,7 @@ public class SchedulePage
         var outer = new Grid { RowDefinitions = new RowDefinitions("*,Auto") };
 
         // ═══════════════════════════════════════════════════════════════
-        // Row 0: 등록된 일정 목록 (스크롤 가능, 공간 전체 사용)
+        // Row 0: 등록된 일정 목록 (자체 ScrollViewer로 스크롤)
         // ═══════════════════════════════════════════════════════════════
         var entrySection = new StackPanel { Spacing = 4, Margin = new Thickness(4) };
 

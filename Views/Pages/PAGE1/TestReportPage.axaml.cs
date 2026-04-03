@@ -83,6 +83,9 @@ public partial class TestReportPage : UserControl
     private bool            _showMeasurerPanel = false;
     private List<MeasurerRow> _measurerRows    = new();
 
+    /// <summary>결과제출-측정인 모드 — 시료 선택시 항상 측정인 형식으로 표시</summary>
+    public bool IsMeasurerMode { get; set; }
+
     // 선택된 결과 행
     private AnalysisResultRow? _selectedRow;
     private Border?            _selectedRowBorder;
@@ -357,6 +360,14 @@ public partial class TestReportPage : UserControl
 
         // 결과 리스트 빌드
         BuildResultRows(sample);
+
+        // 측정인 모드 — 항상 측정인 형식으로 표시
+        if (IsMeasurerMode)
+        {
+            _showMeasurerPanel = true;
+            _measurerRows = DataToMeasurerService.BuildRows(sample);
+        }
+
         ResultListChanged?.Invoke(BuildListControl());
 
         // 첨부파일 목록 갱신
@@ -1372,38 +1383,44 @@ public partial class TestReportPage : UserControl
 
     private Control BuildMeasurerListControl()
     {
-        // ── 헤더 (뒤로가기 + 시료 정보) ──────────────────────────────────────
-        var backBtn = new Button
-        {
-            Content         = "◀ 결과 목록으로",
-            FontFamily      = Font, FontSize = 11,
-            Background      = new SolidColorBrush(Color.Parse("#2a2a3a")),
-            Foreground      = AppRes("AppFg"),
-            BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
-            Padding         = new Thickness(10, 4),
-            Margin          = new Thickness(8, 6),
-        };
-        backBtn.Click += (_, _) =>
-        {
-            _showMeasurerPanel = false;
-            ResultListChanged?.Invoke(BuildListControl());
-            EditPanelChanged?.Invoke(null);
-        };
-
-        var titleTb = new TextBlock
-        {
-            Text       = $"자료TO측정인  —  {_selectedSample?.약칭} / {_selectedSample?.시료명}",
-            FontFamily = Font, FontSize = 12,
-            Foreground = new SolidColorBrush(Color.Parse("#aaaaee")),
-            VerticalAlignment = VerticalAlignment.Center,
-            Margin = new Thickness(4, 0),
-        };
-
         var topRow = new StackPanel
         {
             Orientation = Orientation.Horizontal,
-            Children    = { backBtn, titleTb },
         };
+
+        // IsMeasurerMode 에서는 뒤로가기 불필요 (항상 측정인 형식)
+        if (!IsMeasurerMode)
+        {
+            var backBtn = new Button
+            {
+                Content         = "◀ 결과 목록으로",
+                FontFamily      = Font, FontSize = 11,
+                Background      = new SolidColorBrush(Color.Parse("#2a2a3a")),
+                Foreground      = AppRes("AppFg"),
+                BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
+                Padding         = new Thickness(10, 4),
+                Margin          = new Thickness(8, 6),
+            };
+            backBtn.Click += (_, _) =>
+            {
+                _showMeasurerPanel = false;
+                ResultListChanged?.Invoke(BuildListControl());
+                EditPanelChanged?.Invoke(null);
+            };
+            topRow.Children.Add(backBtn);
+        }
+
+        var titleTb = new TextBlock
+        {
+            Text       = IsMeasurerMode
+                ? $"측정인  —  {_selectedSample?.약칭} / {_selectedSample?.시료명}"
+                : $"자료TO측정인  —  {_selectedSample?.약칭} / {_selectedSample?.시료명}",
+            FontFamily = Font, FontSize = 12,
+            Foreground = new SolidColorBrush(Color.Parse("#aaaaee")),
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin = new Thickness(IsMeasurerMode ? 10 : 4, 6, 0, 0),
+        };
+        topRow.Children.Add(titleTb);
 
         // ── 컬럼 정의 ──────────────────────────────────────────────────────
         const string MeasurerColStr = "*,80,80,*,*,80,80,80";

@@ -50,6 +50,9 @@ public partial class ContractPage : UserControl
     // 계약구분 ComboBox 참조 (저장 시 값 읽기용)
     private ComboBox? _contractTypeComboBox;
 
+    // 신규 추가 시 선택한 템플릿 업체명 (단가 복사용)
+    private string? _templateCompanyName;
+
     // 측정인 관리 패널 상태
     private string?    _selectedMeasCompany;
     private TextBox?   _txbMeasAlias;
@@ -231,12 +234,13 @@ public partial class ContractPage : UserControl
     {
         _selectedContract              = null;
         _isAddMode                     = true;
+        _templateCompanyName           = null;
         _pendingPrices.Clear();
         _priceDisplayBlocks.Clear();
         ContractTreeView.SelectedItem  = null;
         _detailPanel                   = BuildAddPanel();
         DetailPanelChanged?.Invoke(_detailPanel);
-        PricePanelChanged?.Invoke(null);
+        PricePanelChanged?.Invoke(BuildTemplateSelector());
         Log("추가 모드");
     }
 
@@ -534,14 +538,32 @@ public partial class ContractPage : UserControl
 
         bool ok = ContractService.Insert(newContract);
         Log(ok ? $"✅ 추가: {newContract.C_CompanyName}"
-               : $"❌ 추가 실패: {newContract.C_CompanyName}");
+               : $"❌ ��가 실패: {newContract.C_CompanyName}");
 
         if (ok)
         {
+            // 템플릿 업체가 선택된 경우 단가 복사
+            if (!string.IsNullOrEmpty(_templateCompanyName))
+            {
+                try
+                {
+                    var templatePrices = ContractService.GetContractPrices(_templateCompanyName);
+                    var nonEmpty = templatePrices.Where(p => !string.IsNullOrWhiteSpace(p.Price)).ToList();
+                    if (nonEmpty.Count > 0)
+                    {
+                        ContractService.UpdateContractPrices(newContract.C_CompanyName, nonEmpty);
+                        Log($"✅ 템플릿 단가 복사: {_templateCompanyName} → {newContract.C_CompanyName} ({nonEmpty.Count}항목)");
+                    }
+                }
+                catch (Exception ex) { Log($"❌ 템플릿 단가 복사 실패: {ex.Message}"); }
+            }
+
             ContractTreeView.Items.Add(CreateTreeItem(newContract));
-            _isAddMode   = false;
-            _detailPanel = null;
+            _isAddMode           = false;
+            _templateCompanyName = null;
+            _detailPanel         = null;
             DetailPanelChanged?.Invoke(null);
+            PricePanelChanged?.Invoke(null);
         }
     }
 
@@ -1024,6 +1046,145 @@ public partial class ContractPage : UserControl
         BorderBrush = Brush.Parse("#555577"), BorderThickness = new Thickness(1),
         CornerRadius = new CornerRadius(4), Padding = new Thickness(8, 4),
     };
+
+    // =========================================================================
+    // Show3 — 신규 추가 시 템플릿 업체 선택
+    // =========================================================================
+    private Control BuildTemplateSelector()
+    {
+        var root = new StackPanel { Spacing = 8, Margin = new Thickness(8) };
+        root.Children.Add(new TextBlock
+        {
+            Text       = "📋  단가 테이블 템플릿 선택",
+            FontSize   = 13, FontFamily = Font, FontWeight = FontWeight.SemiBold,
+            Foreground = new SolidColorBrush(Color.Parse("#8899bb")),
+        });
+        root.Children.Add(new Border { Height = 1, Background = new SolidColorBrush(Color.Parse("#444444")) });
+        root.Children.Add(new TextBlock
+        {
+            Text         = "기존 계약업체의 단가 테이블을 선택하면 신규 업체에 동일 단가가 복사됩니다.",
+            FontSize     = 10, FontFamily = Font,
+            Foreground   = new SolidColorBrush(Color.Parse("#888888")),
+            TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+            Margin       = new Thickness(0, 0, 0, 4),
+        });
+
+        // 선택 상태 표시 라벨
+        var selLabel = new TextBlock
+        {
+            Text       = "선택 안됨 — 빈 단가로 생성됩니다.",
+            FontSize   = 11, FontFamily = Font,
+            Foreground = new SolidColorBrush(Color.Parse("#888888")),
+            Margin     = new Thickness(0, 0, 0, 6),
+        };
+        root.Children.Add(selLabel);
+
+        // 업체 목록 로드
+        var contracts = ContractService.GetAllContracts()
+            .OrderBy(c => c.C_CompanyName).ToList();
+
+        Border? prevSelected = null;
+
+        foreach (var c in contracts)
+        {
+            var companyName = c.C_CompanyName;
+            var abbr = c.C_Abbreviation;
+
+            // 해당 업체의 단가 요약 (값이 있는 항목 수)
+            var prices = ContractService.GetContractPrices(companyName);
+            var filledCount = prices.Count(p => !string.IsNullOrWhiteSpace(p.Price));
+
+            var card = new Border
+            {
+                Background      = new SolidColorBrush(Color.Parse("#1e1e2e")),
+                BorderBrush     = new SolidColorBrush(Color.Parse("#333344")),
+                BorderThickness = new Thickness(1),
+                CornerRadius    = new CornerRadius(5),
+                Padding         = new Thickness(10, 6),
+                Margin          = new Thickness(0, 1),
+                Cursor          = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
+            };
+
+            var cardContent = new StackPanel { Spacing = 3 };
+
+            // 1줄: 업체명 + 약칭
+            var nameLine = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+            nameLine.Children.Add(new TextBlock
+            {
+                Text       = companyName,
+                FontSize   = 12, FontFamily = Font, FontWeight = FontWeight.SemiBold,
+                Foreground = AppRes("AppFg"),
+            });
+            if (!string.IsNullOrEmpty(abbr))
+                nameLine.Children.Add(new TextBlock
+                {
+                    Text       = $"({abbr})",
+                    FontSize   = 10, FontFamily = Font,
+                    Foreground = new SolidColorBrush(Color.Parse("#888888")),
+                    VerticalAlignment = VerticalAlignment.Center,
+                });
+            cardContent.Children.Add(nameLine);
+
+            // 2줄: 단가 요약 (채워진 항목 / 전체)
+            var priceSummary = new WrapPanel { Orientation = Orientation.Horizontal };
+            priceSummary.Children.Add(new TextBlock
+            {
+                Text       = $"단가: {filledCount}/{prices.Count}항목",
+                FontSize   = 10, FontFamily = Font,
+                Foreground = filledCount > 0
+                    ? new SolidColorBrush(Color.Parse("#aaddaa"))
+                    : new SolidColorBrush(Color.Parse("#666666")),
+            });
+
+            // 대표 단가 몇 개 미리보기
+            var preview = prices.Where(p => !string.IsNullOrWhiteSpace(p.Price)).Take(5).ToList();
+            if (preview.Count > 0)
+            {
+                priceSummary.Children.Add(new TextBlock
+                {
+                    Text   = "  │  ",
+                    FontSize = 9, FontFamily = Font,
+                    Foreground = new SolidColorBrush(Color.Parse("#444444")),
+                });
+                priceSummary.Children.Add(new TextBlock
+                {
+                    Text       = string.Join(", ", preview.Select(p => $"{p.Analyte}:{FormatPrice(p.Price)}")),
+                    FontSize   = 9, FontFamily = Font,
+                    Foreground = new SolidColorBrush(Color.Parse("#888888")),
+                    TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
+                });
+            }
+            cardContent.Children.Add(priceSummary);
+
+            card.Child = cardContent;
+
+            var capturedCard = card;
+            var capturedName = companyName;
+            card.PointerPressed += (_, _) =>
+            {
+                // 이전 선택 해제
+                if (prevSelected != null)
+                {
+                    prevSelected.Background  = new SolidColorBrush(Color.Parse("#1e1e2e"));
+                    prevSelected.BorderBrush = new SolidColorBrush(Color.Parse("#333344"));
+                }
+
+                // 현재 선택
+                capturedCard.Background  = new SolidColorBrush(Color.Parse("#1a2a4a"));
+                capturedCard.BorderBrush = new SolidColorBrush(Color.Parse("#4477aa"));
+                prevSelected = capturedCard;
+
+                _templateCompanyName = capturedName;
+                selLabel.Text       = $"✅ 선택됨: {capturedName}";
+                selLabel.Foreground = new SolidColorBrush(Color.Parse("#88ccff"));
+                Log($"[Template] 선택: {capturedName}");
+            };
+
+            root.Children.Add(card);
+        }
+
+        return root;
+    }
 
     // =========================================================================
     // Show3 — 단가 항목 편집 폼 (단일 항목)

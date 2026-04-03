@@ -285,13 +285,14 @@
                         <MenuItem Header="폐수배출업소"   Click="WasteCompany_Click"/>
                         <MenuItem Header="자료 조회"      Click="WasteDataQuery_Click"/>
                         <MenuItem Header="분석의뢰리스트" Click="WasteSampleList_Click"/>
-                        <MenuItem Header="작업 배정"      Click="WasteAssignment_Click"/>
                         <MenuItem Header="시험기록부"  IsEnabled="False" Opacity="0.4"/>
                         <MenuItem Header="자료검토"    IsEnabled="False" Opacity="0.4"/>
                         <MenuItem Header="테스트"      IsEnabled="False" Opacity="0.4"/>
                     </MenuItem>
 
-                    <MenuItem Header="분석결과입력" Click="WasteAnalysisInput_Click" IsEnabled="False" Opacity="0.4"/>
+                    <MenuItem Header="분석결과입력">
+                        <MenuItem Header="입력" Click="WasteAnalysisInput_Click"/>
+                    </MenuItem>
 
                     <MenuItem Header="처리시설">
                         <MenuItem Header="RDP for Zero4" IsEnabled="False" Opacity="0.4"/>
@@ -300,7 +301,7 @@
                     <MenuItem Header="측정결과 입력" Click="ProcessingFacility_Click" IsEnabled="False" Opacity="0.4"/>
 
                     <MenuItem Header="결과 제출">
-                        <MenuItem Header="측정인" Click="ResultSubmitMeasure_Click" IsEnabled="False" Opacity="0.4"/>
+                        <MenuItem Header="측정인" Click="ResultSubmitMeasure_Click"/>
                         <MenuItem Header="ERP"    Click="ResultSubmitErp_Click"/>
                         <MenuItem Header="Zero4"  Click="ResultSubmitZero4_Click"  IsEnabled="False" Opacity="0.4"/>
                     </MenuItem>
@@ -310,6 +311,11 @@
                         <MenuItem Header="물품구매"    Click="Purchase_Click"/>
                         <MenuItem Header="계약업체 채수" IsEnabled="False" Opacity="0.4"/>
                         <MenuItem Header="출장/일정 관리" Click="Schedule_Click"/>
+                    </MenuItem>
+
+                    <MenuItem Header="리스크관리">
+                        <MenuItem Header="시약관리"  Click="Reagent_Click"/>
+                        <MenuItem Header="초자관리"  Click="Glassware_Click" IsEnabled="False"/>
                     </MenuItem>
 
                     <MenuItem Header="권한관리" x:Name="PermissionMenu">
@@ -505,16 +511,13 @@
                             Grid.Row="2"
                             Background="{DynamicResource PanelBg}"
                             CornerRadius="6" Padding="12">
-                        <ScrollViewer HorizontalScrollBarVisibility="Disabled"
-                                      VerticalScrollBarVisibility="Auto">
-                            <TransitioningContentControl x:Name="Show3"
-                                            HorizontalAlignment="Stretch"
-                                            VerticalAlignment="Top">
-                                <TransitioningContentControl.PageTransition>
-                                    <CrossFade Duration="0:0:0.18"/>
-                                </TransitioningContentControl.PageTransition>
-                            </TransitioningContentControl>
-                        </ScrollViewer>
+                        <TransitioningContentControl x:Name="Show3"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch">
+                            <TransitioningContentControl.PageTransition>
+                                <CrossFade Duration="0:0:0.18"/>
+                            </TransitioningContentControl.PageTransition>
+                        </TransitioningContentControl>
                     </Border>
 
                 </Grid>

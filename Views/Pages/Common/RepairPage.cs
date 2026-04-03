@@ -36,6 +36,8 @@ public class RepairPage
     private readonly StackPanel _listPanel = new() { Spacing = 2 };
     private readonly TextBlock  _listTitle = new() { FontSize = 11, FontFamily = Font, Foreground = new SolidColorBrush(Color.Parse("#777")), Margin = new Thickness(4, 0, 0, 6) };
     private Border? _selectedRowBorder;
+    private int _currentListYear  = DateTime.Today.Year;
+    private int _currentListMonth = DateTime.Today.Month;
 
     // 폼 필드
     private readonly ComboBox  _cmbCategory;
@@ -133,8 +135,8 @@ public class RepairPage
             _tree.Items.Add(yn);
         }
 
-        // 현재 월 자동 로드
-        LoadList(thisYear, thisMonth);
+        // 현재 보고 있는 월 자동 로드
+        LoadList(_currentListYear, _currentListMonth);
     }
 
     // ══════════════════════════════════════════════════════════════════════
@@ -152,6 +154,8 @@ public class RepairPage
 
     private void LoadList(int year, int month)
     {
+        _currentListYear  = year;
+        _currentListMonth = month;
         _listPanel.Children.Clear();
         _selectedRowBorder = null;
         var items = RepairService.GetByMonth(year, month);
@@ -205,6 +209,8 @@ public class RepairPage
             Margin = new Thickness(0,0,0,2),
             Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
             Child = grid,
+            Tag = item.Id,
+            DataContext = item,
         };
 
         border.PointerEntered += (_, _) =>
@@ -363,11 +369,24 @@ public class RepairPage
     private void UpdateSelectedStatus(string status)
     {
         if (_editingItem == null) return;
-        if (RepairService.UpdateStatus(_editingItem.Id, status))
+        var editId = _editingItem.Id;
+        if (RepairService.UpdateStatus(editId, status))
         {
-            _editingItem.상태 = status;
-            SelectCombo(_cmbStatus, status);
-            Refresh();
+            // 트리 건수 갱신 + 현재 월 목록 리프레시
+            LoadTree();
+
+            // 목록에서 변경된 항목 자동 재선택
+            foreach (var child in _listPanel.Children)
+            {
+                if (child is Border b && b.Tag is int id && id == editId)
+                {
+                    _selectedRowBorder = b;
+                    b.Background = new SolidColorBrush(Color.Parse("#2a3a5a"));
+                    if (b.DataContext is RepairItem item)
+                        LoadToForm(item);
+                    break;
+                }
+            }
         }
     }
 

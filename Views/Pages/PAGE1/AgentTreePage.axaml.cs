@@ -40,8 +40,32 @@ public partial class AgentTreePage : UserControl
     private StackPanel? _detailPanel;
     private bool        _isAddMode  = false;
 
-    private static bool CanEdit =>
-        MainPage.CurrentEmployeeId == "201000308";
+    // ── 권한 관리 ────────────────────────────────────────────────────────────
+    // 편집/직급수정: 정승욱, 박은지
+    private static readonly HashSet<string> _editAllowedNames =
+        new(StringComparer.Ordinal) { "정승욱", "박은지" };
+    // 삭제: 정승욱, 박은지, 방찬미, 이예림
+    private static readonly HashSet<string> _deleteAllowedNames =
+        new(StringComparer.Ordinal) { "정승욱", "박은지", "방찬미", "이예림" };
+
+    private static string? _currentUserNameCache;
+    private static string CurrentUserName
+    {
+        get
+        {
+            if (_currentUserNameCache != null) return _currentUserNameCache;
+            var empId = MainPage.CurrentEmployeeId;
+            var agent = AgentService.GetAllItems().FirstOrDefault(a => a.사번 == empId);
+            _currentUserNameCache = agent?.성명 ?? "";
+            return _currentUserNameCache;
+        }
+    }
+
+    /// <summary>직급 수정 등 편집 권한 (정승욱, 박은지)</summary>
+    private static bool CanEdit => _editAllowedNames.Contains(CurrentUserName);
+
+    /// <summary>직원 삭제 권한 (정승욱, 박은지, 방찬미, 이예림)</summary>
+    private static bool CanDelete => _deleteAllowedNames.Contains(CurrentUserName);
 
     // 사진 미리보기 Image 컨트롤 (저장 시 PhotoPath 접근용)
     private Image?      _photoImage;
@@ -54,10 +78,11 @@ public partial class AgentTreePage : UserControl
     private DateTime    _assignmentRangeStart = DateTime.Today;
     private DateTime    _assignmentRangeEnd   = DateTime.Today;
 
-    // 담당항목/업체/기타업무 패널 (Show2)
+    // 담당항목/업체/기타업무/일반업무 패널 (Show2)
     private WrapPanel?  _항목ChipsPanel;
     private WrapPanel?  _업체ChipsPanel;
     private StackPanel? _miscTaskPanel;
+    private StackPanel? _generalTaskPanel;
 
     // ── 업무분장표 상태 ─────────────────────────────────────────────────────
     private DateTime _chartRangeStart;
@@ -268,12 +293,13 @@ public partial class AgentTreePage : UserControl
     // =========================================================================
     public async Task DeleteSelectedAsync()
     {
-        if (!CanEdit) return;
-        if (_selectedAgent == null)
-        {
-            Log("삭제 스킵: 선택 없음");
-            return;
-        }
+        if (_selectedAgent == null) { Log("삭제 스킵: 선택 없음"); return; }
+        await DeleteAgentAsync(_selectedAgent);
+    }
+
+    private async Task DeleteAgentAsync(Agent agent)
+    {
+        if (!CanDelete) return;
 
         // 확인 다이얼로그
         var dlg = new Window
@@ -314,7 +340,7 @@ public partial class AgentTreePage : UserControl
             {
                 new TextBlock
                 {
-                    Text       = $"'{_selectedAgent.성명}' 직원을 삭제하시겠습니까?",
+                    Text       = $"'{agent.성명}' 직원을 삭제하시겠습니까?",
                     Foreground = AppRes("AppFg"),
                     FontSize   = 13,
                     TextWrapping = Avalonia.Media.TextWrapping.Wrap
@@ -329,7 +355,6 @@ public partial class AgentTreePage : UserControl
             }
         };
 
-        // 부모 Window 찾기
         var owner = TopLevel.GetTopLevel(this) as Window;
         if (owner != null)
             await dlg.ShowDialog(owner);
@@ -338,15 +363,14 @@ public partial class AgentTreePage : UserControl
 
         if (!confirmed) return;
 
-        bool ok = AgentService.Delete(_selectedAgent);
-        Log(ok ? $"✅ 삭제 성공: {_selectedAgent.성명}" : $"❌ 삭제 실패: {_selectedAgent.성명}");
+        bool ok = AgentService.Delete(agent);
+        Log(ok ? $"✅ 삭제 성공: {agent.성명}" : $"❌ 삭제 실패: {agent.성명}");
 
         if (ok)
         {
-            // 트리에서 해당 항목 제거
             var toRemove = AgentTreeView.Items
                 .OfType<TreeViewItem>()
-                .FirstOrDefault(i => i.Tag == _selectedAgent);
+                .FirstOrDefault(i => i.Tag == agent);
             if (toRemove != null) AgentTreeView.Items.Remove(toRemove);
 
             _selectedAgent    = null;
@@ -366,24 +390,91 @@ public partial class AgentTreePage : UserControl
             ? $"👁  {agent.성명} — 정보 조회 (읽기 전용)"
             : $"✏️  {agent.성명} — 정보 수정");
 
-        // 사진 + 성명/직급/사번 (상단)
+        // 사진 + 성명/직급/사번 한 줄 (상단)
         var topRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 12, Margin = new Thickness(0, 0, 0, 4) };
         topRow.Children.Add(BuildPhotoArea(agent.PhotoPath, agent.사번));
-        var topInfo = new StackPanel { Spacing = 4, VerticalAlignment = VerticalAlignment.Center };
-        topInfo.Children.Add(BuildFieldRow("성명", agent.성명, isReadOnly: true, isLocked: true));
-        topInfo.Children.Add(BuildFieldRow("직급", agent.직급, isReadOnly: ro));
-        topInfo.Children.Add(BuildFieldRow("사번", agent.사번, isReadOnly: ro));
+        var topInfo = new Grid
+        {
+            ColumnDefinitions = new ColumnDefinitions("*,8,*,8,*"),
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        topInfo.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+        var f성명 = BuildFieldRow("성명", agent.성명, isReadOnly: true, isLocked: true);
+        var f직급 = BuildFieldRow("직급", agent.직급, isReadOnly: ro);
+        var f사번 = BuildFieldRow("사번", agent.사번, isReadOnly: ro);
+        Grid.SetColumn(f성명, 0); Grid.SetColumn(f직급, 2); Grid.SetColumn(f사번, 4);
+        topInfo.Children.Add(f성명); topInfo.Children.Add(f직급); topInfo.Children.Add(f사번);
         topRow.Children.Add(topInfo);
         root.Children.Add(topRow);
 
-        // 기본정보 2열 배치
+        // ── 개발자 모드: 선택 인원으로 로그인 ──
+        if (CanEdit && agent.사번 != MainPage.CurrentEmployeeId)
+        {
+            var devLoginBtn = new Button
+            {
+                Content    = $"🔑 [{agent.성명}](으)로 로그인 (개발자 모드)",
+                FontSize   = 11,
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                Background = new SolidColorBrush(Color.Parse("#2a4a6a")),
+                Foreground = new SolidColorBrush(Color.Parse("#8cf")),
+                Padding    = new Thickness(10, 4),
+                Margin     = new Thickness(0, 4, 0, 0),
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Cursor     = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
+            };
+            devLoginBtn.Click += (_, _) =>
+            {
+                var prevId = MainPage.CurrentEmployeeId;
+                MainPage.CurrentEmployeeId = agent.사번;
+                CurrentUserManager.Instance.SetCurrentUser(agent.사번);
+                _currentUserNameCache = null; // 권한 캐시 초기화
+
+                // 타이틀 바에 개발자 모드 표시
+                if (this.VisualRoot is Window win)
+                    win.Title = $"ETA — 개발자 모드: {agent.성명} ({agent.사번})  [원래: {prevId}]";
+
+                Log($"[DevMode] {prevId} → {agent.사번} ({agent.성명}) 로 전환");
+
+                // UI 새로고침
+                _detailPanel = BuildEditPanel(agent);
+                DetailPanelChanged?.Invoke(_detailPanel);
+            };
+            root.Children.Add(devLoginBtn);
+        }
+
+        // 직무/자격사항/Email 한 줄 + 입사일/측정인고유번호 한 줄
+        root.Children.Add(BuildFieldGrid3(
+            BuildFieldRow("직무",     agent.직무,     isReadOnly: ro),
+            BuildFieldRow("자격사항", agent.자격사항, isReadOnly: ro),
+            BuildFieldRow("Email",    agent.Email,    isReadOnly: ro)
+        ));
         root.Children.Add(BuildFieldGrid(
-            BuildFieldRow("직무",           agent.직무,           isReadOnly: ro),
             BuildFieldRow("입사일",         agent.입사일표시,     isReadOnly: true),
-            BuildFieldRow("자격사항",       agent.자격사항,       isReadOnly: ro),
-            BuildFieldRow("Email",          agent.Email,          isReadOnly: ro),
             BuildFieldRow("측정인고유번호", agent.측정인고유번호, isReadOnly: ro)
         ));
+
+        // ── 직원 삭제 버튼 (권한 있는 경우만) ──
+        if (CanDelete)
+        {
+            var deleteBtn = new Button
+            {
+                Content             = $"🗑  {agent.성명} 삭제",
+                FontSize            = 11,
+                FontFamily          = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                Background          = new SolidColorBrush(Color.Parse("#3a1a1a")),
+                Foreground          = new SolidColorBrush(Color.Parse("#ee8888")),
+                BorderBrush         = new SolidColorBrush(Color.Parse("#663333")),
+                BorderThickness     = new Thickness(1),
+                CornerRadius        = new CornerRadius(4),
+                Padding             = new Thickness(10, 4),
+                Margin              = new Thickness(0, 6, 0, 0),
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Cursor              = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
+            };
+            var capturedAgent = agent;
+            deleteBtn.Click += async (_, _) => await DeleteAgentAsync(capturedAgent);
+            root.Children.Add(deleteBtn);
+        }
 
         // ── 담당 분석항목 ──
         var itemSection = new Border
@@ -420,22 +511,22 @@ public partial class AgentTreePage : UserControl
         contractSection.Child = contractInner;
         root.Children.Add(contractSection);
 
-        // ── 기타업무 ──
-        var taskSection = new Border
+        // ── 일반업무 ──
+        var generalTaskSection = new Border
         {
-            Background   = new SolidColorBrush(Color.Parse("#2a1a2a")),
+            Background   = new SolidColorBrush(Color.Parse("#1a2a2a")),
             CornerRadius = new CornerRadius(4),
             Padding      = new Thickness(8, 6),
             Margin       = new Thickness(0, 6, 0, 0),
         };
-        var taskInner = new StackPanel { Spacing = 3 };
-        _miscTaskPanel = new StackPanel { Spacing = 3 };
-        taskInner.Children.Add(BuildChipSectionHeader("📋 기타업무",
-            () => Show3ContentRequest?.Invoke(BuildMiscTaskForm(agent))));
-        taskInner.Children.Add(_miscTaskPanel);
-        taskSection.Child = taskInner;
-        root.Children.Add(taskSection);
-        RefreshMiscTasks(agent);
+        var generalTaskInner = new StackPanel { Spacing = 3 };
+        _generalTaskPanel = new StackPanel { Spacing = 3 };
+        generalTaskInner.Children.Add(BuildChipSectionHeader("📝 담당 일반업무",
+            () => Show4ContentRequest?.Invoke(BuildShow4GeneralTaskAssignList(agent))));
+        generalTaskInner.Children.Add(_generalTaskPanel);
+        generalTaskSection.Child = generalTaskInner;
+        root.Children.Add(generalTaskSection);
+        RefreshGeneralTasks(agent);
 
         // ── 과거 분장이력 ──
         root.Children.Add(BuildHistorySection(agent));
@@ -452,18 +543,27 @@ public partial class AgentTreePage : UserControl
 
         var topRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 12, Margin = new Thickness(0, 0, 0, 4) };
         topRow.Children.Add(BuildPhotoArea(""));
-        var topInfo = new StackPanel { Spacing = 4, VerticalAlignment = VerticalAlignment.Center };
-        topInfo.Children.Add(BuildFieldRow("성명", "", hint: "이름 입력 (필수)"));
-        topInfo.Children.Add(BuildFieldRow("직급", ""));
-        topInfo.Children.Add(BuildFieldRow("사번", ""));
+        var topInfo = new Grid
+        {
+            ColumnDefinitions = new ColumnDefinitions("*,8,*,8,*"),
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        topInfo.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+        var an성명 = BuildFieldRow("성명", "", hint: "이름 입력 (필수)");
+        var an직급 = BuildFieldRow("직급", "");
+        var an사번 = BuildFieldRow("사번", "");
+        Grid.SetColumn(an성명, 0); Grid.SetColumn(an직급, 2); Grid.SetColumn(an사번, 4);
+        topInfo.Children.Add(an성명); topInfo.Children.Add(an직급); topInfo.Children.Add(an사번);
         topRow.Children.Add(topInfo);
         root.Children.Add(topRow);
 
+        root.Children.Add(BuildFieldGrid3(
+            BuildFieldRow("직무",     ""),
+            BuildFieldRow("자격사항", ""),
+            BuildFieldRow("Email",    "")
+        ));
         root.Children.Add(BuildFieldGrid(
-            BuildFieldRow("직무",           ""),
             BuildFieldRow("입사일",         "", hint: "예) 2024-01-01"),
-            BuildFieldRow("자격사항",       ""),
-            BuildFieldRow("Email",          ""),
             BuildFieldRow("측정인고유번호", "")
         ));
 
@@ -1329,6 +1429,27 @@ public partial class AgentTreePage : UserControl
         return grid;
     }
 
+    /// <summary>필드를 3열 Grid로 배치</summary>
+    private static Grid BuildFieldGrid3(params StackPanel[] fields)
+    {
+        var grid = new Grid
+        {
+            ColumnDefinitions = new ColumnDefinitions("*,8,*,8,*"),
+            Margin = new Thickness(0, 2, 0, 2),
+        };
+        for (int i = 0; i < fields.Length; i++)
+        {
+            int col = (i % 3) * 2;     // 0, 2, 4
+            int row = i / 3;
+            if (grid.RowDefinitions.Count <= row)
+                grid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+            Grid.SetColumn(fields[i], col);
+            Grid.SetRow(fields[i], row);
+            grid.Children.Add(fields[i]);
+        }
+        return grid;
+    }
+
     // =========================================================================
     // 담당항목/업체 칩 섹션 헬퍼
     // =========================================================================
@@ -1663,6 +1784,8 @@ public partial class AgentTreePage : UserControl
                 list.Remove(captured);
                 agent.담당항목 = string.Join(",", list);
                 AgentService.Update(agent);
+                // 분장표준처리에서 금일부터 이 항목의 담당 제거
+                AnalysisRequestService.ClearAnalyteFromAgent(agent.사번, captured, DateTime.Today);
                 AssignItemsForDate(agent, DateTime.Today);
                 RefreshItemChips(agent);
             }));
@@ -1708,6 +1831,7 @@ public partial class AgentTreePage : UserControl
             CornerRadius    = new CornerRadius(10),
             Padding         = new Thickness(7, 2),
             Margin          = new Thickness(0, 2, 4, 2),
+            Cursor          = new Cursor(StandardCursorType.Hand),
         };
         var row = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 3 };
         row.Children.Add(new TextBlock
@@ -1721,10 +1845,13 @@ public partial class AgentTreePage : UserControl
         {
             Content = "×", FontSize = 11, Padding = new Thickness(2, 0),
             Background = Brushes.Transparent, BorderThickness = new Thickness(0),
-            Foreground = new SolidColorBrush(Color.Parse("#886888")),
+            Foreground = new SolidColorBrush(Color.Parse("#dd6688")),
             VerticalAlignment = VerticalAlignment.Center,
+            IsVisible = false,
         };
-        btnX.Click += (_, _) => onRemove?.Invoke();
+        btnX.Click += (_, e) => { e.Handled = true; onRemove?.Invoke(); };
+        chip.PointerEntered += (_, _) => btnX.IsVisible = true;
+        chip.PointerExited  += (_, _) => btnX.IsVisible = false;
         row.Children.Add(btnX);
         chip.Child = row;
         return chip;
@@ -1754,7 +1881,7 @@ public partial class AgentTreePage : UserControl
 
         var histGrid = new Grid
         {
-            ColumnDefinitions = new ColumnDefinitions("*,8,*"),
+            ColumnDefinitions = new ColumnDefinitions("*,4,*,4,*,4,*,4,*"),
         };
         try
         {
@@ -1787,12 +1914,11 @@ public partial class AgentTreePage : UserControl
                     .OrderByDescending(x => x.Count)
                     .ToList();
 
-                int rowIdx = 0;
                 for (int i = 0; i < groups.Count; i++)
                 {
                     var g = groups[i];
-                    int col = (i % 2) * 2;
-                    int r   = i / 2;
+                    int col = (i % 5) * 2;   // 0, 2, 4, 6, 8 (5개 데이터 열)
+                    int r   = i / 5;
                     if (histGrid.RowDefinitions.Count <= r)
                         histGrid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
 
@@ -1855,6 +1981,7 @@ public partial class AgentTreePage : UserControl
         {
             ("분석항목", "🧪", "분석항목", "#1a1a2a", "#aaccff", "#3a5a8a"),
             ("담당업체", "🏢", "담당업체", "#1a2a1a", "#aaccaa", "#3a6a3a"),
+            ("일반업무", "📝", "일반업무", "#2a2a1a", "#ccbb88", "#6a5a3a"),
             ("기타업무", "📋", "기타업무", "#2a1a2a", "#ccaaff", "#6a3a8a"),
         };
         var contentPanel = new StackPanel { Spacing = 4 };
@@ -1895,6 +2022,9 @@ public partial class AgentTreePage : UserControl
                 break;
             case "담당업체":
                 contentPanel.Children.Add(BuildShow3ContractTab(agent));
+                break;
+            case "일반업무":
+                contentPanel.Children.Add(BuildShow3GeneralTaskTab(agent));
                 break;
             case "기타업무":
                 contentPanel.Children.Add(BuildShow3MiscTaskTab(agent));
@@ -2065,6 +2195,670 @@ public partial class AgentTreePage : UserControl
             root.Children.Add(row);
         }
         return root;
+    }
+
+    // ── 일반업무 탭 — 전체 업무 목록 + 직원 배정 인라인 ──────────────────────
+    private Control BuildShow3GeneralTaskTab(Agent agent)
+    {
+        var kbR = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R");
+        var kbM = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
+
+        var root = new StackPanel { Spacing = 4 };
+
+        root.Children.Add(new TextBlock
+        {
+            Text = $"📝 일반업무 배정 — {agent.성명}",
+            FontSize = 13, FontWeight = FontWeight.Bold,
+            FontFamily = kbM, Foreground = new SolidColorBrush(Color.Parse("#ccbb88")),
+            Margin = new Thickness(0, 0, 0, 6),
+        });
+
+        // 설명 텍스트
+        root.Children.Add(new TextBlock
+        {
+            Text = "행을 클릭하면 이 직원의 배정을 추가/해제합니다.",
+            FontSize = 9, FontFamily = kbR,
+            Foreground = new SolidColorBrush(Color.Parse("#778")),
+            Margin = new Thickness(0, 0, 0, 6),
+        });
+
+        // 전체 업무 × 이 직원 배정 상태
+        var allTasks   = GeneralTaskService.GetAll();
+        var grouped    = allTasks.GroupBy(t => t.업무명).OrderBy(g => g.Key).ToList();
+        var myTaskIds  = new HashSet<string>(
+            GeneralTaskService.GetByAgent(agent.사번).Select(t => t.업무명),
+            StringComparer.OrdinalIgnoreCase);
+
+        if (grouped.Count == 0)
+        {
+            root.Children.Add(new TextBlock
+            {
+                Text = "등록된 업무 없음 — 하단 '＋ 신규 업무' 버튼으로 추가하세요.",
+                FontSize = 10, FontFamily = kbR,
+                Foreground = new SolidColorBrush(Color.Parse("#666")),
+                Margin = new Thickness(0, 8),
+            });
+        }
+        else
+        {
+            var listPanel = new StackPanel { Spacing = 2 };
+
+            void RebuildList()
+            {
+                listPanel.Children.Clear();
+                var updatedMyIds = new HashSet<string>(
+                    GeneralTaskService.GetByAgent(agent.사번).Select(t => t.업무명),
+                    StringComparer.OrdinalIgnoreCase);
+                var updatedAll = GeneralTaskService.GetAll()
+                    .GroupBy(t => t.업무명).OrderBy(g => g.Key).ToList();
+
+                foreach (var g in updatedAll)
+                {
+                    bool assigned = updatedMyIds.Contains(g.Key);
+                    var tasksInGroup = g.ToList();
+                    var capturedKey  = g.Key;
+
+                    var row = new Border
+                    {
+                        Background      = assigned
+                            ? new SolidColorBrush(Color.Parse("#1a3a22"))
+                            : new SolidColorBrush(Color.Parse("#222226")),
+                        BorderBrush     = assigned
+                            ? new SolidColorBrush(Color.Parse("#3a7a4a"))
+                            : new SolidColorBrush(Color.Parse("#383840")),
+                        BorderThickness = new Thickness(1),
+                        CornerRadius    = new CornerRadius(5),
+                        Padding         = new Thickness(8, 6),
+                        Cursor          = new Cursor(StandardCursorType.Hand),
+                    };
+
+                    var inner = new Grid
+                    {
+                        ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto,Auto"),
+                    };
+
+                    // 토글 아이콘
+                    inner.Children.Add(new TextBlock
+                    {
+                        Text = assigned ? "✅" : "⬜",
+                        FontSize = 14,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        Margin = new Thickness(0, 0, 8, 0),
+                    });
+
+                    // 업무명 + 배정 인원 뱃지
+                    var nameCol = new StackPanel { Spacing = 2, [Grid.ColumnProperty] = 1,
+                        VerticalAlignment = VerticalAlignment.Center };
+                    nameCol.Children.Add(new TextBlock
+                    {
+                        Text = g.Key, FontSize = 11, FontFamily = kbM,
+                        Foreground = assigned
+                            ? new SolidColorBrush(Color.Parse("#88eebb"))
+                            : AppRes("AppFg"),
+                    });
+                    var chips = new WrapPanel { Orientation = Orientation.Horizontal };
+                    foreach (var t in tasksInGroup.Where(t => !string.IsNullOrWhiteSpace(t.담당자명)))
+                    {
+                        var (cbg, cfg) = BadgeColorHelper.GetBadgeColor(t.담당자명);
+                        chips.Children.Add(new Border
+                        {
+                            Background = new SolidColorBrush(Color.Parse(cbg)),
+                            CornerRadius = new CornerRadius(6),
+                            Padding = new Thickness(5, 1),
+                            Margin = new Thickness(0, 0, 3, 0),
+                            Child = new TextBlock
+                            {
+                                Text = t.담당자명, FontSize = 9, FontFamily = kbR,
+                                Foreground = new SolidColorBrush(Color.Parse(cfg)),
+                            },
+                        });
+                    }
+                    if (chips.Children.Count > 0) nameCol.Children.Add(chips);
+                    inner.Children.Add(nameCol);
+
+                    // 수정 버튼 (업무 자체 내용 편집)
+                    var myRecord = tasksInGroup.FirstOrDefault(t => t.담당자id == agent.사번);
+                    if (assigned && myRecord != null)
+                    {
+                        var capturedRecord = myRecord;
+                        var btnEdit = new Button
+                        {
+                            Content = "✏️", Width = 26, Height = 26, Padding = new Thickness(0),
+                            Background = new SolidColorBrush(Color.Parse("#2a2a3a")),
+                            BorderThickness = new Thickness(1),
+                            BorderBrush = new SolidColorBrush(Color.Parse("#555")),
+                            CornerRadius = new CornerRadius(4),
+                            Cursor = new Cursor(StandardCursorType.Hand),
+                            VerticalAlignment = VerticalAlignment.Center,
+                            Margin = new Thickness(4, 0, 0, 0),
+                            [Grid.ColumnProperty] = 2,
+                        };
+                        btnEdit.Click += (_, e) =>
+                        {
+                            e.Handled = true;
+                            Show3ContentRequest?.Invoke(BuildGeneralTaskForm(agent, capturedRecord));
+                        };
+                        inner.Children.Add(btnEdit);
+                    }
+
+                    row.Child = inner;
+                    row.PointerPressed += (_, _) =>
+                    {
+                        if (assigned)
+                        {
+                            var toRemove = tasksInGroup.FirstOrDefault(t => t.담당자id == agent.사번);
+                            if (toRemove != null) GeneralTaskService.Delete(toRemove.Id);
+                        }
+                        else
+                        {
+                            var template = tasksInGroup.First();
+                            GeneralTaskService.Insert(new GeneralTask
+                            {
+                                업무명   = capturedKey,
+                                내용     = template.내용,
+                                배정자   = ETA.Views.MainPage.CurrentEmployeeId,
+                                담당자id = agent.사번,
+                                담당자명 = agent.성명,
+                                마감일   = template.마감일,
+                                등록일시 = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                            });
+                        }
+                        RefreshGeneralTasks(agent);
+                        RebuildList();
+                    };
+
+                    listPanel.Children.Add(row);
+                }
+            }
+
+            RebuildList();
+            root.Children.Add(listPanel);
+        }
+
+        // 구분선 + 신규 업무 추가
+        root.Children.Add(new Border
+        {
+            Height = 1, Background = new SolidColorBrush(Color.Parse("#333")),
+            Margin = new Thickness(0, 8, 0, 4),
+        });
+        var btnAdd = new Button
+        {
+            Content = "＋ 신규 업무 추가", FontSize = 11, Height = 32,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            HorizontalContentAlignment = HorizontalAlignment.Center,
+            FontFamily = kbM,
+            Background = new SolidColorBrush(Color.Parse("#2a2a1a")),
+            Foreground = new SolidColorBrush(Color.Parse("#ccbb88")),
+            BorderThickness = new Thickness(1),
+            BorderBrush = new SolidColorBrush(Color.Parse("#6a5a3a")),
+            CornerRadius = new CornerRadius(4),
+            Cursor = new Cursor(StandardCursorType.Hand),
+        };
+        btnAdd.Click += (_, _) => Show3ContentRequest?.Invoke(BuildGeneralTaskForm(agent));
+        root.Children.Add(btnAdd);
+
+        return root;
+    }
+
+    /// <summary>일반업무 등록/수정 폼 (Show3에 표시)</summary>
+    private Control BuildGeneralTaskForm(Agent agent, GeneralTask? existing = null)
+    {
+        bool isEdit = existing != null;
+        var root = new StackPanel { Spacing = 8, Margin = new Thickness(4) };
+
+        root.Children.Add(new TextBlock
+        {
+            Text = isEdit ? $"✏️ 일반업무 수정 — {agent.성명}" : $"➕ 신규 일반업무 배정 — {agent.성명}",
+            FontSize = 13, FontWeight = FontWeight.Bold,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+            Foreground = new SolidColorBrush(Color.Parse("#ccbb88")),
+        });
+
+        var txtName = new TextBox
+        {
+            Text = existing?.업무명 ?? "",
+            Watermark = "업무명",
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+            FontSize = 12,
+            Background = new SolidColorBrush(Color.Parse("#3a3a4a")),
+            Foreground = AppRes("AppFg"),
+            BorderThickness = new Thickness(1),
+            BorderBrush = new SolidColorBrush(Color.Parse("#555577")),
+            CornerRadius = new CornerRadius(4),
+            Padding = new Thickness(8, 6),
+        };
+        root.Children.Add(txtName);
+
+        var txtContent = new TextBox
+        {
+            Text = existing?.내용 ?? "",
+            Watermark = "상세 내용",
+            AcceptsReturn = true,
+            TextWrapping = TextWrapping.Wrap,
+            MinHeight = 80,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+            FontSize = 12,
+            Background = new SolidColorBrush(Color.Parse("#3a3a4a")),
+            Foreground = AppRes("AppFg"),
+            BorderThickness = new Thickness(1),
+            BorderBrush = new SolidColorBrush(Color.Parse("#555577")),
+            CornerRadius = new CornerRadius(4),
+            Padding = new Thickness(8, 6),
+        };
+        root.Children.Add(txtContent);
+
+        // 마감일
+        var deadlineRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+        deadlineRow.Children.Add(new TextBlock
+        {
+            Text = "마감일", FontSize = 11,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+            Foreground = AppRes("FgMuted"),
+            VerticalAlignment = VerticalAlignment.Center,
+        });
+        var txtDeadline = new TextBox
+        {
+            Text = existing?.마감일 ?? "",
+            Watermark = "yyyy-MM-dd",
+            Width = 140,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+            FontSize = 12,
+            Background = new SolidColorBrush(Color.Parse("#3a3a4a")),
+            Foreground = AppRes("AppFg"),
+            BorderThickness = new Thickness(1),
+            BorderBrush = new SolidColorBrush(Color.Parse("#555577")),
+            CornerRadius = new CornerRadius(4),
+            Padding = new Thickness(8, 4),
+        };
+        deadlineRow.Children.Add(txtDeadline);
+        root.Children.Add(deadlineRow);
+
+        // 상태 토글 (수정시)
+        string currentStatus = existing?.상태 ?? "대기";
+        if (isEdit)
+        {
+            var statusRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
+            statusRow.Children.Add(new TextBlock
+            {
+                Text = "상태", FontSize = 11,
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                Foreground = AppRes("FgMuted"),
+                VerticalAlignment = VerticalAlignment.Center,
+            });
+            foreach (var st in new[] { "대기", "진행", "완료" })
+            {
+                var capturedSt = st;
+                var (bg, fg, bd) = st switch
+                {
+                    "진행" => ("#2a3a1a", "#88cc88", "#3a6a3a"),
+                    "완료" => ("#1a2a3a", "#88aacc", "#336699"),
+                    _      => ("#2a2a2a", "#ccaa88", "#665533"),
+                };
+                bool active = st == currentStatus;
+                var btnSt = new Button
+                {
+                    Content = st, FontSize = 10,
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                    Padding = new Thickness(8, 3),
+                    CornerRadius = new CornerRadius(8),
+                    BorderThickness = new Thickness(1),
+                    Background  = active ? new SolidColorBrush(Color.Parse(bg)) : new SolidColorBrush(Color.Parse("#222")),
+                    Foreground  = active ? new SolidColorBrush(Color.Parse(fg)) : new SolidColorBrush(Color.Parse("#666")),
+                    BorderBrush = active ? new SolidColorBrush(Color.Parse(bd)) : new SolidColorBrush(Color.Parse("#444")),
+                };
+                btnSt.Click += (_, _) =>
+                {
+                    currentStatus = capturedSt;
+                    foreach (var child in statusRow.Children.OfType<Button>())
+                    {
+                        var s = child.Content?.ToString() ?? "";
+                        var (b2, f2, d2) = s switch
+                        {
+                            "진행" => ("#2a3a1a", "#88cc88", "#3a6a3a"),
+                            "완료" => ("#1a2a3a", "#88aacc", "#336699"),
+                            _      => ("#2a2a2a", "#ccaa88", "#665533"),
+                        };
+                        bool isActive = s == capturedSt;
+                        child.Background  = isActive ? new SolidColorBrush(Color.Parse(b2)) : new SolidColorBrush(Color.Parse("#222"));
+                        child.Foreground  = isActive ? new SolidColorBrush(Color.Parse(f2)) : new SolidColorBrush(Color.Parse("#666"));
+                        child.BorderBrush = isActive ? new SolidColorBrush(Color.Parse(d2)) : new SolidColorBrush(Color.Parse("#444"));
+                    }
+                };
+                statusRow.Children.Add(btnSt);
+            }
+            root.Children.Add(statusRow);
+        }
+
+        // 버튼 행
+        var btnRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, Margin = new Thickness(0, 8, 0, 0) };
+        var btnSave = new Button
+        {
+            Content = isEdit ? "💾 수정" : "💾 저장",
+            Height = 30, Padding = new Thickness(16, 0),
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+            FontSize = 11,
+            Background = new SolidColorBrush(Color.Parse("#1a3a2a")),
+            Foreground = new SolidColorBrush(Color.Parse("#88ee88")),
+            BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
+        };
+        btnSave.Click += (_, _) =>
+        {
+            if (string.IsNullOrWhiteSpace(txtName.Text)) return;
+            if (isEdit)
+            {
+                existing!.업무명 = txtName.Text.Trim();
+                existing!.내용   = txtContent.Text?.Trim() ?? "";
+                existing!.마감일 = txtDeadline.Text?.Trim() ?? "";
+                existing!.상태   = currentStatus;
+                if (currentStatus == "완료" && string.IsNullOrEmpty(existing.완료일시))
+                    existing.완료일시 = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                GeneralTaskService.Update(existing);
+            }
+            else
+            {
+                var t = new GeneralTask
+                {
+                    업무명   = txtName.Text.Trim(),
+                    내용     = txtContent.Text?.Trim() ?? "",
+                    배정자   = ETA.Views.MainPage.CurrentEmployeeId,
+                    담당자id = agent.사번,
+                    담당자명 = agent.성명,
+                    마감일   = txtDeadline.Text?.Trim() ?? "",
+                    등록일시 = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                };
+                GeneralTaskService.Insert(t);
+            }
+            _show3Tab = "일반업무";
+            Show3ContentRequest?.Invoke(BuildShow3Timeline(agent));
+        };
+        btnRow.Children.Add(btnSave);
+
+        if (isEdit)
+        {
+            var btnDel = new Button
+            {
+                Content = "🗑 해당 업무 삭제", Height = 30, Padding = new Thickness(10, 0),
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                FontSize = 11,
+                Background = new SolidColorBrush(Color.Parse("#3a1a1a")),
+                Foreground = new SolidColorBrush(Color.Parse("#ee8888")),
+                BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
+            };
+            btnDel.Click += (_, _) =>
+            {
+                GeneralTaskService.Delete(existing!.Id);
+                _show3Tab = "일반업무";
+                Show3ContentRequest?.Invoke(BuildShow3Timeline(agent));
+            };
+            btnRow.Children.Add(btnDel);
+        }
+
+        var btnBack = new Button
+        {
+            Content = "← 돌아가기", Height = 30, Padding = new Thickness(10, 0),
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+            FontSize = 11,
+            Background = new SolidColorBrush(Color.Parse("#2a2a3a")),
+            Foreground = new SolidColorBrush(Color.Parse("#aaaaaa")),
+            BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
+        };
+        btnBack.Click += (_, _) => { _show3Tab = "일반업무"; Show3ContentRequest?.Invoke(BuildShow3Timeline(agent)); };
+        btnRow.Children.Add(btnBack);
+
+        root.Children.Add(btnRow);
+        return root;
+    }
+
+    // ── Show4에서 호출: 담당자 선택 가능한 일반업무 추가/수정 폼 ─────────────
+    public void ShowGeneralTaskForm(GeneralTask? existing, Action? onSaved)
+    {
+        bool isEdit = existing != null;
+        var root = new StackPanel { Spacing = 8, Margin = new Thickness(4) };
+
+        root.Children.Add(new TextBlock
+        {
+            Text = isEdit ? "✏️ 일반업무 수정" : "➕ 신규 일반업무 추가",
+            FontSize = 13, FontWeight = FontWeight.Bold,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+            Foreground = new SolidColorBrush(Color.Parse("#ccbb88")),
+        });
+
+        var txtName = new TextBox
+        {
+            Text = existing?.업무명 ?? "",
+            Watermark = "업무명",
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+            FontSize = 12,
+            Background = new SolidColorBrush(Color.Parse("#3a3a4a")),
+            Foreground = AppRes("AppFg"),
+            BorderThickness = new Thickness(1),
+            BorderBrush = new SolidColorBrush(Color.Parse("#555577")),
+            CornerRadius = new CornerRadius(4),
+            Padding = new Thickness(8, 6),
+        };
+        root.Children.Add(txtName);
+
+        var txtContent = new TextBox
+        {
+            Text = existing?.내용 ?? "",
+            Watermark = "상세 내용",
+            AcceptsReturn = true,
+            TextWrapping = TextWrapping.Wrap,
+            MinHeight = 80,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+            FontSize = 12,
+            Background = new SolidColorBrush(Color.Parse("#3a3a4a")),
+            Foreground = AppRes("AppFg"),
+            BorderThickness = new Thickness(1),
+            BorderBrush = new SolidColorBrush(Color.Parse("#555577")),
+            CornerRadius = new CornerRadius(4),
+            Padding = new Thickness(8, 6),
+        };
+        root.Children.Add(txtContent);
+
+        // 담당자 선택 콤보박스
+        var agentRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+        agentRow.Children.Add(new TextBlock
+        {
+            Text = "담당자", FontSize = 11,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+            Foreground = AppRes("FgMuted"),
+            VerticalAlignment = VerticalAlignment.Center,
+        });
+        var agents = AgentService.GetAllItems().OrderBy(a => a.성명).ToList();
+        var cboAgent = new ComboBox
+        {
+            Width = 180, FontSize = 12,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+            Background = new SolidColorBrush(Color.Parse("#3a3a4a")),
+            Foreground = AppRes("AppFg"),
+            BorderThickness = new Thickness(1),
+            BorderBrush = new SolidColorBrush(Color.Parse("#555577")),
+            CornerRadius = new CornerRadius(4),
+        };
+        foreach (var a in agents)
+            cboAgent.Items.Add(new ComboBoxItem { Content = a.성명, Tag = a.사번 });
+        // 기존 담당자 선택
+        if (isEdit && !string.IsNullOrEmpty(existing!.담당자id))
+        {
+            for (int i = 0; i < cboAgent.Items.Count; i++)
+                if (cboAgent.Items[i] is ComboBoxItem ci && ci.Tag?.ToString() == existing.담당자id)
+                { cboAgent.SelectedIndex = i; break; }
+        }
+        agentRow.Children.Add(cboAgent);
+        root.Children.Add(agentRow);
+
+        // 마감일
+        var deadlineRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+        deadlineRow.Children.Add(new TextBlock
+        {
+            Text = "마감일", FontSize = 11,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+            Foreground = AppRes("FgMuted"),
+            VerticalAlignment = VerticalAlignment.Center,
+        });
+        var txtDeadline = new TextBox
+        {
+            Text = existing?.마감일 ?? "",
+            Watermark = "yyyy-MM-dd",
+            Width = 140,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+            FontSize = 12,
+            Background = new SolidColorBrush(Color.Parse("#3a3a4a")),
+            Foreground = AppRes("AppFg"),
+            BorderThickness = new Thickness(1),
+            BorderBrush = new SolidColorBrush(Color.Parse("#555577")),
+            CornerRadius = new CornerRadius(4),
+            Padding = new Thickness(8, 4),
+        };
+        deadlineRow.Children.Add(txtDeadline);
+        root.Children.Add(deadlineRow);
+
+        // 상태 토글 (수정시)
+        string currentStatus = existing?.상태 ?? "대기";
+        if (isEdit)
+        {
+            var statusRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
+            statusRow.Children.Add(new TextBlock
+            {
+                Text = "상태", FontSize = 11,
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                Foreground = AppRes("FgMuted"),
+                VerticalAlignment = VerticalAlignment.Center,
+            });
+            foreach (var st in new[] { "대기", "진행", "완료" })
+            {
+                var capturedSt = st;
+                var (bg, fg, bd) = st switch
+                {
+                    "진행" => ("#2a3a1a", "#88cc88", "#3a6a3a"),
+                    "완료" => ("#1a2a3a", "#88aacc", "#336699"),
+                    _      => ("#2a2a2a", "#ccaa88", "#665533"),
+                };
+                bool active = st == currentStatus;
+                var btnSt = new Button
+                {
+                    Content = st, FontSize = 10,
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                    Padding = new Thickness(8, 3),
+                    CornerRadius = new CornerRadius(8),
+                    BorderThickness = new Thickness(1),
+                    Background  = active ? new SolidColorBrush(Color.Parse(bg)) : new SolidColorBrush(Color.Parse("#222")),
+                    Foreground  = active ? new SolidColorBrush(Color.Parse(fg)) : new SolidColorBrush(Color.Parse("#666")),
+                    BorderBrush = active ? new SolidColorBrush(Color.Parse(bd)) : new SolidColorBrush(Color.Parse("#444")),
+                };
+                btnSt.Click += (_, _) =>
+                {
+                    currentStatus = capturedSt;
+                    foreach (var child in statusRow.Children.OfType<Button>())
+                    {
+                        var s = child.Content?.ToString() ?? "";
+                        var (b2, f2, d2) = s switch
+                        {
+                            "진행" => ("#2a3a1a", "#88cc88", "#3a6a3a"),
+                            "완료" => ("#1a2a3a", "#88aacc", "#336699"),
+                            _      => ("#2a2a2a", "#ccaa88", "#665533"),
+                        };
+                        bool isActive = s == capturedSt;
+                        child.Background  = isActive ? new SolidColorBrush(Color.Parse(b2)) : new SolidColorBrush(Color.Parse("#222"));
+                        child.Foreground  = isActive ? new SolidColorBrush(Color.Parse(f2)) : new SolidColorBrush(Color.Parse("#666"));
+                        child.BorderBrush = isActive ? new SolidColorBrush(Color.Parse(d2)) : new SolidColorBrush(Color.Parse("#444"));
+                    }
+                };
+                statusRow.Children.Add(btnSt);
+            }
+            root.Children.Add(statusRow);
+        }
+
+        // 버튼 행
+        var btnRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, Margin = new Thickness(0, 8, 0, 0) };
+        var btnSave = new Button
+        {
+            Content = isEdit ? "💾 수정" : "💾 저장",
+            Height = 30, Padding = new Thickness(16, 0),
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+            FontSize = 11,
+            Background = new SolidColorBrush(Color.Parse("#1a3a2a")),
+            Foreground = new SolidColorBrush(Color.Parse("#88ee88")),
+            BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
+        };
+        btnSave.Click += (_, _) =>
+        {
+            if (string.IsNullOrWhiteSpace(txtName.Text)) return;
+            var selItem = cboAgent.SelectedItem as ComboBoxItem;
+            string agentId   = selItem?.Tag?.ToString() ?? "";
+            string agentName = selItem?.Content?.ToString() ?? "";
+
+            if (isEdit)
+            {
+                existing!.업무명 = txtName.Text.Trim();
+                existing!.내용   = txtContent.Text?.Trim() ?? "";
+                existing!.마감일 = txtDeadline.Text?.Trim() ?? "";
+                existing!.상태   = currentStatus;
+                if (!string.IsNullOrEmpty(agentId))
+                {
+                    existing!.담당자id = agentId;
+                    existing!.담당자명 = agentName;
+                }
+                if (currentStatus == "완료" && string.IsNullOrEmpty(existing.완료일시))
+                    existing.완료일시 = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                GeneralTaskService.Update(existing);
+            }
+            else
+            {
+                var t = new GeneralTask
+                {
+                    업무명   = txtName.Text.Trim(),
+                    내용     = txtContent.Text?.Trim() ?? "",
+                    배정자   = ETA.Views.MainPage.CurrentEmployeeId,
+                    담당자id = agentId,
+                    담당자명 = agentName,
+                    마감일   = txtDeadline.Text?.Trim() ?? "",
+                    등록일시 = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                };
+                GeneralTaskService.Insert(t);
+            }
+            onSaved?.Invoke();
+        };
+        btnRow.Children.Add(btnSave);
+
+        if (isEdit)
+        {
+            var btnDel = new Button
+            {
+                Content = "🗑 해당 업무 삭제", Height = 30, Padding = new Thickness(10, 0),
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                FontSize = 11,
+                Background = new SolidColorBrush(Color.Parse("#3a1a1a")),
+                Foreground = new SolidColorBrush(Color.Parse("#ee8888")),
+                BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
+            };
+            btnDel.Click += (_, _) =>
+            {
+                GeneralTaskService.Delete(existing!.Id);
+                onSaved?.Invoke();
+            };
+            btnRow.Children.Add(btnDel);
+        }
+
+        var btnBack = new Button
+        {
+            Content = "← 취소", Height = 30, Padding = new Thickness(10, 0),
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+            FontSize = 11,
+            Background = new SolidColorBrush(Color.Parse("#2a2a3a")),
+            Foreground = new SolidColorBrush(Color.Parse("#aaaaaa")),
+            BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
+        };
+        btnBack.Click += (_, _) => onSaved?.Invoke();
+        btnRow.Children.Add(btnBack);
+
+        root.Children.Add(btnRow);
+        Show4ContentRequest?.Invoke(new ScrollViewer
+        {
+            Content = root,
+            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+        });
     }
 
     // ── 기타업무 탭 ─────────────────────────────────────────────────────────
@@ -2393,7 +3187,6 @@ public partial class AgentTreePage : UserControl
 
         // 상태 토글 (수정시)
         string currentStatus = existing?.상태 ?? "대기";
-        TextBlock? statusLbl = null;
         if (isEdit)
         {
             var statusRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
@@ -2498,7 +3291,7 @@ public partial class AgentTreePage : UserControl
         {
             var btnDel = new Button
             {
-                Content = "🗑 삭제", Height = 30, Padding = new Thickness(10, 0),
+                Content = "🗑 해당 업무 삭제", Height = 30, Padding = new Thickness(10, 0),
                 FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
                 FontSize = 11,
                 Background = new SolidColorBrush(Color.Parse("#3a1a1a")),
@@ -2748,6 +3541,179 @@ public partial class AgentTreePage : UserControl
                 root.Children.Add(row);
             }
         }
+
+        return new ScrollViewer
+        {
+            Content = root,
+            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+        };
+    }
+
+    // =========================================================================
+    //  Show4: 일반업무 배정 리스트 (Show2 "+" 클릭 시)
+    // =========================================================================
+    private Control BuildShow4GeneralTaskAssignList(Agent agent)
+    {
+        var root = new StackPanel { Spacing = 3, Margin = new Thickness(4) };
+
+        // 헤더
+        var hdr = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*"), Margin = new Thickness(0, 0, 0, 6) };
+        var btnBack = new Button
+        {
+            Content = "← 돌아가기", FontSize = 10,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+            Padding = new Thickness(8, 4),
+            Background = new SolidColorBrush(Color.Parse("#2a2a3a")),
+            Foreground = new SolidColorBrush(Color.Parse("#aaaaaa")),
+            BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
+        };
+        btnBack.Click += (_, _) => Show4ContentRequest?.Invoke(null);
+        hdr.Children.Add(btnBack);
+        hdr.Children.Add(new TextBlock
+        {
+            Text = $"일반업무 배정 — {agent.성명}", FontSize = 12, FontWeight = FontWeight.SemiBold,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+            Foreground = new SolidColorBrush(Color.Parse("#aaccbb")),
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin = new Thickness(8, 0, 0, 0),
+            [Grid.ColumnProperty] = 1,
+        });
+        root.Children.Add(hdr);
+        root.Children.Add(new Border { Height = 1, Background = new SolidColorBrush(Color.Parse("#444")) });
+
+        // 전체 업무 가져오기 — 업무명 기준 그룹
+        var allTasks = GeneralTaskService.GetAll();
+        var grouped = allTasks.GroupBy(t => t.업무명).OrderBy(g => g.Key).ToList();
+
+        if (grouped.Count == 0)
+        {
+            root.Children.Add(new TextBlock
+            {
+                Text = "등록된 일반업무 없음\n하단 '＋ 신규 업무' 버튼으로 먼저 업무를 추가하세요.",
+                FontSize = 10,
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                Foreground = new SolidColorBrush(Color.Parse("#666")),
+                Margin = new Thickness(0, 8),
+            });
+        }
+        else
+        {
+            foreach (var g in grouped)
+            {
+                var tasksInGroup = g.ToList();
+                bool assigned = tasksInGroup.Any(t => t.담당자id == agent.사번);
+
+                var row = new Border
+                {
+                    Background   = assigned ? new SolidColorBrush(Color.Parse("#1a3a2a")) : Brushes.Transparent,
+                    CornerRadius = new CornerRadius(4),
+                    Padding      = new Thickness(6, 5),
+                    Margin       = new Thickness(0, 1),
+                    Cursor       = new Cursor(StandardCursorType.Hand),
+                };
+
+                var inner = new StackPanel { Spacing = 2 };
+
+                // 업무명 + 체크마크
+                var nameRow = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
+                nameRow.Children.Add(new TextBlock
+                {
+                    Text = g.Key, FontSize = 11, FontWeight = FontWeight.SemiBold,
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                    Foreground = assigned
+                        ? new SolidColorBrush(Color.Parse("#aaeebb"))
+                        : AppRes("AppFg"),
+                    TextTrimming = TextTrimming.CharacterEllipsis,
+                });
+                if (assigned)
+                    nameRow.Children.Add(new TextBlock
+                    {
+                        Text = "✓", FontSize = 11,
+                        FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                        Foreground = new SolidColorBrush(Color.Parse("#88ee88")),
+                        VerticalAlignment = VerticalAlignment.Center,
+                        [Grid.ColumnProperty] = 1,
+                    });
+                inner.Children.Add(nameRow);
+
+                // 배정된 인원 뱃지
+                var chipsPanel = new WrapPanel { Orientation = Orientation.Horizontal };
+                foreach (var t in tasksInGroup)
+                {
+                    if (string.IsNullOrWhiteSpace(t.담당자명)) continue;
+                    var (bg, fg) = BadgeColorHelper.GetBadgeColor(t.담당자명);
+                    chipsPanel.Children.Add(new Border
+                    {
+                        Background   = new SolidColorBrush(Color.Parse(bg)),
+                        CornerRadius = new CornerRadius(6),
+                        Padding      = new Thickness(5, 1),
+                        Margin       = new Thickness(0, 0, 3, 0),
+                        Child = new TextBlock
+                        {
+                            Text = t.담당자명, FontSize = 9,
+                            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                            Foreground = new SolidColorBrush(Color.Parse(fg)),
+                        },
+                    });
+                }
+                if (chipsPanel.Children.Count > 0)
+                    inner.Children.Add(chipsPanel);
+
+                row.Child = inner;
+
+                var capturedTaskName = g.Key;
+                row.PointerPressed += (_, _) =>
+                {
+                    if (assigned)
+                    {
+                        // 이미 배정 → 제거
+                        var toRemove = tasksInGroup.FirstOrDefault(t => t.담당자id == agent.사번);
+                        if (toRemove != null) GeneralTaskService.Delete(toRemove.Id);
+                    }
+                    else
+                    {
+                        // 미배정 → 추가 (기존 업무 기반 복제)
+                        var template = tasksInGroup.First();
+                        var newTask = new GeneralTask
+                        {
+                            업무명   = capturedTaskName,
+                            내용     = template.내용,
+                            배정자   = ETA.Views.MainPage.CurrentEmployeeId,
+                            담당자id = agent.사번,
+                            담당자명 = agent.성명,
+                            마감일   = template.마감일,
+                            등록일시 = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                        };
+                        GeneralTaskService.Insert(newTask);
+                    }
+                    RefreshGeneralTasks(agent);
+                    Show4ContentRequest?.Invoke(BuildShow4GeneralTaskAssignList(agent));
+                };
+                root.Children.Add(row);
+            }
+        }
+
+        // 하단: 신규 업무 추가 버튼
+        root.Children.Add(new Border { Height = 1, Background = new SolidColorBrush(Color.Parse("#333")), Margin = new Thickness(0, 6) });
+        var btnNewTask = new Button
+        {
+            Content = "＋ 신규 업무 추가", FontSize = 11, Height = 30,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            HorizontalContentAlignment = HorizontalAlignment.Center,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+            Background = new SolidColorBrush(Color.Parse("#2a2a1a")),
+            Foreground = new SolidColorBrush(Color.Parse("#ccbb88")),
+            BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
+        };
+        btnNewTask.Click += (_, _) =>
+        {
+            ShowGeneralTaskForm(null, () =>
+            {
+                RefreshGeneralTasks(agent);
+                Show4ContentRequest?.Invoke(BuildShow4GeneralTaskAssignList(agent));
+            });
+        };
+        root.Children.Add(btnNewTask);
 
         return new ScrollViewer
         {
@@ -3160,6 +4126,121 @@ public partial class AgentTreePage : UserControl
             }
         }
         catch { }
+    }
+
+    // =========================================================================
+    // 일반업무 — Show2 목록 (4열 그리드)
+    // =========================================================================
+    private void RefreshGeneralTasks(Agent agent)
+    {
+        if (_generalTaskPanel == null) return;
+        _generalTaskPanel.Children.Clear();
+
+        var tasks = GeneralTaskService.GetByAgent(agent.사번);
+        if (tasks.Count == 0)
+        {
+            _generalTaskPanel.Children.Add(new TextBlock
+            {
+                Text = "배정된 일반업무 없음", FontSize = 10,
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                Foreground = new SolidColorBrush(Color.Parse("#555")),
+                Margin = new Thickness(0, 2),
+            });
+            return;
+        }
+
+        const int Cols = 4;
+        var taskGrid = new Grid { ColumnDefinitions = new ColumnDefinitions("*,4,*,4,*,4,*") };
+
+        for (int i = 0; i < tasks.Count; i++)
+        {
+            var t = tasks[i];
+            int gridCol = (i % Cols) * 2;   // 0, 2, 4, 6
+            int gridRow = i / Cols;
+            if (taskGrid.RowDefinitions.Count <= gridRow)
+                taskGrid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+
+            var statusColor = t.상태 switch
+            {
+                "진행" => ("#1a2a2a", "#66ccbb", "#2a6a5a"),
+                "완료" => ("#1a2a3a", "#88aacc", "#336699"),
+                _      => ("#2a2a2a", "#cccc88", "#666633"),
+            };
+
+            var capturedTask  = t;
+            var capturedAgent = agent;
+            var card = new Border
+            {
+                Background      = new SolidColorBrush(Color.Parse(statusColor.Item1)),
+                BorderBrush     = new SolidColorBrush(Color.Parse(statusColor.Item3)),
+                BorderThickness = new Thickness(1),
+                CornerRadius    = new CornerRadius(4),
+                Padding         = new Thickness(5, 3),
+                Margin          = new Thickness(0, 1),
+                Cursor          = new Cursor(StandardCursorType.Hand),
+                [Grid.ColumnProperty] = gridCol,
+                [Grid.RowProperty]    = gridRow,
+            };
+            // 호버시 × 버튼 표시
+            var btnXTask = new Button
+            {
+                Content = "×", FontSize = 11, Padding = new Thickness(2, 0),
+                Background = Brushes.Transparent, BorderThickness = new Thickness(0),
+                Foreground = new SolidColorBrush(Color.Parse("#dd6688")),
+                VerticalAlignment = VerticalAlignment.Top,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                IsVisible = false,
+            };
+            var taskId = t.Id;
+            btnXTask.Click += (_, e) =>
+            {
+                e.Handled = true;
+                GeneralTaskService.Delete(taskId);
+                RefreshGeneralTasks(agent);
+            };
+
+            var inner = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
+            var nameStack = new StackPanel { Spacing = 1 };
+            nameStack.Children.Add(new TextBlock
+            {
+                Text = t.업무명, FontSize = 10,
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                Foreground = new SolidColorBrush(Color.Parse(statusColor.Item2)),
+                TextTrimming = TextTrimming.CharacterEllipsis,
+            });
+            var sub = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4 };
+            sub.Children.Add(new Border
+            {
+                Background   = new SolidColorBrush(Color.Parse(statusColor.Item3)),
+                CornerRadius = new CornerRadius(2),
+                Padding      = new Thickness(3, 0),
+                Child = new TextBlock
+                {
+                    Text = t.상태, FontSize = 8,
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                    Foreground = new SolidColorBrush(Color.Parse(statusColor.Item2)),
+                },
+            });
+            if (!string.IsNullOrEmpty(t.마감일))
+                sub.Children.Add(new TextBlock
+                {
+                    Text = t.마감일, FontSize = 8,
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                    Foreground = new SolidColorBrush(Color.Parse("#777")),
+                    VerticalAlignment = VerticalAlignment.Center,
+                });
+            nameStack.Children.Add(sub);
+            inner.Children.Add(nameStack);
+            inner.Children.Add(btnXTask);
+            Grid.SetColumn(btnXTask, 1);
+            card.Child = inner;
+            card.PointerEntered += (_, _) => btnXTask.IsVisible = true;
+            card.PointerExited  += (_, _) => btnXTask.IsVisible = false;
+            card.PointerPressed += (_, _) => Show3ContentRequest?.Invoke(BuildGeneralTaskForm(capturedAgent, capturedTask));
+            taskGrid.Children.Add(card);
+        }
+
+        _generalTaskPanel.Children.Add(taskGrid);
     }
 
     private void Log(string msg)

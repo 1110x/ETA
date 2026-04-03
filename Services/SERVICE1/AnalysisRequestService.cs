@@ -22,6 +22,9 @@ public static class AnalysisRequestService
     private static readonly string LogPath = Path.GetFullPath(
         Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "Logs", "Treeview.log"));
 
+    // field69~114 마이그레이션은 앱 세션당 1회만 실행
+    private static volatile bool _fieldMigrationDone = false;
+
     private static void Log(string msg)
     {
         var line = $"[{DateTime.Now:HH:mm:ss}] [AnalysisRequestService] {msg}";
@@ -560,6 +563,31 @@ public static class AnalysisRequestService
                 }
             }
 
+            // field69~field114 컬럼 삭제 마이그레이션 — 앱 세션당 1회만 실행
+            if (!_fieldMigrationDone)
+            {
+                _fieldMigrationDone = true;
+                var existingCols = new HashSet<string>(
+                    DbConnectionFactory.GetColumnNames(conn, "분장표준처리"),
+                    StringComparer.OrdinalIgnoreCase);
+                foreach (var fieldName in existingCols.Where(c =>
+                    c.StartsWith("field", StringComparison.OrdinalIgnoreCase) &&
+                    int.TryParse(c[5..], out int n) && n >= 69 && n <= 114).ToList())
+                {
+                    try
+                    {
+                        // 타임아웃 방지: 컬럼마다 별도 연결 사용
+                        using var dropConn = DbConnectionFactory.CreateConnection();
+                        dropConn.Open();
+                        using var drop = dropConn.CreateCommand();
+                        drop.CommandText = $"ALTER TABLE `분장표준처리` DROP COLUMN `{fieldName}`";
+                        drop.ExecuteNonQuery();
+                        Log($"분장표준처리에서 {fieldName} 컬럼 삭제");
+                    }
+                    catch (Exception ex) { Log($"분장표준처리 {fieldName} 삭제 실패: {ex.Message}"); }
+                }
+            }
+
             // 처음 3행: 표준처리기한, 약칭, (날짜행)
             using var cmd = conn.CreateCommand();
             cmd.CommandText = "SELECT * FROM `분장표준처리` LIMIT 3";
@@ -913,6 +941,40 @@ public static class AnalysisRequestService
     }
 
     // =====================================================================
+    //  분장표준처리 — 특정 항목의 특정 직원 분장을 지정 날짜부터 제거
+    // =====================================================================
+    public static void ClearAnalyteFromAgent(string employeeId, string analyteFullName, DateTime from)
+    {
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+
+            string managerName = "";
+            using (var cmd2 = conn.CreateCommand())
+            {
+                cmd2.CommandText = "SELECT `성명` FROM `Agent` WHERE `사번` = @id";
+                cmd2.Parameters.AddWithValue("@id", employeeId);
+                var r = cmd2.ExecuteScalar();
+                if (r != null) managerName = r.ToString()?.Trim() ?? "";
+            }
+            if (string.IsNullOrEmpty(managerName)) return;
+
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = $@"
+                UPDATE `분장표준처리`
+                SET `{analyteFullName}` = NULL
+                WHERE `{analyteFullName}` = @mgr
+                  AND `항목명` >= @from";
+            cmd.Parameters.AddWithValue("@mgr",  managerName);
+            cmd.Parameters.AddWithValue("@from", from.ToString("yyyy-MM-dd"));
+            cmd.ExecuteNonQuery();
+            Log($"ClearAnalyteFromAgent: {employeeId}({managerName}) 항목='{analyteFullName}' from={from:yyyy-MM-dd}");
+        }
+        catch (Exception ex) { Log($"ClearAnalyteFromAgent 오류: {ex.Message}"); }
+    }
+
     // =====================================================================
     //  분장표준처리 — 특정 직원의 기간 내 모든 분장을 NULL로 초기화
     // =====================================================================

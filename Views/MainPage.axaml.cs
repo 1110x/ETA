@@ -47,12 +47,13 @@ public partial class MainPage : Window
     private WaterQualityNameReconcilePage?     _waterQualityNameReconcilePage;
     private WasteSampleListPage?         _wasteSampleListPage;
     private ProcessingFacilityPage?      _processingFacilityPage;
-    private WasteAssignmentPage?         _wasteAssignmentPage;
     private ResultSubmitMeasurePage?     _resultSubmitMeasurePage;
+    private TestReportPage?              _resultSubmitMeasureTestReport;
     private ResultSubmitErpPage?         _resultSubmitErpPage;
     private ResultSubmitZero4Page?       _resultSubmitZero4Page;
     private PurchasePage?      _purchasePage;
     private RepairPage?       _repairPage;
+    private RiskManagePage?   _riskPage;
     private SchedulePage?     _schedulePage;
     private TestReportPage?         _testReportPage;
     private ReportsPanel?           _reportsPanel;           // Content4: 출력 보관함
@@ -380,6 +381,369 @@ public partial class MainPage : Window
             Foreground      = new SolidColorBrush(Color.Parse("#888899")),
         };
 
+        // ── 일반업무 리스트 컨테이너 ────────────────────────────────────
+        var generalTaskStack = new StackPanel { Spacing = 0 };
+        var generalTaskScroll = new ScrollViewer
+        {
+            Content = generalTaskStack,
+            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+        };
+
+        // ── 인라인 업무 추가/수정 폼 빌더 ──────────────────────────────────
+        void ShowInlineTaskForm(ETA.Models.GeneralTask? existing, Action onDone)
+        {
+            bool isEdit = existing != null;
+            generalTaskStack.Children.Clear();
+
+            var agentFont  = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R");
+            var agentFontM = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
+
+            var form = new StackPanel { Spacing = 6, Margin = new Thickness(6) };
+
+            form.Children.Add(new TextBlock
+            {
+                Text = isEdit ? "✏️ 일반업무 수정" : "➕ 신규 일반업무 추가",
+                FontSize = 12, FontWeight = FontWeight.Bold,
+                FontFamily = agentFontM,
+                Foreground = new SolidColorBrush(Color.Parse("#ccbb88")),
+            });
+
+            var txtName = new TextBox
+            {
+                Text = existing?.업무명 ?? "",
+                Watermark = "업무명",
+                FontFamily = agentFont, FontSize = 11,
+                Background = new SolidColorBrush(Color.Parse("#3a3a4a")),
+                Foreground = Res("AppFg"),
+                BorderThickness = new Thickness(1),
+                BorderBrush = new SolidColorBrush(Color.Parse("#555577")),
+                CornerRadius = new CornerRadius(4),
+                Padding = new Thickness(6, 4),
+            };
+            form.Children.Add(txtName);
+
+            var txtContent = new TextBox
+            {
+                Text = existing?.내용 ?? "",
+                Watermark = "상세 내용",
+                AcceptsReturn = true,
+                TextWrapping = TextWrapping.Wrap,
+                MinHeight = 60,
+                FontFamily = agentFont, FontSize = 11,
+                Background = new SolidColorBrush(Color.Parse("#3a3a4a")),
+                Foreground = Res("AppFg"),
+                BorderThickness = new Thickness(1),
+                BorderBrush = new SolidColorBrush(Color.Parse("#555577")),
+                CornerRadius = new CornerRadius(4),
+                Padding = new Thickness(6, 4),
+            };
+            form.Children.Add(txtContent);
+
+            // 담당자 콤보박스
+            var agentRow = new StackPanel { Orientation = Avalonia.Layout.Orientation.Horizontal, Spacing = 6 };
+            agentRow.Children.Add(new TextBlock
+            {
+                Text = "담당자", FontSize = 10, FontFamily = agentFont,
+                Foreground = Res("FgMuted"),
+                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+            });
+            var agents = ETA.Services.SERVICE1.AgentService.GetAllItems().OrderBy(a => a.성명).ToList();
+            var cboAgent = new ComboBox
+            {
+                Width = 160, FontSize = 11, FontFamily = agentFont,
+                Background = new SolidColorBrush(Color.Parse("#3a3a4a")),
+                Foreground = Res("AppFg"),
+                BorderThickness = new Thickness(1),
+                BorderBrush = new SolidColorBrush(Color.Parse("#555577")),
+                CornerRadius = new CornerRadius(4),
+            };
+            foreach (var a in agents)
+                cboAgent.Items.Add(new ComboBoxItem { Content = a.성명, Tag = a.사번 });
+            if (isEdit && !string.IsNullOrEmpty(existing!.담당자id))
+                for (int i = 0; i < cboAgent.Items.Count; i++)
+                    if (cboAgent.Items[i] is ComboBoxItem ci && ci.Tag?.ToString() == existing.담당자id)
+                    { cboAgent.SelectedIndex = i; break; }
+            agentRow.Children.Add(cboAgent);
+            form.Children.Add(agentRow);
+
+            // 마감일
+            var deadlineRow = new StackPanel { Orientation = Avalonia.Layout.Orientation.Horizontal, Spacing = 6 };
+            deadlineRow.Children.Add(new TextBlock
+            {
+                Text = "마감일", FontSize = 10, FontFamily = agentFont,
+                Foreground = Res("FgMuted"),
+                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+            });
+            var txtDeadline = new TextBox
+            {
+                Text = existing?.마감일 ?? "",
+                Watermark = "yyyy-MM-dd",
+                Width = 120, FontFamily = agentFont, FontSize = 11,
+                Background = new SolidColorBrush(Color.Parse("#3a3a4a")),
+                Foreground = Res("AppFg"),
+                BorderThickness = new Thickness(1),
+                BorderBrush = new SolidColorBrush(Color.Parse("#555577")),
+                CornerRadius = new CornerRadius(4),
+                Padding = new Thickness(6, 3),
+            };
+            deadlineRow.Children.Add(txtDeadline);
+            form.Children.Add(deadlineRow);
+
+            // 상태 토글 (수정시)
+            string currentStatus = existing?.상태 ?? "대기";
+            if (isEdit)
+            {
+                var statusRow = new StackPanel { Orientation = Avalonia.Layout.Orientation.Horizontal, Spacing = 4 };
+                statusRow.Children.Add(new TextBlock
+                {
+                    Text = "상태", FontSize = 10, FontFamily = agentFont,
+                    Foreground = Res("FgMuted"),
+                    VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                });
+                foreach (var st in new[] { "대기", "진행", "완료" })
+                {
+                    var capturedSt = st;
+                    var (sbg, sfg, sbd) = st switch
+                    {
+                        "진행" => ("#2a3a1a", "#88cc88", "#3a6a3a"),
+                        "완료" => ("#1a2a3a", "#88aacc", "#336699"),
+                        _      => ("#2a2a2a", "#ccaa88", "#665533"),
+                    };
+                    bool active = st == currentStatus;
+                    var btnSt = new Button
+                    {
+                        Content = st, FontSize = 9, FontFamily = agentFont,
+                        Padding = new Thickness(6, 2),
+                        CornerRadius = new CornerRadius(6),
+                        BorderThickness = new Thickness(1),
+                        Background  = active ? new SolidColorBrush(Color.Parse(sbg)) : new SolidColorBrush(Color.Parse("#222")),
+                        Foreground  = active ? new SolidColorBrush(Color.Parse(sfg)) : new SolidColorBrush(Color.Parse("#666")),
+                        BorderBrush = active ? new SolidColorBrush(Color.Parse(sbd)) : new SolidColorBrush(Color.Parse("#444")),
+                    };
+                    btnSt.Click += (_, _) =>
+                    {
+                        currentStatus = capturedSt;
+                        foreach (var child in statusRow.Children.OfType<Button>())
+                        {
+                            var s = child.Content?.ToString() ?? "";
+                            var (b2, f2, d2) = s switch
+                            {
+                                "진행" => ("#2a3a1a", "#88cc88", "#3a6a3a"),
+                                "완료" => ("#1a2a3a", "#88aacc", "#336699"),
+                                _      => ("#2a2a2a", "#ccaa88", "#665533"),
+                            };
+                            bool on2 = s == capturedSt;
+                            child.Background  = on2 ? new SolidColorBrush(Color.Parse(b2)) : new SolidColorBrush(Color.Parse("#222"));
+                            child.Foreground  = on2 ? new SolidColorBrush(Color.Parse(f2)) : new SolidColorBrush(Color.Parse("#666"));
+                            child.BorderBrush = on2 ? new SolidColorBrush(Color.Parse(d2)) : new SolidColorBrush(Color.Parse("#444"));
+                        }
+                    };
+                    statusRow.Children.Add(btnSt);
+                }
+                form.Children.Add(statusRow);
+            }
+
+            // 버튼 행
+            var btnRow = new StackPanel { Orientation = Avalonia.Layout.Orientation.Horizontal, Spacing = 4, Margin = new Thickness(0, 6, 0, 0) };
+            var btnSave = new Button
+            {
+                Content = isEdit ? "💾 수정" : "💾 저장",
+                Height = 26, Padding = new Thickness(12, 0),
+                FontFamily = agentFont, FontSize = 10,
+                Background = new SolidColorBrush(Color.Parse("#1a3a2a")),
+                Foreground = new SolidColorBrush(Color.Parse("#88ee88")),
+                BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
+            };
+            btnSave.Click += (_, _) =>
+            {
+                if (string.IsNullOrWhiteSpace(txtName.Text)) return;
+                var selItem = cboAgent.SelectedItem as ComboBoxItem;
+                string agentId   = selItem?.Tag?.ToString() ?? "";
+                string agentName = selItem?.Content?.ToString() ?? "";
+
+                if (isEdit)
+                {
+                    existing!.업무명 = txtName.Text.Trim();
+                    existing!.내용   = txtContent.Text?.Trim() ?? "";
+                    existing!.마감일 = txtDeadline.Text?.Trim() ?? "";
+                    existing!.상태   = currentStatus;
+                    if (!string.IsNullOrEmpty(agentId)) { existing!.담당자id = agentId; existing!.담당자명 = agentName; }
+                    if (currentStatus == "완료" && string.IsNullOrEmpty(existing.완료일시))
+                        existing.완료일시 = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    ETA.Services.Common.GeneralTaskService.Update(existing);
+                }
+                else
+                {
+                    var t = new ETA.Models.GeneralTask
+                    {
+                        업무명   = txtName.Text.Trim(),
+                        내용     = txtContent.Text?.Trim() ?? "",
+                        배정자   = MainPage.CurrentEmployeeId,
+                        담당자id = agentId,
+                        담당자명 = agentName,
+                        마감일   = txtDeadline.Text?.Trim() ?? "",
+                        등록일시 = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                    };
+                    ETA.Services.Common.GeneralTaskService.Insert(t);
+                }
+                onDone();
+            };
+            btnRow.Children.Add(btnSave);
+
+            if (isEdit)
+            {
+                var btnDel = new Button
+                {
+                    Content = "🗑 삭제", Height = 26, Padding = new Thickness(8, 0),
+                    FontFamily = agentFont, FontSize = 10,
+                    Background = new SolidColorBrush(Color.Parse("#3a1a1a")),
+                    Foreground = new SolidColorBrush(Color.Parse("#ee8888")),
+                    BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
+                };
+                btnDel.Click += (_, _) =>
+                {
+                    ETA.Services.Common.GeneralTaskService.Delete(existing!.Id);
+                    onDone();
+                };
+                btnRow.Children.Add(btnDel);
+            }
+
+            var btnCancel = new Button
+            {
+                Content = "← 취소", Height = 26, Padding = new Thickness(8, 0),
+                FontFamily = agentFont, FontSize = 10,
+                Background = new SolidColorBrush(Color.Parse("#2a2a3a")),
+                Foreground = new SolidColorBrush(Color.Parse("#aaaaaa")),
+                BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
+            };
+            btnCancel.Click += (_, _) => onDone();
+            btnRow.Children.Add(btnCancel);
+
+            form.Children.Add(btnRow);
+            generalTaskStack.Children.Add(form);
+        }
+
+        void LoadGeneralTaskList()
+        {
+            generalTaskStack.Children.Clear();
+            try
+            {
+                var tasks = ETA.Services.Common.GeneralTaskService.GetAll();
+                // 업무명 기준 그룹화 — 같은 업무에 여러 명 배정 가능
+                var grouped = tasks.GroupBy(t => t.업무명).OrderBy(g => g.Key).ToList();
+                var agentFont = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R");
+                var agentFontM = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
+                bool odd = false;
+
+                foreach (var g in grouped)
+                {
+                    var row = new Border
+                    {
+                        Background = new SolidColorBrush(Color.Parse(odd ? "#1a1a28" : "#1e1e30")),
+                        Padding    = new Thickness(8, 5),
+                        Cursor     = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
+                    };
+                    odd = !odd;
+
+                    var inner = new StackPanel { Spacing = 2 };
+
+                    // 업무명
+                    inner.Children.Add(new TextBlock
+                    {
+                        Text              = g.Key,
+                        FontSize          = 11,
+                        FontWeight        = FontWeight.SemiBold,
+                        Foreground        = new SolidColorBrush(Color.Parse("#cccccc")),
+                        FontFamily        = agentFontM,
+                        TextTrimming      = TextTrimming.CharacterEllipsis,
+                    });
+
+                    // 배정인원 표시
+                    var chipsPanel = new WrapPanel { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 2, 0, 0) };
+                    foreach (var t in g)
+                    {
+                        if (string.IsNullOrWhiteSpace(t.담당자명)) continue;
+                        var (bg, fg) = BadgeColorHelper.GetBadgeColor(t.담당자명);
+                        var statusColor = t.상태 switch
+                        {
+                            "완료"  => "#2a4a2a",
+                            "진행"  or "진행중" => "#2a3a4a",
+                            _       => "#3a2a3a",
+                        };
+                        chipsPanel.Children.Add(new Border
+                        {
+                            Background      = new SolidColorBrush(Color.Parse(statusColor)),
+                            CornerRadius    = new CornerRadius(8),
+                            Padding         = new Thickness(6, 1),
+                            Margin          = new Thickness(0, 0, 3, 2),
+                            Child = new TextBlock
+                            {
+                                Text       = $"{t.담당자명} ({t.상태})",
+                                FontSize   = 9,
+                                FontFamily = agentFont,
+                                Foreground = new SolidColorBrush(Color.Parse(fg)),
+                            },
+                        });
+                    }
+                    if (chipsPanel.Children.Count == 0)
+                        chipsPanel.Children.Add(new TextBlock
+                        {
+                            Text = "미배정", FontSize = 9, FontFamily = agentFont,
+                            Foreground = new SolidColorBrush(Color.Parse("#555566")),
+                        });
+                    inner.Children.Add(chipsPanel);
+
+                    row.Child = inner;
+
+                    // 클릭 시 수정 폼 — 그룹의 첫 번째 항목 수정
+                    var firstTask = g.First();
+                    row.PointerPressed += (_, _) => ShowInlineTaskForm(firstTask, () => LoadGeneralTaskList());
+
+                    generalTaskStack.Children.Add(row);
+                }
+
+                if (grouped.Count == 0)
+                    generalTaskStack.Children.Add(new TextBlock
+                    {
+                        Text = "일반업무 없음", FontSize = 11,
+                        Foreground = new SolidColorBrush(Color.Parse("#555")),
+                        Margin = new Thickness(8, 8),
+                        FontFamily = agentFont,
+                    });
+
+                // 하단: 추가 버튼
+                var btnAdd = new Button
+                {
+                    Content         = "＋ 업무 추가",
+                    FontSize        = 11,
+                    Height          = 28,
+                    Padding         = new Thickness(12, 0),
+                    BorderThickness = new Thickness(0),
+                    CornerRadius    = new CornerRadius(4),
+                    FontFamily      = agentFontM,
+                    Background      = new SolidColorBrush(Color.Parse("#2a3a2a")),
+                    Foreground      = new SolidColorBrush(Color.Parse("#88cc88")),
+                    Margin          = new Thickness(4, 6),
+                    HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left,
+                };
+                btnAdd.Click += (_, _) => ShowInlineTaskForm(null, () => LoadGeneralTaskList());
+                generalTaskStack.Children.Add(btnAdd);
+            }
+            catch { }
+        }
+
+        var btnGenTask = new Button
+        {
+            Content         = "일반업무",
+            FontSize        = 11,
+            Height          = 26,
+            Padding         = new Thickness(12, 0),
+            BorderThickness = new Thickness(0),
+            FontFamily      = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+            Background      = new SolidColorBrush(Color.Parse("#2a2a38")),
+            Foreground      = new SolidColorBrush(Color.Parse("#888899")),
+        };
+
         var tabRow = new StackPanel
         {
             Orientation = Avalonia.Layout.Orientation.Horizontal,
@@ -388,32 +752,49 @@ public partial class MainPage : Window
         };
         tabRow.Children.Add(btnAnalysis);
         tabRow.Children.Add(btnContract);
+        tabRow.Children.Add(btnGenTask);
 
         // 콘텐츠 영역 — 토글로 전환
         var contentArea = new Grid();
         contentArea.Children.Add(dock);
         contentArea.Children.Add(contractScroll);
-        dock.IsVisible         = true;
-        contractScroll.IsVisible = false;
+        contentArea.Children.Add(generalTaskScroll);
+        dock.IsVisible             = true;
+        contractScroll.IsVisible   = false;
+        generalTaskScroll.IsVisible = false;
+
+        void SetActiveTab(Button active)
+        {
+            foreach (var btn in new[] { btnAnalysis, btnContract, btnGenTask })
+            {
+                bool on = btn == active;
+                btn.Background = on ? Res("TabActiveBg") : Res("SubBtnBg");
+                btn.Foreground = on ? Res("TabActiveFg") : Res("FgMuted");
+            }
+        }
 
         btnAnalysis.Click += (_, _) =>
         {
-            dock.IsVisible           = true;
-            contractScroll.IsVisible = false;
-            btnAnalysis.Background   = Res("TabActiveBg");
-            btnAnalysis.Foreground   = Res("TabActiveFg");
-            btnContract.Background   = Res("SubBtnBg");
-            btnContract.Foreground   = Res("FgMuted");
+            dock.IsVisible             = true;
+            contractScroll.IsVisible   = false;
+            generalTaskScroll.IsVisible = false;
+            SetActiveTab(btnAnalysis);
         };
         btnContract.Click += (_, _) =>
         {
-            dock.IsVisible           = false;
-            contractScroll.IsVisible = true;
-            btnAnalysis.Background   = Res("SubBtnBg");
-            btnAnalysis.Foreground   = Res("FgMuted");
-            btnContract.Background   = Res("TabActiveBg");
-            btnContract.Foreground   = Res("TabActiveFg");
+            dock.IsVisible             = false;
+            contractScroll.IsVisible   = true;
+            generalTaskScroll.IsVisible = false;
+            SetActiveTab(btnContract);
             LoadContracts();
+        };
+        btnGenTask.Click += (_, _) =>
+        {
+            dock.IsVisible             = false;
+            contractScroll.IsVisible   = false;
+            generalTaskScroll.IsVisible = true;
+            SetActiveTab(btnGenTask);
+            LoadGeneralTaskList();
         };
 
         var outerDock = new DockPanel { LastChildFill = true };
@@ -430,11 +811,15 @@ public partial class MainPage : Window
         if (_analysisItemsListBox == null) return;
 
         _analysisItemsListBox.Items.Clear();
-        var items = AnalysisService.GetAllItems();
-        Debug.WriteLine($"[LoadAnalysisItems] 로드된 분석항목 수: {items.Count}");
-        
-        foreach (var item in items)
+
+        // 분장표준처리 테이블 컬럼 순서 + 약칭(row2)으로 가져오기
+        var analytes = AnalysisRequestService.GetOrderedAnalytes();
+        Debug.WriteLine($"[LoadAnalysisItems] 로드된 분석항목 수: {analytes.Count}");
+
+        foreach (var (fullName, shortName) in analytes)
         {
+            var (badgeBg, badgeFg) = BadgeColorHelper.GetBadgeColor(shortName);
+
             // 카드 UI: Border + Grid로 구성
             var cardBorder = new Border
             {
@@ -446,17 +831,36 @@ public partial class MainPage : Window
                 Margin          = new Thickness(2, 1),
                 Cursor          = new Cursor(StandardCursorType.Hand),
             };
-            ToolTip.SetTip(cardBorder, $"{item.Category} | ES: {item.ES}");
+            ToolTip.SetTip(cardBorder, $"{fullName} ({shortName})");
 
             var cardGrid = new Grid
             {
                 ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto"),
             };
 
+            // Col 0: 약칭 배지
+            var catBadge = new Border
+            {
+                Background        = new SolidColorBrush(Color.Parse(badgeBg)),
+                CornerRadius      = new CornerRadius(3),
+                Padding           = new Thickness(4, 1),
+                Margin            = new Thickness(0, 0, 5, 0),
+                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                Child = new TextBlock
+                {
+                    Text       = shortName,
+                    FontSize   = 9,
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                    Foreground = new SolidColorBrush(Color.Parse(badgeFg)),
+                }
+            };
+            Grid.SetColumn(catBadge, 0);
+            cardGrid.Children.Add(catBadge);
+
             // Col 1: 항목명
             var nameBlock = new TextBlock
             {
-                Text              = item.Analyte,
+                Text              = fullName,
                 FontSize          = 11,
                 FontWeight        = FontWeight.SemiBold,
                 Foreground        = new SolidColorBrush(Color.Parse("#a0d060")),
@@ -464,6 +868,8 @@ public partial class MainPage : Window
                 TextTrimming      = TextTrimming.CharacterEllipsis,
                 VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
             };
+            Grid.SetColumn(nameBlock, 1);
+            cardGrid.Children.Add(nameBlock);
 
             // Col 2: 할당 배지 (UpdateAssignmentInfo에서 갱신)
             var assignBadge = new TextBlock
@@ -475,34 +881,10 @@ public partial class MainPage : Window
                 VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
                 Margin            = new Thickness(4, 0, 0, 0),
             };
-
-            // Col 0: 항목구분 배지
-            if (!string.IsNullOrWhiteSpace(item.Category))
-            {
-                var catBadge = new Border
-                {
-                    Background        = new SolidColorBrush(Color.Parse(GetAgentCategoryBg(item.Category))),
-                    CornerRadius      = new CornerRadius(3),
-                    Padding           = new Thickness(3, 1),
-                    Margin            = new Thickness(0, 0, 4, 0),
-                    VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
-                    Child = new TextBlock
-                    {
-                        Text       = item.Category.Length > 3 ? item.Category[..3] : item.Category,
-                        FontSize   = 8,
-                        FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
-                        Foreground = new SolidColorBrush(Color.Parse(GetAgentCategoryFg(item.Category))),
-                    }
-                };
-                Grid.SetColumn(catBadge, 0);
-                cardGrid.Children.Add(catBadge);
-            }
-            Grid.SetColumn(nameBlock, 1);
             Grid.SetColumn(assignBadge, 2);
-            cardGrid.Children.Add(nameBlock);
             cardGrid.Children.Add(assignBadge);
 
-            cardBorder.Tag = item.Analyte;
+            cardBorder.Tag = fullName;
             cardBorder.Child = cardGrid;
 
             // ✅ 중요: Border에 직접 PointerPressed 이벤트 등록 (ListBox 이벤트와 상충 방지)
@@ -526,11 +908,11 @@ public partial class MainPage : Window
             var listBoxItem = new ListBoxItem
             {
                 Content = cardBorder,
-                Tag = item.Analyte,
+                Tag = fullName,
                 Padding = new Thickness(0),
                 Margin = new Thickness(0)
             };
-            
+
             _analysisItemsListBox.Items.Add(listBoxItem);
         }
 
@@ -778,7 +1160,7 @@ public partial class MainPage : Window
         _agentTreePage.LoadData();
         _bt1SaveAction = _agentTreePage.SaveSelected;
 
-        SetSubMenu("저장", "새로고침", "직원 추가", "선택 삭제", "엑셀 내보내기", "인쇄", "업무분장표");
+        SetSubMenu("저장", "새로고침", "직원 추가", "", "엑셀 내보내기", "인쇄", "업무분장표");
         SetLeftPanelWidth(260);
         SetContentLayout(content2Star: 1, content4Star: 1, upperStar: 1, lowerStar: 0);
         
@@ -798,11 +1180,7 @@ public partial class MainPage : Window
                 Show2.Content = panel;
                 LogContentChange("Show2", panel);
             };
-            _wasteCompanyPage.OrderSaved += () =>
-            {
-                Show4.Content = BuildOrderHistoryPanel();
-                LogContentChange("Show4", Show4.Content as Control);
-            };
+            _wasteCompanyPage.OrderSaved += () => { };
         }
 
         Show1.Content = _wasteCompanyPage;
@@ -811,14 +1189,14 @@ public partial class MainPage : Window
         LogContentChange("Show2", null);
         Show3.Content = null;
         LogContentChange("Show3", null);
-        Show4.Content = BuildOrderHistoryPanel();
-        LogContentChange("Show4", Show4.Content as Control);
+        Show4.Content = null;
+        LogContentChange("Show4", null);
         _wasteCompanyPage.LoadData();
         _bt1SaveAction = _wasteCompanyPage.SaveSelected;
 
         SetSubMenu("저장", "새로고침", "업소 등록", "엑셀 업로드", "자료 조회", "통계 보기", "설정");
         SetLeftPanelWidth(300);
-        SetContentLayout(content2Star: 1, content4Star: 1, upperStar: 8, lowerStar: 2);
+        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 8, lowerStar: 2);
 
         RestoreModeLayout("WasteCompany");
     }
@@ -979,10 +1357,6 @@ public partial class MainPage : Window
             return;
         }
 
-        // Show2 = 그래프
-        Show2.Content = BuildDataChartPanel(company.업체명, results);
-        LogContentChange("Show2", Show2.Content as Control);
-
         // Show3 = 목록 테이블
         Show3.Content = BuildDataListPanel(company.업체명, results);
         LogContentChange("Show3", Show3.Content as Control);
@@ -991,40 +1365,82 @@ public partial class MainPage : Window
         SetContentLayout(content2Star: 1, content4Star: 1, upperStar: 6, lowerStar: 4);
     }
 
-    private Control BuildDataChartPanel(string 업체명, List<ETA.Models.WasteAnalysisResult> results)
+    private Control BuildWasteBarLinePanel(string 업체명, List<ETA.Models.WasteAnalysisResult> results)
     {
-        var chart = new WasteChartControl($"📈  {업체명}  분석결과 추이", results);
-        chart.HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch;
-        chart.VerticalAlignment   = Avalonia.Layout.VerticalAlignment.Stretch;
+        // 최근 10건
+        var recent = results.Count > 10 ? results.Skip(results.Count - 10).ToList() : results;
 
-        // ── 체크박스 바 ──────────────────────────────────────────────────
-        var checkBar = new WrapPanel { Margin = new Thickness(4, 3) };
-        foreach (var (label, color, _) in WasteChartControl.Series)
+        // 8개 항목 개별 차트 생성
+        var charts = new List<WasteSingleSeriesChart>();
+        foreach (var (label, color, getValue) in WasteBarLineChartControl.Series)
+            charts.Add(new WasteSingleSeriesChart(label, color, getValue, recent));
+
+        // 상단 바: Bar/Line 토글
+        var topBar = new WrapPanel { Margin = new Thickness(4, 3), VerticalAlignment = VerticalAlignment.Center };
+
+        topBar.Children.Add(new TextBlock
         {
-            var captured = label;
-            var cb = new CheckBox
+            Text = $"{업체명}  분석결과 추이", FontSize = 11, FontFamily = _wasteFont,
+            Foreground = Brush.Parse("#8899bb"), FontWeight = FontWeight.SemiBold,
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin = new Thickness(4, 0, 12, 0),
+        });
+
+        var btnBar = new Avalonia.Controls.Button
+        {
+            Content = "Bar", FontSize = 10, FontFamily = _wasteFont,
+            Padding = new Thickness(8, 2), Margin = new Thickness(0, 0, 2, 0),
+            Background = Brush.Parse("#3a3a5a"), Foreground = Brush.Parse("#ffffff"),
+            BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(3),
+        };
+        var btnLine = new Avalonia.Controls.Button
+        {
+            Content = "Line", FontSize = 10, FontFamily = _wasteFont,
+            Padding = new Thickness(8, 2), Margin = new Thickness(0, 0, 8, 0),
+            Background = Brush.Parse("#2a2a3a"), Foreground = Brush.Parse("#888888"),
+            BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(3),
+        };
+        btnBar.Click += (_, _) =>
+        {
+            foreach (var c in charts) c.SetBarMode(true);
+            btnBar.Background  = Brush.Parse("#3a3a5a"); btnBar.Foreground  = Brush.Parse("#ffffff");
+            btnLine.Background = Brush.Parse("#2a2a3a"); btnLine.Foreground = Brush.Parse("#888888");
+        };
+        btnLine.Click += (_, _) =>
+        {
+            foreach (var c in charts) c.SetBarMode(false);
+            btnLine.Background = Brush.Parse("#3a3a5a"); btnLine.Foreground = Brush.Parse("#ffffff");
+            btnBar.Background  = Brush.Parse("#2a2a3a"); btnBar.Foreground  = Brush.Parse("#888888");
+        };
+        topBar.Children.Add(btnBar);
+        topBar.Children.Add(btnLine);
+
+        // 4열 × 2행 그리드
+        var chartGrid = new Grid
+        {
+            RowDefinitions    = new RowDefinitions("*,*"),
+            ColumnDefinitions = new ColumnDefinitions("*,*,*,*"),
+            Margin = new Thickness(2),
+        };
+        for (int i = 0; i < charts.Count; i++)
+        {
+            var border = new Border
             {
-                Content   = captured,
-                IsChecked = true,
-                FontSize  = 10,
-                FontFamily = _wasteFont,
-                Foreground = new SolidColorBrush(color),
-                Margin    = new Thickness(2, 0),
+                Child           = charts[i],
+                BorderBrush     = new SolidColorBrush(Color.Parse("#252535")),
+                BorderThickness = new Thickness(0.5),
+                Margin          = new Thickness(1),
             };
-            cb.IsCheckedChanged += (_, _) => chart.SetEnabled(captured, cb.IsChecked == true);
-            checkBar.Children.Add(cb);
+            Grid.SetRow(border, i / 4);
+            Grid.SetColumn(border, i % 4);
+            chartGrid.Children.Add(border);
         }
 
-        // ── 체크바(상단) + 차트(하단) ────────────────────────────────────
         var root = new Grid { RowDefinitions = new RowDefinitions("Auto,*") };
-        var cbBorder = new Border
-        {
-            Background = Brush.Parse("#16161e"),
-            Child      = checkBar,
-        };
-        root.Children.Add(cbBorder);
-        root.Children.Add(chart);
-        Grid.SetRow(chart, 1);
+        var topBorder = new Border { Background = Brush.Parse("#16161e"), Child = topBar };
+        root.Children.Add(topBorder);
+        root.Children.Add(chartGrid);
+        Grid.SetRow(chartGrid, 1);
         return root;
     }
 
@@ -1076,7 +1492,11 @@ public partial class MainPage : Window
             alt = !alt;
         }
 
-        return root;
+        return new ScrollViewer
+        {
+            Content = root,
+            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+        };
     }
 
     private static string Fmt(double? v) =>
@@ -1144,8 +1564,10 @@ public partial class MainPage : Window
                     return;
                 }
 
-                Show2.Content = BuildDataChartPanel(company.업체명, results);
+                // Show2 = Bar/Line 차트 (최근 10건)
+                Show2.Content = BuildWasteBarLinePanel(company.업체명, results);
                 LogContentChange("Show2", Show2.Content as Control);
+
                 Show3.Content = BuildDataListPanel(company.업체명, results);
                 LogContentChange("Show3", Show3.Content as Control);
             };
@@ -1233,9 +1655,9 @@ public partial class MainPage : Window
         LogContentChange("Show1", _wasteSampleListPage);
         Show2.Content = null;
         LogContentChange("Show2", null);
-        Show3.Content = null;
-        LogContentChange("Show3", null);
-        Show4.Content = _wasteSampleListPage.CompanyTreePanel;
+        Show3.Content = _wasteSampleListPage.CompanyTreePanel;
+        LogContentChange("Show3", _wasteSampleListPage.CompanyTreePanel as Control);
+        Show4.Content = BuildOrderHistoryPanel();
         LogContentChange("Show4", Show4.Content as Control);
         _wasteSampleListPage.LoadData();
         _wasteSampleListPage.LoadCompanyTree();
@@ -1282,7 +1704,8 @@ public partial class MainPage : Window
     private void WasteAnalysisInput_Click(object? sender, RoutedEventArgs e)
     {
         _currentMode = "WasteAnalysisInput";
-        Show1.Content = null;
+        Show1.Content = BuildAnalysisInputCategoryPanel();
+        LogContentChange("Show1", Show1.Content as Control);
         Show2.Content = null;
         Show3.Content = null;
         Show4.Content = null;
@@ -1292,17 +1715,112 @@ public partial class MainPage : Window
         RestoreModeLayout("WasteAnalysisInput");
     }
 
+    private Control BuildAnalysisInputCategoryPanel()
+    {
+        var root = new StackPanel { Spacing = 8, Margin = new Thickness(10) };
+
+        root.Children.Add(new TextBlock
+        {
+            Text = "분석결과입력",
+            FontSize = 14, FontWeight = FontWeight.Bold,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+            Foreground = (Brush)Application.Current!.Resources["AppFg"]!,
+            Margin = new Thickness(0, 0, 0, 8),
+        });
+
+        var categories = new (string Label, string Icon, string Bg, string Fg, string Bd)[]
+        {
+            ("수질분석센터", "🧪", "#1a1a2a", "#aaccff", "#3a5a8a"),
+            ("폐수배출업소", "🏭", "#1a2a1a", "#aaccaa", "#3a6a3a"),
+            ("처리시설",     "⚙️", "#2a1a2a", "#ccaaff", "#6a3a8a"),
+        };
+
+        foreach (var c in categories)
+        {
+            var captured = c;
+            var btn = new Button
+            {
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                HorizontalContentAlignment = HorizontalAlignment.Left,
+                Padding = new Thickness(14, 10),
+                Background = new SolidColorBrush(Color.Parse(c.Bg)),
+                Foreground = new SolidColorBrush(Color.Parse(c.Fg)),
+                BorderThickness = new Thickness(1),
+                BorderBrush = new SolidColorBrush(Color.Parse(c.Bd)),
+                CornerRadius = new CornerRadius(6),
+                Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
+                Content = new StackPanel
+                {
+                    Orientation = Orientation.Horizontal,
+                    Spacing = 10,
+                    Children =
+                    {
+                        new TextBlock
+                        {
+                            Text = c.Icon, FontSize = 18,
+                            VerticalAlignment = VerticalAlignment.Center,
+                        },
+                        new TextBlock
+                        {
+                            Text = c.Label, FontSize = 13,
+                            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                            Foreground = new SolidColorBrush(Color.Parse(c.Fg)),
+                            VerticalAlignment = VerticalAlignment.Center,
+                        },
+                    },
+                },
+            };
+            btn.Click += (_, _) => OnAnalysisInputCategorySelected(captured.Label);
+            root.Children.Add(btn);
+        }
+
+        return root;
+    }
+
+    private void OnAnalysisInputCategorySelected(string category)
+    {
+        // TODO: 카테고리별 분석결과 입력 화면 구현
+        Show2.Content = new TextBlock
+        {
+            Text = $"📋 {category} — 분석결과 입력",
+            FontSize = 13,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+            Foreground = (Brush)Application.Current!.Resources["AppFg"]!,
+            Margin = new Thickness(10),
+        };
+        LogContentChange("Show2", Show2.Content as Control);
+    }
+
     private void ResultSubmitMeasure_Click(object? sender, RoutedEventArgs e)
     {
         _currentMode = "ResultSubmitMeasure";
-        _resultSubmitMeasurePage ??= new ResultSubmitMeasurePage();
-        Show1.Content = _resultSubmitMeasurePage;
-        LogContentChange("Show1", _resultSubmitMeasurePage);
+
+        if (_resultSubmitMeasureTestReport == null)
+        {
+            _resultSubmitMeasureTestReport = new TestReportPage { IsMeasurerMode = true };
+            _resultSubmitMeasureTestReport.ResultListChanged += panel =>
+            {
+                Show2.Content = panel;
+                LogContentChange("Show2", panel);
+            };
+            _resultSubmitMeasureTestReport.EditPanelChanged += panel =>
+            {
+                Show3.Content = panel;
+                LogContentChange("Show3", panel);
+            };
+        }
+
+        Show1.Content = _resultSubmitMeasureTestReport;
+        LogContentChange("Show1", _resultSubmitMeasureTestReport);
         Show2.Content = null; Show3.Content = null; Show4.Content = null;
-        SetSubMenu("저장", "새로고침", "", "", "", "", "");
+        SetSubMenu("새로고침", "", "", "", "", "", "측정인 LOGIN", "자료TO측정인");
         SetLeftPanelWidth(260);
-        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 8, lowerStar: 2);
+        SetContentLayout(content2Star: 8, content4Star: 2, upperStar: 8.5, lowerStar: 1.5);
         RestoreModeLayout("ResultSubmitMeasure");
+
+        Avalonia.Threading.Dispatcher.UIThread.Post(
+            () => _resultSubmitMeasureTestReport.LoadData(),
+            Avalonia.Threading.DispatcherPriority.Render);
     }
 
     private void ResultSubmitErp_Click(object? sender, RoutedEventArgs e)
@@ -1336,36 +1854,6 @@ public partial class MainPage : Window
         RestoreModeLayout("ResultSubmitZero4");
     }
 
-    private void WasteAssignment_Click(object? sender, RoutedEventArgs e)
-    {
-        _currentMode = "WasteAssignment";
-
-        if (_wasteAssignmentPage == null)
-        {
-            _wasteAssignmentPage = new WasteAssignmentPage();
-            _wasteAssignmentPage.ResultGridChanged += panel =>
-            {
-                Show3.Content = panel;
-                LogContentChange("Show3", panel);
-            };
-        }
-
-        Show1.Content = _wasteAssignmentPage;
-        LogContentChange("Show1", _wasteAssignmentPage);
-        Show2.Content = null;
-        LogContentChange("Show2", null);
-        Show3.Content = null;
-        LogContentChange("Show3", null);
-        Show4.Content = null;
-        LogContentChange("Show4", null);
-        _bt1SaveAction = null;
-
-        SetSubMenu("새로고침", "의뢰 생성", "", "", "", "", "");
-        SetLeftPanelWidth(240);
-        SetContentLayout(content2Star: 0, content4Star: 0, upperStar: 3, lowerStar: 7);
-
-        RestoreModeLayout("WasteAssignment");
-    }
 
     private void Analysis_Click(object? sender, RoutedEventArgs e)
     {
@@ -1430,6 +1918,51 @@ public partial class MainPage : Window
         Avalonia.Threading.Dispatcher.UIThread.Post(
             () => _contractPage.LoadData(),
             Avalonia.Threading.DispatcherPriority.Render);
+    }
+
+    // ── 리스크관리 ────────────────────────────────────────────────────────────
+    private void Reagent_Click(object? sender, RoutedEventArgs e)
+    {
+        _currentMode = "RiskManage";
+        _riskPage ??= new RiskManagePage();
+        _riskPage.SelectCategory("시약");
+
+        Show1.Content = _riskPage.TreeControl;
+        LogContentChange("Show1", _riskPage.TreeControl);
+        Show2.Content = _riskPage.UsageControl;
+        LogContentChange("Show2", _riskPage.UsageControl);
+        Show3.Content = _riskPage.FormControl;
+        LogContentChange("Show3", _riskPage.FormControl);
+        Show4.Content = null;
+        LogContentChange("Show4", null);
+        _bt1SaveAction = null;
+
+        SetSubMenu("새로고침", "삭제", "", "", "", "", "", "");
+        SetLeftPanelWidth(320);
+        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 5, lowerStar: 5);
+        RestoreModeLayout("RiskManage", minLowerStar: 3);
+    }
+
+    private void Glassware_Click(object? sender, RoutedEventArgs e)
+    {
+        _currentMode = "RiskManage";
+        _riskPage ??= new RiskManagePage();
+        _riskPage.SelectCategory("초자");
+
+        Show1.Content = _riskPage.TreeControl;
+        LogContentChange("Show1", _riskPage.TreeControl);
+        Show2.Content = _riskPage.UsageControl;
+        LogContentChange("Show2", _riskPage.UsageControl);
+        Show3.Content = _riskPage.FormControl;
+        LogContentChange("Show3", _riskPage.FormControl);
+        Show4.Content = null;
+        LogContentChange("Show4", null);
+        _bt1SaveAction = null;
+
+        SetSubMenu("새로고침", "삭제", "", "", "", "", "", "");
+        SetLeftPanelWidth(320);
+        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 5, lowerStar: 5);
+        RestoreModeLayout("RiskManage", minLowerStar: 3);
     }
 
     // ── 보수요청 ──────────────────────────────────────────────────────────────
@@ -1962,7 +2495,7 @@ public partial class MainPage : Window
         LogContentChange("Show4", _reportsPanel);
         _bt1SaveAction = null;
 
-        SetSubMenu("새로고침", "", "삭제", "엑셀 출력", "", "일괄 엑셀", "측정인 LOGIN", "자료TO측정인");
+        SetSubMenu("새로고침", "", "삭제", "엑셀 출력", "", "일괄 엑셀");
 
         SetContentLayout(content2Star: 8, content4Star: 2, upperStar: 8.5, lowerStar: 1.5);
         
@@ -2209,7 +2742,9 @@ public partial class MainPage : Window
             case "Schedule":        _schedulePage?.SaveEntry();         break;
             case "Purchase":        _purchasePage?.Refresh();           break;
             case "TestReport":      _testReportPage?.LoadData();        break;
+            case "ResultSubmitMeasure": _resultSubmitMeasureTestReport?.LoadData(); break;
             case "Repair":          _repairPage?.Refresh();             break;
+            case "RiskManage":      _riskPage?.Refresh();               break;
             case "WasteSampleList":
                 _wasteSampleListPage?.LoadData();
                 _wasteSampleListPage?.LoadCompanyTree();
@@ -2244,6 +2779,7 @@ public partial class MainPage : Window
                 break;
             case "WasteSampleList": _wasteSampleListPage?.AddNewDate(); break;
             case "Repair":       _repairPage?.ApproveSelected();  break;
+            case "RiskManage":   _riskPage?.DeleteSelected();     break;
             default: Debug.WriteLine($"[{_currentMode}] BT2");   break;
         }
     }
@@ -2885,7 +3421,7 @@ public partial class MainPage : Window
             case "Purchase":
                 _purchasePage?.ShowSettings(this);
                 break;
-            case "TestReport":
+            case "ResultSubmitMeasure":
                 new MeasurerLoginWindow().Show(this);
                 break;
             default:
@@ -2898,8 +3434,8 @@ public partial class MainPage : Window
     {
         switch (_currentMode)
         {
-            case "TestReport":
-                _testReportPage?.ShowMeasurerPanel();
+            case "ResultSubmitMeasure":
+                new DataToMeasurerWindow().Show(this);
                 break;
             default:
                 Debug.WriteLine($"[{_currentMode}] BT8");
