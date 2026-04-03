@@ -162,14 +162,38 @@ public static class WasteCompanyService
             return false;
         }
 
-
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
-        using var cmd = conn.CreateCommand();
+        // ── 여수: 여수_폐수배출업소 테이블 ───────────────────────────────────
+        if (wasteCompany.프로젝트명 == "여수")
+        {
+            if (!DbConnectionFactory.TableExists(conn, "여수_폐수배출업소"))
+            {
+                Debug.WriteLine("❌ 여수_폐수배출업소 테이블 없음");
+                return false;
+            }
+            EnsureYeosuAbbrevColumn(conn);
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"
+                UPDATE `여수_폐수배출업소`
+                SET 업체명 = @업체명, 약칭 = @약칭
+                WHERE 업체명 = @Original업체명";
+            cmd.Parameters.AddWithValue("@업체명",        wasteCompany.업체명 ?? "");
+            cmd.Parameters.AddWithValue("@약칭",          wasteCompany.약칭 ?? "");
+            cmd.Parameters.AddWithValue("@Original업체명", wasteCompany.Original업체명);
+            int rows = cmd.ExecuteNonQuery();
+            Debug.WriteLine($"[UPDATE 여수] {rows}행 업데이트 (업체명: {wasteCompany.Original업체명})");
+            if (rows > 0)
+                wasteCompany.Original업체명 = wasteCompany.업체명 ?? "";
+            return rows > 0;
+        }
+
+        // ── 율촌/세풍: 폐수배출업소 테이블 ───────────────────────────────────
+        using var cmd2 = conn.CreateCommand();
         EnsureAbbrevColumn(conn);
 
-        cmd.CommandText = @"
+        cmd2.CommandText = @"
             UPDATE `폐수배출업소`
             SET
                 업체명       = @업체명,
@@ -179,23 +203,33 @@ public static class WasteCompanyService
                 약칭         = @약칭
             WHERE 업체명 = @Original업체명";
 
-        cmd.Parameters.AddWithValue("@업체명",       wasteCompany.업체명 ?? "");
-        cmd.Parameters.AddWithValue("@프로젝트",     wasteCompany.프로젝트 ?? "");
-        cmd.Parameters.AddWithValue("@프로젝트명",   wasteCompany.프로젝트명 ?? "");
+        cmd2.Parameters.AddWithValue("@업체명",       wasteCompany.업체명 ?? "");
+        cmd2.Parameters.AddWithValue("@프로젝트",     wasteCompany.프로젝트 ?? "");
+        cmd2.Parameters.AddWithValue("@프로젝트명",   wasteCompany.프로젝트명 ?? "");
         // 사업자번호 컬럼이 INTEGER 타입인 경우 빈 문자열 거부 → NULL로 전달
         var 사업자번호Val = string.IsNullOrEmpty(wasteCompany.사업자번호)
             ? (object)DBNull.Value
             : wasteCompany.사업자번호;
-        cmd.Parameters.AddWithValue("@사업자번호", 사업자번호Val);
-        cmd.Parameters.AddWithValue("@약칭",         wasteCompany.약칭 ?? "");
-        cmd.Parameters.AddWithValue("@Original업체명", wasteCompany.Original업체명);
+        cmd2.Parameters.AddWithValue("@사업자번호", 사업자번호Val);
+        cmd2.Parameters.AddWithValue("@약칭",         wasteCompany.약칭 ?? "");
+        cmd2.Parameters.AddWithValue("@Original업체명", wasteCompany.Original업체명);
 
-        int rows = cmd.ExecuteNonQuery();
-        Debug.WriteLine($"[UPDATE] {rows}행 업데이트 (업체명: {wasteCompany.Original업체명})");
+        int rows2 = cmd2.ExecuteNonQuery();
+        Debug.WriteLine($"[UPDATE] {rows2}행 업데이트 (업체명: {wasteCompany.Original업체명})");
 
-        if (rows > 0)
+        if (rows2 > 0)
             wasteCompany.Original업체명 = wasteCompany.업체명 ?? "";  // 키 갱신
 
-        return rows > 0;
+        return rows2 > 0;
+    }
+
+    private static void EnsureYeosuAbbrevColumn(DbConnection conn)
+    {
+        if (!DbConnectionFactory.ColumnExists(conn, "여수_폐수배출업소", "약칭"))
+        {
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "ALTER TABLE `여수_폐수배출업소` ADD COLUMN `약칭` TEXT DEFAULT ''";
+            try { cmd.ExecuteNonQuery(); } catch { }
+        }
     }
 }
