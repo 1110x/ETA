@@ -143,4 +143,91 @@ public static class MyTaskService
         }
         catch (Exception ex) { Log($"GetFacilityItems 오류: {ex.Message}"); return []; }
     }
+
+    // =========================================================================
+    //  의뢰목록 — 폐수채수의뢰 (채수 일정)
+    // =========================================================================
+    public record RequestListItem(
+        int    Id,
+        string SN,
+        string 업체명,
+        string 구분,
+        string 채수일,
+        string 확인자,
+        string 관리번호,
+        string 비고);
+
+    public static List<RequestListItem> GetRequestListItems(string dateStr)
+    {
+        var result = new List<RequestListItem>();
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return result;
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"
+                SELECT Id, SN, 업체명, 구분, 채수일, 확인자, 관리번호, 비고
+                FROM `폐수채수의뢰`
+                WHERE 채수일 = @d
+                ORDER BY
+                    CASE 구분 WHEN '여수' THEN 0 WHEN '율촌' THEN 1 WHEN '세풍' THEN 2 ELSE 3 END,
+                    순서 ASC";
+            cmd.Parameters.AddWithValue("@d", dateStr);
+            using var rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                result.Add(new RequestListItem(
+                    Convert.ToInt32(rdr.GetValue(0)),
+                    rdr.IsDBNull(1) ? "" : rdr.GetString(1),
+                    rdr.IsDBNull(2) ? "" : rdr.GetString(2),
+                    rdr.IsDBNull(3) ? "" : rdr.GetString(3),
+                    rdr.IsDBNull(4) ? "" : rdr.GetString(4),
+                    rdr.IsDBNull(5) ? "" : rdr.GetString(5),
+                    rdr.IsDBNull(6) ? "" : rdr.GetString(6),
+                    rdr.IsDBNull(7) ? "" : rdr.GetString(7)));
+            }
+            Log($"GetRequestListItems({dateStr}): {result.Count}건");
+        }
+        catch (Exception ex) { Log($"GetRequestListItems 오류: {ex.Message}"); }
+        return result;
+    }
+
+    public static List<RequestListItem> GetRequestListItemsRange(string fromDate, string toDate)
+    {
+        var result = new List<RequestListItem>();
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return result;
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"
+                SELECT Id, SN, 업체명, 구분, 채수일, 확인자, 관리번호, 비고
+                FROM `폐수채수의뢰`
+                WHERE 채수일 BETWEEN @from AND @to
+                ORDER BY
+                    채수일 DESC,
+                    CASE 구분 WHEN '여수' THEN 0 WHEN '율촌' THEN 1 WHEN '세풍' THEN 2 ELSE 3 END,
+                    순서 ASC";
+            cmd.Parameters.AddWithValue("@from", fromDate);
+            cmd.Parameters.AddWithValue("@to",   toDate);
+            using var rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                result.Add(new RequestListItem(
+                    Convert.ToInt32(rdr.GetValue(0)),
+                    rdr.IsDBNull(1) ? "" : rdr.GetString(1),
+                    rdr.IsDBNull(2) ? "" : rdr.GetString(2),
+                    rdr.IsDBNull(3) ? "" : rdr.GetString(3),
+                    rdr.IsDBNull(4) ? "" : rdr.GetString(4),
+                    rdr.IsDBNull(5) ? "" : rdr.GetString(5),
+                    rdr.IsDBNull(6) ? "" : rdr.GetString(6),
+                    rdr.IsDBNull(7) ? "" : rdr.GetString(7)));
+            }
+            Log($"GetRequestListItemsRange({fromDate}~{toDate}): {result.Count}건");
+        }
+        catch (Exception ex) { Log($"GetRequestListItemsRange 오류: {ex.Message}"); }
+        return result;
+    }
 }

@@ -20,6 +20,12 @@ public static class WasteCompanyService
             cmd.CommandText = "ALTER TABLE `폐수배출업소` ADD COLUMN `약칭` TEXT DEFAULT ''";
             try { cmd.ExecuteNonQuery(); } catch { }
         }
+        if (!DbConnectionFactory.ColumnExists(conn, "폐수배출업소", "비용부담금_업체명"))
+        {
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "ALTER TABLE `폐수배출업소` ADD COLUMN `비용부담금_업체명` TEXT DEFAULT ''";
+            try { cmd.ExecuteNonQuery(); } catch { }
+        }
     }
 
     public static List<WasteCompany> GetAllItems()
@@ -36,34 +42,63 @@ public static class WasteCompanyService
         conn.Open();
         EnsureAbbrevColumn(conn);
 
-        using var command = conn.CreateCommand();
-        command.CommandText = @"
+        // ── 율촌/세풍: 기존 폐수배출업소 테이블 (여수 제외) ──────────────────
+        using var cmd1 = conn.CreateCommand();
+        cmd1.CommandText = @"
             SELECT
                 프로젝트,
                 프로젝트명,
                 관리번호,
                 업체명,
                 사업자번호,
-                COALESCE(약칭, '') AS 약칭
+                COALESCE(약칭, '') AS 약칭,
+                COALESCE(비용부담금_업체명, '') AS 비용부담금_업체명
             FROM `폐수배출업소`
+            WHERE `프로젝트명` NOT LIKE '%여수%'
             ORDER BY 관리번호 ASC";
-
-        Debug.WriteLine($"[DEBUG] 실행될 SQL → {command.CommandText.Replace("\r\n", " ")}");
-
-        using var reader = command.ExecuteReader();
-        while (reader.Read())
+        using (var reader = cmd1.ExecuteReader())
         {
-            var company = new WasteCompany
+            while (reader.Read())
             {
-                프로젝트       = GetStringOrEmpty(reader, "프로젝트"),
-                프로젝트명     = GetStringOrEmpty(reader, "프로젝트명"),
-                관리번호       = GetStringOrEmpty(reader, "관리번호"),
-                업체명         = GetStringOrEmpty(reader, "업체명"),           // ← 여기가 핵심!
-                사업자번호     = GetStringOrEmpty(reader, "사업자번호"),
-                약칭           = GetStringOrEmpty(reader, "약칭"),
-                Original업체명 = GetStringOrEmpty(reader, "업체명")
-            };
-            items.Add(company);
+                items.Add(new WasteCompany
+                {
+                    프로젝트          = GetStringOrEmpty(reader, "프로젝트"),
+                    프로젝트명        = GetStringOrEmpty(reader, "프로젝트명"),
+                    관리번호          = GetStringOrEmpty(reader, "관리번호"),
+                    업체명            = GetStringOrEmpty(reader, "업체명"),
+                    사업자번호        = GetStringOrEmpty(reader, "사업자번호"),
+                    약칭              = GetStringOrEmpty(reader, "약칭"),
+                    비용부담금_업체명 = GetStringOrEmpty(reader, "비용부담금_업체명"),
+                    Original업체명    = GetStringOrEmpty(reader, "업체명"),
+                });
+            }
+        }
+
+        // ── 여수: 여수_폐수배출업소 테이블 ───────────────────────────────────
+        if (DbConnectionFactory.TableExists(conn, "여수_폐수배출업소"))
+        {
+            using var cmd2 = conn.CreateCommand();
+            cmd2.CommandText = @"
+                SELECT id, 업체명, COALESCE(약칭, '') AS 약칭
+                FROM `여수_폐수배출업소`
+                ORDER BY id ASC";
+            using var r2 = cmd2.ExecuteReader();
+            while (r2.Read())
+            {
+                var name = r2.IsDBNull(1) ? "" : r2.GetString(1).Trim();
+                var abbr = r2.IsDBNull(2) ? "" : r2.GetString(2).Trim();
+                items.Add(new WasteCompany
+                {
+                    프로젝트          = "여수",
+                    프로젝트명        = "여수",
+                    관리번호          = r2.GetValue(0).ToString() ?? "",
+                    업체명            = name,
+                    사업자번호        = "",
+                    약칭              = abbr,
+                    비용부담금_업체명 = "",
+                    Original업체명    = name,
+                });
+            }
         }
 
         Debug.WriteLine($"📊 로드 완료: {items.Count}개 업체");
@@ -81,6 +116,41 @@ public static class WasteCompanyService
         {
             return "";
         }
+    }
+
+    // ── 비용부담금_업체명 저장 ────────────────────────────────────────────────
+    public static void UpdateCostName(string 관리번호, string costName)
+    {
+        if (string.IsNullOrEmpty(관리번호)) return;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+        EnsureAbbrevColumn(conn);
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "UPDATE `폐수배출업소` SET `비용부담금_업체명`=@n WHERE `관리번호`=@id";
+        cmd.Parameters.AddWithValue("@n",  costName);
+        cmd.Parameters.AddWithValue("@id", 관리번호);
+        cmd.ExecuteNonQuery();
+    }
+
+    // ── 비용부담금_업체명 전체 조회 (Show4 파란색 표시용) ─────────────────────
+    public static HashSet<string> GetAllCostNames()
+    {
+        var set = new HashSet<string>(StringComparer.Ordinal);
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return set;
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+        EnsureAbbrevColumn(conn);
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT `비용부담금_업체명` FROM `폐수배출업소` WHERE `비용부담금_업체명` IS NOT NULL AND `비용부담금_업체명` != ''";
+        using var r = cmd.ExecuteReader();
+        while (r.Read())
+        {
+            var val = r.GetString(0);
+            foreach (var part in val.Split(','))
+                if (!string.IsNullOrWhiteSpace(part)) set.Add(part.Trim());
+        }
+        return set;
     }
 
     // 필요하면 이 메서드도 사용하세요 (Page에서 ExecuteDirectUpdate 대신 추천)

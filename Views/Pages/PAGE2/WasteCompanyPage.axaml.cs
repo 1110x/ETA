@@ -25,8 +25,9 @@ public partial class WasteCompanyPage : UserControl
         return new SolidColorBrush(Color.Parse(fallback));
     }
     // ── 외부(MainPage) 연결 ──────────────────────────────────────────────────
-    public event Action<Control?>? DetailPanelChanged;
-    public event Action?           OrderSaved;          // 의뢰 저장 완료 알림
+    public event Action<Control?>?   DetailPanelChanged;
+    public event Action<WasteCompany>? CompanySelected;   // 일반 선택 모드에서 업체 클릭 시
+    public event Action?             OrderSaved;          // 의뢰 저장 완료 알림
 
     // ── 상태 ────────────────────────────────────────────────────────────────
     private WasteCompany? _selectedCompany;
@@ -457,7 +458,8 @@ public partial class WasteCompanyPage : UserControl
         _selectedCompany = company;
         _isAddMode       = false;
         _detailPanel     = BuildEditPanel(company);
-        DetailPanelChanged?.Invoke(_detailPanel);
+        DetailPanelChanged?.Invoke(_detailPanel);   // → Show4 (MainPage에서 라우팅)
+        CompanySelected?.Invoke(company);            // → Show2/Show3 데이터 로드
         Log($"선택: {company.업체명}");
     }
 
@@ -561,11 +563,10 @@ public partial class WasteCompanyPage : UserControl
     {
         var grid = new Grid
         {
-            ColumnDefinitions = new ColumnDefinitions("*,*"),
-            ColumnSpacing     = 16,
-            RowSpacing        = 8,
+            ColumnDefinitions = new ColumnDefinitions("*"),
+            RowSpacing        = 6,
         };
-        for (int i = 0; i <= rowCount / 2; i++)
+        for (int i = 0; i < rowCount; i++)
             grid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
         return grid;
     }
@@ -608,10 +609,8 @@ public partial class WasteCompanyPage : UserControl
             Padding         = new Thickness(8, 4),
         });
 
-        int col     = row % 2;
-        int gridRow = row / 2;
-        Grid.SetColumn(panel, col);
-        Grid.SetRow(panel, gridRow);
+        Grid.SetColumn(panel, 0);
+        Grid.SetRow(panel, row);
         grid.Children.Add(panel);
     }
 
@@ -622,6 +621,9 @@ public partial class WasteCompanyPage : UserControl
     // 약칭 첫 글자의 초성으로 배지 색 결정
     // ㄱ/ㄲ=파랑  ㄴ=청록  ㄷ/ㄸ=하늘  ㄹ=민트  ㅁ=초록  ㅂ/ㅃ=연두
     // ㅅ/ㅆ=노랑  ㅇ=주황  ㅈ/ㅉ=분홍  ㅊ=빨강  ㅋ=자주  ㅌ=보라  ㅍ=남보라  ㅎ=회파랑
+    public static (string Bg, string Fg, string Bd) GetChosungBadgeColorPublic(string 약칭)
+        => GetChosungBadgeColor(약칭);
+
     private static (string Bg, string Fg, string Bd) GetChosungBadgeColor(string 약칭)
     {
         if (string.IsNullOrEmpty(약칭)) return ("#2a2a3a", "#888888", "#444444");
@@ -680,10 +682,8 @@ public partial class WasteCompanyPage : UserControl
             Padding         = new Thickness(8, 4),
         });
 
-        int col     = row % 2;
-        int gridRow = row / 2;
-        Grid.SetColumn(panel, col);
-        Grid.SetRow(panel, gridRow);
+        Grid.SetColumn(panel, 0);
+        Grid.SetRow(panel, row);
         grid.Children.Add(panel);
     }
 

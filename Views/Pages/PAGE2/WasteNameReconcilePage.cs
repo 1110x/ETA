@@ -34,12 +34,15 @@ public sealed class WasteNameReconcilePage
 
     // ── 상태 ─────────────────────────────────────────────────────────────────
     private string?      _officialName;
+    private string?      _officialKey;    // 관리번호 — 동명 업체 구분용
     private readonly List<string> _aliases = new();
 
     // ── UI 참조 ───────────────────────────────────────────────────────────────
     private string   _activeGroup = "여수";
     private TreeView? _officialTree;
     private Button?   _btnYeosoo, _btnYulchon, _btnSepung;
+    private TextBox?  _searchBox;
+    private List<WasteCompany> _officialItems = new();
     private TextBlock? _officialLabel;
     private StackPanel? _aliasList;
     private TextBlock?  _statusLabel;
@@ -63,7 +66,7 @@ public sealed class WasteNameReconcilePage
     // ═══════════════════════════════════════════════════════════════════════════
     private Control BuildOfficialPanel()
     {
-        var root = new Grid { RowDefinitions = new RowDefinitions("Auto,*") };
+        var root = new Grid { RowDefinitions = new RowDefinitions("Auto,Auto,*") };
 
         // 탭 헤더
         var tabBar = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4 };
@@ -88,12 +91,25 @@ public sealed class WasteNameReconcilePage
             Child = tabBar,
         };
 
+        // 검색창
+        _searchBox = new TextBox
+        {
+            Watermark = "🔍 업체명 검색",
+            FontSize = 11, FontFamily = Font,
+            Margin = new Thickness(5, 4, 5, 0),
+            Padding = new Thickness(6, 4),
+            CornerRadius = new CornerRadius(4),
+        };
+        _searchBox.TextChanged += (_, _) => ApplyOfficialFilter(_searchBox.Text ?? "");
+        Grid.SetRow(_searchBox, 1);
+
         _officialTree = new TreeView { Margin = new Thickness(5) };
         _officialTree.SelectionChanged += OfficialTree_SelectionChanged;
+        Grid.SetRow(_officialTree, 2);
 
         root.Children.Add(header);
+        root.Children.Add(_searchBox);
         root.Children.Add(_officialTree);
-        Grid.SetRow(_officialTree, 1);
 
         LoadOfficialTree();
         return root;
@@ -136,32 +152,50 @@ public sealed class WasteNameReconcilePage
 
     private void LoadOfficialTree()
     {
-        if (_officialTree == null) return;
-        _officialTree.Items.Clear();
         try
         {
-            var items = WasteCompanyService.GetAllItems()
+            _officialItems = WasteCompanyService.GetAllItems()
                 .Where(c => GetGroup(c) == _activeGroup)
-                .OrderBy(c => c.업체명, StringComparer.CurrentCulture);
-            foreach (var c in items)
-            {
-                var sp = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4 };
-                sp.Children.Add(new TextBlock
-                {
-                    Text = c.업체명, FontSize = 12, FontFamily = Font,
-                    Foreground = AppRes("AppFg"),
-                    VerticalAlignment = VerticalAlignment.Center,
-                });
-                sp.Children.Add(new TextBlock
-                {
-                    Text = c.관리번호, FontSize = 9, FontFamily = Font,
-                    Foreground = Brush.Parse("#666666"),
-                    VerticalAlignment = VerticalAlignment.Center,
-                });
-                _officialTree.Items.Add(new TreeViewItem { Tag = c, Header = sp });
-            }
+                .OrderBy(c => c.업체명, StringComparer.CurrentCulture)
+                .ToList();
         }
-        catch { }
+        catch { _officialItems = new(); }
+        ApplyOfficialFilter(_searchBox?.Text ?? "");
+    }
+
+    private void ApplyOfficialFilter(string keyword)
+    {
+        if (_officialTree == null) return;
+        _officialTree.Items.Clear();
+        var filtered = string.IsNullOrWhiteSpace(keyword)
+            ? _officialItems
+            : _officialItems.Where(c =>
+                c.업체명.Contains(keyword, StringComparison.CurrentCultureIgnoreCase) ||
+                c.관리번호.Contains(keyword, StringComparison.CurrentCultureIgnoreCase)).ToList();
+        foreach (var c in filtered)
+        {
+            var sp = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4 };
+            sp.Children.Add(new TextBlock
+            {
+                Text = c.업체명, FontSize = 12, FontFamily = Font,
+                Foreground = AppRes("AppFg"),
+                VerticalAlignment = VerticalAlignment.Center,
+            });
+            sp.Children.Add(new TextBlock
+            {
+                Text = c.관리번호, FontSize = 9, FontFamily = Font,
+                Foreground = Brush.Parse("#666666"),
+                VerticalAlignment = VerticalAlignment.Center,
+            });
+            if (!string.IsNullOrEmpty(c.비용부담금_업체명))
+                sp.Children.Add(new TextBlock
+                {
+                    Text = $"[{c.비용부담금_업체명}]", FontSize = 9, FontFamily = Font,
+                    Foreground = Brush.Parse("#5599ee"),
+                    VerticalAlignment = VerticalAlignment.Center,
+                });
+            _officialTree.Items.Add(new TreeViewItem { Tag = c, Header = sp });
+        }
     }
 
     private void OfficialTree_SelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -175,6 +209,7 @@ public sealed class WasteNameReconcilePage
         if (c == null) return;
 
         _officialName = c.업체명;
+        _officialKey  = c.관리번호;
         _aliases.Clear();
         if (_statusLabel != null) _statusLabel.Text = "";
         RefreshMappingPanel();
@@ -363,7 +398,7 @@ public sealed class WasteNameReconcilePage
 
         _aliases.Clear();
         RefreshMappingPanel();
-        Reload();   // 변경 후 전체 갱신 (공식명 트리 + DATA 트리)
+        Reload();
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -419,6 +454,9 @@ public sealed class WasteNameReconcilePage
                 WasteCompanyService.GetAllItems().Select(c => c.업체명),
                 StringComparer.Ordinal);
 
+            // 실무명칭(비용부담금_업체명)으로 이미 저장된 명칭 목록
+            var costNames = WasteCompanyService.GetAllCostNames();
+
             // 공식명에 없는 것만 표시 (미매칭)
             var unmatched = dataNames.Where(n => !officialNames.Contains(n))
                                      .OrderBy(n => n, StringComparer.CurrentCulture)
@@ -431,12 +469,20 @@ public sealed class WasteNameReconcilePage
             }
             foreach (var name in unmatched)
             {
-                var sp = new StackPanel { Orientation = Orientation.Horizontal };
+                bool isMapped = costNames.Contains(name);
+                var sp = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
                 sp.Children.Add(new TextBlock
                 {
                     Text = name, FontSize = 11, FontFamily = Font,
-                    Foreground = AppRes("AppFg"),
+                    Foreground = isMapped ? Brush.Parse("#5599ee") : AppRes("AppFg"),
                 });
+                if (isMapped)
+                    sp.Children.Add(new TextBlock
+                    {
+                        Text = "✓", FontSize = 10, FontFamily = Font,
+                        Foreground = Brush.Parse("#5599ee"),
+                        VerticalAlignment = VerticalAlignment.Center,
+                    });
                 _dataTree.Items.Add(new TreeViewItem { Tag = name, Header = sp });
             }
         }

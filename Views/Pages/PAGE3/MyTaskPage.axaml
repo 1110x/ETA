@@ -115,6 +115,18 @@
                         Foreground="{DynamicResource FgMuted}"
                         BorderThickness="1"
                         BorderBrush="{DynamicResource InputBorder}"/>
+                <Button x:Name="BtnRequestList"
+                        Content="📋 의뢰목록"
+                        Click="CategoryBtn_Click"
+                        Tag="의뢰목록"
+                        FontSize="{DynamicResource FontSizeSM}"
+                        FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                        Padding="8,3"
+                        CornerRadius="10"
+                        Background="{DynamicResource SubBtnBg}"
+                        Foreground="{DynamicResource FgMuted}"
+                        BorderThickness="1"
+                        BorderBrush="{DynamicResource InputBorder}"/>
             </StackPanel>
         </Border>
 

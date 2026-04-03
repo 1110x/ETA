@@ -20,34 +20,40 @@ public static class FacilityDbMigration
         EnsureWasteRequests(conn);
         EnsureWasteResultTables(conn);
         EnsureResultSubmitLog(conn);
+        EnsureYeosuCompanyTable(conn);
     }
 
     // ── 처리시설_마스터 ────────────────────────────────────────────────────
     private static void EnsureProcessingFacilityMaster(DbConnection conn)
     {
-        if (DbConnectionFactory.TableExists(conn, "처리시설_마스터")) return;
+        if (!DbConnectionFactory.TableExists(conn, "처리시설_마스터"))
+        {
+            Exec(conn, $@"
+                CREATE TABLE `처리시설_마스터` (
+                    id          INTEGER PRIMARY KEY {DbConnectionFactory.AutoIncrement},
+                    시설명      TEXT NOT NULL,
+                    시료명      TEXT NOT NULL,
+                    BOD         TEXT DEFAULT '',
+                    TOC         TEXT DEFAULT '',
+                    SS          TEXT DEFAULT '',
+                    `T-N`       TEXT DEFAULT '',
+                    `T-P`       TEXT DEFAULT '',
+                    총대장균군  TEXT DEFAULT '',
+                    COD         TEXT DEFAULT '',
+                    염소이온    TEXT DEFAULT '',
+                    영양염류    TEXT DEFAULT '',
+                    함수율      TEXT DEFAULT '',
+                    중금속      TEXT DEFAULT '',
+                    비고        TEXT DEFAULT ''
+                )");
+            Log("처리시설_마스터 테이블 생성");
+        }
 
-        Exec(conn, $@"
-            CREATE TABLE `처리시설_마스터` (
-                id          INTEGER PRIMARY KEY {DbConnectionFactory.AutoIncrement},
-                시설명      TEXT NOT NULL,
-                시료명      TEXT NOT NULL,
-                BOD         TEXT DEFAULT '',
-                TOC         TEXT DEFAULT '',
-                SS          TEXT DEFAULT '',
-                `T-N`       TEXT DEFAULT '',
-                `T-P`       TEXT DEFAULT '',
-                총대장균군  TEXT DEFAULT '',
-                COD         TEXT DEFAULT '',
-                염소이온    TEXT DEFAULT '',
-                영양염류    TEXT DEFAULT '',
-                함수율      TEXT DEFAULT '',
-                중금속      TEXT DEFAULT '',
-                비고        TEXT DEFAULT ''
-            )");
-
-        Log("처리시설_마스터 테이블 생성");
-        SeedFacilityMaster(conn);
+        // 테이블이 비어 있으면 초기 데이터 투입 (최초 생성 시 또는 이전 시드 실패 시)
+        using var countCmd = conn.CreateCommand();
+        countCmd.CommandText = "SELECT COUNT(*) FROM `처리시설_마스터`";
+        if (Convert.ToInt32(countCmd.ExecuteScalar()) == 0)
+            SeedFacilityMaster(conn);
     }
 
     private static void SeedFacilityMaster(DbConnection conn)
@@ -336,6 +342,142 @@ public static class FacilityDbMigration
                 비고        TEXT DEFAULT ''
             )");
         Log("결과_제출이력 테이블 생성");
+    }
+
+    // ── 여수_폐수배출업소 ─────────────────────────────────────────────────
+    private static void EnsureYeosuCompanyTable(DbConnection conn)
+    {
+        if (!DbConnectionFactory.TableExists(conn, "여수_폐수배출업소"))
+        {
+            Exec(conn, $@"
+                CREATE TABLE `여수_폐수배출업소` (
+                    id      INTEGER PRIMARY KEY {DbConnectionFactory.AutoIncrement},
+                    업체명  TEXT NOT NULL,
+                    약칭    TEXT DEFAULT ''
+                )");
+            Log("여수_폐수배출업소 테이블 생성");
+        }
+
+        using var countCmd = conn.CreateCommand();
+        countCmd.CommandText = "SELECT COUNT(*) FROM `여수_폐수배출업소`";
+        if (Convert.ToInt32(countCmd.ExecuteScalar()) > 0) return;
+
+        var names = new[]
+        {
+            "㈜동성코퍼레이션 여수공장",
+            "㈜세아엠앤에스",
+            "㈜엘지화학",
+            "㈜엘지화학[CA/EDC공장]",
+            "㈜엘지화학[브이시엠공장]",
+            "㈜엘지화학[아크릴레이트2공장]",
+            "㈜엘지화학[엔씨씨옥소알콜-엔씨씨]",
+            "㈜엘지화학[엔씨씨옥소알콜-옥소알콜]",
+            "㈜유니테크 여수지점",
+            "㈜일렘테크놀러지",
+            "㈜청경",
+            "㈜케이아이엔티",
+            "GS 칼텍스 중흥주유소",
+            "KPX라이프사이언스㈜",
+            "구다우케미칼",
+            "금호미쓰이화학㈜",
+            "금호석유화학㈜[1공장]",
+            "금호석유화학㈜[2공장]",
+            "금호석유화학㈜[AU공장]",
+            "금호석유화학㈜[고무약품공장]",
+            "금호석유화학㈜[제2열병합발전소]",
+            "금호티앤엘㈜",
+            "금호폴리켐㈜여수1공장",
+            "금호폴리켐㈜여수2공장",
+            "금호피앤비화학㈜",
+            "남해화학㈜ 여수공장",
+            "대한통운㈜",
+            "더블유알그레이스코리아(유)",
+            "데이원에너지㈜",
+            "롯데케미칼 주식회사 1공장",
+            "롯데케미칼 주식회사 1공장(확장단지)",
+            "롯데케미칼 주식회사 2공장",
+            "롯데케미칼㈜[첨단소재여수공장]",
+            "맛시락",
+            "백광산업㈜여수공장",
+            "비를라카본코리아㈜",
+            "사후관리",
+            "삼남석유화학㈜ 여수공장",
+            "삼양화학실업㈜",
+            "스미토모세이카폴리머스코리아㈜",
+            "신대신카서비스,세차장",
+            "신승오앤에프",
+            "에어리퀴드코리아㈜",
+            "엘지엠엠에이㈜",
+            "여수시청(폐기물소각장)",
+            "여수시청[위생매립장 월내처리장]",
+            "여수환경산업",
+            "여천NCC㈜1공장-환경안전팀",
+            "여천NCC㈜2공장-환경안전팀",
+            "여천NCC㈜3공장-환경안전팀",
+            "오리온엔지니어드카본즈㈜",
+            "재원산업㈜",
+            "제이셀㈜",
+            "㈜동남환경",
+            "㈜와이엔텍",
+            "㈜와이엔텍(5매립장)",
+            "㈜와이엔텍(6매립장)",
+            "㈜케미렉스",
+            "㈜한국환경사업단",
+            "㈜한화 여수사업장",
+            "지에스칼텍스㈜여수공장",
+            "지에스칼텍스㈜여수공장[NO.2 HOU]",
+            "지에스칼텍스㈜여수공장[NO.3 HOU]",
+            "지에스칼텍스㈜[바이오부탄올실증센터]",
+            "지에스칼텍스㈜MFC",
+            "케이씨환경서비스㈜",
+            "케이씨환경서비스㈜여수사업부",
+            "코오롱인더스트리㈜여수공장",
+            "한국바스프㈜",
+            "한국실리콘㈜",
+            "한화솔루션㈜여수[1공장]",
+            "한화솔루션㈜여수[2공장]",
+            "한화솔루션㈜여수[3공장]",
+            "한화솔루션㈜티디아이",
+            "한화솔루션㈜폴리실리콘",
+            "한화에너지㈜여수공장",
+            "한화컴파운드㈜",
+            "해인기업㈜여수공장",
+            "해인기업㈜ 여천",
+            "해인기업㈜(화치공장)",
+            "현대에너지㈜",
+            "호남환경에너지",
+            "환경시설관리㈜ 슬러지 자원화",
+            "휴켐스㈜ 여수공장",
+            "태경케미컬㈜",
+            "그린생명과학주식회사",
+            "금호석유화학㈜정밀화학AU공장",
+            "금호석유화학㈜[정밀고무약품공장]",
+            "넥스워터㈜",
+            "오라이온코리아㈜",
+            "보임열병합발전㈜",
+            "한국동서발전㈜ 신호남건설추진본부",
+            "호남화력발전(한국남서발전)",
+            "씨이케이㈜",
+            "엘엑스엠엠에이㈜",
+            "씨이케이㈜여수사업부",
+            "신대신카서비스세차장",
+            "㈜동성케미컬",
+            "리뉴어스㈜ 슬러지자원화",
+            "㈜롯데지에스화학",
+            "티케이지휴켐스㈜",
+            "피케이씨",
+            "㈜티케이지일렘",
+            "월드이엔티㈜",
+        };
+
+        foreach (var name in names)
+        {
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "INSERT INTO `여수_폐수배출업소` (업체명, 약칭) VALUES (@n, '')";
+            cmd.Parameters.AddWithValue("@n", name);
+            cmd.ExecuteNonQuery();
+        }
+        Log($"여수_폐수배출업소 시드 완료: {names.Length}행");
     }
 
     // ── 헬퍼 ─────────────────────────────────────────────────────────────

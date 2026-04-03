@@ -283,7 +283,7 @@
 
                     <MenuItem Header="비용부담금 관리">
                         <MenuItem Header="폐수배출업소"   Click="WasteCompany_Click"/>
-                        <MenuItem Header="자료 조회"      Click="WasteDataQuery_Click"/>
+                        <MenuItem Header="자료 조회"      Click="WasteDataQuery_Click" IsEnabled="False" Opacity="0.4"/>
                         <MenuItem Header="분석의뢰리스트" Click="WasteSampleList_Click"/>
                         <MenuItem Header="시험기록부"  IsEnabled="False" Opacity="0.4"/>
                         <MenuItem Header="자료검토"    IsEnabled="False" Opacity="0.4"/>

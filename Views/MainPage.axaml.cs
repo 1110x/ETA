@@ -1175,11 +1175,42 @@ public partial class MainPage : Window
         if (_wasteCompanyPage == null)
         {
             _wasteCompanyPage = new WasteCompanyPage();
+
+            // 업소정보(편집 패널) → Show4 (기존 Show2에서 이동)
             _wasteCompanyPage.DetailPanelChanged += panel =>
             {
-                Show2.Content = panel;
-                LogContentChange("Show2", panel);
+                Show4.Content = panel;
+                LogContentChange("Show4", panel);
             };
+
+            // 업체 선택 → Show2(차트) + Show3(목록) 자료조회 기능 직접 구현
+            _wasteCompanyPage.CompanySelected += company =>
+            {
+                List<ETA.Models.WasteAnalysisResult> results;
+                try { results = ETA.Services.SERVICE2.WasteDataService.GetResults(company.업체명); }
+                catch (Exception ex)
+                {
+                    Show2.Content = new TextBlock
+                    {
+                        Text = $"조회 오류: {ex.Message}",
+                        FontSize = 11, FontFamily = _wasteFont,
+                        Foreground = Brush.Parse("#cc4444"),
+                        Margin = new Thickness(12),
+                    };
+                    return;
+                }
+
+                // Show2 = 분석결과 추이 차트
+                Show2.Content = BuildWasteBarLinePanel(company.업체명, results);
+                LogContentChange("Show2", Show2.Content as Control);
+
+                // Show3 = 분석결과 목록 테이블
+                Show3.Content = BuildDataListPanel(company.업체명, results, company.약칭);
+                LogContentChange("Show3", Show3.Content as Control);
+
+                SetContentLayout(content2Star: 2, content4Star: 1, upperStar: 5, lowerStar: 5);
+            };
+
             _wasteCompanyPage.OrderSaved += () => { };
         }
 
@@ -1194,9 +1225,9 @@ public partial class MainPage : Window
         _wasteCompanyPage.LoadData();
         _bt1SaveAction = _wasteCompanyPage.SaveSelected;
 
-        SetSubMenu("저장", "새로고침", "업소 등록", "엑셀 업로드", "자료 조회", "통계 보기", "설정");
+        SetSubMenu("저장", "새로고침", "업소 등록", "엑셀 업로드", "", "통계 보기", "설정");
         SetLeftPanelWidth(300);
-        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 8, lowerStar: 2);
+        SetContentLayout(content2Star: 2, content4Star: 1, upperStar: 6, lowerStar: 4);
 
         RestoreModeLayout("WasteCompany");
     }
@@ -1358,7 +1389,7 @@ public partial class MainPage : Window
         }
 
         // Show3 = 목록 테이블
-        Show3.Content = BuildDataListPanel(company.업체명, results);
+        Show3.Content = BuildDataListPanel(company.업체명, results, company.약칭);
         LogContentChange("Show3", Show3.Content as Control);
 
         // 하단 패널 보이도록
@@ -1367,13 +1398,14 @@ public partial class MainPage : Window
 
     private Control BuildWasteBarLinePanel(string 업체명, List<ETA.Models.WasteAnalysisResult> results)
     {
-        // 최근 10건
-        var recent = results.Count > 10 ? results.Skip(results.Count - 10).ToList() : results;
-
-        // 8개 항목 개별 차트 생성
+        // 8개 항목 개별 차트 생성 (항목별로 값이 있는 것만 최근 10건)
         var charts = new List<WasteSingleSeriesChart>();
         foreach (var (label, color, getValue) in WasteBarLineChartControl.Series)
+        {
+            var withValue = results.Where(r => getValue(r).HasValue).ToList();
+            var recent    = withValue.Count > 10 ? withValue.Skip(withValue.Count - 10).ToList() : withValue;
             charts.Add(new WasteSingleSeriesChart(label, color, getValue, recent));
+        }
 
         // 상단 바: Bar/Line 토글
         var topBar = new WrapPanel { Margin = new Thickness(4, 3), VerticalAlignment = VerticalAlignment.Center };
@@ -1444,22 +1476,48 @@ public partial class MainPage : Window
         return root;
     }
 
-    private Control BuildDataListPanel(string 업체명, List<ETA.Models.WasteAnalysisResult> results)
+    private Control BuildDataListPanel(string 업체명, List<ETA.Models.WasteAnalysisResult> results, string 약칭 = "")
     {
         var root = new StackPanel { Spacing = 0 };
 
         // ── 헤더 ────────────────────────────────────────────────────────────
+        var titleRow = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            Spacing     = 6,
+            Margin      = new Thickness(10, 6),
+        };
+        if (!string.IsNullOrWhiteSpace(약칭))
+        {
+            var (bg, fg, bd) = WasteCompanyPage.GetChosungBadgeColorPublic(약칭);
+            titleRow.Children.Add(new Border
+            {
+                Background      = Brush.Parse(bg),
+                BorderBrush     = Brush.Parse(bd),
+                BorderThickness = new Thickness(1),
+                CornerRadius    = new CornerRadius(8),
+                Padding         = new Thickness(6, 2),
+                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                Child = new TextBlock
+                {
+                    Text       = 약칭,
+                    FontSize   = 10, FontFamily = _wasteFont,
+                    Foreground = Brush.Parse(fg),
+                }
+            });
+        }
+        titleRow.Children.Add(new TextBlock
+        {
+            Text       = $"📋  {업체명}  분석결과 내역  ({results.Count}건)",
+            FontSize   = 11, FontWeight = FontWeight.SemiBold,
+            FontFamily = _wasteFont, Foreground = Brush.Parse("#8899bb"),
+            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+        });
         root.Children.Add(new Border
         {
             Background   = Brush.Parse("#1a1a28"),
             CornerRadius = new CornerRadius(6, 6, 0, 0),
-            Padding      = new Thickness(10, 6),
-            Child = new TextBlock
-            {
-                Text       = $"📋  {업체명}  분석결과 내역  ({results.Count}건)",
-                FontSize   = 11, FontWeight = FontWeight.SemiBold,
-                FontFamily = _wasteFont, Foreground = Brush.Parse("#8899bb"),
-            }
+            Child        = titleRow,
         });
 
         if (results.Count == 0)
@@ -1474,19 +1532,35 @@ public partial class MainPage : Window
             return root;
         }
 
-        // ── 컬럼 헤더 ────────────────────────────────────────────────────────
+        // ── 항목별 평균 계산 ─────────────────────────────────────────────────
+        double? Avg(Func<ETA.Models.WasteAnalysisResult, double?> f)
+        {
+            var vals = results.Where(r => f(r).HasValue).Select(r => f(r)!.Value).ToList();
+            return vals.Count > 0 ? vals.Average() : null;
+        }
+        string H(string name, string avg) => $"{name}\n({avg})";
+
+        // ── 컬럼 헤더 (평균 포함) ────────────────────────────────────────────
         root.Children.Add(MakeDataRow(
-            "채수일", "BOD", "TOC(TC-IC)", "TOC(NPOC)", "SS", "T-N", "T-P", "Phenols", "N-Hexan",
+            "채수일",
+            H("BOD",         Fmt(Avg(r => r.BOD))),
+            H("TOC(TC-IC)",  Fmt(Avg(r => r.TOC_TCIC))),
+            H("TOC(NPOC)",   Fmt(Avg(r => r.TOC_NPOC))),
+            H("SS",          Fmt(Avg(r => r.SS))),
+            H("T-N",         Fmt(Avg(r => r.TN))),
+            H("T-P",         FmtTP(Avg(r => r.TP))),
+            H("Phenols",     Fmt(Avg(r => r.Phenols))),
+            H("N-Hexan",     Fmt(Avg(r => r.NHexan))),
             isHeader: true));
 
-        // ── 데이터 행 ────────────────────────────────────────────────────────
+        // ── 데이터 행 (역순: 최근 → 오래된 순) ─────────────────────────────
         bool alt = false;
-        foreach (var r in results)
+        foreach (var r in results.AsEnumerable().Reverse())
         {
             root.Children.Add(MakeDataRow(
                 r.채수일,
                 Fmt(r.BOD),     Fmt(r.TOC_TCIC), Fmt(r.TOC_NPOC),
-                Fmt(r.SS),      Fmt(r.TN),        Fmt(r.TP),
+                Fmt(r.SS),      Fmt(r.TN),        FmtTP(r.TP),
                 Fmt(r.Phenols), Fmt(r.NHexan),
                 isHeader: false, alt: alt));
             alt = !alt;
@@ -1500,7 +1574,10 @@ public partial class MainPage : Window
     }
 
     private static string Fmt(double? v) =>
-        v.HasValue ? (v.Value >= 100 ? v.Value.ToString("F1") : v.Value.ToString("F3")) : "—";
+        v.HasValue ? v.Value.ToString("F1") : "—";
+
+    private static string FmtTP(double? v) =>
+        v.HasValue ? v.Value.ToString("F3") : "—";
 
     private static Border MakeDataRow(
         string 날짜, string bod, string tocTcic, string tocNpoc,
@@ -1523,7 +1600,8 @@ public partial class MainPage : Window
                 VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
                 HorizontalAlignment = col == 0 ? Avalonia.Layout.HorizontalAlignment.Left : Avalonia.Layout.HorizontalAlignment.Right,
                 Margin = new Thickness(col == 0 ? 8 : 4, 3, col == 0 ? 4 : 8, 3),
-                TextTrimming = TextTrimming.CharacterEllipsis,
+                TextTrimming = isHeader ? TextTrimming.None : TextTrimming.CharacterEllipsis,
+                TextWrapping = isHeader ? TextWrapping.Wrap : TextWrapping.NoWrap,
             };
             Grid.SetColumn(tb, col);
             grid.Children.Add(tb);
@@ -1568,7 +1646,7 @@ public partial class MainPage : Window
                 Show2.Content = BuildWasteBarLinePanel(company.업체명, results);
                 LogContentChange("Show2", Show2.Content as Control);
 
-                Show3.Content = BuildDataListPanel(company.업체명, results);
+                Show3.Content = BuildDataListPanel(company.업체명, results, company.약칭);
                 LogContentChange("Show3", Show3.Content as Control);
             };
         }
@@ -2132,6 +2210,14 @@ public partial class MainPage : Window
             {
                 Show4.Content = _quotationPage;
                 LogContentChange("Show4", _quotationPage);
+            };
+
+            // 거래명세서 발행내역 탭으로 전환 → Show2/Show4 초기화
+            _quotationHistoryPanel.StatementTabActivated += () =>
+            {
+                Show2.Content = null;
+                Show4.Content = null;
+                LogContentChange("Show4", null);
             };
 
             // 분석의뢰내역 노드 선택

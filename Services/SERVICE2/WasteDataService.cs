@@ -27,9 +27,9 @@ public static class WasteDataService
               업체명, (d, v) => Get(d).TN       = v);
         Fetch(conn, "SELECT 채수일, 농도  FROM `TP_DATA`      WHERE 업체명=@n ORDER BY 채수일",
               업체명, (d, v) => Get(d).TP       = v);
-        Fetch(conn, "SELECT 채수일, 농도  FROM `TOC_TCIC_DATA` WHERE 업체명=@n ORDER BY 채수일",
+        Fetch(conn, "SELECT 채수일, 검량선_a FROM `TOC_TCIC_DATA` WHERE 업체명=@n ORDER BY 채수일",
               업체명, (d, v) => Get(d).TOC_TCIC = v);
-        Fetch(conn, "SELECT 채수일, 농도  FROM `TOC_NPOC_DATA` WHERE 업체명=@n ORDER BY 채수일",
+        Fetch(conn, "SELECT 채수일, 검량선_a FROM `TOC_NPOC_DATA` WHERE 업체명=@n ORDER BY 채수일",
               업체명, (d, v) => Get(d).TOC_NPOC = v);
         Fetch(conn, "SELECT 채수일, 농도  FROM `Phenols_DATA` WHERE 업체명=@n ORDER BY 채수일",
               업체명, (d, v) => Get(d).Phenols  = v);
