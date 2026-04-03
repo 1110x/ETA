@@ -9,15 +9,17 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Threading;
 using ETA.Services.Common;
+using ETA.Services.Common;
+using ETA.Views;
 
 namespace ETA.Views.Pages.PAGE2;
 
 public partial class ResultSubmitErpPage : UserControl
 {
     private static readonly FontFamily Font =
-        new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R");
+        new("avares://ETA/Assets/Fonts#Pretendard");
     private static readonly FontFamily FontM =
-        new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
+        new("avares://ETA/Assets/Fonts#Pretendard");
 
     // ── Show2 연결 ────────────────────────────────────────────────────────
     public Action<Control?>? Show2ContentRequest;
@@ -82,7 +84,7 @@ public partial class ResultSubmitErpPage : UserControl
             sp.Children.Add(new TextBlock
             {
                 Text = "Excel 파일을 찾을 수 없습니다.",
-                FontFamily = Font, FontSize = 11,
+                FontFamily = Font, FontSize = AppTheme.FontBase,
                 Foreground = Brush.Parse("#ee6666"),
                 Margin = new Thickness(10, 8),
             });
@@ -104,8 +106,8 @@ public partial class ResultSubmitErpPage : UserControl
     {
         return new Border
         {
-            Background = Brush.Parse("#1a2a3a"),
-            BorderBrush = Brush.Parse("#2a3a4a"),
+            Background = AppTheme.BorderSubtle,
+            BorderBrush = AppTheme.BorderSubtle,
             BorderThickness = new Thickness(0, 0, 0, 1),
             Padding = new Thickness(4, 5),
             Child = new StackPanel
@@ -134,7 +136,7 @@ public partial class ResultSubmitErpPage : UserControl
         var b = new Border
         {
             Background = Brush.Parse(row.번호 % 2 == 0 ? "#0e1820" : "#0b1520"),
-            BorderBrush = Brush.Parse("#1a2a3a"),
+            BorderBrush = AppTheme.BorderSubtle,
             BorderThickness = new Thickness(0, 0, 0, 1),
             Padding = new Thickness(4, 4),
             Cursor = new Cursor(StandardCursorType.Hand),
@@ -170,7 +172,7 @@ public partial class ResultSubmitErpPage : UserControl
             Text = text,
             Width = width,
             FontFamily = Font,
-            FontSize = 11,
+            FontSize = AppTheme.FontBase,
             FontWeight = weight,
             Foreground = Brush.Parse(color),
             Margin = new Thickness(2, 0),
@@ -200,7 +202,7 @@ public partial class ResultSubmitErpPage : UserControl
         // 선택 강조
         _selectedBorder = border;
         _selectedRow    = row;
-        border.Background = Brush.Parse("#1a3a5a");
+        border.Background = AppTheme.BgActiveBlue;
 
         // 오른쪽 패널 채우기
         Dispatcher.UIThread.Post(() =>
@@ -219,7 +221,7 @@ public partial class ResultSubmitErpPage : UserControl
         root.Children.Add(new Border
         {
             Background      = Brush.Parse("#1a2030"),
-            BorderBrush     = Brush.Parse("#334466"),
+            BorderBrush     = AppTheme.BorderAccent,
             BorderThickness = new Thickness(1),
             CornerRadius    = new CornerRadius(6),
             Padding         = new Thickness(14, 10),
@@ -228,14 +230,14 @@ public partial class ResultSubmitErpPage : UserControl
                 new TextBlock
                 {
                     Text = "ERP iU — 채수분석 자동입력",
-                    FontFamily = FontM, FontSize = 13, FontWeight = FontWeight.SemiBold,
-                    Foreground = Brush.Parse("#aaccff"),
+                    FontFamily = FontM, FontSize = AppTheme.FontLG, FontWeight = FontWeight.SemiBold,
+                    Foreground = AppTheme.FgInfo,
                 },
                 new TextBlock
                 {
                     Text = "왼쪽 테이블에서 행 클릭(또는 1행 자동 선택) → 🚀 입력 실행 → 다음 행 자동 이동.",
-                    FontFamily = Font, FontSize = 11,
-                    Foreground = Brush.Parse("#778899"),
+                    FontFamily = Font, FontSize = AppTheme.FontBase,
+                    Foreground = AppTheme.FgMuted,
                     TextWrapping = TextWrapping.Wrap,
                 },
                 new StackPanel { Orientation = Orientation.Horizontal, Spacing = 16, Children =
@@ -253,11 +255,11 @@ public partial class ResultSubmitErpPage : UserControl
             var btnElevate = new Button
             {
                 Content = "🛡️  관리자로 재실행",
-                FontFamily = FontM, FontSize = 11,
+                FontFamily = FontM, FontSize = AppTheme.FontBase,
                 Padding = new Thickness(12, 6),
                 Background = Brush.Parse("#3a1a00"),
-                Foreground = Brush.Parse("#ffaa44"),
-                BorderBrush = Brush.Parse("#aa6600"),
+                Foreground = AppTheme.FgWarn,
+                BorderBrush = AppTheme.BorderWarn,
                 BorderThickness = new Thickness(1),
                 CornerRadius = new CornerRadius(4),
             };
@@ -269,7 +271,7 @@ public partial class ResultSubmitErpPage : UserControl
             root.Children.Add(new Border
             {
                 Background = Brush.Parse("#1e1000"),
-                BorderBrush = Brush.Parse("#aa6600"),
+                BorderBrush = AppTheme.BorderWarn,
                 BorderThickness = new Thickness(1),
                 CornerRadius = new CornerRadius(5),
                 Padding = new Thickness(12, 8),
@@ -279,8 +281,8 @@ public partial class ResultSubmitErpPage : UserControl
                     new TextBlock
                     {
                         Text = "⚠️  관리자 권한 필요 (neoweb.exe가 관리자로 실행 중).",
-                        FontFamily = Font, FontSize = 11,
-                        Foreground = Brush.Parse("#ddaa44"),
+                        FontFamily = Font, FontSize = AppTheme.FontBase,
+                        Foreground = AppTheme.FgWarn,
                         VerticalAlignment = VerticalAlignment.Center,
                     },
                     btnElevate,
@@ -292,19 +294,19 @@ public partial class ResultSubmitErpPage : UserControl
         _statusBadge = new TextBlock
         {
             Text = isAdmin ? "대기 (관리자)" : "대기",
-            FontFamily = FontM, FontSize = 11,
-            Foreground = Brush.Parse("#778899"),
+            FontFamily = FontM, FontSize = AppTheme.FontBase,
+            Foreground = AppTheme.FgMuted,
             VerticalAlignment = VerticalAlignment.Center,
         };
 
         var btnProbe = new Button
         {
             Content = "🔍  프로브",
-            FontFamily = FontM, FontSize = 12,
+            FontFamily = FontM, FontSize = AppTheme.FontMD,
             Padding = new Thickness(12, 7),
             Background = Brush.Parse("#1a3a6a"),
-            Foreground = Brush.Parse("#88aaee"),
-            BorderBrush = Brush.Parse("#336699"),
+            Foreground = AppTheme.FgInfo,
+            BorderBrush = AppTheme.BorderInfo,
             BorderThickness = new Thickness(1),
             CornerRadius = new CornerRadius(5),
         };
@@ -313,11 +315,11 @@ public partial class ResultSubmitErpPage : UserControl
         var btnTest = new Button
         {
             Content = "🧪  테스트",
-            FontFamily = FontM, FontSize = 12,
+            FontFamily = FontM, FontSize = AppTheme.FontMD,
             Padding = new Thickness(12, 7),
-            Background = Brush.Parse("#1a3a1a"),
-            Foreground = Brush.Parse("#88ee88"),
-            BorderBrush = Brush.Parse("#336633"),
+            Background = AppTheme.BgActiveGreen,
+            Foreground = AppTheme.FgSuccess,
+            BorderBrush = AppTheme.BorderActive,
             BorderThickness = new Thickness(1),
             CornerRadius = new CornerRadius(5),
         };
@@ -334,14 +336,14 @@ public partial class ResultSubmitErpPage : UserControl
         _sampleLabel = new TextBlock
         {
             Text = "로딩 중…",
-            FontFamily = Font, FontSize = 11,
+            FontFamily = Font, FontSize = AppTheme.FontBase,
             Foreground = Brush.Parse("#4a6a8a"),
             VerticalAlignment = VerticalAlignment.Center,
         };
         root.Children.Add(new Border
         {
             Background = Brush.Parse("#0e1820"),
-            BorderBrush = Brush.Parse("#223344"),
+            BorderBrush = AppTheme.BorderSubtle,
             BorderThickness = new Thickness(1),
             CornerRadius = new CornerRadius(4),
             Padding = new Thickness(10, 6),
@@ -352,12 +354,12 @@ public partial class ResultSubmitErpPage : UserControl
         _valuesBox = new TextBox
         {
             Text = "",
-            FontFamily = Font, FontSize = 11,
+            FontFamily = Font, FontSize = AppTheme.FontBase,
             Width = 240,
             Padding = new Thickness(6, 5),
-            Background = Brush.Parse("#0e1520"),
-            Foreground = Brush.Parse("#88aacc"),
-            BorderBrush = Brush.Parse("#334466"),
+            Background = AppTheme.BgPrimary,
+            Foreground = AppTheme.FgInfo,
+            BorderBrush = AppTheme.BorderAccent,
             BorderThickness = new Thickness(1),
             CornerRadius = new CornerRadius(4),
             Watermark = "BOD,TOC,SS,NH,PN,TN,TP",
@@ -366,12 +368,12 @@ public partial class ResultSubmitErpPage : UserControl
         _rowBox = new TextBox
         {
             Text = "1",
-            FontFamily = Font, FontSize = 11,
+            FontFamily = Font, FontSize = AppTheme.FontBase,
             Width = 44,
             Padding = new Thickness(6, 5),
-            Background = Brush.Parse("#0e1520"),
-            Foreground = Brush.Parse("#88aacc"),
-            BorderBrush = Brush.Parse("#334466"),
+            Background = AppTheme.BgPrimary,
+            Foreground = AppTheme.FgInfo,
+            BorderBrush = AppTheme.BorderAccent,
             BorderThickness = new Thickness(1),
             CornerRadius = new CornerRadius(4),
             TextAlignment = Avalonia.Media.TextAlignment.Center,
@@ -380,11 +382,11 @@ public partial class ResultSubmitErpPage : UserControl
         _btnRun = new Button
         {
             Content = "🚀  입력 실행",
-            FontFamily = FontM, FontSize = 12,
+            FontFamily = FontM, FontSize = AppTheme.FontMD,
             Padding = new Thickness(16, 8),
             Background = Brush.Parse("#2a1a3a"),
             Foreground = Brush.Parse("#cc88ff"),
-            BorderBrush = Brush.Parse("#664488"),
+            BorderBrush = AppTheme.BorderWarn,
             BorderThickness = new Thickness(1),
             CornerRadius = new CornerRadius(5),
         };
@@ -393,11 +395,11 @@ public partial class ResultSubmitErpPage : UserControl
         _btnStop = new Button
         {
             Content = "⏹  중단",
-            FontFamily = FontM, FontSize = 12,
+            FontFamily = FontM, FontSize = AppTheme.FontMD,
             Padding = new Thickness(12, 7),
-            Background = Brush.Parse("#3a1a1a"),
-            Foreground = Brush.Parse("#ee8888"),
-            BorderBrush = Brush.Parse("#663333"),
+            Background = AppTheme.BgDanger,
+            Foreground = AppTheme.FgDanger,
+            BorderBrush = AppTheme.BorderDanger,
             BorderThickness = new Thickness(1),
             CornerRadius = new CornerRadius(5),
             IsEnabled = false,
@@ -412,8 +414,8 @@ public partial class ResultSubmitErpPage : UserControl
             {
                 new TextBlock
                 {
-                    Text = "행:", FontFamily = FontM, FontSize = 11,
-                    Foreground = Brush.Parse("#556677"),
+                    Text = "행:", FontFamily = FontM, FontSize = AppTheme.FontBase,
+                    Foreground = AppTheme.FgDimmed,
                     VerticalAlignment = VerticalAlignment.Center,
                 },
                 _rowBox,
@@ -433,7 +435,7 @@ public partial class ResultSubmitErpPage : UserControl
         };
         _progressText = new TextBlock
         {
-            Text = "", FontFamily = Font, FontSize = 10,
+            Text = "", FontFamily = Font, FontSize = AppTheme.FontSM,
             Foreground = Brush.Parse("#667788"),
             HorizontalAlignment = HorizontalAlignment.Right,
         };
@@ -454,8 +456,8 @@ public partial class ResultSubmitErpPage : UserControl
 
         root.Children.Add(new Border
         {
-            Background      = Brush.Parse("#0e1520"),
-            BorderBrush     = Brush.Parse("#223344"),
+            Background      = AppTheme.BgPrimary,
+            BorderBrush     = AppTheme.BorderSubtle,
             BorderThickness = new Thickness(1),
             CornerRadius    = new CornerRadius(5),
             Padding         = new Thickness(10, 8),
@@ -582,7 +584,7 @@ public partial class ResultSubmitErpPage : UserControl
             _logPanel.Children.Add(new TextBlock
             {
                 Text = $"{icon}  {msg}",
-                FontFamily = Font, FontSize = 11,
+                FontFamily = Font, FontSize = AppTheme.FontBase,
                 Foreground = Brush.Parse(color),
             });
         });
@@ -611,10 +613,10 @@ public partial class ResultSubmitErpPage : UserControl
         new StackPanel { Spacing = 2, Children =
         {
             new TextBlock { Text = label,
-                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-                FontSize = 9, Foreground = Brush.Parse("#445566") },
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+                FontSize = AppTheme.FontXS, Foreground = AppTheme.FgDimmed },
             new TextBlock { Text = value,
-                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
-                FontSize = 10, Foreground = Brush.Parse("#88aacc") },
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+                FontSize = AppTheme.FontSM, Foreground = AppTheme.FgInfo },
         }};
 }

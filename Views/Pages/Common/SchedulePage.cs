@@ -11,6 +11,8 @@ using System.Linq;
 using ETA.Models;
 using ETA.Services.SERVICE1;
 using ETA.Services.Common;
+using ETA.Services.Common;
+using ETA.Views;
 
 namespace ETA.Views.Pages.Common;
 
@@ -29,7 +31,7 @@ public class SchedulePage
     }
 
     private static readonly FontFamily Font =
-        new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R");
+        new("avares://ETA/Assets/Fonts#Pretendard");
 
     // 트리 노드 태그
     private record TreeTag(string Type, string Name, string Id, string Abbr = "", string Date = "");
@@ -128,7 +130,7 @@ public class SchedulePage
         };
         hdr.Children.Add(new TextBlock
         {
-            Text = "구성원", FontSize = 13, FontWeight = FontWeight.SemiBold,
+            Text = "구성원", FontSize = AppTheme.FontLG, FontWeight = FontWeight.SemiBold,
             FontFamily = Font, Foreground = AppRes("FgMuted"),
             VerticalAlignment = VerticalAlignment.Center,
             [Grid.ColumnProperty] = 0,
@@ -160,7 +162,7 @@ public class SchedulePage
             var btn = new Button
             {
                 Content = $"{kv.Value.Icon} {kv.Key}",
-                FontFamily = Font, FontSize = 10,
+                FontFamily = Font, FontSize = AppTheme.FontSM,
                 Padding = new Thickness(8, 3), Margin = new Thickness(0, 0, 3, 3),
                 CornerRadius = new CornerRadius(10), BorderThickness = new Thickness(1),
             };
@@ -222,12 +224,12 @@ public class SchedulePage
 
     private static Button MakeTabBtn(string text, bool active) => new()
     {
-        Content = text, FontFamily = Font, FontSize = 10,
+        Content = text, FontFamily = Font, FontSize = AppTheme.FontSM,
         Padding = new Thickness(8, 3), CornerRadius = new CornerRadius(10),
         BorderThickness = new Thickness(1),
-        Background  = active ? Brush.Parse("#1a2a4a") : Brush.Parse("#222222"),
-        Foreground  = active ? Brush.Parse("#88aacc") : Brush.Parse("#666666"),
-        BorderBrush = active ? Brush.Parse("#336699") : Brush.Parse("#444444"),
+        Background  = active ? AppTheme.BgActiveBlue : AppTheme.BgSecondary,
+        Foreground  = active ? AppTheme.FgInfo : AppTheme.FgDimmed,
+        BorderBrush = active ? AppTheme.BorderInfo : AppTheme.BorderMuted,
     };
 
     private void ApplyTabStyles()
@@ -239,9 +241,9 @@ public class SchedulePage
     private static void SetTab(Button? btn, bool active)
     {
         if (btn == null) return;
-        btn.Background  = active ? Brush.Parse("#1a2a4a") : Brush.Parse("#222222");
-        btn.Foreground  = active ? Brush.Parse("#88aacc") : Brush.Parse("#666666");
-        btn.BorderBrush = active ? Brush.Parse("#336699") : Brush.Parse("#444444");
+        btn.Background  = active ? AppTheme.BgActiveBlue : AppTheme.BgSecondary;
+        btn.Foreground  = active ? AppTheme.FgInfo : AppTheme.FgDimmed;
+        btn.BorderBrush = active ? AppTheme.BorderInfo : AppTheme.BorderMuted;
     }
 
     public void LoadTree()
@@ -274,7 +276,7 @@ public class SchedulePage
                         VerticalAlignment = VerticalAlignment.Center,
                         Child = new TextBlock
                         {
-                            Text = a.직급, FontSize = 10, FontFamily = Font,
+                            Text = a.직급, FontSize = AppTheme.FontSM, FontFamily = Font,
                             Foreground = new SolidColorBrush(Color.Parse(fg)),
                         },
                     });
@@ -314,7 +316,7 @@ public class SchedulePage
                     {
                         Background = Brush.Parse(bg), CornerRadius = new CornerRadius(3),
                         Padding = new Thickness(4, 1), VerticalAlignment = VerticalAlignment.Center,
-                        Child = new TextBlock { Text = r.약칭, FontSize = 10, FontFamily = Font, Foreground = Brush.Parse(fg) },
+                        Child = new TextBlock { Text = r.약칭, FontSize = AppTheme.FontSM, FontFamily = Font, Foreground = Brush.Parse(fg) },
                     });
                 }
 
@@ -331,10 +333,10 @@ public class SchedulePage
                 if (r.정도보증.Trim() == "O" || r.정도보증.Trim() == "o")
                     topRow.Children.Add(new Border
                     {
-                        Background = Brush.Parse("#2a4a1a"), BorderBrush = Brush.Parse("#4a8a2a"),
+                        Background = Brush.Parse("#2a4a1a"), BorderBrush = AppTheme.BorderActive,
                         BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(3),
                         Padding = new Thickness(3, 0), VerticalAlignment = VerticalAlignment.Center,
-                        Child = new TextBlock { Text = "O", FontSize = 9, FontFamily = Font, Foreground = Brush.Parse("#88dd44"), FontWeight = FontWeight.Bold },
+                        Child = new TextBlock { Text = "O", FontSize = AppTheme.FontXS, FontFamily = Font, Foreground = Brush.Parse("#88dd44"), FontWeight = FontWeight.Bold },
                     });
 
                 // 채수담당자 배지
@@ -345,15 +347,15 @@ public class SchedulePage
                     {
                         Background = Brush.Parse(sbg), CornerRadius = new CornerRadius(3),
                         Padding = new Thickness(4, 1), VerticalAlignment = VerticalAlignment.Center,
-                        Child = new TextBlock { Text = r.채수담당자, FontSize = 9, FontFamily = Font, Foreground = Brush.Parse(sfg) },
+                        Child = new TextBlock { Text = r.채수담당자, FontSize = AppTheme.FontXS, FontFamily = Font, Foreground = Brush.Parse(sfg) },
                     });
                 }
 
                 if (reqSelected)
                     topRow.Children.Add(new TextBlock
                     {
-                        Text = "✓", FontSize = 10, FontFamily = Font,
-                        Foreground = Brush.Parse("#88ee88"), FontWeight = FontWeight.Bold,
+                        Text = "✓", FontSize = AppTheme.FontSM, FontFamily = Font,
+                        Foreground = AppTheme.FgSuccess, FontWeight = FontWeight.Bold,
                         VerticalAlignment = VerticalAlignment.Center,
                     });
 
@@ -364,7 +366,7 @@ public class SchedulePage
                     sp.Children.Add(new TextBlock
                     {
                         Text = $"  {r.채취일자}  {r.접수번호}".Trim(),
-                        FontSize = 9, FontFamily = Font, Foreground = AppRes("FgMuted"),
+                        FontSize = AppTheme.FontXS, FontFamily = Font, Foreground = AppRes("FgMuted"),
                     });
 
                 string displayAbbr = !string.IsNullOrWhiteSpace(r.약칭) ? r.약칭
@@ -376,7 +378,7 @@ public class SchedulePage
                 {
                     Tag    = new TreeTag("request", displayAbbr, r.Id.ToString(), r.접수번호, tagDate),
                     Header = sp,
-                    Background = reqSelected ? Brush.Parse("#1a2a1a") : null,
+                    Background = reqSelected ? AppTheme.BgActiveGreen : null,
                 };
 
                 // 채수담당자 배정된 항목 → 우클릭 컨텍스트 메뉴
@@ -403,7 +405,7 @@ public class SchedulePage
                 var mi = new MenuItem
                 {
                     Header = $"❌ {n} 삭제",
-                    FontFamily = Font, FontSize = 12,
+                    FontFamily = Font, FontSize = AppTheme.FontMD,
                 };
                 mi.Click += (_, _) =>
                 {
@@ -420,7 +422,7 @@ public class SchedulePage
         var clearAll = new MenuItem
         {
             Header = "🗑 담당자 전체 삭제",
-            FontFamily = Font, FontSize = 12,
+            FontFamily = Font, FontSize = AppTheme.FontMD,
         };
         clearAll.Click += (_, _) =>
         {
@@ -434,7 +436,7 @@ public class SchedulePage
         var changeMenu = new MenuItem
         {
             Header = "🔄 담당자 변경",
-            FontFamily = Font, FontSize = 12,
+            FontFamily = Font, FontSize = AppTheme.FontMD,
         };
         var agents = AgentService.GetAllItems().OrderBy(a => a.사번).ToList();
         foreach (var a in agents)
@@ -443,7 +445,7 @@ public class SchedulePage
             var mi = new MenuItem
             {
                 Header = $"  {agentName} ({a.사번})",
-                FontFamily = Font, FontSize = 12,
+                FontFamily = Font, FontSize = AppTheme.FontMD,
             };
             mi.Click += (_, _) =>
             {
@@ -579,8 +581,8 @@ public class SchedulePage
         {
             var chip = new Border
             {
-                Background      = new SolidColorBrush(Color.Parse("#1a2a4a")),
-                BorderBrush     = new SolidColorBrush(Color.Parse("#3366aa")),
+                Background      = AppTheme.BgActiveBlue,
+                BorderBrush     = AppTheme.BorderAccent,
                 BorderThickness = new Thickness(1),
                 CornerRadius    = new CornerRadius(10),
                 Padding         = new Thickness(8, 3),
@@ -589,15 +591,15 @@ public class SchedulePage
             var row = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4 };
             row.Children.Add(new TextBlock
             {
-                Text = $"👤 {name}", FontFamily = Font, FontSize = 11,
-                Foreground = new SolidColorBrush(Color.Parse("#88aaee")),
+                Text = $"👤 {name}", FontFamily = Font, FontSize = AppTheme.FontBase,
+                Foreground = AppTheme.FgInfo,
                 VerticalAlignment = VerticalAlignment.Center,
             });
             // X 버튼
             var removeId = id;
             var btnX = new Button
             {
-                Content = "×", FontSize = 11, Padding = new Thickness(2, 0),
+                Content = "×", FontSize = AppTheme.FontBase, Padding = new Thickness(2, 0),
                 Background = Brushes.Transparent, BorderThickness = new Thickness(0),
                 Foreground = new SolidColorBrush(Color.Parse("#886688")),
                 VerticalAlignment = VerticalAlignment.Center,
@@ -646,7 +648,7 @@ public class SchedulePage
 
         _monthLbl = new TextBlock
         {
-            FontSize = 14, FontWeight = FontWeight.SemiBold, FontFamily = Font,
+            FontSize = AppTheme.FontXL, FontWeight = FontWeight.SemiBold, FontFamily = Font,
             Foreground = AppRes("AppFg"),
             HorizontalAlignment = HorizontalAlignment.Center,
             VerticalAlignment   = VerticalAlignment.Center,
@@ -661,9 +663,9 @@ public class SchedulePage
         var btnToday = new Button
         {
             Content = "오늘", Height = 28, Padding = new Thickness(10, 0),
-            FontSize = 10, FontFamily = Font,
-            Background = Brush.Parse("#1a2a4a"), Foreground = Brush.Parse("#88aacc"),
-            BorderThickness = new Thickness(1), BorderBrush = Brush.Parse("#336699"),
+            FontSize = AppTheme.FontSM, FontFamily = Font,
+            Background = AppTheme.BgActiveBlue, Foreground = AppTheme.FgInfo,
+            BorderThickness = new Thickness(1), BorderBrush = AppTheme.BorderInfo,
             CornerRadius = new CornerRadius(4),
             [Grid.ColumnProperty] = 3,
         };
@@ -698,7 +700,7 @@ public class SchedulePage
         {
             var tb = new TextBlock
             {
-                Text = dowNames[i], FontSize = 11, FontWeight = FontWeight.SemiBold,
+                Text = dowNames[i], FontSize = AppTheme.FontBase, FontWeight = FontWeight.SemiBold,
                 FontFamily = Font, Foreground = Brush.Parse(dowColors[i]),
                 HorizontalAlignment = HorizontalAlignment.Center,
                 Margin = new Thickness(0, 4, 0, 4),
@@ -728,8 +730,8 @@ public class SchedulePage
     private static Button NavBtn(string txt) => new()
     {
         Content = txt, Width = 30, Height = 28, Padding = new Thickness(0),
-        Background = new SolidColorBrush(Color.Parse("#2a2a3a")),
-        Foreground = new SolidColorBrush(Color.Parse("#aaaaaa")),
+        Background = AppTheme.BorderSubtle,
+        Foreground = AppTheme.FgMuted,
         BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
         HorizontalContentAlignment = HorizontalAlignment.Center,
     };
@@ -881,8 +883,8 @@ public class SchedulePage
         {
             // col 0=일, 6=토
             var numFg = isToday  ? Brush.Parse("#66ee66")
-                      : col == 0 ? Brush.Parse("#ee8888")  // 일
-                      : col == 6 ? Brush.Parse("#88aaee")  // 토
+                      : col == 0 ? AppTheme.FgDanger  // 일
+                      : col == 6 ? AppTheme.FgInfo  // 토
                       : AppRes("AppFg");
 
             var dayEntries  = entries.Where(e => e.날짜 == dateStr).ToList();
@@ -902,9 +904,9 @@ public class SchedulePage
             {
                 Text = $"가용:{avail}명",
                 FontFamily = Font,
-                Foreground = totalAgents > 0 && avail < totalAgents * 0.6 ? Brush.Parse("#ee8888")
+                Foreground = totalAgents > 0 && avail < totalAgents * 0.6 ? AppTheme.FgDanger
                            : totalAgents > 0 && avail < totalAgents * 0.8 ? Brush.Parse("#eedd66")
-                           : Brush.Parse("#aaccff"),
+                           : AppTheme.FgInfo,
                 VerticalAlignment = VerticalAlignment.Center,
             }.BindXS());
             hdrRow.Children.Add(new TextBlock
@@ -1050,13 +1052,13 @@ public class SchedulePage
         entryHdrRow.Children.Add(new TextBlock
         {
             Text = "📌 등록된 일정",
-            FontSize = 12, FontWeight = FontWeight.SemiBold,
+            FontSize = AppTheme.FontMD, FontWeight = FontWeight.SemiBold,
             FontFamily = Font, Foreground = AppRes("FgMuted"),
             VerticalAlignment = VerticalAlignment.Center,
         });
         _entryDateLbl = new TextBlock
         {
-            FontSize = 11, FontFamily = Font, Foreground = AppRes("FgMuted"),
+            FontSize = AppTheme.FontBase, FontFamily = Font, Foreground = AppRes("FgMuted"),
             VerticalAlignment = VerticalAlignment.Center,
             [Grid.ColumnProperty] = 1,
         };
@@ -1095,20 +1097,20 @@ public class SchedulePage
         _dateLbl = new TextBlock
         {
             Text = "← 캘린더에서 날짜를 선택하세요",
-            FontSize = 11, FontFamily = Font, Foreground = AppRes("FgMuted"),
+            FontSize = AppTheme.FontBase, FontFamily = Font, Foreground = AppRes("FgMuted"),
             TextWrapping = TextWrapping.Wrap,
         };
         left.Children.Add(_dateLbl);
 
         _companyBadge = new Border
         {
-            Background      = Brush.Parse("#1a3a2a"),
-            BorderBrush     = Brush.Parse("#336644"),
+            Background      = AppTheme.BgActiveGreen,
+            BorderBrush     = AppTheme.BorderActive,
             BorderThickness = new Thickness(1),
             CornerRadius    = new CornerRadius(4),
             Padding         = new Thickness(8, 3),
             IsVisible       = false,
-            Child = new TextBlock { FontSize = 10, FontFamily = Font, Foreground = Brush.Parse("#88ccaa") },
+            Child = new TextBlock { FontSize = AppTheme.FontSM, FontFamily = Font, Foreground = Brush.Parse("#88ccaa") },
         };
         left.Children.Add(_companyBadge);
 
@@ -1116,7 +1118,7 @@ public class SchedulePage
         _agentLbl = new TextBlock
         {
             Text = "👤 선택 안됨",
-            FontSize = 11, FontFamily = Font, Foreground = AppRes("FgMuted"),
+            FontSize = AppTheme.FontBase, FontFamily = Font, Foreground = AppRes("FgMuted"),
         };
         _agentChipsPanel = new WrapPanel { Orientation = Orientation.Horizontal };
         left.Children.Add(_agentLbl);
@@ -1147,8 +1149,8 @@ public class SchedulePage
         _btnSave = new Button
         {
             Content = "💾 저장", Height = 30, Padding = new Thickness(16, 0),
-            FontFamily = Font, FontSize = 11,
-            Background = Brush.Parse("#1a3a2a"), Foreground = Brush.Parse("#88ee88"),
+            FontFamily = Font, FontSize = AppTheme.FontBase,
+            Background = AppTheme.BgActiveGreen, Foreground = AppTheme.FgSuccess,
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
         };
         _btnSave.Click += (_, _) => SaveEntry();
@@ -1156,7 +1158,7 @@ public class SchedulePage
         var btnClear = new Button
         {
             Content = "↺ 초기화", Height = 30, Padding = new Thickness(10, 0),
-            FontFamily = Font, FontSize = 11,
+            FontFamily = Font, FontSize = AppTheme.FontBase,
             Background = AppRes("SubBtnBg"), Foreground = AppRes("FgMuted"),
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
         };
@@ -1165,8 +1167,8 @@ public class SchedulePage
         _btnDelete = new Button
         {
             Content = "🗑 삭제", Height = 30, Padding = new Thickness(10, 0),
-            FontFamily = Font, FontSize = 11,
-            Background = Brush.Parse("#3a1a1a"), Foreground = Brush.Parse("#ee8888"),
+            FontFamily = Font, FontSize = AppTheme.FontBase,
+            Background = AppTheme.BgDanger, Foreground = AppTheme.FgDanger,
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
             IsVisible = false,
         };
@@ -1205,9 +1207,9 @@ public class SchedulePage
         {
             bool a = k == _selCat;
             var  cs = GetCat(k);
-            btn.Background  = a ? Brush.Parse(cs.Bg) : Brush.Parse("#222222");
-            btn.Foreground  = a ? Brush.Parse(cs.Fg) : Brush.Parse("#666666");
-            btn.BorderBrush = a ? Brush.Parse(cs.Bd) : Brush.Parse("#444444");
+            btn.Background  = a ? Brush.Parse(cs.Bg) : AppTheme.BgSecondary;
+            btn.Foreground  = a ? Brush.Parse(cs.Fg) : AppTheme.FgDimmed;
+            btn.BorderBrush = a ? Brush.Parse(cs.Bd) : AppTheme.BorderMuted;
         }
     }
 
@@ -1217,9 +1219,9 @@ public class SchedulePage
         {
             bool a = k == _selSite;
             SiteStyle.TryGetValue(k, out var ss);
-            btn.Background  = a ? Brush.Parse(ss.Bg) : Brush.Parse("#222222");
-            btn.Foreground  = a ? Brush.Parse(ss.Fg) : Brush.Parse("#666666");
-            btn.BorderBrush = a ? Brush.Parse(ss.Bd) : Brush.Parse("#444444");
+            btn.Background  = a ? Brush.Parse(ss.Bg) : AppTheme.BgSecondary;
+            btn.Foreground  = a ? Brush.Parse(ss.Fg) : AppTheme.FgDimmed;
+            btn.BorderBrush = a ? Brush.Parse(ss.Bd) : AppTheme.BorderMuted;
         }
     }
 
@@ -1339,7 +1341,7 @@ public class SchedulePage
             _entryList.Children.Add(new TextBlock
             {
                 Text = "등록된 일정 없음",
-                FontSize = 10, FontFamily = Font,
+                FontSize = AppTheme.FontSM, FontFamily = Font,
                 Foreground = AppRes("FgMuted"),
                 Margin = new Thickness(4),
             });
@@ -1366,7 +1368,7 @@ public class SchedulePage
             firstLine.Children.Add(new TextBlock
             {
                 Text = $"{cs.Icon} {en.분류}",
-                FontSize = 11, FontFamily = Font, FontWeight = FontWeight.SemiBold,
+                FontSize = AppTheme.FontBase, FontFamily = Font, FontWeight = FontWeight.SemiBold,
                 Foreground = Brush.Parse(cs.Fg),
                 VerticalAlignment = VerticalAlignment.Center,
             });
@@ -1376,7 +1378,7 @@ public class SchedulePage
             if (!string.IsNullOrEmpty(displayName))
                 firstLine.Children.Add(new TextBlock
                 {
-                    Text = displayName, FontSize = 11, FontFamily = Font,
+                    Text = displayName, FontSize = AppTheme.FontBase, FontFamily = Font,
                     Foreground = AppRes("AppFg"),
                     VerticalAlignment = VerticalAlignment.Center,
                     TextTrimming = TextTrimming.CharacterEllipsis,
@@ -1387,14 +1389,14 @@ public class SchedulePage
             if (!string.IsNullOrEmpty(en.제목))
                 info.Children.Add(new TextBlock
                 {
-                    Text = en.제목, FontSize = 10, FontFamily = Font,
+                    Text = en.제목, FontSize = AppTheme.FontSM, FontFamily = Font,
                     Foreground = AppRes("FgMuted"),
                     TextTrimming = TextTrimming.CharacterEllipsis,
                 });
             if (!string.IsNullOrEmpty(en.내용))
                 info.Children.Add(new TextBlock
                 {
-                    Text = en.내용, FontSize = 10, FontFamily = Font,
+                    Text = en.내용, FontSize = AppTheme.FontSM, FontFamily = Font,
                     Foreground = AppRes("FgMuted"),
                     TextTrimming = TextTrimming.CharacterEllipsis,
                     MaxWidth = 300,
@@ -1407,8 +1409,8 @@ public class SchedulePage
             var edit = new Button
             {
                 Content = "✏️", Width = 28, Height = 28, Padding = new Thickness(0),
-                Background = Brush.Parse("#1a2a3a"), Foreground = Brush.Parse("#88aaee"),
-                BorderThickness = new Thickness(1), BorderBrush = Brush.Parse("#336699"),
+                Background = AppTheme.BorderSubtle, Foreground = AppTheme.FgInfo,
+                BorderThickness = new Thickness(1), BorderBrush = AppTheme.BorderInfo,
                 CornerRadius = new CornerRadius(4),
                 VerticalAlignment = VerticalAlignment.Center,
                 Margin = new Thickness(4, 0, 2, 0),
@@ -1427,8 +1429,8 @@ public class SchedulePage
             var del = new Button
             {
                 Content = "🗑", Width = 28, Height = 28, Padding = new Thickness(0),
-                Background = Brush.Parse("#3a1a1a"), Foreground = Brush.Parse("#ee8888"),
-                BorderThickness = new Thickness(1), BorderBrush = Brush.Parse("#663333"),
+                Background = AppTheme.BgDanger, Foreground = AppTheme.FgDanger,
+                BorderThickness = new Thickness(1), BorderBrush = AppTheme.BorderDanger,
                 CornerRadius = new CornerRadius(4),
                 VerticalAlignment = VerticalAlignment.Center,
                 Cursor = new Cursor(StandardCursorType.Hand),
@@ -1533,8 +1535,8 @@ public class SchedulePage
             if (i > 0)
                 _progressPanel.Children.Add(new TextBlock
                 {
-                    Text = "→", FontSize = 9, FontFamily = Font,
-                    Foreground = Brush.Parse("#555"),
+                    Text = "→", FontSize = AppTheme.FontXS, FontFamily = Font,
+                    Foreground = AppTheme.FgDimmed,
                     VerticalAlignment = VerticalAlignment.Center,
                 });
 
@@ -1558,11 +1560,11 @@ public class SchedulePage
                 var btnDone = new Button
                 {
                     Content = "✅ 완료",
-                    FontSize = 9, FontFamily = Font,
+                    FontSize = AppTheme.FontXS, FontFamily = Font,
                     Padding = new Thickness(6, 2),
-                    Background      = Brush.Parse("#1a4a2a"),
-                    Foreground      = Brush.Parse("#88ee88"),
-                    BorderBrush     = Brush.Parse("#2a8a4a"),
+                    Background      = AppTheme.BgActiveGreen,
+                    Foreground      = AppTheme.FgSuccess,
+                    BorderBrush     = AppTheme.BorderActive,
                     BorderThickness = new Thickness(1),
                     CornerRadius    = new CornerRadius(8),
                     Cursor          = new Cursor(StandardCursorType.Hand),
@@ -1584,7 +1586,7 @@ public class SchedulePage
                 step.Child = new TextBlock
                 {
                     Text       = stepText,
-                    FontSize   = 9, FontFamily = Font,
+                    FontSize   = AppTheme.FontXS, FontFamily = Font,
                     Foreground = Brush.Parse(fg),
                     FontWeight = current ? FontWeight.SemiBold : FontWeight.Normal,
                 };
@@ -1595,8 +1597,8 @@ public class SchedulePage
 
     private static TextBlock FormLbl(string text) => new()
     {
-        Text = text, FontSize = 10, FontFamily = Font,
-        Foreground = new SolidColorBrush(Color.Parse("#888888")),
+        Text = text, FontSize = AppTheme.FontSM, FontFamily = Font,
+        Foreground = AppTheme.FgMuted,
         Margin = new Thickness(0, 4, 0, 2),
     };
 

@@ -30,7 +30,7 @@ public partial class ProcessingFacilityPage : UserControl
     private readonly Dictionary<(int, string), TextBox> _cells = new();
 
     private static readonly FontFamily Font =
-        new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
+        new("avares://ETA/Assets/Fonts#Pretendard");
 
     // 컬럼 정의: (헤더, 항목키, 너비)
     private static readonly (string Header, string Key, int Width)[] Cols =
@@ -79,7 +79,7 @@ public partial class ProcessingFacilityPage : UserControl
         }
         catch (Exception ex)
         {
-            tbStatus.Foreground = Brush.Parse("#ee4444");
+            tbStatus.Foreground = AppTheme.FgDanger;
             tbStatus.Text = $"시설 목록 오류: {ex.Message}";
         }
     }
@@ -106,13 +106,13 @@ public partial class ProcessingFacilityPage : UserControl
     {
         if (_selectedFacility == null)
         {
-            tbStatus.Foreground = Brush.Parse("#ee8844");
+            tbStatus.Foreground = AppTheme.FgWarn;
             tbStatus.Text = "시설을 먼저 선택하세요";
             return;
         }
         if (dpDate.SelectedDate == null)
         {
-            tbStatus.Foreground = Brush.Parse("#ee8844");
+            tbStatus.Foreground = AppTheme.FgWarn;
             tbStatus.Text = "날짜를 선택하세요";
             return;
         }
@@ -127,12 +127,12 @@ public partial class ProcessingFacilityPage : UserControl
             var grid = BuildResultGrid(_currentRows);
             ResultGridChanged?.Invoke(grid);
 
-            tbStatus.Foreground = Brush.Parse("#888888");
+            tbStatus.Foreground = AppTheme.FgMuted;
             tbStatus.Text = $"{_selectedFacility} / {date}\n{_currentRows.Count}개 시료포인트";
         }
         catch (Exception ex)
         {
-            tbStatus.Foreground = Brush.Parse("#ee4444");
+            tbStatus.Foreground = AppTheme.FgDanger;
             tbStatus.Text = $"조회 오류: {ex.Message}";
             Debug.WriteLine($"[ProcessingFacility] 조회 오류: {ex}");
         }
@@ -169,7 +169,7 @@ public partial class ProcessingFacilityPage : UserControl
         {
             FacilityResultService.SaveRows(_selectedFacility, date, _currentRows,
                 MainPage.CurrentEmployeeId);
-            tbStatus.Foreground = Brush.Parse("#88ee88");
+            tbStatus.Foreground = AppTheme.FgSuccess;
             tbStatus.Text = $"저장 완료 ({DateTime.Now:HH:mm:ss})";
 
             // 저장 후 재조회하여 Id 갱신
@@ -177,7 +177,7 @@ public partial class ProcessingFacilityPage : UserControl
         }
         catch (Exception ex)
         {
-            tbStatus.Foreground = Brush.Parse("#ee4444");
+            tbStatus.Foreground = AppTheme.FgDanger;
             tbStatus.Text = $"저장 오류: {ex.Message}";
             Debug.WriteLine($"[ProcessingFacility] 저장 오류: {ex}");
         }
@@ -241,11 +241,11 @@ public partial class ProcessingFacilityPage : UserControl
                     {
                         Text             = value,
                         FontFamily       = Font,
-                        FontSize         = 12,
+                        FontSize         = AppTheme.FontMD,
                         Background       = new SolidColorBrush(rowBg),
-                        Foreground       = Brush.Parse("#e8e8e8"),
+                        Foreground       = AppTheme.FgPrimary,
                         BorderThickness  = new Thickness(0, 0, 1, 1),
-                        BorderBrush      = Brush.Parse("#404050"),
+                        BorderBrush      = AppTheme.BorderMuted,
                         Padding          = new Thickness(4, 2),
                         VerticalAlignment = VerticalAlignment.Stretch,
                         HorizontalAlignment = HorizontalAlignment.Stretch,
@@ -260,7 +260,7 @@ public partial class ProcessingFacilityPage : UserControl
                     {
                         Background      = Brush.Parse("#222228"),
                         BorderThickness = new Thickness(0, 0, 1, 1),
-                        BorderBrush     = Brush.Parse("#333340"),
+                        BorderBrush     = AppTheme.BorderSubtle,
                         MinHeight       = 26,
                     };
                 }
@@ -291,17 +291,17 @@ public partial class ProcessingFacilityPage : UserControl
     {
         var cell = new Border
         {
-            Background      = Brush.Parse("#2a2a32"),
+            Background      = AppTheme.BgCard,
             BorderThickness = new Thickness(0, 0, 1, 1),
-            BorderBrush     = Brush.Parse("#404050"),
+            BorderBrush     = AppTheme.BorderMuted,
             Padding         = new Thickness(4, 4),
             Child = new TextBlock
             {
                 Text                = text,
                 FontFamily          = Font,
-                FontSize            = 11,
+                FontSize            = AppTheme.FontBase,
                 FontWeight          = FontWeight.SemiBold,
-                Foreground          = Brush.Parse("#cccccc"),
+                Foreground          = AppTheme.FgSecondary,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment   = VerticalAlignment.Center,
             }
@@ -320,14 +320,14 @@ public partial class ProcessingFacilityPage : UserControl
         {
             Background      = Brush.Parse(bg),
             BorderThickness = new Thickness(0, 0, 1, 1),
-            BorderBrush     = Brush.Parse("#404050"),
+            BorderBrush     = AppTheme.BorderMuted,
             Padding         = new Thickness(4, 4),
             MinHeight       = 26,
             Child = new TextBlock
             {
                 Text                = text,
                 FontFamily          = Font,
-                FontSize            = 12,
+                FontSize            = AppTheme.FontMD,
                 Foreground          = Brush.Parse(fg),
                 VerticalAlignment   = VerticalAlignment.Center,
                 TextWrapping        = TextWrapping.NoWrap,

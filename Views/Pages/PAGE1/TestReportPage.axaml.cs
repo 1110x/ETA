@@ -1,4 +1,5 @@
 using Avalonia;
+using Avalonia.Animation;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
@@ -16,6 +17,8 @@ using ETA.Services;
 using ETA.Services.SERVICE1;
 using ETA.Services.SERVICE2;
 using ETA.Services.Common;
+using ETA.Services.Common;
+using ETA.Views;
 
 namespace ETA.Views.Pages.PAGE1;
 
@@ -44,7 +47,7 @@ public partial class TestReportPage : UserControl
 
     private readonly TextBlock  _listTitle  = new()
     {
-        FontSize   = 12,
+        FontSize   = AppTheme.FontMD,
         FontFamily = Font,
         Foreground = new SolidColorBrush(Color.Parse("#8888bb")),
         Margin     = new Thickness(10, 6),
@@ -90,6 +93,11 @@ public partial class TestReportPage : UserControl
     private AnalysisResultRow? _selectedRow;
     private Border?            _selectedRowBorder;
 
+    // ── Show2 부분 애니메이션: 헤더 고정, 데이터 행만 전환 ──
+    private Grid?                       _persistentGrid;
+    private TransitioningContentControl? _listTCC;
+    private Border?                      _infoHeaderBorder;
+
     public TestReportPage()
     {
         InitializeComponent();
@@ -118,6 +126,7 @@ public partial class TestReportPage : UserControl
         _importHasPending  = false;
         _importHasConflict = false;
         _importActionPanel = null;
+        _persistentGrid    = null; _listTCC = null; // 전체 재빌드
         ResultListChanged?.Invoke(BuildListControl());
         EditPanelChanged?.Invoke(null);
 
@@ -128,7 +137,7 @@ public partial class TestReportPage : UserControl
             if (companies.Count == 0)
             {
                 ReportTreeView.Items.Add(new TreeViewItem {
-                    Header = new TextBlock { Text = "⚠️ 데이터 없음", FontSize = 12, FontFamily = Font,
+                    Header = new TextBlock { Text = "⚠️ 데이터 없음", FontSize = AppTheme.FontMD, FontFamily = Font,
                                             Foreground = new SolidColorBrush(Color.Parse("#cc8800")) }
                 });
                 return;
@@ -151,8 +160,8 @@ public partial class TestReportPage : UserControl
             var node = new TreeViewItem { Tag = company, IsExpanded = false,
                 Header = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8,
                     Children = {
-                        new TextBlock { Text = "🏭", FontSize = 16, VerticalAlignment = VerticalAlignment.Center },
-                        new TextBlock { Text = company, FontSize = 13, FontFamily = Font,
+                        new TextBlock { Text = "🏭", FontSize = AppTheme.FontXL, VerticalAlignment = VerticalAlignment.Center },
+                        new TextBlock { Text = company, FontSize = AppTheme.FontLG, FontFamily = Font,
                                         Foreground = AppRes("AppFg"), VerticalAlignment = VerticalAlignment.Center }
                     }
                 }
@@ -186,8 +195,8 @@ public partial class TestReportPage : UserControl
             var yn = new TreeViewItem { IsExpanded = yearOpen,
                 Header = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6,
                     Children = {
-                        new TextBlock { Text = "📆", FontSize = 15, VerticalAlignment = VerticalAlignment.Center },
-                        new TextBlock { Text = $"{yg.Key}년  ({yg.Count()}건)", FontSize = 13, FontFamily = Font,
+                        new TextBlock { Text = "📆", FontSize = AppTheme.FontXL, VerticalAlignment = VerticalAlignment.Center },
+                        new TextBlock { Text = $"{yg.Key}년  ({yg.Count()}건)", FontSize = AppTheme.FontLG, FontFamily = Font,
                                         Foreground = AppRes("AppFg"), VerticalAlignment = VerticalAlignment.Center }
                     }
                 }
@@ -198,7 +207,7 @@ public partial class TestReportPage : UserControl
                 bool monthOpen = mg.Key == curMonthKey || mg.Key == prevMonthKey;
                 var mn = new TreeViewItem { IsExpanded = monthOpen,
                     Header = new TextBlock { Text = $"  📅 {mg.Key}  ({mg.Count()}건)",
-                        FontSize = 12, FontFamily = Font, Foreground = new SolidColorBrush(Color.Parse("#aaaacc")) }
+                        FontSize = AppTheme.FontMD, FontFamily = Font, Foreground = AppTheme.FgInfo }
                 };
                 foreach (var s2 in mg.OrderByDescending(x => x.채취일자))
                     mn.Items.Add(MakeSampleNode(s2, showCompany: true));
@@ -243,7 +252,7 @@ public partial class TestReportPage : UserControl
         row.Children.Add(new ContentControl { Content = chk, [Grid.ColumnProperty] = 0 });
         row.Children.Add(new TextBlock
         {
-            Text = icon, FontSize = 12,
+            Text = icon, FontSize = AppTheme.FontMD,
             Foreground = new SolidColorBrush(Color.Parse(iconColor)),
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Thickness(2, 0, 4, 0),
@@ -255,13 +264,13 @@ public partial class TestReportPage : UserControl
             Padding = new Thickness(4, 1), Margin = new Thickness(0, 0, 5, 0),
             VerticalAlignment = VerticalAlignment.Center,
             [Grid.ColumnProperty] = 2,
-            Child = new TextBlock { Text = sample.약칭, FontSize = 9, FontFamily = Font,
+            Child = new TextBlock { Text = sample.약칭, FontSize = AppTheme.FontXS, FontFamily = Font,
                                     Foreground = Brush.Parse(badgeFg) },
         });
         row.Children.Add(new TextBlock
         {
-            Text = labelText, FontSize = 11, FontFamily = Font,
-            Foreground = Brush.Parse("#dddddd"),
+            Text = labelText, FontSize = AppTheme.FontBase, FontFamily = Font,
+            Foreground = AppTheme.FgPrimary,
             TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
             VerticalAlignment = VerticalAlignment.Center,
             [Grid.ColumnProperty] = 3,
@@ -289,9 +298,9 @@ public partial class TestReportPage : UserControl
                 Header = new TextBlock
                 {
                     Text       = $"  📅 {group.Key}  ({group.Count()}건)",
-                    FontSize   = 12,
+                    FontSize   = AppTheme.FontMD,
                     FontFamily = Font,
-                    Foreground = new SolidColorBrush(Color.Parse("#aaaacc")),
+                    Foreground = AppTheme.FgInfo,
                 }
             };
 
@@ -407,7 +416,7 @@ public partial class TestReportPage : UserControl
     // =========================================================================
     private Control BuildListControl()
     {
-        if (_showMeasurerPanel) return BuildMeasurerListControl();
+        if (_showMeasurerPanel) { _persistentGrid = null; _listTCC = null; return BuildMeasurerListControl(); }
 
         if (_stdToggle == null)
         {
@@ -416,7 +425,7 @@ public partial class TestReportPage : UserControl
                 IsChecked  = _showImportPanel,
                 OnContent  = "📎 Excel 불러오기",
                 OffContent = "📋 시험성적서",
-                FontFamily = Font, FontSize = 11,
+                FontFamily = Font, FontSize = AppTheme.FontBase,
                 HorizontalAlignment = HorizontalAlignment.Left,
                 Margin = new Thickness(8, 2),
             };
@@ -432,16 +441,19 @@ public partial class TestReportPage : UserControl
                 {
                     EditPanelChanged?.Invoke(null);
                 }
+                _persistentGrid = null; _listTCC = null; // 모드 변경 시 전체 재빌드
                 ResultListChanged?.Invoke(BuildListControl());
             };
         }
         else { _stdToggle.IsChecked = _showImportPanel; }
 
-        if (_stdToggle.Parent is ContentControl oldC) oldC.Content = null;
-        _stdToggleContainer = new ContentControl { Content = _stdToggle };
-
         if (_showImportPanel)
         {
+            _persistentGrid = null; _listTCC = null;
+
+            if (_stdToggle.Parent is ContentControl oldC2) oldC2.Content = null;
+            _stdToggleContainer = new ContentControl { Content = _stdToggle };
+
             // Content3 = 액션 패널 (파일 선택, 저장 등)
             if (_importActionPanel == null) _importActionPanel = BuildImportActionPanel();
             EditPanelChanged?.Invoke(_importActionPanel);
@@ -464,8 +476,8 @@ public partial class TestReportPage : UserControl
                 tablePanel.Children.Add(new TextBlock
                 {
                     Text = "오른쪽에서 Excel 파일을 선택하면 결과가 여기에 표시됩니다.",
-                    FontFamily = Font, FontSize = 12,
-                    Foreground = new SolidColorBrush(Color.Parse("#555566")),
+                    FontFamily = Font, FontSize = AppTheme.FontMD,
+                    Foreground = AppTheme.FgDimmed,
                     Margin     = new Thickness(12, 20),
                     HorizontalAlignment = HorizontalAlignment.Center,
                     TextWrapping = Avalonia.Media.TextWrapping.Wrap,
@@ -485,29 +497,50 @@ public partial class TestReportPage : UserControl
             return importOuter;
         }
 
-        // Content2 = 결과 리스트 모드
+        // ── 결과 리스트 모드 ──
         var listPanel = new StackPanel { Spacing = 0 };
         RefreshListPanel(listPanel);
 
-        var outer = new Grid { RowDefinitions = new RowDefinitions("Auto,Auto,Auto,*") };
-        var infoPanel = BuildSampleInfoHeader();
-        Grid.SetRow(infoPanel, 0);
-        Grid.SetRow(_stdToggleContainer, 1);
-        var resultHeader = BuildResultListHeader();
-        Grid.SetRow(resultHeader, 2);
-        var resultScroll = new ScrollViewer
+        var listScroll = new ScrollViewer
         {
             VerticalScrollBarVisibility   = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
             HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
             Content                       = listPanel
         };
-        Grid.SetRow(resultScroll, 3);
 
-        outer.Children.Add(infoPanel);
-        outer.Children.Add(_stdToggleContainer);
-        outer.Children.Add(resultHeader);
-        outer.Children.Add(resultScroll);
-        return outer;
+        // ── 영속 그리드 존재 시: 헤더 고정, 데이터 행만 CrossFade 전환 ──
+        if (_persistentGrid != null && _listTCC != null)
+        {
+            UpdateSampleInfoHeader();
+            _listTCC.Content = listScroll;
+            return _persistentGrid;
+        }
+
+        // ── 최초 빌드: 영속 구조 생성 ──
+        if (_stdToggle.Parent is ContentControl oldC) oldC.Content = null;
+        _stdToggleContainer = new ContentControl { Content = _stdToggle };
+
+        _infoHeaderBorder = BuildSampleInfoHeader();
+        var resultHeader  = BuildResultListHeader();
+
+        _listTCC = new TransitioningContentControl
+        {
+            PageTransition = new CrossFade(TimeSpan.FromMilliseconds(200)),
+            Content        = listScroll
+        };
+
+        _persistentGrid = new Grid { RowDefinitions = new RowDefinitions("Auto,Auto,Auto,*") };
+        Grid.SetRow(_infoHeaderBorder,  0);
+        Grid.SetRow(_stdToggleContainer, 1);
+        Grid.SetRow(resultHeader,        2);
+        Grid.SetRow(_listTCC,            3);
+
+        _persistentGrid.Children.Add(_infoHeaderBorder);
+        _persistentGrid.Children.Add(_stdToggleContainer);
+        _persistentGrid.Children.Add(resultHeader);
+        _persistentGrid.Children.Add(_listTCC);
+
+        return _persistentGrid;
     }
 
     // 시료 정보 헤더 패널
@@ -522,8 +555,8 @@ public partial class TestReportPage : UserControl
                 Child      = new TextBlock
                 {
                     Text       = "왼쪽 트리에서 시료를 선택하세요",
-                    FontFamily = Font, FontSize = 12,
-                    Foreground = new SolidColorBrush(Color.Parse("#555566")),
+                    FontFamily = Font, FontSize = AppTheme.FontMD,
+                    Foreground = AppTheme.FgDimmed,
                 }
             };
         }
@@ -548,9 +581,9 @@ public partial class TestReportPage : UserControl
                 Margin      = new Thickness(0, 0, 16, 4),
                 Children    =
                 {
-                    new TextBlock { Text = l + ":", FontFamily = Font, FontSize = 11,
-                                   Foreground = new SolidColorBrush(Color.Parse("#888899")) },
-                    new TextBlock { Text = v,       FontFamily = Font, FontSize = 11,
+                    new TextBlock { Text = l + ":", FontFamily = Font, FontSize = AppTheme.FontBase,
+                                   Foreground = AppTheme.FgMuted },
+                    new TextBlock { Text = v,       FontFamily = Font, FontSize = AppTheme.FontBase,
                                    Foreground = AppRes("AppFg") }
                 }
             });
@@ -564,10 +597,57 @@ public partial class TestReportPage : UserControl
         };
     }
 
+    /// <summary>영속 그리드의 시료 정보 헤더를 현재 선택된 시료로 갱신 (in-place)</summary>
+    private void UpdateSampleInfoHeader()
+    {
+        if (_infoHeaderBorder == null) return;
+
+        if (_selectedSample == null)
+        {
+            _infoHeaderBorder.Child = new TextBlock
+            {
+                Text       = "왼쪽 트리에서 시료를 선택하세요",
+                FontFamily = Font, FontSize = AppTheme.FontMD,
+                Foreground = AppTheme.FgDimmed,
+            };
+            return;
+        }
+
+        var s = _selectedSample;
+        var fields = new (string L, string V)[]
+        {
+            ("채취일자", s.채취일자), ("채취시간", s.채취시간), ("시료명", s.시료명),
+            ("입회자",   s.입회자),   ("채취자",   $"{s.시료채취자1} {s.시료채취자2}".Trim()),
+            ("방류기준", s.방류허용기준), ("정도보증", s.정도보증),
+            ("분석종료", s.분석종료일),
+        };
+
+        var wrap = new WrapPanel { Orientation = Orientation.Horizontal };
+        foreach (var (l, v) in fields)
+        {
+            if (string.IsNullOrEmpty(v)) continue;
+            wrap.Children.Add(new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Spacing     = 4,
+                Margin      = new Thickness(0, 0, 16, 4),
+                Children    =
+                {
+                    new TextBlock { Text = l + ":", FontFamily = Font, FontSize = AppTheme.FontBase,
+                                   Foreground = AppTheme.FgMuted },
+                    new TextBlock { Text = v,       FontFamily = Font, FontSize = AppTheme.FontBase,
+                                   Foreground = AppRes("AppFg") }
+                }
+            });
+        }
+
+        _infoHeaderBorder.Child = wrap;
+    }
+
     // 결과 리스트 헤더
     private Border BuildResultListHeader() => new Border
     {
-        Background = new SolidColorBrush(Color.Parse("#2a2a3a")),
+        Background = AppTheme.BorderSubtle,
         Padding    = new Thickness(8, 5),
         Child      = new Grid
         {
@@ -591,8 +671,8 @@ public partial class TestReportPage : UserControl
         if (_resultRows.Count == 0)
         {
             listPanel.Children.Add(new TextBlock { Text = "분석 결과 없음",
-                FontFamily = Font, FontSize = 12, Margin = new Thickness(12, 20),
-                Foreground = new SolidColorBrush(Color.Parse("#555555")),
+                FontFamily = Font, FontSize = AppTheme.FontMD, Margin = new Thickness(12, 20),
+                Foreground = AppTheme.FgDimmed,
                 HorizontalAlignment = HorizontalAlignment.Center });
             return;
         }
@@ -608,9 +688,9 @@ public partial class TestReportPage : UserControl
         // 결과값 색: 기준 초과 시 빨간색, 아니면 흰색, 비었으면 회색
         var stdStr  = GetStdDisplay(row);
         IBrush valColor = ExceedsStandard(row.결과값, stdStr)
-            ? new SolidColorBrush(Color.Parse("#ff4444"))
+            ? AppTheme.FgDanger
             : string.IsNullOrEmpty(row.결과값)
-                ? new SolidColorBrush(Color.Parse("#555555"))
+                ? AppTheme.BorderDefault
                 : (IBrush)AppRes("AppFg");
 
         var rowBorder = new Border
@@ -630,10 +710,27 @@ public partial class TestReportPage : UserControl
                     DataCell(row.단위,      4),
                     DataCell(row.분석방법,  5),
                     DataCell(row.ES,        6, new SolidColorBrush(Color.Parse("#8888cc"))),
-                    DataCell(stdStr,        7, new SolidColorBrush(Color.Parse("#ffaa44"))),
+                    DataCell(stdStr,        7, AppTheme.FgWarn),
                 }
             }
         };
+
+        // 우클릭 복사 메뉴
+        var copyItem = new MenuItem { Header = "📋 행 복사" };
+        copyItem.Click += async (_, _) =>
+        {
+            var clip = TopLevel.GetTopLevel(this)?.Clipboard;
+            if (clip != null)
+                await clip.SetTextAsync($"{row.항목명}\t{row.결과값}\t{row.단위}\t{row.분석방법}");
+        };
+        var copyValItem = new MenuItem { Header = "📋 결과값 복사" };
+        copyValItem.Click += async (_, _) =>
+        {
+            var clip = TopLevel.GetTopLevel(this)?.Clipboard;
+            if (clip != null)
+                await clip.SetTextAsync(row.결과값 ?? "");
+        };
+        rowBorder.ContextMenu = new ContextMenu { Items = { copyItem, copyValItem } };
 
         // 선택 이벤트 (Tunnel 방식)
         rowBorder.AddHandler(
@@ -644,7 +741,7 @@ public partial class TestReportPage : UserControl
         rowBorder.PointerEntered += (_, _) =>
         {
             if (rowBorder != _selectedRowBorder)
-                rowBorder.Background = new SolidColorBrush(Color.Parse("#3a3a50"));
+                rowBorder.Background = AppTheme.BorderMuted;
         };
         rowBorder.PointerExited += (_, _) =>
         {
@@ -684,7 +781,7 @@ public partial class TestReportPage : UserControl
         {
             Text         = _importStatus,
             Foreground   = new SolidColorBrush(Color.Parse(_importStatusHex)),
-            FontFamily   = Font, FontSize = 11,
+            FontFamily   = Font, FontSize = AppTheme.FontBase,
             TextWrapping = Avalonia.Media.TextWrapping.Wrap,
             Margin       = new Thickness(0, 4, 0, 0),
         };
@@ -696,9 +793,9 @@ public partial class TestReportPage : UserControl
                 Orientation = Orientation.Horizontal, Spacing = 5,
                 Children =
                 {
-                    new TextBlock { Text = "📅", FontSize = 13, VerticalAlignment = VerticalAlignment.Center },
-                    new TextBlock { Text = fn, FontFamily = Font, FontSize = 11,
-                        Foreground = new SolidColorBrush(Color.Parse("#88ccff")),
+                    new TextBlock { Text = "📅", FontSize = AppTheme.FontLG, VerticalAlignment = VerticalAlignment.Center },
+                    new TextBlock { Text = fn, FontFamily = Font, FontSize = AppTheme.FontBase,
+                        Foreground = AppTheme.FgInfo,
                         VerticalAlignment = VerticalAlignment.Center },
                 }
             });
@@ -708,8 +805,8 @@ public partial class TestReportPage : UserControl
         var saveBtn = new Button
         {
             Content         = "💾 결과 일괄 저장",
-            FontFamily      = Font, FontSize = 11,
-            Background      = new SolidColorBrush(Color.Parse("#2a5a2a")),
+            FontFamily      = Font, FontSize = AppTheme.FontBase,
+            Background      = AppTheme.BorderActive,
             Foreground      = AppRes("AppFg"),
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
             Padding         = new Thickness(12, 5),
@@ -745,8 +842,8 @@ public partial class TestReportPage : UserControl
         var fileBtn = new Button
         {
             Content         = "📂  Excel 결과 파일 선택",
-            FontFamily      = Font, FontSize = 11,
-            Background      = new SolidColorBrush(Color.Parse("#1a3a5a")),
+            FontFamily      = Font, FontSize = AppTheme.FontBase,
+            Background      = AppTheme.BgActiveBlue,
             Foreground      = AppRes("AppFg"),
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
             Padding         = new Thickness(12, 6),
@@ -755,8 +852,8 @@ public partial class TestReportPage : UserControl
         var uploadBtn = new Button
         {
             Content         = "📎  파일 첨부",
-            FontFamily      = Font, FontSize = 11,
-            Background      = new SolidColorBrush(Color.Parse("#3a2a5a")),
+            FontFamily      = Font, FontSize = AppTheme.FontBase,
+            Background      = AppTheme.BorderSeparator,
             Foreground      = AppRes("AppFg"),
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
             Padding         = new Thickness(12, 6),
@@ -831,9 +928,9 @@ public partial class TestReportPage : UserControl
                     Orientation = Orientation.Horizontal, Spacing = 5,
                     Children =
                     {
-                        new TextBlock { Text = "📅", FontSize = 13, VerticalAlignment = VerticalAlignment.Center },
-                        new TextBlock { Text = fn, FontFamily = Font, FontSize = 11,
-                            Foreground = new SolidColorBrush(Color.Parse("#88ccff")),
+                        new TextBlock { Text = "📅", FontSize = AppTheme.FontLG, VerticalAlignment = VerticalAlignment.Center },
+                        new TextBlock { Text = fn, FontFamily = Font, FontSize = AppTheme.FontBase,
+                            Foreground = AppTheme.FgInfo,
                             VerticalAlignment = VerticalAlignment.Center },
                     }
                 });
@@ -951,7 +1048,7 @@ public partial class TestReportPage : UserControl
         var attachDeleteBtn = new Button
         {
             Content         = "🗑  선택 삭제",
-            FontFamily      = Font, FontSize = 11,
+            FontFamily      = Font, FontSize = AppTheme.FontBase,
             Background      = new SolidColorBrush(Color.Parse("#5a1a1a")),
             Foreground      = AppRes("AppFg"),
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
@@ -991,11 +1088,11 @@ public partial class TestReportPage : UserControl
                     new TextBlock
                     {
                         Text       = "📊  Excel 결과 불러오기",
-                        FontFamily = Font, FontSize = 13,
+                        FontFamily = Font, FontSize = AppTheme.FontLG,
                         FontWeight = FontWeight.SemiBold,
                         Foreground = AppRes("AppFg"),
                     },
-                    new Border { Height = 1, Background = new SolidColorBrush(Color.Parse("#444")) },
+                    new Border { Height = 1, Background = AppTheme.BorderMuted },
                     // Excel 선택 + 파일 첨부 버튼 나란히
                     new StackPanel
                     {
@@ -1007,14 +1104,14 @@ public partial class TestReportPage : UserControl
                     conflictPanel,
                     saveBtn,
                     // ── 첨부파일 섹션 ──────────────────────────────────────
-                    new Border { Height = 1, Background = new SolidColorBrush(Color.Parse("#333")),
+                    new Border { Height = 1, Background = AppTheme.BorderSubtle,
                                  Margin = new Thickness(0, 4, 0, 0) },
                     new TextBlock
                     {
                         Text       = "📁  첨부파일",
-                        FontFamily = Font, FontSize = 12,
+                        FontFamily = Font, FontSize = AppTheme.FontMD,
                         FontWeight = FontWeight.SemiBold,
-                        Foreground = new SolidColorBrush(Color.Parse("#aaaacc")),
+                        Foreground = AppTheme.FgInfo,
                     },
                     _attachListPanel,
                     attachDeleteBtn,
@@ -1039,8 +1136,8 @@ public partial class TestReportPage : UserControl
             _attachListPanel.Children.Add(new TextBlock
             {
                 Text       = "첨부된 파일이 없습니다.",
-                FontFamily = Font, FontSize = 11,
-                Foreground = new SolidColorBrush(Color.Parse("#555566")),
+                FontFamily = Font, FontSize = AppTheme.FontBase,
+                Foreground = AppTheme.FgDimmed,
                 Margin     = new Thickness(2, 2),
             });
             return;
@@ -1057,8 +1154,8 @@ public partial class TestReportPage : UserControl
             var nameTb = new TextBlock
             {
                 Text              = att.원본파일명,
-                FontFamily        = Font, FontSize = 11,
-                Foreground        = new SolidColorBrush(Color.Parse("#88ccff")),
+                FontFamily        = Font, FontSize = AppTheme.FontBase,
+                Foreground        = AppTheme.FgInfo,
                 VerticalAlignment = VerticalAlignment.Center,
                 TextTrimming      = Avalonia.Media.TextTrimming.CharacterEllipsis,
                 MaxWidth          = 200,
@@ -1067,15 +1164,15 @@ public partial class TestReportPage : UserControl
             var dateTb = new TextBlock
             {
                 Text              = att.등록일시.Length >= 10 ? att.등록일시[..10] : att.등록일시,
-                FontFamily        = Font, FontSize = 10,
-                Foreground        = new SolidColorBrush(Color.Parse("#555566")),
+                FontFamily        = Font, FontSize = AppTheme.FontSM,
+                Foreground        = AppTheme.FgDimmed,
                 VerticalAlignment = VerticalAlignment.Center,
             };
 
             var openBtn = new Button
             {
                 Content         = "↗",
-                FontSize        = 11, Padding = new Thickness(4, 1),
+                FontSize        = AppTheme.FontBase, Padding = new Thickness(4, 1),
                 Background      = new SolidColorBrush(Color.Parse("#1a2a3a")),
                 Foreground      = AppRes("AppFg"),
                 BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(3),
@@ -1103,7 +1200,7 @@ public partial class TestReportPage : UserControl
 
             _attachListPanel.Children.Add(new Border
             {
-                Background    = new SolidColorBrush(Color.Parse("#1e1e2e")),
+                Background    = AppTheme.BgPrimary,
                 CornerRadius  = new CornerRadius(4),
                 Padding       = new Thickness(4, 2),
                 Child         = row,
@@ -1116,15 +1213,15 @@ public partial class TestReportPage : UserControl
         conflictPanel.Children.Add(new TextBlock
         {
             Text         = $"⚠  {_conflictRows.Count}개 항목이 기존 결과와 다릅니다.",
-            FontFamily   = Font, FontSize = 11,
-            Foreground   = new SolidColorBrush(Color.Parse("#ffaa44")),
+            FontFamily   = Font, FontSize = AppTheme.FontBase,
+            Foreground   = AppTheme.FgWarn,
             TextWrapping = Avalonia.Media.TextWrapping.Wrap,
         });
         var btnRow       = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
         var skipBtn      = new Button
         {
             Content         = "🚫 충돌 항목 건너버림",
-            FontFamily      = Font, FontSize = 11,
+            FontFamily      = Font, FontSize = AppTheme.FontBase,
             Background      = new SolidColorBrush(Color.Parse("#4a2a10")),
             Foreground      = AppRes("AppFg"),
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
@@ -1133,8 +1230,8 @@ public partial class TestReportPage : UserControl
         var overwriteBtn = new Button
         {
             Content         = "✏ 덮어쓰기",
-            FontFamily      = Font, FontSize = 11,
-            Background      = new SolidColorBrush(Color.Parse("#2a3a5a")),
+            FontFamily      = Font, FontSize = AppTheme.FontBase,
+            Background      = AppTheme.BgActiveBlue,
             Foreground      = AppRes("AppFg"),
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
             Padding         = new Thickness(10, 4),
@@ -1194,7 +1291,7 @@ public partial class TestReportPage : UserControl
         new TextBlock
         {
             Text = text ?? "",
-            FontFamily = Font, FontSize = 11,
+            FontFamily = Font, FontSize = AppTheme.FontBase,
             Foreground = new SolidColorBrush(fg),
             TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
             [Grid.ColumnProperty] = col,
@@ -1204,8 +1301,8 @@ public partial class TestReportPage : UserControl
     {
         var tb = new TextBlock
         {
-            Text = text, FontFamily = Font, FontSize = 10,
-            Foreground = new SolidColorBrush(Color.Parse("#aaaacc")),
+            Text = text, FontFamily = Font, FontSize = AppTheme.FontSM,
+            Foreground = AppTheme.FgInfo,
             [Grid.ColumnProperty] = col,
         };
         return tb;
@@ -1215,7 +1312,7 @@ public partial class TestReportPage : UserControl
     {
         var tb = new TextBlock
         {
-            Text = text, FontFamily = Font, FontSize = 11,
+            Text = text, FontFamily = Font, FontSize = AppTheme.FontBase,
             Foreground = fg,
             TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
             [Grid.ColumnProperty] = col,
@@ -1282,13 +1379,13 @@ public partial class TestReportPage : UserControl
         var standardVal = GetStdDisplay(row);
         var valueTb = new TextBox
         {
-            Text = row.결과값, Width = 120, FontFamily = Font, FontSize = 12,
-            Background = new SolidColorBrush(Color.Parse("#3a3a4a")), Foreground = AppRes("AppFg"),
-            BorderThickness = new Thickness(1), BorderBrush = new SolidColorBrush(Color.Parse("#5555aa")),
+            Text = row.결과값, Width = 120, FontFamily = Font, FontSize = AppTheme.FontMD,
+            Background = AppTheme.BorderSeparator, Foreground = AppRes("AppFg"),
+            BorderThickness = new Thickness(1), BorderBrush = AppTheme.BorderAccent,
             CornerRadius = new CornerRadius(4), Padding = new Thickness(8, 4),
         };
-        var statusTb = new TextBlock { FontFamily = Font, FontSize = 11,
-            Foreground = new SolidColorBrush(Color.Parse("#888888")), VerticalAlignment = VerticalAlignment.Center };
+        var statusTb = new TextBlock { FontFamily = Font, FontSize = AppTheme.FontBase,
+            Foreground = AppTheme.FgMuted, VerticalAlignment = VerticalAlignment.Center };
         var saveBtn   = MakeBtn("💾 저장", "#2a5a2a");
         var cancelBtn = MakeBtn("✖ 취소", "#e00000");
 
@@ -1306,7 +1403,7 @@ public partial class TestReportPage : UserControl
                 statusTb.Foreground = new SolidColorBrush(Color.Parse("#44aa44"));
                 ResultListChanged?.Invoke(BuildListControl());
             }
-            else { statusTb.Text = "❌ 저장 실패"; statusTb.Foreground = new SolidColorBrush(Color.Parse("#cc4444")); }
+            else { statusTb.Text = "❌ 저장 실패"; statusTb.Foreground = AppTheme.FgDanger; }
         };
         cancelBtn.Click += (_, _) => { valueTb.Text = row.Original결과값; statusTb.Text = ""; };
 
@@ -1315,9 +1412,9 @@ public partial class TestReportPage : UserControl
             Padding = new Thickness(10),
             Child = new StackPanel { Spacing = 8, Children =
             {
-                new TextBlock { Text = "✏️  결과값 수정", FontFamily = Font, FontSize = 13,
+                new TextBlock { Text = "✏️  결과값 수정", FontFamily = Font, FontSize = AppTheme.FontLG,
                                FontWeight = FontWeight.SemiBold, Foreground = AppRes("AppFg") },
-                new Border { Height = 1, Background = new SolidColorBrush(Color.Parse("#555")) },
+                new Border { Height = 1, Background = AppTheme.BorderDefault },
                 new WrapPanel { Orientation = Orientation.Horizontal, Children =
                 {
                     InfoCell("항목명",   row.항목명),
@@ -1328,8 +1425,8 @@ public partial class TestReportPage : UserControl
                     string.IsNullOrEmpty(standardVal) ? new StackPanel() : InfoCell("방류기준", standardVal, highlight: true),
                     new StackPanel { Orientation = Orientation.Vertical, Spacing = 3, Children =
                     {
-                        new TextBlock { Text = "결과값", FontFamily = Font, FontSize = 10,
-                                       Foreground = new SolidColorBrush(Color.Parse("#aaaaaa")) },
+                        new TextBlock { Text = "결과값", FontFamily = Font, FontSize = AppTheme.FontSM,
+                                       Foreground = AppTheme.FgMuted },
                         new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6,
                             VerticalAlignment = VerticalAlignment.Center,
                             Children = { valueTb, saveBtn, cancelBtn, statusTb } }
@@ -1344,11 +1441,11 @@ public partial class TestReportPage : UserControl
         if (string.IsNullOrEmpty(value)) return new StackPanel();
         return new StackPanel { Orientation = Orientation.Vertical, Spacing = 2, Margin = new Thickness(0,0,16,0),
             Children = {
-                new TextBlock { Text = label, FontFamily = Font, FontSize = 10,
-                               Foreground = new SolidColorBrush(Color.Parse("#888888")) },
-                new TextBlock { Text = value, FontFamily = Font, FontSize = 12,
+                new TextBlock { Text = label, FontFamily = Font, FontSize = AppTheme.FontSM,
+                               Foreground = AppTheme.FgMuted },
+                new TextBlock { Text = value, FontFamily = Font, FontSize = AppTheme.FontMD,
                                Foreground = highlight
-                                   ? new SolidColorBrush(Color.Parse("#ffaa44"))
+                                   ? AppTheme.FgWarn
                                    : (IBrush)AppRes("FgMuted") }
             }
         };
@@ -1356,7 +1453,7 @@ public partial class TestReportPage : UserControl
 
     private static Button MakeBtn(string text, string bg) => new Button
     {
-        Content = text, FontFamily = Font, FontSize = 12,
+        Content = text, FontFamily = Font, FontSize = AppTheme.FontMD,
         Background = new SolidColorBrush(Color.Parse(bg)), Foreground = AppRes("AppFg"),
         BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
         Padding = new Thickness(12, 5), VerticalAlignment = VerticalAlignment.Center,
@@ -1394,8 +1491,8 @@ public partial class TestReportPage : UserControl
             var backBtn = new Button
             {
                 Content         = "◀ 결과 목록으로",
-                FontFamily      = Font, FontSize = 11,
-                Background      = new SolidColorBrush(Color.Parse("#2a2a3a")),
+                FontFamily      = Font, FontSize = AppTheme.FontBase,
+                Background      = AppTheme.BorderSubtle,
                 Foreground      = AppRes("AppFg"),
                 BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
                 Padding         = new Thickness(10, 4),
@@ -1415,7 +1512,7 @@ public partial class TestReportPage : UserControl
             Text       = IsMeasurerMode
                 ? $"측정인  —  {_selectedSample?.약칭} / {_selectedSample?.시료명}"
                 : $"자료TO측정인  —  {_selectedSample?.약칭} / {_selectedSample?.시료명}",
-            FontFamily = Font, FontSize = 12,
+            FontFamily = Font, FontSize = AppTheme.FontMD,
             Foreground = new SolidColorBrush(Color.Parse("#aaaaee")),
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Thickness(IsMeasurerMode ? 10 : 4, 6, 0, 0),
@@ -1428,7 +1525,7 @@ public partial class TestReportPage : UserControl
         // ── 헤더 행 ────────────────────────────────────────────────────────
         var headerBorder = new Border
         {
-            Background = new SolidColorBrush(Color.Parse("#2a2a3a")),
+            Background = AppTheme.BorderSubtle,
             Padding    = new Thickness(8, 5),
             Child = new Grid
             {
@@ -1454,8 +1551,8 @@ public partial class TestReportPage : UserControl
             listPanel.Children.Add(new TextBlock
             {
                 Text = "분석결과가 없습니다. 결과값을 먼저 입력하세요.",
-                FontFamily = Font, FontSize = 12,
-                Foreground = new SolidColorBrush(Color.Parse("#555566")),
+                FontFamily = Font, FontSize = AppTheme.FontMD,
+                Foreground = AppTheme.FgDimmed,
                 Margin     = new Thickness(12, 20),
                 HorizontalAlignment = HorizontalAlignment.Center,
             });
@@ -1477,7 +1574,7 @@ public partial class TestReportPage : UserControl
                         {
                             MeasurerDataCell(row.항목명,   0, AppRes("AppFg"), bold: true),
                             MeasurerDataCell(row.법적기준, 1),
-                            MeasurerDataCell(row.결과값, 2, new SolidColorBrush(Color.Parse("#88ee88")), bold: true),
+                            MeasurerDataCell(row.결과값, 2, AppTheme.FgSuccess, bold: true),
                             MeasurerDataCell(row.측정방법, 3),
                             MeasurerDataCell(row.장비명,   4),
                             MeasurerDataCell(row.담당자,   5),
@@ -1511,7 +1608,7 @@ public partial class TestReportPage : UserControl
     {
         var matchTb = new TextBlock
         {
-            FontFamily   = Font, FontSize = 11,
+            FontFamily   = Font, FontSize = AppTheme.FontBase,
             Foreground   = new SolidColorBrush(Color.Parse("#8888aa")),
             TextWrapping = Avalonia.Media.TextWrapping.Wrap,
             Margin       = new Thickness(0, 4, 0, 0),
@@ -1520,8 +1617,8 @@ public partial class TestReportPage : UserControl
 
         var statusTb = new TextBlock
         {
-            FontFamily   = Font, FontSize = 11,
-            Foreground   = new SolidColorBrush(Color.Parse("#88cc88")),
+            FontFamily   = Font, FontSize = AppTheme.FontBase,
+            Foreground   = AppTheme.FgSuccess,
             TextWrapping = Avalonia.Media.TextWrapping.Wrap,
             Margin       = new Thickness(0, 4, 0, 0),
             IsVisible    = false,
@@ -1530,8 +1627,8 @@ public partial class TestReportPage : UserControl
         var checkBtn = new Button
         {
             Content         = "페이지 확인",
-            FontFamily      = Font, FontSize = 11,
-            Background      = new SolidColorBrush(Color.Parse("#1a3a5a")),
+            FontFamily      = Font, FontSize = AppTheme.FontBase,
+            Background      = AppTheme.BgActiveBlue,
             Foreground      = AppRes("AppFg"),
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
             Padding         = new Thickness(12, 5),
@@ -1540,7 +1637,7 @@ public partial class TestReportPage : UserControl
         var inputBtn = new Button
         {
             Content         = "측정값 입력 진행",
-            FontFamily      = Font, FontSize = 12,
+            FontFamily      = Font, FontSize = AppTheme.FontMD,
             Background      = new SolidColorBrush(Color.Parse("#264026")),
             Foreground      = AppRes("AppFg"),
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
@@ -1550,8 +1647,8 @@ public partial class TestReportPage : UserControl
         var infoTb = new TextBlock
         {
             Text         = $"항목 {_measurerRows.Count}건 준비",
-            FontFamily   = Font, FontSize = 10,
-            Foreground   = new SolidColorBrush(Color.Parse("#555566")),
+            FontFamily   = Font, FontSize = AppTheme.FontSM,
+            Foreground   = AppTheme.FgDimmed,
             Margin       = new Thickness(0, 8, 0, 0),
         };
 
@@ -1560,7 +1657,7 @@ public partial class TestReportPage : UserControl
             if (_selectedSample == null) return;
             checkBtn.IsEnabled = false;
             matchTb.Text       = "페이지 확인 중...";
-            matchTb.Foreground = new SolidColorBrush(Color.Parse("#aaaacc"));
+            matchTb.Foreground = AppTheme.FgInfo;
             var (text, hex) = await MeasurerCdpService.CheckPageMatchAsync(
                 _selectedSample.약칭, _selectedSample.시료명, _selectedSample.채취일자);
             matchTb.Text       = text;
@@ -1579,7 +1676,7 @@ public partial class TestReportPage : UserControl
             inputBtn.IsEnabled  = false;
             checkBtn.IsEnabled  = false;
             statusTb.IsVisible  = true;
-            statusTb.Foreground = new SolidColorBrush(Color.Parse("#88cc88"));
+            statusTb.Foreground = AppTheme.FgSuccess;
             try
             {
                 var (ok, msg) = await MeasurerCdpService.AutoInputAsync(
@@ -1594,7 +1691,7 @@ public partial class TestReportPage : UserControl
             catch (Exception ex)
             {
                 statusTb.Text       = "❌ " + ex.Message;
-                statusTb.Foreground = new SolidColorBrush(Color.Parse("#ee4444"));
+                statusTb.Foreground = AppTheme.FgDanger;
             }
             finally { inputBtn.IsEnabled = true; checkBtn.IsEnabled = true; }
         };
@@ -1616,8 +1713,8 @@ public partial class TestReportPage : UserControl
     {
         var tb = new TextBlock
         {
-            Text = text, FontFamily = Font, FontSize = 10, FontWeight = FontWeight.SemiBold,
-            Foreground = new SolidColorBrush(Color.Parse("#aaaacc")),
+            Text = text, FontFamily = Font, FontSize = AppTheme.FontSM, FontWeight = FontWeight.SemiBold,
+            Foreground = AppTheme.FgInfo,
             VerticalAlignment = VerticalAlignment.Center,
         };
         Grid.SetColumn(tb, col);
@@ -1629,9 +1726,9 @@ public partial class TestReportPage : UserControl
         var tb = new TextBlock
         {
             Text         = text ?? "",
-            FontFamily   = Font, FontSize = 11,
+            FontFamily   = Font, FontSize = AppTheme.FontBase,
             FontWeight   = bold ? FontWeight.SemiBold : FontWeight.Normal,
-            Foreground   = fg ?? new SolidColorBrush(Color.Parse("#cccccc")),
+            Foreground   = fg ?? AppTheme.FgSecondary,
             TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
             VerticalAlignment = VerticalAlignment.Center,
         };
@@ -1882,7 +1979,7 @@ public partial class TestReportPage : UserControl
     // UI 헬퍼
     // =========================================================================
     private static readonly FontFamily Font =
-        new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R");
+        new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
 
     private static ColumnDefinitions ResultColDefs =>
         new ColumnDefinitions("36,70,160,90,60,140,80,*");
@@ -1891,22 +1988,21 @@ public partial class TestReportPage : UserControl
     {
         var tb = new TextBlock
         {
-            Text = text, FontFamily = Font, FontSize = 11, FontWeight = FontWeight.SemiBold,
-            Foreground = new SolidColorBrush(Color.Parse("#aaaacc")),
+            Text = text, FontFamily = Font, FontSize = AppTheme.FontBase, FontWeight = FontWeight.SemiBold,
+            Foreground = AppTheme.FgInfo,
             VerticalAlignment = VerticalAlignment.Center,
         };
         Grid.SetColumn(tb, col); return tb;
     }
 
-    private static TextBlock DataCell(string text, int col, IBrush? fg = null, bool bold = false)
+    private static SelectableTextBlock DataCell(string text, int col, IBrush? fg = null, bool bold = false)
     {
-        var tb = new TextBlock
+        var tb = new SelectableTextBlock
         {
-            Text = text, FontFamily = Font, FontSize = 12,
+            Text = text, FontFamily = Font, FontSize = AppTheme.FontMD,
             FontWeight   = bold ? FontWeight.SemiBold : FontWeight.Normal,
-            Foreground   = fg ?? new SolidColorBrush(Color.Parse("#cccccc")),
+            Foreground   = fg ?? AppTheme.FgSecondary,
             VerticalAlignment = VerticalAlignment.Center,
-            TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
         };
         Grid.SetColumn(tb, col); return tb;
     }
@@ -1922,10 +2018,10 @@ public partial class TestReportPage : UserControl
             Spacing     = 8,
             Children    =
             {
-                new TextBlock { Text = label + " :", Width = 70, FontFamily = Font, FontSize = 11,
-                                Foreground = new SolidColorBrush(Color.Parse("#888888")),
+                new TextBlock { Text = label + " :", Width = 70, FontFamily = Font, FontSize = AppTheme.FontBase,
+                                Foreground = AppTheme.FgMuted,
                                 VerticalAlignment = VerticalAlignment.Center },
-                new TextBlock { Text = value, FontFamily = Font, FontSize = 11,
+                new TextBlock { Text = value, FontFamily = Font, FontSize = AppTheme.FontBase,
                                 Foreground = AppRes("FgMuted"),
                                 VerticalAlignment = VerticalAlignment.Center },
             }
@@ -1940,10 +2036,10 @@ public partial class TestReportPage : UserControl
         {
             Title = "알림", Width = 320, Height = 120, CanResize = false,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            Background = new SolidColorBrush(Color.Parse("#2d2d2d")),
+            Background = AppTheme.BgSecondary,
         };
         var btn = new Button { Content = "확인", Width = 80,
-                               Background = new SolidColorBrush(Color.Parse("#444")),
+                               Background = AppTheme.BorderMuted,
                                Foreground = Brushes.White, BorderThickness = new Thickness(0) };
         btn.Click += (_, _) => dlg.Close();
         dlg.Content = new StackPanel
@@ -1951,7 +2047,7 @@ public partial class TestReportPage : UserControl
             Margin = new Thickness(20), Spacing = 14,
             Children =
             {
-                new TextBlock { Text = msg, FontFamily = Font, FontSize = 12,
+                new TextBlock { Text = msg, FontFamily = Font, FontSize = AppTheme.FontMD,
                                 Foreground = AppRes("AppFg"),
                                 TextWrapping = Avalonia.Media.TextWrapping.Wrap },
                 new StackPanel { Orientation = Orientation.Horizontal,
@@ -1971,14 +2067,14 @@ public partial class TestReportPage : UserControl
         {
             Title = "삭제 확인", Width = 340, Height = 160, CanResize = false,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            Background = new SolidColorBrush(Color.Parse("#2d2d2d")),
+            Background = AppTheme.BgSecondary,
         };
         bool result = false;
         var yes = new Button { Content = "삭제", Width = 80,
-                               Background = new SolidColorBrush(Color.Parse("#c0392b")),
+                               Background = AppTheme.FgDanger,
                                Foreground = Brushes.White, BorderThickness = new Thickness(0) };
         var no  = new Button { Content = "취소", Width = 80,
-                               Background = new SolidColorBrush(Color.Parse("#444")),
+                               Background = AppTheme.BorderMuted,
                                Foreground = Brushes.White, BorderThickness = new Thickness(0) };
         yes.Click += (_, _) => { result = true;  dlg.Close(); };
         no.Click  += (_, _) => { result = false; dlg.Close(); };
@@ -1987,7 +2083,7 @@ public partial class TestReportPage : UserControl
             Margin = new Thickness(20), Spacing = 14,
             Children =
             {
-                new TextBlock { Text = msg, FontFamily = Font, FontSize = 12,
+                new TextBlock { Text = msg, FontFamily = Font, FontSize = AppTheme.FontMD,
                                 Foreground = AppRes("AppFg"),
                                 TextWrapping = Avalonia.Media.TextWrapping.Wrap },
                 new StackPanel { Orientation = Orientation.Horizontal, Spacing = 10,

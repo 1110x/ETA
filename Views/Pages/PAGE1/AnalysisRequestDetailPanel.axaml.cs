@@ -1,4 +1,5 @@
 using Avalonia;
+using ETA.Views;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
@@ -31,11 +32,11 @@ public class AnalysisRequestDetailPanel : UserControl
     }
 
     private static readonly FontFamily Font =
-        new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
+        new("avares://ETA/Assets/Fonts#Pretendard");
 
     // 미리 파싱해 둔 브러시 (매 행마다 Brush.Parse 호출 비용 제거)
-    private static readonly IBrush BrushAnalyzing= Brush.Parse("#ff6666");
-    private static readonly IBrush BrushResult   = Brush.Parse("#88cc88");
+    private static readonly IBrush BrushAnalyzing= AppTheme.FgDanger;
+    private static readonly IBrush BrushResult   = AppTheme.FgSuccess;
     private static readonly IBrush BrushEmpty    = AppRes("FgMuted");
 
     public QuotationCheckPanel? CheckPanel { get; set; }
@@ -93,7 +94,7 @@ public class AnalysisRequestDetailPanel : UserControl
         var header = new TextBlock
         {
             Text = "🧪  분석의뢰 상세",
-            FontSize = 13, FontWeight = FontWeight.Bold,
+            FontSize = AppTheme.FontLG, FontWeight = FontWeight.Bold,
             FontFamily = Font, Foreground = AppRes("AppFg"),
             Margin = new Avalonia.Thickness(0, 0, 0, 4),
         };
@@ -125,7 +126,7 @@ public class AnalysisRequestDetailPanel : UserControl
         _cmbDischarge = new ComboBox
         {
             FontFamily            = Font,
-            FontSize              = 12,
+            FontSize              = AppTheme.FontMD,
             HorizontalAlignment   = HorizontalAlignment.Stretch,
             PlaceholderText       = "방류기준 선택...",
             Margin                = new Avalonia.Thickness(0, 0, 0, 6),
@@ -141,7 +142,7 @@ public class AnalysisRequestDetailPanel : UserControl
         {
             Text              = "법정방류기준",
             FontFamily        = Font,
-            FontSize          = 11,
+            FontSize          = AppTheme.FontBase,
             Foreground        = AppRes("FgMuted"),
             VerticalAlignment = VerticalAlignment.Center,
             Margin            = new Avalonia.Thickness(0, 0, 8, 0),
@@ -171,7 +172,7 @@ public class AnalysisRequestDetailPanel : UserControl
         _txbEmpty = new TextBlock
         {
             Text       = "좌측에서 분석의뢰 항목을 선택하세요.",
-            FontSize   = 11, FontFamily = Font,
+            FontSize   = AppTheme.FontBase, FontFamily = Font,
             Foreground = AppRes("FgMuted"),
             Margin     = new Avalonia.Thickness(12, 20),
         };
@@ -297,7 +298,7 @@ public class AnalysisRequestDetailPanel : UserControl
             _spItems.Children.Add(new TextBlock
             {
                 Text       = "항목 데이터 없음",
-                FontSize   = 11, FontFamily = Font,
+                FontSize   = AppTheme.FontBase, FontFamily = Font,
                 Foreground = BrushEmpty,
                 Margin     = new Avalonia.Thickness(12, 4),
             });
@@ -339,7 +340,7 @@ public class AnalysisRequestDetailPanel : UserControl
                 Child = new TextBlock
                 {
                     Text                = badgeText,
-                    FontSize            = 9, FontFamily = Font,
+                    FontSize            = AppTheme.FontXS, FontFamily = Font,
                     Foreground          = Brush.Parse(fg),
                     HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment   = VerticalAlignment.Center,
@@ -350,7 +351,7 @@ public class AnalysisRequestDetailPanel : UserControl
             grid.Children.Add(new TextBlock
             {
                 Text              = col,
-                FontSize          = 11, FontFamily = Font,
+                FontSize          = AppTheme.FontBase, FontFamily = Font,
                 Foreground        = AppRes("AppFg"),
                 Margin            = new Avalonia.Thickness(4, 3),
                 VerticalAlignment = VerticalAlignment.Center,
@@ -362,7 +363,7 @@ public class AnalysisRequestDetailPanel : UserControl
             grid.Children.Add(new TextBlock
             {
                 Text                = analyzing ? "🔴 분석중" : val,
-                FontSize            = 10, FontFamily = Font,
+                FontSize            = AppTheme.FontSM, FontFamily = Font,
                 Foreground          = analyzing ? BrushAnalyzing : BrushResult,
                 HorizontalAlignment = HorizontalAlignment.Right,
                 VerticalAlignment   = VerticalAlignment.Center,
@@ -410,8 +411,8 @@ public class AnalysisRequestDetailPanel : UserControl
     // ══════════════════════════════════════════════════════════════════════
     private static TextBlock MetaVal() => new()
     {
-        FontSize   = 11,
-        FontFamily = new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+        FontSize   = AppTheme.FontBase,
+        FontFamily = new("avares://ETA/Assets/Fonts#Pretendard"),
         Foreground = AppRes("AppFg"),
         VerticalAlignment = VerticalAlignment.Center,
     };
@@ -421,9 +422,9 @@ public class AnalysisRequestDetailPanel : UserControl
         var lbl = new TextBlock
         {
             Text      = label + " : ",
-            FontSize  = 10,
-            FontFamily = new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
-            Foreground = Brush.Parse("#888"),
+            FontSize  = AppTheme.FontSM,
+            FontFamily = new("avares://ETA/Assets/Fonts#Pretendard"),
+            Foreground = AppTheme.FgMuted,
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Avalonia.Thickness(0, 2, 0, 2),
         };
@@ -438,9 +439,9 @@ public class AnalysisRequestDetailPanel : UserControl
     {
         var tb = new TextBlock
         {
-            Text      = t, FontSize = 10,
-            FontFamily = new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
-            Foreground = Brush.Parse("#666"),
+            Text      = t, FontSize = AppTheme.FontSM,
+            FontFamily = new("avares://ETA/Assets/Fonts#Pretendard"),
+            Foreground = AppTheme.FgDimmed,
             HorizontalAlignment = ha,
             Margin = new Avalonia.Thickness(8, 0),
             [Grid.ColumnProperty] = col,

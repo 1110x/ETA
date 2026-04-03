@@ -1,4 +1,5 @@
 using Avalonia;
+using ETA.Views;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -23,7 +24,7 @@ public class ReportsPanel : UserControl
     }
 
     private static readonly FontFamily Font =
-        new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
+        new("avares://ETA/Assets/Fonts#Pretendard");
 
     private static string ReportsDir =>
         Path.GetFullPath(Path.Combine(
@@ -32,8 +33,8 @@ public class ReportsPanel : UserControl
     private readonly StackPanel _fileList  = new() { Spacing = 2 };
     private readonly TextBlock  _countText = new()
     {
-        FontSize = 11, FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
-        Foreground = new SolidColorBrush(Color.Parse("#666")),
+        FontSize = AppTheme.FontBase, FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+        Foreground = AppTheme.FgDimmed,
         Margin = new Avalonia.Thickness(2, 0, 0, 4),
     };
 
@@ -56,8 +57,8 @@ public class ReportsPanel : UserControl
         header.Children.Add(new TextBlock
         {
             Text = "📂  출력 보관함",
-            FontSize = 13, FontWeight = FontWeight.Bold, FontFamily = Font,
-            Foreground = new SolidColorBrush(Color.Parse("#e0e0e0")),
+            FontSize = AppTheme.FontLG, FontWeight = FontWeight.Bold, FontFamily = Font,
+            Foreground = AppTheme.FgPrimary,
             VerticalAlignment = VerticalAlignment.Center,
             [Grid.ColumnProperty] = 0,
         });
@@ -76,8 +77,8 @@ public class ReportsPanel : UserControl
 
         _chkAll = new CheckBox
         {
-            Content = "전체", FontSize = 11, FontFamily = Font,
-            Foreground = new SolidColorBrush(Color.Parse("#aaa")),
+            Content = "전체", FontSize = AppTheme.FontBase, FontFamily = Font,
+            Foreground = AppTheme.FgMuted,
             VerticalAlignment = VerticalAlignment.Center,
         };
         _chkAll.IsCheckedChanged += (_, _) =>
@@ -165,8 +166,8 @@ public class ReportsPanel : UserControl
                 _fileList.Children.Add(new TextBlock
                 {
                     Text = "출력된 파일이 없습니다.",
-                    FontSize = 11, FontFamily = Font,
-                    Foreground = new SolidColorBrush(Color.Parse("#555")),
+                    FontSize = AppTheme.FontBase, FontFamily = Font,
+                    Foreground = AppTheme.FgDimmed,
                     Margin = new Avalonia.Thickness(4, 8),
                 });
                 return;
@@ -210,7 +211,7 @@ public class ReportsPanel : UserControl
         // 아이콘
         row.Children.Add(new TextBlock
         {
-            Text = icon, FontSize = 13,
+            Text = icon, FontSize = AppTheme.FontLG,
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Avalonia.Thickness(0, 0, 6, 0),
             [Grid.ColumnProperty] = 1,
@@ -219,8 +220,8 @@ public class ReportsPanel : UserControl
         // 파일명
         row.Children.Add(new TextBlock
         {
-            Text = file.Name, FontSize = 11, FontFamily = Font,
-            Foreground = new SolidColorBrush(Color.Parse("#cccccc")),
+            Text = file.Name, FontSize = AppTheme.FontBase, FontFamily = Font,
+            Foreground = AppTheme.FgSecondary,
             TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
             VerticalAlignment = VerticalAlignment.Center,
             [Grid.ColumnProperty] = 2,
@@ -230,8 +231,8 @@ public class ReportsPanel : UserControl
         row.Children.Add(new TextBlock
         {
             Text = file.LastWriteTime.ToString("MM-dd HH:mm"),
-            FontSize = 10, FontFamily = Font,
-            Foreground = new SolidColorBrush(Color.Parse("#555577")),
+            FontSize = AppTheme.FontSM, FontFamily = Font,
+            Foreground = AppTheme.FgDimmed,
             VerticalAlignment = VerticalAlignment.Center,
             [Grid.ColumnProperty] = 3,
         });
@@ -240,7 +241,7 @@ public class ReportsPanel : UserControl
         row.Children.Add(new TextBlock
         {
             Text = FormatSize(file.Length),
-            FontSize = 10, FontFamily = Font,
+            FontSize = AppTheme.FontSM, FontFamily = Font,
             Foreground = new SolidColorBrush(Color.Parse("#444466")),
             VerticalAlignment = VerticalAlignment.Center,
             HorizontalAlignment = HorizontalAlignment.Right,
@@ -249,7 +250,7 @@ public class ReportsPanel : UserControl
 
         var border = new Border
         {
-            Background   = new SolidColorBrush(Color.Parse("#1e1e2e")),
+            Background   = AppTheme.BgPrimary,
             CornerRadius = new Avalonia.CornerRadius(3),
             Padding      = new Avalonia.Thickness(8, 5),
             Margin       = new Avalonia.Thickness(0, 0, 0, 2),
@@ -258,7 +259,7 @@ public class ReportsPanel : UserControl
 
         // 호버
         border.PointerEntered += (_, _) =>
-            border.Background = new SolidColorBrush(Color.Parse("#252535"));
+            border.Background = AppTheme.BgSecondary;
         border.PointerExited += (_, _) =>
             border.Background = new SolidColorBrush(
                 Color.Parse(chk.IsChecked == true ? "#1e2e1e" : "#1e1e2e"));
@@ -325,10 +326,10 @@ public class ReportsPanel : UserControl
     {
         var menu = new ContextMenu();
 
-        var openItem = new MenuItem { Header = "📂  열기", FontFamily = Font, FontSize = 12 };
+        var openItem = new MenuItem { Header = "📂  열기", FontFamily = Font, FontSize = AppTheme.FontMD };
         openItem.Click += (_, _) => OpenFile(file.FullName);
 
-        var exploreItem = new MenuItem { Header = "🔍  탐색기에서 보기", FontFamily = Font, FontSize = 12 };
+        var exploreItem = new MenuItem { Header = "🔍  탐색기에서 보기", FontFamily = Font, FontSize = AppTheme.FontMD };
         exploreItem.Click += (_, _) =>
         {
             try { Process.Start(new ProcessStartInfo { FileName = "explorer.exe", Arguments = $"/select,\"{file.FullName}\"", UseShellExecute = false }); }
@@ -338,14 +339,14 @@ public class ReportsPanel : UserControl
         var checkItem = new MenuItem
         {
             Header = chk.IsChecked == true ? "☑  체크 해제" : "☐  체크",
-            FontFamily = Font, FontSize = 12,
+            FontFamily = Font, FontSize = AppTheme.FontMD,
         };
         checkItem.Click += (_, _) => chk.IsChecked = !(chk.IsChecked == true);
 
         var deleteItem = new MenuItem
         {
-            Header = "🗑  삭제", FontFamily = Font, FontSize = 12,
-            Foreground = new SolidColorBrush(Color.Parse("#f08080")),
+            Header = "🗑  삭제", FontFamily = Font, FontSize = AppTheme.FontMD,
+            Foreground = AppTheme.FgDanger,
         };
         deleteItem.Click += async (_, _) =>
         {
@@ -370,7 +371,7 @@ public class ReportsPanel : UserControl
         {
             Title = "삭제 확인", Width = 340, Height = 150, CanResize = false,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            Background = new SolidColorBrush(Color.Parse("#1e1e2a")),
+            Background = AppTheme.BgPrimary,
         };
         bool result = false;
         var yes = new Button { Content = "삭제", Width = 80, Background = new SolidColorBrush(Color.Parse("#8b2020")), Foreground = Brushes.White, BorderThickness = new Avalonia.Thickness(0), CornerRadius = new Avalonia.CornerRadius(4) };
@@ -382,7 +383,7 @@ public class ReportsPanel : UserControl
             Margin = new Avalonia.Thickness(20), Spacing = 16,
             Children =
             {
-                new TextBlock { Text = $"{target}\n삭제하시겠습니까?", FontFamily = Font, FontSize = 12, Foreground = AppRes("AppFg"), TextWrapping = Avalonia.Media.TextWrapping.Wrap },
+                new TextBlock { Text = $"{target}\n삭제하시겠습니까?", FontFamily = Font, FontSize = AppTheme.FontMD, Foreground = AppRes("AppFg"), TextWrapping = Avalonia.Media.TextWrapping.Wrap },
                 new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Spacing = 8, Children = { no, yes } }
             }
         };
@@ -407,8 +408,8 @@ public class ReportsPanel : UserControl
 
     private static TextBlock ColHead(string text, int col) => new()
     {
-        Text = text, FontSize = 10, FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
-        Foreground = new SolidColorBrush(Color.Parse("#555577")),
+        Text = text, FontSize = AppTheme.FontSM, FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+        Foreground = AppTheme.FgDimmed,
         VerticalAlignment = VerticalAlignment.Center,
         [Grid.ColumnProperty] = col,
     };
@@ -417,8 +418,8 @@ public class ReportsPanel : UserControl
     {
         var btn = new Button
         {
-            Content = text, FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
-            FontSize = 11, Height = 26,
+            Content = text, FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+            FontSize = AppTheme.FontBase, Height = 26,
             Background = new SolidColorBrush(Color.Parse(bg)),
             Foreground = new SolidColorBrush(Color.Parse(fg)),
             BorderThickness = new Avalonia.Thickness(0),

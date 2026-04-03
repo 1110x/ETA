@@ -30,7 +30,7 @@ public class SignUpWindow : Window
     private readonly Button   _btnSignUp;
 
     private static readonly FontFamily Font =
-        new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R");
+        new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
 
     public SignUpWindow()
     {
@@ -231,7 +231,7 @@ public class SignUpWindow : Window
                 new TextBlock
                 {
                     Text       = label,
-                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                     FontSize   = 11,
                     Foreground = AppRes("FgMuted"),
                 },
@@ -243,7 +243,7 @@ public class SignUpWindow : Window
     private static TextBox MakeTb(string hint, bool isPassword = false) => new TextBox
     {
         Watermark       = hint,
-        FontFamily      = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+        FontFamily      = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
         FontSize        = 13,
         Background      = AppRes("InputBg"),
         Foreground      = AppRes("AppFg"),

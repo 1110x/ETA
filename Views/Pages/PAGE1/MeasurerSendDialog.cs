@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using ETA.Views;
 using Avalonia.Layout;
 using Avalonia.Media;
 using ETA.Models;
@@ -15,7 +16,7 @@ namespace ETA.Views.Pages.PAGE1;
 public sealed class MeasurerSendDialog : Window
 {
     private static readonly FontFamily Font =
-        new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
+        new("avares://ETA/Assets/Fonts#Pretendard");
 
     // ── 결과 프로퍼티 ─────────────────────────────────────────────────
     public bool Confirmed { get; private set; }
@@ -40,10 +41,10 @@ public sealed class MeasurerSendDialog : Window
         Background = Brush.Parse("#12121f");
         SystemDecorations = Avalonia.Controls.SystemDecorations.Full;
 
-        var sectionBg = Brush.Parse("#1e1e30");
+        var sectionBg = AppTheme.BgPrimary;
         var labelFg   = Brush.Parse("#c8c8e8");
-        var valueFg   = Brush.Parse("#88ee88");
-        var dimFg     = Brush.Parse("#888899");
+        var valueFg   = AppTheme.FgSuccess;
+        var dimFg     = AppTheme.FgMuted;
         var sepBg     = Brush.Parse("#2a2a44");
 
         // 측정인고유번호 있는 인원만
@@ -58,7 +59,7 @@ public sealed class MeasurerSendDialog : Window
         headerSp.Children.Add(new TextBlock
         {
             Text = "각 의뢰별로 측정목적과 측정인력을 선택하세요.",
-            FontSize = 9, FontFamily = Font, Foreground = dimFg,
+            FontSize = AppTheme.FontXS, FontFamily = Font, Foreground = dimFg,
             Margin = new Avalonia.Thickness(0, 2, 0, 0),
         });
 
@@ -85,7 +86,7 @@ public sealed class MeasurerSendDialog : Window
             titleRow.Children.Add(new TextBlock
             {
                 Text = $"[{i + 1}]  {sample}",
-                FontSize = 11, FontFamily = Font, FontWeight = FontWeight.Bold,
+                FontSize = AppTheme.FontBase, FontFamily = Font, FontWeight = FontWeight.Bold,
                 Foreground = valueFg,
                 VerticalAlignment = VerticalAlignment.Center,
                 [Grid.ColumnProperty] = 0,
@@ -93,7 +94,7 @@ public sealed class MeasurerSendDialog : Window
             titleRow.Children.Add(new TextBlock
             {
                 Text = $"  {analytes}  ·  {company}",
-                FontSize = 9, FontFamily = Font, Foreground = dimFg,
+                FontSize = AppTheme.FontXS, FontFamily = Font, Foreground = dimFg,
                 VerticalAlignment = VerticalAlignment.Center,
                 TextTrimming = TextTrimming.CharacterEllipsis,
                 [Grid.ColumnProperty] = 1,
@@ -112,7 +113,7 @@ public sealed class MeasurerSendDialog : Window
             {
                 Content = "자가측정용 (SELF)",
                 GroupName = groupName,
-                FontSize = 10, FontFamily = Font, Foreground = labelFg,
+                FontSize = AppTheme.FontSM, FontFamily = Font, Foreground = labelFg,
                 Margin = new Avalonia.Thickness(0, 0, 16, 0),
             };
             var rbCf = new RadioButton
@@ -120,7 +121,7 @@ public sealed class MeasurerSendDialog : Window
                 Content = "참고용 (CF)",
                 GroupName = groupName,
                 IsChecked = true,
-                FontSize = 10, FontFamily = Font, Foreground = labelFg,
+                FontSize = AppTheme.FontSM, FontFamily = Font, Foreground = labelFg,
             };
             var purposeRow = new StackPanel
             {
@@ -149,7 +150,7 @@ public sealed class MeasurerSendDialog : Window
                     Content = $"{ag.성명}  ({ag.직급})  [{ag.측정인고유번호}]",
                     Tag = ag.측정인고유번호,
                     FontFamily = Font,
-                    FontSize = 10,
+                    FontSize = AppTheme.FontSM,
                     Foreground = labelFg,
                     Margin = new Avalonia.Thickness(0, 0, 0, 1),
                 };
@@ -237,7 +238,7 @@ public sealed class MeasurerSendDialog : Window
 
     private static Button MakeBtn(string text, string bg, string fg) => new Button
     {
-        Content = text, Height = 30, FontSize = 11, FontFamily = Font,
+        Content = text, Height = 30, FontSize = AppTheme.FontBase, FontFamily = Font,
         Background = Brush.Parse(bg), Foreground = Brush.Parse(fg),
         BorderThickness = new Avalonia.Thickness(0),
         CornerRadius = new Avalonia.CornerRadius(4),

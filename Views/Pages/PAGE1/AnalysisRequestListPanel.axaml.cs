@@ -40,12 +40,12 @@ public class AnalysisRequestListPanel : UserControl
     }
 
     private static readonly FontFamily Font =
-        new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
+        new("avares://ETA/Assets/Fonts#Pretendard");
 
     private static readonly IBrush BrushChildFg  = AppRes("FgMuted");
-    private static readonly IBrush BrushAbbrBg   = Brush.Parse("#3a1a1a");
+    private static readonly IBrush BrushAbbrBg   = AppTheme.BgDanger;
     private static readonly IBrush BrushAbbrFg   = Brush.Parse("#cc8888");
-    private static readonly IBrush BrushParentFg = Brush.Parse("#88ee88");
+    private static readonly IBrush BrushParentFg = AppTheme.FgSuccess;
 
     private readonly TreeView _tree = new();
     private readonly HashSet<string> _addedKeys = new();
@@ -67,8 +67,8 @@ public class AnalysisRequestListPanel : UserControl
 
     private static Button MakeHdrBtn(string text, string bg, string fg, int padX = 10) => new Button
     {
-        Content = text, Height = 24, FontSize = 10,
-        FontFamily = new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+        Content = text, Height = 24, FontSize = AppTheme.FontSM,
+        FontFamily = new("avares://ETA/Assets/Fonts#Pretendard"),
         Background = Brush.Parse(bg), Foreground = Brush.Parse(fg),
         BorderThickness = new Avalonia.Thickness(0),
         CornerRadius = new Avalonia.CornerRadius(4),
@@ -83,7 +83,7 @@ public class AnalysisRequestListPanel : UserControl
         var titleRow = new TextBlock
         {
             Text = "📋  분석의뢰 선택 목록",
-            FontSize = 12, FontWeight = FontWeight.Bold,
+            FontSize = AppTheme.FontMD, FontWeight = FontWeight.Bold,
             FontFamily = Font, Foreground = AppRes("AppFg"),
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Avalonia.Thickness(0, 0, 0, 4),
@@ -120,7 +120,7 @@ public class AnalysisRequestListPanel : UserControl
         _txbStatus = new TextBlock
         {
             Text = "",
-            FontSize = 9, FontFamily = Font,
+            FontSize = AppTheme.FontXS, FontFamily = Font,
             Foreground = AppRes("TreeFg"),
             Margin = new Avalonia.Thickness(0, 2, 0, 2),
             [Grid.RowProperty] = 3,
@@ -128,6 +128,32 @@ public class AnalysisRequestListPanel : UserControl
 
         _tree.Background      = Brushes.Transparent;
         _tree.BorderThickness = new Avalonia.Thickness(0);
+
+        // 드래그앤드롭으로 순서 변경
+        DragDrop.SetAllowDrop(_tree, true);
+        _tree.AddHandler(DragDrop.DragOverEvent, (object? s, DragEventArgs e) =>
+        {
+            e.DragEffects = e.Data.Contains("reorder-node") ? DragDropEffects.Move : DragDropEffects.None;
+            e.Handled = true;
+        });
+        _tree.AddHandler(DragDrop.DropEvent, (object? s, DragEventArgs e) =>
+        {
+            if (!e.Data.Contains("reorder-node")) return;
+            var draggedNode = e.Data.Get("reorder-node") as TreeViewItem;
+            if (draggedNode == null) return;
+
+            // 드롭 위치의 TreeViewItem 찾기
+            var dropTarget = FindTreeViewItemAtPoint(e.GetPosition(_tree));
+            if (dropTarget == null || dropTarget == draggedNode) return;
+
+            // 부모 노드만 재정렬 (자식 노드 무시)
+            int dragIdx = _tree.Items.IndexOf(draggedNode);
+            int dropIdx = _tree.Items.IndexOf(dropTarget);
+            if (dragIdx < 0 || dropIdx < 0) return;
+
+            _tree.Items.RemoveAt(dragIdx);
+            _tree.Items.Insert(dropIdx, draggedNode);
+        });
 
         return new Border
         {
@@ -200,7 +226,7 @@ public class AnalysisRequestListPanel : UserControl
             };
             childGrid.Children.Add(new TextBlock
             {
-                Text = col, FontSize = 10, FontFamily = Font,
+                Text = col, FontSize = AppTheme.FontSM, FontFamily = Font,
                 Foreground = BrushChildFg,
                 VerticalAlignment = VerticalAlignment.Center,
                 Margin = new Avalonia.Thickness(8, 2),
@@ -209,8 +235,8 @@ public class AnalysisRequestListPanel : UserControl
             childGrid.Children.Add(new TextBlock
             {
                 Text = pending ? "🔴 분석중" : kv.Value,
-                FontSize = 9, FontFamily = Font,
-                Foreground = pending ? Brush.Parse("#ff6666") : Brush.Parse("#88cc88"),
+                FontSize = AppTheme.FontXS, FontFamily = Font,
+                Foreground = pending ? AppTheme.FgDanger : AppTheme.FgSuccess,
                 HorizontalAlignment = HorizontalAlignment.Right,
                 VerticalAlignment   = VerticalAlignment.Center,
                 Margin = new Avalonia.Thickness(4, 2),
@@ -364,7 +390,7 @@ public class AnalysisRequestListPanel : UserControl
         var statusLbl = new TextBlock
         {
             Text = $"분장 조회 중... ({today:yyyy-MM-dd} 기준)",
-            FontSize = 10, FontFamily = Font,
+            FontSize = AppTheme.FontSM, FontFamily = Font,
             Foreground = AppRes("FgMuted"),
             Margin = new Avalonia.Thickness(0, 4, 0, 0),
         };
@@ -378,7 +404,7 @@ public class AnalysisRequestListPanel : UserControl
                 new TextBlock
                 {
                     Text = $"분석항목 {groups.Count}개 — 분석자별 기록부 생성",
-                    FontSize = 11, FontFamily = Font,
+                    FontSize = AppTheme.FontBase, FontFamily = Font,
                     Foreground = AppRes("AppFg"),
                 },
                 overallBar,
@@ -419,12 +445,12 @@ public class AnalysisRequestListPanel : UserControl
         {
             var names = string.Join(", ", results.Select(r => r.Assignee));
             statusLbl.Text = $"완료: {names} ({results.Count}개 파일)";
-            statusLbl.Foreground = Brush.Parse("#88ee88");
+            statusLbl.Foreground = AppTheme.FgSuccess;
         }
         else
         {
             statusLbl.Text = "생성 실패 — 템플릿 파일을 확인하세요.";
-            statusLbl.Foreground = Brush.Parse("#ff6666");
+            statusLbl.Foreground = AppTheme.FgDanger;
         }
 
         await Task.Delay(1200);
@@ -450,12 +476,42 @@ public class AnalysisRequestListPanel : UserControl
     {
         var menuDelete = new MenuItem
         {
-            Header = isParent ? "🗑  이 의뢰 삭제 (하위 항목 포함)" : "🗑  이 항목 삭제",
+            Header = isParent ? "\ud83d\uddd1  \uc774 \uc758\ub8b0 \uc0ad\uc81c (\ud558\uc704 \ud56d\ubaa9 \ud3ec\ud568)" : "\ud83d\uddd1  \uc774 \ud56d\ubaa9 \uc0ad\uc81c",
         };
         menuDelete.Click += (_, _) => ConfirmAndDelete(node, isParent);
         var ctx = new ContextMenu();
         ctx.Items.Add(menuDelete);
         node.ContextMenu = ctx;
+
+        // 부모 노드에 드래그 재정렬 기능 추가
+        if (isParent)
+            AttachDragReorder(node);
+    }
+
+    /// <summary>TreeViewItem에 드래그 시작 핸들러 추가 (순서 변경용)</summary>
+    private void AttachDragReorder(TreeViewItem node)
+    {
+        node.PointerPressed += async (s, e) =>
+        {
+            if (!e.GetCurrentPoint(node).Properties.IsLeftButtonPressed) return;
+            // 살짝 드래그해야 시작 (클릭과 구분)
+            var data = new DataObject();
+            data.Set("reorder-node", node);
+            await DragDrop.DoDragDrop(e, data, DragDropEffects.Move);
+        };
+    }
+
+    /// <summary>TreeView 내 특정 위치의 TreeViewItem 찾기</summary>
+    private TreeViewItem? FindTreeViewItemAtPoint(Point pt)
+    {
+        foreach (TreeViewItem item in _tree.Items.OfType<TreeViewItem>())
+        {
+            var pos = item.TranslatePoint(new Point(0, 0), _tree);
+            if (pos == null) continue;
+            if (pt.Y >= pos.Value.Y && pt.Y <= pos.Value.Y + item.Bounds.Height)
+                return item;
+        }
+        return null;
     }
 
     private async void ConfirmAndDelete(TreeViewItem node, bool isParent)
@@ -474,14 +530,14 @@ public class AnalysisRequestListPanel : UserControl
 
         var btnOk = new Button
         {
-            Content = "삭제", Width = 80, Height = 28, FontSize = 11, FontFamily = Font,
-            Background = Brush.Parse("#4a1a1a"), Foreground = Brush.Parse("#f0aeae"),
+            Content = "삭제", Width = 80, Height = 28, FontSize = AppTheme.FontBase, FontFamily = Font,
+            Background = Brush.Parse("#4a1a1a"), Foreground = AppTheme.FgDanger,
             BorderThickness = new Avalonia.Thickness(0), CornerRadius = new Avalonia.CornerRadius(4),
             HorizontalContentAlignment = HorizontalAlignment.Center,
         };
         var btnCancel = new Button
         {
-            Content = "취소", Width = 80, Height = 28, FontSize = 11, FontFamily = Font,
+            Content = "취소", Width = 80, Height = 28, FontSize = AppTheme.FontBase, FontFamily = Font,
             Background = AppRes("SubBtnBg"), Foreground = AppRes("FgMuted"),
             BorderThickness = new Avalonia.Thickness(0), CornerRadius = new Avalonia.CornerRadius(4),
             HorizontalContentAlignment = HorizontalAlignment.Center,
@@ -497,7 +553,7 @@ public class AnalysisRequestListPanel : UserControl
             Margin = new Avalonia.Thickness(20), Spacing = 16,
             Children =
             {
-                new TextBlock { Text = msg, FontSize = 11, FontFamily = Font,
+                new TextBlock { Text = msg, FontSize = AppTheme.FontBase, FontFamily = Font,
                     Foreground = AppRes("AppFg"),
                     TextWrapping = Avalonia.Media.TextWrapping.Wrap },
                 new StackPanel
@@ -560,11 +616,11 @@ public class AnalysisRequestListPanel : UserControl
             Background = Brush.Parse(abg), CornerRadius = new Avalonia.CornerRadius(3),
             Padding = new Avalonia.Thickness(4, 1), Margin = new Avalonia.Thickness(0, 0, 5, 0),
             [Grid.ColumnProperty] = 0,
-            Child = new TextBlock { Text = rec.약칭, FontSize = 9, FontFamily = Font, Foreground = Brush.Parse(afg) },
+            Child = new TextBlock { Text = rec.약칭, FontSize = AppTheme.FontXS, FontFamily = Font, Foreground = Brush.Parse(afg) },
         });
         topRow.Children.Add(new TextBlock
         {
-            Text = rec.시료명, FontSize = 11, FontFamily = Font, Foreground = BrushParentFg,
+            Text = rec.시료명, FontSize = AppTheme.FontBase, FontFamily = Font, Foreground = BrushParentFg,
             TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
             VerticalAlignment = VerticalAlignment.Center,
             [Grid.ColumnProperty] = 1,
@@ -572,7 +628,7 @@ public class AnalysisRequestListPanel : UserControl
         topRow.Children.Add(new TextBlock
         {
             Text = rec.의뢰일.Length >= 10 ? rec.의뢰일[..10] : rec.의뢰일,
-            FontSize = 9, FontFamily = Font, Foreground = AppRes("FgMuted"),
+            FontSize = AppTheme.FontXS, FontFamily = Font, Foreground = AppRes("FgMuted"),
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Avalonia.Thickness(6, 0),
             [Grid.ColumnProperty] = 2,
@@ -583,14 +639,14 @@ public class AnalysisRequestListPanel : UserControl
         var subRow = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,Auto,*") };
         subRow.Children.Add(new TextBlock
         {
-            Text = rec.접수번호, FontSize = 9, FontFamily = Font,
+            Text = rec.접수번호, FontSize = AppTheme.FontXS, FontFamily = Font,
             Foreground = AppRes("FgMuted"), Margin = new Avalonia.Thickness(0, 0, 8, 1),
             [Grid.ColumnProperty] = 0,
         });
         if (!string.IsNullOrEmpty(sampleDisp))
             subRow.Children.Add(new TextBlock
             {
-                Text = $"채취 {sampleDisp}", FontSize = 9, FontFamily = Font,
+                Text = $"채취 {sampleDisp}", FontSize = AppTheme.FontXS, FontFamily = Font,
                 Foreground = AppRes("FgMuted"),
                 Margin = new Avalonia.Thickness(0, 0, 8, 1),
                 [Grid.ColumnProperty] = 1,
@@ -598,7 +654,7 @@ public class AnalysisRequestListPanel : UserControl
         if (!string.IsNullOrWhiteSpace(manager))
             subRow.Children.Add(new TextBlock
             {
-                Text = manager, FontSize = 9, FontFamily = Font,
+                Text = manager, FontSize = AppTheme.FontXS, FontFamily = Font,
                 Foreground = AppRes("TreeFg"),
                 Margin = new Avalonia.Thickness(0, 0, 0, 1),
                 [Grid.ColumnProperty] = 2,
@@ -1273,8 +1329,8 @@ public class AnalysisRequestListPanel : UserControl
         };
         var btnOk = new Button
         {
-            Content = "확인", Width = 80, Height = 28, FontSize = 11, FontFamily = Font,
-            Background = Brush.Parse("#2a3a2a"), Foreground = Brush.Parse("#88ee88"),
+            Content = "확인", Width = 80, Height = 28, FontSize = AppTheme.FontBase, FontFamily = Font,
+            Background = AppTheme.BgActiveGreen, Foreground = AppTheme.FgSuccess,
             BorderThickness = new Avalonia.Thickness(0), CornerRadius = new Avalonia.CornerRadius(4),
             HorizontalContentAlignment = HorizontalAlignment.Center,
         };
@@ -1284,7 +1340,7 @@ public class AnalysisRequestListPanel : UserControl
             Margin = new Avalonia.Thickness(20), Spacing = 16,
             Children =
             {
-                new TextBlock { Text = message, FontSize = 11, FontFamily = Font,
+                new TextBlock { Text = message, FontSize = AppTheme.FontBase, FontFamily = Font,
                     Foreground = AppRes("AppFg"),
                     TextWrapping = Avalonia.Media.TextWrapping.Wrap },
                 new StackPanel

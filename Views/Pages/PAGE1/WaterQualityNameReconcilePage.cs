@@ -12,6 +12,7 @@ using ETA.Services;
 using ETA.Services.SERVICE1;
 using ETA.Services.SERVICE2;
 using ETA.Services.Common;
+using ETA.Views;
 
 namespace ETA.Views.Pages.PAGE1;
 
@@ -63,14 +64,14 @@ public sealed class WaterQualityNameReconcilePage
 
         root.Children.Add(new Border
         {
-            Background   = Brush.Parse("#1a1a28"),
+            Background   = AppTheme.BgPrimary,
             CornerRadius = new CornerRadius(6, 6, 0, 0),
             Padding      = new Thickness(10, 6),
             Child = new TextBlock
             {
                 Text       = "🏢  약칭 목록",
-                FontSize   = 11, FontWeight = FontWeight.SemiBold,
-                FontFamily = Font, Foreground = Brush.Parse("#8899bb"),
+                FontSize   = AppTheme.FontBase, FontWeight = FontWeight.SemiBold,
+                FontFamily = Font, Foreground = AppTheme.FgMuted,
             }
         });
 
@@ -96,7 +97,7 @@ public sealed class WaterQualityNameReconcilePage
                     Tag    = abbr,
                     Header = new TextBlock
                     {
-                        Text       = abbr, FontSize = 12, FontFamily = Font,
+                        Text       = abbr, FontSize = AppTheme.FontMD, FontFamily = Font,
                         FontWeight = FontWeight.Regular,
                         Foreground = AppRes("AppFg"),
                     }
@@ -130,14 +131,14 @@ public sealed class WaterQualityNameReconcilePage
 
         outer.Children.Add(new Border
         {
-            Background   = Brush.Parse("#1a1a28"),
+            Background   = AppTheme.BgPrimary,
             CornerRadius = new CornerRadius(6, 6, 0, 0),
             Padding      = new Thickness(10, 6),
             Child = new TextBlock
             {
                 Text       = "🔗  시료명 매핑",
-                FontSize   = 11, FontWeight = FontWeight.SemiBold,
-                FontFamily = Font, Foreground = Brush.Parse("#8899bb"),
+                FontSize   = AppTheme.FontBase, FontWeight = FontWeight.SemiBold,
+                FontFamily = Font, Foreground = AppTheme.FgMuted,
             }
         });
 
@@ -146,35 +147,35 @@ public sealed class WaterQualityNameReconcilePage
         body.Children.Add(new TextBlock
         {
             Text       = "📌  선택된 약칭",
-            FontSize   = 10, FontFamily = Font, FontWeight = FontWeight.Regular,
-            Foreground = Brush.Parse("#7788aa"),
+            FontSize   = AppTheme.FontSM, FontFamily = Font, FontWeight = FontWeight.Regular,
+            Foreground = AppTheme.FgMuted,
         });
         _officialLabel = new TextBlock
         {
             Text       = "← 왼쪽 트리에서 약칭 선택",
-            FontSize   = 14, FontFamily = Font, FontWeight = FontWeight.SemiBold,
-            Foreground = Brush.Parse("#ccddff"),
+            FontSize   = AppTheme.FontXL, FontFamily = Font, FontWeight = FontWeight.SemiBold,
+            Foreground = AppTheme.FgSecondary,
             Margin     = new Thickness(4, 2, 0, 4),
         };
         body.Children.Add(_officialLabel);
 
-        body.Children.Add(new Border { Height = 1, Background = Brush.Parse("#333344") });
+        body.Children.Add(new Border { Height = 1, Background = AppTheme.BorderSubtle });
 
         // 목표 시료명 텍스트박스 (앞으로 사용될 이름)
         body.Children.Add(new TextBlock
         {
             Text       = "✏  변경될 시료명 (직접 입력)",
-            FontSize   = 10, FontFamily = Font, FontWeight = FontWeight.Regular,
-            Foreground = Brush.Parse("#7788aa"),
+            FontSize   = AppTheme.FontSM, FontFamily = Font, FontWeight = FontWeight.Regular,
+            Foreground = AppTheme.FgMuted,
             Margin     = new Thickness(0, 8, 0, 2),
         });
         _targetBox = new TextBox
         {
-            FontSize        = 12, FontFamily = Font,
+            FontSize        = AppTheme.FontMD, FontFamily = Font,
             Watermark       = "앞으로 사용할 시료명...",
             Background      = Brush.Parse("#1e2030"),
-            Foreground      = Brush.Parse("#eeeeff"),
-            BorderBrush     = Brush.Parse("#445566"),
+            Foreground      = AppTheme.FgPrimary,
+            BorderBrush     = AppTheme.BorderDefault,
             BorderThickness = new Thickness(1),
             CornerRadius    = new CornerRadius(4),
             Padding         = new Thickness(8, 5),
@@ -182,13 +183,13 @@ public sealed class WaterQualityNameReconcilePage
         };
         body.Children.Add(_targetBox);
 
-        body.Children.Add(new Border { Height = 1, Background = Brush.Parse("#333344") });
+        body.Children.Add(new Border { Height = 1, Background = AppTheme.BorderSubtle });
 
         body.Children.Add(new TextBlock
         {
             Text       = "🔀  변경 대상 시료명  (오른쪽 목록에서 클릭 → 추가)",
-            FontSize   = 10, FontFamily = Font, FontWeight = FontWeight.Regular,
-            Foreground = Brush.Parse("#7788aa"),
+            FontSize   = AppTheme.FontSM, FontFamily = Font, FontWeight = FontWeight.Regular,
+            Foreground = AppTheme.FgMuted,
             Margin     = new Thickness(0, 8, 0, 0),
         });
         _aliasList = new StackPanel { Spacing = 3, Margin = new Thickness(0, 4, 0, 0) };
@@ -197,10 +198,10 @@ public sealed class WaterQualityNameReconcilePage
         var execBtn = new Button
         {
             Content             = "▶  시료명 일괄 변경 실행",
-            FontSize            = 11, FontFamily = Font,
-            Background          = Brush.Parse("#1a3a2a"),
-            Foreground          = Brush.Parse("#66ee88"),
-            BorderBrush         = Brush.Parse("#336644"),
+            FontSize            = AppTheme.FontBase, FontFamily = Font,
+            Background          = AppTheme.BgActiveGreen,
+            Foreground          = AppTheme.FgSuccess,
+            BorderBrush         = AppTheme.BorderActive,
             BorderThickness     = new Thickness(1),
             CornerRadius        = new CornerRadius(4),
             Padding             = new Thickness(12, 6),
@@ -212,8 +213,8 @@ public sealed class WaterQualityNameReconcilePage
 
         _statusLabel = new TextBlock
         {
-            FontSize   = 10, FontFamily = Font, FontWeight = FontWeight.Regular,
-            Foreground = Brush.Parse("#666666"),
+            FontSize   = AppTheme.FontSM, FontFamily = Font, FontWeight = FontWeight.Regular,
+            Foreground = AppTheme.FgDimmed,
             Margin     = new Thickness(0, 4, 0, 0),
             TextWrapping = TextWrapping.Wrap,
         };
@@ -241,8 +242,8 @@ public sealed class WaterQualityNameReconcilePage
             _aliasList.Children.Add(new TextBlock
             {
                 Text       = "오른쪽 목록에서 시료명을 클릭하여 추가하세요",
-                FontSize   = 10, FontFamily = Font, FontWeight = FontWeight.Regular,
-                Foreground = Brush.Parse("#555555"),
+                FontSize   = AppTheme.FontSM, FontFamily = Font, FontWeight = FontWeight.Regular,
+                Foreground = AppTheme.FgDimmed,
             });
             return;
         }
@@ -253,16 +254,16 @@ public sealed class WaterQualityNameReconcilePage
             var row = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
             var lbl = new TextBlock
             {
-                Text              = captured, FontSize = 11, FontFamily = Font,
+                Text              = captured, FontSize = AppTheme.FontBase, FontFamily = Font,
                 FontWeight        = FontWeight.Regular,
-                Foreground        = Brush.Parse("#aaffaa"),
+                Foreground        = AppTheme.FgSuccess,
                 VerticalAlignment = VerticalAlignment.Center,
             };
             var removeBtn = new Button
             {
-                Content         = "✕", FontSize = 9,
-                Background      = Brush.Parse("#3a1a1a"),
-                Foreground      = Brush.Parse("#ff8888"),
+                Content         = "✕", FontSize = AppTheme.FontXS,
+                Background      = AppTheme.BgDanger,
+                Foreground      = AppTheme.FgDanger,
                 BorderThickness = new Thickness(0),
                 Padding         = new Thickness(6, 2), CornerRadius = new CornerRadius(3),
             };
@@ -272,7 +273,7 @@ public sealed class WaterQualityNameReconcilePage
             row.Children.Add(removeBtn);
             _aliasList.Children.Add(new Border
             {
-                Background   = Brush.Parse("#1e2a1e"),
+                Background   = AppTheme.BgActiveGreen,
                 CornerRadius = new CornerRadius(4),
                 Padding      = new Thickness(8, 4),
                 Margin       = new Thickness(0, 1),
@@ -286,20 +287,20 @@ public sealed class WaterQualityNameReconcilePage
         if (_statusLabel == null) return;
         if (string.IsNullOrEmpty(_abbr))
         {
-            _statusLabel.Foreground = Brush.Parse("#ee8844");
+            _statusLabel.Foreground = AppTheme.FgWarn;
             _statusLabel.Text = "약칭을 먼저 선택하세요.";
             return;
         }
         var targetName = _targetBox?.Text?.Trim() ?? "";
         if (string.IsNullOrEmpty(targetName))
         {
-            _statusLabel.Foreground = Brush.Parse("#ee8844");
+            _statusLabel.Foreground = AppTheme.FgWarn;
             _statusLabel.Text = "오른쪽 텍스트박스에 목표 시료명을 입력하세요.";
             return;
         }
         if (_aliases.Count == 0)
         {
-            _statusLabel.Foreground = Brush.Parse("#ee8844");
+            _statusLabel.Foreground = AppTheme.FgWarn;
             _statusLabel.Text = "변경할 시료명을 추가하세요.";
             return;
         }
@@ -322,7 +323,7 @@ public sealed class WaterQualityNameReconcilePage
         }
 
         _statusLabel.Foreground = errors.Count == 0
-            ? Brush.Parse("#88ee88") : Brush.Parse("#ee4444");
+            ? AppTheme.FgSuccess : AppTheme.FgDanger;
         _statusLabel.Text = errors.Count == 0
             ? $"✅  {total}건 변경 완료"
             : $"⚠  {total}건 변경, 오류 {errors.Count}건: {errors[0]}";
@@ -342,22 +343,22 @@ public sealed class WaterQualityNameReconcilePage
         // 헤더
         root.Children.Add(new Border
         {
-            Background   = Brush.Parse("#1a1a28"),
+            Background   = AppTheme.BgPrimary,
             CornerRadius = new CornerRadius(6, 6, 0, 0),
             Padding      = new Thickness(10, 6),
             Child = new TextBlock
             {
                 Text       = "📋  시료명 목록 (중복제거)",
-                FontSize   = 11, FontWeight = FontWeight.SemiBold,
-                FontFamily = Font, Foreground = Brush.Parse("#8899bb"),
+                FontSize   = AppTheme.FontBase, FontWeight = FontWeight.SemiBold,
+                FontFamily = Font, Foreground = AppTheme.FgMuted,
             }
         });
 
         // 상태 레이블
         _sampleStatus = new TextBlock
         {
-            FontSize   = 10, FontFamily = Font, FontWeight = FontWeight.Regular,
-            Foreground = Brush.Parse("#666666"),
+            FontSize   = AppTheme.FontSM, FontFamily = Font, FontWeight = FontWeight.Regular,
+            Foreground = AppTheme.FgDimmed,
             Margin     = new Thickness(8, 3),
         };
         Grid.SetRow(_sampleStatus, 1);
@@ -388,7 +389,7 @@ public sealed class WaterQualityNameReconcilePage
                             .ToList();
             if (_sampleStatus != null)
             {
-                _sampleStatus.Foreground = Brush.Parse("#666666");
+                _sampleStatus.Foreground = AppTheme.FgDimmed;
                 _sampleStatus.Text = $"{_abbr} — {names.Count}개";
             }
             foreach (var name in names)
@@ -398,7 +399,7 @@ public sealed class WaterQualityNameReconcilePage
                     Tag    = name,
                     Header = new TextBlock
                     {
-                        Text       = name, FontSize = 11, FontFamily = Font,
+                        Text       = name, FontSize = AppTheme.FontBase, FontFamily = Font,
                         FontWeight = FontWeight.Regular,
                         Foreground = AppRes("AppFg"),
                     }
@@ -409,7 +410,7 @@ public sealed class WaterQualityNameReconcilePage
         {
             if (_sampleStatus != null)
             {
-                _sampleStatus.Foreground = Brush.Parse("#ee4444");
+                _sampleStatus.Foreground = AppTheme.FgDanger;
                 _sampleStatus.Text = $"오류: {ex.Message}";
             }
         }
@@ -426,7 +427,7 @@ public sealed class WaterQualityNameReconcilePage
         {
             if (_statusLabel != null)
             {
-                _statusLabel.Foreground = Brush.Parse("#ee8844");
+                _statusLabel.Foreground = AppTheme.FgWarn;
                 _statusLabel.Text = "먼저 왼쪽에서 약칭을 선택하세요.";
             }
             return;
@@ -440,5 +441,5 @@ public sealed class WaterQualityNameReconcilePage
     }
 
     private static readonly FontFamily Font =
-        new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R");
+        new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
 }

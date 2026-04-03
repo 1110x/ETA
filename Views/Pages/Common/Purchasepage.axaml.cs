@@ -11,6 +11,8 @@ using ETA.Services;
 using ETA.Services.SERVICE1;
 using ETA.Services.SERVICE2;
 using ETA.Services.Common;
+using ETA.Services.Common;
+using ETA.Views;
 
 namespace ETA.Views.Pages.Common;
 
@@ -78,15 +80,15 @@ public class PurchasePage
                 // 트리 제목
                 new Border
                 {
-                    Background = new SolidColorBrush(Color.Parse("#2a2a3a")),
+                    Background = AppTheme.BorderSubtle,
                     Padding    = new Thickness(10, 8),
                     Child      = new TextBlock
                     {
                         Text       = "📅  구매 내역",
                         FontFamily = Font,
-                        FontSize   = 12,
+                        FontSize   = AppTheme.FontMD,
                         FontWeight = FontWeight.SemiBold,
-                        Foreground = new SolidColorBrush(Color.Parse("#aaaacc")),
+                        Foreground = AppTheme.FgInfo,
                     }
                 },
                 treeScroll
@@ -117,7 +119,7 @@ public class PurchasePage
             ItemsSource   = new[] { "소모품", "장비", "시약", "기타" },
             SelectedIndex = 0,
             FontFamily    = Font,
-            FontSize      = 12,
+            FontSize      = AppTheme.FontMD,
         };
         _tbItem      = MakeTextBox("품목명 입력",  180);
         _tbQty       = MakeTextBox("수량",          60);
@@ -128,8 +130,8 @@ public class PurchasePage
         {
             Content         = "➕  요청 추가",
             FontFamily      = Font,
-            FontSize        = 12,
-            Background      = new SolidColorBrush(Color.Parse("#2a5a2a")),
+            FontSize        = AppTheme.FontMD,
+            Background      = AppTheme.BorderActive,
             Foreground      = AppRes("AppFg"),
             BorderThickness = new Thickness(0),
             CornerRadius    = new CornerRadius(4),
@@ -150,11 +152,11 @@ public class PurchasePage
                     {
                         Text       = "📋  신규 물품 요청",
                         FontFamily = Font,
-                        FontSize   = 14,
+                        FontSize   = AppTheme.FontXL,
                         FontWeight = FontWeight.SemiBold,
                         Foreground = AppRes("AppFg"),
                     },
-                    new Border { Height = 1, Background = new SolidColorBrush(Color.Parse("#555555")) },
+                    new Border { Height = 1, Background = AppTheme.BorderDefault },
                     new WrapPanel
                     {
                         Orientation = Orientation.Horizontal,
@@ -172,7 +174,7 @@ public class PurchasePage
                                 Spacing       = 4,
                                 Margin        = new Thickness(0, 0, 0, 0),
                                 VerticalAlignment = VerticalAlignment.Bottom,
-                                Children      = { new TextBlock { Text = " ", FontSize = 11 }, _saveBtn }
+                                Children      = { new TextBlock { Text = " ", FontSize = AppTheme.FontBase }, _saveBtn }
                             }
                         }
                     }
@@ -214,8 +216,8 @@ public class PurchasePage
             {
                 Text       = "내역 없음",
                 FontFamily = Font,
-                FontSize   = 11,
-                Foreground = new SolidColorBrush(Color.Parse("#555555")),
+                FontSize   = AppTheme.FontBase,
+                Foreground = AppTheme.FgDimmed,
                 Margin     = new Thickness(12, 8),
             });
             return;
@@ -233,7 +235,7 @@ public class PurchasePage
 
             var yearHeader = new Border
             {
-                Background  = new SolidColorBrush(Color.Parse("#2a2a3a")),
+                Background  = AppTheme.BorderSubtle,
                 Padding     = new Thickness(10, 6),
                 Cursor      = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
                 Child       = new StackPanel
@@ -245,14 +247,14 @@ public class PurchasePage
                         new TextBlock
                         {
                             Text       = "📁",
-                            FontSize   = 12,
+                            FontSize   = AppTheme.FontMD,
                             VerticalAlignment = VerticalAlignment.Center,
                         },
                         new TextBlock
                         {
                             Text       = $"{year}년",
                             FontFamily = Font,
-                            FontSize   = 13,
+                            FontSize   = AppTheme.FontLG,
                             FontWeight = FontWeight.SemiBold,
                             Foreground = new SolidColorBrush(Color.Parse("#ccccee")),
                             VerticalAlignment = VerticalAlignment.Center,
@@ -266,9 +268,9 @@ public class PurchasePage
                 monthPanel.IsVisible = !monthPanel.IsVisible;
 
             yearHeader.PointerEntered += (_, _) =>
-                yearHeader.Background = new SolidColorBrush(Color.Parse("#3a3a50"));
+                yearHeader.Background = AppTheme.BorderMuted;
             yearHeader.PointerExited += (_, _) =>
-                yearHeader.Background = new SolidColorBrush(Color.Parse("#2a2a3a"));
+                yearHeader.Background = AppTheme.BorderSubtle;
 
             _treePanel.Children.Add(yearHeader);
             _treePanel.Children.Add(monthPanel);
@@ -295,7 +297,7 @@ public class PurchasePage
                             {
                                 Text       = $"{m:D2}월",
                                 FontFamily = Font,
-                                FontSize   = 12,
+                                FontSize   = AppTheme.FontMD,
                                 Foreground = AppRes("AppFg"),
                                 Width      = 36,
                                 VerticalAlignment = VerticalAlignment.Center,
@@ -309,8 +311,8 @@ public class PurchasePage
                                 {
                                     Text       = $"{c}건",
                                     FontFamily = Font,
-                                    FontSize   = 10,
-                                    Foreground = new SolidColorBrush(Color.Parse("#aaccff")),
+                                    FontSize   = AppTheme.FontSM,
+                                    Foreground = AppTheme.FgInfo,
                                 }
                             }
                         }
@@ -380,7 +382,7 @@ public class PurchasePage
                                  ? $"📋  {_filterYear}년 {_filterMonth:D2}월  —  {_items.Count}건"
                                  : "📋  전체",
                 FontFamily = Font,
-                FontSize   = 12,
+                FontSize   = AppTheme.FontMD,
                 Foreground = new SolidColorBrush(Color.Parse("#8888bb")),
             }
         });
@@ -391,8 +393,8 @@ public class PurchasePage
             {
                 Text                = "해당 월의 요청 내역이 없습니다.",
                 FontFamily          = Font,
-                FontSize            = 12,
-                Foreground          = new SolidColorBrush(Color.Parse("#555555")),
+                FontSize            = AppTheme.FontMD,
+                Foreground          = AppTheme.BorderDefault,
                 Margin              = new Thickness(12, 20),
                 HorizontalAlignment = HorizontalAlignment.Center
             });
@@ -413,7 +415,7 @@ public class PurchasePage
     // =========================================================================
     private static Border BuildListHeader() => new Border
     {
-        Background = new SolidColorBrush(Color.Parse("#2a2a3a")),
+        Background = AppTheme.BorderSubtle,
         Padding    = new Thickness(8, 6),
         Child      = new Grid
         {
@@ -478,7 +480,7 @@ public class PurchasePage
         row.PointerEntered += (_, _) =>
         {
             if (row != _selectedRowBorder)
-                row.Background = new SolidColorBrush(Color.Parse("#3a3a50"));
+                row.Background = AppTheme.BorderMuted;
         };
         row.PointerExited += (_, _) =>
         {
@@ -499,7 +501,7 @@ public class PurchasePage
             VerticalAlignment   = VerticalAlignment.Center,
             Child               = new TextBlock
             {
-                Text = status, FontFamily = Font, FontSize = 10, Foreground = AppRes("AppFg")
+                Text = status, FontFamily = Font, FontSize = AppTheme.FontSM, Foreground = AppRes("AppFg")
             }
         };
         Grid.SetColumn(b, col);
@@ -560,7 +562,7 @@ public class PurchasePage
         _cbCategory.SelectedIndex = 0;
         _tbItem.Text = _tbQty.Text = _tbRequester.Text = _tbRemark.Text = "";
         _saveBtn.Content = "➕  요청 추가";
-        _saveBtn.Background = new SolidColorBrush(Color.Parse("#2a5a2a"));
+        _saveBtn.Background = AppTheme.BorderActive;
     }
 
     // =========================================================================
@@ -667,7 +669,7 @@ public class PurchasePage
     {
         var 품목 = _tbItem.Text?.Trim() ?? "";
         if (string.IsNullOrEmpty(품목)) { _tbItem.BorderBrush = Brushes.Red; return; }
-        _tbItem.BorderBrush = new SolidColorBrush(Color.Parse("#555577"));
+        _tbItem.BorderBrush = AppTheme.BorderDefault;
 
         if (!int.TryParse(_tbQty.Text?.Trim(), out int qty) || qty <= 0) qty = 1;
 
@@ -746,7 +748,7 @@ public class PurchasePage
             Height  = 280,
             CanResize = false,
             WindowStartupLocation = Avalonia.Controls.WindowStartupLocation.CenterOwner,
-            Background = new SolidColorBrush(Color.Parse("#2d2d2d")),
+            Background = AppTheme.BgSecondary,
         };
 
         var closeBtn = new Avalonia.Controls.Button
@@ -754,7 +756,7 @@ public class PurchasePage
             Content         = "닫기",
             Width           = 80,
             HorizontalAlignment = HorizontalAlignment.Right,
-            Background      = new SolidColorBrush(Color.Parse("#444")),
+            Background      = AppTheme.BorderMuted,
             Foreground      = Brushes.White,
             BorderThickness = new Thickness(0),
         };
@@ -770,21 +772,21 @@ public class PurchasePage
                 {
                     Text         = title,
                     FontFamily   = Font,
-                    FontSize     = 14,
+                    FontSize     = AppTheme.FontXL,
                     FontWeight   = FontWeight.SemiBold,
                     Foreground   = AppRes("AppFg"),
                 },
                 new Avalonia.Controls.Border
                 {
                     Height     = 1,
-                    Background = new SolidColorBrush(Color.Parse("#555")),
+                    Background = AppTheme.BorderDefault,
                 },
                 new Avalonia.Controls.TextBlock
                 {
                     Text         = message,
                     FontFamily   = Font,
-                    FontSize     = 12,
-                    Foreground   = new SolidColorBrush(Color.Parse("#cccccc")),
+                    FontSize     = AppTheme.FontMD,
+                    Foreground   = AppTheme.FgSecondary,
                     TextWrapping = Avalonia.Media.TextWrapping.Wrap,
                 },
                 closeBtn
@@ -799,7 +801,7 @@ public class PurchasePage
     // 헬퍼
     // =========================================================================
     private static readonly FontFamily Font =
-        new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R");
+        new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
 
     private static ColumnDefinitions ColDefs =>
         new ColumnDefinitions("50,70,180,50,80,70,70,*");
@@ -808,9 +810,9 @@ public class PurchasePage
     {
         var tb = new TextBlock
         {
-            Text = text, FontFamily = Font, FontSize = 11,
+            Text = text, FontFamily = Font, FontSize = AppTheme.FontBase,
             FontWeight = FontWeight.SemiBold,
-            Foreground = new SolidColorBrush(Color.Parse("#aaaacc")),
+            Foreground = AppTheme.FgInfo,
             VerticalAlignment = VerticalAlignment.Center,
         };
         Grid.SetColumn(tb, col); return tb;
@@ -820,9 +822,9 @@ public class PurchasePage
     {
         var tb = new TextBlock
         {
-            Text = text, FontFamily = Font, FontSize = 12,
+            Text = text, FontFamily = Font, FontSize = AppTheme.FontMD,
             FontWeight   = bold ? FontWeight.SemiBold : FontWeight.Normal,
-            Foreground   = fg ?? new SolidColorBrush(Color.Parse("#cccccc")),
+            Foreground   = fg ?? AppTheme.FgSecondary,
             VerticalAlignment = VerticalAlignment.Center,
             TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
         };
@@ -840,8 +842,8 @@ public class PurchasePage
             Margin      = new Thickness(0, 0, 14, 0),
             Children    =
             {
-                new TextBlock { Text = label, FontFamily = Font, FontSize = 11,
-                                Foreground = new SolidColorBrush(Color.Parse("#aaaaaa")) },
+                new TextBlock { Text = label, FontFamily = Font, FontSize = AppTheme.FontBase,
+                                Foreground = AppTheme.FgMuted },
                 input
             }
         };
@@ -849,11 +851,11 @@ public class PurchasePage
 
     private static TextBox MakeTextBox(string hint, double w) => new TextBox
     {
-        Watermark = hint, Width = w, FontFamily = Font, FontSize = 12,
-        Background      = new SolidColorBrush(Color.Parse("#3a3a4a")),
+        Watermark = hint, Width = w, FontFamily = Font, FontSize = AppTheme.FontMD,
+        Background      = AppTheme.BorderSeparator,
         Foreground      = AppRes("AppFg"),
         BorderThickness = new Thickness(1),
-        BorderBrush     = new SolidColorBrush(Color.Parse("#555577")),
+        BorderBrush     = AppTheme.BorderDefault,
         CornerRadius    = new CornerRadius(4),
         Padding         = new Thickness(8, 4),
     };

@@ -13,6 +13,8 @@ using ETA.Services;
 using ETA.Services.SERVICE1;
 using ETA.Services.SERVICE2;
 using ETA.Services.Common;
+using ETA.Services.Common;
+using ETA.Views;
 
 namespace ETA.Views.Pages.PAGE2;
 
@@ -72,8 +74,8 @@ public sealed class WasteNameReconcilePage
         var tabBar = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4 };
         tabBar.Children.Add(new TextBlock
         {
-            Text = "공식 업체명", FontSize = 11, FontWeight = FontWeight.SemiBold,
-            Foreground = Brush.Parse("#8899bb"), FontFamily = Font,
+            Text = "공식 업체명", FontSize = AppTheme.FontBase, FontWeight = FontWeight.SemiBold,
+            Foreground = AppTheme.FgMuted, FontFamily = Font,
             VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 8, 0),
         });
         _btnYeosoo  = MakeTabBtn("🌊 여수", "여수", true);
@@ -85,7 +87,7 @@ public sealed class WasteNameReconcilePage
 
         var header = new Border
         {
-            Background = Brush.Parse("#1a1a28"),
+            Background = AppTheme.BgPrimary,
             CornerRadius = new CornerRadius(6, 6, 0, 0),
             Padding = new Thickness(8, 4),
             Child = tabBar,
@@ -95,7 +97,7 @@ public sealed class WasteNameReconcilePage
         _searchBox = new TextBox
         {
             Watermark = "🔍 업체명 검색",
-            FontSize = 11, FontFamily = Font,
+            FontSize = AppTheme.FontBase, FontFamily = Font,
             Margin = new Thickness(5, 4, 5, 0),
             Padding = new Thickness(6, 4),
             CornerRadius = new CornerRadius(4),
@@ -120,7 +122,7 @@ public sealed class WasteNameReconcilePage
         var btn = new Button
         {
             Content = content, Tag = tag,
-            FontSize = 10, FontFamily = Font,
+            FontSize = AppTheme.FontSM, FontFamily = Font,
             Padding = new Thickness(8, 3), CornerRadius = new CornerRadius(10),
             BorderThickness = new Thickness(1),
         };
@@ -177,21 +179,21 @@ public sealed class WasteNameReconcilePage
             var sp = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4 };
             sp.Children.Add(new TextBlock
             {
-                Text = c.업체명, FontSize = 12, FontFamily = Font,
+                Text = c.업체명, FontSize = AppTheme.FontMD, FontFamily = Font,
                 Foreground = AppRes("AppFg"),
                 VerticalAlignment = VerticalAlignment.Center,
             });
             sp.Children.Add(new TextBlock
             {
-                Text = c.관리번호, FontSize = 9, FontFamily = Font,
-                Foreground = Brush.Parse("#666666"),
+                Text = c.관리번호, FontSize = AppTheme.FontXS, FontFamily = Font,
+                Foreground = AppTheme.FgDimmed,
                 VerticalAlignment = VerticalAlignment.Center,
             });
             if (!string.IsNullOrEmpty(c.비용부담금_업체명))
                 sp.Children.Add(new TextBlock
                 {
-                    Text = $"[{c.비용부담금_업체명}]", FontSize = 9, FontFamily = Font,
-                    Foreground = Brush.Parse("#5599ee"),
+                    Text = $"[{c.비용부담금_업체명}]", FontSize = AppTheme.FontXS, FontFamily = Font,
+                    Foreground = AppTheme.FgInfo,
                     VerticalAlignment = VerticalAlignment.Center,
                 });
             _officialTree.Items.Add(new TreeViewItem { Tag = c, Header = sp });
@@ -224,14 +226,14 @@ public sealed class WasteNameReconcilePage
 
         outer.Children.Add(new Border
         {
-            Background = Brush.Parse("#1a1a28"),
+            Background = AppTheme.BgPrimary,
             CornerRadius = new CornerRadius(6, 6, 0, 0),
             Padding = new Thickness(10, 6),
             Child = new TextBlock
             {
                 Text = "🔗  명칭 매핑",
-                FontSize = 11, FontWeight = FontWeight.SemiBold,
-                FontFamily = Font, Foreground = Brush.Parse("#8899bb"),
+                FontSize = AppTheme.FontBase, FontWeight = FontWeight.SemiBold,
+                FontFamily = Font, Foreground = AppTheme.FgMuted,
             }
         });
 
@@ -241,24 +243,24 @@ public sealed class WasteNameReconcilePage
         body.Children.Add(new TextBlock
         {
             Text = "📌  공식명  (A컬럼 — 변경 목표)",
-            FontSize = 10, FontFamily = Font, Foreground = Brush.Parse("#7788aa"),
+            FontSize = AppTheme.FontSM, FontFamily = Font, Foreground = AppTheme.FgMuted,
         });
         _officialLabel = new TextBlock
         {
             Text = "← 왼쪽 트리에서 공식명 선택",
-            FontSize = 14, FontFamily = Font, FontWeight = FontWeight.SemiBold,
-            Foreground = Brush.Parse("#ccddff"),
+            FontSize = AppTheme.FontXL, FontFamily = Font, FontWeight = FontWeight.SemiBold,
+            Foreground = AppTheme.FgSecondary,
             Margin = new Thickness(4, 2, 0, 8),
         };
         body.Children.Add(_officialLabel);
 
-        body.Children.Add(new Border { Height = 1, Background = Brush.Parse("#333344") });
+        body.Children.Add(new Border { Height = 1, Background = AppTheme.BorderSubtle });
 
         // DATA 명칭 목록 영역
         body.Children.Add(new TextBlock
         {
             Text = "🔀  변경 대상 DATA 명칭  (오른쪽 트리에서 클릭 → 추가)",
-            FontSize = 10, FontFamily = Font, Foreground = Brush.Parse("#7788aa"),
+            FontSize = AppTheme.FontSM, FontFamily = Font, Foreground = AppTheme.FgMuted,
             Margin = new Thickness(0, 4, 0, 0),
         });
         _aliasList = new StackPanel { Spacing = 3, Margin = new Thickness(0, 4, 0, 0) };
@@ -268,10 +270,10 @@ public sealed class WasteNameReconcilePage
         var execBtn = new Button
         {
             Content = "▶  DATA 일괄 변경 실행",
-            FontSize = 11, FontFamily = Font,
-            Background = Brush.Parse("#1a3a2a"),
-            Foreground = Brush.Parse("#66ee88"),
-            BorderBrush = Brush.Parse("#336644"),
+            FontSize = AppTheme.FontBase, FontFamily = Font,
+            Background = AppTheme.BgActiveGreen,
+            Foreground = AppTheme.FgSuccess,
+            BorderBrush = AppTheme.BorderActive,
             BorderThickness = new Thickness(1),
             CornerRadius = new CornerRadius(4),
             Padding = new Thickness(12, 6),
@@ -283,8 +285,8 @@ public sealed class WasteNameReconcilePage
 
         _statusLabel = new TextBlock
         {
-            FontSize = 10, FontFamily = Font,
-            Foreground = Brush.Parse("#666666"),
+            FontSize = AppTheme.FontSM, FontFamily = Font,
+            Foreground = AppTheme.FgDimmed,
             Margin = new Thickness(0, 4, 0, 0),
         };
         body.Children.Add(_statusLabel);
@@ -316,8 +318,8 @@ public sealed class WasteNameReconcilePage
             _aliasList.Children.Add(new TextBlock
             {
                 Text = "오른쪽 트리에서 DATA 명칭을 클릭하여 추가하세요",
-                FontSize = 10, FontFamily = Font,
-                Foreground = Brush.Parse("#555555"),
+                FontSize = AppTheme.FontSM, FontFamily = Font,
+                Foreground = AppTheme.FgDimmed,
             });
             return;
         }
@@ -328,15 +330,15 @@ public sealed class WasteNameReconcilePage
             var rowGrid = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
             var label = new TextBlock
             {
-                Text = captured, FontSize = 11, FontFamily = Font,
-                Foreground = Brush.Parse("#aaffaa"),
+                Text = captured, FontSize = AppTheme.FontBase, FontFamily = Font,
+                Foreground = AppTheme.FgSuccess,
                 VerticalAlignment = VerticalAlignment.Center,
             };
             var removeBtn = new Button
             {
-                Content = "✕", FontSize = 9,
-                Background = Brush.Parse("#3a1a1a"),
-                Foreground = Brush.Parse("#ff8888"),
+                Content = "✕", FontSize = AppTheme.FontXS,
+                Background = AppTheme.BgDanger,
+                Foreground = AppTheme.FgDanger,
                 BorderThickness = new Thickness(0),
                 Padding = new Thickness(6, 2), CornerRadius = new CornerRadius(3),
             };
@@ -347,7 +349,7 @@ public sealed class WasteNameReconcilePage
 
             _aliasList.Children.Add(new Border
             {
-                Background = Brush.Parse("#1e2a1e"),
+                Background = AppTheme.BgActiveGreen,
                 CornerRadius = new CornerRadius(4),
                 Padding = new Thickness(8, 4),
                 Margin = new Thickness(0, 1),
@@ -361,13 +363,13 @@ public sealed class WasteNameReconcilePage
         if (_statusLabel == null) return;
         if (string.IsNullOrEmpty(_officialName))
         {
-            _statusLabel.Foreground = Brush.Parse("#ee8844");
+            _statusLabel.Foreground = AppTheme.FgWarn;
             _statusLabel.Text = "공식명을 먼저 선택하세요.";
             return;
         }
         if (_aliases.Count == 0)
         {
-            _statusLabel.Foreground = Brush.Parse("#ee8844");
+            _statusLabel.Foreground = AppTheme.FgWarn;
             _statusLabel.Text = "변경할 DATA 명칭을 추가하세요.";
             return;
         }
@@ -391,7 +393,7 @@ public sealed class WasteNameReconcilePage
         }
 
         _statusLabel.Foreground = errors.Count == 0
-            ? Brush.Parse("#88ee88") : Brush.Parse("#ee4444");
+            ? AppTheme.FgSuccess : AppTheme.FgDanger;
         _statusLabel.Text = errors.Count == 0
             ? $"✅  {total}건 변경 완료"
             : $"⚠  {total}건 변경, 오류 {errors.Count}건: {errors[0]}";
@@ -412,21 +414,21 @@ public sealed class WasteNameReconcilePage
 
         root.Children.Add(new Border
         {
-            Background = Brush.Parse("#1a1a28"),
+            Background = AppTheme.BgPrimary,
             CornerRadius = new CornerRadius(6, 6, 0, 0),
             Padding = new Thickness(10, 6),
             Child = new TextBlock
             {
                 Text = "📊  DATA 테이블 업체명",
-                FontSize = 11, FontWeight = FontWeight.SemiBold,
-                FontFamily = Font, Foreground = Brush.Parse("#8899bb"),
+                FontSize = AppTheme.FontBase, FontWeight = FontWeight.SemiBold,
+                FontFamily = Font, Foreground = AppTheme.FgMuted,
             }
         });
 
         _dataStatusLabel = new TextBlock
         {
-            FontSize = 10, FontFamily = Font,
-            Foreground = Brush.Parse("#666666"),
+            FontSize = AppTheme.FontSM, FontFamily = Font,
+            Foreground = AppTheme.FgDimmed,
             Margin = new Thickness(8, 3),
         };
         Grid.SetRow(_dataStatusLabel, 1);
@@ -464,7 +466,7 @@ public sealed class WasteNameReconcilePage
 
             if (_dataStatusLabel != null)
             {
-                _dataStatusLabel.Foreground = Brush.Parse("#666666");
+                _dataStatusLabel.Foreground = AppTheme.FgDimmed;
                 _dataStatusLabel.Text = $"미매칭 {unmatched.Count}개 / 전체 {dataNames.Count}개";
             }
             foreach (var name in unmatched)
@@ -473,14 +475,14 @@ public sealed class WasteNameReconcilePage
                 var sp = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
                 sp.Children.Add(new TextBlock
                 {
-                    Text = name, FontSize = 11, FontFamily = Font,
-                    Foreground = isMapped ? Brush.Parse("#5599ee") : AppRes("AppFg"),
+                    Text = name, FontSize = AppTheme.FontBase, FontFamily = Font,
+                    Foreground = isMapped ? AppTheme.FgInfo : AppRes("AppFg"),
                 });
                 if (isMapped)
                     sp.Children.Add(new TextBlock
                     {
-                        Text = "✓", FontSize = 10, FontFamily = Font,
-                        Foreground = Brush.Parse("#5599ee"),
+                        Text = "✓", FontSize = AppTheme.FontSM, FontFamily = Font,
+                        Foreground = AppTheme.FgInfo,
                         VerticalAlignment = VerticalAlignment.Center,
                     });
                 _dataTree.Items.Add(new TreeViewItem { Tag = name, Header = sp });
@@ -490,7 +492,7 @@ public sealed class WasteNameReconcilePage
         {
             if (_dataStatusLabel != null)
             {
-                _dataStatusLabel.Foreground = Brush.Parse("#ee4444");
+                _dataStatusLabel.Foreground = AppTheme.FgDanger;
                 _dataStatusLabel.Text = $"오류: {ex.Message}";
             }
         }
@@ -510,7 +512,7 @@ public sealed class WasteNameReconcilePage
         {
             if (_statusLabel != null)
             {
-                _statusLabel.Foreground = Brush.Parse("#ee8844");
+                _statusLabel.Foreground = AppTheme.FgWarn;
                 _statusLabel.Text = "먼저 왼쪽에서 공식명을 선택하세요.";
             }
             return;
@@ -534,5 +536,5 @@ public sealed class WasteNameReconcilePage
     }
 
     private static readonly FontFamily Font =
-        new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R");
+        new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
 }

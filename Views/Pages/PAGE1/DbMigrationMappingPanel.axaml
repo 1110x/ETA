@@ -17,20 +17,20 @@
         </Style>
         <Style Selector="TextBlock.col-header">
             <Setter Property="FontSize"     Value="{DynamicResource FontSizeBase}"/>
-            <Setter Property="FontFamily"   Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+            <Setter Property="FontFamily"   Value="avares://ETA/Assets/Fonts#Pretendard"/>
             <Setter Property="Foreground"   Value="{DynamicResource FgMuted}"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
         <Style Selector="TextBlock.col-old">
             <Setter Property="FontSize"     Value="{DynamicResource FontSizeBase}"/>
-            <Setter Property="FontFamily"   Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"/>
+            <Setter Property="FontFamily"   Value="avares://ETA/Assets/Fonts#Pretendard"/>
             <Setter Property="Foreground"   Value="{DynamicResource AppFg}"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
         </Style>
         <Style Selector="TextBlock.col-new">
             <Setter Property="FontSize"     Value="{DynamicResource FontSizeBase}"/>
-            <Setter Property="FontFamily"   Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"/>
+            <Setter Property="FontFamily"   Value="avares://ETA/Assets/Fonts#Pretendard"/>
             <Setter Property="Foreground"   Value="#88ddaa"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
@@ -45,19 +45,19 @@
             <StackPanel Orientation="Horizontal" Spacing="8">
                 <TextBlock Text="🔄  시료명 매핑"
                            FontSize="{DynamicResource FontSizeLG}" FontWeight="Bold"
-                           FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                           FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                            Foreground="{DynamicResource AppFg}" VerticalAlignment="Center"/>
                 <Border x:Name="bdgCompany"
-                        Background="#1a3060" CornerRadius="4"
+                        Background="{DynamicResource ThemeBgActiveBlue}" CornerRadius="4"
                         Padding="6,2" IsVisible="False">
                     <TextBlock x:Name="txbCompanyBadge"
-                               FontSize="{DynamicResource FontSizeBase}" Foreground="#88aaff"
-                               FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+                               FontSize="{DynamicResource FontSizeBase}" Foreground="{DynamicResource ThemeFgLink}"
+                               FontFamily="avares://ETA/Assets/Fonts#Pretendard"/>
                 </Border>
                 <TextBlock x:Name="txbRowCount"
                            Text="" FontSize="{DynamicResource FontSizeBase}" Foreground="{DynamicResource FgMuted}"
                            VerticalAlignment="Center"
-                           FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"/>
+                           FontFamily="avares://ETA/Assets/Fonts#Pretendard"/>
             </StackPanel>
         </Border>
 
@@ -66,7 +66,7 @@
                    x:Name="txbHint"
                    Text="← Show4에서 채취지점을 클릭하면 선택된 행에 매핑됩니다."
                    FontSize="{DynamicResource FontSizeSM}" Foreground="{DynamicResource FgMuted}"
-                   FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"
+                   FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                    Margin="8,4,0,2"/>
 
         <!-- 컬럼 헤더 행 -->
@@ -91,16 +91,16 @@
             <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
                 <TextBlock x:Name="txbSaveStatus"
                            Text="" FontSize="{DynamicResource FontSizeBase}"
-                           Foreground="#88cc88"
-                           FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"
+                           Foreground="{DynamicResource ThemeFgSuccess}"
+                           FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                            VerticalAlignment="Center"/>
                 <Button x:Name="btnSave"
                         Content="💾  저장"
                         Height="28" Padding="12,0"
                         FontSize="{DynamicResource FontSizeMD}"
-                        FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
-                        Background="#1a3a1a" Foreground="#88cc88"
-                        BorderBrush="#336633" BorderThickness="1"
+                        FontFamily="avares://ETA/Assets/Fonts#Pretendard"
+                        Background="{DynamicResource ThemeBgActiveGreen}" Foreground="{DynamicResource ThemeFgSuccess}"
+                        BorderBrush="{DynamicResource ThemeBorderActive}" BorderThickness="1"
                         CornerRadius="4"
                         IsEnabled="False"
                         Click="BtnSave_Click"/>

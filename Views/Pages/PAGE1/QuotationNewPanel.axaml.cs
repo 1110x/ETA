@@ -1,4 +1,5 @@
 using Avalonia;
+using ETA.Views;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -27,7 +28,7 @@ public partial class QuotationNewPanel : UserControl
     }
 
     private static readonly FontFamily Font =
-        new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
+        new("avares://ETA/Assets/Fonts#Pretendard");
 
     // ── 상태 ──────────────────────────────────────────────────────────────
     private Contract?       _company;
@@ -361,7 +362,7 @@ public partial class QuotationNewPanel : UserControl
         {
             Text      = name,
             FontSize  = AppFonts.Base, FontFamily = Font,
-            Foreground = Brush.Parse("#cccccc"),
+            Foreground = AppTheme.FgSecondary,
             TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
             VerticalAlignment = VerticalAlignment.Center,
             Margin    = new Avalonia.Thickness(8, 3),
@@ -460,7 +461,7 @@ public partial class QuotationNewPanel : UserControl
 
         // 노란색 테두리
         txbSampleName.BorderBrush = _sampleDuplicated
-            ? Brush.Parse("#f0c040")
+            ? AppTheme.FgWarn
             : Brush.Parse("#444");
 
         UpdateWarning();
@@ -685,17 +686,17 @@ public partial class QuotationNewPanel : UserControl
     {
         var tcs = new System.Threading.Tasks.TaskCompletionSource<(string, string, string)?>();
 
-        var font = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
+        var font = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
 
         // 입력 필드
-        var txName  = new TextBox { Text = initName,  Watermark = "담당자 이름",  FontFamily = font, FontSize = 13 };
-        var txPhone = new TextBox { Text = initPhone, Watermark = "연락처",        FontFamily = font, FontSize = 13 };
-        var txEmail = new TextBox { Text = initEmail, Watermark = "이메일",        FontFamily = font, FontSize = 13 };
+        var txName  = new TextBox { Text = initName,  Watermark = "담당자 이름",  FontFamily = font, FontSize = AppTheme.FontLG };
+        var txPhone = new TextBox { Text = initPhone, Watermark = "연락처",        FontFamily = font, FontSize = AppTheme.FontLG };
+        var txEmail = new TextBox { Text = initEmail, Watermark = "이메일",        FontFamily = font, FontSize = AppTheme.FontLG };
 
         // 경고 레이블
         var txWarn = new TextBlock
         {
-            FontFamily = font, FontSize = 11,
+            FontFamily = font, FontSize = AppTheme.FontBase,
             Foreground = Brushes.OrangeRed,
             IsVisible  = false,
             Text       = "담당자 이름과 연락처는 필수입니다.",
@@ -710,7 +711,7 @@ public partial class QuotationNewPanel : UserControl
                 Spacing = 4,
                 Children =
                 {
-                    new TextBlock { Text = label, FontFamily = f, FontSize = 11, Foreground = AppRes("FgMuted") },
+                    new TextBlock { Text = label, FontFamily = f, FontSize = AppTheme.FontBase, Foreground = AppRes("FgMuted") },
                     box,
                 }
             }
@@ -720,7 +721,7 @@ public partial class QuotationNewPanel : UserControl
         {
             Content     = "저장 확인",
             FontFamily  = font,
-            FontSize    = 13,
+            FontSize    = AppTheme.FontLG,
             Padding     = new Thickness(20, 6),
             Background  = new SolidColorBrush(Color.Parse("#3a6ea5")),
             Foreground  = Brushes.White,
@@ -730,9 +731,9 @@ public partial class QuotationNewPanel : UserControl
         {
             Content    = "취소",
             FontFamily = font,
-            FontSize   = 13,
+            FontSize   = AppTheme.FontLG,
             Padding    = new Thickness(12, 6),
-            Background = new SolidColorBrush(Color.Parse("#333355")),
+            Background = AppTheme.BorderSubtle,
             Foreground = AppRes("FgMuted"),
             HorizontalAlignment = HorizontalAlignment.Right,
         };
@@ -744,7 +745,7 @@ public partial class QuotationNewPanel : UserControl
             SizeToContent         = SizeToContent.Height,
             CanResize             = false,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            Background            = new SolidColorBrush(Color.Parse("#1e1e2e")),
+            Background            = AppTheme.BgPrimary,
             Content               = new StackPanel
             {
                 Margin  = new Thickness(20, 16),
@@ -755,7 +756,7 @@ public partial class QuotationNewPanel : UserControl
                     {
                         Text       = "견적 발행 전 담당자 정보를 확인하세요.",
                         FontFamily = font,
-                        FontSize   = 12,
+                        FontSize   = AppTheme.FontMD,
                         Foreground = AppRes("AppFg"),
                         Margin     = new Thickness(0, 0, 0, 8),
                     },

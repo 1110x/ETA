@@ -11,6 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading.Tasks;
+using ETA.Views;
 
 namespace ETA.Views.Pages.Common;
 
@@ -22,8 +24,8 @@ namespace ETA.Views.Pages.Common;
 /// </summary>
 public class RiskManagePage
 {
-    private static readonly FontFamily FontM = new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
-    private static readonly FontFamily FontR = new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R");
+    private static readonly FontFamily FontM = new("avares://ETA/Assets/Fonts#Pretendard");
+    private static readonly FontFamily FontR = new("avares://ETA/Assets/Fonts#Pretendard");
 
     // 초성별 색상 (ㄱ~ㅎ 19개)
     private static readonly string[] ChosungColors =
@@ -45,8 +47,8 @@ public class RiskManagePage
     private readonly StackPanel _listPanel = new() { Spacing = 3 };
     private readonly TextBlock  _listCount = new()
     {
-        FontSize = 10, FontFamily = FontR,
-        Foreground = new SolidColorBrush(Color.Parse("#666")),
+        FontSize = AppTheme.FontSM, FontFamily = FontR,
+        Foreground = AppTheme.FgDimmed,
         Margin = new Thickness(0, 4, 0, 4),
     };
     private Border? _selectedCard;
@@ -147,8 +149,8 @@ public class RiskManagePage
     {
         var title = new TextBlock
         {
-            Text = "시약관리", FontSize = 15, FontWeight = FontWeight.Bold,
-            FontFamily = FontM, Foreground = new SolidColorBrush(Color.Parse("#dddddd")),
+            Text = "시약관리", FontSize = AppTheme.FontXL, FontWeight = FontWeight.Bold,
+            FontFamily = FontM, Foreground = AppTheme.FgPrimary,
             Margin = new Thickness(0, 0, 0, 10),
         };
 
@@ -219,7 +221,7 @@ public class RiskManagePage
             Child = new TextBlock
             {
                 Text          = badgeText,
-                FontSize      = 9,
+                FontSize      = AppTheme.FontXS,
                 FontFamily    = FontM,
                 Foreground    = Brushes.White,
                 TextAlignment = TextAlignment.Center,
@@ -230,8 +232,8 @@ public class RiskManagePage
         var nameStack = new StackPanel { Spacing = 1 };
         nameStack.Children.Add(new TextBlock
         {
-            Text = item.품목명, FontSize = 12, FontFamily = FontM,
-            Foreground = new SolidColorBrush(Color.Parse("#e8e8e8")),
+            Text = item.품목명, FontSize = AppTheme.FontMD, FontFamily = FontM,
+            Foreground = AppTheme.FgPrimary,
             TextTrimming = TextTrimming.CharacterEllipsis,
         });
 
@@ -241,16 +243,16 @@ public class RiskManagePage
         if (subs.Count > 0)
             nameStack.Children.Add(new TextBlock
             {
-                Text = string.Join("  ", subs), FontSize = 9, FontFamily = FontR,
-                Foreground = new SolidColorBrush(Color.Parse("#777")),
+                Text = string.Join("  ", subs), FontSize = AppTheme.FontXS, FontFamily = FontR,
+                Foreground = AppTheme.FgDimmed,
                 TextTrimming = TextTrimming.CharacterEllipsis,
             });
 
         var qtyBlock = new TextBlock
         {
             Text = item.재고량 > 0 ? $"재고 {item.재고량}" : "",
-            FontSize = 9, FontFamily = FontR,
-            Foreground = new SolidColorBrush(Color.Parse("#888")),
+            FontSize = AppTheme.FontXS, FontFamily = FontR,
+            Foreground = AppTheme.FgMuted,
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Thickness(4, 0, 0, 0),
         };
@@ -324,7 +326,7 @@ public class RiskManagePage
             VerticalAlignment = VerticalAlignment.Center,
             Child = new TextBlock
             {
-                Text = item.상태, FontSize = 9, FontFamily = FontM,
+                Text = item.상태, FontSize = AppTheme.FontXS, FontFamily = FontM,
                 Foreground = new SolidColorBrush(Color.Parse(statusFg)),
                 TextAlignment = TextAlignment.Center,
             },
@@ -333,21 +335,21 @@ public class RiskManagePage
         var nameStack = new StackPanel { Spacing = 1 };
         nameStack.Children.Add(new TextBlock
         {
-            Text = item.품목명, FontSize = 12, FontFamily = FontM,
-            Foreground = new SolidColorBrush(Color.Parse("#e8e8e8")),
+            Text = item.품목명, FontSize = AppTheme.FontMD, FontFamily = FontM,
+            Foreground = AppTheme.FgPrimary,
             TextTrimming = TextTrimming.CharacterEllipsis,
         });
         if (!string.IsNullOrEmpty(item.규격))
             nameStack.Children.Add(new TextBlock
             {
-                Text = $"{item.규격}  {item.재질}", FontSize = 9, FontFamily = FontR,
-                Foreground = new SolidColorBrush(Color.Parse("#777")),
+                Text = $"{item.규격}  {item.재질}", FontSize = AppTheme.FontXS, FontFamily = FontR,
+                Foreground = AppTheme.FgDimmed,
             });
 
         var qtyBlock = new TextBlock
         {
-            Text = $"×{item.수량}", FontSize = 10, FontFamily = FontR,
-            Foreground = new SolidColorBrush(Color.Parse("#888")),
+            Text = $"×{item.수량}", FontSize = AppTheme.FontSM, FontFamily = FontR,
+            Foreground = AppTheme.FgMuted,
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Thickness(4, 0, 0, 0),
         };
@@ -417,8 +419,8 @@ public class RiskManagePage
         _usagePanel.Children.Add(new TextBlock
         {
             Text = "시약을 선택하면\n사용량 현황이 표시됩니다",
-            FontSize = 11, FontFamily = FontR,
-            Foreground = new SolidColorBrush(Color.Parse("#555566")),
+            FontSize = AppTheme.FontBase, FontFamily = FontR,
+            Foreground = AppTheme.FgDimmed,
             TextAlignment = TextAlignment.Center,
             HorizontalAlignment = HorizontalAlignment.Center,
             TextWrapping = TextWrapping.Wrap,
@@ -433,13 +435,13 @@ public class RiskManagePage
         // 제목
         _usagePanel.Children.Add(new TextBlock
         {
-            Text = "사용량 현황", FontSize = 11, FontWeight = FontWeight.Bold,
-            FontFamily = FontM, Foreground = new SolidColorBrush(Color.Parse("#aaaacc")),
+            Text = "사용량 현황", FontSize = AppTheme.FontBase, FontWeight = FontWeight.Bold,
+            FontFamily = FontM, Foreground = AppTheme.FgInfo,
             Margin = new Thickness(0, 0, 0, 2),
         });
         _usagePanel.Children.Add(new TextBlock
         {
-            Text = item.품목명, FontSize = 14, FontWeight = FontWeight.Bold,
+            Text = item.품목명, FontSize = AppTheme.FontXL, FontWeight = FontWeight.Bold,
             FontFamily = FontM,
             Foreground = new SolidColorBrush(Color.Parse(GetChosungColor(item.품목명))),
             TextWrapping = TextWrapping.Wrap,
@@ -448,7 +450,7 @@ public class RiskManagePage
         if (!string.IsNullOrEmpty(item.영문명))
             _usagePanel.Children.Add(new TextBlock
             {
-                Text = item.영문명, FontSize = 10, FontFamily = FontR,
+                Text = item.영문명, FontSize = AppTheme.FontSM, FontFamily = FontR,
                 Foreground = new SolidColorBrush(Color.Parse("#667788")),
                 TextWrapping = TextWrapping.Wrap,
                 Margin = new Thickness(0, 0, 0, 14),
@@ -473,8 +475,8 @@ public class RiskManagePage
                 Child = new TextBlock
                 {
                     Text = "💡 Show3 폼에서 최대 적정보유량을 입력하면\n진행률이 표시됩니다",
-                    FontSize = 9, FontFamily = FontR,
-                    Foreground = new SolidColorBrush(Color.Parse("#555577")),
+                    FontSize = AppTheme.FontXS, FontFamily = FontR,
+                    Foreground = AppTheme.FgDimmed,
                     TextWrapping = TextWrapping.Wrap,
                 },
             });
@@ -490,14 +492,14 @@ public class RiskManagePage
         var header = new Grid { ColumnDefinitions = new ColumnDefinitions("90,*,Auto"), Margin = new Thickness(0, 0, 0, 3) };
         header.Children.Add(new TextBlock
         {
-            Text = label, FontSize = 10, FontFamily = FontR,
-            Foreground = new SolidColorBrush(Color.Parse("#999999")),
+            Text = label, FontSize = AppTheme.FontSM, FontFamily = FontR,
+            Foreground = AppTheme.FgMuted,
             VerticalAlignment = VerticalAlignment.Center,
         });
         var valTb = new TextBlock
         {
             Text = max > 0 ? $"{value:N0} / {max:N0}" : $"{value:N0}",
-            FontSize = 10, FontFamily = FontR,
+            FontSize = AppTheme.FontSM, FontFamily = FontR,
             Foreground = new SolidColorBrush(Color.Parse(over ? "#ff9999" : "#777788")),
             VerticalAlignment = VerticalAlignment.Center,
         };
@@ -520,7 +522,7 @@ public class RiskManagePage
         };
         var emptyBorder = new Border
         {
-            Background   = new SolidColorBrush(Color.Parse("#1a1a2a")),
+            Background   = AppTheme.BgPrimary,
             Height       = 10,
             CornerRadius = pct <= 0 ? new CornerRadius(3) : new CornerRadius(0, 3, 3, 0),
         };
@@ -567,7 +569,7 @@ public class RiskManagePage
         string titleColor = isNew ? "#88ccaa" : GetChosungColor(item!.품목명);
         _formPanel.Children.Add(new TextBlock
         {
-            Text = titleText, FontSize = 14, FontWeight = FontWeight.Bold,
+            Text = titleText, FontSize = AppTheme.FontXL, FontWeight = FontWeight.Bold,
             FontFamily = FontM, Foreground = new SolidColorBrush(Color.Parse(titleColor)),
             Margin = new Thickness(0, 0, 0, 10), TextWrapping = TextWrapping.Wrap,
         });
@@ -690,8 +692,8 @@ public class RiskManagePage
             };
             cell.Children.Add(new TextBlock
             {
-                Text = label, FontSize = 9, FontFamily = FontR,
-                Foreground = new SolidColorBrush(Color.Parse("#777")),
+                Text = label, FontSize = AppTheme.FontXS, FontFamily = FontR,
+                Foreground = AppTheme.FgDimmed,
             });
             cell.Children.Add(ctrl);
 
@@ -743,8 +745,8 @@ public class RiskManagePage
 
         _formPanel.Children.Add(new TextBlock
         {
-            Text = $"✏️ 초자 수정 — {item.품목명}", FontSize = 14, FontWeight = FontWeight.Bold,
-            FontFamily = FontM, Foreground = new SolidColorBrush(Color.Parse("#88aacc")),
+            Text = $"✏️ 초자 수정 — {item.품목명}", FontSize = AppTheme.FontXL, FontWeight = FontWeight.Bold,
+            FontFamily = FontM, Foreground = AppTheme.FgInfo,
             Margin = new Thickness(0, 0, 0, 10),
         });
 
@@ -775,8 +777,8 @@ public class RiskManagePage
 
         _formPanel.Children.Add(new TextBlock
         {
-            Text = "➕ 초자 신규 등록", FontSize = 14, FontWeight = FontWeight.Bold,
-            FontFamily = FontM, Foreground = new SolidColorBrush(Color.Parse("#88aacc")),
+            Text = "➕ 초자 신규 등록", FontSize = AppTheme.FontXL, FontWeight = FontWeight.Bold,
+            FontFamily = FontM, Foreground = AppTheme.FgInfo,
             Margin = new Thickness(0, 0, 0, 10),
         });
 
@@ -843,11 +845,11 @@ public class RiskManagePage
         _formPanel.Children.Add(new Border
         {
             Margin = new Thickness(0, 6, 0, 4),
-            BorderBrush = new SolidColorBrush(Color.Parse("#2a2a3a")),
+            BorderBrush = AppTheme.BorderSubtle,
             BorderThickness = new Thickness(0, 0, 0, 1),
             Child = new TextBlock
             {
-                Text = text, FontSize = 10, FontFamily = FontM,
+                Text = text, FontSize = AppTheme.FontSM, FontFamily = FontM,
                 Foreground = new SolidColorBrush(Color.Parse("#667788")),
                 Margin = new Thickness(0, 0, 0, 3),
             },
@@ -864,8 +866,8 @@ public class RiskManagePage
         var sp = new StackPanel { Spacing = 2, Margin = new Thickness(0, 0, 0, 6) };
         sp.Children.Add(new TextBlock
         {
-            Text = label, FontSize = 9, FontFamily = FontR,
-            Foreground = new SolidColorBrush(Color.Parse("#777")),
+            Text = label, FontSize = AppTheme.FontXS, FontFamily = FontR,
+            Foreground = AppTheme.FgDimmed,
         });
         sp.Children.Add(ctrl);
         _formPanel.Children.Add(sp);
@@ -935,10 +937,10 @@ public class RiskManagePage
     {
         Watermark       = hint,
         FontFamily      = FontR,
-        FontSize        = 12,
-        Background      = new SolidColorBrush(Color.Parse("#1e1e2a")),
-        Foreground      = new SolidColorBrush(Color.Parse("#dddddd")),
-        BorderBrush     = new SolidColorBrush(Color.Parse("#333344")),
+        FontSize        = AppTheme.FontMD,
+        Background      = AppTheme.BgPrimary,
+        Foreground      = AppTheme.FgPrimary,
+        BorderBrush     = AppTheme.BorderSubtle,
         BorderThickness = new Thickness(1),
         CornerRadius    = new CornerRadius(4),
         Padding         = new Thickness(8, 5),
@@ -948,10 +950,10 @@ public class RiskManagePage
     {
         var cb = new ComboBox
         {
-            FontFamily  = FontR, FontSize = 12,
-            Background  = new SolidColorBrush(Color.Parse("#1e1e2a")),
-            Foreground  = new SolidColorBrush(Color.Parse("#dddddd")),
-            BorderBrush = new SolidColorBrush(Color.Parse("#333344")),
+            FontFamily  = FontR, FontSize = AppTheme.FontMD,
+            Background  = AppTheme.BgPrimary,
+            Foreground  = AppTheme.FgPrimary,
+            BorderBrush = AppTheme.BorderSubtle,
             HorizontalAlignment = HorizontalAlignment.Stretch,
         };
         foreach (var s in items) cb.Items.Add(new ComboBoxItem { Content = s });
@@ -966,7 +968,7 @@ public class RiskManagePage
         Height          = 30,
         Padding         = new Thickness(14, 0),
         FontFamily      = FontR,
-        FontSize        = 11,
+        FontSize        = AppTheme.FontBase,
         Background      = new SolidColorBrush(Color.Parse(bg)),
         Foreground      = new SolidColorBrush(Color.Parse(fg)),
         BorderThickness = new Thickness(0),

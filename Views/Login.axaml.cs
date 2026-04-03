@@ -1,6 +1,11 @@
+using Avalonia;
+using Avalonia.Animation;
+using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Media;
+using Avalonia.Styling;
 using System;
 using System.IO;
 using System.Diagnostics;
@@ -137,7 +142,7 @@ public partial class Login : Window
         }
 
         Log("[DoLogin] 로그인 성공 → Lottie 재생");
-        loginForm.IsVisible = false;
+        await AnimateLoginFormOut();
         PlayLottieAndNavigate(empId);
         }
         catch (Exception ex)
@@ -209,12 +214,13 @@ public partial class Login : Window
         MainPage.CurrentEmployeeId = empId;
 
         var main = new MainPage();
-        // 로그인 창과 같은 위치·크기로 열기
+        // 로그인 창과 같은 위치·크기로 열기 (이후 애니메이션 확장)
         main.WindowStartupLocation = WindowStartupLocation.Manual;
-        main.Position = this.Position;
-        main.Width    = this.Width;
-        main.Height   = this.Height;
+        main.Position    = this.Position;
+        main.Width       = this.Width;
+        main.Height      = this.Height;
         main.WindowState = this.WindowState;
+        main.AnimateExpand(this.Width, this.Height, this.Position);
         main.Show();
         Close();
     }
@@ -302,7 +308,7 @@ public partial class Login : Window
     private int _titleClickCount;
     private DateTime _titleLastClick = DateTime.MinValue;
 
-    private void Title_Click(object? sender, PointerPressedEventArgs e)
+    private async void Title_Click(object? sender, PointerPressedEventArgs e)
     {
         var now = DateTime.Now;
         if ((now - _titleLastClick).TotalSeconds > 3) _titleClickCount = 0;
@@ -313,16 +319,53 @@ public partial class Login : Window
         {
             _titleClickCount = 0;
             Log("[EasterEgg] 관리자 자동 로그인");
-            loginForm.IsVisible = false;
+            await AnimateLoginFormOut();
             PlayLottieAndNavigate("201000308");
         }
     }
 
-    private void ShowError(string msg)
+    // ── 로그인 폼 페이드아웃 + 슬라이드업 애니메이션 ──────────────────────
+    private async Task AnimateLoginFormOut()
+    {
+        var animation = new Animation
+        {
+            Duration = TimeSpan.FromMilliseconds(350),
+            Easing = new CubicEaseIn(),
+            FillMode = FillMode.Forward,
+            Children =
+            {
+                new KeyFrame
+                {
+                    Cue = new Cue(0),
+                    Setters =
+                    {
+                        new Setter(OpacityProperty, 1.0),
+                        new Setter(TranslateTransform.YProperty, 0.0)
+                    }
+                },
+                new KeyFrame
+                {
+                    Cue = new Cue(1),
+                    Setters =
+                    {
+                        new Setter(OpacityProperty, 0.0),
+                        new Setter(TranslateTransform.YProperty, -30.0)
+                    }
+                }
+            }
+        };
+        await animation.RunAsync(loginForm);
+        loginForm.IsVisible = false;
+    }
+
+    private async void ShowError(string msg)
     {
         if (txtError == null) return;
-        txtError.Foreground = Avalonia.Media.Brush.Parse("#EF4444");
-        txtError.Text       = msg;
-        txtError.IsVisible  = true;
+        txtError.Foreground = Brush.Parse("#EF4444");
+        txtError.Opacity = 0;
+        txtError.Text = msg;
+        txtError.IsVisible = true;
+        await Task.Delay(16); // 1프레임 대기 후 트랜지션 발동
+        txtError.Opacity = 1;
     }
 }

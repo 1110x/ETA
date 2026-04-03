@@ -311,7 +311,7 @@ public static class TestReportGdiPrinter
     private static Font F(float pt, bool bold = false)
     {
         var style = bold ? FontStyle.Bold : FontStyle.Regular;
-        try   { return new Font("KBIZ한마음고딕 M", pt, style, GraphicsUnit.Point); }
+        try   { return new Font("Pretendard", pt, style, GraphicsUnit.Point); }
         catch { return new Font("맑은 고딕",         pt, style, GraphicsUnit.Point); }
     }
 

@@ -1,5 +1,7 @@
 using Avalonia;
+using ETA.Views;
 using Avalonia.Controls;
+using ETA.Views;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
@@ -23,7 +25,7 @@ namespace ETA.Views;
 public class OrderRequestWindow : Window
 {
     private static readonly FontFamily Font =
-        new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
+        new("avares://ETA/Assets/Fonts#Pretendard");
 
     private readonly QuotationIssue  _issue;
     private readonly HashSet<string> _analysisItems;
@@ -55,7 +57,7 @@ public class OrderRequestWindow : Window
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
         // 기본 시스템 데코레이션(이동+최소/최대/닫기) 유지
         SystemDecorations     = SystemDecorations.Full;
-        Background            = Brush.Parse("#1a1a2a");
+        Background            = AppTheme.BgPrimary;
 
         Content = BuildUI();
         LoadSampleNames();
@@ -73,13 +75,13 @@ public class OrderRequestWindow : Window
                 new TextBlock
                 {
                     Text = "📋  의뢰서 작성",
-                    FontSize = 14, FontWeight = FontWeight.Bold,
-                    FontFamily = Font, Foreground = Brush.Parse("#e0e0e0"),
+                    FontSize = AppTheme.FontXL, FontWeight = FontWeight.Bold,
+                    FontFamily = Font, Foreground = AppTheme.FgPrimary,
                 },
                 new TextBlock
                 {
                     Text = $"업체: {_issue.업체명}  |  견적번호: {_issue.견적번호}",
-                    FontSize = 10, FontFamily = Font,
+                    FontSize = AppTheme.FontSM, FontFamily = Font,
                     Foreground = Brush.Parse("#777799"),
                 },
             }
@@ -91,8 +93,8 @@ public class OrderRequestWindow : Window
             IsChecked   = true,
             OnContent   = "측정인 채취지점",
             OffContent  = "기존 목록",
-            FontSize    = 10, FontFamily = Font,
-            Foreground  = Brush.Parse("#aaaacc"),
+            FontSize    = AppTheme.FontSM, FontFamily = Font,
+            Foreground  = AppTheme.FgInfo,
             Margin      = new Thickness(0, 0, 0, 6),
         };
         _tglMeasurer.IsCheckedChanged += (_, _) => ReloadList();
@@ -100,8 +102,8 @@ public class OrderRequestWindow : Window
         // 매칭 정보
         _txbInfo = new TextBlock
         {
-            FontSize = 10, FontFamily = Font,
-            Foreground = Brush.Parse("#88aacc"),
+            FontSize = AppTheme.FontSM, FontFamily = Font,
+            Foreground = AppTheme.FgInfo,
             TextWrapping = Avalonia.Media.TextWrapping.Wrap,
             Margin = new Thickness(0, 0, 0, 8),
         };
@@ -109,17 +111,17 @@ public class OrderRequestWindow : Window
         // 전체선택/해제 버튼
         var btnAll = new Button
         {
-            Content = "전체 선택", Height = 22, FontSize = 10,
-            FontFamily = Font, Background = Brush.Parse("#2a2a3a"),
-            Foreground = Brush.Parse("#aaa"), BorderThickness = new Thickness(0),
+            Content = "전체 선택", Height = 22, FontSize = AppTheme.FontSM,
+            FontFamily = Font, Background = AppTheme.BorderSubtle,
+            Foreground = AppTheme.FgMuted, BorderThickness = new Thickness(0),
             CornerRadius = new CornerRadius(3), Padding = new Thickness(8, 0),
             Margin = new Thickness(0, 0, 6, 0),
         };
         var btnNone = new Button
         {
-            Content = "전체 해제", Height = 22, FontSize = 10,
-            FontFamily = Font, Background = Brush.Parse("#2a2a3a"),
-            Foreground = Brush.Parse("#aaa"), BorderThickness = new Thickness(0),
+            Content = "전체 해제", Height = 22, FontSize = AppTheme.FontSM,
+            FontFamily = Font, Background = AppTheme.BorderSubtle,
+            Foreground = AppTheme.FgMuted, BorderThickness = new Thickness(0),
             CornerRadius = new CornerRadius(3), Padding = new Thickness(8, 0),
         };
         btnAll.Click  += (_, _) => SetAllChecked(true);
@@ -140,27 +142,27 @@ public class OrderRequestWindow : Window
             VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
             HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
             Height = 260,
-            Background = Brush.Parse("#13131f"),
+            Background = AppTheme.BgPrimary,
         };
 
         // 시료명 추가
         var addLabel = new TextBlock
         {
-            Text = "시료명 추가", FontSize = 10, FontFamily = Font,
-            Foreground = Brush.Parse("#666"), Margin = new Thickness(0, 10, 0, 4),
+            Text = "시료명 추가", FontSize = AppTheme.FontSM, FontFamily = Font,
+            Foreground = AppTheme.FgDimmed, Margin = new Thickness(0, 10, 0, 4),
         };
         _txbNew = new TextBox
         {
-            Watermark = "새 시료명 입력", Height = 28, FontSize = 11,
-            FontFamily = Font, Background = Brush.Parse("#1e1e2e"),
-            Foreground = Brush.Parse("#ddd"), BorderBrush = Brush.Parse("#444"),
+            Watermark = "새 시료명 입력", Height = 28, FontSize = AppTheme.FontBase,
+            FontFamily = Font, Background = AppTheme.BgPrimary,
+            Foreground = AppTheme.FgPrimary, BorderBrush = AppTheme.BorderMuted,
             Padding = new Thickness(8, 0),
         };
         var btnAdd = new Button
         {
-            Content = "➕ 추가", Height = 28, FontSize = 11,
-            FontFamily = Font, Background = Brush.Parse("#2a3a2a"),
-            Foreground = Brush.Parse("#88cc88"), BorderThickness = new Thickness(0),
+            Content = "➕ 추가", Height = 28, FontSize = AppTheme.FontBase,
+            FontFamily = Font, Background = AppTheme.BgActiveGreen,
+            Foreground = AppTheme.FgSuccess, BorderThickness = new Thickness(0),
             CornerRadius = new CornerRadius(3), Padding = new Thickness(12, 0),
         };
         btnAdd.Click += BtnAdd_Click;
@@ -173,7 +175,7 @@ public class OrderRequestWindow : Window
         // 상태
         _txbStatus = new TextBlock
         {
-            FontSize = 10, FontFamily = Font,
+            FontSize = AppTheme.FontSM, FontFamily = Font,
             IsVisible = false, Margin = new Thickness(0, 2, 0, 0),
         };
 
@@ -181,8 +183,8 @@ public class OrderRequestWindow : Window
         _btnNext = new Button
         {
             Content = "다음 →  편집 화면으로",
-            Height = 34, FontSize = 12, FontFamily = Font,
-            Background = Brush.Parse("#1a4a2a"), Foreground = Brush.Parse("#88ee88"),
+            Height = 34, FontSize = AppTheme.FontMD, FontFamily = Font,
+            Background = AppTheme.BgActiveGreen, Foreground = AppTheme.FgSuccess,
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
             HorizontalAlignment = HorizontalAlignment.Stretch,
             HorizontalContentAlignment = HorizontalAlignment.Center,
@@ -199,7 +201,7 @@ public class OrderRequestWindow : Window
                 Children =
                 {
                     headerInfo,
-                    new Border { Height = 1, Background = Brush.Parse("#333"), Margin = new Thickness(0,0,0,8) },
+                    new Border { Height = 1, Background = AppTheme.BorderSubtle, Margin = new Thickness(0,0,0,8) },
                     _tglMeasurer,
                     _txbInfo,
                     selBtns,
@@ -230,13 +232,13 @@ public class OrderRequestWindow : Window
         if (points.Count > 0)
         {
             _txbInfo.Text       = $"✅ 측정인 채취지점 {points.Count}개  ({_matchedMeasurerCompany})";
-            _txbInfo.Foreground = Brush.Parse("#88cc88");
+            _txbInfo.Foreground = AppTheme.FgSuccess;
             LoadCheckboxes(points);
         }
         else
         {
             _txbInfo.Text       = $"⚠️ 측정인 DB에서 '{_issue.업체명}' 현장을 찾지 못했습니다.";
-            _txbInfo.Foreground = Brush.Parse("#f0c040");
+            _txbInfo.Foreground = AppTheme.FgWarn;
             _cbPanel.Children.Clear();
             UpdateNextButton();
         }
@@ -248,7 +250,7 @@ public class OrderRequestWindow : Window
         if (_matchedColumn == null)
         {
             _txbInfo.Text       = $"ℹ️ '{_issue.업체명}' 컬럼이 없습니다. 하단에서 시료명을 추가하면 자동 생성됩니다.";
-            _txbInfo.Foreground = Brush.Parse("#aaaacc");
+            _txbInfo.Foreground = AppTheme.FgInfo;
             _cbPanel.Children.Clear();
             UpdateNextButton();
             return;
@@ -259,7 +261,7 @@ public class OrderRequestWindow : Window
         _txbInfo.Text       = exact
             ? $"✅ 매칭: {_matchedColumn}"
             : $"🔍 유사매칭: {_matchedColumn}  (입력: {_issue.업체명})";
-        _txbInfo.Foreground = exact ? Brush.Parse("#88cc88") : Brush.Parse("#f0c040");
+        _txbInfo.Foreground = exact ? AppTheme.FgSuccess : AppTheme.FgWarn;
         RefreshCheckboxes();
     }
 
@@ -342,8 +344,8 @@ public class OrderRequestWindow : Window
         {
             Content    = name,
             IsChecked  = false,
-            FontSize   = 11, FontFamily = Font,
-            Foreground = Brush.Parse("#cccccc"),
+            FontSize   = AppTheme.FontBase, FontFamily = Font,
+            Foreground = AppTheme.FgSecondary,
             Padding    = new Thickness(6, 0),
         };
         cb.IsCheckedChanged += (_, _) => UpdateNextButton();
@@ -397,7 +399,7 @@ public class OrderRequestWindow : Window
             }
             _matchedColumn = colName;
             _txbInfo.Text       = $"✅ '{colName}' 컬럼 자동 생성";
-            _txbInfo.Foreground = Brush.Parse("#88cc88");
+            _txbInfo.Foreground = AppTheme.FgSuccess;
         }
 
         bool ok = OrderRequestService.AddSampleName(_matchedColumn, name);
@@ -426,7 +428,7 @@ public class OrderRequestWindow : Window
     private void ShowStatus(string msg, bool error = false)
     {
         _txbStatus.Text       = msg;
-        _txbStatus.Foreground = error ? Brush.Parse("#f08080") : Brush.Parse("#88ee88");
+        _txbStatus.Foreground = error ? AppTheme.FgDanger : AppTheme.FgSuccess;
         _txbStatus.IsVisible  = true;
     }
 }

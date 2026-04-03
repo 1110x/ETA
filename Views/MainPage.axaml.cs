@@ -1,10 +1,15 @@
 using Avalonia;
+using Avalonia.Animation;
+using Avalonia.Animation.Easings;
 using Avalonia.Controls;
+using Avalonia.Controls.Presenters;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Styling;
+using Avalonia.Threading;
+using Avalonia.VisualTree;
 using ETA.Models;
 using ETA.Services;
 using ETA.Services.SERVICE1;
@@ -82,6 +87,10 @@ public partial class MainPage : Window
 
     private System.Action? _bt1SaveAction;
 
+    // ── Show2/Show3 영속 래퍼 (직원정보 등 — 내부 CrossFade, 외부 슬라이드 방지) ──
+    private TransitioningContentControl? _show2AgentWrapper;
+    private TransitioningContentControl? _show3AgentWrapper;
+
     // ── 마지막으로 표시된 issue 캐시 (트리뷰 선택 null 시 복원용) ─────
     private ETA.Models.QuotationIssue? _lastShownIssue;
 
@@ -93,19 +102,319 @@ public partial class MainPage : Window
     {
         InitializeComponent();
         DataContext = new MainWindowViewModel();
-        ApplyTheme(true);
-        
+        ApplyTheme(0);
+
         // WindowPositionManager 초기화
         _positionManager = new WindowPositionManager(CurrentUserManager.Instance.CurrentUserId);
-        
+
         // 윈도우 이벤트 연결
         this.Opened += MainPage_Opened;
         this.Closing += MainPage_Closing;
+
+        // SubMenu 버튼 호버 시 텍스트 그라데이션 효과
+        TextShimmer.AttachHover(BT1); TextShimmer.AttachHover(BT2);
+        TextShimmer.AttachHover(BT3); TextShimmer.AttachHover(BT4);
+        TextShimmer.AttachHover(BT5); TextShimmer.AttachHover(BT6);
+        TextShimmer.AttachHover(BT7); TextShimmer.AttachHover(BT8);
+
+        // Show1 / Show4 패널 호버 shimmer
+        this.Loaded += (_, _) =>
+        {
+            var show1Border = this.FindControl<Border>("Show1Border");
+            var content4Border = this.FindControl<Border>("Content4Border");
+            if (show1Border != null)    TextShimmer.AttachPanelHover(show1Border);
+            if (content4Border != null) TextShimmer.AttachPanelHover(content4Border);
+        };
+    }
+
+    // ── 글로벌 키보드 단축키 ──
+    protected override void OnKeyDown(KeyEventArgs e)
+    {
+        base.OnKeyDown(e);
+        if (e.KeyModifiers == KeyModifiers.Control && e.Key == Key.S)
+        {
+            e.Handled = true;
+            BT1_Click(null, new RoutedEventArgs());
+        }
+    }
+
+    // ── Show3 접기/펼치기 ──
+    private GridLength _show3SavedHeight = new GridLength(192, GridUnitType.Star);
+    private bool _show3Collapsed;
+
+    // ── 레이아웃 모드: "default" = Show3 하단 전체폭, "split" = Show4 풀하이트 ──
+    private string _layoutMode = "default";
+
+    private void BtnToggleShow3_Click(object? sender, RoutedEventArgs e)
+    {
+        var grid = this.FindControl<Grid>("RightSplitGrid");
+        if (grid == null) return;
+
+        var rowDef = grid.RowDefinitions[2]; // Show3 row
+        if (_show3Collapsed)
+        {
+            rowDef.Height = _show3SavedHeight;
+            LowerBorder.IsVisible = true;
+            VerticalSplitter.IsVisible = true;
+            btnToggleShow3.Content = "▼";
+            _show3Collapsed = false;
+        }
+        else
+        {
+            _show3SavedHeight = rowDef.Height;
+            rowDef.Height = new GridLength(0);
+            LowerBorder.IsVisible = false;
+            VerticalSplitter.IsVisible = false;
+            btnToggleShow3.Content = "▲";
+            _show3Collapsed = true;
+        }
+    }
+
+    private void BtnLayoutToggle_Click(object? sender, RoutedEventArgs e)
+    {
+        // Show3 버튼: default ↔ split (Show4 풀하이트)
+        var newMode = _layoutMode == "split" ? "default" : "split";
+        SetPanelLayout(newMode);
+    }
+
+    private void BtnLayoutToggle2_Click(object? sender, RoutedEventArgs e)
+    {
+        // Show2 버튼: default ↔ expand2 (Show2 풀하이트)
+        var newMode = _layoutMode == "expand2" ? "default" : "expand2";
+        SetPanelLayout(newMode);
+    }
+
+    private void BtnLayoutToggle4_Click(object? sender, RoutedEventArgs e)
+    {
+        // Show4 버튼: default ↔ split (Show4 풀하이트)
+        var newMode = _layoutMode == "split" ? "default" : "split";
+        SetPanelLayout(newMode);
+    }
+
+    private void BtnLayoutToggle4Top_Click(object? sender, RoutedEventArgs e)
+    {
+        // Show4 상단 버튼: default ↔ expand2top (Show4 하단이동 + Show2 상단 확장)
+        var newMode = _layoutMode == "expand2top" ? "default" : "expand2top";
+        SetPanelLayout(newMode);
+    }
+
+    /// <summary>
+    /// 레이아웃 모드 전환.
+    /// "default":    Show2+Show4 상단, Show3 하단 전체폭
+    /// "split":      Show2+Show3 좌측 상하, Show4 우측 풀하이트
+    /// "expand2":    Show2 좌측 풀하이트, Show4+Show3 우측 상하
+    /// "expand2top": Show2 상단 전체폭, Show3+Show4 하단 좌우
+    /// </summary>
+    private void SetPanelLayout(string mode)
+    {
+        _layoutMode = mode;
+        var grid = this.FindControl<Grid>("RightSplitGrid");
+        if (grid == null) return;
+
+        var c2 = this.FindControl<Border>("Content2Border");
+        var c4 = this.FindControl<Border>("Content4Border");
+        var lb = this.FindControl<Border>("LowerBorder");
+        var hs = this.FindControl<GridSplitter>("HorizontalSplitter");
+        var vs = this.FindControl<GridSplitter>("VerticalSplitter");
+        var tb = this.FindControl<Button>("btnToggleShow3");
+        if (c2 == null || c4 == null || lb == null || hs == null || vs == null) return;
+
+        if (mode == "split")
+        {
+            // Show2: Row=0, Col=0
+            Grid.SetRow(c2, 0); Grid.SetColumn(c2, 0);
+            Grid.SetRowSpan(c2, 1); Grid.SetColumnSpan(c2, 1);
+
+            // Show3: Row=2, Col=0 (Show2 아래)
+            Grid.SetRow(lb, 2); Grid.SetColumn(lb, 0);
+            Grid.SetRowSpan(lb, 1); Grid.SetColumnSpan(lb, 1);
+
+            // Show4: Row=0, Col=2, RowSpan=3 (풀하이트)
+            Grid.SetRow(c4, 0); Grid.SetColumn(c4, 2);
+            Grid.SetRowSpan(c4, 3); Grid.SetColumnSpan(c4, 1);
+
+            // 좌우 스플리터: 전체 높이
+            Grid.SetRow(hs, 0); Grid.SetColumn(hs, 1);
+            Grid.SetRowSpan(hs, 3); Grid.SetColumnSpan(hs, 1);
+
+            // 상하 스플리터: 좌측 열만
+            Grid.SetRow(vs, 1); Grid.SetColumn(vs, 0);
+            Grid.SetRowSpan(vs, 1); Grid.SetColumnSpan(vs, 1);
+
+            if (tb != null)
+            {
+                Grid.SetRow(tb, 1); Grid.SetColumn(tb, 0);
+                Grid.SetColumnSpan(tb, 1);
+            }
+        }
+        else if (mode == "expand2")
+        {
+            // Show2: Row=0, Col=0, RowSpan=3 (풀하이트)
+            Grid.SetRow(c2, 0); Grid.SetColumn(c2, 0);
+            Grid.SetRowSpan(c2, 3); Grid.SetColumnSpan(c2, 1);
+
+            // Show4: Row=0, Col=2
+            Grid.SetRow(c4, 0); Grid.SetColumn(c4, 2);
+            Grid.SetRowSpan(c4, 1); Grid.SetColumnSpan(c4, 1);
+
+            // Show3: Row=2, Col=2 (Show4 아래)
+            Grid.SetRow(lb, 2); Grid.SetColumn(lb, 2);
+            Grid.SetRowSpan(lb, 1); Grid.SetColumnSpan(lb, 1);
+
+            // 좌우 스플리터: 전체 높이
+            Grid.SetRow(hs, 0); Grid.SetColumn(hs, 1);
+            Grid.SetRowSpan(hs, 3); Grid.SetColumnSpan(hs, 1);
+
+            // 상하 스플리터: 우측 열만
+            Grid.SetRow(vs, 1); Grid.SetColumn(vs, 2);
+            Grid.SetRowSpan(vs, 1); Grid.SetColumnSpan(vs, 1);
+
+            if (tb != null)
+            {
+                Grid.SetRow(tb, 1); Grid.SetColumn(tb, 2);
+                Grid.SetColumnSpan(tb, 1);
+            }
+        }
+        else if (mode == "expand2top")
+        {
+            // Show2: Row=0, Col=0, ColSpan=3 (상단 전체폭 확장)
+            Grid.SetRow(c2, 0); Grid.SetColumn(c2, 0);
+            Grid.SetRowSpan(c2, 1); Grid.SetColumnSpan(c2, 3);
+
+            // Show4: Row=2, Col=2 (하단 우측)
+            Grid.SetRow(c4, 2); Grid.SetColumn(c4, 2);
+            Grid.SetRowSpan(c4, 1); Grid.SetColumnSpan(c4, 1);
+
+            // Show3: Row=2, Col=0 (하단 좌측)
+            Grid.SetRow(lb, 2); Grid.SetColumn(lb, 0);
+            Grid.SetRowSpan(lb, 1); Grid.SetColumnSpan(lb, 1);
+
+            // 좌우 스플리터: 하단 행 (Show3 ↔ Show4 사이)
+            Grid.SetRow(hs, 2); Grid.SetColumn(hs, 1);
+            Grid.SetRowSpan(hs, 1); Grid.SetColumnSpan(hs, 1);
+
+            // 상하 스플리터: 전체 폭
+            Grid.SetRow(vs, 1); Grid.SetColumn(vs, 0);
+            Grid.SetRowSpan(vs, 1); Grid.SetColumnSpan(vs, 3);
+
+            if (tb != null)
+            {
+                Grid.SetRow(tb, 1); Grid.SetColumn(tb, 0);
+                Grid.SetColumnSpan(tb, 3);
+            }
+        }
+        else // "default"
+        {
+            // Show2: Row=0, Col=0
+            Grid.SetRow(c2, 0); Grid.SetColumn(c2, 0);
+            Grid.SetRowSpan(c2, 1); Grid.SetColumnSpan(c2, 1);
+
+            // Show4: Row=0, Col=2
+            Grid.SetRow(c4, 0); Grid.SetColumn(c4, 2);
+            Grid.SetRowSpan(c4, 1); Grid.SetColumnSpan(c4, 1);
+
+            // Show3: Row=2, Col=0, ColSpan=3 (전체 폭)
+            Grid.SetRow(lb, 2); Grid.SetColumn(lb, 0);
+            Grid.SetRowSpan(lb, 1); Grid.SetColumnSpan(lb, 3);
+
+            // 좌우 스플리터: 상단만
+            Grid.SetRow(hs, 0); Grid.SetColumn(hs, 1);
+            Grid.SetRowSpan(hs, 1); Grid.SetColumnSpan(hs, 1);
+
+            // 상하 스플리터: 전체 폭
+            Grid.SetRow(vs, 1); Grid.SetColumn(vs, 0);
+            Grid.SetRowSpan(vs, 1); Grid.SetColumnSpan(vs, 3);
+
+            if (tb != null)
+            {
+                Grid.SetRow(tb, 1); Grid.SetColumn(tb, 0);
+                Grid.SetColumnSpan(tb, 3);
+            }
+        }
+
+        // 버튼 아이콘 갱신
+        btnLayoutToggle.Content     = mode == "split"      ? "◢" : "◤";
+        btnLayoutToggle2.Content    = mode == "expand2"    ? "◤" : "◣";
+        btnLayoutToggle4.Content    = mode == "split"      ? "◥" : "◤";
+        if (btnLayoutToggle4Top != null)
+            btnLayoutToggle4Top.Content = mode == "expand2top" ? "▲" : "▼";
+    }
+
+    // ── 로그인 → 메인 전환 확장 애니메이션 ────────────────────────────────
+    private double _expandFromW, _expandFromH;
+    private PixelPoint _expandFromPos;
+    private bool _shouldAnimate;
+
+    public void AnimateExpand(double fromW, double fromH, PixelPoint fromPos)
+    {
+        _expandFromW = fromW;
+        _expandFromH = fromH;
+        _expandFromPos = fromPos;
+        _shouldAnimate = true;
+    }
+
+    private async void RunExpandAnimation()
+    {
+        if (!_shouldAnimate) return;
+        _shouldAnimate = false;
+
+        double targetW = _expandFromW * 1.5;
+        double targetH = _expandFromH * 1.5;
+
+        // 화면 크기 제한
+        var screen = Screens.Primary ?? Screens.All.FirstOrDefault();
+        if (screen != null)
+        {
+            var wa = screen.WorkingArea;
+            double maxW = wa.Width / screen.Scaling;
+            double maxH = wa.Height / screen.Scaling;
+            if (targetW > maxW) targetW = maxW;
+            if (targetH > maxH) targetH = maxH;
+        }
+
+        int steps = 30;
+        double duration = 400; // ms
+        double stepMs = duration / steps;
+
+        double startW = _expandFromW;
+        double startH = _expandFromH;
+        double startX = _expandFromPos.X;
+        double startY = _expandFromPos.Y;
+
+        // 최종 위치: 중앙 유지
+        double scaling = screen?.Scaling ?? 1.0;
+        double endX = startX - (targetW - startW) * scaling / 2;
+        double endY = startY - (targetH - startH) * scaling / 2;
+
+        // 화면 밖으로 나가지 않도록 보정
+        if (endX < 0) endX = 0;
+        if (endY < 0) endY = 0;
+
+        for (int i = 1; i <= steps; i++)
+        {
+            double t = (double)i / steps;
+            // CubicEaseOut: t = 1 - (1-t)^3
+            double ease = 1 - Math.Pow(1 - t, 3);
+
+            Width  = startW + (targetW - startW) * ease;
+            Height = startH + (targetH - startH) * ease;
+            Position = new PixelPoint(
+                (int)(startX + (endX - startX) * ease),
+                (int)(startY + (endY - startY) * ease));
+
+            await Task.Delay((int)stepMs);
+        }
+
+        // 최종 값 보정
+        Width = targetW;
+        Height = targetH;
+        Position = new PixelPoint((int)endX, (int)endY);
     }
 
     private void MainPage_Opened(object? sender, EventArgs e)
     {
         System.Diagnostics.Debug.WriteLine("[MainPage] Opened 이벤트");
+        RunExpandAnimation();
         LoadProfileInfo();
 
         // 서버 연결 시 오늘까지 업무분장 자동 연장
@@ -117,6 +426,11 @@ public partial class MainPage : Window
         ApplyFontScale(savedScale);
         if (sldFontSize != null) sldFontSize.Value = savedScale;
         if (txbFontScale != null) txbFontScale.Text = $"{(int)(savedScale * 100)}%";
+
+        // MenuItem 호버 시 텍스트 그라데이션 효과
+        foreach (var mi in this.GetVisualDescendants().OfType<MenuItem>())
+            TextShimmer.AttachHover(mi);
+
     }
 
     private void LoadProfileInfo()
@@ -183,7 +497,7 @@ public partial class MainPage : Window
         // ── 리스트박스 ────────────────────────────────────────────────────
         _analysisItemsListBox = new ListBox
         {
-            Background      = new SolidColorBrush(Color.Parse("#1e1e2e")),
+            Background      = AppTheme.BgPrimary,
             BorderThickness = new Thickness(0),
             SelectionMode   = SelectionMode.Multiple,
             Margin          = new Thickness(2, 0, 2, 2),
@@ -194,11 +508,11 @@ public partial class MainPage : Window
         var txbRange = new TextBlock
         {
             Text              = DateTime.Today.ToString("yyyy-MM-dd"),
-            FontSize          = 10,
-            Foreground        = new SolidColorBrush(Color.Parse("#aaaaaa")),
+            FontSize          = AppTheme.FontSM,
+            Foreground        = AppTheme.FgMuted,
             VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
             MinWidth          = 160,
-            FontFamily        = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+            FontFamily        = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
         };
 
         var btnCal = new Button
@@ -206,12 +520,12 @@ public partial class MainPage : Window
             Content         = "📅",
             Width           = 28,
             Height          = 22,
-            FontSize        = 11,
+            FontSize        = AppTheme.FontBase,
             Padding         = new Thickness(0),
             Background      = new SolidColorBrush(Color.Parse("#2a3a4a")),
-            Foreground      = new SolidColorBrush(Color.Parse("#aaaaaa")),
+            Foreground      = AppTheme.FgMuted,
             BorderThickness = new Thickness(1),
-            BorderBrush     = new SolidColorBrush(Color.Parse("#555555")),
+            BorderBrush     = AppTheme.BorderDefault,
         };
         ToolTip.SetTip(btnCal, "기간 선택 (드래그로 범위 설정)");
 
@@ -220,12 +534,12 @@ public partial class MainPage : Window
             Content         = "오늘",
             Width           = 42,
             Height          = 22,
-            FontSize        = 10,
+            FontSize        = AppTheme.FontSM,
             Padding         = new Thickness(4, 0),
             Background      = new SolidColorBrush(Color.Parse("#3a5a3a")),
-            Foreground      = new SolidColorBrush(Color.Parse("#aaaaaa")),
+            Foreground      = AppTheme.FgMuted,
             BorderThickness = new Thickness(1),
-            BorderBrush     = new SolidColorBrush(Color.Parse("#666666")),
+            BorderBrush     = AppTheme.BorderMuted,
         };
 
         var dateRow = new StackPanel
@@ -245,11 +559,17 @@ public partial class MainPage : Window
             IsVisible     = false,
             Margin        = new Thickness(4, 0, 4, 2),
             DisplayDate   = DateTime.Today,
+            Focusable     = true,
         };
         calendar.SelectedDates.Add(DateTime.Today);
+        calendar.KeyDown += (_, e) =>
+        {
+            if (e.Key == Key.Escape && calendar.IsVisible)
+            { calendar.IsVisible = false; e.Handled = true; }
+        };
 
         // ── 이벤트 연결 ───────────────────────────────────────────────────
-        btnCal.Click += (_, _) => calendar.IsVisible = !calendar.IsVisible;
+        btnCal.Click += (_, _) => { calendar.IsVisible = !calendar.IsVisible; if (calendar.IsVisible) calendar.Focus(); };
 
         btnToday.Click += (_, _) =>
         {
@@ -273,10 +593,46 @@ public partial class MainPage : Window
                 calendar.IsVisible = false;
         };
 
+        // ── 검색창 ────────────────────────────────────────────────────────
+        var searchBox = new TextBox
+        {
+            Watermark       = "\ud83d\udd0d \ubd84\uc11d\ud56d\ubaa9 \uac80\uc0c9...",
+            FontSize        = AppTheme.FontMD,
+            FontFamily      = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+            Height          = 32,
+            Margin          = new Thickness(4, 2, 4, 4),
+            CornerRadius    = new CornerRadius(6),
+            Padding         = new Thickness(8, 5),
+            BorderThickness = new Thickness(1),
+            BorderBrush     = AppTheme.BorderDefault,
+            Background      = AppTheme.BgPrimary,
+            Foreground      = AppTheme.FgPrimary,
+        };
+        // 한글 IME 안전: TextChanged → 400ms 디바운스 후 검색
+        DispatcherTimer? searchTimer = null;
+        searchBox.TextChanged += (_, _) =>
+        {
+            searchTimer?.Stop();
+            searchTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(400) };
+            searchTimer.Tick += (_, _) =>
+            {
+                searchTimer!.Stop();
+                if (_analysisItemsListBox == null) return;
+                var q = searchBox.Text?.Trim().ToLower() ?? "";
+                foreach (var item in _analysisItemsListBox.Items.OfType<ListBoxItem>())
+                {
+                    var name = item.Tag as string ?? "";
+                    item.IsVisible = string.IsNullOrEmpty(q) || name.ToLower().Contains(q);
+                }
+            };
+            searchTimer.Start();
+        };
+
         // ── 분석항목 컨테이너 (DockPanel) ────────────────────────────────
         var header = new StackPanel { Spacing = 0 };
         header.Children.Add(dateRow);
         header.Children.Add(calendar);
+        header.Children.Add(searchBox);
 
         var dock = new DockPanel { LastChildFill = true };
         DockPanel.SetDock(header, Dock.Top);
@@ -312,9 +668,9 @@ public partial class MainPage : Window
                     var name = new TextBlock
                     {
                         Text              = c.C_CompanyName,
-                        FontSize          = 11,
-                        Foreground        = new SolidColorBrush(Color.Parse("#cccccc")),
-                        FontFamily        = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                        FontSize          = AppTheme.FontBase,
+                        Foreground        = AppTheme.FgSecondary,
+                        FontFamily        = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                         VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
                         TextTrimming      = TextTrimming.CharacterEllipsis,
                     };
@@ -334,9 +690,9 @@ public partial class MainPage : Window
                             Child             = new TextBlock
                             {
                                 Text       = c.C_Abbreviation,
-                                FontSize   = 9,
+                                FontSize   = AppTheme.FontXS,
                                 Foreground = new SolidColorBrush(Color.Parse(fg)),
-                                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                             },
                         };
                         inner.Children.Add(badge);
@@ -348,10 +704,10 @@ public partial class MainPage : Window
                 if (contracts.Count == 0)
                     contractStack.Children.Add(new TextBlock
                     {
-                        Text = "계약업체 없음", FontSize = 11,
-                        Foreground = new SolidColorBrush(Color.Parse("#555")),
+                        Text = "계약업체 없음", FontSize = AppTheme.FontBase,
+                        Foreground = AppTheme.FgDimmed,
                         Margin = new Thickness(8, 8),
-                        FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                        FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                     });
             }
             catch { }
@@ -361,24 +717,24 @@ public partial class MainPage : Window
         var btnAnalysis = new Button
         {
             Content         = "분석항목",
-            FontSize        = 11,
+            FontSize        = AppTheme.FontBase,
             Height          = 26,
             Padding         = new Thickness(12, 0),
             BorderThickness = new Thickness(0),
-            FontFamily      = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+            FontFamily      = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
             Background      = new SolidColorBrush(Color.Parse("#3a4a6a")),
             Foreground      = new SolidColorBrush(Color.Parse("#ddeeff")),
         };
         var btnContract = new Button
         {
             Content         = "계약업체",
-            FontSize        = 11,
+            FontSize        = AppTheme.FontBase,
             Height          = 26,
             Padding         = new Thickness(12, 0),
             BorderThickness = new Thickness(0),
-            FontFamily      = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+            FontFamily      = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
             Background      = new SolidColorBrush(Color.Parse("#2a2a38")),
-            Foreground      = new SolidColorBrush(Color.Parse("#888899")),
+            Foreground      = AppTheme.FgMuted,
         };
 
         // ── 일반업무 리스트 컨테이너 ────────────────────────────────────
@@ -395,28 +751,28 @@ public partial class MainPage : Window
             bool isEdit = existing != null;
             generalTaskStack.Children.Clear();
 
-            var agentFont  = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R");
-            var agentFontM = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
+            var agentFont  = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
+            var agentFontM = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
 
             var form = new StackPanel { Spacing = 6, Margin = new Thickness(6) };
 
             form.Children.Add(new TextBlock
             {
                 Text = isEdit ? "✏️ 일반업무 수정" : "➕ 신규 일반업무 추가",
-                FontSize = 12, FontWeight = FontWeight.Bold,
+                FontSize = AppTheme.FontMD, FontWeight = FontWeight.Bold,
                 FontFamily = agentFontM,
-                Foreground = new SolidColorBrush(Color.Parse("#ccbb88")),
+                Foreground = AppTheme.FgWarn,
             });
 
             var txtName = new TextBox
             {
                 Text = existing?.업무명 ?? "",
                 Watermark = "업무명",
-                FontFamily = agentFont, FontSize = 11,
-                Background = new SolidColorBrush(Color.Parse("#3a3a4a")),
+                FontFamily = agentFont, FontSize = AppTheme.FontBase,
+                Background = AppTheme.BorderSeparator,
                 Foreground = Res("AppFg"),
                 BorderThickness = new Thickness(1),
-                BorderBrush = new SolidColorBrush(Color.Parse("#555577")),
+                BorderBrush = AppTheme.BorderDefault,
                 CornerRadius = new CornerRadius(4),
                 Padding = new Thickness(6, 4),
             };
@@ -429,11 +785,11 @@ public partial class MainPage : Window
                 AcceptsReturn = true,
                 TextWrapping = TextWrapping.Wrap,
                 MinHeight = 60,
-                FontFamily = agentFont, FontSize = 11,
-                Background = new SolidColorBrush(Color.Parse("#3a3a4a")),
+                FontFamily = agentFont, FontSize = AppTheme.FontBase,
+                Background = AppTheme.BorderSeparator,
                 Foreground = Res("AppFg"),
                 BorderThickness = new Thickness(1),
-                BorderBrush = new SolidColorBrush(Color.Parse("#555577")),
+                BorderBrush = AppTheme.BorderDefault,
                 CornerRadius = new CornerRadius(4),
                 Padding = new Thickness(6, 4),
             };
@@ -443,18 +799,18 @@ public partial class MainPage : Window
             var agentRow = new StackPanel { Orientation = Avalonia.Layout.Orientation.Horizontal, Spacing = 6 };
             agentRow.Children.Add(new TextBlock
             {
-                Text = "담당자", FontSize = 10, FontFamily = agentFont,
+                Text = "담당자", FontSize = AppTheme.FontSM, FontFamily = agentFont,
                 Foreground = Res("FgMuted"),
                 VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
             });
             var agents = ETA.Services.SERVICE1.AgentService.GetAllItems().OrderBy(a => a.성명).ToList();
             var cboAgent = new ComboBox
             {
-                Width = 160, FontSize = 11, FontFamily = agentFont,
-                Background = new SolidColorBrush(Color.Parse("#3a3a4a")),
+                Width = 160, FontSize = AppTheme.FontBase, FontFamily = agentFont,
+                Background = AppTheme.BorderSeparator,
                 Foreground = Res("AppFg"),
                 BorderThickness = new Thickness(1),
-                BorderBrush = new SolidColorBrush(Color.Parse("#555577")),
+                BorderBrush = AppTheme.BorderDefault,
                 CornerRadius = new CornerRadius(4),
             };
             foreach (var a in agents)
@@ -470,7 +826,7 @@ public partial class MainPage : Window
             var deadlineRow = new StackPanel { Orientation = Avalonia.Layout.Orientation.Horizontal, Spacing = 6 };
             deadlineRow.Children.Add(new TextBlock
             {
-                Text = "마감일", FontSize = 10, FontFamily = agentFont,
+                Text = "마감일", FontSize = AppTheme.FontSM, FontFamily = agentFont,
                 Foreground = Res("FgMuted"),
                 VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
             });
@@ -478,11 +834,11 @@ public partial class MainPage : Window
             {
                 Text = existing?.마감일 ?? "",
                 Watermark = "yyyy-MM-dd",
-                Width = 120, FontFamily = agentFont, FontSize = 11,
-                Background = new SolidColorBrush(Color.Parse("#3a3a4a")),
+                Width = 120, FontFamily = agentFont, FontSize = AppTheme.FontBase,
+                Background = AppTheme.BorderSeparator,
                 Foreground = Res("AppFg"),
                 BorderThickness = new Thickness(1),
-                BorderBrush = new SolidColorBrush(Color.Parse("#555577")),
+                BorderBrush = AppTheme.BorderDefault,
                 CornerRadius = new CornerRadius(4),
                 Padding = new Thickness(6, 3),
             };
@@ -496,7 +852,7 @@ public partial class MainPage : Window
                 var statusRow = new StackPanel { Orientation = Avalonia.Layout.Orientation.Horizontal, Spacing = 4 };
                 statusRow.Children.Add(new TextBlock
                 {
-                    Text = "상태", FontSize = 10, FontFamily = agentFont,
+                    Text = "상태", FontSize = AppTheme.FontSM, FontFamily = agentFont,
                     Foreground = Res("FgMuted"),
                     VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
                 });
@@ -512,13 +868,13 @@ public partial class MainPage : Window
                     bool active = st == currentStatus;
                     var btnSt = new Button
                     {
-                        Content = st, FontSize = 9, FontFamily = agentFont,
+                        Content = st, FontSize = AppTheme.FontXS, FontFamily = agentFont,
                         Padding = new Thickness(6, 2),
                         CornerRadius = new CornerRadius(6),
                         BorderThickness = new Thickness(1),
-                        Background  = active ? new SolidColorBrush(Color.Parse(sbg)) : new SolidColorBrush(Color.Parse("#222")),
-                        Foreground  = active ? new SolidColorBrush(Color.Parse(sfg)) : new SolidColorBrush(Color.Parse("#666")),
-                        BorderBrush = active ? new SolidColorBrush(Color.Parse(sbd)) : new SolidColorBrush(Color.Parse("#444")),
+                        Background  = active ? new SolidColorBrush(Color.Parse(sbg)) : AppTheme.BgSecondary,
+                        Foreground  = active ? new SolidColorBrush(Color.Parse(sfg)) : AppTheme.BorderMuted,
+                        BorderBrush = active ? new SolidColorBrush(Color.Parse(sbd)) : AppTheme.BorderMuted,
                     };
                     btnSt.Click += (_, _) =>
                     {
@@ -533,9 +889,9 @@ public partial class MainPage : Window
                                 _      => ("#2a2a2a", "#ccaa88", "#665533"),
                             };
                             bool on2 = s == capturedSt;
-                            child.Background  = on2 ? new SolidColorBrush(Color.Parse(b2)) : new SolidColorBrush(Color.Parse("#222"));
-                            child.Foreground  = on2 ? new SolidColorBrush(Color.Parse(f2)) : new SolidColorBrush(Color.Parse("#666"));
-                            child.BorderBrush = on2 ? new SolidColorBrush(Color.Parse(d2)) : new SolidColorBrush(Color.Parse("#444"));
+                            child.Background  = on2 ? new SolidColorBrush(Color.Parse(b2)) : AppTheme.BgSecondary;
+                            child.Foreground  = on2 ? new SolidColorBrush(Color.Parse(f2)) : AppTheme.BorderMuted;
+                            child.BorderBrush = on2 ? new SolidColorBrush(Color.Parse(d2)) : AppTheme.BorderMuted;
                         }
                     };
                     statusRow.Children.Add(btnSt);
@@ -549,9 +905,9 @@ public partial class MainPage : Window
             {
                 Content = isEdit ? "💾 수정" : "💾 저장",
                 Height = 26, Padding = new Thickness(12, 0),
-                FontFamily = agentFont, FontSize = 10,
-                Background = new SolidColorBrush(Color.Parse("#1a3a2a")),
-                Foreground = new SolidColorBrush(Color.Parse("#88ee88")),
+                FontFamily = agentFont, FontSize = AppTheme.FontSM,
+                Background = AppTheme.BgActiveGreen,
+                Foreground = AppTheme.FgSuccess,
                 BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
             };
             btnSave.Click += (_, _) =>
@@ -595,9 +951,9 @@ public partial class MainPage : Window
                 var btnDel = new Button
                 {
                     Content = "🗑 삭제", Height = 26, Padding = new Thickness(8, 0),
-                    FontFamily = agentFont, FontSize = 10,
-                    Background = new SolidColorBrush(Color.Parse("#3a1a1a")),
-                    Foreground = new SolidColorBrush(Color.Parse("#ee8888")),
+                    FontFamily = agentFont, FontSize = AppTheme.FontSM,
+                    Background = AppTheme.BgDanger,
+                    Foreground = AppTheme.FgDanger,
                     BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
                 };
                 btnDel.Click += (_, _) =>
@@ -611,9 +967,9 @@ public partial class MainPage : Window
             var btnCancel = new Button
             {
                 Content = "← 취소", Height = 26, Padding = new Thickness(8, 0),
-                FontFamily = agentFont, FontSize = 10,
-                Background = new SolidColorBrush(Color.Parse("#2a2a3a")),
-                Foreground = new SolidColorBrush(Color.Parse("#aaaaaa")),
+                FontFamily = agentFont, FontSize = AppTheme.FontSM,
+                Background = AppTheme.BorderSubtle,
+                Foreground = AppTheme.FgMuted,
                 BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
             };
             btnCancel.Click += (_, _) => onDone();
@@ -631,8 +987,8 @@ public partial class MainPage : Window
                 var tasks = ETA.Services.Common.GeneralTaskService.GetAll();
                 // 업무명 기준 그룹화 — 같은 업무에 여러 명 배정 가능
                 var grouped = tasks.GroupBy(t => t.업무명).OrderBy(g => g.Key).ToList();
-                var agentFont = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R");
-                var agentFontM = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
+                var agentFont = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
+                var agentFontM = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
                 bool odd = false;
 
                 foreach (var g in grouped)
@@ -651,9 +1007,9 @@ public partial class MainPage : Window
                     inner.Children.Add(new TextBlock
                     {
                         Text              = g.Key,
-                        FontSize          = 11,
+                        FontSize          = AppTheme.FontBase,
                         FontWeight        = FontWeight.SemiBold,
-                        Foreground        = new SolidColorBrush(Color.Parse("#cccccc")),
+                        Foreground        = AppTheme.FgSecondary,
                         FontFamily        = agentFontM,
                         TextTrimming      = TextTrimming.CharacterEllipsis,
                     });
@@ -679,7 +1035,7 @@ public partial class MainPage : Window
                             Child = new TextBlock
                             {
                                 Text       = $"{t.담당자명} ({t.상태})",
-                                FontSize   = 9,
+                                FontSize   = AppTheme.FontXS,
                                 FontFamily = agentFont,
                                 Foreground = new SolidColorBrush(Color.Parse(fg)),
                             },
@@ -688,8 +1044,8 @@ public partial class MainPage : Window
                     if (chipsPanel.Children.Count == 0)
                         chipsPanel.Children.Add(new TextBlock
                         {
-                            Text = "미배정", FontSize = 9, FontFamily = agentFont,
-                            Foreground = new SolidColorBrush(Color.Parse("#555566")),
+                            Text = "미배정", FontSize = AppTheme.FontXS, FontFamily = agentFont,
+                            Foreground = AppTheme.FgDimmed,
                         });
                     inner.Children.Add(chipsPanel);
 
@@ -705,8 +1061,8 @@ public partial class MainPage : Window
                 if (grouped.Count == 0)
                     generalTaskStack.Children.Add(new TextBlock
                     {
-                        Text = "일반업무 없음", FontSize = 11,
-                        Foreground = new SolidColorBrush(Color.Parse("#555")),
+                        Text = "일반업무 없음", FontSize = AppTheme.FontBase,
+                        Foreground = AppTheme.FgDimmed,
                         Margin = new Thickness(8, 8),
                         FontFamily = agentFont,
                     });
@@ -715,14 +1071,14 @@ public partial class MainPage : Window
                 var btnAdd = new Button
                 {
                     Content         = "＋ 업무 추가",
-                    FontSize        = 11,
+                    FontSize        = AppTheme.FontBase,
                     Height          = 28,
                     Padding         = new Thickness(12, 0),
                     BorderThickness = new Thickness(0),
                     CornerRadius    = new CornerRadius(4),
                     FontFamily      = agentFontM,
-                    Background      = new SolidColorBrush(Color.Parse("#2a3a2a")),
-                    Foreground      = new SolidColorBrush(Color.Parse("#88cc88")),
+                    Background      = AppTheme.BgActiveGreen,
+                    Foreground      = AppTheme.FgSuccess,
                     Margin          = new Thickness(4, 6),
                     HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left,
                 };
@@ -735,13 +1091,13 @@ public partial class MainPage : Window
         var btnGenTask = new Button
         {
             Content         = "일반업무",
-            FontSize        = 11,
+            FontSize        = AppTheme.FontBase,
             Height          = 26,
             Padding         = new Thickness(12, 0),
             BorderThickness = new Thickness(0),
-            FontFamily      = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+            FontFamily      = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
             Background      = new SolidColorBrush(Color.Parse("#2a2a38")),
-            Foreground      = new SolidColorBrush(Color.Parse("#888899")),
+            Foreground      = AppTheme.FgMuted,
         };
 
         var tabRow = new StackPanel
@@ -812,8 +1168,13 @@ public partial class MainPage : Window
 
         _analysisItemsListBox.Items.Clear();
 
-        // 분장표준처리 테이블 컬럼 순서 + 약칭(row2)으로 가져오기
-        var analytes = AnalysisRequestService.GetOrderedAnalytes();
+        // 분장표준처리 테이블 컬럼 순서 + 약칭(row2)으로 가져오기 (비분석항목 제외)
+        var analytes = AnalysisRequestService.GetOrderedAnalytes()
+            .Where(a => !a.fullName.StartsWith("_")
+                     && a.fullName != "기타업무"
+                     && a.fullName != "담당계약업체"
+                     && a.fullName != "항목명")
+            .ToList();
         Debug.WriteLine($"[LoadAnalysisItems] 로드된 분석항목 수: {analytes.Count}");
 
         foreach (var (fullName, shortName) in analytes)
@@ -825,10 +1186,10 @@ public partial class MainPage : Window
             {
                 Background      = new SolidColorBrush(Color.Parse("#2a2a38")),
                 BorderThickness = new Thickness(1),
-                BorderBrush     = new SolidColorBrush(Color.Parse("#444455")),
+                BorderBrush     = AppTheme.BorderMuted,
                 CornerRadius    = new CornerRadius(3),
-                Padding         = new Thickness(6, 3),
-                Margin          = new Thickness(2, 1),
+                Padding         = new Thickness(6, 2),
+                Margin          = new Thickness(0, 1),
                 Cursor          = new Cursor(StandardCursorType.Hand),
             };
             ToolTip.SetTip(cardBorder, $"{fullName} ({shortName})");
@@ -849,8 +1210,8 @@ public partial class MainPage : Window
                 Child = new TextBlock
                 {
                     Text       = shortName,
-                    FontSize   = 9,
-                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                    FontSize   = AppTheme.FontXS,
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                     Foreground = new SolidColorBrush(Color.Parse(badgeFg)),
                 }
             };
@@ -861,10 +1222,10 @@ public partial class MainPage : Window
             var nameBlock = new TextBlock
             {
                 Text              = fullName,
-                FontSize          = 11,
+                FontSize          = AppTheme.FontBase,
                 FontWeight        = FontWeight.SemiBold,
-                Foreground        = new SolidColorBrush(Color.Parse("#a0d060")),
-                FontFamily        = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                Foreground        = Res("AppFg"),
+                FontFamily        = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                 TextTrimming      = TextTrimming.CharacterEllipsis,
                 VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
             };
@@ -875,9 +1236,9 @@ public partial class MainPage : Window
             var assignBadge = new TextBlock
             {
                 Text              = "·",
-                FontSize          = 9,
+                FontSize          = AppTheme.FontXS,
                 Foreground        = Res("FgMuted"),
-                FontFamily        = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                FontFamily        = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                 VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
                 Margin            = new Thickness(4, 0, 0, 0),
             };
@@ -904,13 +1265,10 @@ public partial class MainPage : Window
                 }
             };
 
-            // ListBoxItem에 카드 넣기
             var listBoxItem = new ListBoxItem
             {
                 Content = cardBorder,
                 Tag = fullName,
-                Padding = new Thickness(0),
-                Margin = new Thickness(0)
             };
 
             _analysisItemsListBox.Items.Add(listBoxItem);
@@ -981,7 +1339,7 @@ public partial class MainPage : Window
 
                         // 배지: 이름을 모두 나열
                         assignBadge.Text       = string.Join(", ", grouped.Select(g => g.Key));
-                        assignBadge.Foreground = new SolidColorBrush(Color.Parse("#88cc88"));
+                        assignBadge.Foreground = AppTheme.FgSuccess;
 
                         // 툴팁: 이름(N일) 형식으로 중복 표시
                         bool isRange = _content4QueryStart != _content4QueryEnd;
@@ -1032,6 +1390,92 @@ public partial class MainPage : Window
 
 
     // ══════════════════════════════════════════════════════════════════════
+    //  프로그레스 오버레이 헬퍼 + shimmer 애니메이션
+    // ══════════════════════════════════════════════════════════════════════
+
+    private DispatcherTimer? _shimmerTimer;
+
+    public void ShowProgress(string message)
+    {
+        if (txtProgressMsg != null) txtProgressMsg.Text = message;
+        if (pbGlobal != null) pbGlobal.IsIndeterminate = true;
+        if (progressOverlay != null)
+        {
+            progressOverlay.Opacity = 0;
+            progressOverlay.IsVisible = true;
+            progressOverlay.Opacity = 1;
+        }
+        StartShimmer();
+    }
+
+    public void HideProgress()
+    {
+        StopShimmer();
+        if (progressOverlay != null)
+            progressOverlay.IsVisible = false;
+    }
+
+    private void StartShimmer()
+    {
+        var shimmer = this.FindControl<Border>("shimmerOverlay");
+        if (shimmer == null) return;
+
+        _shimmerTimer?.Stop();
+        var transform = shimmer.RenderTransform as TranslateTransform ?? new TranslateTransform(-300, 0);
+        shimmer.RenderTransform = transform;
+
+        _shimmerTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(16) };
+        int frame = 0;
+        _shimmerTimer.Tick += (_, _) =>
+        {
+            frame++;
+            double t = (double)(frame % 110) / 110; // 110 frames = ~1.8초
+            double easedT = t < 0.5 ? 4 * t * t * t : 1 - Math.Pow(-2 * t + 2, 3) / 2;
+            transform.X = -300 + 600 * easedT;
+        };
+        _shimmerTimer.Start();
+    }
+
+    private void StopShimmer()
+    {
+        _shimmerTimer?.Stop();
+        _shimmerTimer = null;
+    }
+
+    public async Task RunWithProgress(string message, Func<Task> work)
+    {
+        ShowProgress(message);
+        try { await Task.Run(work); }
+        finally { HideProgress(); }
+    }
+
+    public async Task RunWithProgress(string message, Func<Action<int, string>, Task> work)
+    {
+        ShowProgress(message);
+        if (pbGlobal != null)
+        {
+            pbGlobal.IsIndeterminate = false;
+            pbGlobal.Maximum = 100;
+        }
+        try
+        {
+            await Task.Run(() => work((pct, msg) =>
+            {
+                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                {
+                    if (pbGlobal != null) pbGlobal.Value = pct;
+                    if (txtProgressMsg != null) txtProgressMsg.Text = msg;
+                });
+            }));
+        }
+        finally
+        {
+            if (pbGlobal != null) pbGlobal.IsIndeterminate = true;
+            HideProgress();
+        }
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
     //  레이아웃 헬퍼
     // ══════════════════════════════════════════════════════════════════════
 
@@ -1047,7 +1491,10 @@ public partial class MainPage : Window
         double upperStar   = 4, double lowerStar    = 1)
     {
         var rightGrid = this.FindControl<Grid>("RightSplitGrid");
-        if (rightGrid != null && rightGrid.RowDefinitions.Count >= 3)
+        if (rightGrid == null) return;
+
+        // 행: Show2(상) / 스플리터 / Show3(하)
+        if (rightGrid.RowDefinitions.Count >= 3)
         {
             rightGrid.RowDefinitions[0].Height = new GridLength(upperStar, GridUnitType.Star);
             rightGrid.RowDefinitions[2].Height = lowerStar > 0
@@ -1059,13 +1506,16 @@ public partial class MainPage : Window
 
             var vSplitter = this.FindControl<GridSplitter>("VerticalSplitter");
             if (vSplitter != null) vSplitter.IsVisible = lowerStar > 0;
+
+            var toggle = this.FindControl<Button>("btnToggleShow3");
+            if (toggle != null) toggle.IsVisible = lowerStar > 0 || _show3Collapsed;
         }
 
-        var upperGrid = this.FindControl<Grid>("UpperContentGrid");
-        if (upperGrid != null && upperGrid.ColumnDefinitions.Count >= 3)
+        // 열: Show2+Show3(좌) / 스플리터 / Show4(우)
+        if (rightGrid.ColumnDefinitions.Count >= 3)
         {
-            upperGrid.ColumnDefinitions[0].Width = new GridLength(content2Star, GridUnitType.Star);
-            upperGrid.ColumnDefinitions[2].Width = content4Star > 0
+            rightGrid.ColumnDefinitions[0].Width = new GridLength(content2Star, GridUnitType.Star);
+            rightGrid.ColumnDefinitions[2].Width = content4Star > 0
                 ? new GridLength(content4Star, GridUnitType.Star)
                 : new GridLength(0);
 
@@ -1119,18 +1569,28 @@ public partial class MainPage : Window
         if (_agentTreePage == null)
         {
             _agentTreePage = new AgentTreePage();
+
+            // Show2 영속 래퍼: 직원 선택 시 전체 슬라이드 대신 CrossFade만 적용
+            _show2AgentWrapper ??= new TransitioningContentControl
+            {
+                PageTransition = new CrossFade(TimeSpan.FromMilliseconds(200))
+            };
             _agentTreePage.DetailPanelChanged += panel =>
             {
-                Show2.Content = panel;
-                LogContentChange("Show2", panel);
+                _show2AgentWrapper!.Content = panel;
+                LogContentChange("Show2(inner)", panel);
             };
         }
 
-        // Show3: 직원 선택 시 타임라인 차트
+        // Show3 영속 래퍼: 타임라인 차트도 CrossFade 전환
+        _show3AgentWrapper ??= new TransitioningContentControl
+        {
+            PageTransition = new CrossFade(TimeSpan.FromMilliseconds(200))
+        };
         _agentTreePage.Show3ContentRequest = ctrl =>
         {
-            Show3.Content = ctrl;
-            LogContentChange("Show3", ctrl);
+            _show3AgentWrapper!.Content = ctrl;
+            LogContentChange("Show3(inner)", ctrl);
         };
         // Show4: 영구 wrapper ContentControl 안에서 내용만 교체 (TransitioningContentControl 재사용 버그 방지)
         if (_show4AgentWrapper == null)
@@ -1145,10 +1605,13 @@ public partial class MainPage : Window
 
         Show1.Content = _agentTreePage;
         LogContentChange("Show1", _agentTreePage);
-        Show2.Content = null;
-        LogContentChange("Show2", null);
-        Show3.Content = null;
-        LogContentChange("Show3", null);
+        // Show2/Show3: 영속 래퍼 사용 → 직원 선택 시 부드러운 CrossFade만 적용
+        _show2AgentWrapper!.Content = null;
+        Show2.Content = _show2AgentWrapper;
+        LogContentChange("Show2", _show2AgentWrapper);
+        _show3AgentWrapper!.Content = null;
+        Show3.Content = _show3AgentWrapper;
+        LogContentChange("Show3", _show3AgentWrapper);
 
         // ✅ Content4: wrapper를 Show4에 고정 (이후 내용은 wrapper.Content 교체)
         Show4.Content = _show4AgentWrapper;
@@ -1156,6 +1619,7 @@ public partial class MainPage : Window
 
         // AgentTreePage에 ListBox 참조 전달
         _agentTreePage.AnalysisItemsListBox = _analysisItemsListBox;
+        _agentTreePage.Show4RefreshRequest = () => UpdateAssignmentInfo();
         
         _agentTreePage.LoadData();
         _bt1SaveAction = _agentTreePage.SaveSelected;
@@ -1176,14 +1640,14 @@ public partial class MainPage : Window
         {
             _wasteCompanyPage = new WasteCompanyPage();
 
-            // 업소정보(편집 패널) → Show4 (기존 Show2에서 이동)
+            // 업소정보(편집 패널) → Show3
             _wasteCompanyPage.DetailPanelChanged += panel =>
             {
-                Show4.Content = panel;
-                LogContentChange("Show4", panel);
+                Show3.Content = panel;
+                LogContentChange("Show3", panel);
             };
 
-            // 업체 선택 → Show2(차트) + Show3(목록) 자료조회 기능 직접 구현
+            // 업체 선택 → Show2(차트) + Show4(목록) 자료조회 기능 직접 구현
             _wasteCompanyPage.CompanySelected += company =>
             {
                 List<ETA.Models.WasteAnalysisResult> results;
@@ -1193,8 +1657,8 @@ public partial class MainPage : Window
                     Show2.Content = new TextBlock
                     {
                         Text = $"조회 오류: {ex.Message}",
-                        FontSize = 11, FontFamily = _wasteFont,
-                        Foreground = Brush.Parse("#cc4444"),
+                        FontSize = AppTheme.FontBase, FontFamily = _wasteFont,
+                        Foreground = AppTheme.FgDanger,
                         Margin = new Thickness(12),
                     };
                     return;
@@ -1204,11 +1668,9 @@ public partial class MainPage : Window
                 Show2.Content = BuildWasteBarLinePanel(company.업체명, results);
                 LogContentChange("Show2", Show2.Content as Control);
 
-                // Show3 = 분석결과 목록 테이블
-                Show3.Content = BuildDataListPanel(company.업체명, results, company.약칭);
-                LogContentChange("Show3", Show3.Content as Control);
-
-                SetContentLayout(content2Star: 2, content4Star: 1, upperStar: 5, lowerStar: 5);
+                // Show4 = 분석결과 목록 테이블
+                Show4.Content = BuildDataListPanel(company.업체명, results, company.약칭);
+                LogContentChange("Show4", Show4.Content as Control);
             };
 
             _wasteCompanyPage.OrderSaved += () => { };
@@ -1236,7 +1698,9 @@ public partial class MainPage : Window
     // 의뢰내역 리스트 패널 (Show4)
     // =========================================================================
     private static readonly FontFamily _wasteFont =
-        new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R");
+        new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
+
+    private bool _wasteChartIsBar = true; // Bar/Line 토글 상태 유지
 
     private Control BuildOrderHistoryPanel()
     {
@@ -1245,14 +1709,14 @@ public partial class MainPage : Window
         // 헤더
         root.Children.Add(new Border
         {
-            Background   = Brush.Parse("#1a1a28"),
+            Background   = AppTheme.BgPrimary,
             CornerRadius = new CornerRadius(6, 6, 0, 0),
             Padding      = new Thickness(10, 6),
             Child = new TextBlock
             {
                 Text       = "📋  의뢰내역",
-                FontSize   = 11, FontWeight = FontWeight.SemiBold,
-                FontFamily = _wasteFont, Foreground = Brush.Parse("#8899bb"),
+                FontSize   = AppTheme.FontLG, FontWeight = FontWeight.SemiBold,
+                FontFamily = _wasteFont, Foreground = AppTheme.FgMuted,
             }
         });
 
@@ -1275,13 +1739,13 @@ public partial class MainPage : Window
                 DateTime.TryParse(date, out var d);
                 listPanel.Children.Add(new Border
                 {
-                    Background = Brush.Parse("#22223a"),
+                    Background = AppTheme.BgInput,
                     Padding    = new Thickness(8, 3),
                     Child = new TextBlock
                     {
                         Text       = $"{d:yyyy-MM-dd} ({DayKr(d)})  {rows.Count}건",
-                        FontSize   = 10, FontWeight = FontWeight.SemiBold,
-                        FontFamily = _wasteFont, Foreground = Brush.Parse("#8899bb"),
+                        FontSize   = AppTheme.FontMD, FontWeight = FontWeight.SemiBold,
+                        FontFamily = _wasteFont, Foreground = AppTheme.FgMuted,
                     }
                 });
 
@@ -1303,11 +1767,11 @@ public partial class MainPage : Window
                         Margin            = new Thickness(0, 0, 0, 1),
                     };
 
-                    void AddCell(int col, string text, string fg, int size = 10, FontWeight fw = FontWeight.Normal)
+                    void AddCell(int col, string text, string fg, double size = 0, FontWeight fw = FontWeight.Normal)
                     {
                         var tb = new TextBlock
                         {
-                            Text      = text, FontSize = size, FontFamily = _wasteFont,
+                            Text      = text, FontSize = size > 0 ? size : AppTheme.FontMD, FontFamily = _wasteFont,
                             Foreground = Brush.Parse(fg), FontWeight = fw,
                             VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
                             Margin = new Thickness(6, 3),
@@ -1330,8 +1794,8 @@ public partial class MainPage : Window
         {
             listPanel.Children.Add(new TextBlock
             {
-                Text = $"오류: {ex.Message}", FontSize = 10,
-                FontFamily = _wasteFont, Foreground = Brush.Parse("#cc4444"),
+                Text = $"오류: {ex.Message}", FontSize = AppTheme.FontSM,
+                FontFamily = _wasteFont, Foreground = AppTheme.FgDanger,
                 Margin = new Thickness(8),
             });
         }
@@ -1367,8 +1831,8 @@ public partial class MainPage : Window
             Show3.Content = new TextBlock
             {
                 Text = "왼쪽 트리에서 업체를 먼저 선택하세요",
-                FontSize = 12, FontFamily = _wasteFont,
-                Foreground = Brush.Parse("#888888"),
+                FontSize = AppTheme.FontMD, FontFamily = _wasteFont,
+                Foreground = AppTheme.FgMuted,
                 Margin = new Thickness(12),
             };
             return;
@@ -1381,8 +1845,8 @@ public partial class MainPage : Window
             Show3.Content = new TextBlock
             {
                 Text = $"조회 오류: {ex.Message}",
-                FontSize = 11, FontFamily = _wasteFont,
-                Foreground = Brush.Parse("#cc4444"),
+                FontSize = AppTheme.FontBase, FontFamily = _wasteFont,
+                Foreground = AppTheme.FgDanger,
                 Margin = new Thickness(12),
             };
             return;
@@ -1412,37 +1876,46 @@ public partial class MainPage : Window
 
         topBar.Children.Add(new TextBlock
         {
-            Text = $"{업체명}  분석결과 추이", FontSize = 11, FontFamily = _wasteFont,
-            Foreground = Brush.Parse("#8899bb"), FontWeight = FontWeight.SemiBold,
+            Text = $"{업체명}  분석결과 추이", FontSize = AppTheme.FontBase, FontFamily = _wasteFont,
+            Foreground = AppTheme.FgMuted, FontWeight = FontWeight.SemiBold,
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Thickness(4, 0, 12, 0),
         });
 
         var btnBar = new Avalonia.Controls.Button
         {
-            Content = "Bar", FontSize = 10, FontFamily = _wasteFont,
+            Content = "Bar", FontSize = AppTheme.FontSM, FontFamily = _wasteFont,
             Padding = new Thickness(8, 2), Margin = new Thickness(0, 0, 2, 0),
-            Background = Brush.Parse("#3a3a5a"), Foreground = Brush.Parse("#ffffff"),
+            Background = _wasteChartIsBar ? AppTheme.BorderMuted : AppTheme.BorderSubtle,
+            Foreground = _wasteChartIsBar ? AppTheme.FgPrimary : AppTheme.FgMuted,
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(3),
         };
         var btnLine = new Avalonia.Controls.Button
         {
-            Content = "Line", FontSize = 10, FontFamily = _wasteFont,
+            Content = "Line", FontSize = AppTheme.FontSM, FontFamily = _wasteFont,
             Padding = new Thickness(8, 2), Margin = new Thickness(0, 0, 8, 0),
-            Background = Brush.Parse("#2a2a3a"), Foreground = Brush.Parse("#888888"),
+            Background = _wasteChartIsBar ? AppTheme.BorderSubtle : AppTheme.BorderMuted,
+            Foreground = _wasteChartIsBar ? AppTheme.FgMuted : AppTheme.FgPrimary,
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(3),
         };
+
+        // 이전 상태 복원
+        if (!_wasteChartIsBar)
+            foreach (var c in charts) c.SetBarMode(false);
+
         btnBar.Click += (_, _) =>
         {
+            _wasteChartIsBar = true;
             foreach (var c in charts) c.SetBarMode(true);
-            btnBar.Background  = Brush.Parse("#3a3a5a"); btnBar.Foreground  = Brush.Parse("#ffffff");
-            btnLine.Background = Brush.Parse("#2a2a3a"); btnLine.Foreground = Brush.Parse("#888888");
+            btnBar.Background  = AppTheme.BorderMuted; btnBar.Foreground  = AppTheme.FgPrimary;
+            btnLine.Background = AppTheme.BorderSubtle; btnLine.Foreground = AppTheme.FgMuted;
         };
         btnLine.Click += (_, _) =>
         {
+            _wasteChartIsBar = false;
             foreach (var c in charts) c.SetBarMode(false);
-            btnLine.Background = Brush.Parse("#3a3a5a"); btnLine.Foreground = Brush.Parse("#ffffff");
-            btnBar.Background  = Brush.Parse("#2a2a3a"); btnBar.Foreground  = Brush.Parse("#888888");
+            btnLine.Background = AppTheme.BorderMuted; btnLine.Foreground = AppTheme.FgPrimary;
+            btnBar.Background  = AppTheme.BorderSubtle; btnBar.Foreground  = AppTheme.FgMuted;
         };
         topBar.Children.Add(btnBar);
         topBar.Children.Add(btnLine);
@@ -1459,7 +1932,7 @@ public partial class MainPage : Window
             var border = new Border
             {
                 Child           = charts[i],
-                BorderBrush     = new SolidColorBrush(Color.Parse("#252535")),
+                BorderBrush     = AppTheme.BgSecondary,
                 BorderThickness = new Thickness(0.5),
                 Margin          = new Thickness(1),
             };
@@ -1501,7 +1974,7 @@ public partial class MainPage : Window
                 Child = new TextBlock
                 {
                     Text       = 약칭,
-                    FontSize   = 10, FontFamily = _wasteFont,
+                    FontSize   = AppTheme.FontSM, FontFamily = _wasteFont,
                     Foreground = Brush.Parse(fg),
                 }
             });
@@ -1509,13 +1982,13 @@ public partial class MainPage : Window
         titleRow.Children.Add(new TextBlock
         {
             Text       = $"📋  {업체명}  분석결과 내역  ({results.Count}건)",
-            FontSize   = 11, FontWeight = FontWeight.SemiBold,
-            FontFamily = _wasteFont, Foreground = Brush.Parse("#8899bb"),
+            FontSize   = AppTheme.FontBase, FontWeight = FontWeight.SemiBold,
+            FontFamily = _wasteFont, Foreground = AppTheme.FgMuted,
             VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
         });
         root.Children.Add(new Border
         {
-            Background   = Brush.Parse("#1a1a28"),
+            Background   = AppTheme.BgPrimary,
             CornerRadius = new CornerRadius(6, 6, 0, 0),
             Child        = titleRow,
         });
@@ -1525,8 +1998,8 @@ public partial class MainPage : Window
             root.Children.Add(new TextBlock
             {
                 Text = "분석결과 없음",
-                FontSize = 11, FontFamily = _wasteFont,
-                Foreground = Brush.Parse("#555555"),
+                FontSize = AppTheme.FontBase, FontFamily = _wasteFont,
+                Foreground = AppTheme.FgDimmed,
                 Margin = new Thickness(12, 8),
             });
             return root;
@@ -1594,9 +2067,9 @@ public partial class MainPage : Window
         {
             var tb = new TextBlock
             {
-                Text = text, FontSize = 10, FontFamily = _wasteFont,
+                Text = text, FontSize = AppTheme.FontSM, FontFamily = _wasteFont,
                 FontWeight = fw,
-                Foreground = text == "—" ? Brush.Parse("#444444") : Brush.Parse(fg),
+                Foreground = text == "—" ? AppTheme.BorderMuted : Brush.Parse(fg),
                 VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
                 HorizontalAlignment = col == 0 ? Avalonia.Layout.HorizontalAlignment.Left : Avalonia.Layout.HorizontalAlignment.Right,
                 Margin = new Thickness(col == 0 ? 8 : 4, 3, col == 0 ? 4 : 8, 3),
@@ -1635,8 +2108,8 @@ public partial class MainPage : Window
                     Show3.Content = new TextBlock
                     {
                         Text = $"조회 오류: {ex.Message}",
-                        FontSize = 11, FontFamily = _wasteFont,
-                        Foreground = Brush.Parse("#cc4444"),
+                        FontSize = AppTheme.FontBase, FontFamily = _wasteFont,
+                        Foreground = AppTheme.FgDanger,
                         Margin = new Thickness(12),
                     };
                     return;
@@ -1727,16 +2200,23 @@ public partial class MainPage : Window
                 Show2.Content = panel;
                 LogContentChange("Show2", panel);
             };
+            _wasteSampleListPage.DetailPanelSilentChanged += panel =>
+            {
+                var saved = Show2.PageTransition;
+                Show2.PageTransition = null;
+                Show2.Content = panel;
+                Show2.PageTransition = saved;
+            };
         }
 
         Show1.Content = _wasteSampleListPage;
         LogContentChange("Show1", _wasteSampleListPage);
         Show2.Content = null;
         LogContentChange("Show2", null);
-        Show3.Content = _wasteSampleListPage.CompanyTreePanel;
-        LogContentChange("Show3", _wasteSampleListPage.CompanyTreePanel as Control);
-        Show4.Content = BuildOrderHistoryPanel();
-        LogContentChange("Show4", Show4.Content as Control);
+        Show4.Content = _wasteSampleListPage.CompanyTreePanel;
+        LogContentChange("Show4", _wasteSampleListPage.CompanyTreePanel as Control);
+        Show3.Content = BuildOrderHistoryPanel();
+        LogContentChange("Show3", Show3.Content as Control);
         _wasteSampleListPage.LoadData();
         _wasteSampleListPage.LoadCompanyTree();
         _bt1SaveAction = null;
@@ -1800,8 +2280,8 @@ public partial class MainPage : Window
         root.Children.Add(new TextBlock
         {
             Text = "분석결과입력",
-            FontSize = 14, FontWeight = FontWeight.Bold,
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+            FontSize = AppTheme.FontXL, FontWeight = FontWeight.Bold,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
             Foreground = (Brush)Application.Current!.Resources["AppFg"]!,
             Margin = new Thickness(0, 0, 0, 8),
         });
@@ -1840,8 +2320,8 @@ public partial class MainPage : Window
                         },
                         new TextBlock
                         {
-                            Text = c.Label, FontSize = 13,
-                            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                            Text = c.Label, FontSize = AppTheme.FontLG,
+                            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                             Foreground = new SolidColorBrush(Color.Parse(c.Fg)),
                             VerticalAlignment = VerticalAlignment.Center,
                         },
@@ -1861,8 +2341,8 @@ public partial class MainPage : Window
         Show2.Content = new TextBlock
         {
             Text = $"📋 {category} — 분석결과 입력",
-            FontSize = 13,
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+            FontSize = AppTheme.FontLG,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
             Foreground = (Brush)Application.Current!.Resources["AppFg"]!,
             Margin = new Thickness(10),
         };
@@ -2309,7 +2789,7 @@ public partial class MainPage : Window
         {
             Text = "발행 대상 목록",
             FontFamily = _tradeFont,
-            FontSize = 14,
+            FontSize = AppTheme.FontXL,
             Foreground = Res("AppFg"),
             Margin = new Thickness(8, 6, 0, 4),
         };
@@ -2318,7 +2798,7 @@ public partial class MainPage : Window
         {
             Content = "전체 지우기",
             FontFamily = _tradeFont,
-            FontSize = 11,
+            FontSize = AppTheme.FontBase,
             Padding = new Thickness(6, 2),
             Background = Res("SubBtnBg"),
             Foreground = Res("FgMuted"),
@@ -2369,7 +2849,7 @@ public partial class MainPage : Window
         {
             IsChecked = true,
             FontFamily = _tradeFont,
-            FontSize = 12,
+            FontSize = AppTheme.FontMD,
             Foreground = Res("AppFg"),
             Content = $"{issue.약칭}  {issue.시료명}  [{issue.견적번호}]",
             Tag = issue,
@@ -2396,7 +2876,7 @@ public partial class MainPage : Window
             {
                 Text = "체크된 항목이 없습니다.",
                 FontFamily = _tradeFont,
-                FontSize = 13,
+                FontSize = AppTheme.FontLG,
                 Foreground = Res("FgMuted"),
                 Margin = new Thickness(16),
             };
@@ -2427,14 +2907,14 @@ public partial class MainPage : Window
         {
             Text = $"업체: {companies}",
             FontFamily = _tradeFont,
-            FontSize = 13,
+            FontSize = AppTheme.FontLG,
             Foreground = Res("AppFg"),
         });
         root.Children.Add(new TextBlock
         {
             Text = $"견적번호: {string.Join(", ", issues.Select(i => i.견적번호))}",
             FontFamily = _tradeFont,
-            FontSize = 11,
+            FontSize = AppTheme.FontBase,
             Foreground = Res("FgMuted"),
         });
         root.Children.Add(new Border
@@ -2453,7 +2933,7 @@ public partial class MainPage : Window
         TextBlock Cell(string text, bool isHeader = false) => new()
         {
             Text = text,
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
             FontSize = isHeader ? 12 : 11,
             Foreground = Res(isHeader ? "AppFg" : "FgMuted"),
             Margin = new Thickness(4, 2),
@@ -2658,16 +3138,16 @@ public partial class MainPage : Window
 
     private Border BuildMigrationConfirmPanel(string oldName, string newName)
     {
-        var font  = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
-        var fontR = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R");
+        var font  = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
+        var fontR = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
 
         // 결과 메시지 TextBlock (나중에 버튼 핸들러에서 참조)
         var txbMigResult = new TextBlock
         {
             Text       = "",
-            FontSize   = 13,
+            FontSize   = AppTheme.FontLG,
             FontFamily = fontR,
-            Foreground = Brush.Parse("#aaddaa"),
+            Foreground = AppTheme.FgSuccess,
             Margin     = new Thickness(0, 12, 0, 0),
             TextWrapping = TextWrapping.Wrap,
         };
@@ -2675,12 +3155,12 @@ public partial class MainPage : Window
         var btnExecute = new Button
         {
             Content    = "▶ 변경 실행",
-            FontSize   = 14,
+            FontSize   = AppTheme.FontXL,
             FontFamily = font,
             FontWeight = FontWeight.Bold,
-            Background = Brush.Parse("#2a4a2a"),
+            Background = AppTheme.BorderActive,
             Foreground = Brush.Parse("#88ff88"),
-            BorderBrush = Brush.Parse("#448844"),
+            BorderBrush = AppTheme.BorderActive,
             BorderThickness = new Thickness(1),
             Padding    = new Thickness(16, 8),
             CornerRadius = new CornerRadius(5),
@@ -2703,14 +3183,14 @@ public partial class MainPage : Window
             if (string.IsNullOrEmpty(error))
             {
                 txbMigResult.Text       = $"✅ 완료! {updatedRows}건 변경";
-                txbMigResult.Foreground = Brush.Parse("#aaddaa");
+                txbMigResult.Foreground = AppTheme.FgSuccess;
                 _dbMigrationPage?.LoadData();
                 _dbMigrationTargetPage?.LoadData();
             }
             else
             {
                 txbMigResult.Text       = $"❌ 오류: {error}";
-                txbMigResult.Foreground = Brush.Parse("#ff8888");
+                txbMigResult.Foreground = AppTheme.FgDanger;
                 btnExecute.IsEnabled    = true;
             }
         };
@@ -2724,35 +3204,35 @@ public partial class MainPage : Window
                 new TextBlock
                 {
                     Text       = "업체명 변경 확인",
-                    FontSize   = 16, FontWeight = FontWeight.Bold,
+                    FontSize   = AppTheme.FontXL, FontWeight = FontWeight.Bold,
                     FontFamily = font,
-                    Foreground = Brush.Parse("#e0e0e0"),
+                    Foreground = AppTheme.FgPrimary,
                     Margin     = new Thickness(0, 0, 0, 8),
                 },
                 new TextBlock
                 {
                     Text       = $"변경 전:  {oldName}",
-                    FontSize   = 13, FontFamily = fontR,
-                    Foreground = Brush.Parse("#ff9999"),
+                    FontSize   = AppTheme.FontLG, FontFamily = fontR,
+                    Foreground = AppTheme.FgDanger,
                 },
                 new TextBlock
                 {
                     Text       = $"변경 후:  {newName}",
-                    FontSize   = 13, FontFamily = fontR,
+                    FontSize   = AppTheme.FontLG, FontFamily = fontR,
                     Foreground = Brush.Parse("#99ff99"),
                 },
                 new TextBlock
                 {
                     Text       = "아래 테이블의 업체명이 일괄 변경됩니다:",
-                    FontSize   = 12, FontFamily = fontR,
-                    Foreground = Brush.Parse("#aaaaaa"),
+                    FontSize   = AppTheme.FontMD, FontFamily = fontR,
+                    Foreground = AppTheme.FgMuted,
                     Margin     = new Thickness(0, 10, 0, 0),
                 },
                 new TextBlock
                 {
                     Text       = "  • 견적발행내역\n  • 거래명세서발행내역\n  • 계약 DB\n  • 분석의뢰및결과\n  • 시료명칭(컬럼명)",
-                    FontSize   = 12, FontFamily = fontR,
-                    Foreground = Brush.Parse("#cccccc"),
+                    FontSize   = AppTheme.FontMD, FontFamily = fontR,
+                    Foreground = AppTheme.FgSecondary,
                     LineHeight = 20,
                 },
                 btnExecute,
@@ -2763,7 +3243,7 @@ public partial class MainPage : Window
         return new Border
         {
             Background   = Brush.Parse("#1a1e2a"),
-            BorderBrush  = Brush.Parse("#334466"),
+            BorderBrush  = AppTheme.BorderAccent,
             BorderThickness = new Thickness(1),
             CornerRadius = new CornerRadius(6),
             Child        = new ScrollViewer
@@ -2804,6 +3284,41 @@ public partial class MainPage : Window
     //  서브메뉴 버튼
     // ══════════════════════════════════════════════════════════════════════
 
+    // ── 모드 → 네비게이션 표시명 매핑 ──
+    private static readonly Dictionary<string, (string Main, string Sub)> NavMap = new()
+    {
+        ["Agent"]                    = ("직원관리", "업무분장"),
+        ["Contract"]                 = ("계약관리", "계약"),
+        ["Analysis"]                 = ("분석관리", "분석"),
+        ["TestReport"]               = ("분석관리", "시험성적서"),
+        ["Quotation"]                = ("견적관리", "견적/발행"),
+        ["QuotationIssue"]           = ("견적관리", "분석의뢰"),
+        ["WasteCompany"]             = ("폐수관리", "배출업소"),
+        ["WasteDataQuery"]           = ("폐수관리", "데이터조회"),
+        ["WasteNameReconcile"]       = ("폐수관리", "약칭매칭(폐수)"),
+        ["WaterQualityNameReconcile"]= ("폐수관리", "약칭매칭(수질)"),
+        ["WasteSampleList"]          = ("폐수관리", "시료관리"),
+        ["ProcessingFacility"]       = ("폐수관리", "처리시설"),
+        ["WasteAnalysisInput"]       = ("폐수관리", "분석입력"),
+        ["ResultSubmitMeasure"]      = ("결과제출", "측정인"),
+        ["ResultSubmitErp"]          = ("결과제출", "ERP"),
+        ["ResultSubmitZero4"]        = ("결과제출", "Zero4"),
+        ["Schedule"]                 = ("일정관리", "스케줄"),
+        ["Purchase"]                 = ("업무지원", "구매요청"),
+        ["Repair"]                   = ("업무지원", "보수요청"),
+        ["RiskManage"]               = ("업무지원", "위험관리"),
+        ["MyTask"]                   = ("나의업무", "할 일"),
+        ["DbMigration"]              = ("설정", "DB 마이그레이션"),
+    };
+
+    private void UpdateNavPath()
+    {
+        if (NavMap.TryGetValue(_currentMode, out var nav))
+            txtNavPath.Text = $"{nav.Main}  ›  {nav.Sub}";
+        else
+            txtNavPath.Text = "";
+    }
+
     private void SetSubMenu(string bt1, string bt2, string bt3,
                             string bt4, string bt5, string bt6,
                             string bt7 = "", string bt8 = "")
@@ -2813,6 +3328,9 @@ public partial class MainPage : Window
         SetBtn(BT6, bt6); SetBtn(BT7, bt7); SetBtn(BT8, bt8);
         SubMenu.IsVisible = new[] { bt1, bt2, bt3, bt4, bt5, bt6, bt7, bt8 }
             .Any(s => !string.IsNullOrWhiteSpace(s));
+        UpdateNavPath();
+
+        // (shimmer 제거됨)
     }
 
     private static void SetBtn(Avalonia.Controls.Button btn, string label)
@@ -2939,7 +3457,7 @@ public partial class MainPage : Window
         Show2.Content = new TextBlock
         {
             Text              = "⏳  Excel 가져오는 중...",
-            FontSize          = 13, Foreground = Res("FgMuted"),
+            FontSize          = AppTheme.FontLG, Foreground = Res("FgMuted"),
             Margin            = new Thickness(12),
             VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
         };
@@ -2951,8 +3469,8 @@ public partial class MainPage : Window
             Text              = errCount < 0
                                     ? "❌  Excel 파일을 열 수 없습니다."
                                     : $"✅  가져오기 완료 — 성공 {ok}건{(errCount > 0 ? $", 오류 {errCount}건" : "")}\n트리에서 업체를 선택하면 단가가 표시됩니다.",
-            FontSize          = 13,
-            Foreground        = errCount < 0 ? Brushes.OrangeRed : new SolidColorBrush(Color.Parse("#16a34a")),
+            FontSize          = AppTheme.FontLG,
+            Foreground        = errCount < 0 ? Brushes.OrangeRed : AppTheme.FgSuccess,
             Margin            = new Thickness(12),
             VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
         };
@@ -2981,7 +3499,7 @@ public partial class MainPage : Window
             Show2.Content = new TextBlock
             {
                 Text = "견적서를 먼저 선택하세요.",
-                FontFamily = _tradeFont, FontSize = 13,
+                FontFamily = _tradeFont, FontSize = AppTheme.FontLG,
                 Foreground = Brushes.OrangeRed, Margin = new Thickness(16),
             };
             return;
@@ -3007,8 +3525,8 @@ public partial class MainPage : Window
         Show2.Content = new TextBlock
         {
             Text = ok ? $"견적서 저장 완료\n{file.Path.LocalPath}" : $"오류: {msg}",
-            FontFamily = _tradeFont, FontSize = 13,
-            Foreground = ok ? new SolidColorBrush(Color.Parse("#16a34a")) : Brushes.OrangeRed,
+            FontFamily = _tradeFont, FontSize = AppTheme.FontLG,
+            Foreground = ok ? AppTheme.FgSuccess : Brushes.OrangeRed,
             Margin = new Thickness(16),
             TextWrapping = TextWrapping.Wrap,
         };
@@ -3028,7 +3546,7 @@ public partial class MainPage : Window
             {
                 Text = "발행할 항목을 체크리스트에서 선택하세요.",
                 FontFamily = _tradeFont,
-                FontSize = 13,
+                FontSize = AppTheme.FontLG,
                 Foreground = Brushes.OrangeRed,
                 Margin = new Thickness(16),
             };
@@ -3097,7 +3615,7 @@ public partial class MainPage : Window
                     new TextBlock
                     {
                         Text = "⚠  분석이 완료되지 않았습니다",
-                        FontSize = 15,
+                        FontSize = AppTheme.FontXL,
                         FontWeight = FontWeight.Bold,
                         Foreground = Brushes.Orange,
                         FontFamily = _tradeFont,
@@ -3113,7 +3631,7 @@ public partial class MainPage : Window
                             Content = new TextBlock
                             {
                                 Text = itemLines,
-                                FontSize = 12,
+                                FontSize = AppTheme.FontMD,
                                 Foreground = Res("AppFg"),
                                 FontFamily = _tradeFont,
                                 TextWrapping = Avalonia.Media.TextWrapping.Wrap,
@@ -3123,7 +3641,7 @@ public partial class MainPage : Window
                     new TextBlock
                     {
                         Text = "그래도 발행하시겠습니까?",
-                        FontSize = 13,
+                        FontSize = AppTheme.FontLG,
                         Foreground = Res("FgMuted"),
                         FontFamily = _tradeFont,
                     },
@@ -3169,7 +3687,7 @@ public partial class MainPage : Window
         {
             Text = "거래명세서 생성 중...",
             FontFamily = _tradeFont,
-            FontSize = 13,
+            FontSize = AppTheme.FontLG,
             Foreground = Res("FgMuted"),
             Margin = new Thickness(16),
         };
@@ -3184,7 +3702,7 @@ public partial class MainPage : Window
             {
                 Text = $"오류: {msg}",
                 FontFamily = _tradeFont,
-                FontSize = 13,
+                FontSize = AppTheme.FontLG,
                 Foreground = Brushes.OrangeRed,
                 Margin = new Thickness(16),
             };
@@ -3213,8 +3731,8 @@ public partial class MainPage : Window
         {
             Text = $"발행 완료\n거래명세서번호: {statementNo}\n공급가액: {supply:N0}\n부가세: {vat:N0}\n합계: {total:N0}",
             FontFamily = _tradeFont,
-            FontSize = 13,
-            Foreground = new SolidColorBrush(Color.Parse("#16a34a")),
+            FontSize = AppTheme.FontLG,
+            Foreground = AppTheme.FgSuccess,
             Margin = new Thickness(16),
         };
     }
@@ -3223,7 +3741,7 @@ public partial class MainPage : Window
     // 거래명세서 편집 패널 (BT6)
     // =========================================================================
     private static readonly FontFamily _tradeFont =
-        new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R");
+        new("avares://ETA/Assets/Fonts#Pretendard");
 
     private void ShowTradeStatementEditor()
     {
@@ -3235,7 +3753,7 @@ public partial class MainPage : Window
             Show4.Content = new TextBlock
             {
                 Text = "⚠️  Show1에서 Ctrl+클릭으로\n견적서를 먼저 선택하세요.",
-                FontSize = 12, Foreground = Brushes.DarkOrange, FontFamily = _tradeFont,
+                FontSize = AppTheme.FontMD, Foreground = Brushes.DarkOrange, FontFamily = _tradeFont,
                 Margin = new Thickness(12), TextWrapping = Avalonia.Media.TextWrapping.Wrap,
                 VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
             };
@@ -3258,7 +3776,7 @@ public partial class MainPage : Window
                 Show2.Content = new TextBlock
                 {
                     Text = "체크된 항목이 없습니다.",
-                    FontSize = 12, Foreground = Res("FgMuted"), FontFamily = _tradeFont,
+                    FontSize = AppTheme.FontMD, Foreground = Res("FgMuted"), FontFamily = _tradeFont,
                     Margin = new Thickness(12),
                 };
                 return;
@@ -3274,19 +3792,19 @@ public partial class MainPage : Window
             preview.Children.Add(new TextBlock
             {
                 Text = "📄  거래명세서 미리보기",
-                FontSize = 14, FontFamily = _tradeFont, FontWeight = FontWeight.SemiBold,
+                FontSize = AppTheme.FontXL, FontFamily = _tradeFont, FontWeight = FontWeight.SemiBold,
                 Foreground = Res("AppFg"),
             });
             preview.Children.Add(new Border { Height = 1, Background = Res("InputBorder"), Margin = new Thickness(0,2,0,4) });
-            preview.Children.Add(new TextBlock { Text = $"공급받는자 : {company}", FontSize = 11, FontFamily = _tradeFont, Foreground = Res("FgMuted") });
-            preview.Children.Add(new TextBlock { Text = $"발행일     : {DateTime.Today:yyyy-MM-dd}", FontSize = 11, FontFamily = _tradeFont, Foreground = Res("FgMuted") });
-            preview.Children.Add(new TextBlock { Text = $"건수       : {checked_.Count}건", FontSize = 11, FontFamily = _tradeFont, Foreground = Res("FgMuted") });
+            preview.Children.Add(new TextBlock { Text = $"공급받는자 : {company}", FontSize = AppTheme.FontBase, FontFamily = _tradeFont, Foreground = Res("FgMuted") });
+            preview.Children.Add(new TextBlock { Text = $"발행일     : {DateTime.Today:yyyy-MM-dd}", FontSize = AppTheme.FontBase, FontFamily = _tradeFont, Foreground = Res("FgMuted") });
+            preview.Children.Add(new TextBlock { Text = $"건수       : {checked_.Count}건", FontSize = AppTheme.FontBase, FontFamily = _tradeFont, Foreground = Res("FgMuted") });
 
             // 견적번호 목록
             var noList = new TextBlock
             {
                 Text = "견적번호 : " + string.Join(", ", checked_.Select(i => i.견적번호)),
-                FontSize = 10, FontFamily = _tradeFont,
+                FontSize = AppTheme.FontSM, FontFamily = _tradeFont,
                 Foreground = Res("FgMuted"),
                 TextWrapping = Avalonia.Media.TextWrapping.Wrap,
             };
@@ -3298,11 +3816,11 @@ public partial class MainPage : Window
             void AddAmtRow(string label, decimal amt, bool bold = false)
             {
                 var row = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
-                row.Children.Add(new TextBlock { Text = label, Width = 90, FontSize = 12, FontFamily = _tradeFont, Foreground = Res("FgMuted") });
+                row.Children.Add(new TextBlock { Text = label, Width = 90, FontSize = AppTheme.FontMD, FontFamily = _tradeFont, Foreground = Res("FgMuted") });
                 var tb = new TextBlock
                 {
                     Text = amt.ToString("N0") + " 원",
-                    FontSize = 13, FontFamily = _tradeFont,
+                    FontSize = AppTheme.FontLG, FontFamily = _tradeFont,
                     Foreground = bold ? Res("AppFg") : Res("FgMuted"),
                     FontWeight = bold ? FontWeight.SemiBold : FontWeight.Normal,
                 };
@@ -3329,7 +3847,7 @@ public partial class MainPage : Window
             Child = new TextBlock
             {
                 Text = "📋  거래명세서 항목 선택",
-                FontSize = 13, FontFamily = _tradeFont, FontWeight = FontWeight.SemiBold,
+                FontSize = AppTheme.FontLG, FontFamily = _tradeFont, FontWeight = FontWeight.SemiBold,
                 Foreground = Res("AppFg"),
             }
         });
@@ -3351,13 +3869,13 @@ public partial class MainPage : Window
                         new TextBlock
                         {
                             Text = $"{issue.약칭}  {issue.시료명}",
-                            FontSize = 11, FontFamily = _tradeFont, Foreground = Res("AppFg"),
+                            FontSize = AppTheme.FontBase, FontFamily = _tradeFont, Foreground = Res("AppFg"),
                             TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
                         },
                         new TextBlock
                         {
                             Text = $"{issue.견적번호}  |  {issue.총금액:N0} 원",
-                            FontSize = 10, FontFamily = _tradeFont,
+                            FontSize = AppTheme.FontSM, FontFamily = _tradeFont,
                             Foreground = Res("FgMuted"),
                         },
                     }
@@ -3381,7 +3899,7 @@ public partial class MainPage : Window
         {
             Content = "🖨  발행 (Excel + DB 저장)",
             Height = 38, Margin = new Thickness(8, 6),
-            FontSize = 12, FontFamily = _tradeFont,
+            FontSize = AppTheme.FontMD, FontFamily = _tradeFont,
             Background = Res("SubBtnBg"),
             Foreground = Res("AppFg"),
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
@@ -3411,7 +3929,7 @@ public partial class MainPage : Window
             Show2.Content = new TextBlock
             {
                 Text = "⚠️  체크된 항목이 없습니다.",
-                FontSize = 13, Foreground = Brushes.Orange, FontFamily = _tradeFont,
+                FontSize = AppTheme.FontLG, Foreground = Brushes.Orange, FontFamily = _tradeFont,
                 Margin = new Thickness(12),
             };
             return;
@@ -3450,7 +3968,7 @@ public partial class MainPage : Window
         Show2.Content = new TextBlock
         {
             Text = $"⏳  발행 중... ({checkedIssues.Count}건)",
-            FontSize = 13, Foreground = Res("FgMuted"), FontFamily = _tradeFont,
+            FontSize = AppTheme.FontLG, Foreground = Res("FgMuted"), FontFamily = _tradeFont,
             Margin = new Thickness(12),
         };
 
@@ -3479,7 +3997,7 @@ public partial class MainPage : Window
             Show2.Content = new TextBlock
             {
                 Text = $"✅  발행 완료!\n거래명세서번호: {statementNo}\n{checkedIssues.Count}건  합계: {total:N0} 원\n\n{savePath}",
-                FontSize = 13, Foreground = new SolidColorBrush(Color.Parse("#16a34a")), FontFamily = _tradeFont,
+                FontSize = AppTheme.FontLG, Foreground = AppTheme.FgSuccess, FontFamily = _tradeFont,
                 Margin = new Thickness(12), TextWrapping = Avalonia.Media.TextWrapping.Wrap,
             };
             try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(savePath) { UseShellExecute = true }); }
@@ -3490,7 +4008,7 @@ public partial class MainPage : Window
             Show2.Content = new TextBlock
             {
                 Text = $"❌  {msg}",
-                FontSize = 13, Foreground = Brushes.OrangeRed, FontFamily = _tradeFont,
+                FontSize = AppTheme.FontLG, Foreground = Brushes.OrangeRed, FontFamily = _tradeFont,
                 Margin = new Thickness(12),
             };
         }
@@ -3533,10 +4051,10 @@ public partial class MainPage : Window
     //  테마 (DynamicResource 전체 교체 방식)
     // ══════════════════════════════════════════════════════════════════════
 
-    private void OnThemeChanged(object? sender, RoutedEventArgs e)
+    private void OnThemeSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        if (tglTheme == null) return;
-        ApplyTheme(tglTheme.IsChecked == true);
+        if (cboTheme == null) return;
+        ApplyTheme(cboTheme.SelectedIndex);
     }
 
     // ══════════════════════════════════════════════════════════════════════
@@ -3610,17 +4128,25 @@ public partial class MainPage : Window
         return 1.0;
     }
 
-    private void ApplyTheme(bool isDark)
+    private void ApplyTheme(int themeIndex)
     {
-        // ── Avalonia 기본 테마 변형도 함께 변경 ──────────────────────────
-        var variant = isDark ? ThemeVariant.Dark : ThemeVariant.Light;
+        // ── Avalonia 기본 테마 변형 ──
+        var isLight = themeIndex == 1; // Soft Light만 Light variant
+        var variant = isLight ? ThemeVariant.Light : ThemeVariant.Dark;
         if (Application.Current is Application app)
             app.RequestedThemeVariant = variant;
         this.RequestedThemeVariant = variant;
 
+        // ── 팔레트 선택 ──
+        var palette = themeIndex switch
+        {
+            1 => LightPalette(),
+            2 => OceanPalette(),
+            3 => ForestPalette(),
+            _ => DarkPalette(),
+        };
+
         // ── Window.Resources + Application.Current.Resources 동시 교체 ──
-        // → 하위 페이지 코드에서 AppRes() 로 현재 테마 색상 조회 가능
-        var palette = isDark ? DarkPalette() : LightPalette();
         foreach (var (key, color) in palette)
         {
             var brush = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse(color));
@@ -3640,24 +4166,25 @@ public partial class MainPage : Window
     // ── 다크 팔레트 ──────────────────────────────────────────────────────
     private static System.Collections.Generic.Dictionary<string, string> DarkPalette() => new()
     {
+        // ── 레이아웃 ──
         ["AppBg"]            = "#1e1e26",
         ["PanelBg"]          = "#39383f",
         ["PanelInnerBg"]     = "#2d2d35",
         ["MenuBarBg"]        = "#444444",
         ["MenuItemBg"]       = "#444444",
-        ["MenuItemHover"]    = "#012800",
-        ["SubMenuBg"]        = "#012800",
-        ["SubMenuItemBg"]    = "#444444",   // ★ 서브메뉴 항목 통일
-        ["SubMenuItemHover"] = "#023d00",
+        ["MenuItemHover"]    = "#3a3a5a",
+        ["SubMenuBg"]        = "#2a2a3a",
+        ["SubMenuItemBg"]    = "#35343c",
+        ["SubMenuItemHover"] = "#3a3a5a",
         ["SubBtnBg"]         = "#342f2f",
-        ["SubBtnHover"]      = "#012800",
+        ["SubBtnHover"]      = "#3a3a5a",
         ["SplitterColor"]    = "#020202",
-        ["AppFg"]            = "#ffffff",
-        ["FgMuted"]          = "#aaaaaa",
-        ["FgHover"]          = "#fd0f0f",
-        ["TreeFg"]           = "#e0e0e0",
-        ["TreeSelBg"]        = "#014a00",
-        ["TreeSelFg"]        = "#ffffff",
+        ["AppFg"]            = "#d8d8e0",
+        ["FgMuted"]          = "#999aaa",
+        ["FgHover"]          = "#88aaff",
+        ["TreeFg"]           = "#d0d0d8",
+        ["TreeSelBg"]        = "#1e3a5a",
+        ["TreeSelFg"]        = "#e8e8f0",
         ["GridHeaderBg"]     = "#2a2a32",
         ["GridRowBg"]        = "#35343c",
         ["GridRowAltBg"]     = "#2d2d35",
@@ -3668,39 +4195,278 @@ public partial class MainPage : Window
         ["Panel4Bg"]         = "#252535",
         ["TabActiveBg"]      = "#1e3a5a",
         ["TabActiveFg"]      = "#88aaee",
+        // ── 버튼 ──
+        ["BtnBg"]            = "#2a2a3a",
+        ["BtnFg"]            = "#cccccc",
+        ["BtnBorder"]        = "#404050",
+        ["BtnHoverBg"]       = "#3a3a5a",
+        ["BtnPrimaryBg"]     = "#1e3a5a",
+        ["BtnPrimaryFg"]     = "#88aaee",
+        ["BtnPrimaryBorder"] = "#336699",
+        ["BtnPrimaryHover"]  = "#2a4a6a",
+        ["BtnDangerBg"]      = "#4a2a2a",
+        ["BtnDangerFg"]      = "#ff8888",
+        ["BtnDangerBorder"]  = "#663333",
+        ["BtnDangerHover"]   = "#5a3333",
+        ["BtnSuccessBg"]     = "#1a3a2a",
+        ["BtnSuccessFg"]     = "#88cc88",
+        ["BtnSuccessBorder"] = "#2a6a2a",
+        ["BtnSuccessHover"]  = "#2a4a3a",
+        // ── Theme* (AppTheme 헬퍼 + DynamicResource 연동) ──
+        ["ThemeBorderDefault"]   = "#555577",
+        ["ThemeBorderSubtle"]    = "#333344",
+        ["ThemeBorderMuted"]     = "#404050",
+        ["ThemeBorderActive"]    = "#2a6a2a",
+        ["ThemeBorderInfo"]      = "#336699",
+        ["ThemeBorderAccent"]    = "#3a5a8a",
+        ["ThemeBorderDanger"]    = "#663333",
+        ["ThemeBorderWarn"]      = "#6a5a3a",
+        ["ThemeBorderSeparator"] = "#3a3a4a",
+        ["ThemeBorderPanel"]     = "#3a3a4a",
+        ["ThemeFgPrimary"]       = "#ffffff",
+        ["ThemeFgSecondary"]     = "#cccccc",
+        ["ThemeFgMuted"]         = "#888899",
+        ["ThemeFgDimmed"]        = "#555566",
+        ["ThemeFgSuccess"]       = "#88cc88",
+        ["ThemeFgInfo"]          = "#88aacc",
+        ["ThemeFgDanger"]        = "#ff6666",
+        ["ThemeFgWarn"]          = "#ffaa44",
+        ["ThemeFgLink"]          = "#88aaff",
+        ["ThemeBgPrimary"]       = "#1e1e26",
+        ["ThemeBgSecondary"]     = "#252535",
+        ["ThemeBgCard"]          = "#2a2a3a",
+        ["ThemeBgInput"]         = "#22223a",
+        ["ThemeBgActiveGreen"]   = "#1a3a1a",
+        ["ThemeBgActiveBlue"]    = "#1e3a5a",
+        ["ThemeBgDanger"]        = "#4a2a2a",
     };
 
     // ── 라이트 팔레트 ─────────────────────────────────────────────────────
     private static System.Collections.Generic.Dictionary<string, string> LightPalette() => new()
     {
-        ["AppBg"]            = "#f0f2f5",
-        ["PanelBg"]          = "#ffffff",
-        ["PanelInnerBg"]     = "#f8f9fb",
-        ["MenuBarBg"]        = "#2d6a4f",
-        ["MenuItemBg"]       = "#2d6a4f",
-        ["MenuItemHover"]    = "#1b4332",
-        ["SubMenuBg"]        = "#1b4332",
-        ["SubMenuItemBg"]    = "#2d6a4f",   // ★ 라이트도 통일
-        ["SubMenuItemHover"] = "#145a32",
-        ["SubBtnBg"]         = "#e2e8f0",
-        ["SubBtnHover"]      = "#cbd5e1",
-        ["SplitterColor"]    = "#cbd5e1",
-        ["AppFg"]            = "#1a1a2e",
+        // ── 레이아웃 (눈부시지 않은 소프트 라이트) ──
+        ["AppBg"]            = "#eef1f6",
+        ["PanelBg"]          = "#f5f7fa",
+        ["PanelInnerBg"]     = "#edf0f5",
+        ["MenuBarBg"]        = "#334155",
+        ["MenuItemBg"]       = "#334155",
+        ["MenuItemHover"]    = "#1e293b",
+        ["SubMenuBg"]        = "#1e293b",
+        ["SubMenuItemBg"]    = "#334155",
+        ["SubMenuItemHover"] = "#475569",
+        ["SubBtnBg"]         = "#dde3ec",
+        ["SubBtnHover"]      = "#c8d0dc",
+        ["SplitterColor"]    = "#c8d0dc",
+        ["AppFg"]            = "#1e293b",
         ["FgMuted"]          = "#64748b",
-        ["FgHover"]          = "#dc2626",
+        ["FgHover"]          = "#2563eb",
         ["TreeFg"]           = "#1e293b",
-        ["TreeSelBg"]        = "#bbf7d0",
-        ["TreeSelFg"]        = "#14532d",
-        ["GridHeaderBg"]     = "#e2e8f0",
-        ["GridRowBg"]        = "#ffffff",
-        ["GridRowAltBg"]     = "#f8fafc",
-        ["InputBg"]          = "#ffffff",
+        ["TreeSelBg"]        = "#dbeafe",
+        ["TreeSelFg"]        = "#1e40af",
+        ["GridHeaderBg"]     = "#dde3ec",
+        ["GridRowBg"]        = "#f5f7fa",
+        ["GridRowAltBg"]     = "#edf0f5",
+        ["InputBg"]          = "#f5f7fa",
         ["InputBorder"]      = "#94a3b8",
         ["InputFg"]          = "#1e293b",
-        ["TreeHoverBg"]      = "#e2e8f0",
-        ["Panel4Bg"]         = "#f0f4f8",
+        ["TreeHoverBg"]      = "#dde3ec",
+        ["Panel4Bg"]         = "#edf0f5",
         ["TabActiveBg"]      = "#dbeafe",
         ["TabActiveFg"]      = "#1e40af",
+        // ── 버튼 (라이트) ──
+        ["BtnBg"]            = "#e4e8ef",
+        ["BtnFg"]            = "#334155",
+        ["BtnBorder"]        = "#c4cdd8",
+        ["BtnHoverBg"]       = "#d1d9e4",
+        ["BtnPrimaryBg"]     = "#2563eb",
+        ["BtnPrimaryFg"]     = "#ffffff",
+        ["BtnPrimaryBorder"] = "#1e40af",
+        ["BtnPrimaryHover"]  = "#1d4ed8",
+        ["BtnDangerBg"]      = "#fef2f2",
+        ["BtnDangerFg"]      = "#dc2626",
+        ["BtnDangerBorder"]  = "#fca5a5",
+        ["BtnDangerHover"]   = "#fee2e2",
+        ["BtnSuccessBg"]     = "#f0fdf4",
+        ["BtnSuccessFg"]     = "#16a34a",
+        ["BtnSuccessBorder"] = "#86efac",
+        ["BtnSuccessHover"]  = "#dcfce7",
+        // ── Theme* (라이트 모드 — 소프트 톤) ──
+        ["ThemeBorderDefault"]   = "#b8c4d4",
+        ["ThemeBorderSubtle"]    = "#d1d9e4",
+        ["ThemeBorderMuted"]     = "#c4cdd8",
+        ["ThemeBorderActive"]    = "#3b82f6",
+        ["ThemeBorderInfo"]      = "#3b82f6",
+        ["ThemeBorderAccent"]    = "#6366f1",
+        ["ThemeBorderDanger"]    = "#ef4444",
+        ["ThemeBorderWarn"]      = "#f59e0b",
+        ["ThemeBorderSeparator"] = "#d1d9e4",
+        ["ThemeBorderPanel"]     = "#c4cdd8",
+        ["ThemeFgPrimary"]       = "#1e293b",
+        ["ThemeFgSecondary"]     = "#475569",
+        ["ThemeFgMuted"]         = "#64748b",
+        ["ThemeFgDimmed"]        = "#94a3b8",
+        ["ThemeFgSuccess"]       = "#16a34a",
+        ["ThemeFgInfo"]          = "#2563eb",
+        ["ThemeFgDanger"]        = "#dc2626",
+        ["ThemeFgWarn"]          = "#d97706",
+        ["ThemeFgLink"]          = "#2563eb",
+        ["ThemeBgPrimary"]       = "#eef1f6",
+        ["ThemeBgSecondary"]     = "#e4e8ef",
+        ["ThemeBgCard"]          = "#f5f7fa",
+        ["ThemeBgInput"]         = "#f5f7fa",
+        ["ThemeBgActiveGreen"]   = "#dcfce7",
+        ["ThemeBgActiveBlue"]    = "#dbeafe",
+        ["ThemeBgDanger"]        = "#fef2f2",
+    };
+
+    // ── Ocean 팔레트 (딥 블루 다크) ──────────────────────────────────────
+    private static System.Collections.Generic.Dictionary<string, string> OceanPalette() => new()
+    {
+        ["AppBg"]            = "#0f172a",
+        ["PanelBg"]          = "#1e293b",
+        ["PanelInnerBg"]     = "#162032",
+        ["MenuBarBg"]        = "#1e3a5a",
+        ["MenuItemBg"]       = "#1e3a5a",
+        ["MenuItemHover"]    = "#2a4a6a",
+        ["SubMenuBg"]        = "#162032",
+        ["SubMenuItemBg"]    = "#1e293b",
+        ["SubMenuItemHover"] = "#2a4a6a",
+        ["SubBtnBg"]         = "#1e293b",
+        ["SubBtnHover"]      = "#2a4a6a",
+        ["SplitterColor"]    = "#0c1220",
+        ["AppFg"]            = "#d0d8e4",
+        ["FgMuted"]          = "#8a99b0",
+        ["FgHover"]          = "#60a5fa",
+        ["TreeFg"]           = "#bcc8d8",
+        ["TreeSelBg"]        = "#1e40af",
+        ["TreeSelFg"]        = "#dde4f0",
+        ["GridHeaderBg"]     = "#1a2744",
+        ["GridRowBg"]        = "#1e293b",
+        ["GridRowAltBg"]     = "#162032",
+        ["InputBg"]          = "#162032",
+        ["InputBorder"]      = "#334155",
+        ["InputFg"]          = "#e2e8f0",
+        ["TreeHoverBg"]      = "#1a2744",
+        ["Panel4Bg"]         = "#162032",
+        ["TabActiveBg"]      = "#1e40af",
+        ["TabActiveFg"]      = "#93c5fd",
+        ["BtnBg"]            = "#1e293b",
+        ["BtnFg"]            = "#cbd5e1",
+        ["BtnBorder"]        = "#334155",
+        ["BtnHoverBg"]       = "#2a4a6a",
+        ["BtnPrimaryBg"]     = "#1e40af",
+        ["BtnPrimaryFg"]     = "#93c5fd",
+        ["BtnPrimaryBorder"] = "#3b82f6",
+        ["BtnPrimaryHover"]  = "#2563eb",
+        ["BtnDangerBg"]      = "#450a0a",
+        ["BtnDangerFg"]      = "#f87171",
+        ["BtnDangerBorder"]  = "#7f1d1d",
+        ["BtnDangerHover"]   = "#991b1b",
+        ["BtnSuccessBg"]     = "#052e16",
+        ["BtnSuccessFg"]     = "#4ade80",
+        ["BtnSuccessBorder"] = "#166534",
+        ["BtnSuccessHover"]  = "#14532d",
+        ["ThemeBorderDefault"]   = "#334155",
+        ["ThemeBorderSubtle"]    = "#1e293b",
+        ["ThemeBorderMuted"]     = "#2a3a5a",
+        ["ThemeBorderActive"]    = "#3b82f6",
+        ["ThemeBorderInfo"]      = "#3b82f6",
+        ["ThemeBorderAccent"]    = "#6366f1",
+        ["ThemeBorderDanger"]    = "#7f1d1d",
+        ["ThemeBorderWarn"]      = "#78350f",
+        ["ThemeBorderSeparator"] = "#1e293b",
+        ["ThemeBorderPanel"]     = "#334155",
+        ["ThemeFgPrimary"]       = "#e2e8f0",
+        ["ThemeFgSecondary"]     = "#cbd5e1",
+        ["ThemeFgMuted"]         = "#94a3b8",
+        ["ThemeFgDimmed"]        = "#475569",
+        ["ThemeFgSuccess"]       = "#4ade80",
+        ["ThemeFgInfo"]          = "#60a5fa",
+        ["ThemeFgDanger"]        = "#f87171",
+        ["ThemeFgWarn"]          = "#fbbf24",
+        ["ThemeFgLink"]          = "#93c5fd",
+        ["ThemeBgPrimary"]       = "#0f172a",
+        ["ThemeBgSecondary"]     = "#162032",
+        ["ThemeBgCard"]          = "#1e293b",
+        ["ThemeBgInput"]         = "#162032",
+        ["ThemeBgActiveGreen"]   = "#052e16",
+        ["ThemeBgActiveBlue"]    = "#172554",
+        ["ThemeBgDanger"]        = "#450a0a",
+    };
+
+    // ── Forest 팔레트 (따뜻한 다크 그린) ──────────────────────────────────
+    private static System.Collections.Generic.Dictionary<string, string> ForestPalette() => new()
+    {
+        ["AppBg"]            = "#1a1e1a",
+        ["PanelBg"]          = "#2a302a",
+        ["PanelInnerBg"]     = "#222822",
+        ["MenuBarBg"]        = "#2d3a2d",
+        ["MenuItemBg"]       = "#2d3a2d",
+        ["MenuItemHover"]    = "#3a4a3a",
+        ["SubMenuBg"]        = "#222822",
+        ["SubMenuItemBg"]    = "#2a302a",
+        ["SubMenuItemHover"] = "#3a4a3a",
+        ["SubBtnBg"]         = "#2a302a",
+        ["SubBtnHover"]      = "#3a4a3a",
+        ["SplitterColor"]    = "#141814",
+        ["AppFg"]            = "#d0d8d0",
+        ["FgMuted"]          = "#7a8a7a",
+        ["FgHover"]          = "#86efac",
+        ["TreeFg"]           = "#b8c8b8",
+        ["TreeSelBg"]        = "#1a5a2a",
+        ["TreeSelFg"]        = "#dde8dd",
+        ["GridHeaderBg"]     = "#243024",
+        ["GridRowBg"]        = "#2a302a",
+        ["GridRowAltBg"]     = "#222822",
+        ["InputBg"]          = "#222822",
+        ["InputBorder"]      = "#3a4a3a",
+        ["InputFg"]          = "#e0e8e0",
+        ["TreeHoverBg"]      = "#243024",
+        ["Panel4Bg"]         = "#222822",
+        ["TabActiveBg"]      = "#1a5a2a",
+        ["TabActiveFg"]      = "#86efac",
+        ["BtnBg"]            = "#2a302a",
+        ["BtnFg"]            = "#b4c8b4",
+        ["BtnBorder"]        = "#3a4a3a",
+        ["BtnHoverBg"]       = "#3a4a3a",
+        ["BtnPrimaryBg"]     = "#1a5a2a",
+        ["BtnPrimaryFg"]     = "#86efac",
+        ["BtnPrimaryBorder"] = "#22c55e",
+        ["BtnPrimaryHover"]  = "#166534",
+        ["BtnDangerBg"]      = "#3a1a1a",
+        ["BtnDangerFg"]      = "#f87171",
+        ["BtnDangerBorder"]  = "#663333",
+        ["BtnDangerHover"]   = "#5a2a2a",
+        ["BtnSuccessBg"]     = "#0f3a1a",
+        ["BtnSuccessFg"]     = "#86efac",
+        ["BtnSuccessBorder"] = "#22c55e",
+        ["BtnSuccessHover"]  = "#166534",
+        ["ThemeBorderDefault"]   = "#3a4a3a",
+        ["ThemeBorderSubtle"]    = "#2a342a",
+        ["ThemeBorderMuted"]     = "#344434",
+        ["ThemeBorderActive"]    = "#22c55e",
+        ["ThemeBorderInfo"]      = "#3b82f6",
+        ["ThemeBorderAccent"]    = "#4ade80",
+        ["ThemeBorderDanger"]    = "#663333",
+        ["ThemeBorderWarn"]      = "#6a5a3a",
+        ["ThemeBorderSeparator"] = "#2a342a",
+        ["ThemeBorderPanel"]     = "#3a4a3a",
+        ["ThemeFgPrimary"]       = "#e0e8e0",
+        ["ThemeFgSecondary"]     = "#b4c8b4",
+        ["ThemeFgMuted"]         = "#8a9a8a",
+        ["ThemeFgDimmed"]        = "#5a6a5a",
+        ["ThemeFgSuccess"]       = "#86efac",
+        ["ThemeFgInfo"]          = "#60a5fa",
+        ["ThemeFgDanger"]        = "#f87171",
+        ["ThemeFgWarn"]          = "#fbbf24",
+        ["ThemeFgLink"]          = "#86efac",
+        ["ThemeBgPrimary"]       = "#1a1e1a",
+        ["ThemeBgSecondary"]     = "#222822",
+        ["ThemeBgCard"]          = "#2a302a",
+        ["ThemeBgInput"]         = "#222822",
+        ["ThemeBgActiveGreen"]   = "#0f3a1a",
+        ["ThemeBgActiveBlue"]    = "#1a2a3a",
+        ["ThemeBgDanger"]        = "#3a1a1a",
     };
 
     // ── Quotation 이벤트 핸들러 (중복 구독 방지용 named handler) ─────────
@@ -3745,6 +4511,20 @@ public partial class MainPage : Window
     private void LogContentChange(string contentName, object? content)
     {
         Debug.WriteLine($"[{DateTime.Now:HH:mm:ss}] ContentChange: {contentName} = {content?.GetType().Name ?? "null"}");
+
+        // 패널 내용이 세팅되면 shimmer sweep 재생
+        if (content != null)
+        {
+            Control? target = contentName switch
+            {
+                "Show1" => Show1,
+                "Show2" or "Show2(inner)" => Show2,
+                "Show3" => Show3,
+                "Show4" => Show4,
+                _ => null,
+            };
+            // (shimmer 제거됨)
+        }
     }
 
     // ══════════════════════════════════════════════════════════════════════
@@ -3779,20 +4559,20 @@ public partial class MainPage : Window
                     layout.LeftPanelWidth = colDef.Width.Value;
             }
 
-            // 오른쪽 상단/하단 분할 비율
+            // 오른쪽 상단/하단 + 좌우 분할 비율 (플랫 그리드)
             var rightGrid = this.FindControl<Grid>("RightSplitGrid");
-            if (rightGrid != null && rightGrid.RowDefinitions.Count >= 3)
+            if (rightGrid != null)
             {
-                layout.UpperStar = rightGrid.RowDefinitions[0].Height.Value;
-                layout.LowerStar = rightGrid.RowDefinitions[2].Height.Value;
-            }
-
-            // Content2/Content4 분할 비율
-            var upperGrid = this.FindControl<Grid>("UpperContentGrid");
-            if (upperGrid != null && upperGrid.ColumnDefinitions.Count >= 3)
-            {
-                layout.Content2Star = upperGrid.ColumnDefinitions[0].Width.Value;
-                layout.Content4Star = upperGrid.ColumnDefinitions[2].Width.Value;
+                if (rightGrid.RowDefinitions.Count >= 3)
+                {
+                    layout.UpperStar = rightGrid.RowDefinitions[0].Height.Value;
+                    layout.LowerStar = rightGrid.RowDefinitions[2].Height.Value;
+                }
+                if (rightGrid.ColumnDefinitions.Count >= 3)
+                {
+                    layout.Content2Star = rightGrid.ColumnDefinitions[0].Width.Value;
+                    layout.Content4Star = rightGrid.ColumnDefinitions[2].Width.Value;
+                }
             }
 
             layout.SavedAt = DateTime.Now;

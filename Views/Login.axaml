@@ -10,12 +10,79 @@
         WindowStartupLocation="CenterScreen">
 
     <Window.Styles>
-        <!-- 포커스/호버 시 배경색 유지 -->
+        <!-- ══ 로그인 카드 등장 애니메이션 (페이드+슬라이드업) ══ -->
+        <Style Selector="Border#loginForm">
+            <Setter Property="RenderTransformOrigin" Value="50%,50%"/>
+            <Style.Animations>
+                <Animation Duration="0:0:0.7" Easing="CubicEaseOut" FillMode="Forward" Delay="0:0:0.1">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0"/>
+                        <Setter Property="TranslateTransform.Y" Value="40"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="1"/>
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- ══ 버튼 호버/프레스 스케일 효과 ══ -->
+        <Style Selector="Button">
+            <Setter Property="RenderTransformOrigin" Value="50%,50%"/>
+            <Setter Property="RenderTransform" Value="scaleX(1) scaleY(1)"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.15" Easing="CubicEaseOut"/>
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Button:pointerover">
+            <Setter Property="RenderTransform" Value="scaleX(1.03) scaleY(1.03)"/>
+        </Style>
+        <Style Selector="Button:pressed">
+            <Setter Property="RenderTransform" Value="scaleX(0.96) scaleY(0.96)"/>
+        </Style>
+
+        <!-- ══ 입력 포커스 강조 + 호버 배경 ══ -->
+        <Style Selector="TextBox">
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="BorderBrush" Duration="0:0:0.25" Easing="CubicEaseOut"/>
+                    <ThicknessTransition Property="BorderThickness" Duration="0:0:0.2" Easing="CubicEaseOut"/>
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="TextBox:focus">
+            <Setter Property="BorderBrush" Value="#3B6FE8"/>
+            <Setter Property="BorderThickness" Value="2"/>
+        </Style>
         <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
             <Setter Property="Background" Value="#F8FAFF"/>
         </Style>
         <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
             <Setter Property="Background" Value="#F0F4FF"/>
+        </Style>
+
+        <!-- ══ 에러 메시지 페이드인 ══ -->
+        <Style Selector="TextBlock#txtError">
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.35" Easing="CubicEaseOut"/>
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <!-- ══ 회원가입 링크 호버 효과 ══ -->
+        <Style Selector="TextBlock#lnkSignUp">
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.15"/>
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="TextBlock#lnkSignUp:pointerover">
+            <Setter Property="Opacity" Value="0.7"/>
         </Style>
     </Window.Styles>
 
@@ -50,14 +117,14 @@
                                    Foreground="White"
                                    FontSize="13"
                                    VerticalAlignment="Center"
-                                   FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+                                   FontFamily="avares://ETA/Assets/Fonts#Pretendard"/>
                         <TextBlock x:Name="txtConnectPct"
                                    Grid.Column="1"
                                    Text="0%"
                                    Foreground="#88ffffff"
                                    FontSize="11"
                                    VerticalAlignment="Center"
-                                   FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+                                   FontFamily="avares://ETA/Assets/Fonts#Pretendard"/>
                     </Grid>
                     <ProgressBar x:Name="pbConnect"
                                  Minimum="0" Maximum="100" Value="0"
@@ -101,7 +168,7 @@
                                    PointerPressed="Title_Click"/>
                         <TextBlock Text="TEAM Professional WATER ANALYSIS CENTER" FontSize="9"
                                    Foreground="#9CA3AF" TextWrapping="Wrap"/>
-                        <TextBlock Text="Presented by 1110x v1.0" FontSize="10" FontFamily="Assets/Fonts/KBIZ한마음명조 M.ttf"
+                        <TextBlock Text="Presented by 1110x v1.0" FontSize="10" FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                                    Foreground="#5a2da1"/>
                     </StackPanel>
                 </Grid>
@@ -112,7 +179,7 @@
                                Foreground="#374151"/>
                     <TextBox x:Name="txtEmail" Watermark="202912345" FontSize="{DynamicResource FontSizeXL}"
                              Padding="12,12" CornerRadius="9"
-                             BorderBrush="#D1D9FF" BorderThickness="1.5"
+                             BorderBrush="{DynamicResource LoginInputBorder}" BorderThickness="1.5"
                              Background="#F8FAFF" Foreground="#111827"
                              LetterSpacing="3"/>
                 </StackPanel>
@@ -124,7 +191,7 @@
                     <TextBox x:Name="txtPassword"
                              Watermark="초기 비밀번호: 123456"
                              FontSize="{DynamicResource FontSizeXL}" Padding="12,12" CornerRadius="9"
-                             BorderBrush="#D1D9FF" BorderThickness="1.5"
+                             BorderBrush="{DynamicResource LoginInputBorder}" BorderThickness="1.5"
                              Background="#F8FAFF" Foreground="#111827"
                              LetterSpacing="3"/>
                 </StackPanel>
@@ -159,7 +226,7 @@
                                 Click="ChangePassword_Click"
                                 FontSize="{DynamicResource FontSizeLG}" Padding="8,9"
                                 CornerRadius="8" BorderThickness="1.5"
-                                BorderBrush="#D1D9FF"
+                                BorderBrush="{DynamicResource LoginInputBorder}"
                                 Background="White" Foreground="#374151"
                                 HorizontalAlignment="Stretch"
                                 HorizontalContentAlignment="Center">
@@ -183,7 +250,7 @@
 
                 <!-- DB 모드 토글 -->
                 <Border Background="#F0F4FF" CornerRadius="8" Padding="12,8"
-                        BorderBrush="#C7D2FE" BorderThickness="1">
+                        BorderBrush="{DynamicResource LoginCardBorder}" BorderThickness="1">
                     <Grid ColumnDefinitions="*,Auto">
                         <StackPanel Grid.Column="0" Spacing="2" VerticalAlignment="Center">
                             <TextBlock x:Name="txtDbMode" Text="로컬 DB"
@@ -202,13 +269,24 @@
                                 Margin="8,0,0,0"
                                 Cursor="Hand"
                                 PointerPressed="DbModeToggle_Click">
+                            <Border.Transitions>
+                                <Transitions>
+                                    <BrushTransition Property="Background" Duration="0:0:0.2" Easing="CubicEaseInOut"/>
+                                </Transitions>
+                            </Border.Transitions>
                             <Border x:Name="toggleKnob"
                                     Width="20" Height="20"
                                     CornerRadius="10"
                                     Background="White"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Center"
-                                    Margin="3,0,0,0"/>
+                                    Margin="3,0,0,0">
+                                <Border.Transitions>
+                                    <Transitions>
+                                        <ThicknessTransition Property="Margin" Duration="0:0:0.2" Easing="CubicEaseInOut"/>
+                                    </Transitions>
+                                </Border.Transitions>
+                            </Border>
                         </Border>
                     </Grid>
                 </Border>

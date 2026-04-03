@@ -1,5 +1,7 @@
 using Avalonia;
+using ETA.Views;
 using Avalonia.Controls;
+using ETA.Views;
 using Avalonia.Layout;
 using Avalonia.Media;
 using ETA.Services;
@@ -26,13 +28,13 @@ public class InstallCheckDialog : Window
     }
 
     private static readonly FontFamily Font =
-        new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
+        new("avares://ETA/Assets/Fonts#Pretendard");
 
     private readonly StackPanel _itemPanel  = new() { Spacing = 6 };
     private readonly TextBlock  _statusText = new()
     {
-        FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
-        FontSize   = 11,
+        FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+        FontSize   = AppTheme.FontBase,
         Foreground = Brushes.Gray,
         Margin     = new Avalonia.Thickness(0, 4, 0, 0),
     };
@@ -77,7 +79,7 @@ public class InstallCheckDialog : Window
         {
             Text       = "📦  초기 설정",
             FontFamily = Font,
-            FontSize   = 16,
+            FontSize   = AppTheme.FontXL,
             FontWeight = FontWeight.Bold,
             Foreground = AppRes("AppFg"),
             Margin     = new Avalonia.Thickness(0, 0, 0, 6),
@@ -87,7 +89,7 @@ public class InstallCheckDialog : Window
         {
             Text       = "아래 항목이 설치되어 있지 않습니다.\n지금 설치하시겠습니까?",
             FontFamily = Font,
-            FontSize   = 12,
+            FontSize   = AppTheme.FontMD,
             Foreground = AppRes("FgMuted"),
             Margin     = new Avalonia.Thickness(0, 0, 0, 12),
         };
@@ -104,7 +106,7 @@ public class InstallCheckDialog : Window
                     new TextBlock
                     {
                         Text       = item.Required ? "🔴" : "🟡",
-                        FontSize   = 14,
+                        FontSize   = AppTheme.FontXL,
                         VerticalAlignment = VerticalAlignment.Center,
                     },
                     new StackPanel
@@ -117,7 +119,7 @@ public class InstallCheckDialog : Window
                             {
                                 Text       = item.Name,
                                 FontFamily = Font,
-                                FontSize   = 13,
+                                FontSize   = AppTheme.FontLG,
                                 FontWeight = FontWeight.SemiBold,
                                 Foreground = AppRes("AppFg"),
                             },
@@ -125,7 +127,7 @@ public class InstallCheckDialog : Window
                             {
                                 Text       = item.Description,
                                 FontFamily = Font,
-                                FontSize   = 11,
+                                FontSize   = AppTheme.FontBase,
                                 Foreground = AppRes("FgMuted"),
                             },
                         }
@@ -204,7 +206,7 @@ public class InstallCheckDialog : Window
             if (fail == 0)
             {
                 _statusText.Text       = $"✅ {ok}개 설치 완료";
-                _statusText.Foreground = new SolidColorBrush(Color.Parse("#88cc88"));
+                _statusText.Foreground = AppTheme.FgSuccess;
             }
             else
             {

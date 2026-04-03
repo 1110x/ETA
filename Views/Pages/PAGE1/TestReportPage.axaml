@@ -10,7 +10,7 @@
             <Setter Property="MinHeight"  Value="0" />
             <Setter Property="FontSize"   Value="{DynamicResource FontSizeBase}" />
             <Setter Property="Foreground" Value="{DynamicResource TreeFg}" />
-            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#Pretendard" />
             <Setter Property="Background" Value="Transparent" />
         </Style>
         <Style Selector="TreeViewItem /template/ ContentPresenter#PART_HeaderPresenter">
@@ -51,7 +51,7 @@
                          BorderBrush="{DynamicResource InputBorder}" Padding="6,0" CornerRadius="4"
                          Margin="6,0,0,0"
                          VerticalAlignment="Center"
-                         FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"
+                         FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                          TextChanged="TxbSearch_TextChanged"/>
             </Grid>
         </Border>

@@ -9,7 +9,7 @@
             <Setter Property="MinHeight"  Value="0" />
             <Setter Property="FontSize"   Value="{DynamicResource FontSizeBase}" />
             <Setter Property="Foreground" Value="{DynamicResource TreeFg}" />
-            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#Pretendard" />
             <Setter Property="Background" Value="Transparent" />
         </Style>
         <Style Selector="TreeViewItem /template/ ContentPresenter#PART_HeaderPresenter">
@@ -35,7 +35,7 @@
                 <TextBlock Text="자료 조회"
                            FontSize="{DynamicResource FontSizeBase}" FontWeight="SemiBold"
                            Foreground="{DynamicResource FgMuted}"
-                           FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                           FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                            VerticalAlignment="Center"
                            Margin="0,0,8,0"/>
                 <Button x:Name="BtnYeosoo"
@@ -43,16 +43,16 @@
                         Click="GroupTab_Click"
                         Tag="여수"
                         FontSize="{DynamicResource FontSizeSM}"
-                        FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                        FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                         Padding="8,3" CornerRadius="10"
-                        Background="#1e3a5a" Foreground="#88aacc"
-                        BorderThickness="1" BorderBrush="#336699"/>
+                        Background="{DynamicResource ThemeBgActiveBlue}" Foreground="{DynamicResource ThemeFgInfo}"
+                        BorderThickness="1" BorderBrush="{DynamicResource ThemeBorderInfo}"/>
                 <Button x:Name="BtnYulchon"
                         Content="🏗 율촌"
                         Click="GroupTab_Click"
                         Tag="율촌"
                         FontSize="{DynamicResource FontSizeSM}"
-                        FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                        FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                         Padding="8,3" CornerRadius="10"
                         Background="{DynamicResource SubBtnBg}"
                         Foreground="{DynamicResource FgMuted}"
@@ -63,7 +63,7 @@
                         Click="GroupTab_Click"
                         Tag="세풍"
                         FontSize="{DynamicResource FontSizeSM}"
-                        FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                        FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                         Padding="8,3" CornerRadius="10"
                         Background="{DynamicResource SubBtnBg}"
                         Foreground="{DynamicResource FgMuted}"

@@ -4,8 +4,10 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Threading;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using ETA.Models;
@@ -18,7 +20,7 @@ namespace ETA.Views;
 internal sealed class WasteBarLineChartControl : Control
 {
     private static readonly FontFamily Font =
-        new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R");
+        new("avares://ETA/Assets/Fonts#Pretendard");
 
     internal static readonly (string Label, Color Color, Func<WasteAnalysisResult, double?> Get)[] Series =
     {
@@ -40,6 +42,12 @@ internal sealed class WasteBarLineChartControl : Control
     // 마우스 호버 — 툴팁용
     private int _hoverIndex = -1;
 
+    // ── 바 등장 애니메이션 ──
+    private double _animProgress = 0;
+    private readonly Stopwatch _animSw = new();
+    private DispatcherTimer? _animTimer;
+    private const double AnimDurationMs = 600; // 0.6초
+
     public WasteBarLineChartControl(string title, List<WasteAnalysisResult> data)
     {
         _title   = title;
@@ -47,6 +55,32 @@ internal sealed class WasteBarLineChartControl : Control
         _enabled = new HashSet<string>(Series.Select(s => s.Label));
         HorizontalAlignment = HorizontalAlignment.Stretch;
         VerticalAlignment   = VerticalAlignment.Stretch;
+        StartBarAnimation();
+    }
+
+    private void StartBarAnimation()
+    {
+        _animProgress = 0;
+        _animSw.Restart();
+        _animTimer?.Stop();
+        _animTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(16) }; // ~60fps
+        _animTimer.Tick += (_, _) =>
+        {
+            double t = _animSw.ElapsedMilliseconds / AnimDurationMs;
+            if (t >= 1.0)
+            {
+                _animProgress = 1.0;
+                _animTimer.Stop();
+            }
+            else
+            {
+                // QuarticEaseOut: 빠르게 시작, 끝에 감속
+                double u = 1.0 - t;
+                _animProgress = 1.0 - u * u * u * u;
+            }
+            InvalidateVisual();
+        };
+        _animTimer.Start();
     }
 
     public void SetEnabled(string label, bool on)
@@ -168,12 +202,13 @@ internal sealed class WasteBarLineChartControl : Control
                     if (!vals[i].HasValue) continue;
                     double ratio = (vals[i]!.Value - minV) / (maxV - minV);
                     ratio = Math.Clamp(ratio, 0, 1);
-                    double barH = ratio * plotH;
+                    double barH = ratio * plotH * _animProgress; // 애니메이션 적용
                     double cx   = padL + (i + 0.5) * slotW;
                     double bx   = cx + barStart;
                     double by   = padT + plotH - barH;
 
-                    var barBrush = new SolidColorBrush(Color.FromArgb(200, color.R, color.G, color.B));
+                    byte alpha = (byte)(200 * _animProgress);
+                    var barBrush = new SolidColorBrush(Color.FromArgb(alpha, color.R, color.G, color.B));
                     ctx.FillRectangle(barBrush, new Rect(bx, by, Math.Max(barW - 1, 2), barH));
                 }
             }

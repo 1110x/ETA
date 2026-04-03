@@ -14,6 +14,7 @@ using ETA.Services;
 using ETA.Services.SERVICE1;
 using ETA.Services.SERVICE2;
 using ETA.Services.Common;
+using ETA.Views;
 
 namespace ETA.Views.Pages.PAGE2;
 
@@ -100,7 +101,7 @@ public partial class WasteCompanyPage : UserControl
             // 모드 진입 (amber 강조 — 테마 무관)
             BtnOrder.Background  = new SolidColorBrush(Color.Parse("#92400e"));
             BtnOrder.Foreground  = new SolidColorBrush(Color.Parse("#fbbf24"));
-            BtnOrder.BorderBrush = new SolidColorBrush(Color.Parse("#d97706"));
+            BtnOrder.BorderBrush = AppTheme.BorderWarn;
             _orderDate     = DateTime.Today.ToString("yyyy-MM-dd");
             _orderSelected.Clear();
             _orderExisting = WasteSampleService.GetCompanyNamesForDate(_orderDate);
@@ -130,7 +131,7 @@ public partial class WasteCompanyPage : UserControl
         // 날짜 선택
         root.Children.Add(new TextBlock
         {
-            Text = "채수일", FontSize = 11, FontFamily = Font,
+            Text = "채수일", FontSize = AppTheme.FontBase, FontFamily = Font,
             Foreground = AppRes("FgMuted"),
         });
 
@@ -138,7 +139,7 @@ public partial class WasteCompanyPage : UserControl
         var dp = new CalendarDatePicker
         {
             SelectedDate = initDate == DateTime.MinValue ? DateTime.Today : initDate,
-            FontFamily = Font, FontSize = 12,
+            FontFamily = Font, FontSize = AppTheme.FontMD,
             Margin = new Thickness(0, 0, 0, 8),
         };
         dp.SelectedDateChanged += (_, _) =>
@@ -155,12 +156,12 @@ public partial class WasteCompanyPage : UserControl
         // 확인자
         root.Children.Add(new TextBlock
         {
-            Text = "확인자", FontSize = 11, FontFamily = Font,
+            Text = "확인자", FontSize = AppTheme.FontBase, FontFamily = Font,
             Foreground = AppRes("FgMuted"),
         });
         _확인자Box = new TextBox
         {
-            FontFamily = Font, FontSize = 12,
+            FontFamily = Font, FontSize = AppTheme.FontMD,
             Background = AppRes("InputBg"),
             Foreground = AppRes("InputFg"),
             BorderBrush = AppRes("InputBorder"),
@@ -173,7 +174,7 @@ public partial class WasteCompanyPage : UserControl
         // 선택 업체 목록
         root.Children.Add(new TextBlock
         {
-            Text = "선택된 업체", FontSize = 11, FontFamily = Font,
+            Text = "선택된 업체", FontSize = AppTheme.FontBase, FontFamily = Font,
             Foreground = AppRes("FgMuted"),
         });
         _orderListPanel = new StackPanel { Spacing = 3, Margin = new Thickness(0, 4, 0, 8) };
@@ -186,7 +187,7 @@ public partial class WasteCompanyPage : UserControl
             Background = new SolidColorBrush(Color.Parse("#15803d")),
             Foreground = Brushes.White,
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
-            FontFamily = Font, FontSize = 12,
+            FontFamily = Font, FontSize = AppTheme.FontMD,
         };
         var btnCancel = new Button
         {
@@ -194,7 +195,7 @@ public partial class WasteCompanyPage : UserControl
             Background = AppRes("SubBtnBg"),
             Foreground = AppRes("FgMuted"),
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
-            FontFamily = Font, FontSize = 12,
+            FontFamily = Font, FontSize = AppTheme.FontMD,
         };
         btnSave.Click += (_, _) =>
         {
@@ -240,13 +241,13 @@ public partial class WasteCompanyPage : UserControl
             var row = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
             row.Children.Add(new TextBlock
             {
-                Text = "✅", FontSize = 11,
+                Text = "✅", FontSize = AppTheme.FontBase,
                 VerticalAlignment = VerticalAlignment.Center,
             });
             row.Children.Add(new TextBlock
             {
-                Text = c.업체명, FontSize = 11, FontFamily = Font,
-                Foreground = new SolidColorBrush(Color.Parse("#16a34a")),
+                Text = c.업체명, FontSize = AppTheme.FontBase, FontFamily = Font,
+                Foreground = AppTheme.FgSuccess,
                 VerticalAlignment = VerticalAlignment.Center,
             });
             _orderListPanel.Children.Add(row);
@@ -255,7 +256,7 @@ public partial class WasteCompanyPage : UserControl
             _orderListPanel.Children.Add(new TextBlock
             {
                 Text = "왼쪽 트리에서 업체를 선택하세요",
-                FontSize = 10, FontFamily = Font,
+                FontSize = AppTheme.FontSM, FontFamily = Font,
                 Foreground = AppRes("FgMuted"),
             });
     }
@@ -323,7 +324,7 @@ public partial class WasteCompanyPage : UserControl
             _      => ("📁", "#aaaaaa"),
         };
 
-        return new TreeViewItem
+        var tvi = new TreeViewItem
         {
             IsExpanded = true,
             Header = new StackPanel
@@ -347,19 +348,21 @@ public partial class WasteCompanyPage : UserControl
                     }.BindLG(),
                     new Border
                     {
-                        Background   = new SolidColorBrush(Color.Parse("#2a2a3a")),
+                        Background   = AppTheme.BorderSubtle,
                         CornerRadius = new CornerRadius(8),
                         Padding      = new Thickness(5, 1),
                         VerticalAlignment = VerticalAlignment.Center,
                         Child = new TextBlock
                         {
                             Text = count.ToString(), FontFamily = Font,
-                            Foreground = new SolidColorBrush(Color.Parse("#888888")),
+                            Foreground = AppTheme.FgMuted,
                         }.BindXS()
                     }
                 }
             }
         };
+        TextShimmer.AttachHover(tvi);
+        return tvi;
     }
 
     // =========================================================================
@@ -410,15 +413,15 @@ public partial class WasteCompanyPage : UserControl
         sp.Children.Add(new TextBlock
         {
             Text = company.업체명, FontFamily = Font,
-            Foreground = selectedNow    ? new SolidColorBrush(Color.Parse("#aaffaa"))
-                       : alreadyOrdered ? new SolidColorBrush(Color.Parse("#ff8888"))
+            Foreground = selectedNow    ? AppTheme.FgSuccess
+                       : alreadyOrdered ? AppTheme.FgDanger
                        : AppRes("AppFg"),
             VerticalAlignment = VerticalAlignment.Center,
         }.BindMD());
         sp.Children.Add(new TextBlock
         {
             Text = company.관리번호, FontFamily = Font,
-            Foreground = new SolidColorBrush(Color.Parse("#666666")),
+            Foreground = AppTheme.FgMuted,
             VerticalAlignment = VerticalAlignment.Center,
         }.BindXS());
 
@@ -536,7 +539,7 @@ public partial class WasteCompanyPage : UserControl
     // UI 헬퍼
     // =========================================================================
     private static readonly FontFamily Font =
-        new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R");
+        new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
 
     private static StackPanel MakeRootPanel(string title)
     {
@@ -544,7 +547,7 @@ public partial class WasteCompanyPage : UserControl
         root.Children.Add(new TextBlock
         {
             Text       = title,
-            FontSize   = 15,
+            FontSize   = AppTheme.FontXL,
             FontFamily = Font,
             FontWeight = FontWeight.SemiBold,
             Foreground = AppRes("AppFg"),
@@ -553,7 +556,7 @@ public partial class WasteCompanyPage : UserControl
         root.Children.Add(new Border
         {
             Height     = 1,
-            Background = new SolidColorBrush(Color.Parse("#555555")),
+            Background = AppTheme.BorderDefault,
             Margin     = new Thickness(0, 0, 0, 4)
         });
         return root;
@@ -580,10 +583,10 @@ public partial class WasteCompanyPage : UserControl
         {
             Text              = (isLocked ? "🔒 " : "    ") + label + " :",
             Width             = 130,
-            FontSize          = 12,
+            FontSize          = AppTheme.FontMD,
             FontFamily        = Font,
             Foreground        = isLocked
-                                    ? new SolidColorBrush(Color.Parse("#888888"))
+                                    ? AppTheme.FgMuted
                                     : AppRes("FgMuted"),
             VerticalAlignment = VerticalAlignment.Center,
         });
@@ -592,19 +595,19 @@ public partial class WasteCompanyPage : UserControl
         {
             Text            = value ?? "",
             Width           = 200,
-            FontSize        = 12,
+            FontSize        = AppTheme.FontMD,
             FontFamily      = Font,
             IsReadOnly      = isReadOnly,
             Background      = isReadOnly
                                   ? new SolidColorBrush(Color.Parse("#252525"))
-                                  : new SolidColorBrush(Color.Parse("#3a3a4a")),
+                                  : AppTheme.BorderSeparator,
             Foreground      = isReadOnly
-                                  ? new SolidColorBrush(Color.Parse("#666666"))
+                                  ? AppTheme.BorderMuted
                                   : AppRes("AppFg"),
             BorderThickness = new Thickness(1),
             BorderBrush     = isReadOnly
-                                  ? new SolidColorBrush(Color.Parse("#333333"))
-                                  : new SolidColorBrush(Color.Parse("#555577")),
+                                  ? AppTheme.BorderSubtle
+                                  : AppTheme.BorderDefault,
             CornerRadius    = new CornerRadius(4),
             Padding         = new Thickness(8, 4),
         });
@@ -662,7 +665,7 @@ public partial class WasteCompanyPage : UserControl
         {
             Text              = "    약칭 :",
             Width             = 130,
-            FontSize          = 12,
+            FontSize          = AppTheme.FontMD,
             FontFamily        = Font,
             Foreground        = AppRes("FgMuted"),
             VerticalAlignment = VerticalAlignment.Center,
@@ -672,12 +675,12 @@ public partial class WasteCompanyPage : UserControl
         {
             Text            = value ?? "",
             Width           = 200,
-            FontSize        = 12,
+            FontSize        = AppTheme.FontMD,
             FontFamily      = Font,
-            Background      = new SolidColorBrush(Color.Parse("#3a3a4a")),
+            Background      = AppTheme.BorderSeparator,
             Foreground      = AppRes("AppFg"),
             BorderThickness = new Thickness(1),
-            BorderBrush     = new SolidColorBrush(Color.Parse("#555577")),
+            BorderBrush     = AppTheme.BorderDefault,
             CornerRadius    = new CornerRadius(4),
             Padding         = new Thickness(8, 4),
         });

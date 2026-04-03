@@ -11,7 +11,7 @@
             <TextBlock Text="결과 제출 — Zero4"
                        FontSize="{DynamicResource FontSizeBase}" FontWeight="SemiBold"
                        Foreground="{DynamicResource FgMuted}"
-                       FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+                       FontFamily="avares://ETA/Assets/Fonts#Pretendard"/>
         </Border>
 
         <Border Grid.Row="1" Background="{DynamicResource PanelInnerBg}" CornerRadius="0,0,6,6" Padding="16">

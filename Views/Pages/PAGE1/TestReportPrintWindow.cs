@@ -16,7 +16,7 @@ namespace ETA.Views.Pages.PAGE1;
 public sealed class TestReportPrintWindow : Window
 {
     // ── 폰트 ───────────────────────────────────────────────────────────────
-    private static readonly FontFamily FM = new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
+    private static readonly FontFamily FM = new("avares://ETA/Assets/Fonts#Pretendard");
 
     // ── 색상 (템플릿: 배경색 없음) ──────────────────────────────────────────
     private static readonly IBrush BgPage  = new SolidColorBrush(Color.Parse("#ffffff"));
@@ -120,7 +120,7 @@ public sealed class TestReportPrintWindow : Window
 
     private static Button Btn(string t, string bg, string fg) => new()
     {
-        Content = t, FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+        Content = t, FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
         FontSize = 12, Padding = new Thickness(14, 6), CornerRadius = new CornerRadius(4),
         BorderThickness = new Thickness(0),
         Background = new SolidColorBrush(Color.Parse(bg)),

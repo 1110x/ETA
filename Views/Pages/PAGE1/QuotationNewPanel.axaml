@@ -11,7 +11,7 @@
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Padding"         Value="12,0" />
             <Setter Property="FontSize"        Value="{DynamicResource FontSizeBase}" />
-            <Setter Property="FontFamily"      Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+            <Setter Property="FontFamily"      Value="avares://ETA/Assets/Fonts#Pretendard" />
         </Style>
         <Style Selector="Button.action-btn:pointerover">
             <Setter Property="Background" Value="#3a6a3a" />
@@ -28,7 +28,7 @@
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Padding"         Value="10,0" />
             <Setter Property="FontSize"        Value="{DynamicResource FontSizeBase}" />
-            <Setter Property="FontFamily"      Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+            <Setter Property="FontFamily"      Value="avares://ETA/Assets/Fonts#Pretendard" />
         </Style>
         <Style Selector="Button.ghost-btn:pointerover">
             <Setter Property="Background" Value="{DynamicResource TreeHoverBg}" />
@@ -41,7 +41,7 @@
             <Setter Property="BorderBrush"  Value="{DynamicResource InputBorder}" />
             <Setter Property="Padding"      Value="6,0" />
             <Setter Property="CornerRadius" Value="3" />
-            <Setter Property="FontFamily"   Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+            <Setter Property="FontFamily"   Value="avares://ETA/Assets/Fonts#Pretendard" />
         </Style>
         <Style Selector="ComboBox">
             <Setter Property="Height"       Value="26" />
@@ -51,13 +51,13 @@
             <Setter Property="BorderBrush"  Value="{DynamicResource InputBorder}" />
             <Setter Property="Padding"      Value="6,0" />
             <Setter Property="CornerRadius" Value="3" />
-            <Setter Property="FontFamily"   Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+            <Setter Property="FontFamily"   Value="avares://ETA/Assets/Fonts#Pretendard" />
         </Style>
         <Style Selector="TextBlock.lbl">
             <Setter Property="FontSize"          Value="{DynamicResource FontSizeSM}" />
             <Setter Property="Foreground"        Value="{DynamicResource FgMuted}" />
             <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="FontFamily"        Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+            <Setter Property="FontFamily"        Value="avares://ETA/Assets/Fonts#Pretendard" />
         </Style>
     </UserControl.Styles>
 
@@ -70,7 +70,7 @@
                        Text="📝  신규 견적 작성"
                        FontSize="{DynamicResource FontSizeLG}" FontWeight="Bold"
                        Foreground="{DynamicResource AppFg}"
-                       FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                       FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                        VerticalAlignment="Center" />
             <Button Grid.Column="1" Classes="ghost-btn"
                     Content="🔄 초기화" Click="BtnClear_Click" />
@@ -78,7 +78,7 @@
         <Border Grid.Row="1" Height="1" Background="{DynamicResource InputBorder}" Margin="0,0,0,6" />
 
         <!-- 업체 -->
-        <Border Grid.Row="2" Background="#1a2a1a" CornerRadius="4"
+        <Border Grid.Row="2" Background="{DynamicResource ThemeBgActiveGreen}" CornerRadius="4"
                 Padding="8,5" Margin="0,0,0,6">
             <Grid ColumnDefinitions="Auto,*,Auto">
                 <TextBlock Grid.Column="0" Classes="lbl" Text="업체 : " />
@@ -87,20 +87,20 @@
                     <TextBlock x:Name="txbCompany"
                                Text="— 오른쪽에서 업체를 선택하세요 —"
                                FontSize="{DynamicResource FontSizeBase}" FontWeight="SemiBold"
-                               Foreground="#7cd87c"
-                               FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+                               Foreground="{DynamicResource ThemeFgSuccess}"
+                               FontFamily="avares://ETA/Assets/Fonts#Pretendard" />
                     <Border x:Name="bdgAbbr"
                             IsVisible="False"
                             CornerRadius="3" Padding="5,1">
                         <TextBlock x:Name="txbAbbr"
                                    FontSize="{DynamicResource FontSizeSM}"
-                                   FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+                                   FontFamily="avares://ETA/Assets/Fonts#Pretendard" />
                     </Border>
                 </StackPanel>
                 <TextBlock Grid.Column="2" x:Name="txbMode"
                            FontSize="{DynamicResource FontSizeSM}" Foreground="{DynamicResource FgMuted}"
                            VerticalAlignment="Center" Margin="6,0,0,0"
-                           FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+                           FontFamily="avares://ETA/Assets/Fonts#Pretendard" />
             </Grid>
         </Border>
 
@@ -143,13 +143,13 @@
                                                  MinimumPrefixLength="0"
                                                  HorizontalAlignment="Stretch"
                                                  FontSize="{DynamicResource FontSizeBase}"
-                                                 FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+                                                 FontFamily="avares://ETA/Assets/Fonts#Pretendard" />
                             </StackPanel>
                         </Grid>
 
                         <!-- 신규 담당자 입력 시 연락처/이메일 -->
                         <Border x:Name="pnlContactInfo" IsVisible="False"
-                                Background="#1a2a1e" CornerRadius="3" Padding="8,5">
+                                Background="{DynamicResource ThemeBgActiveGreen}" CornerRadius="3" Padding="8,5">
                             <Grid ColumnDefinitions="*,8,*">
                                 <StackPanel Grid.Column="0" Spacing="3">
                                     <TextBlock Classes="lbl" Text="연락처" />
@@ -189,8 +189,8 @@
                         <!-- 경고 메시지 -->
                         <TextBlock x:Name="txbWarning"
                                    FontSize="{DynamicResource FontSizeSM}"
-                                   FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
-                                   Foreground="#f0c040"
+                                   FontFamily="avares://ETA/Assets/Fonts#Pretendard"
+                                   Foreground="{DynamicResource ThemeFgWarn}"
                                    IsVisible="False"
                                    TextWrapping="Wrap" />
 
@@ -214,20 +214,20 @@
                         <TextBlock x:Name="txbNoItems"
                                    Text="아래 패널에서 분석항목을 선택하세요."
                                    FontSize="{DynamicResource FontSizeSM}"
-                                   FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                                   FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                                    Foreground="{DynamicResource FgMuted}" Margin="10,6"
                                    IsVisible="True" />
                     </StackPanel>
                 </Border>
 
                 <!-- 합계 -->
-                <Border Background="#1a2a1a" CornerRadius="5" Padding="10,7">
+                <Border Background="{DynamicResource ThemeBgActiveGreen}" CornerRadius="5" Padding="10,7">
                     <Grid ColumnDefinitions="*,Auto">
                         <TextBlock Grid.Column="0" Classes="lbl" Text="합계 금액" />
                         <TextBlock Grid.Column="1" x:Name="txbTotal"
                                    Text="—" FontSize="{DynamicResource FontSizeLG}" FontWeight="Bold"
-                                   Foreground="#7cd87c"
-                                   FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+                                   Foreground="{DynamicResource ThemeFgSuccess}"
+                                   FontFamily="avares://ETA/Assets/Fonts#Pretendard" />
                     </Grid>
                 </Border>
 
@@ -237,14 +237,14 @@
         <!-- 개별 수량 편집 패널 — 스크롤에 무관하게 고정 (Row=4) -->
         <Border Grid.Row="4"
                 x:Name="pnlQtyEdit"
-                Background="#1a2a2a" CornerRadius="5" Padding="10,7"
+                Background="{DynamicResource ThemeBgActiveGreen}" CornerRadius="5" Padding="10,7"
                 Margin="0,4,0,0"
                 IsVisible="False">
             <Grid ColumnDefinitions="*,Auto,Auto">
                 <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="1">
                     <TextBlock x:Name="txbEditingItem" FontSize="{DynamicResource FontSizeBase}"
                                FontWeight="SemiBold" Foreground="#8fd8d8"
-                               FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R" />
+                               FontFamily="avares://ETA/Assets/Fonts#Pretendard" />
                     <TextBlock Classes="lbl" Text="수량 (0 = 삭제)" />
                 </StackPanel>
                 <TextBox Grid.Column="1" x:Name="txbQty"
@@ -262,8 +262,8 @@
                      IsIndeterminate="False"
                      Height="4"
                      Margin="0,4,0,0"
-                     Foreground="#7cd87c"
-                     Background="#1a2a1a" />
+                     Foreground="{DynamicResource ThemeFgSuccess}"
+                     Background="{DynamicResource ThemeBgActiveGreen}" />
 
         <!-- 하단 버튼 -->
         <StackPanel Grid.Row="6" Orientation="Horizontal"

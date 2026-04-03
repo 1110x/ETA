@@ -9,7 +9,7 @@
             <Setter Property="MinHeight"  Value="0" />
             <Setter Property="FontSize"   Value="{DynamicResource FontSizeBase}" />
             <Setter Property="Foreground" Value="{DynamicResource TreeFg}" />
-            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#Pretendard" />
             <Setter Property="Background" Value="Transparent" />
         </Style>
         <Style Selector="TreeViewItem /template/ ContentPresenter#PART_HeaderPresenter">
@@ -37,13 +37,13 @@
                 <TextBlock Text="채수 의뢰 목록"
                            FontSize="{DynamicResource FontSizeBase}" FontWeight="SemiBold"
                            Foreground="{DynamicResource FgMuted}"
-                           FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                           FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                            VerticalAlignment="Center"/>
                 <Button x:Name="btnNewDate"
                         Content="+ 날짜 추가"
                         Height="20" FontSize="{DynamicResource FontSizeSM}"
-                        FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
-                        Background="#1a3a2a" Foreground="#88ee88"
+                        FontFamily="avares://ETA/Assets/Fonts#Pretendard"
+                        Background="{DynamicResource ThemeBgActiveGreen}" Foreground="{DynamicResource ThemeFgSuccess}"
                         BorderThickness="0" CornerRadius="3"
                         Padding="8,0"
                         Click="BtnNewDate_Click"/>
@@ -60,7 +60,7 @@
                 Padding="4,4">
             <Calendar x:Name="InlineCalendar"
                       SelectionMode="SingleDate"
-                      FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                      FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                       FontSize="{DynamicResource FontSizeMD}"
                       SelectedDatesChanged="InlineCalendar_DateChanged" />
         </Border>

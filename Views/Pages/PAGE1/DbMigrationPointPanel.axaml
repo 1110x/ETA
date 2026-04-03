@@ -9,7 +9,7 @@
             <Setter Property="MinHeight"  Value="0" />
             <Setter Property="FontSize"   Value="{DynamicResource FontSizeBase}" />
             <Setter Property="Foreground" Value="{DynamicResource TreeFg}" />
-            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#Pretendard" />
             <Setter Property="Background" Value="Transparent" />
         </Style>
         <Style Selector="TreeViewItem /template/ ContentPresenter#PART_HeaderPresenter">
@@ -38,7 +38,7 @@
                               IsChecked="False"
                               OnContent="🌐 전체 보기"
                               OffContent="🔍 선택 업체"
-                              FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                              FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                               FontSize="{DynamicResource FontSizeBase}"
                               VerticalAlignment="Center"
                               IsCheckedChanged="TglShowAll_Changed"/>
@@ -46,7 +46,7 @@
                            Text="—"
                            FontSize="{DynamicResource FontSizeBase}" Foreground="{DynamicResource FgMuted}"
                            VerticalAlignment="Center"
-                           FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"/>
+                           FontFamily="avares://ETA/Assets/Fonts#Pretendard"/>
             </StackPanel>
         </Border>
 
@@ -55,7 +55,7 @@
                    x:Name="txbHint"
                    Text="← 왼쪽에서 업체를 선택하세요"
                    FontSize="{DynamicResource FontSizeBase}" Foreground="{DynamicResource FgMuted}"
-                   FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"
+                   FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                    Margin="8,4,0,2"
                    IsVisible="True"/>
 

@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
@@ -13,6 +14,8 @@ using ETA.Services;
 using ETA.Services.SERVICE1;
 using ETA.Services.SERVICE2;
 using ETA.Services.Common;
+using ETA.Services.Common;
+using ETA.Views;
 
 namespace ETA.Views.Pages.PAGE2;
 
@@ -26,9 +29,16 @@ public partial class WasteSampleListPage : UserControl
 
     // ── 외부 연결 ────────────────────────────────────────────────────────────
     public event Action<Control?>? DetailPanelChanged;
+    public event Action<Control?>? DetailPanelSilentChanged;  // 전환 효과 없이 교체
 
     private string? _selectedDate;
     private Panel?  _detailPanel;
+
+    // ── 드래그앤드롭 상태 ──────────────────────────────────────────────────────
+    private Grid?   _dragSourceRow;          // 드래그 중인 행
+    private int     _dragSampleId;
+    private string  _dragDate = "";
+    private string  _dragGroup = "";
 
     // ── Show4: 업체 트리 ─────────────────────────────────────────────────────
     private Control?   _companyTreePanel;
@@ -43,9 +53,18 @@ public partial class WasteSampleListPage : UserControl
     public Control CompanyTreePanel => _companyTreePanel ??= BuildCompanyTreePanel();
 
     private static readonly FontFamily Font =
-        new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R");
+        new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
 
-    public WasteSampleListPage() => InitializeComponent();
+    public WasteSampleListPage()
+    {
+        InitializeComponent();
+        // 인라인 캘린더 ESC 닫기
+        InlineCalendar.KeyDown += (_, e) =>
+        {
+            if (e.Key == Key.Escape && CalendarPickerBorder.IsVisible)
+            { CalendarPickerBorder.IsVisible = false; e.Handled = true; }
+        };
+    }
 
     // =========================================================================
     // 데이터 로드 (날짜 트리뷰)
@@ -101,17 +120,17 @@ public partial class WasteSampleListPage : UserControl
                     {
                         Text = $"📅  {d.Year}년 {d.Month}월",
                         FontWeight = FontWeight.SemiBold,
-                        FontFamily = Font, Foreground = Brush.Parse("#8899bb"),
+                        FontFamily = Font, Foreground = AppTheme.FgMuted,
                         VerticalAlignment = VerticalAlignment.Center,
                     }.BindMD(),
                     new Border
                     {
-                        Background = Brush.Parse("#2a2a3a"), CornerRadius = new CornerRadius(8),
+                        Background = AppTheme.BorderSubtle, CornerRadius = new CornerRadius(8),
                         Padding = new Thickness(5,1),
                         Child = new TextBlock
                         {
                             Text = count.ToString(),
-                            FontFamily = Font, Foreground = Brush.Parse("#666"),
+                            FontFamily = Font, Foreground = AppTheme.FgDimmed,
                         }.BindXS()
                     }
                 }
@@ -137,16 +156,16 @@ public partial class WasteSampleListPage : UserControl
                     new TextBlock
                     {
                         Text = label, FontFamily = Font,
-                        Foreground = Brush.Parse("#dddddd"),
+                        Foreground = AppTheme.FgPrimary,
                     }.BindMD(),
                     new Border
                     {
-                        Background = Brush.Parse("#2a2a3a"), CornerRadius = new CornerRadius(8),
+                        Background = AppTheme.BorderSubtle, CornerRadius = new CornerRadius(8),
                         Padding = new Thickness(5, 1), VerticalAlignment = VerticalAlignment.Center,
                         Child = new TextBlock
                         {
                             Text = samples.Count.ToString(),
-                            FontFamily = Font, Foreground = Brush.Parse("#666"),
+                            FontFamily = Font, Foreground = AppTheme.FgDimmed,
                         }.BindXS(),
                     },
                 }
@@ -181,7 +200,7 @@ public partial class WasteSampleListPage : UserControl
             VerticalAlignment = VerticalAlignment.Center,
             Child = new TextBlock
             {
-                Text = s.구분, FontSize = 9, FontFamily = Font,
+                Text = s.구분, FontSize = AppTheme.FontSM, FontFamily = Font,
                 Foreground = Brush.Parse(fg),
             },
         });
@@ -190,15 +209,15 @@ public partial class WasteSampleListPage : UserControl
         if (!string.IsNullOrEmpty(s.SN))
             sp.Children.Add(new TextBlock
             {
-                Text = s.SN, FontSize = 9, FontFamily = Font,
-                Foreground = Brush.Parse("#666"),
+                Text = s.SN, FontSize = AppTheme.FontSM, FontFamily = Font,
+                Foreground = AppTheme.FgDimmed,
                 VerticalAlignment = VerticalAlignment.Center,
             });
 
         // 업체명
         sp.Children.Add(new TextBlock
         {
-            Text = s.업체명, FontSize = 11, FontFamily = Font,
+            Text = s.업체명, FontSize = AppTheme.FontMD, FontFamily = Font,
             Foreground = AppRes("AppFg"),
             VerticalAlignment = VerticalAlignment.Center,
         });
@@ -258,11 +277,14 @@ public partial class WasteSampleListPage : UserControl
     // =========================================================================
     // 상세 패널 새로고침
     // =========================================================================
-    private void RefreshDetail()
+    private void RefreshDetail(bool silent = false)
     {
         if (_selectedDate == null) return;
         _detailPanel = BuildSamplePanel(_selectedDate);
-        DetailPanelChanged?.Invoke(_detailPanel);
+        if (silent && DetailPanelSilentChanged != null)
+            DetailPanelSilentChanged.Invoke(_detailPanel);
+        else
+            DetailPanelChanged?.Invoke(_detailPanel);
     }
 
     // =========================================================================
@@ -280,9 +302,9 @@ public partial class WasteSampleListPage : UserControl
         {
             Text = $"🗓  채수일  {d:yyyy-MM-dd} ({DayOfWeekKr(d)})",
             FontWeight = FontWeight.SemiBold, FontFamily = Font,
-            Foreground = Brush.Parse("#e0e0e0"),
+            Foreground = AppTheme.FgPrimary,
         }.BindLG());
-        root.Children.Add(new Border { Height = 1, Background = Brush.Parse("#333"), Margin = new Thickness(0,0,0,4) });
+        root.Children.Add(new Border { Height = 1, Background = AppTheme.BorderSubtle, Margin = new Thickness(0,0,0,4) });
 
         // 그룹별 섹션
         foreach (var groupKey in new[] { "여수", "율촌", "세풍" })
@@ -313,26 +335,46 @@ public partial class WasteSampleListPage : UserControl
                     new TextBlock
                     {
                         Text = $"({groupRows.Count}건)", FontFamily = Font,
-                        Foreground = Brush.Parse("#666"), VerticalAlignment = VerticalAlignment.Center,
+                        Foreground = AppTheme.FgDimmed, VerticalAlignment = VerticalAlignment.Center,
                     }.BindSM()
                 }
             };
             root.Children.Add(groupHeader);
 
-            // 행 목록
+            // 행 목록 (드래그앤드롭 지원) — Grid 래퍼로 오버레이 인디케이터 배치
             var listPanel = new StackPanel { Spacing = 2 };
             foreach (var row in groupRows)
                 listPanel.Children.Add(BuildSampleRow(row, date, groupKey));
-            root.Children.Add(listPanel);
+
+            var listWrapper = new Grid();
+            listWrapper.Children.Add(listPanel);
+            // 드롭 인디케이터용 오버레이 (레이아웃에 영향 없음)
+            var indicatorOverlay = new Border
+            {
+                Height = 2, Background = Brush.Parse("#4488ff"),
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                VerticalAlignment = VerticalAlignment.Top,
+                IsHitTestVisible = false, IsVisible = false,
+                BoxShadow = new BoxShadows(new BoxShadow { Blur = 6, Color = Color.Parse("#4488ff") }),
+                Tag = "indicator",
+            };
+            listWrapper.Children.Add(indicatorOverlay);
+
+            var gk2 = groupKey;
+            DragDrop.SetAllowDrop(listWrapper, true);
+            listWrapper.AddHandler(DragDrop.DragOverEvent, (_, e) => OnListDragOver(listPanel, indicatorOverlay, e));
+            listWrapper.AddHandler(DragDrop.DropEvent, (_, e) => OnListDrop(listPanel, e, date, gk2));
+            listWrapper.AddHandler(DragDrop.DragLeaveEvent, (_, _) => { indicatorOverlay.IsVisible = false; });
+            root.Children.Add(listWrapper);
 
             // + 업체 추가 버튼
             var gk = groupKey;
             var addBtn = new Button
             {
                 Content = $"+ {groupKey} 업체 추가",
-                Height = 24, FontSize = 10, FontFamily = Font,
-                Background = Brush.Parse("#1a2a1a"), Foreground = Brush.Parse("#88cc88"),
-                BorderThickness = new Thickness(1), BorderBrush = Brush.Parse("#2a4a2a"),
+                Height = 24, FontSize = AppTheme.FontSM, FontFamily = Font,
+                Background = AppTheme.BgActiveGreen, Foreground = AppTheme.FgSuccess,
+                BorderThickness = new Thickness(1), BorderBrush = AppTheme.BorderActive,
                 CornerRadius = new CornerRadius(4), Padding = new Thickness(10, 0),
                 Margin = new Thickness(0, 2, 0, 8),
             };
@@ -344,73 +386,157 @@ public partial class WasteSampleListPage : UserControl
     }
 
     // =========================================================================
-    // 개별 행 (S/N + 업체명 + ↑↓ 삭제)
+    // 개별 행 (드래그핸들 + S/N + 업체명 + 삭제)
     // =========================================================================
     private Grid BuildSampleRow(WasteSample s, string date, string groupKey)
     {
         var row = new Grid
         {
-            ColumnDefinitions = new ColumnDefinitions("90,*,26,26,26"),
+            ColumnDefinitions = new ColumnDefinitions("24,90,*,26"),
             Background = Brush.Parse(s.순서 % 2 == 1 ? "#1a1a28" : "#1e1e30"),
             Margin = new Thickness(0, 1),
+            Tag = s,   // 드래그용 데이터
+        };
+
+        // ≡ 드래그 핸들
+        var handle = new TextBlock
+        {
+            Text = "≡", FontSize = 16, FontFamily = Font,
+            Foreground = Brush.Parse("#555"),
+            VerticalAlignment = VerticalAlignment.Center,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            Cursor = new Cursor(StandardCursorType.Hand),
+            [Grid.ColumnProperty] = 0,
+        };
+
+        // 드래그 시작: 핸들 위에서 PointerPressed
+        var dt = date;
+        var gk = groupKey;
+        handle.PointerPressed += async (sender, e) =>
+        {
+            if (e.GetCurrentPoint(handle).Properties.IsLeftButtonPressed)
+            {
+                _dragSampleId = s.Id;
+                _dragDate = dt;
+                _dragGroup = gk;
+                _dragSourceRow = row;
+                row.Opacity = 0.4;
+
+                var data = new DataObject();
+                data.Set("sampleReorder", s.Id.ToString());
+                await DragDrop.DoDragDrop(e, data, DragDropEffects.Move);
+
+                // 드래그 끝 → 복구
+                row.Opacity = 1;
+                _dragSourceRow = null;
+            }
         };
 
         // S/N
         row.Children.Add(new TextBlock
         {
             Text = s.SN, FontFamily = Font,
-            Foreground = Brush.Parse("#aaccff"),
+            Foreground = AppTheme.FgInfo,
             VerticalAlignment = VerticalAlignment.Center,
-            Margin = new Thickness(8, 4),
-            [Grid.ColumnProperty] = 0,
+            Margin = new Thickness(4, 4),
+            [Grid.ColumnProperty] = 1,
         }.BindBase());
 
         // 업체명
         row.Children.Add(new TextBlock
         {
             Text = s.업체명, FontFamily = Font,
-            Foreground = Brush.Parse("#e0e0e0"),
+            Foreground = AppTheme.FgPrimary,
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Thickness(4, 4),
-            [Grid.ColumnProperty] = 1,
+            [Grid.ColumnProperty] = 2,
         }.BindMD());
-
-        // ↑
-        var btnUp = MakeIconBtn("▲", "#555");
-        btnUp.SetValue(Grid.ColumnProperty, 2);
-        btnUp.Click += (_, _) =>
-        {
-            WasteSampleService.MoveUp(s.Id, date, groupKey);
-            RefreshDetail();
-        };
-
-        // ↓
-        var btnDown = MakeIconBtn("▼", "#555");
-        btnDown.SetValue(Grid.ColumnProperty, 3);
-        btnDown.Click += (_, _) =>
-        {
-            WasteSampleService.MoveDown(s.Id, date, groupKey);
-            RefreshDetail();
-        };
 
         // 삭제
         var btnDel = MakeIconBtn("✕", "#883333");
-        btnDel.SetValue(Grid.ColumnProperty, 4);
+        btnDel.SetValue(Grid.ColumnProperty, 3);
         btnDel.Click += (_, _) =>
         {
             WasteSampleService.Delete(s.Id);
-            RefreshDetail();
+            RefreshDetail(silent: true);
         };
 
-        row.Children.Add(btnUp);
-        row.Children.Add(btnDown);
+        row.Children.Add(handle);
         row.Children.Add(btnDel);
         return row;
     }
 
+    // =========================================================================
+    // 드래그앤드롭 핸들러 (오버레이 인디케이터 — 레이아웃 영향 없음)
+    // =========================================================================
+    private void OnListDragOver(StackPanel listPanel, Border indicator, DragEventArgs e)
+    {
+        if (!e.Data.Contains("sampleReorder")) return;
+        e.DragEffects = DragDropEffects.Move;
+
+        var pos = e.GetPosition(listPanel);
+        int insertIdx = GetInsertIndex(listPanel, pos.Y);
+        double y = GetInsertY(listPanel, insertIdx);
+
+        indicator.Margin = new Thickness(0, y - 1, 0, 0);
+        indicator.IsVisible = true;
+    }
+
+    private void OnListDrop(StackPanel listPanel, DragEventArgs e, string date, string groupKey)
+    {
+        if (!e.Data.Contains("sampleReorder")) return;
+
+        // 인디케이터 숨기기 (래퍼 Grid의 두 번째 자식)
+        if (listPanel.Parent is Grid wrapper)
+            foreach (var c in wrapper.Children)
+                if (c is Border b && b.Tag?.ToString() == "indicator") b.IsVisible = false;
+
+        if (_dragGroup != groupKey) return;
+
+        var pos = e.GetPosition(listPanel);
+        int insertIdx = GetInsertIndex(listPanel, pos.Y);
+
+        // 데이터 인덱스 계산
+        int srcDataIdx = -1;
+        for (int i = 0; i < listPanel.Children.Count; i++)
+            if (listPanel.Children[i] is Grid g && g.Tag is WasteSample ws && ws.Id == _dragSampleId)
+            { srcDataIdx = i; break; }
+
+        if (srcDataIdx < 0) return;
+
+        int targetIdx = insertIdx;
+        if (targetIdx > srcDataIdx) targetIdx--;
+        if (targetIdx == srcDataIdx) return;
+
+        WasteSampleService.ReorderTo(_dragSampleId, date, groupKey, targetIdx);
+        RefreshDetail(silent: true);
+    }
+
+    private static int GetInsertIndex(StackPanel listPanel, double mouseY)
+    {
+        for (int i = 0; i < listPanel.Children.Count; i++)
+        {
+            if (listPanel.Children[i] is not Control c) continue;
+            double mid = c.Bounds.Y + c.Bounds.Height / 2;
+            if (mouseY < mid) return i;
+        }
+        return listPanel.Children.Count;
+    }
+
+    private static double GetInsertY(StackPanel listPanel, int insertIdx)
+    {
+        if (listPanel.Children.Count == 0) return 0;
+        if (insertIdx >= listPanel.Children.Count)
+        {
+            var last = (Control)listPanel.Children[^1];
+            return last.Bounds.Y + last.Bounds.Height;
+        }
+        return ((Control)listPanel.Children[insertIdx]).Bounds.Y;
+    }
+
     private static Button MakeIconBtn(string text, string fg) => new()
     {
-        Content = text, FontSize = 9,
+        Content = text, FontSize = AppTheme.FontXS,
         Background = Brushes.Transparent, Foreground = Brush.Parse(fg),
         BorderThickness = new Thickness(0), Padding = new Thickness(2),
         VerticalAlignment = VerticalAlignment.Center,
@@ -434,7 +560,7 @@ public partial class WasteSampleListPage : UserControl
             Width = 400, Height = 250,
             CanResize = false,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            Background = Brush.Parse("#2a2a3a"),
+            Background = AppTheme.BorderSubtle,
         };
 
         // 날짜 선택 (기본값: 현재 선택된 날짜)
@@ -444,7 +570,7 @@ public partial class WasteSampleListPage : UserControl
             SelectedDate = parsedDate == DateTime.MinValue
                 ? DateTime.Today
                 : parsedDate,
-            FontFamily = Font, FontSize = 12,
+            FontFamily = Font, FontSize = AppTheme.FontMD,
         };
 
         var acb = new AutoCompleteBox
@@ -452,22 +578,22 @@ public partial class WasteSampleListPage : UserControl
             ItemsSource = companies,
             Watermark = "업체명 입력 또는 선택",
             FilterMode = AutoCompleteFilterMode.Contains,
-            Height = 32, FontSize = 12, FontFamily = Font,
+            Height = 32, FontSize = AppTheme.FontMD, FontFamily = Font,
         };
 
         var btnOk = new Button
         {
             Content = "추가", Width = 80, Height = 30,
-            Background = Brush.Parse("#1a3a2a"), Foreground = Brush.Parse("#88ee88"),
+            Background = AppTheme.BgActiveGreen, Foreground = AppTheme.FgSuccess,
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
-            FontFamily = Font, FontSize = 12,
+            FontFamily = Font, FontSize = AppTheme.FontMD,
         };
         var btnCancel = new Button
         {
             Content = "취소", Width = 80, Height = 30,
-            Background = Brush.Parse("#333"), Foreground = Brush.Parse("#aaa"),
+            Background = AppTheme.BorderSubtle, Foreground = AppTheme.FgMuted,
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
-            FontFamily = Font, FontSize = 12,
+            FontFamily = Font, FontSize = AppTheme.FontMD,
         };
 
         btnOk.Click += (_, _) =>
@@ -485,7 +611,7 @@ public partial class WasteSampleListPage : UserControl
             EnsureDateInTree(selectedDate);
             _selectedDate = selectedDate;
             dlg.Close();
-            RefreshDetail();
+            RefreshDetail(silent: true);
         };
         btnCancel.Click += (_, _) => dlg.Close();
 
@@ -494,9 +620,9 @@ public partial class WasteSampleListPage : UserControl
             Margin = new Thickness(16), Spacing = 10,
             Children =
             {
-                new TextBlock { Text = "채수일", FontSize = 11, FontFamily = Font, Foreground = Brush.Parse("#888") },
+                new TextBlock { Text = "채수일", FontSize = AppTheme.FontBase, FontFamily = Font, Foreground = AppTheme.FgMuted },
                 dp,
-                new TextBlock { Text = "업체명", FontSize = 11, FontFamily = Font, Foreground = Brush.Parse("#888") },
+                new TextBlock { Text = "업체명", FontSize = AppTheme.FontBase, FontFamily = Font, Foreground = AppTheme.FgMuted },
                 acb,
                 new StackPanel
                 {
@@ -522,22 +648,22 @@ public partial class WasteSampleListPage : UserControl
         root.Children.Add(new TextBlock
         {
             Text = "채수 날짜 신규 추가",
-            FontSize = 15, FontFamily = Font, FontWeight = FontWeight.SemiBold,
-            Foreground = Brush.Parse("#e0e0e0"),
+            FontSize = AppTheme.FontXL, FontFamily = Font, FontWeight = FontWeight.SemiBold,
+            Foreground = AppTheme.FgPrimary,
         });
-        root.Children.Add(new Border { Height = 1, Background = Brush.Parse("#333") });
+        root.Children.Add(new Border { Height = 1, Background = AppTheme.BorderSubtle });
 
         var dp = new CalendarDatePicker
         {
             SelectedDate = DateTime.Today,
-            FontFamily = Font, FontSize = 12,
+            FontFamily = Font, FontSize = AppTheme.FontMD,
         };
 
         var btnCreate = new Button
         {
             Content = "날짜 생성",
-            Height = 30, FontSize = 12, FontFamily = Font,
-            Background = Brush.Parse("#1a3a2a"), Foreground = Brush.Parse("#88ee88"),
+            Height = 30, FontSize = AppTheme.FontMD, FontFamily = Font,
+            Background = AppTheme.BgActiveGreen, Foreground = AppTheme.FgSuccess,
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
             Padding = new Thickness(16, 0),
         };
@@ -550,7 +676,7 @@ public partial class WasteSampleListPage : UserControl
             RefreshDetail();
         };
 
-        root.Children.Add(new TextBlock { Text = "채수일 선택", FontSize = 11, FontFamily = Font, Foreground = Brush.Parse("#888") });
+        root.Children.Add(new TextBlock { Text = "채수일 선택", FontSize = AppTheme.FontBase, FontFamily = Font, Foreground = AppTheme.FgMuted });
         root.Children.Add(dp);
         root.Children.Add(btnCreate);
         return root;
@@ -611,8 +737,8 @@ public partial class WasteSampleListPage : UserControl
         };
         headerSp.Children.Add(new TextBlock
         {
-            Text = "폐수배출업소", FontSize = 11, FontWeight = FontWeight.SemiBold,
-            FontFamily = Font, Foreground = Brush.Parse("#8899bb"),
+            Text = "폐수배출업소", FontSize = AppTheme.FontBase, FontWeight = FontWeight.SemiBold,
+            FontFamily = Font, Foreground = AppTheme.FgMuted,
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Thickness(0, 0, 6, 0),
         });
@@ -625,7 +751,7 @@ public partial class WasteSampleListPage : UserControl
 
         root.Children.Add(new Border
         {
-            Background = Brush.Parse("#1a1a28"),
+            Background = AppTheme.BgPrimary,
             CornerRadius = new CornerRadius(6, 6, 0, 0),
             Padding = new Thickness(8, 4),
             Child = headerSp,
@@ -636,11 +762,11 @@ public partial class WasteSampleListPage : UserControl
         _companySearchBox = new TextBox
         {
             Watermark = "🔍 업체명 검색",
-            FontFamily = Font, FontSize = 11,
+            FontFamily = Font, FontSize = AppTheme.FontBase,
             Height = 28,
-            Background = Brush.Parse("#252535"),
-            Foreground = Brush.Parse("#cccccc"),
-            BorderBrush = Brush.Parse("#333355"),
+            Background = AppTheme.BgSecondary,
+            Foreground = AppTheme.FgSecondary,
+            BorderBrush = AppTheme.BorderSubtle,
             BorderThickness = new Thickness(0, 0, 0, 1),
             CornerRadius = new CornerRadius(0),
             Padding = new Thickness(8, 4),
@@ -652,8 +778,8 @@ public partial class WasteSampleListPage : UserControl
         // Row 2: 상태
         _companyTreeStatus = new TextBlock
         {
-            FontSize = 10, FontFamily = Font,
-            Foreground = Brush.Parse("#666666"),
+            FontSize = AppTheme.FontSM, FontFamily = Font,
+            Foreground = AppTheme.FgDimmed,
             Margin = new Thickness(8, 3),
         };
         Grid.SetRow(_companyTreeStatus, 2);
@@ -681,7 +807,7 @@ public partial class WasteSampleListPage : UserControl
         var btn = new Button
         {
             Content = content, Tag = tag,
-            FontSize = 10, FontFamily = Font,
+            FontSize = AppTheme.FontSM, FontFamily = Font,
             Padding = new Thickness(8, 3),
             CornerRadius = new CornerRadius(10),
             BorderThickness = new Thickness(1),
@@ -709,9 +835,9 @@ public partial class WasteSampleListPage : UserControl
             }
             else
             {
-                btn.Background  = Brush.Parse("#222222");
-                btn.Foreground  = Brush.Parse("#666666");
-                btn.BorderBrush = Brush.Parse("#444444");
+                btn.Background  = AppTheme.BgSecondary;
+                btn.Foreground  = AppTheme.FgDimmed;
+                btn.BorderBrush = AppTheme.BorderMuted;
             }
         }
     }
@@ -728,7 +854,7 @@ public partial class WasteSampleListPage : UserControl
             var companies = WasteCompanyService.GetAllItems()
                 .Where(c => CompanyGroup(c) == _companyActiveGroup)
                 .Where(c => string.IsNullOrEmpty(search) ||
-                            c.업체명.Contains(search) || c.약칭.Contains(search))
+                            c.업체명.Contains(search, StringComparison.OrdinalIgnoreCase) || c.약칭.Contains(search, StringComparison.OrdinalIgnoreCase))
                 .OrderBy(c => c.관리번호)
                 .ToList();
 
@@ -737,7 +863,7 @@ public partial class WasteSampleListPage : UserControl
 
             if (_companyTreeStatus != null)
             {
-                _companyTreeStatus.Foreground = Brush.Parse("#666666");
+                _companyTreeStatus.Foreground = AppTheme.FgDimmed;
                 string statusText = $"{_companyActiveGroup} {companies.Count}개";
                 if (!string.IsNullOrEmpty(search)) statusText += $"  (검색: \"{search}\")";
                 _companyTreeStatus.Text = statusText + " — 클릭하면 목록에 추가";
@@ -747,7 +873,7 @@ public partial class WasteSampleListPage : UserControl
         {
             if (_companyTreeStatus != null)
             {
-                _companyTreeStatus.Foreground = Brush.Parse("#ee4444");
+                _companyTreeStatus.Foreground = AppTheme.FgDanger;
                 _companyTreeStatus.Text = $"오류: {ex.Message}";
             }
         }
@@ -779,21 +905,21 @@ public partial class WasteSampleListPage : UserControl
                 Orientation = Orientation.Horizontal, Spacing = 6,
                 Children =
                 {
-                    new TextBlock { Text = icon, FontSize = 13, VerticalAlignment = VerticalAlignment.Center },
+                    new TextBlock { Text = icon, FontSize = AppTheme.FontLG, VerticalAlignment = VerticalAlignment.Center },
                     new TextBlock
                     {
-                        Text = name, FontSize = 13, FontWeight = FontWeight.SemiBold,
+                        Text = name, FontSize = AppTheme.FontLG, FontWeight = FontWeight.SemiBold,
                         FontFamily = Font, Foreground = Brush.Parse(color),
                         VerticalAlignment = VerticalAlignment.Center,
                     },
                     new Border
                     {
-                        Background = Brush.Parse("#2a2a3a"), CornerRadius = new CornerRadius(8),
+                        Background = AppTheme.BorderSubtle, CornerRadius = new CornerRadius(8),
                         Padding = new Thickness(5, 1), VerticalAlignment = VerticalAlignment.Center,
                         Child = new TextBlock
                         {
-                            Text = count.ToString(), FontSize = 9,
-                            FontFamily = Font, Foreground = Brush.Parse("#888"),
+                            Text = count.ToString(), FontSize = AppTheme.FontXS,
+                            FontFamily = Font, Foreground = AppTheme.FgMuted,
                         }
                     }
                 }
@@ -818,7 +944,7 @@ public partial class WasteSampleListPage : UserControl
                 VerticalAlignment = VerticalAlignment.Center,
                 Child = new TextBlock
                 {
-                    Text = c.약칭, FontSize = 9, FontFamily = Font,
+                    Text = c.약칭, FontSize = AppTheme.FontXS, FontFamily = Font,
                     Foreground = Brush.Parse(fg),
                 },
             });
@@ -826,14 +952,14 @@ public partial class WasteSampleListPage : UserControl
 
         sp.Children.Add(new TextBlock
         {
-            Text = c.업체명, FontSize = 12, FontFamily = Font,
+            Text = c.업체명, FontSize = AppTheme.FontMD, FontFamily = Font,
             Foreground = AppRes("AppFg"),
             VerticalAlignment = VerticalAlignment.Center,
         });
         sp.Children.Add(new TextBlock
         {
-            Text = c.관리번호, FontSize = 9, FontFamily = Font,
-            Foreground = Brush.Parse("#666"),
+            Text = c.관리번호, FontSize = AppTheme.FontXS, FontFamily = Font,
+            Foreground = AppTheme.FgDimmed,
             VerticalAlignment = VerticalAlignment.Center,
         });
 
@@ -880,7 +1006,7 @@ public partial class WasteSampleListPage : UserControl
         {
             if (_companyTreeStatus != null)
             {
-                _companyTreeStatus.Foreground = Brush.Parse("#ee8844");
+                _companyTreeStatus.Foreground = AppTheme.FgWarn;
                 _companyTreeStatus.Text = "왼쪽에서 날짜를 먼저 선택하세요";
             }
             _companyTreeView!.SelectedItem = null;
@@ -893,7 +1019,7 @@ public partial class WasteSampleListPage : UserControl
         {
             if (_companyTreeStatus != null)
             {
-                _companyTreeStatus.Foreground = Brush.Parse("#ee8844");
+                _companyTreeStatus.Foreground = AppTheme.FgWarn;
                 _companyTreeStatus.Text = $"이미 추가됨: {company.업체명}";
             }
             _companyTreeView!.SelectedItem = null;
@@ -908,12 +1034,12 @@ public partial class WasteSampleListPage : UserControl
 
         if (_companyTreeStatus != null)
         {
-            _companyTreeStatus.Foreground = Brush.Parse("#88ee88");
+            _companyTreeStatus.Foreground = AppTheme.FgSuccess;
             _companyTreeStatus.Text = $"추가됨: {company.업체명}";
         }
 
         _companyTreeView!.SelectedItem = null;
-        RefreshDetail();
+        RefreshDetail(silent: true);
     }
 
     private void Log(string msg)

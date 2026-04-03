@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using ETA.Views;
 
 namespace ETA.Views.Pages.Common;
 
@@ -24,7 +25,7 @@ namespace ETA.Views.Pages.Common;
 public class RepairPage
 {
     private static readonly FontFamily Font =
-        new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
+        new("avares://ETA/Assets/Fonts#Pretendard");
 
     // ── 컨트롤 ───────────────────────────────────────────────────────────
     public Control TreeControl { get; }
@@ -34,7 +35,7 @@ public class RepairPage
     // ── 내부 상태 ─────────────────────────────────────────────────────────
     private readonly TreeView  _tree    = new() { Background = Brushes.Transparent, BorderThickness = new Thickness(0) };
     private readonly StackPanel _listPanel = new() { Spacing = 2 };
-    private readonly TextBlock  _listTitle = new() { FontSize = 11, FontFamily = Font, Foreground = new SolidColorBrush(Color.Parse("#777")), Margin = new Thickness(4, 0, 0, 6) };
+    private readonly TextBlock  _listTitle = new() { FontSize = AppTheme.FontBase, FontFamily = Font, Foreground = AppTheme.FgDimmed, Margin = new Thickness(4, 0, 0, 6) };
     private Border? _selectedRowBorder;
     private int _currentListYear  = DateTime.Today.Year;
     private int _currentListMonth = DateTime.Today.Month;
@@ -67,7 +68,7 @@ public class RepairPage
         _cmbStatus    = MakeCombo(new[] { "대기", "진행중", "완료", "반려" });
         _txbProcess   = MakeTxb("처리 내용");
         _txbNote      = MakeTxb("비고");
-        _txbFormTitle = new TextBlock { Text = "신규 보수요청", FontSize = 13, FontWeight = FontWeight.Bold, FontFamily = Font, Foreground = new SolidColorBrush(Color.Parse("#e0e0e0")), Margin = new Thickness(0,0,0,8) };
+        _txbFormTitle = new TextBlock { Text = "신규 보수요청", FontSize = AppTheme.FontLG, FontWeight = FontWeight.Bold, FontFamily = Font, Foreground = AppTheme.FgPrimary, Margin = new Thickness(0,0,0,8) };
         _btnSave = MakeBtn("💾 저장", "#2a4a2a", "#aef0ae");
         _btnNew  = MakeBtn("✚ 신규", "#2a2a3a", "#aaa");
         _btnSave.Click += OnSave;
@@ -90,7 +91,7 @@ public class RepairPage
     // ══════════════════════════════════════════════════════════════════════
     private Control BuildTree()
     {
-        var header = new TextBlock { Text = "🔧  보수요청", FontSize = 13, FontWeight = FontWeight.Bold, FontFamily = Font, Foreground = new SolidColorBrush(Color.Parse("#e0e0e0")), Margin = new Thickness(0,0,0,8) };
+        var header = new TextBlock { Text = "🔧  보수요청", FontSize = AppTheme.FontLG, FontWeight = FontWeight.Bold, FontFamily = Font, Foreground = AppTheme.FgPrimary, Margin = new Thickness(0,0,0,8) };
         var scroll = new ScrollViewer { Content = _tree, VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto, HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled };
         var grid = new Grid { RowDefinitions = new RowDefinitions("Auto,*") };
         Grid.SetRow(header, 0); Grid.SetRow(scroll, 1);
@@ -144,7 +145,7 @@ public class RepairPage
     // ══════════════════════════════════════════════════════════════════════
     private Control BuildList()
     {
-        var divider = new Border { Height = 1, Background = new SolidColorBrush(Color.Parse("#333")), Margin = new Thickness(0,4,0,6) };
+        var divider = new Border { Height = 1, Background = AppTheme.BorderSubtle, Margin = new Thickness(0,4,0,6) };
         var scroll  = new ScrollViewer { Content = _listPanel, VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto, HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled };
         var grid = new Grid { RowDefinitions = new RowDefinitions("Auto,Auto,*") };
         Grid.SetRow(_listTitle, 0); Grid.SetRow(divider, 1); Grid.SetRow(scroll, 2);
@@ -163,7 +164,7 @@ public class RepairPage
 
         if (items.Count == 0)
         {
-            _listPanel.Children.Add(new TextBlock { Text = "보수요청 없음", FontSize = 11, FontFamily = Font, Foreground = new SolidColorBrush(Color.Parse("#555")), Margin = new Thickness(4,8) });
+            _listPanel.Children.Add(new TextBlock { Text = "보수요청 없음", FontSize = AppTheme.FontBase, FontFamily = Font, Foreground = AppTheme.FgDimmed, Margin = new Thickness(4,8) });
             return;
         }
 
@@ -185,10 +186,10 @@ public class RepairPage
 
         // 장비명 + 증상
         var info = new StackPanel { Orientation = Orientation.Vertical, Spacing = 2, [Grid.ColumnProperty] = 0 };
-        info.Children.Add(new TextBlock { Text = item.장비명, FontSize = 12, FontFamily = Font, Foreground = new SolidColorBrush(Color.Parse("#ddd")), TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis });
-        info.Children.Add(new TextBlock { Text = $"{item.구분}  {item.요청일:MM-dd}  {item.요청자}", FontSize = 10, FontFamily = Font, Foreground = new SolidColorBrush(Color.Parse("#666")) });
+        info.Children.Add(new TextBlock { Text = item.장비명, FontSize = AppTheme.FontMD, FontFamily = Font, Foreground = AppTheme.FgPrimary, TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis });
+        info.Children.Add(new TextBlock { Text = $"{item.구분}  {item.요청일:MM-dd}  {item.요청자}", FontSize = AppTheme.FontSM, FontFamily = Font, Foreground = AppTheme.FgDimmed });
         if (!string.IsNullOrEmpty(item.증상))
-            info.Children.Add(new TextBlock { Text = item.증상, FontSize = 10, FontFamily = Font, Foreground = new SolidColorBrush(Color.Parse("#888")), TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis });
+            info.Children.Add(new TextBlock { Text = item.증상, FontSize = AppTheme.FontSM, FontFamily = Font, Foreground = AppTheme.FgMuted, TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis });
         grid.Children.Add(info);
 
         // 상태 배지
@@ -198,13 +199,13 @@ public class RepairPage
             CornerRadius = new CornerRadius(3), Padding = new Thickness(4,1),
             HorizontalAlignment = HorizontalAlignment.Right,
             VerticalAlignment = VerticalAlignment.Center,
-            Child = new TextBlock { Text = item.상태, FontSize = 10, FontFamily = Font, Foreground = new SolidColorBrush(Color.Parse("#eee")) },
+            Child = new TextBlock { Text = item.상태, FontSize = AppTheme.FontSM, FontFamily = Font, Foreground = new SolidColorBrush(Color.Parse("#eee")) },
             [Grid.ColumnProperty] = 2,
         });
 
         var border = new Border
         {
-            Background = new SolidColorBrush(Color.Parse("#1e1e2e")),
+            Background = AppTheme.BgPrimary,
             CornerRadius = new CornerRadius(4), Padding = new Thickness(10, 7),
             Margin = new Thickness(0,0,0,2),
             Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
@@ -216,12 +217,12 @@ public class RepairPage
         border.PointerEntered += (_, _) =>
         {
             if (border != _selectedRowBorder)
-                border.Background = new SolidColorBrush(Color.Parse("#252535"));
+                border.Background = AppTheme.BgSecondary;
         };
         border.PointerExited += (_, _) =>
         {
             if (border != _selectedRowBorder)
-                border.Background = new SolidColorBrush(Color.Parse("#1e1e2e"));
+                border.Background = AppTheme.BgPrimary;
         };
 
         // ★ 클릭 → 폼에 내용 로드 (터널링: 자식이 이벤트를 소비해도 받음)
@@ -233,9 +234,9 @@ public class RepairPage
                 {
                     // 이전 선택 해제
                     if (_selectedRowBorder != null)
-                        _selectedRowBorder.Background = new SolidColorBrush(Color.Parse("#1e1e2e"));
+                        _selectedRowBorder.Background = AppTheme.BgPrimary;
                     _selectedRowBorder = border;
-                    border.Background = new SolidColorBrush(Color.Parse("#2a3a5a"));
+                    border.Background = AppTheme.BgActiveBlue;
                     LoadToForm(item);
                 }
             },
@@ -249,7 +250,7 @@ public class RepairPage
     // ══════════════════════════════════════════════════════════════════════
     private Control BuildForm()
     {
-        var divider = new Border { Height = 1, Background = new SolidColorBrush(Color.Parse("#333")), Margin = new Thickness(0,4,0,8) };
+        var divider = new Border { Height = 1, Background = AppTheme.BorderSubtle, Margin = new Thickness(0,4,0,8) };
 
         var grid = new Grid
         {
@@ -259,7 +260,7 @@ public class RepairPage
 
         void Add(string label, Control ctrl, int row)
         {
-            var lbl = new TextBlock { Text = label, FontSize = 11, FontFamily = Font, Foreground = new SolidColorBrush(Color.Parse("#888")), VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0,0,0,4) };
+            var lbl = new TextBlock { Text = label, FontSize = AppTheme.FontBase, FontFamily = Font, Foreground = AppTheme.FgMuted, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0,0,0,4) };
             Grid.SetRow(lbl,  row); Grid.SetColumn(lbl,  0);
             Grid.SetRow(ctrl, row); Grid.SetColumn(ctrl, 1);
             grid.Children.Add(lbl); grid.Children.Add(ctrl);
@@ -381,7 +382,7 @@ public class RepairPage
                 if (child is Border b && b.Tag is int id && id == editId)
                 {
                     _selectedRowBorder = b;
-                    b.Background = new SolidColorBrush(Color.Parse("#2a3a5a"));
+                    b.Background = AppTheme.BgActiveBlue;
                     if (b.DataContext is RepairItem item)
                         LoadToForm(item);
                     break;
@@ -403,10 +404,10 @@ public class RepairPage
 
     private static TextBox MakeTxb(string watermark) => new()
     {
-        Watermark = watermark, Height = 26, FontSize = 12, FontFamily = Font,
+        Watermark = watermark, Height = 26, FontSize = AppTheme.FontMD, FontFamily = Font,
         Background = new SolidColorBrush(Color.Parse("#2a2a35")),
-        Foreground = new SolidColorBrush(Color.Parse("#ddd")),
-        BorderBrush = new SolidColorBrush(Color.Parse("#444")),
+        Foreground = AppTheme.FgPrimary,
+        BorderBrush = AppTheme.BorderMuted,
         Padding = new Thickness(6,0), CornerRadius = new CornerRadius(4),
         Margin = new Thickness(0,0,0,4),
     };
@@ -415,10 +416,10 @@ public class RepairPage
     {
         var cb = new ComboBox
         {
-            Height = 26, FontSize = 12, FontFamily = Font,
+            Height = 26, FontSize = AppTheme.FontMD, FontFamily = Font,
             Background  = new SolidColorBrush(Color.Parse("#2a2a35")),
-            Foreground  = new SolidColorBrush(Color.Parse("#ddd")),
-            BorderBrush = new SolidColorBrush(Color.Parse("#444")),
+            Foreground  = AppTheme.FgPrimary,
+            BorderBrush = AppTheme.BorderMuted,
             Padding = new Thickness(6,0), CornerRadius = new CornerRadius(4),
             HorizontalAlignment = HorizontalAlignment.Stretch,
             Margin = new Thickness(0,0,0,4),
@@ -430,7 +431,7 @@ public class RepairPage
 
     private static Button MakeBtn(string text, string bg, string fg) => new()
     {
-        Content = text, Height = 28, FontSize = 12, FontFamily = Font,
+        Content = text, Height = 28, FontSize = AppTheme.FontMD, FontFamily = Font,
         Background = new SolidColorBrush(Color.Parse(bg)),
         Foreground = new SolidColorBrush(Color.Parse(fg)),
         BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),

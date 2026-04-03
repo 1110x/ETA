@@ -5,7 +5,7 @@
         Width="420" Height="520"
         MinWidth="380" MinHeight="480"
         WindowStartupLocation="CenterOwner"
-        Background="#1a1a2e"
+        Background="{DynamicResource ThemeBgPrimary}"
         CanResize="False"
         ShowInTaskbar="False"
         Icon="avares://ETA/Assets/icons/ETA.ico">
@@ -29,13 +29,13 @@
         <StackPanel Grid.Row="0" Margin="0,0,0,18">
             <TextBlock Text="측정인 LOGIN"
                        FontSize="{DynamicResource FontSizeLG}" FontWeight="Bold"
-                       Foreground="#88aacc"
-                       FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                       Foreground="{DynamicResource ThemeFgInfo}"
+                       FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                        HorizontalAlignment="Center"/>
             <TextBlock Text="측정인.kr 로그인 · DB 업데이트"
                        FontSize="{DynamicResource FontSizeBase}"
-                       Foreground="#555"
-                       FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"
+                       Foreground="{DynamicResource ThemeFgDimmed}"
+                       FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                        HorizontalAlignment="Center"
                        Margin="0,3,0,0"/>
         </StackPanel>
@@ -47,52 +47,52 @@
             <!-- 브라우저 선택 -->
             <StackPanel Spacing="4">
                 <TextBlock Text="브라우저"
-                           FontSize="{DynamicResource FontSizeBase}" Foreground="#888"
-                           FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"/>
+                           FontSize="{DynamicResource FontSizeBase}" Foreground="{DynamicResource ThemeFgMuted}"
+                           FontFamily="avares://ETA/Assets/Fonts#Pretendard"/>
                 <ComboBox x:Name="cmbBrowser"
                           Height="30" FontSize="{DynamicResource FontSizeMD}"
-                          Background="#22223a" Foreground="#ddd"
-                          BorderBrush="#3a3a55" Padding="6,2"
+                          Background="{DynamicResource ThemeBgInput}" Foreground="{DynamicResource ThemeFgPrimary}"
+                          BorderBrush="{DynamicResource LoginMutedBorder}" Padding="6,2"
                           CornerRadius="4"
                           HorizontalAlignment="Stretch"
-                          FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"/>
+                          FontFamily="avares://ETA/Assets/Fonts#Pretendard"/>
             </StackPanel>
 
             <!-- 아이디 -->
             <StackPanel Spacing="4">
                 <TextBlock Text="아이디 (이메일)"
-                           FontSize="{DynamicResource FontSizeBase}" Foreground="#888"
-                           FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"/>
+                           FontSize="{DynamicResource FontSizeBase}" Foreground="{DynamicResource ThemeFgMuted}"
+                           FontFamily="avares://ETA/Assets/Fonts#Pretendard"/>
                 <TextBox x:Name="txbUserId"
                          Watermark="아이디 입력..."
                          Height="30" FontSize="{DynamicResource FontSizeMD}"
-                         Background="#22223a" Foreground="#ddd"
-                         BorderBrush="#3a3a55" Padding="8,4"
+                         Background="{DynamicResource ThemeBgInput}" Foreground="{DynamicResource ThemeFgPrimary}"
+                         BorderBrush="{DynamicResource LoginMutedBorder}" Padding="8,4"
                          CornerRadius="4"
-                         FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"/>
+                         FontFamily="avares://ETA/Assets/Fonts#Pretendard"/>
             </StackPanel>
 
             <!-- 비밀번호 -->
             <StackPanel Spacing="4">
                 <TextBlock Text="비밀번호"
-                           FontSize="{DynamicResource FontSizeBase}" Foreground="#888"
-                           FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"/>
+                           FontSize="{DynamicResource FontSizeBase}" Foreground="{DynamicResource ThemeFgMuted}"
+                           FontFamily="avares://ETA/Assets/Fonts#Pretendard"/>
                 <TextBox x:Name="txbPassword"
                          Watermark="비밀번호 입력..."
                          PasswordChar="●"
                          Height="30" FontSize="{DynamicResource FontSizeMD}"
-                         Background="#22223a" Foreground="#ddd"
-                         BorderBrush="#3a3a55" Padding="8,4"
+                         Background="{DynamicResource ThemeBgInput}" Foreground="{DynamicResource ThemeFgPrimary}"
+                         BorderBrush="{DynamicResource LoginMutedBorder}" Padding="8,4"
                          CornerRadius="4"
-                         FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"/>
+                         FontFamily="avares://ETA/Assets/Fonts#Pretendard"/>
             </StackPanel>
 
             <!-- 상태 -->
-            <Border Background="#1a1a1a" CornerRadius="4" Padding="8,6">
+            <Border Background="{DynamicResource ThemeBgPrimary}" CornerRadius="4" Padding="8,6">
                 <TextBlock x:Name="txbStatus"
                            Text="로그인을 실행하세요."
-                           FontSize="{DynamicResource FontSizeSM}" Foreground="#666"
-                           FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"
+                           FontSize="{DynamicResource FontSizeSM}" Foreground="{DynamicResource ThemeFgDimmed}"
+                           FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                            TextWrapping="Wrap"/>
             </Border>
 
@@ -100,40 +100,40 @@
             <ProgressBar x:Name="pgbScrape"
                          Minimum="0" Maximum="100" Value="0"
                          Height="6" CornerRadius="3"
-                         Foreground="#1a6fc4"
-                         Background="#222233"
+                         Foreground="{DynamicResource ThemeFgLink}"
+                         Background="{DynamicResource ThemeBgSecondary}"
                          IsVisible="False"/>
 
             <!-- ── 로그인 완료 후 DB 업데이트 안내 패널 ── -->
             <Border x:Name="pnlDbUpdate"
                     IsVisible="False"
-                    Background="#12201a" CornerRadius="6"
+                    Background="{DynamicResource ThemeBgActiveGreen}" CornerRadius="6"
                     Padding="10,8" Margin="0,4,0,0">
                 <StackPanel Spacing="5">
                     <TextBlock Text="✅ 로그인 완료 — 브라우저에서 DB 업데이트 가능"
                                FontSize="{DynamicResource FontSizeXS}" FontWeight="Bold"
-                               Foreground="#88ffaa"
-                               FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                               Foreground="{DynamicResource ThemeFgSuccess}"
+                               FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                                TextWrapping="Wrap"/>
                     <TextBlock
                                Text="측정인.kr 계획 작성 모달을 열면 아래 버튼이 자동 삽입됩니다. 클릭하면 ETA DB에 반영됩니다."
-                               FontSize="{DynamicResource FontSizeXS}" Foreground="#99aabb"
-                               FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"
+                               FontSize="{DynamicResource FontSizeXS}" Foreground="{DynamicResource ThemeFgMuted}"
+                               FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                                TextWrapping="Wrap"/>
-                    <Border Background="#1a1a2e" CornerRadius="4" Padding="6,4">
+                    <Border Background="{DynamicResource ThemeBgPrimary}" CornerRadius="4" Padding="6,4">
                         <StackPanel Spacing="2">
                             <TextBlock Text="🔵 ETA 계약 DB 업데이트 — 채취지점·계약 정보 수집"
-                                       FontSize="{DynamicResource FontSizeXS}" Foreground="#88aaff"
-                                       FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"/>
+                                       FontSize="{DynamicResource FontSizeXS}" Foreground="{DynamicResource ThemeFgLink}"
+                                       FontFamily="avares://ETA/Assets/Fonts#Pretendard"/>
                             <TextBlock Text="🟢 ETA 분석DB 업데이트 — 분석항목 코드 수집"
-                                       FontSize="{DynamicResource FontSizeXS}" Foreground="#88ffcc"
-                                       FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"/>
+                                       FontSize="{DynamicResource FontSizeXS}" Foreground="{DynamicResource ThemeFgSuccess}"
+                                       FontFamily="avares://ETA/Assets/Fonts#Pretendard"/>
                         </StackPanel>
                     </Border>
                     <TextBlock x:Name="txbPollStatus"
                                Text="⏳ DB 업데이트 대기 중..."
-                               FontSize="{DynamicResource FontSizeXS}" Foreground="#aaaacc"
-                               FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"
+                               FontSize="{DynamicResource FontSizeXS}" Foreground="{DynamicResource ThemeFgInfo}"
+                               FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                                TextWrapping="Wrap"/>
                 </StackPanel>
             </Border>
@@ -147,22 +147,22 @@
                     Content="로그인 실행"
                     Click="BtnLogin_Click"
                     Height="34" FontSize="{DynamicResource FontSizeMD}"
-                    Background="#1a3a2a" Foreground="#88cc88"
-                    BorderBrush="#2a5a3a" BorderThickness="1"
+                    Background="{DynamicResource ThemeBgActiveGreen}" Foreground="{DynamicResource ThemeFgSuccess}"
+                    BorderBrush="{DynamicResource LoginActionBorder}" BorderThickness="1"
                     CornerRadius="4"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center"
-                    FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+                    FontFamily="avares://ETA/Assets/Fonts#Pretendard"/>
             <Button Grid.Column="2"
                     Content="닫기"
                     Click="BtnClose_Click"
                     Height="34" FontSize="{DynamicResource FontSizeMD}"
-                    Background="#222233" Foreground="#888"
-                    BorderBrush="#3a3a55" BorderThickness="1"
+                    Background="{DynamicResource ThemeBgSecondary}" Foreground="{DynamicResource ThemeFgMuted}"
+                    BorderBrush="{DynamicResource LoginMutedBorder}" BorderThickness="1"
                     CornerRadius="4"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center"
-                    FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"/>
+                    FontFamily="avares://ETA/Assets/Fonts#Pretendard"/>
         </Grid>
 
     </Grid>

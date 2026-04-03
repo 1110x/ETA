@@ -3,8 +3,10 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Threading;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using ETA.Models;
@@ -17,7 +19,7 @@ namespace ETA.Views;
 internal sealed class WasteSingleSeriesChart : Control
 {
     private static readonly FontFamily Font =
-        new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R");
+        new("avares://ETA/Assets/Fonts#Pretendard");
 
     private readonly string _label;
     private readonly Color _color;
@@ -25,6 +27,12 @@ internal sealed class WasteSingleSeriesChart : Control
     private readonly List<WasteAnalysisResult> _data;
     private bool _barMode = true;
     private int _hoverIndex = -1;
+
+    // ── 바 등장 애니메이션 ──
+    private double _animProgress = 0;
+    private readonly Stopwatch _animSw = new();
+    private DispatcherTimer? _animTimer;
+    private const double AnimDurationMs = 600;
 
     public WasteSingleSeriesChart(
         string label, Color color,
@@ -37,6 +45,23 @@ internal sealed class WasteSingleSeriesChart : Control
         _data     = data;
         HorizontalAlignment = HorizontalAlignment.Stretch;
         VerticalAlignment   = VerticalAlignment.Stretch;
+        StartBarAnimation();
+    }
+
+    private void StartBarAnimation()
+    {
+        _animProgress = 0;
+        _animSw.Restart();
+        _animTimer?.Stop();
+        _animTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(16) };
+        _animTimer.Tick += (_, _) =>
+        {
+            double t = _animSw.ElapsedMilliseconds / AnimDurationMs;
+            if (t >= 1.0) { _animProgress = 1.0; _animTimer.Stop(); }
+            else { double u = 1.0 - t; _animProgress = 1.0 - u * u * u * u; } // QuarticEaseOut
+            InvalidateVisual();
+        };
+        _animTimer.Start();
     }
 
     public void SetBarMode(bool bar) { _barMode = bar; InvalidateVisual(); }
@@ -147,11 +172,12 @@ internal sealed class WasteSingleSeriesChart : Control
                 if (!vals[i].HasValue) continue;
                 double ratio = vals[i]!.Value / maxV;
                 ratio = Math.Clamp(ratio, 0, 1);
-                double barH = ratio * plotH;
+                double barH = ratio * plotH * _animProgress; // 애니메이션 적용
                 double cx = padL + (i + 0.5) * slotW;
                 double bx = cx - barW / 2;
                 double by = padT + plotH - barH;
-                var barBrush = new SolidColorBrush(Color.FromArgb(200, _color.R, _color.G, _color.B));
+                byte alpha = (byte)(200 * _animProgress);
+                var barBrush = new SolidColorBrush(Color.FromArgb(alpha, _color.R, _color.G, _color.B));
                 ctx.FillRectangle(barBrush, new Rect(bx, by, barW, barH));
             }
         }

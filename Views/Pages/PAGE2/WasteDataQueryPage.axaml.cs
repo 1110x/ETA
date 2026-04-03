@@ -11,6 +11,8 @@ using ETA.Services;
 using ETA.Services.SERVICE1;
 using ETA.Services.SERVICE2;
 using ETA.Services.Common;
+using ETA.Services.Common;
+using ETA.Views;
 
 namespace ETA.Views.Pages.PAGE2;
 
@@ -83,7 +85,7 @@ public partial class WasteDataQueryPage : UserControl
         sp.Children.Add(new TextBlock
         {
             Text      = company.업체명,
-            FontSize  = 12,
+            FontSize  = AppTheme.FontMD,
             FontFamily = Font,
             Foreground = AppRes("AppFg"),
             VerticalAlignment = VerticalAlignment.Center,
@@ -91,9 +93,9 @@ public partial class WasteDataQueryPage : UserControl
         sp.Children.Add(new TextBlock
         {
             Text      = company.관리번호,
-            FontSize  = 9,
+            FontSize  = AppTheme.FontXS,
             FontFamily = Font,
-            Foreground = new SolidColorBrush(Color.Parse("#666666")),
+            Foreground = AppTheme.FgDimmed,
             VerticalAlignment = VerticalAlignment.Center,
         });
         return new TreeViewItem { Tag = company, Header = sp };
@@ -131,13 +133,13 @@ public partial class WasteDataQueryPage : UserControl
             }
             else
             {
-                btn.Background  = new SolidColorBrush(Color.Parse("#222222"));
-                btn.Foreground  = new SolidColorBrush(Color.Parse("#666666"));
-                btn.BorderBrush = new SolidColorBrush(Color.Parse("#444444"));
+                btn.Background  = AppTheme.BgSecondary;
+                btn.Foreground  = AppTheme.BorderMuted;
+                btn.BorderBrush = AppTheme.BorderMuted;
             }
         }
     }
 
     private static readonly FontFamily Font =
-        new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R");
+        new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
 }

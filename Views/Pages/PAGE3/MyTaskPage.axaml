@@ -9,7 +9,7 @@
             <Setter Property="MinHeight"  Value="0" />
             <Setter Property="FontSize"   Value="{DynamicResource FontSizeBase}" />
             <Setter Property="Foreground" Value="{DynamicResource TreeFg}" />
-            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#Pretendard" />
             <Setter Property="Background" Value="Transparent" />
         </Style>
         <Style Selector="TreeViewItem /template/ ContentPresenter#PART_HeaderPresenter">
@@ -39,12 +39,12 @@
                            FontSize="{DynamicResource FontSizeBase}"
                            FontWeight="SemiBold"
                            Foreground="{DynamicResource FgMuted}"
-                           FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                           FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                            VerticalAlignment="Center"/>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4">
                     <DatePicker x:Name="dpDate"
                                 FontSize="{DynamicResource FontSizeSM}"
-                                FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                                FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                                 SelectedDateChanged="DpDate_SelectedDateChanged"/>
                 </StackPanel>
             </Grid>
@@ -60,19 +60,19 @@
                         Click="CategoryBtn_Click"
                         Tag="측대"
                         FontSize="{DynamicResource FontSizeSM}"
-                        FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                        FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                         Padding="8,3"
                         CornerRadius="10"
-                        Background="#1a2a4a"
-                        Foreground="#88aaee"
+                        Background="{DynamicResource ThemeBgActiveBlue}"
+                        Foreground="{DynamicResource ThemeFgInfo}"
                         BorderThickness="1"
-                        BorderBrush="#336699"/>
+                        BorderBrush="{DynamicResource ThemeBorderInfo}"/>
                 <Button x:Name="BtnYeosoo"
                         Content="🌊 여수"
                         Click="CategoryBtn_Click"
                         Tag="여수"
                         FontSize="{DynamicResource FontSizeSM}"
-                        FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                        FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                         Padding="8,3"
                         CornerRadius="10"
                         Background="{DynamicResource SubBtnBg}"
@@ -84,7 +84,7 @@
                         Click="CategoryBtn_Click"
                         Tag="율촌"
                         FontSize="{DynamicResource FontSizeSM}"
-                        FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                        FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                         Padding="8,3"
                         CornerRadius="10"
                         Background="{DynamicResource SubBtnBg}"
@@ -96,7 +96,7 @@
                         Click="CategoryBtn_Click"
                         Tag="세풍"
                         FontSize="{DynamicResource FontSizeSM}"
-                        FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                        FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                         Padding="8,3"
                         CornerRadius="10"
                         Background="{DynamicResource SubBtnBg}"
@@ -108,7 +108,7 @@
                         Click="CategoryBtn_Click"
                         Tag="처리시설"
                         FontSize="{DynamicResource FontSizeSM}"
-                        FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                        FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                         Padding="8,3"
                         CornerRadius="10"
                         Background="{DynamicResource SubBtnBg}"
@@ -120,7 +120,7 @@
                         Click="CategoryBtn_Click"
                         Tag="의뢰목록"
                         FontSize="{DynamicResource FontSizeSM}"
-                        FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                        FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                         Padding="8,3"
                         CornerRadius="10"
                         Background="{DynamicResource SubBtnBg}"

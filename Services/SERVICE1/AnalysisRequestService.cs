@@ -883,21 +883,68 @@ public static class AnalysisRequestService
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
-            using var cmd = conn.CreateCommand();
-            cmd.CommandText =
-                "SELECT * FROM `분장표준처리` WHERE `항목명` BETWEEN @s AND @e ORDER BY `항목명`";
-            cmd.Parameters.AddWithValue("@s", start.ToString("yyyy-MM-dd"));
-            cmd.Parameters.AddWithValue("@e", end.ToString("yyyy-MM-dd"));
-            using var rdr = cmd.ExecuteReader();
-            while (rdr.Read())
+
+            // 1. 범위 내 날짜별 할당자 맵 구축
+            var dayMap = new Dictionary<string, string>();
+            using (var cmd = conn.CreateCommand())
             {
-                for (int i = 1; i < rdr.FieldCount; i++)
+                cmd.CommandText =
+                    "SELECT * FROM `분장표준처리` WHERE `항목명` BETWEEN @s AND @e ORDER BY `항목명`";
+                cmd.Parameters.AddWithValue("@s", start.ToString("yyyy-MM-dd"));
+                cmd.Parameters.AddWithValue("@e", end.ToString("yyyy-MM-dd"));
+
+                using var rdr = cmd.ExecuteReader();
+                while (rdr.Read())
                 {
-                    if (!string.Equals(rdr.GetName(i).Trim(), analyteFullName,
-                        StringComparison.OrdinalIgnoreCase)) continue;
-                    var val = rdr.IsDBNull(i) ? "" : rdr.GetValue(i)?.ToString()?.Trim() ?? "";
-                    if (!string.IsNullOrEmpty(val)) assignees.Add(val);
-                    break;
+                    var dateStr = rdr.IsDBNull(0) ? "" : rdr.GetValue(0)?.ToString()?.Trim() ?? "";
+                    for (int i = 1; i < rdr.FieldCount; i++)
+                    {
+                        if (!string.Equals(rdr.GetName(i).Trim(), analyteFullName,
+                            StringComparison.OrdinalIgnoreCase)) continue;
+                        var val = rdr.IsDBNull(i) ? "" : rdr.GetValue(i)?.ToString()?.Trim() ?? "";
+                        if (!string.IsNullOrEmpty(val) && !string.IsNullOrEmpty(dateStr))
+                            dayMap[dateStr] = val;
+                        break;
+                    }
+                }
+            }
+
+            // 2. 범위 시작일 이전의 가장 최근 할당자 (자동 할당 fallback)
+            string fallback = "";
+            using (var cmd2 = conn.CreateCommand())
+            {
+                cmd2.CommandText =
+                    "SELECT * FROM `분장표준처리` WHERE `항목명` < @s ORDER BY `항목명` DESC";
+                cmd2.Parameters.AddWithValue("@s", start.ToString("yyyy-MM-dd"));
+
+                using var rdr2 = cmd2.ExecuteReader();
+                while (rdr2.Read())
+                {
+                    for (int i = 1; i < rdr2.FieldCount; i++)
+                    {
+                        if (!string.Equals(rdr2.GetName(i).Trim(), analyteFullName,
+                            StringComparison.OrdinalIgnoreCase)) continue;
+                        var val = rdr2.IsDBNull(i) ? "" : rdr2.GetValue(i)?.ToString()?.Trim() ?? "";
+                        if (!string.IsNullOrEmpty(val)) fallback = val;
+                        break;
+                    }
+                    if (!string.IsNullOrEmpty(fallback)) break;
+                }
+            }
+
+            // 3. 날짜별 순회 — 빈 날짜는 직전 할당자를 자동 적용
+            string lastKnown = fallback;
+            for (var d = start; d <= end; d = d.AddDays(1))
+            {
+                var key = d.ToString("yyyy-MM-dd");
+                if (dayMap.TryGetValue(key, out var assignee))
+                {
+                    lastKnown = assignee;
+                    assignees.Add(assignee);
+                }
+                else if (!string.IsNullOrEmpty(lastKnown))
+                {
+                    assignees.Add(lastKnown); // 자동 할당
                 }
             }
         }
@@ -918,20 +965,46 @@ public static class AnalysisRequestService
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
 
-            using var cmd = conn.CreateCommand();
-            cmd.CommandText = "SELECT * FROM `분장표준처리` WHERE `항목명` = @date";
-            cmd.Parameters.AddWithValue("@date", date.ToString("yyyy-MM-dd"));
-
-            using var rdr = cmd.ExecuteReader();
-            if (rdr.Read())
+            // 1. 해당 날짜에서 직접 조회
+            using (var cmd = conn.CreateCommand())
             {
-                for (int i = 1; i < rdr.FieldCount; i++)
+                cmd.CommandText = "SELECT * FROM `분장표준처리` WHERE `항목명` = @date";
+                cmd.Parameters.AddWithValue("@date", date.ToString("yyyy-MM-dd"));
+
+                using var rdr = cmd.ExecuteReader();
+                if (rdr.Read())
                 {
-                    if (!string.Equals(rdr.GetName(i).Trim(), analyteFullName,
-                        StringComparison.OrdinalIgnoreCase)) continue;
-                    var val = rdr.IsDBNull(i) ? "" : rdr.GetValue(i)?.ToString()?.Trim() ?? "";
-                    if (!string.IsNullOrEmpty(val)) assignees.Add(val);
-                    break;
+                    for (int i = 1; i < rdr.FieldCount; i++)
+                    {
+                        if (!string.Equals(rdr.GetName(i).Trim(), analyteFullName,
+                            StringComparison.OrdinalIgnoreCase)) continue;
+                        var val = rdr.IsDBNull(i) ? "" : rdr.GetValue(i)?.ToString()?.Trim() ?? "";
+                        if (!string.IsNullOrEmpty(val)) assignees.Add(val);
+                        break;
+                    }
+                }
+            }
+
+            // 2. 할당자가 없으면 → 가장 최근 날짜의 할당자를 자동 적용
+            if (assignees.Count == 0)
+            {
+                using var cmd2 = conn.CreateCommand();
+                cmd2.CommandText =
+                    "SELECT * FROM `분장표준처리` WHERE `항목명` < @date ORDER BY `항목명` DESC";
+                cmd2.Parameters.AddWithValue("@date", date.ToString("yyyy-MM-dd"));
+
+                using var rdr2 = cmd2.ExecuteReader();
+                while (rdr2.Read())
+                {
+                    for (int i = 1; i < rdr2.FieldCount; i++)
+                    {
+                        if (!string.Equals(rdr2.GetName(i).Trim(), analyteFullName,
+                            StringComparison.OrdinalIgnoreCase)) continue;
+                        var val = rdr2.IsDBNull(i) ? "" : rdr2.GetValue(i)?.ToString()?.Trim() ?? "";
+                        if (!string.IsNullOrEmpty(val)) assignees.Add(val);
+                        break;
+                    }
+                    if (assignees.Count > 0) break; // 찾으면 즉시 종료
                 }
             }
         }

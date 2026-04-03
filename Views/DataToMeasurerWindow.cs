@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using ETA.Views;
 using Avalonia.Controls.Primitives;
 using Avalonia.Data;
 using Avalonia.Interactivity;
@@ -37,7 +38,7 @@ public class DataToMeasurerWindow : Window
     }
 
     private static readonly FontFamily Font =
-        new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
+        new("avares://ETA/Assets/Fonts#Pretendard");
     private static readonly object LogLock = new();
     private static readonly string InputLogPath = ResolveInputLogPath();
 
@@ -128,7 +129,7 @@ public class DataToMeasurerWindow : Window
         {
             Text       = "자료 TO 측정인",
             FontFamily = Font,
-            FontSize   = 16,
+            FontSize   = AppTheme.FontXL,
             FontWeight = FontWeight.Bold,
             Foreground = AppRes("AppFg"),
             Margin     = new Thickness(12, 10, 0, 4),
@@ -140,7 +141,7 @@ public class DataToMeasurerWindow : Window
                 ? $"선택된 시료: {_sourceSample.약칭} / {_sourceSample.시료명} (채취일: {_sourceSample.채취일자})"
                 : "데이터공유를 통해 시험성적서의 분석 결과를 측정인 사이트에 입력할 수 있도록 정리합니다. 항목을 확인 후 [측정인에 입력] 버튼을 클릭하세요.",
             FontFamily = Font,
-            FontSize   = 11,
+            FontSize   = AppTheme.FontBase,
             Foreground = AppRes("FgMuted"),
             Margin     = new Thickness(12, 0, 0, 6),
             TextWrapping = TextWrapping.Wrap,
@@ -148,8 +149,8 @@ public class DataToMeasurerWindow : Window
 
         // ── 상태 표시 ──────────────────────────────────────────────────────
         _statusTb.FontFamily = Font;
-        _statusTb.FontSize   = 11;
-        _statusTb.Foreground = new SolidColorBrush(Color.Parse("#88cc88"));
+        _statusTb.FontSize   = AppTheme.FontBase;
+        _statusTb.Foreground = AppTheme.FgSuccess;
         _statusTb.Margin     = new Thickness(12, 0, 0, 6);
         _statusTb.Text       = "데이터 로드 중...";
 
@@ -159,10 +160,10 @@ public class DataToMeasurerWindow : Window
         _grid.Background           = AppRes("PanelBg");
         _grid.Foreground           = AppRes("AppFg");
         _grid.GridLinesVisibility  = DataGridGridLinesVisibility.All;
-        _grid.HorizontalGridLinesBrush = new SolidColorBrush(Color.Parse("#333355"));
-        _grid.VerticalGridLinesBrush   = new SolidColorBrush(Color.Parse("#333355"));
+        _grid.HorizontalGridLinesBrush = AppTheme.BorderSubtle;
+        _grid.VerticalGridLinesBrush   = AppTheme.BorderSubtle;
         _grid.FontFamily           = Font;
-        _grid.FontSize             = 12;
+        _grid.FontSize             = AppTheme.FontMD;
         _grid.Margin               = new Thickness(8, 0, 8, 8);
 
         BuildGridColumns();
@@ -170,7 +171,7 @@ public class DataToMeasurerWindow : Window
         // ── 버튼 열 ────────────────────────────────────────────────────────
         // ── 측정인 페이지 확인 영역 ─────────────────────────────────────
         _matchTb.FontFamily  = Font;
-        _matchTb.FontSize    = 11;
+        _matchTb.FontSize    = AppTheme.FontBase;
         _matchTb.Foreground  = AppRes("FgMuted");
         _matchTb.Margin      = new Thickness(12, 2, 12, 2);
         _matchTb.Text        = "▶ [측정값 입력 진행] 버튼: 현재 브라우저의 측정인 페이지와 로드된 시료를 확인한 뒤 입력을 진행합니다.";
@@ -253,8 +254,8 @@ public class DataToMeasurerWindow : Window
         btn.Content         = label;
         btn.Width           = 120;
         btn.Height          = 32;
-        btn.FontFamily      = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
-        btn.FontSize        = 12;
+        btn.FontFamily      = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
+        btn.FontSize        = AppTheme.FontMD;
         btn.Background      = new SolidColorBrush(Color.Parse(bg));
         btn.Foreground      = AppRes("AppFg");
         btn.BorderThickness = new Thickness(0);
@@ -410,7 +411,7 @@ public class DataToMeasurerWindow : Window
             if (string.IsNullOrEmpty(h2Text))
             {
                 _matchTb.Text = "⚠️ 측정인 탭을 찾을 수 없습니다. 브라우저에서 측정인.kr을 먼저 열어주세요.";
-                _matchTb.Foreground = new SolidColorBrush(Color.Parse("#ffaa44"));
+                _matchTb.Foreground = AppTheme.FgWarn;
                 return;
             }
 
@@ -449,7 +450,7 @@ public class DataToMeasurerWindow : Window
         catch (Exception ex)
         {
             _matchTb.Text = $"⚠️ 확인 오류: {ex.Message}";
-            _matchTb.Foreground = new SolidColorBrush(Color.Parse("#ee4444"));
+            _matchTb.Foreground = AppTheme.FgDanger;
         }
     }
 

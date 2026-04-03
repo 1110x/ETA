@@ -1,4 +1,5 @@
 using Avalonia;
+using ETA.Views;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
@@ -29,7 +30,7 @@ public partial class QuotationDetailPanel : UserControl
     public event Action<QuotationIssue>? CorrectRequested;
 
     private static readonly FontFamily Font =
-        new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
+        new("avares://ETA/Assets/Fonts#Pretendard");
 
     // ── 로그 ─────────────────────────────────────────────────────────────
     private static readonly string LogPath = Path.GetFullPath(
@@ -183,7 +184,7 @@ public partial class QuotationDetailPanel : UserControl
                 Text       = "항목 데이터 없음",
                 FontSize   = AppFonts.Base,
                 FontFamily = Font,
-                Foreground = Brush.Parse("#555"),
+                Foreground = AppTheme.FgDimmed,
                 Margin     = new Avalonia.Thickness(12, 4),
             });
         }

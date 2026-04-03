@@ -7,6 +7,7 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using System;
 using System.IO;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ using ETA.Services;
 using ETA.Services.SERVICE1;
 using ETA.Services.SERVICE2;
 using ETA.Services.Common;
+using ETA.Views;
 
 namespace ETA.Views.Pages.PAGE1;
 
@@ -33,6 +35,7 @@ public partial class AgentTreePage : UserControl
     public event Action<Control?>? DetailPanelChanged;
     public Action<Control?>? Show3ContentRequest { get; set; }
     public Action<Control?>? Show4ContentRequest { get; set; }
+    public Action? Show4RefreshRequest { get; set; }
     public ListBox? AnalysisItemsListBox { get; set; }
 
     // ── 상태 ────────────────────────────────────────────────────────────────
@@ -112,6 +115,45 @@ public partial class AgentTreePage : UserControl
     }
 
     // =========================================================================
+    // 검색 필터
+    // =========================================================================
+    // TextChanged + 400ms 디바운스 (한글 IME 조합 깨짐 방지)
+    private DispatcherTimer? _searchDebounce;
+    private string _lastAgentSearch = "";
+
+    private void AgentSearchBox_TextChanged(object? sender, Avalonia.Controls.TextChangedEventArgs e)
+    {
+        _searchDebounce?.Stop();
+        _searchDebounce = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(400) };
+        _searchDebounce.Tick += (_, _) =>
+        {
+            _searchDebounce!.Stop();
+            DoAgentSearch();
+        };
+        _searchDebounce.Start();
+    }
+
+    protected override void OnLoaded(RoutedEventArgs e)
+    {
+        base.OnLoaded(e);
+    }
+
+    private void DoAgentSearch()
+    {
+        var q = AgentSearchBox.Text?.Trim().ToLower() ?? "";
+        if (q == _lastAgentSearch) return;
+        _lastAgentSearch = q;
+        foreach (var tvi in AgentTreeView.Items.OfType<TreeViewItem>())
+        {
+            if (tvi.Tag is Agent agent)
+                tvi.IsVisible = string.IsNullOrEmpty(q)
+                    || (agent.성명?.ToLower().Contains(q) ?? false)
+                    || (agent.사번?.ToLower().Contains(q) ?? false)
+                    || (agent.직급?.ToLower().Contains(q) ?? false);
+        }
+    }
+
+    // =========================================================================
     // 데이터 로드
     // =========================================================================
     public void LoadData()
@@ -164,9 +206,9 @@ public partial class AgentTreePage : UserControl
                 Child             = new TextBlock
                 {
                     Text              = agent.직급,
-                    FontSize          = 10,
+                    FontSize          = AppTheme.FontSM,
                     Foreground        = new SolidColorBrush(Color.Parse(fg)),
-                    FontFamily        = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                    FontFamily        = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                     VerticalAlignment = VerticalAlignment.Center,
                 }
             });
@@ -176,17 +218,19 @@ public partial class AgentTreePage : UserControl
         headerPanel.Children.Add(new TextBlock
         {
             Text              = agent.성명,
-            FontSize          = 13,
-            FontFamily        = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R",
+            FontSize          = AppTheme.FontLG,
+            FontFamily        = "avares://ETA/Assets/Fonts#Pretendard",
             Foreground        = AppRes("AppFg"),
             VerticalAlignment = VerticalAlignment.Center,
         });
 
-        return new TreeViewItem
+        var tvi = new TreeViewItem
         {
             Tag    = agent,
             Header = headerPanel,
         };
+        TextShimmer.AttachHover(tvi);
+        return tvi;
     }
 
     // 원형 사진 또는 이니셜 원 헬퍼
@@ -234,7 +278,7 @@ public partial class AgentTreePage : UserControl
                 Text                = initial,
                 FontSize            = size * 0.45,
                 Foreground          = new SolidColorBrush(Color.Parse(ifg)),
-                FontFamily          = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                FontFamily          = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment   = VerticalAlignment.Center,
             }
@@ -260,6 +304,7 @@ public partial class AgentTreePage : UserControl
         _detailPanel      = BuildEditPanel(agent);
         DetailPanelChanged?.Invoke(_detailPanel);
         Show3ContentRequest?.Invoke(BuildShow3Timeline(agent));
+
         Log($"선택: {agent.성명}");
     }
 
@@ -309,7 +354,7 @@ public partial class AgentTreePage : UserControl
             Height          = 150,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
             CanResize       = false,
-            Background      = new SolidColorBrush(Color.Parse("#2d2d2d")),
+            Background      = AppTheme.BgSecondary,
         };
 
         bool confirmed = false;
@@ -318,14 +363,14 @@ public partial class AgentTreePage : UserControl
         {
             Content    = "삭제",
             Width      = 80,
-            Background = new SolidColorBrush(Color.Parse("#c0392b")),
+            Background = AppTheme.FgDanger,
             Foreground = Brushes.White,
         };
         var noBtn = new Button
         {
             Content    = "취소",
             Width      = 80,
-            Background = new SolidColorBrush(Color.Parse("#444")),
+            Background = AppTheme.BorderMuted,
             Foreground = Brushes.White,
         };
 
@@ -342,7 +387,7 @@ public partial class AgentTreePage : UserControl
                 {
                     Text       = $"'{agent.성명}' 직원을 삭제하시겠습니까?",
                     Foreground = AppRes("AppFg"),
-                    FontSize   = 13,
+                    FontSize   = AppTheme.FontLG,
                     TextWrapping = Avalonia.Media.TextWrapping.Wrap
                 },
                 new StackPanel
@@ -413,9 +458,9 @@ public partial class AgentTreePage : UserControl
             var devLoginBtn = new Button
             {
                 Content    = $"🔑 [{agent.성명}](으)로 로그인 (개발자 모드)",
-                FontSize   = 11,
-                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-                Background = new SolidColorBrush(Color.Parse("#2a4a6a")),
+                FontSize   = AppTheme.FontBase,
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+                Background = AppTheme.BorderInfo,
                 Foreground = new SolidColorBrush(Color.Parse("#8cf")),
                 Padding    = new Thickness(10, 4),
                 Margin     = new Thickness(0, 4, 0, 0),
@@ -459,11 +504,11 @@ public partial class AgentTreePage : UserControl
             var deleteBtn = new Button
             {
                 Content             = $"🗑  {agent.성명} 삭제",
-                FontSize            = 11,
-                FontFamily          = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-                Background          = new SolidColorBrush(Color.Parse("#3a1a1a")),
-                Foreground          = new SolidColorBrush(Color.Parse("#ee8888")),
-                BorderBrush         = new SolidColorBrush(Color.Parse("#663333")),
+                FontSize            = AppTheme.FontBase,
+                FontFamily          = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+                Background          = AppTheme.BgDanger,
+                Foreground          = AppTheme.FgDanger,
+                BorderBrush         = AppTheme.BorderDanger,
                 BorderThickness     = new Thickness(1),
                 CornerRadius        = new CornerRadius(4),
                 Padding             = new Thickness(10, 4),
@@ -479,7 +524,7 @@ public partial class AgentTreePage : UserControl
         // ── 담당 분석항목 ──
         var itemSection = new Border
         {
-            Background   = new SolidColorBrush(Color.Parse("#1a1a2a")),
+            Background   = AppTheme.BgPrimary,
             CornerRadius = new CornerRadius(4),
             Padding      = new Thickness(8, 6),
             Margin       = new Thickness(0, 6, 0, 0),
@@ -492,12 +537,46 @@ public partial class AgentTreePage : UserControl
         RefreshItemChips(agent);
         itemInner.Children.Add(_항목ChipsPanel);
         itemSection.Child = itemInner;
+
+        // 드래그앤드랍: Show4에서 분석항목을 끌어다 놓으면 배정
+        DragDrop.SetAllowDrop(itemSection, true);
+        itemSection.AddHandler(DragDrop.DragOverEvent, (object? s, DragEventArgs e) =>
+        {
+            e.DragEffects = e.Data.Contains("analyte") ? DragDropEffects.Move : DragDropEffects.None;
+            e.Handled = true;
+        });
+        itemSection.AddHandler(DragDrop.DropEvent, (object? s, DragEventArgs e) =>
+        {
+            if (!e.Data.Contains("analyte")) return;
+            var analyte = e.Data.Get("analyte") as string;
+            if (string.IsNullOrEmpty(analyte)) return;
+
+            // 이미 배정된 항목이면 무시
+            if (agent.담당항목목록.Contains(analyte))
+            {
+                Log($"드랍 무시: {analyte} 이미 배정됨");
+                return;
+            }
+
+            // 담당항목에 추가
+            var list = agent.담당항목목록.ToList();
+            list.Add(analyte);
+            agent.담당항목 = string.Join(",", list);
+            AgentService.Update(agent);
+
+            // 분장표준처리에 금일부터 배정
+            AssignItemsForDate(agent, DateTime.Today);
+            RefreshItemChips(agent);
+            Show4RefreshRequest?.Invoke();
+            Log($"드랍 배정: {agent.성명} ← {analyte}");
+        });
+
         root.Children.Add(itemSection);
 
         // ── 담당 계약업체 ──
         var contractSection = new Border
         {
-            Background   = new SolidColorBrush(Color.Parse("#1a2a1a")),
+            Background   = AppTheme.BgActiveGreen,
             CornerRadius = new CornerRadius(4),
             Padding      = new Thickness(8, 6),
             Margin       = new Thickness(0, 6, 0, 0),
@@ -577,7 +656,7 @@ public partial class AgentTreePage : UserControl
     {
         var border = new Border
         {
-            Background   = new SolidColorBrush(Color.Parse("#1a2a1a")),
+            Background   = AppTheme.BgActiveGreen,
             CornerRadius = new CornerRadius(6),
             Padding      = new Thickness(10, 8),
             Margin       = new Thickness(0, 8, 0, 0)
@@ -589,10 +668,10 @@ public partial class AgentTreePage : UserControl
         stack.Children.Add(new TextBlock
         {
             Text       = "📋 업무 분장",
-            FontSize   = 12,
+            FontSize   = AppTheme.FontMD,
             FontWeight = FontWeight.Bold,
             Foreground = new SolidColorBrush(Color.Parse("#7cd87c")),
-            FontFamily = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"
+            FontFamily = "avares://ETA/Assets/Fonts#Pretendard"
         });
 
         // ── 날짜 범위 표시 + 달력 버튼 ──────────────────────────────────
@@ -606,11 +685,11 @@ public partial class AgentTreePage : UserControl
         var txbDateRange = new TextBlock
         {
             Text              = DateTime.Today.ToString("yyyy-MM-dd"),
-            FontSize          = 11,
-            Foreground        = new SolidColorBrush(Color.Parse("#aaa")),
+            FontSize          = AppTheme.FontBase,
+            Foreground        = AppTheme.FgMuted,
             VerticalAlignment = VerticalAlignment.Center,
             MinWidth          = 170,
-            FontFamily        = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"
+            FontFamily        = "avares://ETA/Assets/Fonts#Pretendard"
         };
 
         var btnCal = new Button
@@ -618,12 +697,12 @@ public partial class AgentTreePage : UserControl
             Content         = "📅",
             Width           = 30,
             Height          = 24,
-            FontSize        = 12,
+            FontSize        = AppTheme.FontMD,
             Padding         = new Thickness(0),
             Background      = new SolidColorBrush(Color.Parse("#2a3a4a")),
-            Foreground      = new SolidColorBrush(Color.Parse("#aaa")),
+            Foreground      = AppTheme.FgMuted,
             BorderThickness = new Thickness(1),
-            BorderBrush     = new SolidColorBrush(Color.Parse("#555")),
+            BorderBrush     = AppTheme.BorderDefault,
         };
         ToolTip.SetTip(btnCal, "기간 선택 (드래그로 범위 설정)");
 
@@ -632,12 +711,12 @@ public partial class AgentTreePage : UserControl
             Content         = "오늘",
             Width           = 44,
             Height          = 24,
-            FontSize        = 10,
+            FontSize        = AppTheme.FontSM,
             Padding         = new Thickness(4, 0),
             Background      = new SolidColorBrush(Color.Parse("#3a5a3a")),
-            Foreground      = new SolidColorBrush(Color.Parse("#aaa")),
+            Foreground      = AppTheme.FgMuted,
             BorderThickness = new Thickness(1),
-            BorderBrush     = new SolidColorBrush(Color.Parse("#666"))
+            BorderBrush     = AppTheme.BorderMuted
         };
 
         dateRow.Children.Add(txbDateRange);
@@ -652,8 +731,14 @@ public partial class AgentTreePage : UserControl
             IsVisible     = false,
             Margin        = new Thickness(0, 2, 0, 0),
             DisplayDate   = DateTime.Today,
+            Focusable     = true,
         };
         calendar.SelectedDates.Add(DateTime.Today);
+        calendar.KeyDown += (_, e) =>
+        {
+            if (e.Key == Key.Escape && calendar.IsVisible)
+            { calendar.IsVisible = false; e.Handled = true; }
+        };
         stack.Children.Add(calendar);
 
         // ── 타임라인 캔버스 ───────────────────────────────────────────────
@@ -676,6 +761,13 @@ public partial class AgentTreePage : UserControl
         DateTime rangeStart = DateTime.Today;
         DateTime rangeEnd   = DateTime.Today;
 
+        // DragOver 핸들러 — 드롭 허용 표시 (이것이 없으면 드롭 거부됨)
+        timelineScroll.AddHandler(DragDrop.DragOverEvent, (object? sender, DragEventArgs e) =>
+        {
+            e.DragEffects = e.Data.Contains("analyte") ? DragDropEffects.Move : DragDropEffects.None;
+            e.Handled = true;
+        });
+
         // 드래그 드랍 — 중복 체크 포함 async 핸들러
         timelineScroll.AddHandler(DragDrop.DropEvent, async (object? sender, DragEventArgs e) =>
         {
@@ -697,6 +789,7 @@ public partial class AgentTreePage : UserControl
             AnalysisRequestService.AddAssignment(
                 agent.사번, analyte, rangeStart, rangeStart.AddMonths(1));
             RefreshTimeline(timelineCanvas, agent, rangeStart, rangeEnd);
+            Show4RefreshRequest?.Invoke();
             Log($"분장 추가: {agent.성명} ← {analyte}");
         });
 
@@ -711,7 +804,7 @@ public partial class AgentTreePage : UserControl
             Height          = 4,
             Margin          = new Thickness(0, 6, 0, 0),
             Foreground      = new SolidColorBrush(Color.Parse("#7cd87c")),
-            Background      = new SolidColorBrush(Color.Parse("#1a2a1a")),
+            Background      = AppTheme.BgActiveGreen,
         };
         stack.Children.Add(saveProgress);
 
@@ -720,12 +813,12 @@ public partial class AgentTreePage : UserControl
         {
             Content             = "💾 분장 저장",
             Height              = 28,
-            FontSize            = 11,
-            FontFamily          = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R",
-            Background          = new SolidColorBrush(Color.Parse("#2a5a2a")),
+            FontSize            = AppTheme.FontBase,
+            FontFamily          = "avares://ETA/Assets/Fonts#Pretendard",
+            Background          = AppTheme.BorderActive,
             Foreground          = AppRes("AppFg"),
             BorderThickness     = new Thickness(1),
-            BorderBrush         = new SolidColorBrush(Color.Parse("#4a8a4a")),
+            BorderBrush         = AppTheme.BorderActive,
             CornerRadius        = new CornerRadius(4),
             Padding             = new Thickness(10, 0),
             Margin              = new Thickness(0, 4, 0, 0),
@@ -794,7 +887,7 @@ public partial class AgentTreePage : UserControl
             Height                = 160,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
             CanResize             = false,
-            Background            = new SolidColorBrush(Color.Parse("#2d2d2d")),
+            Background            = AppTheme.BgSecondary,
         };
 
         bool result = false;
@@ -809,7 +902,7 @@ public partial class AgentTreePage : UserControl
         {
             Content    = "취소",
             Width      = 70,
-            Background = new SolidColorBrush(Color.Parse("#444")),
+            Background = AppTheme.BorderMuted,
             Foreground = Brushes.White,
         };
         yesBtn.Click += (_, _) => { result = true;  dlg.Close(); };
@@ -825,9 +918,9 @@ public partial class AgentTreePage : UserControl
                 {
                     Text         = $"⚠️ '{analyte}'은(는) 이미 {names}에게 할당되어 있습니다.\n업데이트 하시겠습니까?",
                     Foreground   = AppRes("AppFg"),
-                    FontSize     = 12,
+                    FontSize     = AppTheme.FontMD,
                     TextWrapping = Avalonia.Media.TextWrapping.Wrap,
-                    FontFamily   = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R",
+                    FontFamily   = "avares://ETA/Assets/Fonts#Pretendard",
                 },
                 new StackPanel
                 {
@@ -871,7 +964,7 @@ public partial class AgentTreePage : UserControl
             {
                 Content   = "⏳ 할당된 항목 없음",
                 IsEnabled = false,
-                Foreground = new SolidColorBrush(Color.Parse("#666666"))
+                Foreground = AppTheme.FgDimmed
             });
             return;
         }
@@ -889,17 +982,17 @@ public partial class AgentTreePage : UserControl
                 Child = new TextBlock
                 {
                     Text       = shortName,
-                    FontSize   = 9,
+                    FontSize   = AppTheme.FontXS,
                     Foreground = new SolidColorBrush(Color.Parse("#7ab4cc")),
-                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                 },
             });
             topRow.Children.Add(new TextBlock
             {
                 Text              = fullName,
-                FontSize          = 11,
-                FontFamily        = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
-                Foreground        = new SolidColorBrush(Color.Parse("#dddddd")),
+                FontSize          = AppTheme.FontBase,
+                FontFamily        = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+                Foreground        = AppTheme.FgPrimary,
                 TextTrimming      = Avalonia.Media.TextTrimming.CharacterEllipsis,
                 VerticalAlignment = VerticalAlignment.Center,
                 [Grid.ColumnProperty] = 1,
@@ -923,9 +1016,9 @@ public partial class AgentTreePage : UserControl
             var noItem = new TextBlock
             {
                 Text       = "할당된 항목 없음",
-                FontSize   = 11,
-                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-                Foreground = new SolidColorBrush(Color.Parse("#666")),
+                FontSize   = AppTheme.FontBase,
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+                Foreground = AppTheme.FgDimmed,
             };
             Canvas.SetLeft(noItem, 8.0);
             Canvas.SetTop(noItem, 8.0);
@@ -954,8 +1047,8 @@ public partial class AgentTreePage : UserControl
                 var lbl = new TextBlock
                 {
                     Text       = label,
-                    FontSize   = 8,
-                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                    FontSize   = AppTheme.FontXS,
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                     Foreground = new SolidColorBrush(Color.Parse(isMonStart ? "#aaccff" : "#888")),
                 };
                 Canvas.SetLeft(lbl, TL_LABEL_W + d * TL_DAY_W);
@@ -987,7 +1080,7 @@ public partial class AgentTreePage : UserControl
             {
                 Width  = canvasW,
                 Height = 1,
-                Fill   = new SolidColorBrush(Color.Parse("#2a2a3a")),
+                Fill   = AppTheme.BorderSubtle,
             };
             Canvas.SetLeft(sep, 0.0);
             Canvas.SetTop(sep, y);
@@ -1005,8 +1098,8 @@ public partial class AgentTreePage : UserControl
                 Child        = new TextBlock
                 {
                     Text              = entry.ShortName,
-                    FontSize          = 9,
-                    FontFamily        = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                    FontSize          = AppTheme.FontXS,
+                    FontFamily        = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                     Foreground        = new SolidColorBrush(Color.Parse(catFg)),
                     TextTrimming      = TextTrimming.CharacterEllipsis,
                     VerticalAlignment = VerticalAlignment.Center,
@@ -1078,7 +1171,7 @@ public partial class AgentTreePage : UserControl
             Height          = 100,
             CornerRadius    = new CornerRadius(6),
             BorderThickness = new Thickness(1),
-            BorderBrush     = new SolidColorBrush(Color.Parse("#555577")),
+            BorderBrush     = AppTheme.BorderDefault,
             Background      = new SolidColorBrush(Color.Parse("#252525")),
             ClipToBounds    = true,
             Child           = _photoImage
@@ -1093,8 +1186,8 @@ public partial class AgentTreePage : UserControl
         var uploadBtn = new Button
         {
             Content         = "📷 사진 업로드",
-            FontSize        = 11,
-            FontFamily      = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R",
+            FontSize        = AppTheme.FontBase,
+            FontFamily      = "avares://ETA/Assets/Fonts#Pretendard",
             Background      = new SolidColorBrush(Color.Parse("#3a4a6a")),
             Foreground      = AppRes("AppFg"),
             BorderThickness = new Thickness(0),
@@ -1105,8 +1198,8 @@ public partial class AgentTreePage : UserControl
         var removeBtn = new Button
         {
             Content         = "🗑 사진 제거",
-            FontSize        = 11,
-            FontFamily      = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R",
+            FontSize        = AppTheme.FontBase,
+            FontFamily      = "avares://ETA/Assets/Fonts#Pretendard",
             Background      = new SolidColorBrush(Color.Parse("#4a3a3a")),
             Foreground      = AppRes("AppFg"),
             BorderThickness = new Thickness(0),
@@ -1126,8 +1219,8 @@ public partial class AgentTreePage : UserControl
         btnPanel.Children.Add(new TextBlock
         {
             Text       = "jpg / png / bmp",
-            FontSize   = 10,
-            Foreground = new SolidColorBrush(Color.Parse("#666666"))
+            FontSize   = AppTheme.FontSM,
+            Foreground = AppTheme.FgDimmed
         });
 
         panel.Children.Add(photoBorder);
@@ -1353,15 +1446,15 @@ public partial class AgentTreePage : UserControl
         root.Children.Add(new TextBlock
         {
             Text       = title,
-            FontSize   = 15,
-            FontFamily = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 M",
+            FontSize   = AppTheme.FontXL,
+            FontFamily = "avares://ETA/Assets/Fonts#Pretendard",
             Foreground = AppRes("AppFg"),
             Margin     = new Thickness(0, 0, 0, 4)
         });
         root.Children.Add(new Border
         {
             Height     = 1,
-            Background = new SolidColorBrush(Color.Parse("#555555")),
+            Background = AppTheme.BorderDefault,
             Margin     = new Thickness(0, 0, 0, 4)
         });
         return root;
@@ -1377,30 +1470,22 @@ public partial class AgentTreePage : UserControl
         panel.Children.Add(new TextBlock
         {
             Text              = (isLocked ? "🔒 " : "") + label,
-            FontSize          = 10,
-            FontFamily        = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R",
-            Foreground        = isLocked
-                                    ? new SolidColorBrush(Color.Parse("#888888"))
-                                    : AppRes("FgMuted"),
+            FontSize          = AppTheme.FontSM,
+            FontFamily        = "avares://ETA/Assets/Fonts#Pretendard",
+            Foreground        = isLocked ? AppTheme.FgMuted : AppRes("FgMuted"),
         });
 
         panel.Children.Add(new TextBox
         {
             Text            = value ?? "",
-            FontSize        = 12,
-            FontFamily      = "avares://ETA/Assets/Fonts#KBIZ한마음고딕 R",
+            FontSize        = AppTheme.FontMD,
+            FontFamily      = "avares://ETA/Assets/Fonts#Pretendard",
             IsReadOnly      = isReadOnly,
             Watermark       = hint,
-            Background      = isReadOnly
-                                  ? new SolidColorBrush(Color.Parse("#252525"))
-                                  : new SolidColorBrush(Color.Parse("#3a3a4a")),
-            Foreground      = isReadOnly
-                                  ? new SolidColorBrush(Color.Parse("#666666"))
-                                  : AppRes("AppFg"),
+            Background      = isReadOnly ? AppTheme.BgSecondary : AppTheme.BgInput,
+            Foreground      = isReadOnly ? AppTheme.FgMuted     : AppRes("AppFg"),
             BorderThickness = new Thickness(1),
-            BorderBrush     = isReadOnly
-                                  ? new SolidColorBrush(Color.Parse("#333333"))
-                                  : new SolidColorBrush(Color.Parse("#555577")),
+            BorderBrush     = isReadOnly ? AppTheme.BorderSubtle : AppTheme.BorderDefault,
             CornerRadius    = new CornerRadius(4),
             Padding         = new Thickness(8, 4)
         });
@@ -1455,6 +1540,8 @@ public partial class AgentTreePage : UserControl
     // =========================================================================
     private Control BuildChipSectionHeader(string title, Action? onAdd, Action<DateTime>? onAssignDate = null)
     {
+        var wrapper = new StackPanel { Spacing = 0 };
+
         var row = new Grid
         {
             ColumnDefinitions = new ColumnDefinitions("*,Auto"),
@@ -1463,57 +1550,45 @@ public partial class AgentTreePage : UserControl
         row.Children.Add(new TextBlock
         {
             Text = title,
-            FontSize = 11, FontWeight = FontWeight.SemiBold,
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-            Foreground = new SolidColorBrush(Color.Parse("#aaaacc")),
+            FontSize = AppTheme.FontBase, FontWeight = FontWeight.SemiBold,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+            Foreground = AppTheme.FgInfo,
             VerticalAlignment = VerticalAlignment.Center,
         });
+
+        // 인라인 캘린더 (토글)
+        Border? calBorder = null;
+
         if (CanEdit)
         {
             var btnStack = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 3, [Grid.ColumnProperty] = 1 };
 
             if (onAssignDate != null)
             {
-                var calPicker = new CalendarDatePicker
-                {
-                    Width = 200,
-                    Watermark = "배정 날짜",
-                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-                };
-                var flyout = new Flyout { Content = calPicker };
-                calPicker.SelectedDateChanged += (_, _) =>
-                {
-                    if (calPicker.SelectedDate.HasValue)
-                    {
-                        flyout.Hide();
-                        onAssignDate(calPicker.SelectedDate.Value);
-                        calPicker.SelectedDate = null;
-                    }
-                };
                 var btnCal = new Button
                 {
-                    Content = "📅", FontSize = 11, Width = 24, Height = 24,
+                    Content = "📅", FontSize = AppTheme.FontBase, Width = 24, Height = 24,
                     Padding = new Thickness(0),
-                    Background = new SolidColorBrush(Color.Parse("#2a3a2a")),
-                    Foreground = new SolidColorBrush(Color.Parse("#88cc88")),
+                    Background = AppTheme.BgActiveGreen,
+                    Foreground = AppTheme.FgSuccess,
                     BorderThickness = new Thickness(1),
-                    BorderBrush = new SolidColorBrush(Color.Parse("#3a6a3a")),
+                    BorderBrush = AppTheme.BorderActive,
                     CornerRadius = new CornerRadius(4),
                     HorizontalContentAlignment = HorizontalAlignment.Center,
                     VerticalContentAlignment = VerticalAlignment.Center,
-                    Flyout = flyout,
                 };
+                calBorder = InlineCalendarHelper.Create(onAssignDate, btnCal);
                 btnStack.Children.Add(btnCal);
             }
 
             var btnAdd = new Button
             {
-                Content = "+", FontSize = 13, Width = 24, Height = 24,
+                Content = "+", FontSize = AppTheme.FontLG, Width = 24, Height = 24,
                 Padding = new Thickness(0),
-                Background = new SolidColorBrush(Color.Parse("#2a3a5a")),
-                Foreground = new SolidColorBrush(Color.Parse("#88aaee")),
+                Background = AppTheme.BgActiveBlue,
+                Foreground = AppTheme.FgInfo,
                 BorderThickness = new Thickness(1),
-                BorderBrush = new SolidColorBrush(Color.Parse("#3a5a8a")),
+                BorderBrush = AppTheme.BorderAccent,
                 CornerRadius = new CornerRadius(4),
                 HorizontalContentAlignment = HorizontalAlignment.Center,
                 VerticalContentAlignment = VerticalAlignment.Center,
@@ -1522,7 +1597,10 @@ public partial class AgentTreePage : UserControl
             btnStack.Children.Add(btnAdd);
             row.Children.Add(btnStack);
         }
-        return row;
+
+        wrapper.Children.Add(row);
+        if (calBorder != null) wrapper.Children.Add(calBorder);
+        return wrapper;
     }
 
     /// <summary>agent.담당항목목록의 모든 항목을 지정 날짜의 분장표준처리에 배정</summary>
@@ -1568,7 +1646,7 @@ public partial class AgentTreePage : UserControl
     {
         var ym      = date.ToString("yyyy-MM");
         var qaqcDir = GetQaqcDir(ym);
-        var font    = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R");
+        var font    = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
 
         var root = new StackPanel { Spacing = 6, Margin = new Thickness(6) };
 
@@ -1576,10 +1654,10 @@ public partial class AgentTreePage : UserControl
         root.Children.Add(new TextBlock
         {
             Text = $"📅 {date:yyyy년 MM월} 배정 + 첨부",
-            FontSize = 12, FontWeight = FontWeight.SemiBold,
+            FontSize = AppTheme.FontMD, FontWeight = FontWeight.SemiBold,
             FontFamily = font, Foreground = new SolidColorBrush(Color.Parse("#aaccee")),
         });
-        root.Children.Add(new Border { Height = 1, Background = new SolidColorBrush(Color.Parse("#333355")), Margin = new Thickness(0, 0, 0, 4) });
+        root.Children.Add(new Border { Height = 1, Background = AppTheme.BorderSubtle, Margin = new Thickness(0, 0, 0, 4) });
 
         var listStack = new StackPanel { Spacing = 6 };
 
@@ -1595,7 +1673,7 @@ public partial class AgentTreePage : UserControl
             var itemBorder = new Border
             {
                 Background      = new SolidColorBrush(Color.Parse("#1a1a2e")),
-                BorderBrush     = new SolidColorBrush(Color.Parse("#333355")),
+                BorderBrush     = AppTheme.BorderSubtle,
                 BorderThickness = new Thickness(1),
                 CornerRadius    = new CornerRadius(4),
                 Padding         = new Thickness(6, 4),
@@ -1612,13 +1690,13 @@ public partial class AgentTreePage : UserControl
                 [Grid.ColumnProperty] = 0,
                 Child = new TextBlock
                 {
-                    Text = displayShort, FontSize = 9,
+                    Text = displayShort, FontSize = AppTheme.FontXS,
                     FontFamily = font, Foreground = new SolidColorBrush(Color.Parse(chipFg)),
                 },
             });
             nameRow.Children.Add(new TextBlock
             {
-                Text = capturedFull, FontSize = 10, FontFamily = font,
+                Text = capturedFull, FontSize = AppTheme.FontSM, FontFamily = font,
                 Foreground = new SolidColorBrush(Color.Parse("#ccccee")),
                 VerticalAlignment = VerticalAlignment.Center,
                 TextTrimming = TextTrimming.CharacterEllipsis,
@@ -1628,12 +1706,12 @@ public partial class AgentTreePage : UserControl
             // 📎 버튼
             var btnAttach = new Button
             {
-                Content = "📎", FontSize = 11, Width = 24, Height = 24,
+                Content = "📎", FontSize = AppTheme.FontBase, Width = 24, Height = 24,
                 Padding = new Thickness(0),
-                Background = new SolidColorBrush(Color.Parse("#2a3a5a")),
-                Foreground = new SolidColorBrush(Color.Parse("#88aaee")),
+                Background = AppTheme.BgActiveBlue,
+                Foreground = AppTheme.FgInfo,
                 BorderThickness = new Thickness(1),
-                BorderBrush = new SolidColorBrush(Color.Parse("#3a5a8a")),
+                BorderBrush = AppTheme.BorderAccent,
                 CornerRadius = new CornerRadius(4),
                 HorizontalContentAlignment = HorizontalAlignment.Center,
                 VerticalContentAlignment = VerticalAlignment.Center,
@@ -1657,16 +1735,16 @@ public partial class AgentTreePage : UserControl
                     var fRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4 };
                     fRow.Children.Add(new TextBlock
                     {
-                        Text = "📄 " + display, FontSize = 9, FontFamily = font,
-                        Foreground = new SolidColorBrush(Color.Parse("#88ee88")),
+                        Text = "📄 " + display, FontSize = AppTheme.FontXS, FontFamily = font,
+                        Foreground = AppTheme.FgSuccess,
                         VerticalAlignment = VerticalAlignment.Center,
                     });
                     var capturedF = fPath;
                     var delBtn = new Button
                     {
-                        Content = "×", FontSize = 9, Width = 16, Height = 16, Padding = new Thickness(0),
-                        Background = new SolidColorBrush(Color.Parse("#3a1a1a")),
-                        Foreground = new SolidColorBrush(Color.Parse("#ee8888")),
+                        Content = "×", FontSize = AppTheme.FontXS, Width = 16, Height = 16, Padding = new Thickness(0),
+                        Background = AppTheme.BgDanger,
+                        Foreground = AppTheme.FgDanger,
                         BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(2),
                         HorizontalContentAlignment = HorizontalAlignment.Center,
                         VerticalContentAlignment = VerticalAlignment.Center,
@@ -1683,8 +1761,8 @@ public partial class AgentTreePage : UserControl
                 if (files.Length == 0)
                     fileStack.Children.Add(new TextBlock
                     {
-                        Text = "첨부 없음", FontSize = 9, FontFamily = font,
-                        Foreground = new SolidColorBrush(Color.Parse("#555577")),
+                        Text = "첨부 없음", FontSize = AppTheme.FontXS, FontFamily = font,
+                        Foreground = AppTheme.FgDimmed,
                     });
             }
             RefreshFiles();
@@ -1727,11 +1805,11 @@ public partial class AgentTreePage : UserControl
         {
             Content = "✅ 배정 완료",
             Height = 32, Padding = new Thickness(16, 0),
-            FontFamily = font, FontSize = 11,
-            Background = new SolidColorBrush(Color.Parse("#1a3a2a")),
-            Foreground = new SolidColorBrush(Color.Parse("#88ee88")),
+            FontFamily = font, FontSize = AppTheme.FontBase,
+            Background = AppTheme.BgActiveGreen,
+            Foreground = AppTheme.FgSuccess,
             BorderThickness = new Thickness(1),
-            BorderBrush = new SolidColorBrush(Color.Parse("#2a6a3a")),
+            BorderBrush = AppTheme.BorderActive,
             CornerRadius = new CornerRadius(4),
             Margin = new Thickness(0, 4, 0, 0),
         };
@@ -1758,9 +1836,9 @@ public partial class AgentTreePage : UserControl
         {
             _항목ChipsPanel.Children.Add(new TextBlock
             {
-                Text = "없음", FontSize = 10,
-                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-                Foreground = new SolidColorBrush(Color.Parse("#555")),
+                Text = "없음", FontSize = AppTheme.FontSM,
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+                Foreground = AppTheme.FgDimmed,
                 Margin = new Thickness(0, 2),
             });
             return;
@@ -1800,9 +1878,9 @@ public partial class AgentTreePage : UserControl
         {
             _업체ChipsPanel.Children.Add(new TextBlock
             {
-                Text = "없음", FontSize = 10,
-                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-                Foreground = new SolidColorBrush(Color.Parse("#555")),
+                Text = "없음", FontSize = AppTheme.FontSM,
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+                Foreground = AppTheme.FgDimmed,
                 Margin = new Thickness(0, 2),
             });
             return;
@@ -1836,14 +1914,14 @@ public partial class AgentTreePage : UserControl
         var row = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 3 };
         row.Children.Add(new TextBlock
         {
-            Text = label, FontSize = 10,
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+            Text = label, FontSize = AppTheme.FontSM,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
             Foreground = new SolidColorBrush(Color.Parse(fg)),
             VerticalAlignment = VerticalAlignment.Center,
         });
         var btnX = new Button
         {
-            Content = "×", FontSize = 11, Padding = new Thickness(2, 0),
+            Content = "×", FontSize = AppTheme.FontBase, Padding = new Thickness(2, 0),
             Background = Brushes.Transparent, BorderThickness = new Thickness(0),
             Foreground = new SolidColorBrush(Color.Parse("#dd6688")),
             VerticalAlignment = VerticalAlignment.Center,
@@ -1864,7 +1942,7 @@ public partial class AgentTreePage : UserControl
     {
         var border = new Border
         {
-            Background   = new SolidColorBrush(Color.Parse("#1a1a2a")),
+            Background   = AppTheme.BgPrimary,
             CornerRadius = new CornerRadius(4),
             Padding      = new Thickness(8, 6),
             Margin       = new Thickness(0, 10, 0, 0),
@@ -1873,9 +1951,9 @@ public partial class AgentTreePage : UserControl
         stack.Children.Add(new TextBlock
         {
             Text = "📊 과거 분장이력 (전체)",
-            FontSize = 11, FontWeight = FontWeight.SemiBold,
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-            Foreground = new SolidColorBrush(Color.Parse("#aaaacc")),
+            FontSize = AppTheme.FontBase, FontWeight = FontWeight.SemiBold,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+            Foreground = AppTheme.FgInfo,
             Margin = new Thickness(0, 0, 0, 4),
         });
 
@@ -1890,9 +1968,9 @@ public partial class AgentTreePage : UserControl
             {
                 histGrid.Children.Add(new TextBlock
                 {
-                    Text = "이력 없음", FontSize = 9,
-                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-                    Foreground = new SolidColorBrush(Color.Parse("#555")),
+                    Text = "이력 없음", FontSize = AppTheme.FontXS,
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+                    Foreground = AppTheme.FgDimmed,
                 });
             }
             else
@@ -1933,16 +2011,16 @@ public partial class AgentTreePage : UserControl
                         [Grid.ColumnProperty] = 0,
                         Child = new TextBlock
                         {
-                            Text = g.Short, FontSize = 9,
-                            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                            Text = g.Short, FontSize = AppTheme.FontXS,
+                            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                             Foreground = new SolidColorBrush(Color.Parse(catFg)),
                         },
                     });
                     row.Children.Add(new TextBlock
                     {
                         Text = $"{g.Count}일",
-                        FontSize = 9,
-                        FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                        FontSize = AppTheme.FontXS,
+                        FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                         Foreground = new SolidColorBrush(Color.Parse("#7ab4cc")),
                         VerticalAlignment = VerticalAlignment.Center,
                         HorizontalAlignment = HorizontalAlignment.Right,
@@ -1994,14 +2072,14 @@ public partial class AgentTreePage : UserControl
             var btn = new Button
             {
                 Content     = $"{t.Icon} {t.Label}",
-                FontSize    = 11,
-                FontFamily  = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                FontSize    = AppTheme.FontBase,
+                FontFamily  = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                 Padding     = new Thickness(10, 4),
                 CornerRadius = new CornerRadius(8, 8, 0, 0),
                 BorderThickness = new Thickness(1, 1, 1, 0),
-                Background  = active ? new SolidColorBrush(Color.Parse(t.Bg)) : new SolidColorBrush(Color.Parse("#1a1a1a")),
-                Foreground  = active ? new SolidColorBrush(Color.Parse(t.Fg)) : new SolidColorBrush(Color.Parse("#666")),
-                BorderBrush = active ? new SolidColorBrush(Color.Parse(t.Bd)) : new SolidColorBrush(Color.Parse("#333")),
+                Background  = active ? new SolidColorBrush(Color.Parse(t.Bg)) : AppTheme.BgPrimary,
+                Foreground  = active ? new SolidColorBrush(Color.Parse(t.Fg)) : AppTheme.BorderMuted,
+                BorderBrush = active ? new SolidColorBrush(Color.Parse(t.Bd)) : AppTheme.BorderSubtle,
                 Cursor      = new Cursor(StandardCursorType.Hand),
             };
             btn.Click += (_, _) =>
@@ -2042,9 +2120,9 @@ public partial class AgentTreePage : UserControl
         root.Children.Add(new TextBlock
         {
             Text = $"📈 업무 분장 타임라인 — {agent.성명}",
-            FontSize = 13, FontWeight = FontWeight.Bold,
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
-            Foreground = new SolidColorBrush(Color.Parse("#aaccff")),
+            FontSize = AppTheme.FontLG, FontWeight = FontWeight.Bold,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+            Foreground = AppTheme.FgInfo,
             Margin = new Thickness(0, 0, 0, 2),
         });
 
@@ -2052,32 +2130,32 @@ public partial class AgentTreePage : UserControl
         var txbRange = new TextBlock
         {
             Text = $"{DateTime.Today:yyyy-MM-dd}",
-            FontSize = 11,
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-            Foreground = new SolidColorBrush(Color.Parse("#aaa")),
+            FontSize = AppTheme.FontBase,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+            Foreground = AppTheme.FgMuted,
             VerticalAlignment = VerticalAlignment.Center,
             MinWidth = 170,
         };
         var btnToday = new Button
         {
-            Content = "오늘", Width = 48, Height = 24, FontSize = 10,
+            Content = "오늘", Width = 48, Height = 24, FontSize = AppTheme.FontSM,
             Padding = new Thickness(4, 0),
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-            Background = new SolidColorBrush(Color.Parse("#2a3a5a")),
-            Foreground = new SolidColorBrush(Color.Parse("#88aacc")),
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+            Background = AppTheme.BgActiveBlue,
+            Foreground = AppTheme.FgInfo,
             BorderThickness = new Thickness(1),
-            BorderBrush = new SolidColorBrush(Color.Parse("#3a5a8a")),
+            BorderBrush = AppTheme.BorderAccent,
             CornerRadius = new CornerRadius(4),
         };
         var btnMonth = new Button
         {
-            Content = "이번달", Width = 52, Height = 24, FontSize = 10,
+            Content = "이번달", Width = 52, Height = 24, FontSize = AppTheme.FontSM,
             Padding = new Thickness(4, 0),
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-            Background = new SolidColorBrush(Color.Parse("#2a3a2a")),
-            Foreground = new SolidColorBrush(Color.Parse("#88cc88")),
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+            Background = AppTheme.BgActiveGreen,
+            Foreground = AppTheme.FgSuccess,
             BorderThickness = new Thickness(1),
-            BorderBrush = new SolidColorBrush(Color.Parse("#3a6a3a")),
+            BorderBrush = AppTheme.BorderActive,
             CornerRadius = new CornerRadius(4),
         };
         dateRow.Children.Add(txbRange);
@@ -2102,6 +2180,13 @@ public partial class AgentTreePage : UserControl
         DateTime rangeStart = DateTime.Today;
         DateTime rangeEnd   = DateTime.Today;
 
+        // DragOver 핸들러 — 드롭 허용 표시
+        scroll.AddHandler(DragDrop.DragOverEvent, (object? sender, DragEventArgs e) =>
+        {
+            e.DragEffects = e.Data.Contains("analyte") ? DragDropEffects.Move : DragDropEffects.None;
+            e.Handled = true;
+        });
+
         scroll.AddHandler(DragDrop.DropEvent, async (object? sender, DragEventArgs e) =>
         {
             if (!e.Data.Contains("analyte")) return;
@@ -2117,6 +2202,7 @@ public partial class AgentTreePage : UserControl
 
             AnalysisRequestService.AddAssignment(agent.사번, analyte, rangeStart, rangeStart.AddMonths(1));
             RefreshTimeline(canvas, agent, rangeStart, rangeEnd);
+            Show4RefreshRequest?.Invoke();
         });
 
         btnToday.Click += (_, _) =>
@@ -2149,8 +2235,8 @@ public partial class AgentTreePage : UserControl
         root.Children.Add(new TextBlock
         {
             Text = $"🏢 담당 계약업체 — {agent.성명}",
-            FontSize = 13, FontWeight = FontWeight.Bold,
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+            FontSize = AppTheme.FontLG, FontWeight = FontWeight.Bold,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
             Foreground = new SolidColorBrush(Color.Parse("#aaccaa")),
             Margin = new Thickness(0, 0, 0, 4),
         });
@@ -2159,9 +2245,9 @@ public partial class AgentTreePage : UserControl
         {
             root.Children.Add(new TextBlock
             {
-                Text = "배정된 계약업체 없음", FontSize = 11,
-                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-                Foreground = new SolidColorBrush(Color.Parse("#666")),
+                Text = "배정된 계약업체 없음", FontSize = AppTheme.FontBase,
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+                Foreground = AppTheme.FgDimmed,
             });
             return root;
         }
@@ -2171,8 +2257,8 @@ public partial class AgentTreePage : UserControl
             var (bg, fg) = BadgeColorHelper.GetBadgeColor(name);
             var row = new Border
             {
-                Background   = new SolidColorBrush(Color.Parse("#1a2a1a")),
-                BorderBrush  = new SolidColorBrush(Color.Parse("#3a6a3a")),
+                Background   = AppTheme.BgActiveGreen,
+                BorderBrush  = AppTheme.BorderActive,
                 BorderThickness = new Thickness(1),
                 CornerRadius = new CornerRadius(4),
                 Padding      = new Thickness(8, 6),
@@ -2186,8 +2272,8 @@ public partial class AgentTreePage : UserControl
                 Padding      = new Thickness(6, 2),
                 Child = new TextBlock
                 {
-                    Text = name, FontSize = 11,
-                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                    Text = name, FontSize = AppTheme.FontBase,
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                     Foreground = new SolidColorBrush(Color.Parse(fg)),
                 },
             });
@@ -2200,16 +2286,16 @@ public partial class AgentTreePage : UserControl
     // ── 일반업무 탭 — 전체 업무 목록 + 직원 배정 인라인 ──────────────────────
     private Control BuildShow3GeneralTaskTab(Agent agent)
     {
-        var kbR = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R");
-        var kbM = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
+        var kbR = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
+        var kbM = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
 
         var root = new StackPanel { Spacing = 4 };
 
         root.Children.Add(new TextBlock
         {
             Text = $"📝 일반업무 배정 — {agent.성명}",
-            FontSize = 13, FontWeight = FontWeight.Bold,
-            FontFamily = kbM, Foreground = new SolidColorBrush(Color.Parse("#ccbb88")),
+            FontSize = AppTheme.FontLG, FontWeight = FontWeight.Bold,
+            FontFamily = kbM, Foreground = AppTheme.FgWarn,
             Margin = new Thickness(0, 0, 0, 6),
         });
 
@@ -2217,7 +2303,7 @@ public partial class AgentTreePage : UserControl
         root.Children.Add(new TextBlock
         {
             Text = "행을 클릭하면 이 직원의 배정을 추가/해제합니다.",
-            FontSize = 9, FontFamily = kbR,
+            FontSize = AppTheme.FontXS, FontFamily = kbR,
             Foreground = new SolidColorBrush(Color.Parse("#778")),
             Margin = new Thickness(0, 0, 0, 6),
         });
@@ -2234,8 +2320,8 @@ public partial class AgentTreePage : UserControl
             root.Children.Add(new TextBlock
             {
                 Text = "등록된 업무 없음 — 하단 '＋ 신규 업무' 버튼으로 추가하세요.",
-                FontSize = 10, FontFamily = kbR,
-                Foreground = new SolidColorBrush(Color.Parse("#666")),
+                FontSize = AppTheme.FontSM, FontFamily = kbR,
+                Foreground = AppTheme.FgDimmed,
                 Margin = new Thickness(0, 8),
             });
         }
@@ -2281,7 +2367,7 @@ public partial class AgentTreePage : UserControl
                     inner.Children.Add(new TextBlock
                     {
                         Text = assigned ? "✅" : "⬜",
-                        FontSize = 14,
+                        FontSize = AppTheme.FontXL,
                         VerticalAlignment = VerticalAlignment.Center,
                         Margin = new Thickness(0, 0, 8, 0),
                     });
@@ -2291,7 +2377,7 @@ public partial class AgentTreePage : UserControl
                         VerticalAlignment = VerticalAlignment.Center };
                     nameCol.Children.Add(new TextBlock
                     {
-                        Text = g.Key, FontSize = 11, FontFamily = kbM,
+                        Text = g.Key, FontSize = AppTheme.FontBase, FontFamily = kbM,
                         Foreground = assigned
                             ? new SolidColorBrush(Color.Parse("#88eebb"))
                             : AppRes("AppFg"),
@@ -2308,7 +2394,7 @@ public partial class AgentTreePage : UserControl
                             Margin = new Thickness(0, 0, 3, 0),
                             Child = new TextBlock
                             {
-                                Text = t.담당자명, FontSize = 9, FontFamily = kbR,
+                                Text = t.담당자명, FontSize = AppTheme.FontXS, FontFamily = kbR,
                                 Foreground = new SolidColorBrush(Color.Parse(cfg)),
                             },
                         });
@@ -2324,9 +2410,9 @@ public partial class AgentTreePage : UserControl
                         var btnEdit = new Button
                         {
                             Content = "✏️", Width = 26, Height = 26, Padding = new Thickness(0),
-                            Background = new SolidColorBrush(Color.Parse("#2a2a3a")),
+                            Background = AppTheme.BorderSubtle,
                             BorderThickness = new Thickness(1),
-                            BorderBrush = new SolidColorBrush(Color.Parse("#555")),
+                            BorderBrush = AppTheme.BorderDefault,
                             CornerRadius = new CornerRadius(4),
                             Cursor = new Cursor(StandardCursorType.Hand),
                             VerticalAlignment = VerticalAlignment.Center,
@@ -2378,19 +2464,19 @@ public partial class AgentTreePage : UserControl
         // 구분선 + 신규 업무 추가
         root.Children.Add(new Border
         {
-            Height = 1, Background = new SolidColorBrush(Color.Parse("#333")),
+            Height = 1, Background = AppTheme.BorderSubtle,
             Margin = new Thickness(0, 8, 0, 4),
         });
         var btnAdd = new Button
         {
-            Content = "＋ 신규 업무 추가", FontSize = 11, Height = 32,
+            Content = "＋ 신규 업무 추가", FontSize = AppTheme.FontBase, Height = 32,
             HorizontalAlignment = HorizontalAlignment.Stretch,
             HorizontalContentAlignment = HorizontalAlignment.Center,
             FontFamily = kbM,
             Background = new SolidColorBrush(Color.Parse("#2a2a1a")),
-            Foreground = new SolidColorBrush(Color.Parse("#ccbb88")),
+            Foreground = AppTheme.FgWarn,
             BorderThickness = new Thickness(1),
-            BorderBrush = new SolidColorBrush(Color.Parse("#6a5a3a")),
+            BorderBrush = AppTheme.BorderWarn,
             CornerRadius = new CornerRadius(4),
             Cursor = new Cursor(StandardCursorType.Hand),
         };
@@ -2409,21 +2495,21 @@ public partial class AgentTreePage : UserControl
         root.Children.Add(new TextBlock
         {
             Text = isEdit ? $"✏️ 일반업무 수정 — {agent.성명}" : $"➕ 신규 일반업무 배정 — {agent.성명}",
-            FontSize = 13, FontWeight = FontWeight.Bold,
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
-            Foreground = new SolidColorBrush(Color.Parse("#ccbb88")),
+            FontSize = AppTheme.FontLG, FontWeight = FontWeight.Bold,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+            Foreground = AppTheme.FgWarn,
         });
 
         var txtName = new TextBox
         {
             Text = existing?.업무명 ?? "",
             Watermark = "업무명",
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-            FontSize = 12,
-            Background = new SolidColorBrush(Color.Parse("#3a3a4a")),
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+            FontSize = AppTheme.FontMD,
+            Background = AppTheme.BorderSeparator,
             Foreground = AppRes("AppFg"),
             BorderThickness = new Thickness(1),
-            BorderBrush = new SolidColorBrush(Color.Parse("#555577")),
+            BorderBrush = AppTheme.BorderDefault,
             CornerRadius = new CornerRadius(4),
             Padding = new Thickness(8, 6),
         };
@@ -2436,12 +2522,12 @@ public partial class AgentTreePage : UserControl
             AcceptsReturn = true,
             TextWrapping = TextWrapping.Wrap,
             MinHeight = 80,
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-            FontSize = 12,
-            Background = new SolidColorBrush(Color.Parse("#3a3a4a")),
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+            FontSize = AppTheme.FontMD,
+            Background = AppTheme.BorderSeparator,
             Foreground = AppRes("AppFg"),
             BorderThickness = new Thickness(1),
-            BorderBrush = new SolidColorBrush(Color.Parse("#555577")),
+            BorderBrush = AppTheme.BorderDefault,
             CornerRadius = new CornerRadius(4),
             Padding = new Thickness(8, 6),
         };
@@ -2451,8 +2537,8 @@ public partial class AgentTreePage : UserControl
         var deadlineRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
         deadlineRow.Children.Add(new TextBlock
         {
-            Text = "마감일", FontSize = 11,
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+            Text = "마감일", FontSize = AppTheme.FontBase,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
             Foreground = AppRes("FgMuted"),
             VerticalAlignment = VerticalAlignment.Center,
         });
@@ -2461,12 +2547,12 @@ public partial class AgentTreePage : UserControl
             Text = existing?.마감일 ?? "",
             Watermark = "yyyy-MM-dd",
             Width = 140,
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-            FontSize = 12,
-            Background = new SolidColorBrush(Color.Parse("#3a3a4a")),
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+            FontSize = AppTheme.FontMD,
+            Background = AppTheme.BorderSeparator,
             Foreground = AppRes("AppFg"),
             BorderThickness = new Thickness(1),
-            BorderBrush = new SolidColorBrush(Color.Parse("#555577")),
+            BorderBrush = AppTheme.BorderDefault,
             CornerRadius = new CornerRadius(4),
             Padding = new Thickness(8, 4),
         };
@@ -2480,8 +2566,8 @@ public partial class AgentTreePage : UserControl
             var statusRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
             statusRow.Children.Add(new TextBlock
             {
-                Text = "상태", FontSize = 11,
-                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                Text = "상태", FontSize = AppTheme.FontBase,
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                 Foreground = AppRes("FgMuted"),
                 VerticalAlignment = VerticalAlignment.Center,
             });
@@ -2497,14 +2583,14 @@ public partial class AgentTreePage : UserControl
                 bool active = st == currentStatus;
                 var btnSt = new Button
                 {
-                    Content = st, FontSize = 10,
-                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                    Content = st, FontSize = AppTheme.FontSM,
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                     Padding = new Thickness(8, 3),
                     CornerRadius = new CornerRadius(8),
                     BorderThickness = new Thickness(1),
-                    Background  = active ? new SolidColorBrush(Color.Parse(bg)) : new SolidColorBrush(Color.Parse("#222")),
-                    Foreground  = active ? new SolidColorBrush(Color.Parse(fg)) : new SolidColorBrush(Color.Parse("#666")),
-                    BorderBrush = active ? new SolidColorBrush(Color.Parse(bd)) : new SolidColorBrush(Color.Parse("#444")),
+                    Background  = active ? new SolidColorBrush(Color.Parse(bg)) : AppTheme.BgSecondary,
+                    Foreground  = active ? new SolidColorBrush(Color.Parse(fg)) : AppTheme.BorderMuted,
+                    BorderBrush = active ? new SolidColorBrush(Color.Parse(bd)) : AppTheme.BorderMuted,
                 };
                 btnSt.Click += (_, _) =>
                 {
@@ -2519,9 +2605,9 @@ public partial class AgentTreePage : UserControl
                             _      => ("#2a2a2a", "#ccaa88", "#665533"),
                         };
                         bool isActive = s == capturedSt;
-                        child.Background  = isActive ? new SolidColorBrush(Color.Parse(b2)) : new SolidColorBrush(Color.Parse("#222"));
-                        child.Foreground  = isActive ? new SolidColorBrush(Color.Parse(f2)) : new SolidColorBrush(Color.Parse("#666"));
-                        child.BorderBrush = isActive ? new SolidColorBrush(Color.Parse(d2)) : new SolidColorBrush(Color.Parse("#444"));
+                        child.Background  = isActive ? new SolidColorBrush(Color.Parse(b2)) : AppTheme.BgSecondary;
+                        child.Foreground  = isActive ? new SolidColorBrush(Color.Parse(f2)) : AppTheme.BorderMuted;
+                        child.BorderBrush = isActive ? new SolidColorBrush(Color.Parse(d2)) : AppTheme.BorderMuted;
                     }
                 };
                 statusRow.Children.Add(btnSt);
@@ -2535,10 +2621,10 @@ public partial class AgentTreePage : UserControl
         {
             Content = isEdit ? "💾 수정" : "💾 저장",
             Height = 30, Padding = new Thickness(16, 0),
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-            FontSize = 11,
-            Background = new SolidColorBrush(Color.Parse("#1a3a2a")),
-            Foreground = new SolidColorBrush(Color.Parse("#88ee88")),
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+            FontSize = AppTheme.FontBase,
+            Background = AppTheme.BgActiveGreen,
+            Foreground = AppTheme.FgSuccess,
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
         };
         btnSave.Click += (_, _) =>
@@ -2578,10 +2664,10 @@ public partial class AgentTreePage : UserControl
             var btnDel = new Button
             {
                 Content = "🗑 해당 업무 삭제", Height = 30, Padding = new Thickness(10, 0),
-                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-                FontSize = 11,
-                Background = new SolidColorBrush(Color.Parse("#3a1a1a")),
-                Foreground = new SolidColorBrush(Color.Parse("#ee8888")),
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+                FontSize = AppTheme.FontBase,
+                Background = AppTheme.BgDanger,
+                Foreground = AppTheme.FgDanger,
                 BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
             };
             btnDel.Click += (_, _) =>
@@ -2596,10 +2682,10 @@ public partial class AgentTreePage : UserControl
         var btnBack = new Button
         {
             Content = "← 돌아가기", Height = 30, Padding = new Thickness(10, 0),
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-            FontSize = 11,
-            Background = new SolidColorBrush(Color.Parse("#2a2a3a")),
-            Foreground = new SolidColorBrush(Color.Parse("#aaaaaa")),
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+            FontSize = AppTheme.FontBase,
+            Background = AppTheme.BorderSubtle,
+            Foreground = AppTheme.FgMuted,
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
         };
         btnBack.Click += (_, _) => { _show3Tab = "일반업무"; Show3ContentRequest?.Invoke(BuildShow3Timeline(agent)); };
@@ -2618,21 +2704,21 @@ public partial class AgentTreePage : UserControl
         root.Children.Add(new TextBlock
         {
             Text = isEdit ? "✏️ 일반업무 수정" : "➕ 신규 일반업무 추가",
-            FontSize = 13, FontWeight = FontWeight.Bold,
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
-            Foreground = new SolidColorBrush(Color.Parse("#ccbb88")),
+            FontSize = AppTheme.FontLG, FontWeight = FontWeight.Bold,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+            Foreground = AppTheme.FgWarn,
         });
 
         var txtName = new TextBox
         {
             Text = existing?.업무명 ?? "",
             Watermark = "업무명",
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-            FontSize = 12,
-            Background = new SolidColorBrush(Color.Parse("#3a3a4a")),
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+            FontSize = AppTheme.FontMD,
+            Background = AppTheme.BorderSeparator,
             Foreground = AppRes("AppFg"),
             BorderThickness = new Thickness(1),
-            BorderBrush = new SolidColorBrush(Color.Parse("#555577")),
+            BorderBrush = AppTheme.BorderDefault,
             CornerRadius = new CornerRadius(4),
             Padding = new Thickness(8, 6),
         };
@@ -2645,12 +2731,12 @@ public partial class AgentTreePage : UserControl
             AcceptsReturn = true,
             TextWrapping = TextWrapping.Wrap,
             MinHeight = 80,
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-            FontSize = 12,
-            Background = new SolidColorBrush(Color.Parse("#3a3a4a")),
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+            FontSize = AppTheme.FontMD,
+            Background = AppTheme.BorderSeparator,
             Foreground = AppRes("AppFg"),
             BorderThickness = new Thickness(1),
-            BorderBrush = new SolidColorBrush(Color.Parse("#555577")),
+            BorderBrush = AppTheme.BorderDefault,
             CornerRadius = new CornerRadius(4),
             Padding = new Thickness(8, 6),
         };
@@ -2660,20 +2746,20 @@ public partial class AgentTreePage : UserControl
         var agentRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
         agentRow.Children.Add(new TextBlock
         {
-            Text = "담당자", FontSize = 11,
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+            Text = "담당자", FontSize = AppTheme.FontBase,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
             Foreground = AppRes("FgMuted"),
             VerticalAlignment = VerticalAlignment.Center,
         });
         var agents = AgentService.GetAllItems().OrderBy(a => a.성명).ToList();
         var cboAgent = new ComboBox
         {
-            Width = 180, FontSize = 12,
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-            Background = new SolidColorBrush(Color.Parse("#3a3a4a")),
+            Width = 180, FontSize = AppTheme.FontMD,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+            Background = AppTheme.BorderSeparator,
             Foreground = AppRes("AppFg"),
             BorderThickness = new Thickness(1),
-            BorderBrush = new SolidColorBrush(Color.Parse("#555577")),
+            BorderBrush = AppTheme.BorderDefault,
             CornerRadius = new CornerRadius(4),
         };
         foreach (var a in agents)
@@ -2692,8 +2778,8 @@ public partial class AgentTreePage : UserControl
         var deadlineRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
         deadlineRow.Children.Add(new TextBlock
         {
-            Text = "마감일", FontSize = 11,
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+            Text = "마감일", FontSize = AppTheme.FontBase,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
             Foreground = AppRes("FgMuted"),
             VerticalAlignment = VerticalAlignment.Center,
         });
@@ -2702,12 +2788,12 @@ public partial class AgentTreePage : UserControl
             Text = existing?.마감일 ?? "",
             Watermark = "yyyy-MM-dd",
             Width = 140,
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-            FontSize = 12,
-            Background = new SolidColorBrush(Color.Parse("#3a3a4a")),
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+            FontSize = AppTheme.FontMD,
+            Background = AppTheme.BorderSeparator,
             Foreground = AppRes("AppFg"),
             BorderThickness = new Thickness(1),
-            BorderBrush = new SolidColorBrush(Color.Parse("#555577")),
+            BorderBrush = AppTheme.BorderDefault,
             CornerRadius = new CornerRadius(4),
             Padding = new Thickness(8, 4),
         };
@@ -2721,8 +2807,8 @@ public partial class AgentTreePage : UserControl
             var statusRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
             statusRow.Children.Add(new TextBlock
             {
-                Text = "상태", FontSize = 11,
-                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                Text = "상태", FontSize = AppTheme.FontBase,
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                 Foreground = AppRes("FgMuted"),
                 VerticalAlignment = VerticalAlignment.Center,
             });
@@ -2738,14 +2824,14 @@ public partial class AgentTreePage : UserControl
                 bool active = st == currentStatus;
                 var btnSt = new Button
                 {
-                    Content = st, FontSize = 10,
-                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                    Content = st, FontSize = AppTheme.FontSM,
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                     Padding = new Thickness(8, 3),
                     CornerRadius = new CornerRadius(8),
                     BorderThickness = new Thickness(1),
-                    Background  = active ? new SolidColorBrush(Color.Parse(bg)) : new SolidColorBrush(Color.Parse("#222")),
-                    Foreground  = active ? new SolidColorBrush(Color.Parse(fg)) : new SolidColorBrush(Color.Parse("#666")),
-                    BorderBrush = active ? new SolidColorBrush(Color.Parse(bd)) : new SolidColorBrush(Color.Parse("#444")),
+                    Background  = active ? new SolidColorBrush(Color.Parse(bg)) : AppTheme.BgSecondary,
+                    Foreground  = active ? new SolidColorBrush(Color.Parse(fg)) : AppTheme.BorderMuted,
+                    BorderBrush = active ? new SolidColorBrush(Color.Parse(bd)) : AppTheme.BorderMuted,
                 };
                 btnSt.Click += (_, _) =>
                 {
@@ -2760,9 +2846,9 @@ public partial class AgentTreePage : UserControl
                             _      => ("#2a2a2a", "#ccaa88", "#665533"),
                         };
                         bool isActive = s == capturedSt;
-                        child.Background  = isActive ? new SolidColorBrush(Color.Parse(b2)) : new SolidColorBrush(Color.Parse("#222"));
-                        child.Foreground  = isActive ? new SolidColorBrush(Color.Parse(f2)) : new SolidColorBrush(Color.Parse("#666"));
-                        child.BorderBrush = isActive ? new SolidColorBrush(Color.Parse(d2)) : new SolidColorBrush(Color.Parse("#444"));
+                        child.Background  = isActive ? new SolidColorBrush(Color.Parse(b2)) : AppTheme.BgSecondary;
+                        child.Foreground  = isActive ? new SolidColorBrush(Color.Parse(f2)) : AppTheme.BorderMuted;
+                        child.BorderBrush = isActive ? new SolidColorBrush(Color.Parse(d2)) : AppTheme.BorderMuted;
                     }
                 };
                 statusRow.Children.Add(btnSt);
@@ -2776,10 +2862,10 @@ public partial class AgentTreePage : UserControl
         {
             Content = isEdit ? "💾 수정" : "💾 저장",
             Height = 30, Padding = new Thickness(16, 0),
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-            FontSize = 11,
-            Background = new SolidColorBrush(Color.Parse("#1a3a2a")),
-            Foreground = new SolidColorBrush(Color.Parse("#88ee88")),
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+            FontSize = AppTheme.FontBase,
+            Background = AppTheme.BgActiveGreen,
+            Foreground = AppTheme.FgSuccess,
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
         };
         btnSave.Click += (_, _) =>
@@ -2827,10 +2913,10 @@ public partial class AgentTreePage : UserControl
             var btnDel = new Button
             {
                 Content = "🗑 해당 업무 삭제", Height = 30, Padding = new Thickness(10, 0),
-                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-                FontSize = 11,
-                Background = new SolidColorBrush(Color.Parse("#3a1a1a")),
-                Foreground = new SolidColorBrush(Color.Parse("#ee8888")),
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+                FontSize = AppTheme.FontBase,
+                Background = AppTheme.BgDanger,
+                Foreground = AppTheme.FgDanger,
                 BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
             };
             btnDel.Click += (_, _) =>
@@ -2844,10 +2930,10 @@ public partial class AgentTreePage : UserControl
         var btnBack = new Button
         {
             Content = "← 취소", Height = 30, Padding = new Thickness(10, 0),
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-            FontSize = 11,
-            Background = new SolidColorBrush(Color.Parse("#2a2a3a")),
-            Foreground = new SolidColorBrush(Color.Parse("#aaaaaa")),
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+            FontSize = AppTheme.FontBase,
+            Background = AppTheme.BorderSubtle,
+            Foreground = AppTheme.FgMuted,
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
         };
         btnBack.Click += (_, _) => onSaved?.Invoke();
@@ -2871,20 +2957,20 @@ public partial class AgentTreePage : UserControl
         hdr.Children.Add(new TextBlock
         {
             Text = $"📋 기타업무 — {agent.성명}",
-            FontSize = 13, FontWeight = FontWeight.Bold,
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+            FontSize = AppTheme.FontLG, FontWeight = FontWeight.Bold,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
             Foreground = new SolidColorBrush(Color.Parse("#ccaaff")),
             VerticalAlignment = VerticalAlignment.Center,
         });
         var btnAdd = new Button
         {
-            Content = "➕ 신규 추가", FontSize = 11, Height = 28,
+            Content = "➕ 신규 추가", FontSize = AppTheme.FontBase, Height = 28,
             Padding = new Thickness(10, 0),
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
             Background = new SolidColorBrush(Color.Parse("#2a1a3a")),
             Foreground = new SolidColorBrush(Color.Parse("#cc88ff")),
             BorderThickness = new Thickness(1),
-            BorderBrush = new SolidColorBrush(Color.Parse("#6a3a8a")),
+            BorderBrush = AppTheme.BorderAccent,
             CornerRadius = new CornerRadius(4),
             Cursor = new Cursor(StandardCursorType.Hand),
             [Grid.ColumnProperty] = 1,
@@ -2903,9 +2989,9 @@ public partial class AgentTreePage : UserControl
         {
             root.Children.Add(new TextBlock
             {
-                Text = "배정된 업무 없음", FontSize = 11,
-                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-                Foreground = new SolidColorBrush(Color.Parse("#666")),
+                Text = "배정된 업무 없음", FontSize = AppTheme.FontBase,
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+                Foreground = AppTheme.FgDimmed,
                 Margin = new Thickness(0, 8),
             });
             return root;
@@ -2941,8 +3027,8 @@ public partial class AgentTreePage : UserControl
                 VerticalAlignment = VerticalAlignment.Center,
                 Child = new TextBlock
                 {
-                    Text = t.상태, FontSize = 10,
-                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                    Text = t.상태, FontSize = AppTheme.FontSM,
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                     Foreground = new SolidColorBrush(Color.Parse(statusStyle.Fg)),
                 },
             });
@@ -2951,24 +3037,24 @@ public partial class AgentTreePage : UserControl
             var info = new StackPanel { Spacing = 2, [Grid.ColumnProperty] = 1 };
             info.Children.Add(new TextBlock
             {
-                Text = t.업무명, FontSize = 12,
-                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                Text = t.업무명, FontSize = AppTheme.FontMD,
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                 Foreground = new SolidColorBrush(Color.Parse(statusStyle.Fg)),
             });
             var meta = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
             if (!string.IsNullOrEmpty(t.마감일))
                 meta.Children.Add(new TextBlock
                 {
-                    Text = $"마감: {t.마감일}", FontSize = 9,
-                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-                    Foreground = new SolidColorBrush(Color.Parse("#888")),
+                    Text = $"마감: {t.마감일}", FontSize = AppTheme.FontXS,
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+                    Foreground = AppTheme.FgMuted,
                 });
             if (!string.IsNullOrEmpty(t.내용))
                 meta.Children.Add(new TextBlock
                 {
-                    Text = t.내용, FontSize = 9,
-                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-                    Foreground = new SolidColorBrush(Color.Parse("#777")),
+                    Text = t.내용, FontSize = AppTheme.FontXS,
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+                    Foreground = AppTheme.FgDimmed,
                     TextTrimming = TextTrimming.CharacterEllipsis, MaxWidth = 200,
                 });
             if (meta.Children.Count > 0) info.Children.Add(meta);
@@ -2979,9 +3065,9 @@ public partial class AgentTreePage : UserControl
             var btnEdit = new Button
             {
                 Content = "✏️", Width = 28, Height = 28, Padding = new Thickness(0),
-                Background = new SolidColorBrush(Color.Parse("#2a2a3a")),
+                Background = AppTheme.BorderSubtle,
                 BorderThickness = new Thickness(1),
-                BorderBrush = new SolidColorBrush(Color.Parse("#555")),
+                BorderBrush = AppTheme.BorderDefault,
                 CornerRadius = new CornerRadius(4),
                 Cursor = new Cursor(StandardCursorType.Hand),
                 VerticalAlignment = VerticalAlignment.Center,
@@ -2996,9 +3082,9 @@ public partial class AgentTreePage : UserControl
             var btnDel = new Button
             {
                 Content = "🗑", Width = 28, Height = 28, Padding = new Thickness(0),
-                Background = new SolidColorBrush(Color.Parse("#3a1a1a")),
+                Background = AppTheme.BgDanger,
                 BorderThickness = new Thickness(1),
-                BorderBrush = new SolidColorBrush(Color.Parse("#663333")),
+                BorderBrush = AppTheme.BorderDanger,
                 CornerRadius = new CornerRadius(4),
                 Cursor = new Cursor(StandardCursorType.Hand),
                 VerticalAlignment = VerticalAlignment.Center,
@@ -3032,9 +3118,9 @@ public partial class AgentTreePage : UserControl
         {
             _miscTaskPanel.Children.Add(new TextBlock
             {
-                Text = "배정된 업무 없음", FontSize = 10,
-                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-                Foreground = new SolidColorBrush(Color.Parse("#555")),
+                Text = "배정된 업무 없음", FontSize = AppTheme.FontSM,
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+                Foreground = AppTheme.FgDimmed,
                 Margin = new Thickness(0, 2),
             });
             return;
@@ -3068,8 +3154,8 @@ public partial class AgentTreePage : UserControl
                 Margin       = new Thickness(0, 0, 6, 0),
                 Child = new TextBlock
                 {
-                    Text = t.상태, FontSize = 9,
-                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                    Text = t.상태, FontSize = AppTheme.FontXS,
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                     Foreground = new SolidColorBrush(Color.Parse(statusColor.Item2)),
                 },
             });
@@ -3078,17 +3164,17 @@ public partial class AgentTreePage : UserControl
             var info = new StackPanel { [Grid.ColumnProperty] = 1 };
             info.Children.Add(new TextBlock
             {
-                Text = t.업무명, FontSize = 10,
-                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                Text = t.업무명, FontSize = AppTheme.FontSM,
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                 Foreground = new SolidColorBrush(Color.Parse(statusColor.Item2)),
                 TextTrimming = TextTrimming.CharacterEllipsis,
             });
             if (!string.IsNullOrEmpty(t.마감일))
                 info.Children.Add(new TextBlock
                 {
-                    Text = $"마감: {t.마감일}", FontSize = 9,
-                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-                    Foreground = new SolidColorBrush(Color.Parse("#777")),
+                    Text = $"마감: {t.마감일}", FontSize = AppTheme.FontXS,
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+                    Foreground = AppTheme.FgDimmed,
                 });
             row.Children.Add(info);
 
@@ -3099,7 +3185,7 @@ public partial class AgentTreePage : UserControl
             {
                 Content = "✏️", Width = 24, Height = 24, Padding = new Thickness(0),
                 Background = Brushes.Transparent, BorderThickness = new Thickness(0),
-                Foreground = new SolidColorBrush(Color.Parse("#88aacc")),
+                Foreground = AppTheme.FgInfo,
                 VerticalAlignment = VerticalAlignment.Center,
                 Cursor = new Cursor(StandardCursorType.Hand),
                 [Grid.ColumnProperty] = 2,
@@ -3121,8 +3207,8 @@ public partial class AgentTreePage : UserControl
         root.Children.Add(new TextBlock
         {
             Text = isEdit ? $"✏️ 업무 수정 — {agent.성명}" : $"➕ 신규 업무 배정 — {agent.성명}",
-            FontSize = 13, FontWeight = FontWeight.Bold,
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+            FontSize = AppTheme.FontLG, FontWeight = FontWeight.Bold,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
             Foreground = new SolidColorBrush(Color.Parse("#ccaaff")),
         });
 
@@ -3130,12 +3216,12 @@ public partial class AgentTreePage : UserControl
         {
             Text = existing?.업무명 ?? "",
             Watermark = "업무명",
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-            FontSize = 12,
-            Background = new SolidColorBrush(Color.Parse("#3a3a4a")),
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+            FontSize = AppTheme.FontMD,
+            Background = AppTheme.BorderSeparator,
             Foreground = AppRes("AppFg"),
             BorderThickness = new Thickness(1),
-            BorderBrush = new SolidColorBrush(Color.Parse("#555577")),
+            BorderBrush = AppTheme.BorderDefault,
             CornerRadius = new CornerRadius(4),
             Padding = new Thickness(8, 6),
         };
@@ -3148,12 +3234,12 @@ public partial class AgentTreePage : UserControl
             AcceptsReturn = true,
             TextWrapping = TextWrapping.Wrap,
             MinHeight = 80,
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-            FontSize = 12,
-            Background = new SolidColorBrush(Color.Parse("#3a3a4a")),
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+            FontSize = AppTheme.FontMD,
+            Background = AppTheme.BorderSeparator,
             Foreground = AppRes("AppFg"),
             BorderThickness = new Thickness(1),
-            BorderBrush = new SolidColorBrush(Color.Parse("#555577")),
+            BorderBrush = AppTheme.BorderDefault,
             CornerRadius = new CornerRadius(4),
             Padding = new Thickness(8, 6),
         };
@@ -3163,8 +3249,8 @@ public partial class AgentTreePage : UserControl
         var deadlineRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
         deadlineRow.Children.Add(new TextBlock
         {
-            Text = "마감일", FontSize = 11,
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+            Text = "마감일", FontSize = AppTheme.FontBase,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
             Foreground = AppRes("FgMuted"),
             VerticalAlignment = VerticalAlignment.Center,
         });
@@ -3173,12 +3259,12 @@ public partial class AgentTreePage : UserControl
             Text = existing?.마감일 ?? "",
             Watermark = "yyyy-MM-dd",
             Width = 140,
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-            FontSize = 12,
-            Background = new SolidColorBrush(Color.Parse("#3a3a4a")),
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+            FontSize = AppTheme.FontMD,
+            Background = AppTheme.BorderSeparator,
             Foreground = AppRes("AppFg"),
             BorderThickness = new Thickness(1),
-            BorderBrush = new SolidColorBrush(Color.Parse("#555577")),
+            BorderBrush = AppTheme.BorderDefault,
             CornerRadius = new CornerRadius(4),
             Padding = new Thickness(8, 4),
         };
@@ -3192,8 +3278,8 @@ public partial class AgentTreePage : UserControl
             var statusRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
             statusRow.Children.Add(new TextBlock
             {
-                Text = "상태", FontSize = 11,
-                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                Text = "상태", FontSize = AppTheme.FontBase,
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                 Foreground = AppRes("FgMuted"),
                 VerticalAlignment = VerticalAlignment.Center,
             });
@@ -3209,14 +3295,14 @@ public partial class AgentTreePage : UserControl
                 bool active = st == currentStatus;
                 var btnSt = new Button
                 {
-                    Content = st, FontSize = 10,
-                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                    Content = st, FontSize = AppTheme.FontSM,
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                     Padding = new Thickness(8, 3),
                     CornerRadius = new CornerRadius(8),
                     BorderThickness = new Thickness(1),
-                    Background  = active ? new SolidColorBrush(Color.Parse(bg)) : new SolidColorBrush(Color.Parse("#222")),
-                    Foreground  = active ? new SolidColorBrush(Color.Parse(fg)) : new SolidColorBrush(Color.Parse("#666")),
-                    BorderBrush = active ? new SolidColorBrush(Color.Parse(bd)) : new SolidColorBrush(Color.Parse("#444")),
+                    Background  = active ? new SolidColorBrush(Color.Parse(bg)) : AppTheme.BgSecondary,
+                    Foreground  = active ? new SolidColorBrush(Color.Parse(fg)) : AppTheme.BorderMuted,
+                    BorderBrush = active ? new SolidColorBrush(Color.Parse(bd)) : AppTheme.BorderMuted,
                 };
                 btnSt.Click += (_, _) =>
                 {
@@ -3232,9 +3318,9 @@ public partial class AgentTreePage : UserControl
                             _      => ("#2a2a2a", "#ccaa88", "#665533"),
                         };
                         bool isActive = s == capturedSt;
-                        child.Background  = isActive ? new SolidColorBrush(Color.Parse(b2)) : new SolidColorBrush(Color.Parse("#222"));
-                        child.Foreground  = isActive ? new SolidColorBrush(Color.Parse(f2)) : new SolidColorBrush(Color.Parse("#666"));
-                        child.BorderBrush = isActive ? new SolidColorBrush(Color.Parse(d2)) : new SolidColorBrush(Color.Parse("#444"));
+                        child.Background  = isActive ? new SolidColorBrush(Color.Parse(b2)) : AppTheme.BgSecondary;
+                        child.Foreground  = isActive ? new SolidColorBrush(Color.Parse(f2)) : AppTheme.BorderMuted;
+                        child.BorderBrush = isActive ? new SolidColorBrush(Color.Parse(d2)) : AppTheme.BorderMuted;
                     }
                 };
                 statusRow.Children.Add(btnSt);
@@ -3248,10 +3334,10 @@ public partial class AgentTreePage : UserControl
         {
             Content = isEdit ? "💾 수정" : "💾 저장",
             Height = 30, Padding = new Thickness(16, 0),
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-            FontSize = 11,
-            Background = new SolidColorBrush(Color.Parse("#1a3a2a")),
-            Foreground = new SolidColorBrush(Color.Parse("#88ee88")),
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+            FontSize = AppTheme.FontBase,
+            Background = AppTheme.BgActiveGreen,
+            Foreground = AppTheme.FgSuccess,
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
         };
         btnSave.Click += (_, _) =>
@@ -3292,10 +3378,10 @@ public partial class AgentTreePage : UserControl
             var btnDel = new Button
             {
                 Content = "🗑 해당 업무 삭제", Height = 30, Padding = new Thickness(10, 0),
-                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-                FontSize = 11,
-                Background = new SolidColorBrush(Color.Parse("#3a1a1a")),
-                Foreground = new SolidColorBrush(Color.Parse("#ee8888")),
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+                FontSize = AppTheme.FontBase,
+                Background = AppTheme.BgDanger,
+                Foreground = AppTheme.FgDanger,
                 BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
             };
             btnDel.Click += (_, _) =>
@@ -3310,10 +3396,10 @@ public partial class AgentTreePage : UserControl
         var btnBack = new Button
         {
             Content = "← 돌아가기", Height = 30, Padding = new Thickness(10, 0),
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-            FontSize = 11,
-            Background = new SolidColorBrush(Color.Parse("#2a2a3a")),
-            Foreground = new SolidColorBrush(Color.Parse("#aaaaaa")),
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+            FontSize = AppTheme.FontBase,
+            Background = AppTheme.BorderSubtle,
+            Foreground = AppTheme.FgMuted,
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
         };
         btnBack.Click += (_, _) => { _show3Tab = "기타업무"; Show3ContentRequest?.Invoke(BuildShow3Timeline(agent)); };
@@ -3334,26 +3420,26 @@ public partial class AgentTreePage : UserControl
         var hdr = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*"), Margin = new Thickness(0, 0, 0, 6) };
         var btnBack = new Button
         {
-            Content = "← 돌아가기", FontSize = 10,
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+            Content = "← 돌아가기", FontSize = AppTheme.FontSM,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
             Padding = new Thickness(8, 4),
-            Background = new SolidColorBrush(Color.Parse("#2a2a3a")),
-            Foreground = new SolidColorBrush(Color.Parse("#aaaaaa")),
+            Background = AppTheme.BorderSubtle,
+            Foreground = AppTheme.FgMuted,
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
         };
         btnBack.Click += (_, _) => Show4ContentRequest?.Invoke(null);
         hdr.Children.Add(btnBack);
         hdr.Children.Add(new TextBlock
         {
-            Text = "분석항목 선택", FontSize = 12, FontWeight = FontWeight.SemiBold,
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
-            Foreground = new SolidColorBrush(Color.Parse("#aaccff")),
+            Text = "분석항목 선택", FontSize = AppTheme.FontMD, FontWeight = FontWeight.SemiBold,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+            Foreground = AppTheme.FgInfo,
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Thickness(8, 0, 0, 0),
             [Grid.ColumnProperty] = 1,
         });
         root.Children.Add(hdr);
-        root.Children.Add(new Border { Height = 1, Background = new SolidColorBrush(Color.Parse("#444")) });
+        root.Children.Add(new Border { Height = 1, Background = AppTheme.BorderMuted });
 
         // 분장표준처리 컬럼 순서대로 항목 목록
         var analytes = AnalysisRequestService.GetOrderedAnalytes();
@@ -3381,8 +3467,8 @@ public partial class AgentTreePage : UserControl
                 [Grid.ColumnProperty] = 0,
                 Child = new TextBlock
                 {
-                    Text = shortName, FontSize = 9,
-                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                    Text = shortName, FontSize = AppTheme.FontXS,
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                     Foreground = new SolidColorBrush(Color.Parse(badgeFg)),
                 },
             });
@@ -3390,8 +3476,8 @@ public partial class AgentTreePage : UserControl
             // 전체 항목명
             inner.Children.Add(new TextBlock
             {
-                Text = fullName, FontSize = 10,
-                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                Text = fullName, FontSize = AppTheme.FontSM,
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                 Foreground = assigned ? new SolidColorBrush(Color.Parse(badgeFg)) : AppRes("AppFg"),
                 VerticalAlignment = VerticalAlignment.Center,
                 [Grid.ColumnProperty] = 1,
@@ -3400,9 +3486,9 @@ public partial class AgentTreePage : UserControl
             if (assigned)
                 inner.Children.Add(new TextBlock
                 {
-                    Text = "✓", FontSize = 11,
-                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
-                    Foreground = new SolidColorBrush(Color.Parse("#88ee88")),
+                    Text = "✓", FontSize = AppTheme.FontBase,
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+                    Foreground = AppTheme.FgSuccess,
                     VerticalAlignment = VerticalAlignment.Center,
                     [Grid.ColumnProperty] = 2,
                 });
@@ -3442,26 +3528,26 @@ public partial class AgentTreePage : UserControl
         var hdr = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*"), Margin = new Thickness(0, 0, 0, 6) };
         var btnBack = new Button
         {
-            Content = "← 돌아가기", FontSize = 10,
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+            Content = "← 돌아가기", FontSize = AppTheme.FontSM,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
             Padding = new Thickness(8, 4),
-            Background = new SolidColorBrush(Color.Parse("#2a2a3a")),
-            Foreground = new SolidColorBrush(Color.Parse("#aaaaaa")),
+            Background = AppTheme.BorderSubtle,
+            Foreground = AppTheme.FgMuted,
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
         };
         btnBack.Click += (_, _) => Show4ContentRequest?.Invoke(null);
         hdr.Children.Add(btnBack);
         hdr.Children.Add(new TextBlock
         {
-            Text = "계약업체 선택 (현행 계약)", FontSize = 12, FontWeight = FontWeight.SemiBold,
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+            Text = "계약업체 선택 (현행 계약)", FontSize = AppTheme.FontMD, FontWeight = FontWeight.SemiBold,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
             Foreground = new SolidColorBrush(Color.Parse("#aaccaa")),
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Thickness(8, 0, 0, 0),
             [Grid.ColumnProperty] = 1,
         });
         root.Children.Add(hdr);
-        root.Children.Add(new Border { Height = 1, Background = new SolidColorBrush(Color.Parse("#444")) });
+        root.Children.Add(new Border { Height = 1, Background = AppTheme.BorderMuted });
 
         var contracts = ContractService.GetAllContracts()
             .Where(c => c.DaysLeft == null || c.DaysLeft >= 0)
@@ -3471,9 +3557,9 @@ public partial class AgentTreePage : UserControl
         {
             root.Children.Add(new TextBlock
             {
-                Text = "현행 계약 없음", FontSize = 10,
-                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-                Foreground = new SolidColorBrush(Color.Parse("#666")),
+                Text = "현행 계약 없음", FontSize = AppTheme.FontSM,
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+                Foreground = AppTheme.FgDimmed,
                 Margin = new Thickness(0, 8),
             });
         }
@@ -3487,7 +3573,7 @@ public partial class AgentTreePage : UserControl
 
                 var row = new Border
                 {
-                    Background   = assigned ? new SolidColorBrush(Color.Parse("#1a3a2a")) : Brushes.Transparent,
+                    Background   = assigned ? AppTheme.BgActiveGreen : Brushes.Transparent,
                     CornerRadius = new CornerRadius(4),
                     Padding      = new Thickness(6, 4),
                     Margin       = new Thickness(0, 1),
@@ -3502,15 +3588,15 @@ public partial class AgentTreePage : UserControl
                     [Grid.ColumnProperty] = 0,
                     Child = new TextBlock
                     {
-                        Text = abbr, FontSize = 9,
-                        FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                        Text = abbr, FontSize = AppTheme.FontXS,
+                        FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                         Foreground = new SolidColorBrush(Color.Parse(fg)),
                     },
                 });
                 inner.Children.Add(new TextBlock
                 {
-                    Text = c.C_CompanyName, FontSize = 10,
-                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                    Text = c.C_CompanyName, FontSize = AppTheme.FontSM,
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                     Foreground = AppRes("AppFg"),
                     VerticalAlignment = VerticalAlignment.Center,
                     TextTrimming = TextTrimming.CharacterEllipsis,
@@ -3519,9 +3605,9 @@ public partial class AgentTreePage : UserControl
                 if (assigned)
                     inner.Children.Add(new TextBlock
                     {
-                        Text = "✓", FontSize = 11,
-                        FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
-                        Foreground = new SolidColorBrush(Color.Parse("#88ee88")),
+                        Text = "✓", FontSize = AppTheme.FontBase,
+                        FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+                        Foreground = AppTheme.FgSuccess,
                         VerticalAlignment = VerticalAlignment.Center,
                         [Grid.ColumnProperty] = 2,
                     });
@@ -3560,26 +3646,26 @@ public partial class AgentTreePage : UserControl
         var hdr = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*"), Margin = new Thickness(0, 0, 0, 6) };
         var btnBack = new Button
         {
-            Content = "← 돌아가기", FontSize = 10,
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+            Content = "← 돌아가기", FontSize = AppTheme.FontSM,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
             Padding = new Thickness(8, 4),
-            Background = new SolidColorBrush(Color.Parse("#2a2a3a")),
-            Foreground = new SolidColorBrush(Color.Parse("#aaaaaa")),
+            Background = AppTheme.BorderSubtle,
+            Foreground = AppTheme.FgMuted,
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
         };
         btnBack.Click += (_, _) => Show4ContentRequest?.Invoke(null);
         hdr.Children.Add(btnBack);
         hdr.Children.Add(new TextBlock
         {
-            Text = $"일반업무 배정 — {agent.성명}", FontSize = 12, FontWeight = FontWeight.SemiBold,
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+            Text = $"일반업무 배정 — {agent.성명}", FontSize = AppTheme.FontMD, FontWeight = FontWeight.SemiBold,
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
             Foreground = new SolidColorBrush(Color.Parse("#aaccbb")),
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Thickness(8, 0, 0, 0),
             [Grid.ColumnProperty] = 1,
         });
         root.Children.Add(hdr);
-        root.Children.Add(new Border { Height = 1, Background = new SolidColorBrush(Color.Parse("#444")) });
+        root.Children.Add(new Border { Height = 1, Background = AppTheme.BorderMuted });
 
         // 전체 업무 가져오기 — 업무명 기준 그룹
         var allTasks = GeneralTaskService.GetAll();
@@ -3590,9 +3676,9 @@ public partial class AgentTreePage : UserControl
             root.Children.Add(new TextBlock
             {
                 Text = "등록된 일반업무 없음\n하단 '＋ 신규 업무' 버튼으로 먼저 업무를 추가하세요.",
-                FontSize = 10,
-                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-                Foreground = new SolidColorBrush(Color.Parse("#666")),
+                FontSize = AppTheme.FontSM,
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+                Foreground = AppTheme.FgDimmed,
                 Margin = new Thickness(0, 8),
             });
         }
@@ -3605,7 +3691,7 @@ public partial class AgentTreePage : UserControl
 
                 var row = new Border
                 {
-                    Background   = assigned ? new SolidColorBrush(Color.Parse("#1a3a2a")) : Brushes.Transparent,
+                    Background   = assigned ? AppTheme.BgActiveGreen : Brushes.Transparent,
                     CornerRadius = new CornerRadius(4),
                     Padding      = new Thickness(6, 5),
                     Margin       = new Thickness(0, 1),
@@ -3618,8 +3704,8 @@ public partial class AgentTreePage : UserControl
                 var nameRow = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
                 nameRow.Children.Add(new TextBlock
                 {
-                    Text = g.Key, FontSize = 11, FontWeight = FontWeight.SemiBold,
-                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                    Text = g.Key, FontSize = AppTheme.FontBase, FontWeight = FontWeight.SemiBold,
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                     Foreground = assigned
                         ? new SolidColorBrush(Color.Parse("#aaeebb"))
                         : AppRes("AppFg"),
@@ -3628,9 +3714,9 @@ public partial class AgentTreePage : UserControl
                 if (assigned)
                     nameRow.Children.Add(new TextBlock
                     {
-                        Text = "✓", FontSize = 11,
-                        FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
-                        Foreground = new SolidColorBrush(Color.Parse("#88ee88")),
+                        Text = "✓", FontSize = AppTheme.FontBase,
+                        FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+                        Foreground = AppTheme.FgSuccess,
                         VerticalAlignment = VerticalAlignment.Center,
                         [Grid.ColumnProperty] = 1,
                     });
@@ -3650,8 +3736,8 @@ public partial class AgentTreePage : UserControl
                         Margin       = new Thickness(0, 0, 3, 0),
                         Child = new TextBlock
                         {
-                            Text = t.담당자명, FontSize = 9,
-                            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                            Text = t.담당자명, FontSize = AppTheme.FontXS,
+                            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                             Foreground = new SolidColorBrush(Color.Parse(fg)),
                         },
                     });
@@ -3694,15 +3780,15 @@ public partial class AgentTreePage : UserControl
         }
 
         // 하단: 신규 업무 추가 버튼
-        root.Children.Add(new Border { Height = 1, Background = new SolidColorBrush(Color.Parse("#333")), Margin = new Thickness(0, 6) });
+        root.Children.Add(new Border { Height = 1, Background = AppTheme.BorderSubtle, Margin = new Thickness(0, 6) });
         var btnNewTask = new Button
         {
-            Content = "＋ 신규 업무 추가", FontSize = 11, Height = 30,
+            Content = "＋ 신규 업무 추가", FontSize = AppTheme.FontBase, Height = 30,
             HorizontalAlignment = HorizontalAlignment.Stretch,
             HorizontalContentAlignment = HorizontalAlignment.Center,
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
             Background = new SolidColorBrush(Color.Parse("#2a2a1a")),
-            Foreground = new SolidColorBrush(Color.Parse("#ccbb88")),
+            Foreground = AppTheme.FgWarn,
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
         };
         btnNewTask.Click += (_, _) =>
@@ -3735,17 +3821,17 @@ public partial class AgentTreePage : UserControl
 
         // ── 헤더 ────────────────────────────────────────────────────────────
         var header = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Margin = new Thickness(8, 6, 8, 4) };
-        var kbFont = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R");
-        var kbFontM = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
+        var kbFont = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
+        var kbFontM = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
 
         header.Children.Add(new TextBlock {
-            Text = "업무분장표", FontSize = 14, FontWeight = FontWeight.Bold,
-            FontFamily = kbFontM, Foreground = new SolidColorBrush(Color.Parse("#aaccff")),
+            Text = "업무분장표", FontSize = AppTheme.FontXL, FontWeight = FontWeight.Bold,
+            FontFamily = kbFontM, Foreground = AppTheme.FgInfo,
             VerticalAlignment = VerticalAlignment.Center });
 
         Button MakeBtn(string text, string bg, string fg, string bd, int w = 30) => new()
         {
-            Content = text, Width = w, Height = 24, FontSize = 10,
+            Content = text, Width = w, Height = 24, FontSize = AppTheme.FontSM,
             Padding = new Thickness(0), CornerRadius = new CornerRadius(4),
             FontFamily = kbFont, Cursor = new Cursor(StandardCursorType.Hand),
             Background = new SolidColorBrush(Color.Parse(bg)),
@@ -3761,8 +3847,8 @@ public partial class AgentTreePage : UserControl
         btnApply.FontFamily = kbFontM;
 
         var txbMonth = new TextBlock {
-            Text = _chartRangeStart.ToString("yyyy년 MM월"), FontSize = 12,
-            FontFamily = kbFont, Foreground = new SolidColorBrush(Color.Parse("#ccc")),
+            Text = _chartRangeStart.ToString("yyyy년 MM월"), FontSize = AppTheme.FontMD,
+            FontFamily = kbFont, Foreground = AppTheme.FgSecondary,
             VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(8, 0, 0, 0) };
 
         header.Children.Add(btnPrev);
@@ -3812,8 +3898,8 @@ public partial class AgentTreePage : UserControl
     private void RefreshAssignmentChartSlider(StackPanel body)
     {
         body.Children.Clear();
-        var kbFont  = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R");
-        var kbFontM = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
+        var kbFont  = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
+        var kbFontM = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
 
         // 표시 범위: 해당월 -5일 ~ +5일
         DateTime dispStart = _chartRangeStart.AddDays(-5);
@@ -3848,7 +3934,7 @@ public partial class AgentTreePage : UserControl
             string color = !inMonth ? "#444" : isSun ? "#cc6666" : isSat ? "#6688cc" : "#999";
             dateCanvas.Children.Add(new TextBlock
             {
-                Text = dt.Day.ToString(), FontSize = 8, Width = GC_DAY_W,
+                Text = dt.Day.ToString(), FontSize = AppTheme.FontXS, Width = GC_DAY_W,
                 FontFamily = kbFont, TextAlignment = TextAlignment.Center,
                 Foreground = new SolidColorBrush(Color.Parse(color)),
                 [Canvas.LeftProperty] = d * GC_DAY_W, [Canvas.TopProperty] = 2.0,
@@ -3875,7 +3961,7 @@ public partial class AgentTreePage : UserControl
                 Padding = new Thickness(3, 0), VerticalAlignment = VerticalAlignment.Center,
                 Child = new TextBlock
                 {
-                    Text = shortName, FontSize = 8, FontFamily = kbFontM,
+                    Text = shortName, FontSize = AppTheme.FontXS, FontFamily = kbFontM,
                     Foreground = new SolidColorBrush(Color.Parse(lbFg)),
                     TextTrimming = TextTrimming.CharacterEllipsis,
                     VerticalAlignment = VerticalAlignment.Center,
@@ -3908,7 +3994,7 @@ public partial class AgentTreePage : UserControl
             {
                 int ti = (int)(DateTime.Today - dispStart).TotalDays;
                 track.Children.Add(new Avalonia.Controls.Shapes.Rectangle
-                { Width = GC_DAY_W, Height = GC_ROW_H, Fill = new SolidColorBrush(Color.Parse("#1a2a1a")),
+                { Width = GC_DAY_W, Height = GC_ROW_H, Fill = AppTheme.BgActiveGreen,
                   [Canvas.LeftProperty] = ti * GC_DAY_W });
             }
 
@@ -3917,7 +4003,7 @@ public partial class AgentTreePage : UserControl
             {
                 StartPoint = new Point(0, barY + GC_BAR_H / 2),
                 EndPoint = new Point(trackW, barY + GC_BAR_H / 2),
-                Stroke = new SolidColorBrush(Color.Parse("#333")), StrokeThickness = 1,
+                Stroke = AppTheme.BorderSubtle, StrokeThickness = 1,
             });
 
             // 스팬 바 (담당자별 색상 바 + 이름)
@@ -3942,7 +4028,7 @@ public partial class AgentTreePage : UserControl
                     CornerRadius = new CornerRadius(3), Padding = new Thickness(4, 0), ClipToBounds = true,
                     Child = new TextBlock
                     {
-                        Text = sp.Manager, FontSize = 9, FontFamily = kbFont,
+                        Text = sp.Manager, FontSize = AppTheme.FontXS, FontFamily = kbFont,
                         Foreground = new SolidColorBrush(Color.Parse(c.Item2)),
                         TextTrimming = TextTrimming.CharacterEllipsis,
                         VerticalAlignment = VerticalAlignment.Center,
@@ -3963,7 +4049,7 @@ public partial class AgentTreePage : UserControl
                 track.Children.Add(new Avalonia.Controls.Shapes.Line
                 {
                     StartPoint = new Point(bx, barY - 2), EndPoint = new Point(bx, barY + GC_BAR_H + 2),
-                    Stroke = new SolidColorBrush(Color.Parse("#ffaa44")), StrokeThickness = 2,
+                    Stroke = AppTheme.FgWarn, StrokeThickness = 2,
                 });
 
                 // 메모 라벨 (엑셀 메모 스타일 — 경계선 위)
@@ -3971,12 +4057,12 @@ public partial class AgentTreePage : UserControl
                 var memo = new Border
                 {
                     Background = new SolidColorBrush(Color.Parse("#332a1a")),
-                    BorderBrush = new SolidColorBrush(Color.Parse("#664a2a")),
+                    BorderBrush = AppTheme.BorderWarn,
                     BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(3),
                     Padding = new Thickness(4, 1), IsVisible = false,
                     Child = new TextBlock
                     {
-                        Text = memoText, FontSize = 8, FontFamily = kbFont,
+                        Text = memoText, FontSize = AppTheme.FontXS, FontFamily = kbFont,
                         Foreground = new SolidColorBrush(Color.Parse("#ffcc88")),
                     },
                 };
@@ -4064,11 +4150,11 @@ public partial class AgentTreePage : UserControl
                 var captFull2 = fullName; var captStart2 = gapStart; var captBody2 = body;
                 var plus = new Button
                 {
-                    Width = 20, Height = 20, Content = "+", FontSize = 12,
+                    Width = 20, Height = 20, Content = "+", FontSize = AppTheme.FontMD,
                     Padding = new Thickness(0), CornerRadius = new CornerRadius(10),
-                    Background = new SolidColorBrush(Color.Parse("#2a3a2a")),
-                    Foreground = new SolidColorBrush(Color.Parse("#88cc88")),
-                    BorderBrush = new SolidColorBrush(Color.Parse("#4a6a4a")),
+                    Background = AppTheme.BgActiveGreen,
+                    Foreground = AppTheme.FgSuccess,
+                    BorderBrush = AppTheme.BorderActive,
                     BorderThickness = new Thickness(1), FontFamily = kbFontM,
                     Cursor = new Cursor(StandardCursorType.Hand),
                     HorizontalContentAlignment = HorizontalAlignment.Center,
@@ -4080,9 +4166,9 @@ public partial class AgentTreePage : UserControl
 
                 var names = AgentService.GetAllNames();
                 var lb = new ListBox { MaxHeight = 200, MinWidth = 120, ItemsSource = names,
-                    FontSize = 11, FontFamily = kbFont,
-                    Background = new SolidColorBrush(Color.Parse("#1a1a2a")),
-                    Foreground = new SolidColorBrush(Color.Parse("#ccc")) };
+                    FontSize = AppTheme.FontBase, FontFamily = kbFont,
+                    Background = AppTheme.BgPrimary,
+                    Foreground = AppTheme.FgSecondary };
                 var fly = new Flyout { Content = lb, Placement = PlacementMode.Bottom };
                 plus.Flyout = fly;
                 lb.SelectionChanged += (_, _) =>
@@ -4141,9 +4227,9 @@ public partial class AgentTreePage : UserControl
         {
             _generalTaskPanel.Children.Add(new TextBlock
             {
-                Text = "배정된 일반업무 없음", FontSize = 10,
-                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-                Foreground = new SolidColorBrush(Color.Parse("#555")),
+                Text = "배정된 일반업무 없음", FontSize = AppTheme.FontSM,
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+                Foreground = AppTheme.FgDimmed,
                 Margin = new Thickness(0, 2),
             });
             return;
@@ -4184,7 +4270,7 @@ public partial class AgentTreePage : UserControl
             // 호버시 × 버튼 표시
             var btnXTask = new Button
             {
-                Content = "×", FontSize = 11, Padding = new Thickness(2, 0),
+                Content = "×", FontSize = AppTheme.FontBase, Padding = new Thickness(2, 0),
                 Background = Brushes.Transparent, BorderThickness = new Thickness(0),
                 Foreground = new SolidColorBrush(Color.Parse("#dd6688")),
                 VerticalAlignment = VerticalAlignment.Top,
@@ -4203,8 +4289,8 @@ public partial class AgentTreePage : UserControl
             var nameStack = new StackPanel { Spacing = 1 };
             nameStack.Children.Add(new TextBlock
             {
-                Text = t.업무명, FontSize = 10,
-                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
+                Text = t.업무명, FontSize = AppTheme.FontSM,
+                FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                 Foreground = new SolidColorBrush(Color.Parse(statusColor.Item2)),
                 TextTrimming = TextTrimming.CharacterEllipsis,
             });
@@ -4216,17 +4302,17 @@ public partial class AgentTreePage : UserControl
                 Padding      = new Thickness(3, 0),
                 Child = new TextBlock
                 {
-                    Text = t.상태, FontSize = 8,
-                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"),
+                    Text = t.상태, FontSize = AppTheme.FontXS,
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
                     Foreground = new SolidColorBrush(Color.Parse(statusColor.Item2)),
                 },
             });
             if (!string.IsNullOrEmpty(t.마감일))
                 sub.Children.Add(new TextBlock
                 {
-                    Text = t.마감일, FontSize = 8,
-                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"),
-                    Foreground = new SolidColorBrush(Color.Parse("#777")),
+                    Text = t.마감일, FontSize = AppTheme.FontXS,
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+                    Foreground = AppTheme.FgDimmed,
                     VerticalAlignment = VerticalAlignment.Center,
                 });
             nameStack.Children.Add(sub);

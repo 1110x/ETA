@@ -25,7 +25,7 @@ public partial class MyTaskPage : UserControl
     private string   _employeeName   = "";
 
     private static readonly FontFamily Font =
-        new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
+        new("avares://ETA/Assets/Fonts#Pretendard");
 
     // 카테고리별 활성 버튼 스타일
     private static readonly Dictionary<string, (string Bg, string Fg, string Bd)> CatStyle = new()
@@ -151,19 +151,19 @@ public partial class MyTaskPage : UserControl
         var header = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
         header.Children.Add(new TextBlock
         {
-            Text = "🧪", FontSize = 13, VerticalAlignment = VerticalAlignment.Center
+            Text = "🧪", FontSize = AppTheme.FontLG, VerticalAlignment = VerticalAlignment.Center
         });
         header.Children.Add(new TextBlock
         {
             Text = string.IsNullOrEmpty(shortName) ? fullName : shortName,
-            FontFamily = Font, FontSize = 13,
+            FontFamily = Font, FontSize = AppTheme.FontLG,
             VerticalAlignment = VerticalAlignment.Center
         });
         if (!string.IsNullOrEmpty(shortName) && shortName != fullName)
         {
             header.Children.Add(new TextBlock
             {
-                Text = $"({fullName})", FontFamily = Font, FontSize = 11,
+                Text = $"({fullName})", FontFamily = Font, FontSize = AppTheme.FontBase,
                 Foreground = AppRes("FgMuted"), VerticalAlignment = VerticalAlignment.Center
             });
         }
@@ -210,17 +210,17 @@ public partial class MyTaskPage : UserControl
         var header = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
         header.Children.Add(new TextBlock
         {
-            Text = icon, FontSize = 13, VerticalAlignment = VerticalAlignment.Center
+            Text = icon, FontSize = AppTheme.FontLG, VerticalAlignment = VerticalAlignment.Center
         });
         header.Children.Add(new TextBlock
         {
-            Text = company, FontFamily = Font, FontSize = 13,
+            Text = company, FontFamily = Font, FontSize = AppTheme.FontLG,
             Foreground = new SolidColorBrush(Color.Parse(color)),
             VerticalAlignment = VerticalAlignment.Center
         });
         header.Children.Add(new TextBlock
         {
-            Text = $"{count}건", FontFamily = Font, FontSize = 11,
+            Text = $"{count}건", FontFamily = Font, FontSize = AppTheme.FontBase,
             Foreground = AppRes("FgMuted"), VerticalAlignment = VerticalAlignment.Center
         });
 
@@ -239,11 +239,11 @@ public partial class MyTaskPage : UserControl
         var header = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
         header.Children.Add(new TextBlock
         {
-            Text = statusIcon, FontSize = 12, VerticalAlignment = VerticalAlignment.Center
+            Text = statusIcon, FontSize = AppTheme.FontMD, VerticalAlignment = VerticalAlignment.Center
         });
         header.Children.Add(new TextBlock
         {
-            Text = wi.항목, FontFamily = Font, FontSize = 12,
+            Text = wi.항목, FontFamily = Font, FontSize = AppTheme.FontMD,
             Foreground = new SolidColorBrush(Color.Parse(statusColor)),
             VerticalAlignment = VerticalAlignment.Center
         });
@@ -251,7 +251,7 @@ public partial class MyTaskPage : UserControl
         {
             header.Children.Add(new TextBlock
             {
-                Text = wi.배정자, FontFamily = Font, FontSize = 11,
+                Text = wi.배정자, FontFamily = Font, FontSize = AppTheme.FontBase,
                 Foreground = AppRes("FgMuted"), VerticalAlignment = VerticalAlignment.Center
             });
         }
@@ -291,16 +291,16 @@ public partial class MyTaskPage : UserControl
         var header = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
         header.Children.Add(new TextBlock
         {
-            Text = statusIcon, FontSize = 12, VerticalAlignment = VerticalAlignment.Center
+            Text = statusIcon, FontSize = AppTheme.FontMD, VerticalAlignment = VerticalAlignment.Center
         });
         header.Children.Add(new TextBlock
         {
-            Text = fi.시설명, FontFamily = Font, FontSize = 13,
+            Text = fi.시설명, FontFamily = Font, FontSize = AppTheme.FontLG,
             VerticalAlignment = VerticalAlignment.Center
         });
         header.Children.Add(new TextBlock
         {
-            Text = fi.시료명, FontFamily = Font, FontSize = 11,
+            Text = fi.시료명, FontFamily = Font, FontSize = AppTheme.FontBase,
             Foreground = AppRes("FgMuted"), VerticalAlignment = VerticalAlignment.Center
         });
 
@@ -347,16 +347,16 @@ public partial class MyTaskPage : UserControl
             var dateHeader = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
             dateHeader.Children.Add(new TextBlock
             {
-                Text = $"{d:MM/dd}({dayKr})", FontFamily = Font, FontSize = 13,
+                Text = $"{d:MM/dd}({dayKr})", FontFamily = Font, FontSize = AppTheme.FontLG,
                 FontWeight = isToday ? FontWeight.Bold : FontWeight.Normal,
                 Foreground = isToday
                     ? new SolidColorBrush(Color.Parse("#aaddff"))
-                    : new SolidColorBrush(Color.Parse("#888888")),
+                    : AppTheme.FgMuted,
                 VerticalAlignment = VerticalAlignment.Center,
             });
             dateHeader.Children.Add(new TextBlock
             {
-                Text = $"{dateGroup.Count()}건", FontFamily = Font, FontSize = 11,
+                Text = $"{dateGroup.Count()}건", FontFamily = Font, FontSize = AppTheme.FontBase,
                 Foreground = AppRes("FgMuted"), VerticalAlignment = VerticalAlignment.Center,
             });
 
@@ -378,16 +378,16 @@ public partial class MyTaskPage : UserControl
                 };
 
                 var groupHeader = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
-                groupHeader.Children.Add(new TextBlock { Text = icon, FontSize = 12, VerticalAlignment = VerticalAlignment.Center });
+                groupHeader.Children.Add(new TextBlock { Text = icon, FontSize = AppTheme.FontMD, VerticalAlignment = VerticalAlignment.Center });
                 groupHeader.Children.Add(new TextBlock
                 {
-                    Text = grp.Key, FontFamily = Font, FontSize = 12,
+                    Text = grp.Key, FontFamily = Font, FontSize = AppTheme.FontMD,
                     Foreground = new SolidColorBrush(Color.Parse(color)),
                     VerticalAlignment = VerticalAlignment.Center,
                 });
                 groupHeader.Children.Add(new TextBlock
                 {
-                    Text = $"{grp.Count()}건", FontFamily = Font, FontSize = 11,
+                    Text = $"{grp.Count()}건", FontFamily = Font, FontSize = AppTheme.FontBase,
                     Foreground = AppRes("FgMuted"), VerticalAlignment = VerticalAlignment.Center,
                 });
 
@@ -398,19 +398,19 @@ public partial class MyTaskPage : UserControl
                     var itemHeader = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
                     itemHeader.Children.Add(new TextBlock
                     {
-                        Text = item.SN, FontFamily = Font, FontSize = 11,
+                        Text = item.SN, FontFamily = Font, FontSize = AppTheme.FontBase,
                         Foreground = AppRes("FgMuted"), Width = 70,
                         VerticalAlignment = VerticalAlignment.Center,
                     });
                     itemHeader.Children.Add(new TextBlock
                     {
-                        Text = item.업체명, FontFamily = Font, FontSize = 12,
+                        Text = item.업체명, FontFamily = Font, FontSize = AppTheme.FontMD,
                         Foreground = AppRes("AppFg"), VerticalAlignment = VerticalAlignment.Center,
                     });
                     if (!string.IsNullOrEmpty(item.확인자))
                         itemHeader.Children.Add(new TextBlock
                         {
-                            Text = item.확인자, FontFamily = Font, FontSize = 11,
+                            Text = item.확인자, FontFamily = Font, FontSize = AppTheme.FontBase,
                             Foreground = new SolidColorBrush(Color.Parse("#66aaee")),
                             VerticalAlignment = VerticalAlignment.Center,
                         });
@@ -432,7 +432,7 @@ public partial class MyTaskPage : UserControl
         {
             Header = new TextBlock
             {
-                Text = text, FontFamily = Font, FontSize = 12,
+                Text = text, FontFamily = Font, FontSize = AppTheme.FontMD,
                 Foreground = AppRes("FgMuted")
             }
         };
@@ -469,18 +469,18 @@ public partial class MyTaskPage : UserControl
         root.Children.Add(new TextBlock
         {
             Text = $"🧪  {(string.IsNullOrEmpty(tag.ShortName) ? tag.FullName : tag.ShortName)}",
-            FontFamily = Font, FontSize = 15, FontWeight = FontWeight.SemiBold,
+            FontFamily = Font, FontSize = AppTheme.FontXL, FontWeight = FontWeight.SemiBold,
             Foreground = AppRes("AppFg")
         });
         root.Children.Add(new TextBlock
         {
-            Text = tag.FullName, FontFamily = Font, FontSize = 11,
+            Text = tag.FullName, FontFamily = Font, FontSize = AppTheme.FontBase,
             Foreground = AppRes("FgMuted")
         });
         root.Children.Add(new TextBlock
         {
             Text = $"채취일: {dateStr}  /  총 {samples.Count}건",
-            FontFamily = Font, FontSize = 12, Foreground = AppRes("FgMuted"),
+            FontFamily = Font, FontSize = AppTheme.FontMD, Foreground = AppRes("FgMuted"),
             Margin = new Thickness(0, 4, 0, 4)
         });
 
@@ -489,7 +489,7 @@ public partial class MyTaskPage : UserControl
             root.Children.Add(new TextBlock
             {
                 Text = "해당 날짜에 의뢰된 시료가 없습니다.",
-                FontFamily = Font, FontSize = 12, Foreground = AppRes("FgMuted")
+                FontFamily = Font, FontSize = AppTheme.FontMD, Foreground = AppRes("FgMuted")
             });
         }
         else
@@ -506,19 +506,19 @@ public partial class MyTaskPage : UserControl
                 var row = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
                 row.Children.Add(new TextBlock
                 {
-                    Text = s.Company, FontFamily = Font, FontSize = 12,
+                    Text = s.Company, FontFamily = Font, FontSize = AppTheme.FontMD,
                     FontWeight = FontWeight.SemiBold, Foreground = AppRes("AppFg"),
                     Width = 80
                 });
                 row.Children.Add(new TextBlock
                 {
-                    Text = s.Sample, FontFamily = Font, FontSize = 12,
+                    Text = s.Sample, FontFamily = Font, FontSize = AppTheme.FontMD,
                     Foreground = AppRes("AppFg"), Width = 120
                 });
                 if (!string.IsNullOrEmpty(s.접수번호))
                     row.Children.Add(new TextBlock
                     {
-                        Text = s.접수번호, FontFamily = Font, FontSize = 11,
+                        Text = s.접수번호, FontFamily = Font, FontSize = AppTheme.FontBase,
                         Foreground = AppRes("FgMuted")
                     });
                 card.Child = row;
@@ -537,17 +537,17 @@ public partial class MyTaskPage : UserControl
         root.Children.Add(new TextBlock
         {
             Text = $"🌊  {wi.업체명} — {wi.항목}",
-            FontFamily = Font, FontSize = 15, FontWeight = FontWeight.SemiBold,
+            FontFamily = Font, FontSize = AppTheme.FontXL, FontWeight = FontWeight.SemiBold,
             Foreground = AppRes("AppFg")
         });
 
         void AddRow(string label, string value, string? color = null)
         {
             var sp = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
-            sp.Children.Add(new TextBlock { Text = label, FontFamily = Font, FontSize = 12, Foreground = AppRes("FgMuted"), Width = 70 });
+            sp.Children.Add(new TextBlock { Text = label, FontFamily = Font, FontSize = AppTheme.FontMD, Foreground = AppRes("FgMuted"), Width = 70 });
             sp.Children.Add(new TextBlock
             {
-                Text = value, FontFamily = Font, FontSize = 12,
+                Text = value, FontFamily = Font, FontSize = AppTheme.FontMD,
                 Foreground = color != null ? new SolidColorBrush(Color.Parse(color)) : AppRes("AppFg")
             });
             root.Children.Add(sp);
@@ -580,17 +580,17 @@ public partial class MyTaskPage : UserControl
         root.Children.Add(new TextBlock
         {
             Text = $"⚙  {fi.시설명}",
-            FontFamily = Font, FontSize = 15, FontWeight = FontWeight.SemiBold,
+            FontFamily = Font, FontSize = AppTheme.FontXL, FontWeight = FontWeight.SemiBold,
             Foreground = AppRes("AppFg")
         });
 
         void AddRow(string label, string value, string? color = null)
         {
             var sp = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
-            sp.Children.Add(new TextBlock { Text = label, FontFamily = Font, FontSize = 12, Foreground = AppRes("FgMuted"), Width = 70 });
+            sp.Children.Add(new TextBlock { Text = label, FontFamily = Font, FontSize = AppTheme.FontMD, Foreground = AppRes("FgMuted"), Width = 70 });
             sp.Children.Add(new TextBlock
             {
-                Text = value, FontFamily = Font, FontSize = 12,
+                Text = value, FontFamily = Font, FontSize = AppTheme.FontMD,
                 Foreground = color != null ? new SolidColorBrush(Color.Parse(color)) : AppRes("AppFg")
             });
             root.Children.Add(sp);
@@ -623,7 +623,7 @@ public partial class MyTaskPage : UserControl
         root.Children.Add(new TextBlock
         {
             Text = $"📋  {req.업체명}",
-            FontFamily = Font, FontSize = 15, FontWeight = FontWeight.SemiBold,
+            FontFamily = Font, FontSize = AppTheme.FontXL, FontWeight = FontWeight.SemiBold,
             Foreground = AppRes("AppFg")
         });
 
@@ -631,10 +631,10 @@ public partial class MyTaskPage : UserControl
         {
             if (string.IsNullOrEmpty(value)) return;
             var sp = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
-            sp.Children.Add(new TextBlock { Text = label, FontFamily = Font, FontSize = 12, Foreground = AppRes("FgMuted"), Width = 60 });
+            sp.Children.Add(new TextBlock { Text = label, FontFamily = Font, FontSize = AppTheme.FontMD, Foreground = AppRes("FgMuted"), Width = 60 });
             sp.Children.Add(new TextBlock
             {
-                Text = value, FontFamily = Font, FontSize = 12,
+                Text = value, FontFamily = Font, FontSize = AppTheme.FontMD,
                 Foreground = color != null ? new SolidColorBrush(Color.Parse(color)) : AppRes("AppFg")
             });
             root.Children.Add(sp);

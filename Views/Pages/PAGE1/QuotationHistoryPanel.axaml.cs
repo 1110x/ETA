@@ -1,4 +1,5 @@
 using Avalonia;
+using ETA.Views;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -45,7 +46,7 @@ public partial class QuotationHistoryPanel : UserControl
     }
 
     private static readonly FontFamily Font =
-        new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
+        new("avares://ETA/Assets/Fonts#Pretendard");
 
     // ── 공개 이벤트 ───────────────────────────────────────────────────────
     public event Action<QuotationIssue>?        IssueSelected;
@@ -53,6 +54,7 @@ public partial class QuotationHistoryPanel : UserControl
     public event Action<AnalysisRequestRecord>? AnalysisRequestSelected;
     public event Action?                        AnalysisTabActivated;
     public event Action?                        QuotationTabActivated;
+    public event Action?                        StatementTabActivated;
 
     /// <summary>true이면 노드 클릭 시 IssueAddedToList 이벤트를 발생시키고 Show2 상세표시 안 함.
     /// false=견적/의뢰서(보라색), true=거래명세서 발행(청색)</summary>
@@ -387,20 +389,55 @@ public partial class QuotationHistoryPanel : UserControl
         }
 
         // ── 견적발행내역 탭 삭제 ─────────────────────────────────────────
-        if (!(_treeQuotation.SelectedItem is TreeViewItem qItem &&
-              qItem.Tag is QuotationIssue issue)) return;
+        var selected = GetSelectedIssues();
+        if (selected.Count == 0) return;
 
-        bool qConfirmed = await ShowConfirmDialogAsync(owner,
-            $"아래 견적을 삭제하시겠습니까?\n\n{issue.약칭}  {issue.시료명}\n{issue.견적번호}");
+        // 거래명세서번호가 있는 건이 포함된 경우 → 거래명세서 삭제 옵션 제공
+        var withStatement = selected.Where(i => !string.IsNullOrEmpty(i.거래명세서번호)).ToList();
+        if (withStatement.Count > 0)
+        {
+            var stNos = withStatement.Select(i => i.거래명세서번호!).Distinct().ToList();
+            string stMsg = stNos.Count == 1
+                ? $"거래명세서 [{stNos[0]}]을(를) 삭제하시겠습니까?\n\n연결된 견적 {withStatement.Count}건의 거래명세서번호가 초기화됩니다."
+                : $"거래명세서 {stNos.Count}건을 삭제하시겠습니까?\n\n{string.Join("\n", stNos.Take(5))}"
+                  + (stNos.Count > 5 ? $"\n… 외 {stNos.Count - 5}건" : "");
+
+            bool stConfirmed = await ShowConfirmDialogAsync(owner, stMsg);
+            if (!stConfirmed) return;
+
+            await Task.Run(() =>
+            {
+                foreach (var no in stNos)
+                    QuotationService.DeleteTradeStatement(no);
+            });
+
+            LoadData();
+            await ShowAlertDialogAsync(owner, $"거래명세서 {stNos.Count}건 삭제되었습니다.");
+            return;
+        }
+
+        // 거래명세서번호 없는 일반 견적 삭제
+        string qMsg = selected.Count == 1
+            ? $"아래 견적을 삭제하시겠습니까?\n\n{selected[0].약칭}  {selected[0].시료명}\n{selected[0].견적번호}"
+            : $"선택된 {selected.Count}건을 삭제하시겠습니까?\n\n"
+              + string.Join("\n", selected.Take(5).Select(i => $"  {i.약칭}  {i.시료명}"))
+              + (selected.Count > 5 ? $"\n  … 외 {selected.Count - 5}건" : "");
+
+        bool qConfirmed = await ShowConfirmDialogAsync(owner, qMsg);
         if (!qConfirmed) return;
 
-        Log($"삭제: {issue.견적번호}");
-        bool qOk = QuotationService.Delete(issue.Id);
-        if (qOk)
+        int qDeleted = 0;
+        await Task.Run(() =>
         {
-            LoadData();
-            await ShowAlertDialogAsync(owner, "삭제되었습니다.");
-        }
+            foreach (var issue in selected)
+            {
+                Log($"삭제: {issue.견적번호}");
+                if (QuotationService.Delete(issue.Id)) qDeleted++;
+            }
+        });
+
+        LoadData();
+        await ShowAlertDialogAsync(owner, $"{qDeleted}건 삭제되었습니다.");
     }
 
     // ── 다이얼로그 헬퍼 ──────────────────────────────────────────────────
@@ -415,7 +452,7 @@ public partial class QuotationHistoryPanel : UserControl
             SizeToContent         = SizeToContent.Height,
             CanResize             = false,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            Background            = new SolidColorBrush(Color.Parse("#1e1e2e")),
+            Background            = AppTheme.BgPrimary,
         };
 
         var yesBtn = new Button
@@ -423,7 +460,7 @@ public partial class QuotationHistoryPanel : UserControl
             Content             = "삭제",
             Width               = 70,
             Background          = new SolidColorBrush(Color.Parse("#4a1a1a")),
-            Foreground          = new SolidColorBrush(Color.Parse("#ff8888")),
+            Foreground          = AppTheme.FgDanger,
             FontFamily          = Font,
             FontSize            = AppFonts.Base,
             HorizontalContentAlignment = HorizontalAlignment.Center,
@@ -432,8 +469,8 @@ public partial class QuotationHistoryPanel : UserControl
         {
             Content             = "취소",
             Width               = 70,
-            Background          = new SolidColorBrush(Color.Parse("#2a2a3a")),
-            Foreground          = new SolidColorBrush(Color.Parse("#aaaaaa")),
+            Background          = AppTheme.BgCard,
+            Foreground          = AppTheme.FgMuted,
             FontFamily          = Font,
             FontSize            = AppFonts.Base,
             HorizontalContentAlignment = HorizontalAlignment.Center,
@@ -452,7 +489,7 @@ public partial class QuotationHistoryPanel : UserControl
                 new TextBlock
                 {
                     Text         = message,
-                    Foreground   = new SolidColorBrush(Color.Parse("#dddddd")),
+                    Foreground   = AppTheme.FgPrimary,
                     FontSize     = AppFonts.MD,
                     FontFamily   = Font,
                     TextWrapping = Avalonia.Media.TextWrapping.Wrap,
@@ -484,7 +521,7 @@ public partial class QuotationHistoryPanel : UserControl
             SizeToContent         = SizeToContent.Height,
             CanResize             = false,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            Background            = new SolidColorBrush(Color.Parse("#1e1e2e")),
+            Background            = AppTheme.BgPrimary,
         };
 
         var okBtn = new Button
@@ -510,7 +547,7 @@ public partial class QuotationHistoryPanel : UserControl
                 new TextBlock
                 {
                     Text       = message,
-                    Foreground = new SolidColorBrush(Color.Parse("#dddddd")),
+                    Foreground = AppTheme.FgPrimary,
                     FontSize   = AppFonts.MD,
                     FontFamily = Font,
                     TextWrapping = Avalonia.Media.TextWrapping.Wrap,
@@ -638,11 +675,13 @@ public partial class QuotationHistoryPanel : UserControl
         var tb = new TextBlock
         {
             Text = header, FontFamily = Font,
-            Foreground = Brush.Parse("#aaaacc"),
+            Foreground = AppTheme.FgInfo,
             Margin = new Thickness(2, 1),
         };
         Fs(tb, "FontSizeBase");
-        return new TreeViewItem { Header = tb, IsExpanded = false };
+        var tvi = new TreeViewItem { Header = tb, IsExpanded = false };
+        TextShimmer.AttachHover(tvi);
+        return tvi;
     }
 
     private TreeViewItem MakeIssueLeaf(QuotationIssue issue)
@@ -675,7 +714,7 @@ public partial class QuotationHistoryPanel : UserControl
         topRow.Children.Add(Fs(new TextBlock
         {
             Text = issue.시료명, FontFamily = Font,
-            Foreground = Brush.Parse("#dddddd"),
+            Foreground = AppTheme.FgPrimary,
             TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
             VerticalAlignment = VerticalAlignment.Center,
             [Grid.ColumnProperty] = 2,
@@ -685,7 +724,7 @@ public partial class QuotationHistoryPanel : UserControl
         bottomRow.Children.Add(Fs(new TextBlock
         {
             Text = issue.견적번호, FontFamily = Font,
-            Foreground = Brush.Parse("#445566"),
+            Foreground = AppTheme.FgDimmed,
             VerticalAlignment = VerticalAlignment.Center,
             [Grid.ColumnProperty] = 0,
         }, "FontSizeXS"));
@@ -693,7 +732,7 @@ public partial class QuotationHistoryPanel : UserControl
             bottomRow.Children.Add(Fs(new TextBlock
             {
                 Text = issue.담당자, FontFamily = Font,
-                Foreground = Brush.Parse("#778899"),
+                Foreground = AppTheme.FgMuted,
                 VerticalAlignment = VerticalAlignment.Center,
                 Margin = new Thickness(4, 0, 0, 0),
                 [Grid.ColumnProperty] = 1,
@@ -701,7 +740,7 @@ public partial class QuotationHistoryPanel : UserControl
         bottomRow.Children.Add(Fs(new TextBlock
         {
             Text = mmdd, FontFamily = Font,
-            Foreground = Brush.Parse("#556677"),
+            Foreground = AppTheme.FgDimmed,
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Thickness(4, 0, 0, 0),
             [Grid.ColumnProperty] = 2,
@@ -726,7 +765,7 @@ public partial class QuotationHistoryPanel : UserControl
         topRow.Children.Add(Fs(new TextBlock
         {
             Text = rec.시료명, FontFamily = Font,
-            Foreground = Brush.Parse("#dddddd"),
+            Foreground = AppTheme.FgPrimary,
             TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
             VerticalAlignment = VerticalAlignment.Center,
             [Grid.ColumnProperty] = 1,
@@ -737,14 +776,14 @@ public partial class QuotationHistoryPanel : UserControl
         bottomAnalysis.Children.Add(Fs(new TextBlock
         {
             Text = rec.접수번호, FontFamily = Font,
-            Foreground = Brush.Parse("#445566"),
+            Foreground = AppTheme.FgDimmed,
             VerticalAlignment = VerticalAlignment.Center,
             [Grid.ColumnProperty] = 0,
         }, "FontSizeXS"));
         bottomAnalysis.Children.Add(Fs(new TextBlock
         {
             Text = recMmdd, FontFamily = Font,
-            Foreground = Brush.Parse("#556677"),
+            Foreground = AppTheme.FgDimmed,
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Thickness(4, 0, 0, 1),
             [Grid.ColumnProperty] = 1,

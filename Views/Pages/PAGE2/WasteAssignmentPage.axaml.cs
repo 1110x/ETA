@@ -26,7 +26,7 @@ public partial class WasteAssignmentPage : UserControl
     private string _currentDate = DateTime.Today.ToString("yyyy-MM-dd");
 
     private static readonly FontFamily Font =
-        new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
+        new("avares://ETA/Assets/Fonts#Pretendard");
 
     // 상태별 색
     private static readonly Color ColMidam    = Color.Parse("#dd3333"); // 미담 = 빨강
@@ -199,7 +199,7 @@ public partial class WasteAssignmentPage : UserControl
             {
                 Text            = "해당 날짜의 작업 항목이 없습니다",
                 FontFamily      = Font,
-                Foreground      = Brush.Parse("#666666"),
+                Foreground      = AppTheme.FgDimmed,
                 Margin          = new Thickness(12, 16),
                 HorizontalAlignment = HorizontalAlignment.Center,
             }.BindMD());
@@ -218,9 +218,9 @@ public partial class WasteAssignmentPage : UserControl
     {
         return new Border
         {
-            Background      = Brush.Parse("#1e1e2e"),
+            Background      = AppTheme.BgPrimary,
             BorderThickness = new Thickness(0, 0, 0, 1),
-            BorderBrush     = Brush.Parse("#44448a"),
+            BorderBrush     = AppTheme.BorderAccent,
             Padding         = new Thickness(10, 6),
             Child = new TextBlock
             {
@@ -328,7 +328,7 @@ public partial class WasteAssignmentPage : UserControl
         {
             Background      = Brushes.Transparent,
             BorderThickness = new Thickness(0, 0, 1, 1),
-            BorderBrush     = Brush.Parse("#404050"),
+            BorderBrush     = AppTheme.BorderMuted,
             MinHeight       = 28,
             HorizontalContentAlignment = HorizontalAlignment.Center,
             VerticalContentAlignment   = VerticalAlignment.Center,
@@ -375,15 +375,15 @@ public partial class WasteAssignmentPage : UserControl
     {
         var cell = new Border
         {
-            Background      = Brush.Parse("#2a2a32"),
+            Background      = AppTheme.BgCard,
             BorderThickness = new Thickness(0, 0, 1, 1),
-            BorderBrush     = Brush.Parse("#404050"),
+            BorderBrush     = AppTheme.BorderMuted,
             Padding         = new Thickness(4, 4),
             Child = new TextBlock
             {
                 Text = text, FontFamily = Font,
                 FontWeight = FontWeight.SemiBold,
-                Foreground = Brush.Parse("#cccccc"),
+                Foreground = AppTheme.FgSecondary,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment   = VerticalAlignment.Center,
             }.BindBase()
@@ -399,7 +399,7 @@ public partial class WasteAssignmentPage : UserControl
         {
             Background      = Brush.Parse(bg),
             BorderThickness = new Thickness(0, 0, 1, 1),
-            BorderBrush     = Brush.Parse("#404050"),
+            BorderBrush     = AppTheme.BorderMuted,
             Padding         = new Thickness(6, 4),
             MinHeight       = 28,
             Child = new TextBlock

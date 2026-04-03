@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using ETA.Views;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
@@ -23,9 +24,9 @@ namespace ETA.Views.Pages.PAGE1;
 public partial class DbMigrationMappingPanel : UserControl
 {
     private static readonly FontFamily Font =
-        new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R");
+        new("avares://ETA/Assets/Fonts#Pretendard");
     private static readonly FontFamily FontM =
-        new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
+        new("avares://ETA/Assets/Fonts#Pretendard");
 
     // ── 상태 ─────────────────────────────────────────────────────────────────
     private Contract?  _company;
@@ -68,8 +69,8 @@ public partial class DbMigrationMappingPanel : UserControl
             spRows.Children.Add(new TextBlock
             {
                 Text       = "해당 약칭의 시료명 없음",
-                FontSize   = 11, FontFamily = Font,
-                Foreground = new SolidColorBrush(Color.Parse("#666")),
+                FontSize   = AppTheme.FontBase, FontFamily = Font,
+                Foreground = AppTheme.FgDimmed,
                 Margin     = new Avalonia.Thickness(8, 6),
             });
             return;

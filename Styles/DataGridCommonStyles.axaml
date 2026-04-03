@@ -2,22 +2,36 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <!-- 컬럼 헤더 공통 스타일 (테마 자동 적용) -->
+    <!-- 컬럼 헤더 공통 스타일 + 호버 트랜지션 -->
     <Style Selector="DataGridColumnHeader">
         <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundBaseMediumBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
-        <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+        <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#Pretendard" />
         <Setter Property="FontSize" Value="{DynamicResource FontSizeLG}" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="Padding" Value="1,1" />
         <Setter Property="BorderThickness" Value="0,0,1,1" />
         <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.15" Easing="CubicEaseOut"/>
+            </Transitions>
+        </Setter>
     </Style>
 
-    <!-- 셀 안 TextBlock 공통 스타일 (테마 자동 적용) -->
+    <!-- 행 호버 트랜지션 -->
+    <Style Selector="DataGridRow">
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.15" Easing="CubicEaseOut"/>
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <!-- 셀 안 TextBlock 공통 스타일 -->
     <Style Selector="DataGridCell TextBlock">
         <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
-        <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R" />
+        <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#Pretendard" />
         <Setter Property="FontSize" Value="{DynamicResource FontSizeMD}" />
     </Style>
 

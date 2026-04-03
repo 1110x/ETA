@@ -13,13 +13,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading.Tasks;
+using ETA.Views;
 
 namespace ETA.Views.Pages.PAGE1;
 
 public class OrderRequestEditPanel : UserControl
 {
     private static readonly FontFamily Font =
-        new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
+        new("avares://ETA/Assets/Fonts#Pretendard");
 
     private QuotationIssue    _issue        = null!;
     private List<string>      _samples      = new();
@@ -54,28 +56,28 @@ public class OrderRequestEditPanel : UserControl
                 new TextBlock
                 {
                     Text = "📋  의뢰서 편집",
-                    FontSize = 13, FontWeight = FontWeight.Bold,
-                    FontFamily = Font, Foreground = Brush.Parse("#e0e0e0"),
+                    FontSize = AppTheme.FontLG, FontWeight = FontWeight.Bold,
+                    FontFamily = Font, Foreground = AppTheme.FgPrimary,
                 },
                 new TextBlock
                 {
                     Text = $"{_issue.업체명}  |  {_issue.견적번호}  |  {_issue.견적구분}",
-                    FontSize = 9, FontFamily = Font, Foreground = Brush.Parse("#666688"),
+                    FontSize = AppTheme.FontXS, FontFamily = Font, Foreground = Brush.Parse("#666688"),
                 },
             }
         });
 
         var btnSubmit = new Button
         {
-            Content = "🔄 업데이트", Height = 26, FontSize = 11, FontFamily = Font,
-            Background = Brush.Parse("#1a4a2a"), Foreground = Brush.Parse("#88ee88"),
+            Content = "🔄 업데이트", Height = 26, FontSize = AppTheme.FontBase, FontFamily = Font,
+            Background = AppTheme.BgActiveGreen, Foreground = AppTheme.FgSuccess,
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
             Padding = new Thickness(12, 0), Margin = new Thickness(0, 0, 6, 0),
         };
         var btnCancel = new Button
         {
-            Content = "← 뒤로", Height = 26, FontSize = 11, FontFamily = Font,
-            Background = Brush.Parse("#2a2a3a"), Foreground = Brush.Parse("#888"),
+            Content = "← 뒤로", Height = 26, FontSize = AppTheme.FontBase, FontFamily = Font,
+            Background = AppTheme.BorderSubtle, Foreground = AppTheme.FgMuted,
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
             Padding = new Thickness(12, 0),
         };
@@ -89,7 +91,7 @@ public class OrderRequestEditPanel : UserControl
         var info = new TextBlock
         {
             Text = $"시료 {_samples.Count}건  ·  견적항목 {_quotedItems.Count}개 기본 체크  ·  체크 해제로 제외 가능",
-            FontSize = 9, FontFamily = Font, Foreground = Brush.Parse("#555577"),
+            FontSize = AppTheme.FontXS, FontFamily = Font, Foreground = AppTheme.FgDimmed,
             Margin = new Thickness(0, 4, 0, 6),
         };
 
@@ -107,7 +109,7 @@ public class OrderRequestEditPanel : UserControl
             Children =
             {
                 Rc(titleBar, 0),
-                Rc(new Border { Height = 1, Background = Brush.Parse("#333"), Margin = new Thickness(0,5,0,5) }, 1),
+                Rc(new Border { Height = 1, Background = AppTheme.BorderSubtle, Margin = new Thickness(0,5,0,5) }, 1),
                 Rc(info, 2),
                 Rc(scroll, 3),
             }
@@ -139,7 +141,7 @@ public class OrderRequestEditPanel : UserControl
             var tb = new TextBlock
             {
                 Text                = sName,
-                FontSize            = 9,
+                FontSize            = AppTheme.FontXS,
                 FontFamily          = Font,
                 Foreground          = Brush.Parse("#ccccee"),
                 HorizontalAlignment = HorizontalAlignment.Center,
@@ -152,7 +154,7 @@ public class OrderRequestEditPanel : UserControl
             var hdr = new Border
             {
                 Background      = Brush.Parse("#1a1a30"),
-                BorderBrush     = Brush.Parse("#2a2a3a"),
+                BorderBrush     = AppTheme.BorderSubtle,
                 BorderThickness = new Thickness(0, 0, 1, 1),
                 Child           = tb,
             };
@@ -173,15 +175,15 @@ public class OrderRequestEditPanel : UserControl
             var nameCell = new Border
             {
                 Background      = Brush.Parse(rowBg),
-                BorderBrush     = Brush.Parse("#2a2a3a"),
+                BorderBrush     = AppTheme.BorderSubtle,
                 BorderThickness = new Thickness(0, 0, 1, 1),
                 Padding         = new Thickness(6, 0),
                 Child           = new TextBlock
                 {
                     Text              = colName,
-                    FontSize          = 9,
+                    FontSize          = AppTheme.FontXS,
                     FontFamily        = Font,
-                    Foreground        = isQ ? Brush.Parse("#88cc88") : Brush.Parse("#888899"),
+                    Foreground        = isQ ? AppTheme.FgSuccess : AppTheme.FgMuted,
                     VerticalAlignment = VerticalAlignment.Center,
                     TextTrimming      = Avalonia.Media.TextTrimming.CharacterEllipsis,
                 }
@@ -205,7 +207,7 @@ public class OrderRequestEditPanel : UserControl
                 var cell = new Border
                 {
                     Background      = Brush.Parse(rowBg),
-                    BorderBrush     = Brush.Parse("#222230"),
+                    BorderBrush     = AppTheme.BorderSubtle,
                     BorderThickness = new Thickness(0, 0, 1, 1),
                     Child           = cb,
                 };
@@ -259,17 +261,17 @@ public class OrderRequestEditPanel : UserControl
     {
         var b = new Border
         {
-            Background      = Brush.Parse("#1e1e30"),
-            BorderBrush     = Brush.Parse("#333"),
+            Background      = AppTheme.BgPrimary,
+            BorderBrush     = AppTheme.BorderSubtle,
             BorderThickness = new Thickness(0, 0, 1, 1),
             Padding         = new Thickness(6, 0),
             Child           = new TextBlock
             {
                 Text              = text,
-                FontSize          = 10,
+                FontSize          = AppTheme.FontSM,
                 FontFamily        = Font,
                 FontWeight        = FontWeight.SemiBold,
-                Foreground        = Brush.Parse("#aaaacc"),
+                Foreground        = AppTheme.FgInfo,
                 VerticalAlignment = VerticalAlignment.Center,
             }
         };
@@ -286,21 +288,21 @@ public class OrderRequestEditPanel : UserControl
             Title = "확인", Width = 360, Height = 200,
             CanResize = false,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            Background = Brush.Parse("#1e1e2a"),
+            Background = AppTheme.BgPrimary,
         };
         var yes = new Button
         {
             Content = "덮어쓰기", Width = 90, Height = 26,
-            Background = Brush.Parse("#4a2a2a"), Foreground = Brush.Parse("#f0aeae"),
+            Background = AppTheme.BgDanger, Foreground = AppTheme.FgDanger,
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
-            FontFamily = Font, FontSize = 11,
+            FontFamily = Font, FontSize = AppTheme.FontBase,
         };
         var no = new Button
         {
             Content = "취소", Width = 80, Height = 26,
-            Background = Brush.Parse("#2a2a3a"), Foreground = Brush.Parse("#aaa"),
+            Background = AppTheme.BorderSubtle, Foreground = AppTheme.FgMuted,
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
-            FontFamily = Font, FontSize = 11,
+            FontFamily = Font, FontSize = AppTheme.FontBase,
         };
         yes.Click += (_, _) => { r = true;  dlg.Close(); };
         no.Click  += (_, _) => { r = false; dlg.Close(); };
@@ -311,8 +313,8 @@ public class OrderRequestEditPanel : UserControl
             {
                 new TextBlock
                 {
-                    Text = msg, FontFamily = Font, FontSize = 11,
-                    Foreground = Brush.Parse("#ddd"),
+                    Text = msg, FontFamily = Font, FontSize = AppTheme.FontBase,
+                    Foreground = AppTheme.FgPrimary,
                     TextWrapping = Avalonia.Media.TextWrapping.Wrap,
                 },
                 new StackPanel
@@ -334,14 +336,14 @@ public class OrderRequestEditPanel : UserControl
             Title = "완료", Width = 300, Height = 130,
             CanResize = false,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            Background = Brush.Parse("#1e1e2a"),
+            Background = AppTheme.BgPrimary,
         };
         var ok = new Button
         {
             Content = "확인", Width = 70, Height = 26,
-            Background = Brush.Parse("#2a2a3a"), Foreground = Brush.Parse("#aaa"),
+            Background = AppTheme.BorderSubtle, Foreground = AppTheme.FgMuted,
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
-            FontFamily = Font, FontSize = 11,
+            FontFamily = Font, FontSize = AppTheme.FontBase,
             HorizontalAlignment = HorizontalAlignment.Right,
         };
         ok.Click += (_, _) => dlg.Close();
@@ -352,8 +354,8 @@ public class OrderRequestEditPanel : UserControl
             {
                 new TextBlock
                 {
-                    Text = msg, FontFamily = Font, FontSize = 11,
-                    Foreground = Brush.Parse("#88ee88"),
+                    Text = msg, FontFamily = Font, FontSize = AppTheme.FontBase,
+                    Foreground = AppTheme.FgSuccess,
                     TextWrapping = Avalonia.Media.TextWrapping.Wrap,
                 },
                 ok,

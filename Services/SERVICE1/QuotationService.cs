@@ -786,6 +786,35 @@ public static class QuotationService
         }
     }
 
+    /// <summary>선택된 견적의 거래명세서번호를 DB에서 제거하고, 거래명세서발행내역 레코드도 삭제</summary>
+    public static bool DeleteTradeStatement(string statementNo)
+    {
+        if (string.IsNullOrEmpty(statementNo)) return false;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return false;
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+
+        // 1. 견적발행내역에서 거래명세서번호 제거
+        using (var cmd = conn.CreateCommand())
+        {
+            cmd.CommandText = "UPDATE `견적발행내역` SET `거래명세서번호`=NULL WHERE `거래명세서번호`=@no";
+            cmd.Parameters.AddWithValue("@no", statementNo);
+            cmd.ExecuteNonQuery();
+        }
+
+        // 2. 거래명세서발행내역 레코드 삭제
+        if (TableExists(conn, "거래명세서발행내역"))
+        {
+            using var cmd2 = conn.CreateCommand();
+            cmd2.CommandText = "DELETE FROM `거래명세서발행내역` WHERE `거래명세서번호`=@no";
+            cmd2.Parameters.AddWithValue("@no", statementNo);
+            cmd2.ExecuteNonQuery();
+        }
+
+        Log($"거래명세서 삭제: {statementNo}");
+        return true;
+    }
+
     /// <summary>
     /// 선택된 견적들의 항목별 합산 데이터를 거래명세서 INSERT용 dict로 반환한다.
     /// key: 항목명, value: (합산수량, 단가, 합산소계)

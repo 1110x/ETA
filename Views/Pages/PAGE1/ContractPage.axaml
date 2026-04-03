@@ -6,7 +6,7 @@
         <!-- ToggleSwitch -->
         <Style Selector="ToggleSwitch">
             <Setter Property="FontSize"   Value="{DynamicResource FontSizeBase}" />
-            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#Pretendard" />
         </Style>
         <!-- TreeViewItem -->
         <Style Selector="TreeViewItem">
@@ -15,7 +15,7 @@
             <Setter Property="MinHeight"  Value="0" />
             <Setter Property="FontSize"   Value="{DynamicResource FontSizeBase}" />
             <Setter Property="Foreground" Value="{DynamicResource TreeFg}" />
-            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#Pretendard" />
             <Setter Property="Background" Value="Transparent" />
         </Style>
         <Style Selector="TreeViewItem /template/ ContentPresenter#PART_HeaderPresenter">
@@ -40,7 +40,7 @@
             <TextBlock Text="계약업체 목록"
                        FontSize="{DynamicResource FontSizeBase}" FontWeight="SemiBold"
                        Foreground="{DynamicResource FgMuted}"
-                       FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                       FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                        VerticalAlignment="Center"/>
         </Border>
         <Border Grid.Row="1"

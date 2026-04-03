@@ -141,6 +141,46 @@ public static class WasteSampleService
         return GetByDate(채수일);
     }
 
+    // ── 드래그앤드롭 순서 변경 (임의 위치로 이동) ────────────────────────────
+    public static void ReorderTo(int id, string 채수일, string 구분, int newIndex)
+    {
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+
+        // 현재 그룹의 Id 목록 (순서대로)
+        var ids = new List<int>();
+        using (var cmd = conn.CreateCommand())
+        {
+            cmd.CommandText = "SELECT Id FROM `폐수채수의뢰` WHERE 채수일=@d AND 구분=@g ORDER BY 순서 ASC";
+            cmd.Parameters.AddWithValue("@d", 채수일);
+            cmd.Parameters.AddWithValue("@g", 구분);
+            using var r = cmd.ExecuteReader();
+            while (r.Read()) ids.Add(r.GetInt32(0));
+        }
+
+        int oldIndex = ids.IndexOf(id);
+        if (oldIndex < 0 || oldIndex == newIndex) return;
+        if (newIndex < 0) newIndex = 0;
+        if (newIndex >= ids.Count) newIndex = ids.Count - 1;
+
+        // 리스트에서 제거 후 새 위치에 삽입
+        ids.RemoveAt(oldIndex);
+        ids.Insert(newIndex, id);
+
+        // 전체 재번호
+        for (int i = 0; i < ids.Count; i++)
+        {
+            int seq = i + 1;
+            string sn = WasteSample.BuildSN(채수일, 구분, seq);
+            using var upd = conn.CreateCommand();
+            upd.CommandText = "UPDATE `폐수채수의뢰` SET 순서=@s, SN=@sn WHERE Id=@id";
+            upd.Parameters.AddWithValue("@s",  seq);
+            upd.Parameters.AddWithValue("@sn", sn);
+            upd.Parameters.AddWithValue("@id", ids[i]);
+            upd.ExecuteNonQuery();
+        }
+    }
+
     // ── 내부 헬퍼 ─────────────────────────────────────────────────────────────
     private static int NextSeq(string 채수일, string 구분)
     {

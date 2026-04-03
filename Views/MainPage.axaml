@@ -3,6 +3,7 @@
         xmlns:lottie="using:Avalonia.Labs.Lottie"
         x:Class="ETA.Views.MainPage"
         TransparencyLevelHint="AcrylicBlur"
+        CanResize="True"
         Width="1600" Height="900"
         Icon="avares://ETA/Assets/icons/ETA.ico"
         Title="ETA Water Analysis Center">
@@ -30,18 +31,18 @@
         <SolidColorBrush x:Key="PanelInnerBg"     Color="#2d2d35"/>
         <SolidColorBrush x:Key="MenuBarBg"        Color="#444444"/>
         <SolidColorBrush x:Key="MenuItemBg"       Color="#444444"/>
-        <SolidColorBrush x:Key="MenuItemHover"    Color="#012800"/>
-        <SolidColorBrush x:Key="SubMenuBg"        Color="#012800"/>
-        <SolidColorBrush x:Key="SubMenuItemBg"    Color="#444444"/>  <!-- ★ 통일 -->
-        <SolidColorBrush x:Key="SubMenuItemHover" Color="#023d00"/>
+        <SolidColorBrush x:Key="MenuItemHover"    Color="#3a3a5a"/>
+        <SolidColorBrush x:Key="SubMenuBg"        Color="#2a2a3a"/>
+        <SolidColorBrush x:Key="SubMenuItemBg"    Color="#35343c"/>
+        <SolidColorBrush x:Key="SubMenuItemHover" Color="#3a3a5a"/>
         <SolidColorBrush x:Key="SubBtnBg"         Color="#342f2f"/>
-        <SolidColorBrush x:Key="SubBtnHover"      Color="#012800"/>
+        <SolidColorBrush x:Key="SubBtnHover"      Color="#3a3a5a"/>
         <SolidColorBrush x:Key="SplitterColor"    Color="#020202"/>
-        <SolidColorBrush x:Key="AppFg"            Color="#ffffff"/>
+        <SolidColorBrush x:Key="AppFg"            Color="#d8d8e0"/>
         <SolidColorBrush x:Key="FgMuted"          Color="#aaaaaa"/>
-        <SolidColorBrush x:Key="FgHover"          Color="#fd0f0f"/>
-        <SolidColorBrush x:Key="TreeFg"           Color="#e0e0e0"/>
-        <SolidColorBrush x:Key="TreeSelBg"        Color="#014a00"/>
+        <SolidColorBrush x:Key="FgHover"          Color="#88aaff"/>
+        <SolidColorBrush x:Key="TreeFg"           Color="#d0d0d8"/>
+        <SolidColorBrush x:Key="TreeSelBg"        Color="#1e3a5a"/>
         <SolidColorBrush x:Key="TreeSelFg"        Color="#ffffff"/>
         <SolidColorBrush x:Key="GridHeaderBg"     Color="#2a2a32"/>
         <SolidColorBrush x:Key="GridRowBg"        Color="#35343c"/>
@@ -51,26 +52,63 @@
         <SolidColorBrush x:Key="InputFg"          Color="#e8e8e8"/>
         <SolidColorBrush x:Key="TreeHoverBg"      Color="#252535"/>
         <SolidColorBrush x:Key="Panel4Bg"         Color="#252535"/>
+
+        <!-- ── 버튼 색상 (테마 전환 대응) ── -->
+        <SolidColorBrush x:Key="BtnBg"            Color="#2a2a3a"/>
+        <SolidColorBrush x:Key="BtnFg"            Color="#cccccc"/>
+        <SolidColorBrush x:Key="BtnBorder"        Color="#404050"/>
+        <SolidColorBrush x:Key="BtnHoverBg"       Color="#3a3a5a"/>
+        <SolidColorBrush x:Key="BtnPrimaryBg"     Color="#1e3a5a"/>
+        <SolidColorBrush x:Key="BtnPrimaryFg"     Color="#88aaee"/>
+        <SolidColorBrush x:Key="BtnPrimaryBorder" Color="#336699"/>
+        <SolidColorBrush x:Key="BtnPrimaryHover"  Color="#2a4a6a"/>
+        <SolidColorBrush x:Key="BtnDangerBg"      Color="#4a2a2a"/>
+        <SolidColorBrush x:Key="BtnDangerFg"      Color="#ff8888"/>
+        <SolidColorBrush x:Key="BtnDangerBorder"  Color="#663333"/>
+        <SolidColorBrush x:Key="BtnDangerHover"   Color="#5a3333"/>
+        <SolidColorBrush x:Key="BtnSuccessBg"     Color="#1a3a2a"/>
+        <SolidColorBrush x:Key="BtnSuccessFg"     Color="#88cc88"/>
+        <SolidColorBrush x:Key="BtnSuccessBorder" Color="#2a6a2a"/>
+        <SolidColorBrush x:Key="BtnSuccessHover"  Color="#2a4a3a"/>
     </Window.Resources>
 
     <!-- ── 전역 스타일 (모든 하위 컨트롤에 적용) ── -->
     <Window.Styles>
+        <!-- ══════════════════════════════════════════════════════════════
+             기본 컨트롤 스타일 + 트랜지션 애니메이션
+        ═══════════════════════════════════════════════════════════════ -->
+
         <!-- TextBlock -->
         <Style Selector="TextBlock">
             <Setter Property="Foreground"  Value="{DynamicResource AppFg}"/>
-            <Setter Property="FontFamily"  Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+            <Setter Property="FontFamily"  Value="avares://ETA/Assets/Fonts#Pretendard"/>
             <Setter Property="FontSize"    Value="{DynamicResource FontSizeLG}"/>
         </Style>
 
-        <!-- TextBox -->
+        <!-- TextBox + 포커스 강조 트랜지션 -->
         <Style Selector="TextBox">
             <Setter Property="Background"   Value="{DynamicResource InputBg}"/>
             <Setter Property="Foreground"   Value="{DynamicResource InputFg}"/>
             <Setter Property="BorderBrush"  Value="{DynamicResource InputBorder}"/>
-            <Setter Property="FontFamily"   Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontFamily"   Value="avares://ETA/Assets/Fonts#Pretendard"/>
             <Setter Property="FontSize"     Value="{DynamicResource FontSizeLG}"/>
-            <Setter Property="CornerRadius" Value="4"/>
-            <Setter Property="Padding"      Value="6,4"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding"      Value="8,5"/>
+            <Setter Property="MinHeight"    Value="30"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="BorderBrush" Duration="0:0:0.2" Easing="CubicEaseOut"/>
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="TextBox:focus">
+            <Setter Property="BorderBrush" Value="#6366F1"/>
+        </Style>
+
+        <!-- CalendarDatePicker: \uc9c1\uc811 \ud0c0\uc774\ud551 \uae08\uc9c0, \uce98\ub9b0\ub354\ub85c\ub9cc \uc120\ud0dd -->
+        <Style Selector="CalendarDatePicker /template/ TextBox">
+            <Setter Property="IsReadOnly" Value="True"/>
         </Style>
 
         <!-- ComboBox -->
@@ -78,55 +116,100 @@
             <Setter Property="Background"  Value="{DynamicResource InputBg}"/>
             <Setter Property="Foreground"  Value="{DynamicResource InputFg}"/>
             <Setter Property="BorderBrush" Value="{DynamicResource InputBorder}"/>
-            <Setter Property="FontFamily"  Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+            <Setter Property="FontFamily"  Value="avares://ETA/Assets/Fonts#Pretendard"/>
             <Setter Property="FontSize"    Value="{DynamicResource FontSizeLG}"/>
         </Style>
 
-        <!-- DataGrid -->
+        <!-- ══ DataGrid + 행 호버/선택 트랜지션 ══ -->
         <Style Selector="DataGrid">
             <Setter Property="Background"      Value="{DynamicResource GridRowBg}"/>
             <Setter Property="RowBackground"   Value="{DynamicResource GridRowBg}"/>
             <Setter Property="Foreground"      Value="{DynamicResource AppFg}"/>
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="FontFamily"      Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+            <Setter Property="FontFamily"      Value="avares://ETA/Assets/Fonts#Pretendard"/>
             <Setter Property="FontSize"        Value="{DynamicResource FontSizeMD}"/>
         </Style>
-        <!-- 짝수 행 교대 색상 (Avalonia는 AlternatingRowBackground 없음) -->
+        <Style Selector="DataGridRow">
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.15" Easing="CubicEaseOut"/>
+                </Transitions>
+            </Setter>
+        </Style>
         <Style Selector="DataGridRow:nth-child(even)">
             <Setter Property="Background" Value="{DynamicResource GridRowAltBg}"/>
+        </Style>
+        <Style Selector="DataGridRow:pointerover">
+            <Setter Property="Background" Value="{DynamicResource TreeHoverBg}"/>
+            <Style.Animations>
+                <Animation Duration="0:0:0.25" Easing="CubicEaseOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0.7"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
         </Style>
         <Style Selector="DataGridColumnHeader">
             <Setter Property="Background" Value="{DynamicResource GridHeaderBg}"/>
             <Setter Property="Foreground" Value="{DynamicResource AppFg}"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Padding"    Value="8,4"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.15" Easing="CubicEaseOut"/>
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="DataGridColumnHeader:pointerover">
+            <Setter Property="Background" Value="{DynamicResource TreeHoverBg}"/>
         </Style>
 
-        <!-- TreeView -->
+        <!-- ══ TreeView + 호버/선택 트랜지션 ══ -->
         <Style Selector="TreeView">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="{DynamicResource TreeFg}"/>
-            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#Pretendard"/>
             <Setter Property="FontSize"   Value="{DynamicResource FontSizeLG}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="BorderBrush" Value="{DynamicResource InputBorder}"/>
             <Setter Property="CornerRadius" Value="4"/>
         </Style>
         <Style Selector="TreeViewItem">
-            <Setter Property="Padding"    Value="1,0" />
-            <Setter Property="Margin"     Value="0" />
+            <Setter Property="Padding"    Value="2,3" />
+            <Setter Property="Margin"     Value="0,1" />
             <Setter Property="MinHeight"  Value="0" />
-            <Setter Property="FontSize"   Value="{DynamicResource FontSizeBase}" />
+            <Setter Property="FontSize"   Value="{DynamicResource FontSizeMD}" />
             <Setter Property="Foreground" Value="{DynamicResource TreeFg}" />
-            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#Pretendard" />
             <Setter Property="Background" Value="Transparent" />
         </Style>
         <Style Selector="TreeViewItem /template/ ContentPresenter#PART_HeaderPresenter">
-            <Setter Property="Padding"    Value="2,1" />
+            <Setter Property="Padding"    Value="4,4" />
             <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.15" Easing="CubicEaseOut"/>
+                </Transitions>
+            </Setter>
         </Style>
         <Style Selector="TreeViewItem:selected">
             <Setter Property="Foreground" Value="{DynamicResource TreeSelFg}" />
+            <Style.Animations>
+                <Animation Duration="0:0:0.4" Easing="CubicEaseOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0.5"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="50%">
+                        <Setter Property="Opacity" Value="1.08"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
         </Style>
         <Style Selector="TreeViewItem:selected /template/ ContentPresenter#PART_HeaderPresenter">
             <Setter Property="Background"   Value="{DynamicResource TreeSelBg}" />
@@ -140,39 +223,132 @@
         <!-- CheckBox / RadioButton -->
         <Style Selector="CheckBox">
             <Setter Property="Foreground" Value="{DynamicResource AppFg}"/>
-            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#Pretendard"/>
             <Setter Property="FontSize"   Value="{DynamicResource FontSizeLG}"/>
         </Style>
         <Style Selector="RadioButton">
             <Setter Property="Foreground" Value="{DynamicResource AppFg}"/>
-            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#Pretendard"/>
             <Setter Property="FontSize"   Value="{DynamicResource FontSizeLG}"/>
         </Style>
 
-        <!-- Button 전역 기본값: 내용 수직·수평 가운데 정렬 -->
+        <!-- ══ Button 전역: 기본 스타일 + 호버/프레스 ══ -->
         <Style Selector="Button">
+            <Setter Property="Background"  Value="{DynamicResource BtnBg}"/>
+            <Setter Property="Foreground"  Value="{DynamicResource BtnFg}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BtnBorder}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius"    Value="5"/>
+            <Setter Property="Padding"         Value="12,5"/>
+            <Setter Property="FontSize"        Value="{DynamicResource FontSizeSM}"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment"   Value="Center"/>
-            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#Pretendard"/>
+            <Setter Property="RenderTransformOrigin" Value="50%,50%"/>
+            <Setter Property="RenderTransform" Value="scaleX(1) scaleY(1)"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.12" Easing="CubicEaseOut"/>
+                    <BrushTransition Property="Background" Duration="0:0:0.15" Easing="CubicEaseOut"/>
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Button:pointerover">
+            <Setter Property="RenderTransform" Value="scaleX(1.03) scaleY(1.03)"/>
+            <Setter Property="Background" Value="{DynamicResource BtnHoverBg}"/>
+        </Style>
+        <Style Selector="Button:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource BtnHoverBg}"/>
+        </Style>
+        <Style Selector="Button:pressed">
+            <Setter Property="RenderTransform" Value="scaleX(0.96) scaleY(0.96)"/>
+            <Style.Animations>
+                <Animation Duration="0:0:0.35" Easing="CubicEaseOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0.6"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="60%">
+                        <Setter Property="Opacity" Value="1.05"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- ── Button 변형: primary (강조 액션) ── -->
+        <Style Selector="Button.primary">
+            <Setter Property="Background"  Value="{DynamicResource BtnPrimaryBg}"/>
+            <Setter Property="Foreground"  Value="{DynamicResource BtnPrimaryFg}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BtnPrimaryBorder}"/>
+            <Setter Property="FontWeight"  Value="SemiBold"/>
+        </Style>
+        <Style Selector="Button.primary:pointerover">
+            <Setter Property="Background" Value="{DynamicResource BtnPrimaryHover}"/>
+        </Style>
+        <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource BtnPrimaryHover}"/>
+        </Style>
+
+        <!-- ── Button 변형: danger (삭제/위험 액션) ── -->
+        <Style Selector="Button.danger">
+            <Setter Property="Background"  Value="{DynamicResource BtnDangerBg}"/>
+            <Setter Property="Foreground"  Value="{DynamicResource BtnDangerFg}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BtnDangerBorder}"/>
+        </Style>
+        <Style Selector="Button.danger:pointerover">
+            <Setter Property="Background" Value="{DynamicResource BtnDangerHover}"/>
+        </Style>
+        <Style Selector="Button.danger:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource BtnDangerHover}"/>
+        </Style>
+
+        <!-- ── Button 변형: success (저장/확인) ── -->
+        <Style Selector="Button.success">
+            <Setter Property="Background"  Value="{DynamicResource BtnSuccessBg}"/>
+            <Setter Property="Foreground"  Value="{DynamicResource BtnSuccessFg}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BtnSuccessBorder}"/>
+        </Style>
+        <Style Selector="Button.success:pointerover">
+            <Setter Property="Background" Value="{DynamicResource BtnSuccessHover}"/>
+        </Style>
+        <Style Selector="Button.success:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource BtnSuccessHover}"/>
         </Style>
 
         <!-- Label -->
         <Style Selector="Label">
             <Setter Property="Foreground" Value="{DynamicResource AppFg}"/>
-            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#Pretendard"/>
         </Style>
 
-        <!-- ══ 상단 메인 메뉴바 버튼(MenuItem) ══ -->
+        <!-- ══ 상단 메인 메뉴바 MenuItem + 호버 트랜지션 ══ -->
         <Style Selector="MenuItem">
             <Setter Property="FontSize"    Value="{DynamicResource FontSizeLG}"/>
-            <Setter Property="FontFamily"  Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+            <Setter Property="FontFamily"  Value="avares://ETA/Assets/Fonts#Pretendard"/>
             <Setter Property="Height"      Value="25"/>
             <Setter Property="Padding"     Value="18,0"/>
             <Setter Property="Background"  Value="{DynamicResource MenuItemBg}"/>
             <Setter Property="Foreground"  Value="{DynamicResource AppFg}"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.15" Easing="CubicEaseOut"/>
+                </Transitions>
+            </Setter>
         </Style>
         <Style Selector="MenuItem:pointerover">
             <Setter Property="Background"  Value="{DynamicResource MenuItemHover}"/>
+            <Style.Animations>
+                <Animation Duration="0:0:0.3" Easing="CubicEaseOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0.6"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
         </Style>
         <Style Selector="MenuItem:pointerover > TextBlock">
             <Setter Property="Foreground" Value="{DynamicResource AppFg}"/>
@@ -182,17 +358,25 @@
         <Style Selector="MenuFlyoutPresenter">
             <Setter Property="Background"       Value="{DynamicResource SubMenuBg}"/>
             <Setter Property="CornerRadius"     Value="8"/>
-            <Setter Property="Padding"          Value="5,5"/>
-            <Setter Property="BorderThickness"  Value="0"/>
+            <Setter Property="Padding"          Value="4"/>
+            <Setter Property="BorderThickness"  Value="1"/>
+            <Setter Property="BorderBrush"      Value="{DynamicResource InputBorder}"/>
             <Setter Property="Foreground"       Value="{DynamicResource AppFg}"/>
         </Style>
 
-        <!-- ★ 서브메뉴 항목: SubMenuItemBg 로 통일 (위아래 색상 차이 해소) -->
+        <!-- ★ 서브메뉴 항목 + 호버 트랜지션 + 구분선 -->
         <Style Selector="MenuItem MenuItem">
-            <Setter Property="Background"  Value="{DynamicResource SubMenuItemBg}"/>
-            <Setter Property="Foreground"  Value="{DynamicResource AppFg}"/>
-            <Setter Property="Padding"     Value="5,5"/>
-            <Setter Property="MinHeight"   Value="36"/>
+            <Setter Property="Background"      Value="{DynamicResource SubMenuItemBg}"/>
+            <Setter Property="Foreground"      Value="{DynamicResource AppFg}"/>
+            <Setter Property="Padding"         Value="12,8"/>
+            <Setter Property="MinHeight"       Value="36"/>
+            <Setter Property="CornerRadius"    Value="4"/>
+            <Setter Property="Margin"          Value="2,1"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.15" Easing="CubicEaseOut"/>
+                </Transitions>
+            </Setter>
         </Style>
         <Style Selector="MenuItem MenuItem:pointerover">
             <Setter Property="Background"  Value="{DynamicResource SubMenuItemHover}"/>
@@ -207,10 +391,10 @@
             <Setter Property="Foreground" Value="{DynamicResource AppFg}"/>
         </Style>
 
-        <!-- ══ 서브메뉴 버튼 (SubMenu 툴바) ══ -->
+        <!-- ══ 서브메뉴 버튼 (BT1~BT8): 호버 스케일 + 글로우 ══ -->
         <Style Selector="StackPanel#SubMenu > Button">
             <Setter Property="FontSize"                   Value="{DynamicResource FontSizeLG}"/>
-            <Setter Property="FontFamily"                 Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+            <Setter Property="FontFamily"                 Value="avares://ETA/Assets/Fonts#Pretendard"/>
             <Setter Property="Height"                     Value="25"/>
             <Setter Property="CornerRadius"               Value="4"/>
             <Setter Property="Background"                 Value="{DynamicResource SubBtnBg}"/>
@@ -219,6 +403,19 @@
             <Setter Property="VerticalContentAlignment"   Value="Center"/>
             <Setter Property="Padding"                    Value="18,0"/>
             <Setter Property="BorderThickness"            Value="0"/>
+            <Setter Property="RenderTransformOrigin"      Value="50%,50%"/>
+            <Setter Property="RenderTransform"            Value="scaleX(1) scaleY(1)"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.12" Easing="CubicEaseOut"/>
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="StackPanel#SubMenu > Button:pointerover">
+            <Setter Property="RenderTransform" Value="scaleX(1.06) scaleY(1.06)"/>
+        </Style>
+        <Style Selector="StackPanel#SubMenu > Button:pressed">
+            <Setter Property="RenderTransform" Value="scaleX(0.94) scaleY(0.94)"/>
         </Style>
         <Style Selector="StackPanel#SubMenu > Button:pointerover /template/ ContentPresenter">
             <Setter Property="Background" Value="{DynamicResource SubBtnHover}"/>
@@ -228,9 +425,27 @@
         <!-- ToggleSwitch -->
         <Style Selector="ToggleSwitch">
             <Setter Property="Foreground" Value="{DynamicResource AppFg}"/>
-            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"/>
+            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#Pretendard"/>
             <Setter Property="FontSize"   Value="10"/>
             <Setter Property="MinWidth"   Value="110"/>
+        </Style>
+
+        <!-- Slider: 깔끔한 원형 Thumb + 얇은 트랙 -->
+        <Style Selector="Slider">
+            <Setter Property="Foreground" Value="#6366F1"/>
+            <Setter Property="Height" Value="24"/>
+        </Style>
+        <!-- Thumb 내부 Border → 완전한 원형 -->
+        <Style Selector="Slider /template/ Thumb /template/ Border">
+            <Setter Property="Width"        Value="14"/>
+            <Setter Property="Height"       Value="14"/>
+            <Setter Property="CornerRadius" Value="7"/>
+            <Setter Property="Background"   Value="#6366F1"/>
+        </Style>
+        <!-- 트랙 배경 얇게 -->
+        <Style Selector="Slider:horizontal /template/ Border#TrackBackground">
+            <Setter Property="Height"       Value="4"/>
+            <Setter Property="CornerRadius" Value="2"/>
         </Style>
 
         <!-- ScrollBar -->
@@ -240,6 +455,63 @@
     </Window.Styles>
 
     <Grid RowDefinitions="30,*" Background="{DynamicResource AppBg}">
+
+        <!-- \u2550\u2550\u2550 \ud504\ub85c\uadf8\ub808\uc2a4 \uc624\ubc84\ub808\uc774 (\ucd5c\uc0c1\uc704 ZIndex) \u2550\u2550\u2550 -->
+        <Border x:Name="progressOverlay" IsVisible="False"
+                Grid.RowSpan="2" ZIndex="999"
+                HorizontalAlignment="Center" VerticalAlignment="Bottom"
+                Margin="0,0,0,24">
+            <Border CornerRadius="12" Padding="28,14"
+                    BoxShadow="0 8 32 0 #40000000"
+                    ClipToBounds="True">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                        <GradientStop Color="#DD1a1a2e" Offset="0"/>
+                        <GradientStop Color="#DD252545" Offset="0.5"/>
+                        <GradientStop Color="#DD1a1a2e" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+                <Border.Transitions>
+                    <Transitions>
+                        <DoubleTransition Property="Opacity" Duration="0:0:0.3" Easing="CubicEaseOut"/>
+                    </Transitions>
+                </Border.Transitions>
+                <Grid>
+                    <!-- Shimmer overlay -->
+                    <Border x:Name="shimmerOverlay" Opacity="0.15"
+                            CornerRadius="12" IsHitTestVisible="False"
+                            RenderTransformOrigin="0.5,0.5">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                                <GradientStop Color="Transparent" Offset="0"/>
+                                <GradientStop Color="#406366F1" Offset="0.4"/>
+                                <GradientStop Color="#608B5CF6" Offset="0.5"/>
+                                <GradientStop Color="#406366F1" Offset="0.6"/>
+                                <GradientStop Color="Transparent" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Border.RenderTransform>
+                            <TranslateTransform X="-300"/>
+                        </Border.RenderTransform>
+                    </Border>
+                    <!-- Content -->
+                    <StackPanel Orientation="Horizontal" Spacing="14">
+                        <ProgressBar x:Name="pbGlobal" IsIndeterminate="True"
+                                     Width="220" Height="5" CornerRadius="3"
+                                     Foreground="#6366F1">
+                            <ProgressBar.Transitions>
+                                <Transitions>
+                                    <DoubleTransition Property="Value" Duration="0:0:0.35" Easing="CubicEaseOut"/>
+                                </Transitions>
+                            </ProgressBar.Transitions>
+                        </ProgressBar>
+                        <TextBlock x:Name="txtProgressMsg" Text="\ucc98\ub9ac \uc911..."
+                                   Foreground="#e0e0e0" FontSize="12"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Border>
 
         <!-- ═══ 상단 메뉴바 ═══ -->
         <Border Grid.Row="0" Background="{DynamicResource MenuBarBg}" Padding="1">
@@ -342,7 +614,7 @@
                             Minimum="0.9" Maximum="1.1" Value="1.0"
                             SmallChange="0.01" LargeChange="0.05"
                             TickFrequency="0.01" IsSnapToTickEnabled="True"
-                            Width="100" Height="18"
+                            Width="100" Height="26"
                             VerticalAlignment="Center"
                             ValueChanged="SldFontSize_ValueChanged"/>
                     <TextBlock Text="가"
@@ -366,14 +638,19 @@
                             VerticalAlignment="Center"
                             Margin="0,0,6,0"/>
 
-                    <!-- 테마 토글 -->
-                    <ToggleSwitch x:Name="tglTheme"
-                                  Margin="0,-5,0,0"
-                                  VerticalAlignment="Center"
-                                  OnContent="🌙 다크모드"
-                                  OffContent="☀️ 라이트모드"
-                                  IsChecked="True"
-                                  IsCheckedChanged="OnThemeChanged"/>
+                    <!-- 테마 선택 -->
+                    <TextBlock Text="🎨" FontSize="13" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                    <ComboBox x:Name="cboTheme"
+                              Width="130" Height="24"
+                              FontSize="{DynamicResource FontSizeSM}"
+                              VerticalAlignment="Center"
+                              SelectedIndex="0"
+                              SelectionChanged="OnThemeSelectionChanged">
+                        <ComboBoxItem Content="🌙 Dark"/>
+                        <ComboBoxItem Content="☀️ Soft Light"/>
+                        <ComboBoxItem Content="🌊 Ocean"/>
+                        <ComboBoxItem Content="🍃 Forest"/>
+                    </ComboBox>
                 </StackPanel>
             </Grid>
         </Border>
@@ -381,22 +658,33 @@
         <!-- ═══ 본문 영역 ═══ -->
         <Grid Grid.Row="1" RowDefinitions="Auto,*">
 
-            <!-- 서브메뉴 툴바 -->
-            <StackPanel x:Name="SubMenu"
-                        Grid.Row="0"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Orientation="Horizontal"
-                        Spacing="8" Margin="12,10,0,0">
-                <Button x:Name="BT1" Content="항목1" Click="BT1_Click"/>
-                <Button x:Name="BT2" Content="항목2" Click="BT2_Click"/>
-                <Button x:Name="BT3" Content="항목3" Click="BT3_Click"/>
-                <Button x:Name="BT4" Content="항목4" Click="BT4_Click"/>
-                <Button x:Name="BT5" Content="항목5" Click="BT5_Click"/>
-                <Button x:Name="BT6" Content="항목6" Click="BT6_Click"/>
-                <Button x:Name="BT7" Content="항목7" Click="BT7_Click"/>
-                <Button x:Name="BT8" Content="항목8" Click="BT8_Click"/>
-            </StackPanel>
+            <!-- 서브메뉴 툴바 + 네비게이션 경로 -->
+            <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                <StackPanel x:Name="SubMenu"
+                            Grid.Column="0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal"
+                            Spacing="8" Margin="12,10,0,0">
+                    <Button x:Name="BT1" Content="항목1" Click="BT1_Click"/>
+                    <Button x:Name="BT2" Content="항목2" Click="BT2_Click"/>
+                    <Button x:Name="BT3" Content="항목3" Click="BT3_Click"/>
+                    <Button x:Name="BT4" Content="항목4" Click="BT4_Click"/>
+                    <Button x:Name="BT5" Content="항목5" Click="BT5_Click"/>
+                    <Button x:Name="BT6" Content="항목6" Click="BT6_Click"/>
+                    <Button x:Name="BT7" Content="항목7" Click="BT7_Click"/>
+                    <Button x:Name="BT8" Content="항목8" Click="BT8_Click"/>
+                </StackPanel>
+                <!-- 네비게이션 경로 표시 (오른쪽 상단) -->
+                <TextBlock x:Name="txtNavPath"
+                           Grid.Column="1"
+                           Text=""
+                           FontSize="{DynamicResource FontSizeSM}"
+                           Foreground="{DynamicResource ThemeFgMuted}"
+                           VerticalAlignment="Center"
+                           Margin="0,10,16,0"
+                           Opacity="0.8"/>
+            </Grid>
 
             <!-- ── 4분할 레이아웃 ── -->
             <!--
@@ -411,9 +699,10 @@
                   Margin="10,10,10,10"
                   ColumnDefinitions="200,8,*">
 
-                <!-- ── Content1: 왼쪽 사이드바 ── -->
+                <!-- ── Content1: 왼쪽 사이드바 (좌→우 슬라이드) ── -->
                 <Border Grid.Column="0"
                         Background="{DynamicResource PanelBg}"
+                        BorderBrush="{DynamicResource InputBorder}" BorderThickness="1"
                         CornerRadius="6" Padding="16" Margin="0,0,1,0">
                     <TransitioningContentControl x:Name="Show1"
                                     HorizontalAlignment="Stretch"
@@ -421,7 +710,10 @@
                                     HorizontalContentAlignment="Stretch"
                                     VerticalContentAlignment="Stretch">
                         <TransitioningContentControl.PageTransition>
-                            <CrossFade Duration="0:0:0.18"/>
+                            <CompositePageTransition>
+                                <CrossFade Duration="0:0:0.3"/>
+                                <PageSlide Duration="0:0:0.3" Orientation="Horizontal" SlideInEasing="QuarticEaseOut" SlideOutEasing="CubicEaseIn"/>
+                            </CompositePageTransition>
                         </TransitioningContentControl.PageTransition>
                     </TransitioningContentControl>
                 </Border>
@@ -433,92 +725,157 @@
                               VerticalAlignment="Stretch"
                               ResizeDirection="Columns"
                               Cursor="SizeWestEast"/>
-                <Border Grid.Column="1" Width="1"
-                        Background="{DynamicResource SplitterColor}"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Stretch" Opacity="0.9"/>
 
-                <!-- ── 오른쪽 (상하 분할) ── -->
+                <!-- ── 오른쪽: 플랫 3×3 그리드 (레이아웃 모드 전환 가능) ── -->
                 <Grid Grid.Column="2" x:Name="RightSplitGrid"
                       Margin="1,0,0,0"
+                      ColumnDefinitions="*,8,*"
                       RowDefinitions="808*,8,192*">
 
-                    <!-- 상단: Content2 + Content4 (좌우 분할) — Show1/2 경계와 동일 패턴 -->
-                    <Grid Grid.Row="0" x:Name="UpperContentGrid"
-                          ColumnDefinitions="*,8,*">
-
-                        <!-- Content2 -->
-                        <Border Grid.Column="0"
-                                Background="{DynamicResource PanelBg}"
-                                CornerRadius="6" Padding="12" Margin="0,0,1,0">
+                    <!-- Show2 -->
+                    <Border x:Name="Content2Border"
+                            Grid.Row="0" Grid.Column="0"
+                            Background="{DynamicResource PanelBg}"
+                            BorderBrush="{DynamicResource InputBorder}" BorderThickness="1"
+                            CornerRadius="6" Padding="12" Margin="0,0,1,0">
+                        <Grid>
                             <TransitioningContentControl x:Name="Show2"
                                             HorizontalAlignment="Stretch"
                                             VerticalAlignment="Stretch"
                                             HorizontalContentAlignment="Stretch"
                                             VerticalContentAlignment="Stretch">
                                 <TransitioningContentControl.PageTransition>
-                                    <CrossFade Duration="0:0:0.18"/>
+                                    <CompositePageTransition>
+                                        <CrossFade Duration="0:0:0.3"/>
+                                        <PageSlide Duration="0:0:0.3" Orientation="Vertical" SlideInEasing="QuarticEaseOut" SlideOutEasing="CubicEaseIn"/>
+                                    </CompositePageTransition>
                                 </TransitioningContentControl.PageTransition>
                             </TransitioningContentControl>
-                        </Border>
+                            <!-- Show2 풀하이트 레이아웃 전환 버튼 (좌하단) -->
+                            <Button x:Name="btnLayoutToggle2"
+                                    Content="◣"
+                                    FontSize="10" Width="20" Height="20"
+                                    Padding="0" CornerRadius="0,0,0,4"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Bottom"
+                                    Background="{DynamicResource InputBorder}"
+                                    Foreground="{DynamicResource FgMuted}"
+                                    BorderThickness="0" Opacity="0.5"
+                                    ToolTip.Tip="레이아웃 전환 (Show2 풀하이트 ↔ 기본)"
+                                    Click="BtnLayoutToggle2_Click"/>
+                        </Grid>
+                    </Border>
 
-                        <!-- Content2↔4 스플리터 -->
-                        <GridSplitter x:Name="HorizontalSplitter"
-                                      Grid.Column="1" Width="8"
-                                      Background="Transparent"
-                                      HorizontalAlignment="Stretch"
-                                      VerticalAlignment="Stretch"
-                                      ResizeDirection="Columns"
-                                      Cursor="SizeWestEast"/>
-                        <Border Grid.Column="1" Width="1"
-                                Background="{DynamicResource SplitterColor}"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Stretch"
-                                Opacity="0.9"/>
-
-                        <!-- Content4 -->
-                        <Border x:Name="Content4Border"
-                                Grid.Column="2"
-                                Background="{DynamicResource Panel4Bg}"
-                                CornerRadius="6" Padding="12" Margin="1,0,0,0">
+                    <!-- Show4 -->
+                    <Border x:Name="Content4Border"
+                            Grid.Row="0" Grid.Column="2"
+                            Background="{DynamicResource PanelBg}"
+                            BorderBrush="{DynamicResource InputBorder}" BorderThickness="1"
+                            CornerRadius="6" Padding="12" Margin="1,0,0,0">
+                        <Grid>
                             <TransitioningContentControl x:Name="Show4"
                                             HorizontalAlignment="Stretch"
                                             VerticalAlignment="Stretch"
                                             HorizontalContentAlignment="Stretch"
                                             VerticalContentAlignment="Stretch">
                                 <TransitioningContentControl.PageTransition>
-                                    <CrossFade Duration="0:0:0.18"/>
+                                    <CompositePageTransition>
+                                        <CrossFade Duration="0:0:0.3"/>
+                                        <PageSlide Duration="0:0:0.3" Orientation="Horizontal" SlideInEasing="QuarticEaseOut" SlideOutEasing="CubicEaseIn"/>
+                                    </CompositePageTransition>
                                 </TransitioningContentControl.PageTransition>
                             </TransitioningContentControl>
-                        </Border>
-                    </Grid>
+                            <!-- Show4 하단 이동 버튼 (우상단) — 클릭 시 Show2 확장 + Show4 하단 이동 -->
+                            <Button x:Name="btnLayoutToggle4Top"
+                                    Content="▼"
+                                    FontSize="9" Width="20" Height="20"
+                                    Padding="0" CornerRadius="0,4,0,0"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Top"
+                                    Background="{DynamicResource InputBorder}"
+                                    Foreground="{DynamicResource FgMuted}"
+                                    BorderThickness="0" Opacity="0.5"
+                                    ToolTip.Tip="Show4를 하단으로 이동 (Show2 상단 확장 ↔ 기본)"
+                                    Click="BtnLayoutToggle4Top_Click"/>
+                            <!-- Show4 풀하이트 레이아웃 전환 버튼 (좌하단) -->
+                            <Button x:Name="btnLayoutToggle4"
+                                    Content="◤"
+                                    FontSize="10" Width="20" Height="20"
+                                    Padding="0" CornerRadius="0,0,0,4"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Bottom"
+                                    Background="{DynamicResource InputBorder}"
+                                    Foreground="{DynamicResource FgMuted}"
+                                    BorderThickness="0" Opacity="0.5"
+                                    ToolTip.Tip="레이아웃 전환 (Show4 풀하이트 ↔ 기본)"
+                                    Click="BtnLayoutToggle4_Click"/>
+                        </Grid>
+                    </Border>
 
-                    <!-- 상하 스플리터 -->
+                    <!-- Show3 -->
+                    <Border x:Name="LowerBorder"
+                            Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
+                            Background="{DynamicResource PanelBg}"
+                            BorderBrush="{DynamicResource InputBorder}" BorderThickness="1"
+                            CornerRadius="6" Padding="12">
+                        <Grid>
+                            <TransitioningContentControl x:Name="Show3"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Stretch">
+                                <TransitioningContentControl.PageTransition>
+                                    <CompositePageTransition>
+                                        <CrossFade Duration="0:0:0.3"/>
+                                        <PageSlide Duration="0:0:0.3" Orientation="Vertical" SlideInEasing="QuarticEaseOut" SlideOutEasing="CubicEaseIn"/>
+                                    </CompositePageTransition>
+                                </TransitioningContentControl.PageTransition>
+                            </TransitioningContentControl>
+                            <!-- 레이아웃 모드 전환 버튼 (우하단 삼각형) -->
+                            <Button x:Name="btnLayoutToggle"
+                                    Content="◤"
+                                    FontSize="10" Width="20" Height="20"
+                                    Padding="0" CornerRadius="4,0,0,0"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Bottom"
+                                    Background="{DynamicResource InputBorder}"
+                                    Foreground="{DynamicResource FgMuted}"
+                                    BorderThickness="0" Opacity="0.5"
+                                    ToolTip.Tip="레이아웃 전환 (Show4 풀하이트 ↔ 기본)"
+                                    Click="BtnLayoutToggle_Click"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- 좌우 스플리터 (Show2↔Show4 또는 중앙↔Show4) -->
+                    <GridSplitter x:Name="HorizontalSplitter"
+                                  Grid.Row="0" Grid.Column="1"
+                                  Width="8"
+                                  Background="Transparent"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Stretch"
+                                  ResizeDirection="Columns"
+                                  Cursor="SizeWestEast"/>
+
+                    <!-- 상하 스플리터 (Show2↔Show3) -->
                     <GridSplitter x:Name="VerticalSplitter"
-                                  Grid.Row="1" Height="8"
+                                  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
+                                  Height="8"
                                   Background="Transparent"
                                   HorizontalAlignment="Stretch"
                                   VerticalAlignment="Stretch"
                                   ResizeDirection="Rows"
                                   Cursor="SizeNorthSouth"/>
-                    <Border Grid.Row="1" Height="1"
-                            Background="{DynamicResource SplitterColor}"
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Center" Opacity="0.9"/>
 
-                    <!-- 하단: Content3 (카테고리별 독립 스크롤 섹션) -->
-                    <Border x:Name="LowerBorder"
-                            Grid.Row="2"
-                            Background="{DynamicResource PanelBg}"
-                            CornerRadius="6" Padding="12">
-                        <TransitioningContentControl x:Name="Show3"
-                                        HorizontalAlignment="Stretch"
-                                        VerticalAlignment="Stretch">
-                            <TransitioningContentControl.PageTransition>
-                                <CrossFade Duration="0:0:0.18"/>
-                            </TransitioningContentControl.PageTransition>
-                        </TransitioningContentControl>
-                    </Border>
+                    <!-- Show3 토글 버튼 -->
+                    <Button x:Name="btnToggleShow3"
+                            Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
+                            Content="▼"
+                            FontSize="8" Width="28" Height="14"
+                            Padding="0" CornerRadius="0,0,4,4"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Bottom"
+                            Background="{DynamicResource InputBorder}"
+                            Foreground="{DynamicResource AppFg}"
+                            BorderThickness="0" Opacity="0.7"
+                            Click="BtnToggleShow3_Click"/>
 
                 </Grid>
             </Grid>

@@ -16,6 +16,7 @@ using ETA.Services.SERVICE1;
 using ETA.Services.SERVICE2;
 using ETA.Services.Common;
 using Avalonia.VisualTree;
+using ETA.Views;
 
 namespace ETA.Views.Pages.PAGE1;
 
@@ -118,7 +119,7 @@ public partial class ContractPage : UserControl
             _     => "🏢"
         };
 
-        return new TreeViewItem
+        var tvi = new TreeViewItem
         {
             Tag    = contract,
             Header = new StackPanel
@@ -144,7 +145,7 @@ public partial class ContractPage : UserControl
                             new TextBlock
                             {
                                 Text       = contract.C_CompanyName,
-                                FontSize   = 13,
+                                FontSize   = AppTheme.FontLG,
                                 FontFamily = Font,
                                 Foreground = AppRes("AppFg"),
                             },
@@ -164,15 +165,15 @@ public partial class ContractPage : UserControl
                                             Child = new TextBlock
                                             {
                                                 Text       = contract.C_Abbreviation,
-                                                FontSize   = 9, FontFamily = Font,
+                                                FontSize   = AppTheme.FontXS, FontFamily = Font,
                                                 Foreground = Brush.Parse(BadgeColorHelper.GetBadgeColor(contract.C_Abbreviation).Fg),
                                             }
                                         },
                                     new TextBlock
                                     {
                                         Text       = contract.C_ContractType,
-                                        FontSize   = 10, FontFamily = Font,
-                                        Foreground = new SolidColorBrush(Color.Parse("#888888")),
+                                        FontSize   = AppTheme.FontSM, FontFamily = Font,
+                                        Foreground = AppTheme.FgMuted,
                                         VerticalAlignment = VerticalAlignment.Center,
                                     }
                                 }
@@ -182,6 +183,8 @@ public partial class ContractPage : UserControl
                 }
             }
         };
+        TextShimmer.AttachHover(tvi);
+        return tvi;
     }
 
     // =========================================================================
@@ -336,7 +339,7 @@ public partial class ContractPage : UserControl
         root.Children.Add(new Border
         {
             Height     = 1,
-            Background = new SolidColorBrush(Color.Parse("#444444")),
+            Background = AppTheme.BorderMuted,
             Margin     = new Thickness(0, 16, 0, 8),
         });
 
@@ -348,23 +351,23 @@ public partial class ContractPage : UserControl
             root.Children.Add(new TextBlock
             {
                 Text       = $"📊  분석 단가 — {c.C_CompanyName}",
-                FontSize   = 13, FontFamily = Font, FontWeight = FontWeight.SemiBold,
-                Foreground = new SolidColorBrush(Color.Parse("#8899bb")),
+                FontSize   = AppTheme.FontLG, FontFamily = Font, FontWeight = FontWeight.SemiBold,
+                Foreground = AppTheme.FgMuted,
                 Margin     = new Thickness(0, 0, 0, 4),
             });
             root.Children.Add(new TextBlock
             {
                 Text       = "항목 클릭 → 오른쪽에서 편집  |  서브메뉴 [저장] → 서버 반영",
-                FontSize   = 10, FontFamily = Font,
-                Foreground = new SolidColorBrush(Color.Parse("#666666")),
+                FontSize   = AppTheme.FontSM, FontFamily = Font,
+                Foreground = AppTheme.FgDimmed,
                 Margin     = new Thickness(0, 0, 0, 6),
             });
             // 로딩 표시
             priceContainer.Children.Add(new TextBlock
             {
                 Text       = "⏳ 단가 로드 중...",
-                FontSize   = 10, FontFamily = Font,
-                Foreground = new SolidColorBrush(Color.Parse("#666666")),
+                FontSize   = AppTheme.FontSM, FontFamily = Font,
+                Foreground = AppTheme.FgDimmed,
             });
         }
         else
@@ -372,7 +375,7 @@ public partial class ContractPage : UserControl
             root.Children.Add(new TextBlock
             {
                 Text       = "🔒  단가 정보 — 접근 권한 없음",
-                FontSize   = 12, FontFamily = Font,
+                FontSize   = AppTheme.FontMD, FontFamily = Font,
                 Foreground = new SolidColorBrush(Color.Parse("#775555")),
             });
         }
@@ -399,8 +402,8 @@ public partial class ContractPage : UserControl
             priceContainer.Children.Add(new TextBlock
             {
                 Text       = "단가 정보 없음 — Excel 가져오기로 불러오세요.",
-                FontSize   = 11, FontFamily = Font,
-                Foreground = new SolidColorBrush(Color.Parse("#888888")),
+                FontSize   = AppTheme.FontBase, FontFamily = Font,
+                Foreground = AppTheme.FgMuted,
             });
             return;
         }
@@ -425,10 +428,10 @@ public partial class ContractPage : UserControl
             var priceBlock = new TextBlock
             {
                 Text              = FormatPrice(price),
-                Width             = 60, FontSize = 10, FontFamily = Font,
+                Width             = 60, FontSize = AppTheme.FontSM, FontFamily = Font,
                 Foreground        = string.IsNullOrEmpty(price)
-                                        ? new SolidColorBrush(Color.Parse("#555555"))
-                                        : new SolidColorBrush(Color.Parse("#aaddaa")),
+                                        ? AppTheme.BorderDefault
+                                        : AppTheme.FgSuccess,
                 VerticalAlignment = VerticalAlignment.Center,
                 TextAlignment     = Avalonia.Media.TextAlignment.Right,
             };
@@ -436,7 +439,7 @@ public partial class ContractPage : UserControl
 
             var cell = new Border
             {
-                Background      = new SolidColorBrush(Color.Parse("#1e1e2e")),
+                Background      = AppTheme.BgPrimary,
                 CornerRadius    = new CornerRadius(3),
                 Padding         = new Thickness(6, 3),
                 Cursor          = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
@@ -449,7 +452,7 @@ public partial class ContractPage : UserControl
                         new TextBlock
                         {
                             Text              = analyte,
-                            FontSize          = 9, FontFamily = Font,
+                            FontSize          = AppTheme.FontXS, FontFamily = Font,
                             Foreground        = AppRes("FgMuted"),
                             VerticalAlignment = VerticalAlignment.Center,
                             TextTrimming      = Avalonia.Media.TextTrimming.CharacterEllipsis,
@@ -630,7 +633,7 @@ public partial class ContractPage : UserControl
     // UI 헬퍼
     // =========================================================================
     private static readonly FontFamily Font =
-        new FontFamily("avares://ETA/Assets/Fonts#KBIZ한마음고딕 R");
+        new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
 
     private static StackPanel MakeRootPanel(string title)
     {
@@ -638,7 +641,7 @@ public partial class ContractPage : UserControl
         root.Children.Add(new TextBlock
         {
             Text       = title,
-            FontSize   = 15,
+            FontSize   = AppTheme.FontXL,
             FontFamily = Font,
             FontWeight = FontWeight.SemiBold,
             Foreground = AppRes("AppFg"),
@@ -647,7 +650,7 @@ public partial class ContractPage : UserControl
         root.Children.Add(new Border
         {
             Height     = 1,
-            Background = new SolidColorBrush(Color.Parse("#555555")),
+            Background = AppTheme.BorderDefault,
             Margin     = new Thickness(0, 0, 0, 4)
         });
         return root;
@@ -676,10 +679,10 @@ public partial class ContractPage : UserControl
         {
             Text              = (isLocked ? "🔒 " : "    ") + label + " :",
             Width             = 130,
-            FontSize          = 12,
+            FontSize          = AppTheme.FontMD,
             FontFamily        = Font,
             Foreground        = isLocked
-                                    ? new SolidColorBrush(Color.Parse("#888888"))
+                                    ? AppTheme.FgMuted
                                     : AppRes("FgMuted"),
             VerticalAlignment = VerticalAlignment.Center,
         });
@@ -688,20 +691,20 @@ public partial class ContractPage : UserControl
         {
             Text            = value ?? "",
             Width           = 200,
-            FontSize        = 12,
+            FontSize        = AppTheme.FontMD,
             FontFamily      = Font,
             IsReadOnly      = isReadOnly,
             Watermark       = hint,
             Background      = isReadOnly
                                   ? new SolidColorBrush(Color.Parse("#252525"))
-                                  : new SolidColorBrush(Color.Parse("#3a3a4a")),
+                                  : AppTheme.BorderSeparator,
             Foreground      = isReadOnly
-                                  ? new SolidColorBrush(Color.Parse("#666666"))
+                                  ? AppTheme.BorderMuted
                                   : AppRes("AppFg"),
             BorderThickness = new Thickness(1),
             BorderBrush     = isReadOnly
-                                  ? new SolidColorBrush(Color.Parse("#333333"))
-                                  : new SolidColorBrush(Color.Parse("#555577")),
+                                  ? AppTheme.BorderSubtle
+                                  : AppTheme.BorderDefault,
             CornerRadius    = new CornerRadius(4),
             Padding         = new Thickness(8, 4),
         });
@@ -727,7 +730,7 @@ public partial class ContractPage : UserControl
         {
             Text              = "    " + label + " :",
             Width             = 130,
-            FontSize          = 12,
+            FontSize          = AppTheme.FontMD,
             FontFamily        = Font,
             Foreground        = AppRes("FgMuted"),
             VerticalAlignment = VerticalAlignment.Center,
@@ -747,12 +750,12 @@ public partial class ContractPage : UserControl
         var comboBox = new ComboBox
         {
             Width           = 200,
-            FontSize        = 12,
+            FontSize        = AppTheme.FontMD,
             FontFamily      = Font,
-            Background      = new SolidColorBrush(Color.Parse("#3a3a4a")),
+            Background      = AppTheme.BorderSeparator,
             Foreground      = AppRes("AppFg"),
             BorderThickness = new Thickness(1),
-            BorderBrush     = new SolidColorBrush(Color.Parse("#555577")),
+            BorderBrush     = AppTheme.BorderDefault,
             Padding         = new Thickness(8, 4),
         };
 
@@ -791,15 +794,15 @@ public partial class ContractPage : UserControl
             Width   = 340, Height = 150,
             CanResize = false,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            Background = new SolidColorBrush(Color.Parse("#2d2d2d")),
+            Background = AppTheme.BgSecondary,
         };
 
         bool result = false;
         var yes = new Button { Content = "삭제", Width = 80,
-                               Background = new SolidColorBrush(Color.Parse("#c0392b")),
+                               Background = AppTheme.FgDanger,
                                Foreground = Brushes.White, BorderThickness = new Thickness(0) };
         var no  = new Button { Content = "취소", Width = 80,
-                               Background = new SolidColorBrush(Color.Parse("#444")),
+                               Background = AppTheme.BorderMuted,
                                Foreground = Brushes.White, BorderThickness = new Thickness(0) };
 
         yes.Click += (_, _) => { result = true;  dlg.Close(); };
@@ -811,7 +814,7 @@ public partial class ContractPage : UserControl
             Children =
             {
                 new TextBlock { Text = message, Foreground = AppRes("AppFg"),
-                                FontSize = 13, TextWrapping = Avalonia.Media.TextWrapping.Wrap },
+                                FontSize = AppTheme.FontLG, TextWrapping = Avalonia.Media.TextWrapping.Wrap },
                 new StackPanel { Orientation = Orientation.Horizontal, Spacing = 12,
                                  HorizontalAlignment = HorizontalAlignment.Right,
                                  Children = { yes, no } }
@@ -846,8 +849,8 @@ public partial class ContractPage : UserControl
             root.Children.Add(new TextBlock
             {
                 Text = "측정인 DB에 업체가 없습니다.\n먼저 로그인하여 데이터를 수집하세요.",
-                FontSize = 11, FontFamily = Font,
-                Foreground = Brush.Parse("#f0c040"),
+                FontSize = AppTheme.FontBase, FontFamily = Font,
+                Foreground = AppTheme.FgWarn,
                 TextWrapping = Avalonia.Media.TextWrapping.Wrap,
             });
             return root;
@@ -856,15 +859,15 @@ public partial class ContractPage : UserControl
         root.Children.Add(new TextBlock
         {
             Text = $"업체 {companies.Count}개 — 선택하여 정보를 편집하세요.",
-            FontSize = 10, FontFamily = Font, Foreground = Brush.Parse("#888"),
+            FontSize = AppTheme.FontSM, FontFamily = Font, Foreground = AppTheme.FgMuted,
             Margin = new Thickness(0, 0, 0, 4),
         });
 
         var listBox = new ListBox
         {
             MaxHeight = 220,
-            Background = Brush.Parse("#13131f"),
-            BorderBrush = Brush.Parse("#333"), BorderThickness = new Thickness(1),
+            Background = AppTheme.BgPrimary,
+            BorderBrush = AppTheme.BorderSubtle, BorderThickness = new Thickness(1),
         };
         foreach (var c in companies)
         {
@@ -877,15 +880,15 @@ public partial class ContractPage : UserControl
                     Orientation = Orientation.Horizontal, Spacing = 8,
                     Children =
                     {
-                        new TextBlock { Text = c, FontSize = 11, FontFamily = Font,
-                                        Foreground = Brush.Parse("#ddd") },
+                        new TextBlock { Text = c, FontSize = AppTheme.FontBase, FontFamily = Font,
+                                        Foreground = AppTheme.FgPrimary },
                         string.IsNullOrEmpty(info.약칭)
                             ? (Control)new TextBlock()
                             : new Border
                             {
-                                Background = Brush.Parse("#1a3a5a"), CornerRadius = new CornerRadius(3),
+                                Background = AppTheme.BgActiveBlue, CornerRadius = new CornerRadius(3),
                                 Padding = new Thickness(4, 1),
-                                Child = new TextBlock { Text = info.약칭, FontSize = 9,
+                                Child = new TextBlock { Text = info.약칭, FontSize = AppTheme.FontXS,
                                                         FontFamily = Font, Foreground = Brush.Parse("#88aadd") }
                             }
                     }
@@ -916,12 +919,12 @@ public partial class ContractPage : UserControl
 
         _measEditForm.Children.Add(new Border
         {
-            Height = 1, Background = Brush.Parse("#444"), Margin = new Thickness(0, 0, 0, 4)
+            Height = 1, Background = AppTheme.BorderMuted, Margin = new Thickness(0, 0, 0, 4)
         });
         _measEditForm.Children.Add(new TextBlock
         {
-            Text = company, FontSize = 12, FontFamily = Font,
-            Foreground = Brush.Parse("#aaccff"), FontWeight = FontWeight.SemiBold,
+            Text = company, FontSize = AppTheme.FontMD, FontFamily = Font,
+            Foreground = AppTheme.FgInfo, FontWeight = FontWeight.SemiBold,
         });
 
         // 약칭
@@ -938,17 +941,17 @@ public partial class ContractPage : UserControl
             var sugRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4 };
             sugRow.Children.Add(new TextBlock
             {
-                Text = "추천:", FontSize = 9, FontFamily = Font,
-                Foreground = Brush.Parse("#666"), VerticalAlignment = VerticalAlignment.Center,
+                Text = "추천:", FontSize = AppTheme.FontXS, FontFamily = Font,
+                Foreground = AppTheme.FgDimmed, VerticalAlignment = VerticalAlignment.Center,
             });
             foreach (var sug in suggestions)
             {
                 var s = sug;
                 var btn = new Button
                 {
-                    Content = s, Height = 20, FontSize = 9, FontFamily = Font,
+                    Content = s, Height = 20, FontSize = AppTheme.FontXS, FontFamily = Font,
                     Background = Brush.Parse("#2a2a4a"), Foreground = Brush.Parse("#99aacc"),
-                    BorderThickness = new Thickness(1), BorderBrush = Brush.Parse("#444"),
+                    BorderThickness = new Thickness(1), BorderBrush = AppTheme.BorderMuted,
                     CornerRadius = new CornerRadius(3), Padding = new Thickness(6, 0),
                 };
                 btn.Click += (_, _) => { if (_txbMeasAlias != null) _txbMeasAlias.Text = s; };
@@ -969,9 +972,9 @@ public partial class ContractPage : UserControl
         qtRow.Children.Add(MakeLabel("견적구분"));
         _cmbMeasQuotType = new ComboBox
         {
-            Width = 200, FontSize = 12, FontFamily = Font,
-            Background = Brush.Parse("#3a3a4a"), Foreground = AppRes("AppFg"),
-            BorderBrush = Brush.Parse("#555577"), BorderThickness = new Thickness(1),
+            Width = 200, FontSize = AppTheme.FontMD, FontFamily = Font,
+            Background = AppTheme.BorderSeparator, Foreground = AppRes("AppFg"),
+            BorderBrush = AppTheme.BorderDefault, BorderThickness = new Thickness(1),
             Padding = new Thickness(8, 4),
         };
         try
@@ -990,8 +993,8 @@ public partial class ContractPage : UserControl
         // 저장 버튼
         var btnSave = new Button
         {
-            Content = "💾  저장", Height = 30, FontSize = 12, FontFamily = Font,
-            Background = Brush.Parse("#1a3a2a"), Foreground = Brush.Parse("#88ee88"),
+            Content = "💾  저장", Height = 30, FontSize = AppTheme.FontMD, FontFamily = Font,
+            Background = AppTheme.BgActiveGreen, Foreground = AppTheme.FgSuccess,
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
             Padding = new Thickness(16, 0), Margin = new Thickness(0, 6, 0, 0),
         };
@@ -1035,15 +1038,15 @@ public partial class ContractPage : UserControl
 
     private static TextBlock MakeLabel(string text) => new()
     {
-        Text = text + " :", Width = 110, FontSize = 11, FontFamily = Font,
+        Text = text + " :", Width = 110, FontSize = AppTheme.FontBase, FontFamily = Font,
         Foreground = AppRes("FgMuted"), VerticalAlignment = VerticalAlignment.Center,
     };
 
     private static TextBox MakeTextBox(string value, string hint = "") => new()
     {
-        Text = value, Width = 200, FontSize = 12, FontFamily = Font, Watermark = hint,
-        Background = Brush.Parse("#3a3a4a"), Foreground = AppRes("AppFg"),
-        BorderBrush = Brush.Parse("#555577"), BorderThickness = new Thickness(1),
+        Text = value, Width = 200, FontSize = AppTheme.FontMD, FontFamily = Font, Watermark = hint,
+        Background = AppTheme.BorderSeparator, Foreground = AppRes("AppFg"),
+        BorderBrush = AppTheme.BorderDefault, BorderThickness = new Thickness(1),
         CornerRadius = new CornerRadius(4), Padding = new Thickness(8, 4),
     };
 
@@ -1056,15 +1059,15 @@ public partial class ContractPage : UserControl
         root.Children.Add(new TextBlock
         {
             Text       = "📋  단가 테이블 템플릿 선택",
-            FontSize   = 13, FontFamily = Font, FontWeight = FontWeight.SemiBold,
-            Foreground = new SolidColorBrush(Color.Parse("#8899bb")),
+            FontSize   = AppTheme.FontLG, FontFamily = Font, FontWeight = FontWeight.SemiBold,
+            Foreground = AppTheme.FgMuted,
         });
-        root.Children.Add(new Border { Height = 1, Background = new SolidColorBrush(Color.Parse("#444444")) });
+        root.Children.Add(new Border { Height = 1, Background = AppTheme.BorderMuted });
         root.Children.Add(new TextBlock
         {
             Text         = "기존 계약업체의 단가 테이블을 선택하면 신규 업체에 동일 단가가 복사됩니다.",
-            FontSize     = 10, FontFamily = Font,
-            Foreground   = new SolidColorBrush(Color.Parse("#888888")),
+            FontSize     = AppTheme.FontSM, FontFamily = Font,
+            Foreground   = AppTheme.FgMuted,
             TextWrapping = Avalonia.Media.TextWrapping.Wrap,
             Margin       = new Thickness(0, 0, 0, 4),
         });
@@ -1073,8 +1076,8 @@ public partial class ContractPage : UserControl
         var selLabel = new TextBlock
         {
             Text       = "선택 안됨 — 빈 단가로 생성됩니다.",
-            FontSize   = 11, FontFamily = Font,
-            Foreground = new SolidColorBrush(Color.Parse("#888888")),
+            FontSize   = AppTheme.FontBase, FontFamily = Font,
+            Foreground = AppTheme.FgMuted,
             Margin     = new Thickness(0, 0, 0, 6),
         };
         root.Children.Add(selLabel);
@@ -1096,8 +1099,8 @@ public partial class ContractPage : UserControl
 
             var card = new Border
             {
-                Background      = new SolidColorBrush(Color.Parse("#1e1e2e")),
-                BorderBrush     = new SolidColorBrush(Color.Parse("#333344")),
+                Background      = AppTheme.BgPrimary,
+                BorderBrush     = AppTheme.BorderSubtle,
                 BorderThickness = new Thickness(1),
                 CornerRadius    = new CornerRadius(5),
                 Padding         = new Thickness(10, 6),
@@ -1112,15 +1115,15 @@ public partial class ContractPage : UserControl
             nameLine.Children.Add(new TextBlock
             {
                 Text       = companyName,
-                FontSize   = 12, FontFamily = Font, FontWeight = FontWeight.SemiBold,
+                FontSize   = AppTheme.FontMD, FontFamily = Font, FontWeight = FontWeight.SemiBold,
                 Foreground = AppRes("AppFg"),
             });
             if (!string.IsNullOrEmpty(abbr))
                 nameLine.Children.Add(new TextBlock
                 {
                     Text       = $"({abbr})",
-                    FontSize   = 10, FontFamily = Font,
-                    Foreground = new SolidColorBrush(Color.Parse("#888888")),
+                    FontSize   = AppTheme.FontSM, FontFamily = Font,
+                    Foreground = AppTheme.FgMuted,
                     VerticalAlignment = VerticalAlignment.Center,
                 });
             cardContent.Children.Add(nameLine);
@@ -1130,10 +1133,10 @@ public partial class ContractPage : UserControl
             priceSummary.Children.Add(new TextBlock
             {
                 Text       = $"단가: {filledCount}/{prices.Count}항목",
-                FontSize   = 10, FontFamily = Font,
+                FontSize   = AppTheme.FontSM, FontFamily = Font,
                 Foreground = filledCount > 0
-                    ? new SolidColorBrush(Color.Parse("#aaddaa"))
-                    : new SolidColorBrush(Color.Parse("#666666")),
+                    ? AppTheme.FgSuccess
+                    : AppTheme.BorderMuted,
             });
 
             // 대표 단가 몇 개 미리보기
@@ -1143,14 +1146,14 @@ public partial class ContractPage : UserControl
                 priceSummary.Children.Add(new TextBlock
                 {
                     Text   = "  │  ",
-                    FontSize = 9, FontFamily = Font,
-                    Foreground = new SolidColorBrush(Color.Parse("#444444")),
+                    FontSize = AppTheme.FontXS, FontFamily = Font,
+                    Foreground = AppTheme.FgDimmed,
                 });
                 priceSummary.Children.Add(new TextBlock
                 {
                     Text       = string.Join(", ", preview.Select(p => $"{p.Analyte}:{FormatPrice(p.Price)}")),
-                    FontSize   = 9, FontFamily = Font,
-                    Foreground = new SolidColorBrush(Color.Parse("#888888")),
+                    FontSize   = AppTheme.FontXS, FontFamily = Font,
+                    Foreground = AppTheme.FgMuted,
                     TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
                 });
             }
@@ -1165,18 +1168,18 @@ public partial class ContractPage : UserControl
                 // 이전 선택 해제
                 if (prevSelected != null)
                 {
-                    prevSelected.Background  = new SolidColorBrush(Color.Parse("#1e1e2e"));
-                    prevSelected.BorderBrush = new SolidColorBrush(Color.Parse("#333344"));
+                    prevSelected.Background  = AppTheme.BgPrimary;
+                    prevSelected.BorderBrush = AppTheme.BorderSubtle;
                 }
 
                 // 현재 선택
-                capturedCard.Background  = new SolidColorBrush(Color.Parse("#1a2a4a"));
-                capturedCard.BorderBrush = new SolidColorBrush(Color.Parse("#4477aa"));
+                capturedCard.Background  = AppTheme.BgActiveBlue;
+                capturedCard.BorderBrush = AppTheme.BorderInfo;
                 prevSelected = capturedCard;
 
                 _templateCompanyName = capturedName;
                 selLabel.Text       = $"✅ 선택됨: {capturedName}";
-                selLabel.Foreground = new SolidColorBrush(Color.Parse("#88ccff"));
+                selLabel.Foreground = AppTheme.FgInfo;
                 Log($"[Template] 선택: {capturedName}");
             };
 
@@ -1205,20 +1208,20 @@ public partial class ContractPage : UserControl
         root.Children.Add(new TextBlock
         {
             Text       = "✏️  단가 편집",
-            FontSize   = 13, FontFamily = Font, FontWeight = FontWeight.SemiBold,
-            Foreground = new SolidColorBrush(Color.Parse("#8899bb")),
+            FontSize   = AppTheme.FontLG, FontFamily = Font, FontWeight = FontWeight.SemiBold,
+            Foreground = AppTheme.FgMuted,
         });
         root.Children.Add(new Border
         {
             Height     = 1,
-            Background = new SolidColorBrush(Color.Parse("#444444")),
+            Background = AppTheme.BorderMuted,
         });
 
         // 항목명
         root.Children.Add(new TextBlock
         {
             Text       = analyte,
-            FontSize   = 12, FontFamily = Font, FontWeight = FontWeight.SemiBold,
+            FontSize   = AppTheme.FontMD, FontFamily = Font, FontWeight = FontWeight.SemiBold,
             Foreground = AppRes("AppFg"),
         });
 
@@ -1226,11 +1229,11 @@ public partial class ContractPage : UserControl
         var priceBox = new TextBox
         {
             Text            = currentPrice,
-            FontSize        = 14, FontFamily = Font,
+            FontSize        = AppTheme.FontXL, FontFamily = Font,
             Watermark       = "단가 입력 (원)",
-            Background      = new SolidColorBrush(Color.Parse("#3a3a4a")),
+            Background      = AppTheme.BorderSeparator,
             Foreground      = AppRes("AppFg"),
-            BorderBrush     = new SolidColorBrush(Color.Parse("#555577")),
+            BorderBrush     = AppTheme.BorderDefault,
             BorderThickness = new Thickness(1),
             CornerRadius    = new CornerRadius(4),
             Padding         = new Thickness(10, 6),
@@ -1241,9 +1244,9 @@ public partial class ContractPage : UserControl
         var btnApply = new Button
         {
             Content         = "✅  적용 (Show2 반영)",
-            Height          = 34, FontSize = 12, FontFamily = Font,
-            Background      = new SolidColorBrush(Color.Parse("#1a3a5a")),
-            Foreground      = new SolidColorBrush(Color.Parse("#88aaee")),
+            Height          = 34, FontSize = AppTheme.FontMD, FontFamily = Font,
+            Background      = AppTheme.BgActiveBlue,
+            Foreground      = AppTheme.FgInfo,
             BorderThickness = new Thickness(0),
             CornerRadius    = new CornerRadius(4),
             Padding         = new Thickness(16, 0),
@@ -1258,7 +1261,7 @@ public partial class ContractPage : UserControl
             {
                 displayBlock.Text       = string.IsNullOrEmpty(newPrice) ? "—" : newPrice;
                 displayBlock.Foreground = string.IsNullOrEmpty(newPrice)
-                                            ? new SolidColorBrush(Color.Parse("#555555"))
+                                            ? AppTheme.BorderDefault
                                             : new SolidColorBrush(Color.Parse("#ffdd88")); // 변경됨 표시
             }
             Log($"단가 적용(pending): {analyte} = {newPrice}");
@@ -1268,8 +1271,8 @@ public partial class ContractPage : UserControl
         root.Children.Add(new TextBlock
         {
             Text       = "※ 서브메뉴 [저장]으로 서버에 최종 반영됩니다.",
-            FontSize   = 10, FontFamily = Font,
-            Foreground = new SolidColorBrush(Color.Parse("#666666")),
+            FontSize   = AppTheme.FontSM, FontFamily = Font,
+            Foreground = AppTheme.FgDimmed,
             TextWrapping = Avalonia.Media.TextWrapping.Wrap,
         });
 
@@ -1292,7 +1295,7 @@ public partial class ContractPage : UserControl
             foreach (var (analyte, _) in priceList)
             {
                 if (_priceDisplayBlocks.TryGetValue(analyte, out var tb))
-                    tb.Foreground = new SolidColorBrush(Color.Parse("#aaddaa"));
+                    tb.Foreground = AppTheme.FgSuccess;
             }
             _pendingPrices.Clear();
             Log($"✅ 단가 최종 저장: {_selectedContract.C_CompanyName} ({priceList.Count}건)");

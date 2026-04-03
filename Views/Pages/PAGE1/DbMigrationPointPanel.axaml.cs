@@ -1,4 +1,5 @@
 using Avalonia;
+using ETA.Views;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
@@ -26,7 +27,7 @@ public partial class DbMigrationPointPanel : UserControl
     }
 
     private static readonly Avalonia.Media.FontFamily Font =
-        new("avares://ETA/Assets/Fonts#KBIZ한마음고딕 M");
+        new("avares://ETA/Assets/Fonts#Pretendard");
 
     /// <summary>채취지점명 노드 클릭 시 발생 — Show2로 전달</summary>
     public event Action<string>? SamplingPointSelected;
@@ -109,9 +110,9 @@ public partial class DbMigrationPointPanel : UserControl
     {
         // 헤더: 업체명 + 약칭 배지 + 건수
         var header = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
-        header.Children.Add(new TextBlock { Text = "🏭", FontSize = 14, VerticalAlignment = VerticalAlignment.Center });
+        header.Children.Add(new TextBlock { Text = "🏭", FontSize = AppTheme.FontXL, VerticalAlignment = VerticalAlignment.Center });
         header.Children.Add(new TextBlock {
-            Text = company, FontSize = 12, FontFamily = Font,
+            Text = company, FontSize = AppTheme.FontMD, FontFamily = Font,
             Foreground = AppRes("AppFg"), VerticalAlignment = VerticalAlignment.Center
         });
 
@@ -122,13 +123,13 @@ public partial class DbMigrationPointPanel : UserControl
                 Background   = new SolidColorBrush(Avalonia.Media.Color.Parse(bg)),
                 CornerRadius = new Avalonia.CornerRadius(3),
                 Padding      = new Avalonia.Thickness(4, 1),
-                Child        = new TextBlock { Text = abbr, FontSize = 10,
+                Child        = new TextBlock { Text = abbr, FontSize = AppTheme.FontSM,
                                                Foreground = new SolidColorBrush(Avalonia.Media.Color.Parse(fg)) }
             });
         }
 
         header.Children.Add(new TextBlock {
-            Text = $"({points.Count})", FontSize = 10, FontFamily = Font,
+            Text = $"({points.Count})", FontSize = AppTheme.FontSM, FontFamily = Font,
             Foreground = new SolidColorBrush(Avalonia.Media.Color.Parse("#888888")),
             VerticalAlignment = VerticalAlignment.Center
         });
@@ -142,8 +143,8 @@ public partial class DbMigrationPointPanel : UserControl
                 Header = new StackPanel {
                     Orientation = Orientation.Horizontal, Spacing = 6,
                     Children = {
-                        new TextBlock { Text = "📍", FontSize = 12, VerticalAlignment = VerticalAlignment.Center },
-                        new TextBlock { Text = pt, FontSize = 11, FontFamily = Font,
+                        new TextBlock { Text = "📍", FontSize = AppTheme.FontMD, VerticalAlignment = VerticalAlignment.Center },
+                        new TextBlock { Text = pt, FontSize = AppTheme.FontBase, FontFamily = Font,
                                         Foreground = new SolidColorBrush(Avalonia.Media.Color.Parse("#bbddff")),
                                         VerticalAlignment = VerticalAlignment.Center }
                     }
@@ -157,7 +158,7 @@ public partial class DbMigrationPointPanel : UserControl
     }
 
     private static TextBlock MakeTextBlock(string text, string color) =>
-        new() { Text = text, FontSize = 12, FontFamily = Font,
+        new() { Text = text, FontSize = AppTheme.FontMD, FontFamily = Font,
                 Foreground = new SolidColorBrush(Avalonia.Media.Color.Parse(color)) };
 
     private void TglShowAll_Changed(object? sender, RoutedEventArgs e)

@@ -11,6 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq;
+using ETA.Views;
 
 namespace ETA.Views.Pages.PAGE1;
 
@@ -157,7 +159,7 @@ public partial class QuotationCheckPanel : UserControl
                 Text = $"{catKey}",
                 FontSize = AppFonts.MD,
                 FontWeight = FontWeight.SemiBold,
-                Foreground = Brush.Parse("#a0d060"),
+                Foreground = AppTheme.FgInfo,
                 Margin = new Avalonia.Thickness(0, 0, 0, 6),
                 TextWrapping = TextWrapping.Wrap,
                 TextAlignment = TextAlignment.Center,
@@ -168,10 +170,10 @@ public partial class QuotationCheckPanel : UserControl
             // Border: 컬럼 시각적 구분
             var columnBorder = new Border
             {
-                Background = Brush.Parse("#252530"),
+                Background = AppTheme.BgSecondary,
                 CornerRadius = new Avalonia.CornerRadius(4),
                 BorderThickness = new Avalonia.Thickness(1),
-                BorderBrush = Brush.Parse("#3a3a45"),
+                BorderBrush = AppTheme.BorderSubtle,
                 Padding = new Avalonia.Thickness(8),
                 VerticalAlignment = Avalonia.Layout.VerticalAlignment.Stretch,
             };
@@ -212,7 +214,7 @@ public partial class QuotationCheckPanel : UserControl
                     IsChecked = false,
                     Tag = item,
                     FontSize = AppFonts.SM,
-                    Foreground = Brush.Parse("#ddd"),
+                    Foreground = AppTheme.FgPrimary,
                     Margin = new Avalonia.Thickness(0, 0, 0, 2),
                     Padding = new Avalonia.Thickness(2, 1),
                 };

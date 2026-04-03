@@ -10,7 +10,7 @@
             <Setter Property="Foreground"   Value="{DynamicResource AppFg}" />
             <Setter Property="FontSize"     Value="{DynamicResource FontSizeMD}" />
             <Setter Property="CornerRadius" Value="3" />
-            <Setter Property="FontFamily"   Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+            <Setter Property="FontFamily"   Value="avares://ETA/Assets/Fonts#Pretendard" />
         </Style>
         <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
             <Setter Property="Background" Value="{DynamicResource TreeSelBg}" />
@@ -28,7 +28,7 @@
                    Text="ETA 계약 DB 업체"
                    FontSize="{DynamicResource FontSizeMD}" FontWeight="Bold"
                    Foreground="{DynamicResource AppFg}"
-                   FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                   FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                    Margin="0,0,0,6"/>
 
         <!-- 토글: 활성계약만 / 전체 -->
@@ -37,7 +37,7 @@
                       IsChecked="True"
                       OnContent="✅ 활성계약만"
                       OffContent="📋 전체 업체"
-                      FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                      FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                       FontSize="{DynamicResource FontSizeBase}"
                       HorizontalAlignment="Left"
                       Margin="8,2,0,6"
@@ -50,21 +50,21 @@
                      Height="26" FontSize="{DynamicResource FontSizeBase}"
                      Background="{DynamicResource InputBg}" Foreground="{DynamicResource InputFg}"
                      BorderBrush="{DynamicResource InputBorder}" Padding="8,0" CornerRadius="4"
-                     FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"
+                     FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                      TextChanged="TxbSearch_TextChanged" />
             <TextBlock x:Name="txbCount"
                        Text="0개 업체"
                        FontSize="{DynamicResource FontSizeBase}" Foreground="{DynamicResource FgMuted}"
                        Margin="2,0,0,0"
-                       FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R" />
+                       FontFamily="avares://ETA/Assets/Fonts#Pretendard" />
         </StackPanel>
 
         <!-- 선택된 업체 표시 -->
         <TextBlock Grid.Row="3"
                    x:Name="txbSelected"
                    Text=""
-                   FontSize="{DynamicResource FontSizeBase}" Foreground="#6699cc"
-                   FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"
+                   FontSize="{DynamicResource FontSizeBase}" Foreground="{DynamicResource ThemeFgInfo}"
+                   FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                    Margin="2,0,0,4"
                    IsVisible="False"/>
 
@@ -83,7 +83,7 @@
                         <TextBlock Grid.Column="0"
                                    Text="{Binding C_CompanyName}"
                                    FontSize="{DynamicResource FontSizeBase}"
-                                   FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"
+                                   FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                                    TextTrimming="CharacterEllipsis"
                                    VerticalAlignment="Center" />
                         <!-- 약칭 배지 -->

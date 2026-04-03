@@ -11,7 +11,7 @@
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Padding"         Value="8,0" />
             <Setter Property="FontSize"        Value="{DynamicResource FontSizeBase}" />
-            <Setter Property="FontFamily"      Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+            <Setter Property="FontFamily"      Value="avares://ETA/Assets/Fonts#Pretendard" />
         </Style>
         <Style Selector="Button.ghost-btn:pointerover">
             <Setter Property="Background" Value="{DynamicResource TreeHoverBg}" />
@@ -24,13 +24,13 @@
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Padding"         Value="8,0" />
             <Setter Property="FontSize"        Value="{DynamicResource FontSizeBase}" />
-            <Setter Property="FontFamily"      Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+            <Setter Property="FontFamily"      Value="avares://ETA/Assets/Fonts#Pretendard" />
         </Style>
 
         <!-- ToggleSwitch 글꼴 -->
         <Style Selector="ToggleSwitch">
             <Setter Property="FontSize"   Value="{DynamicResource FontSizeBase}" />
-            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#Pretendard" />
             <Setter Property="Foreground" Value="{DynamicResource TreeFg}" />
         </Style>
 
@@ -41,7 +41,7 @@
             <Setter Property="MinHeight"  Value="0" />
             <Setter Property="FontSize"   Value="{DynamicResource FontSizeBase}" />
             <Setter Property="Foreground" Value="{DynamicResource TreeFg}" />
-            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#Pretendard" />
             <Setter Property="Background" Value="Transparent" />
         </Style>
         <Style Selector="TreeViewItem /template/ ContentPresenter#PART_HeaderPresenter">
@@ -88,7 +88,7 @@
                          BorderBrush="{DynamicResource InputBorder}" Padding="6,0" CornerRadius="4"
                          Margin="6,0,6,0"
                          VerticalAlignment="Center"
-                         FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 R"
+                         FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                          TextChanged="TxbSearch_TextChanged" />
 
                 <!-- 탭 레이블 (현재 탭 이름) -->
@@ -98,7 +98,7 @@
                            FontSize="{DynamicResource FontSizeSM}" Foreground="{DynamicResource FgMuted}"
                            VerticalAlignment="Center"
                            Margin="0,0,8,0"
-                           FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M" />
+                           FontFamily="avares://ETA/Assets/Fonts#Pretendard" />
 
                 <Button Grid.Column="3"
                         Classes="danger-btn"
@@ -114,7 +114,7 @@
         </Border>
 
         <!-- ② 구분선 -->
-        <Border Grid.Row="1" x:Name="separatorBorder" Height="1" Background="#3a2a5a" Margin="0,0,0,2" />
+        <Border Grid.Row="1" x:Name="separatorBorder" Height="1" Background="{DynamicResource ThemeBorderSeparator}" Margin="0,0,0,2" />
 
         <!-- ③ AXAML tvHistory (더미, 핸들러 연결용) -->
         <TreeView Grid.Row="2"
@@ -137,7 +137,7 @@
                    Text=""
                    FontSize="{DynamicResource FontSizeSM}" Foreground="{DynamicResource FgMuted}"
                    Margin="2,3,0,0"
-                   FontFamily="avares://ETA/Assets/Fonts#KBIZ한마음고딕 M"
+                   FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                    TextTrimming="CharacterEllipsis" />
     </Grid>
 </UserControl>
