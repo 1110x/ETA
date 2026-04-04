@@ -9,6 +9,13 @@ public class WasteSample
     public string SN        { get; set; } = "";   // 03-31-01 / [세풍]03-31-01
     public string 업체명    { get; set; } = "";
     public string 관리번호  { get; set; } = "";
+    public string BOD       { get; set; } = "";
+    public string TOC       { get; set; } = "";
+    public string SS        { get; set; } = "";
+    public string TN        { get; set; } = "";   // T-N
+    public string TP        { get; set; } = "";   // T-P
+    public string NHexan    { get; set; } = "";   // N-Hexan
+    public string Phenols   { get; set; } = "";
     public string 비고      { get; set; } = "";
     public string 확인자    { get; set; } = "";
 

@@ -1,8 +1,11 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Threading;
+using Avalonia.VisualTree;
 using ETA.Models;
 using ETA.Services.Common;
 using ETA.Services.SERVICE3;
@@ -19,10 +22,13 @@ public partial class MyTaskPage : UserControl
     public event Action<Control?>? DetailPanelChanged;
 
     // ── 상태 ─────────────────────────────────────────────────────────────────
-    private string   _activeCategory = "측대";
+    private string _activeCategory = "수질분석센터";
     private DateTime _selectedDate   = DateTime.Today;
     private string   _employeeId     = "";
     private string   _employeeName   = "";
+    private HashSet<DateTime> _analysisRequestDates = new();
+    private HashSet<DateTime> _wasteRequestDates = new();
+    private Calendar? _calendar;
 
     private static readonly FontFamily Font =
         new("avares://ETA/Assets/Fonts#Pretendard");
@@ -30,12 +36,10 @@ public partial class MyTaskPage : UserControl
     // 카테고리별 활성 버튼 스타일
     private static readonly Dictionary<string, (string Bg, string Fg, string Bd)> CatStyle = new()
     {
-        ["측대"]    = ("#1a2a4a", "#88aaee", "#336699"),
-        ["여수"]    = ("#1e3a5a", "#88aacc", "#336699"),
-        ["율촌"]    = ("#1a3a1a", "#aaccaa", "#336633"),
-        ["세풍"]    = ("#3a2a1a", "#ccaa88", "#996633"),
-        ["처리시설"] = ("#2a1a3a", "#bb99cc", "#663399"),
-        ["의뢰목록"] = ("#1a3a2a", "#88ccaa", "#339966"),
+        ["수질분석센터"] = ("#1a2a4a", "#88aaee", "#336699"),
+        ["비용부담금"]   = ("#2a2a1a", "#ccbb88", "#887733"),
+        ["처리시설"]     = ("#2a1a3a", "#bb99cc", "#663399"),
+        ["의뢰목록"]     = ("#1a3a2a", "#88ccaa", "#339966"),
     };
 
     private readonly Dictionary<string, Button> _catBtns = new();
@@ -43,14 +47,138 @@ public partial class MyTaskPage : UserControl
     public MyTaskPage()
     {
         InitializeComponent();
-        dpDate.SelectedDate = DateTime.Today;
 
-        _catBtns["측대"]    = BtnMeokdae;
-        _catBtns["여수"]    = BtnYeosoo;
-        _catBtns["율촌"]    = BtnYulchon;
-        _catBtns["세풍"]    = BtnSepung;
-        _catBtns["처리시설"] = BtnFacility;
-        _catBtns["의뢰목록"] = BtnRequestList;
+        // 날짜 텍스트 초기화
+        UpdateDateText();
+
+        // 인라인 캘린더 직접 생성 (날짜별 색상 마킹)
+        _calendar = new Calendar
+        {
+            SelectionMode = CalendarSelectionMode.SingleDate,
+            FontFamily = Font,
+            FontSize = AppTheme.FontMD,
+            DisplayDate = DateTime.Today,
+            Focusable = true,
+        };
+
+        var calBorder = new Border
+        {
+            IsVisible = false,
+            Background = AppTheme.BgInput,
+            BorderBrush = AppTheme.BorderSubtle,
+            BorderThickness = new Avalonia.Thickness(0, 0, 0, 1),
+            Padding = new Avalonia.Thickness(4),
+            Margin = new Avalonia.Thickness(0, 4, 0, 0),
+            Focusable = true,
+            Child = _calendar,
+        };
+
+        // 날짜 클릭 → 선택 처리
+        _calendar.SelectedDatesChanged += (_, _) =>
+        {
+            if (_calendar.SelectedDate.HasValue)
+            {
+                var date = _calendar.SelectedDate.Value;
+                calBorder.IsVisible = false;
+                _selectedDate = date;
+                UpdateDateText();
+                RefreshTree();
+                _calendar.SelectedDates.Clear();
+            }
+        };
+
+        // ESC → expanded 상태면 날짜 뷰로 복귀, 아니면 캘린더 닫기
+        _calendar.KeyDown += (_, e) =>
+        {
+            if (e.Key == Avalonia.Input.Key.Escape && calBorder.IsVisible)
+            {
+                // 월/년 선택 뷰(expanded)면 DisplayMode를 Month로 복귀
+                if (_calendar.DisplayMode != CalendarMode.Month)
+                {
+                    _calendar.DisplayMode = CalendarMode.Month;
+                    Dispatcher.UIThread.Post(StyleCalendarDayButtons, DispatcherPriority.Loaded);
+                }
+                else
+                {
+                    calBorder.IsVisible = false;
+                }
+                e.Handled = true;
+            }
+        };
+
+        // 월 변경 시 마킹 갱신
+        _calendar.DisplayDateChanged += (_, _) =>
+            Dispatcher.UIThread.Post(StyleCalendarDayButtons, DispatcherPriority.Loaded);
+
+        // 토글 버튼
+        btnCalToggle.Click += (_, _) =>
+        {
+            calBorder.IsVisible = !calBorder.IsVisible;
+            if (calBorder.IsVisible)
+            {
+                _calendar.DisplayDate = _selectedDate;
+                LoadDateSets();
+                _calendar.Focus();
+            }
+        };
+
+        calendarHost.Child = calBorder;
+
+        _catBtns["수질분석센터"] = BtnMeokdae;
+        _catBtns["비용부담금"]   = BtnWasteCost;
+        _catBtns["처리시설"]     = BtnFacility;
+        _catBtns["의뢰목록"]     = BtnRequestList;
+    }
+
+    private void UpdateDateText()
+    {
+        string dayKr = _selectedDate.DayOfWeek switch
+        {
+            DayOfWeek.Monday    => "월",
+            DayOfWeek.Tuesday   => "화",
+            DayOfWeek.Wednesday => "수",
+            DayOfWeek.Thursday  => "목",
+            DayOfWeek.Friday    => "금",
+            DayOfWeek.Saturday  => "토",
+            _                   => "일",
+        };
+        txtDate.Text = $"{_selectedDate:yyyy-MM-dd} ({dayKr})";
+    }
+
+    private void LoadDateSets()
+    {
+        _analysisRequestDates = new HashSet<DateTime>(MyTaskService.GetAnalysisRequestDates());
+        _wasteRequestDates = new HashSet<DateTime>(MyTaskService.GetWasteRequestDates());
+        Dispatcher.UIThread.Post(StyleCalendarDayButtons, DispatcherPriority.Loaded);
+    }
+
+    // 파란색: 분석의뢰및결과, 붉은색: 폐수의뢰및결과, 보라색: 둘 다
+    private static readonly IBrush BrushAnalysis = new SolidColorBrush(Color.Parse("#B366aaee")); // 파란 70%
+    private static readonly IBrush BrushWaste    = new SolidColorBrush(Color.Parse("#B3ee6666")); // 붉은 70%
+    private static readonly IBrush BrushBoth     = new SolidColorBrush(Color.Parse("#B3aa66ee")); // 보라 70%
+
+    private void StyleCalendarDayButtons()
+    {
+        if (_calendar == null) return;
+
+        foreach (var btn in _calendar.GetVisualDescendants().OfType<CalendarDayButton>())
+        {
+            if (btn.DataContext is DateTime dt)
+            {
+                var date = dt.Date;
+                bool isAnalysis = _analysisRequestDates.Contains(date);
+                bool isWaste = _wasteRequestDates.Contains(date);
+
+                if (isAnalysis && isWaste)
+                    btn.Background = BrushBoth;
+                else if (isAnalysis)
+                    btn.Background = BrushAnalysis;
+                else if (isWaste)
+                    btn.Background = BrushWaste;
+                else
+                    btn.Background = Brushes.Transparent;
+            }
+        }
     }
 
     // =========================================================================
@@ -64,16 +192,8 @@ public partial class MyTaskPage : UserControl
     }
 
     // =========================================================================
-    // 날짜 변경
+    // 날짜 변경 — InlineCalendarHelper 콜백으로 처리
     // =========================================================================
-    private void DpDate_SelectedDateChanged(object? sender, DatePickerSelectedValueChangedEventArgs e)
-    {
-        if (dpDate.SelectedDate is { } d)
-        {
-            _selectedDate = d.DateTime;
-            RefreshTree();
-        }
-    }
 
     // =========================================================================
     // 카테고리 버튼 클릭
@@ -81,7 +201,7 @@ public partial class MyTaskPage : UserControl
     private void CategoryBtn_Click(object? sender, RoutedEventArgs e)
     {
         if (sender is not Button btn) return;
-        _activeCategory = btn.Tag as string ?? "측대";
+        _activeCategory = btn.Tag as string ?? "수질분석센터";
         UpdateCategoryButtons();
         RefreshTree();
         DetailPanelChanged?.Invoke(null);
@@ -119,12 +239,10 @@ public partial class MyTaskPage : UserControl
 
         switch (_activeCategory)
         {
-            case "측대":      LoadMeokdaeTree(dateStr);             break;
-            case "여수":
-            case "율촌":
-            case "세풍":      LoadWasteTree(dateStr, _activeCategory); break;
-            case "처리시설":  LoadFacilityTree(dateStr);            break;
-            case "의뢰목록":  LoadRequestListTree(dateStr);         break;
+            case "수질분석센터": LoadMeokdaeTree(dateStr);       break;
+            case "비용부담금":   LoadAllWasteTree(dateStr);       break;
+            case "처리시설":     LoadFacilityTree(dateStr);       break;
+            case "의뢰목록":     LoadRequestListTree(dateStr);    break;
         }
     }
 
@@ -175,7 +293,64 @@ public partial class MyTaskPage : UserControl
 
     private record AnalyteTag(string FullName, string ShortName);
 
-    // ── 여수/율촌/세풍 트리 ───────────────────────────────────────────────────
+    // ── 비용부담금 트리 (여수+율촌+세풍 통합) ─────────────────────────────────
+    private void LoadAllWasteTree(string dateStr)
+    {
+        var allItems = new List<WasteRequestItem>();
+        foreach (var 구분 in new[] { "여수", "율촌", "세풍" })
+            allItems.AddRange(MyTaskService.GetWasteItems(dateStr, 구분));
+
+        if (allItems.Count == 0)
+        {
+            TaskTreeView.Items.Add(MakeEmptyNode("비용부담금 의뢰 없음"));
+            return;
+        }
+
+        // 구분별 그룹 → 업체별 서브그룹
+        var byGubun = allItems.GroupBy(i => i.구분)
+            .OrderBy(g => g.Key == "여수" ? 0 : g.Key == "율촌" ? 1 : 2);
+
+        foreach (var gubunGrp in byGubun)
+        {
+            var (icon, color) = gubunGrp.Key switch
+            {
+                "여수" => ("🌊", "#88aacc"),
+                "율촌" => ("🏗", "#aaccaa"),
+                _      => ("🏭", "#ccaa88"),
+            };
+
+            // 구분 헤더 노드
+            var gubunHeader = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
+            gubunHeader.Children.Add(new TextBlock { Text = icon, FontSize = AppTheme.FontLG, VerticalAlignment = VerticalAlignment.Center });
+            gubunHeader.Children.Add(new TextBlock
+            {
+                Text = gubunGrp.Key, FontFamily = Font, FontSize = AppTheme.FontLG,
+                Foreground = new SolidColorBrush(Color.Parse(color)),
+                FontWeight = FontWeight.SemiBold,
+                VerticalAlignment = VerticalAlignment.Center,
+            });
+            gubunHeader.Children.Add(new TextBlock
+            {
+                Text = $"{gubunGrp.Count()}건", FontFamily = Font, FontSize = AppTheme.FontBase,
+                Foreground = AppRes("FgMuted"), VerticalAlignment = VerticalAlignment.Center,
+            });
+
+            var gubunNode = new TreeViewItem { Header = gubunHeader, IsExpanded = true };
+
+            // 업체별 그룹
+            var byCompany = gubunGrp.GroupBy(i => i.업체명).OrderBy(g => g.Key);
+            foreach (var compGrp in byCompany)
+            {
+                var companyNode = MakeCompanyNode(compGrp.Key, compGrp.Count(), gubunGrp.Key);
+                foreach (var wi in compGrp)
+                    companyNode.Items.Add(MakeWasteItemNode(wi));
+                gubunNode.Items.Add(companyNode);
+            }
+
+            TaskTreeView.Items.Add(gubunNode);
+        }
+    }
+
     private void LoadWasteTree(string dateStr, string 구분)
     {
         var items = MyTaskService.GetWasteItems(dateStr, 구분);
@@ -261,6 +436,91 @@ public partial class MyTaskPage : UserControl
         return item;
     }
 
+    // ── 의뢰목록 트리 ──────────────────────────────────────────────────────────
+    private void LoadRequestListTree(string dateStr)
+    {
+        var items = MyTaskService.GetRequestListItems(dateStr);
+
+        if (items.Count == 0)
+        {
+            TaskTreeView.Items.Add(MakeEmptyNode("해당일 의뢰 없음"));
+            return;
+        }
+
+        // 구분별 그룹
+        var byGubun = items.GroupBy(i => i.구분)
+            .OrderBy(g => g.Key == "여수" ? 0 : g.Key == "율촌" ? 1 : 2);
+
+        foreach (var grp in byGubun)
+        {
+            var (icon, color) = grp.Key switch
+            {
+                "여수" => ("🌊", "#88aacc"),
+                "율촌" => ("🏗", "#aaccaa"),
+                _      => ("🏭", "#ccaa88"),
+            };
+
+            var gubunHeader = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
+            gubunHeader.Children.Add(new TextBlock { Text = icon, FontSize = AppTheme.FontLG, VerticalAlignment = VerticalAlignment.Center });
+            gubunHeader.Children.Add(new TextBlock
+            {
+                Text = grp.Key, FontFamily = Font, FontSize = AppTheme.FontLG,
+                Foreground = new SolidColorBrush(Color.Parse(color)),
+                FontWeight = FontWeight.SemiBold,
+                VerticalAlignment = VerticalAlignment.Center,
+            });
+            gubunHeader.Children.Add(new TextBlock
+            {
+                Text = $"{grp.Count()}건", FontFamily = Font, FontSize = AppTheme.FontBase,
+                Foreground = AppRes("FgMuted"), VerticalAlignment = VerticalAlignment.Center,
+            });
+
+            var gubunNode = new TreeViewItem { Header = gubunHeader, IsExpanded = true };
+
+            foreach (var ri in grp)
+                gubunNode.Items.Add(MakeRequestListNode(ri));
+
+            TaskTreeView.Items.Add(gubunNode);
+        }
+    }
+
+    private TreeViewItem MakeRequestListNode(MyTaskService.RequestListItem ri)
+    {
+        var header = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
+        header.Children.Add(new TextBlock
+        {
+            Text = ri.HasResult ? "🟢" : "🔴",
+            FontSize = AppTheme.FontMD, VerticalAlignment = VerticalAlignment.Center
+        });
+        header.Children.Add(new TextBlock
+        {
+            Text = ri.업체명, FontFamily = Font, FontSize = AppTheme.FontMD,
+            FontWeight = FontWeight.SemiBold,
+            VerticalAlignment = VerticalAlignment.Center
+        });
+        if (!string.IsNullOrEmpty(ri.관리번호))
+        {
+            header.Children.Add(new TextBlock
+            {
+                Text = ri.관리번호, FontFamily = Font, FontSize = AppTheme.FontBase,
+                Foreground = AppRes("FgMuted"), VerticalAlignment = VerticalAlignment.Center
+            });
+        }
+        if (!string.IsNullOrEmpty(ri.확인자))
+        {
+            header.Children.Add(new TextBlock
+            {
+                Text = ri.확인자, FontFamily = Font, FontSize = AppTheme.FontBase,
+                Foreground = new SolidColorBrush(Color.Parse("#88ccaa")),
+                VerticalAlignment = VerticalAlignment.Center
+            });
+        }
+
+        var item = new TreeViewItem { Header = header };
+        item.Tag = ri;
+        return item;
+    }
+
     // ── 처리시설 트리 ──────────────────────────────────────────────────────────
     private void LoadFacilityTree(string dateStr)
     {
@@ -309,121 +569,6 @@ public partial class MyTaskPage : UserControl
         return item;
     }
 
-    // ── 의뢰목록 트리 (폐수채수의뢰 — 선택일 기준 7일 범위) ─────────────────
-    private void LoadRequestListTree(string dateStr)
-    {
-        DateTime.TryParse(dateStr, out var selectedDate);
-        var fromDate = selectedDate.AddDays(-7);
-        var from = fromDate.ToString("yyyy-MM-dd");
-        var to   = dateStr;
-
-        var items = MyTaskService.GetRequestListItemsRange(from, to);
-
-        if (items.Count == 0)
-        {
-            TaskTreeView.Items.Add(MakeEmptyNode($"채수 의뢰 없음 ({from} ~ {to})"));
-            return;
-        }
-
-        // 날짜별 그룹 (내림차순: 최근 날짜가 위)
-        var byDate = items.GroupBy(i => i.채수일)
-                          .OrderByDescending(g => g.Key);
-
-        foreach (var dateGroup in byDate)
-        {
-            // 날짜 헤더 노드
-            DateTime.TryParse(dateGroup.Key, out var d);
-            bool isToday = d.Date == selectedDate.Date;
-            string dayKr = d.DayOfWeek switch
-            {
-                DayOfWeek.Monday    => "월",
-                DayOfWeek.Tuesday   => "화",
-                DayOfWeek.Wednesday => "수",
-                DayOfWeek.Thursday  => "목",
-                DayOfWeek.Friday    => "금",
-                DayOfWeek.Saturday  => "토",
-                _                   => "일",
-            };
-            var dateHeader = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
-            dateHeader.Children.Add(new TextBlock
-            {
-                Text = $"{d:MM/dd}({dayKr})", FontFamily = Font, FontSize = AppTheme.FontLG,
-                FontWeight = isToday ? FontWeight.Bold : FontWeight.Normal,
-                Foreground = isToday
-                    ? new SolidColorBrush(Color.Parse("#aaddff"))
-                    : AppTheme.FgMuted,
-                VerticalAlignment = VerticalAlignment.Center,
-            });
-            dateHeader.Children.Add(new TextBlock
-            {
-                Text = $"{dateGroup.Count()}건", FontFamily = Font, FontSize = AppTheme.FontBase,
-                Foreground = AppRes("FgMuted"), VerticalAlignment = VerticalAlignment.Center,
-            });
-
-            var dateNode = new TreeViewItem { Header = dateHeader, IsExpanded = isToday };
-
-            // 날짜 내 구분별 서브그룹
-            var byGubun = dateGroup
-                .GroupBy(i => i.구분)
-                .OrderBy(g => g.Key == "여수" ? 0 : g.Key == "율촌" ? 1 : g.Key == "세풍" ? 2 : 3);
-
-            foreach (var grp in byGubun)
-            {
-                var (icon, color) = grp.Key switch
-                {
-                    "여수" => ("🌊", "#88aacc"),
-                    "율촌" => ("🏗",  "#aaccaa"),
-                    "세풍" => ("🏭", "#ccaa88"),
-                    _     => ("📋", "#88ccaa"),
-                };
-
-                var groupHeader = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
-                groupHeader.Children.Add(new TextBlock { Text = icon, FontSize = AppTheme.FontMD, VerticalAlignment = VerticalAlignment.Center });
-                groupHeader.Children.Add(new TextBlock
-                {
-                    Text = grp.Key, FontFamily = Font, FontSize = AppTheme.FontMD,
-                    Foreground = new SolidColorBrush(Color.Parse(color)),
-                    VerticalAlignment = VerticalAlignment.Center,
-                });
-                groupHeader.Children.Add(new TextBlock
-                {
-                    Text = $"{grp.Count()}건", FontFamily = Font, FontSize = AppTheme.FontBase,
-                    Foreground = AppRes("FgMuted"), VerticalAlignment = VerticalAlignment.Center,
-                });
-
-                var groupNode = new TreeViewItem { Header = groupHeader, IsExpanded = isToday };
-
-                foreach (var item in grp)
-                {
-                    var itemHeader = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
-                    itemHeader.Children.Add(new TextBlock
-                    {
-                        Text = item.SN, FontFamily = Font, FontSize = AppTheme.FontBase,
-                        Foreground = AppRes("FgMuted"), Width = 70,
-                        VerticalAlignment = VerticalAlignment.Center,
-                    });
-                    itemHeader.Children.Add(new TextBlock
-                    {
-                        Text = item.업체명, FontFamily = Font, FontSize = AppTheme.FontMD,
-                        Foreground = AppRes("AppFg"), VerticalAlignment = VerticalAlignment.Center,
-                    });
-                    if (!string.IsNullOrEmpty(item.확인자))
-                        itemHeader.Children.Add(new TextBlock
-                        {
-                            Text = item.확인자, FontFamily = Font, FontSize = AppTheme.FontBase,
-                            Foreground = new SolidColorBrush(Color.Parse("#66aaee")),
-                            VerticalAlignment = VerticalAlignment.Center,
-                        });
-
-                    groupNode.Items.Add(new TreeViewItem { Header = itemHeader, Tag = item });
-                }
-
-                dateNode.Items.Add(groupNode);
-            }
-
-            TaskTreeView.Items.Add(dateNode);
-        }
-    }
 
     // ── 빈 노드 ───────────────────────────────────────────────────────────────
     private TreeViewItem MakeEmptyNode(string text)
@@ -447,11 +592,11 @@ public partial class MyTaskPage : UserControl
 
         Control? panel = sel.Tag switch
         {
-            AnalyteTag tag                      => BuildAnalyteDetail(tag),
-            WasteRequestItem wi                 => BuildWasteItemDetail(wi),
-            FacilityWorkItem fi                 => BuildFacilityDetail(fi),
-            MyTaskService.RequestListItem req   => BuildRequestListDetail(req),
-            _                                   => null,
+            AnalyteTag tag                    => BuildAnalyteDetail(tag),
+            WasteRequestItem wi               => BuildWasteItemDetail(wi),
+            FacilityWorkItem fi               => BuildFacilityDetail(fi),
+            MyTaskService.RequestListItem ri  => BuildRequestListDetail(ri),
+            _                                 => null,
         };
 
         DetailPanelChanged?.Invoke(panel);
@@ -572,6 +717,41 @@ public partial class MyTaskPage : UserControl
         return new ScrollViewer { Content = root, HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled };
     }
 
+    // ── 의뢰목록 상세 ────────────────────────────────────────────────────────
+    private Control BuildRequestListDetail(MyTaskService.RequestListItem ri)
+    {
+        var root = new StackPanel { Spacing = 8, Margin = new Thickness(12) };
+
+        root.Children.Add(new TextBlock
+        {
+            Text = $"📋  {ri.업체명}",
+            FontFamily = Font, FontSize = AppTheme.FontXL, FontWeight = FontWeight.SemiBold,
+            Foreground = AppRes("AppFg")
+        });
+
+        void AddRow(string label, string value, string? color = null)
+        {
+            if (string.IsNullOrEmpty(value)) return;
+            var sp = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+            sp.Children.Add(new TextBlock { Text = label, FontFamily = Font, FontSize = AppTheme.FontMD, Foreground = AppRes("FgMuted"), Width = 70 });
+            sp.Children.Add(new TextBlock
+            {
+                Text = value, FontFamily = Font, FontSize = AppTheme.FontMD,
+                Foreground = color != null ? new SolidColorBrush(Color.Parse(color)) : AppRes("AppFg")
+            });
+            root.Children.Add(sp);
+        }
+
+        AddRow("SN", ri.SN);
+        AddRow("구분", ri.구분);
+        AddRow("채수일", ri.채수일);
+        AddRow("관리번호", ri.관리번호);
+        AddRow("확인자", ri.확인자, "#88ccaa");
+        AddRow("비고", ri.비고);
+
+        return new ScrollViewer { Content = root, HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled };
+    }
+
     // ── 처리시설 상세 ────────────────────────────────────────────────────────
     private Control BuildFacilityDetail(FacilityWorkItem fi)
     {
@@ -611,42 +791,6 @@ public partial class MyTaskPage : UserControl
         if (!string.IsNullOrEmpty(fi.배정자))  AddRow("배정자", fi.배정자);
         if (!string.IsNullOrEmpty(fi.배정일시)) AddRow("배정일시", fi.배정일시);
         if (!string.IsNullOrEmpty(fi.완료일시)) AddRow("완료일시", fi.완료일시);
-
-        return new ScrollViewer { Content = root, HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled };
-    }
-
-    // ── 의뢰목록 상세 ─────────────────────────────────────────────────────────
-    private Control BuildRequestListDetail(MyTaskService.RequestListItem req)
-    {
-        var root = new StackPanel { Spacing = 8, Margin = new Thickness(12) };
-
-        root.Children.Add(new TextBlock
-        {
-            Text = $"📋  {req.업체명}",
-            FontFamily = Font, FontSize = AppTheme.FontXL, FontWeight = FontWeight.SemiBold,
-            Foreground = AppRes("AppFg")
-        });
-
-        void AddRow(string label, string value, string? color = null)
-        {
-            if (string.IsNullOrEmpty(value)) return;
-            var sp = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
-            sp.Children.Add(new TextBlock { Text = label, FontFamily = Font, FontSize = AppTheme.FontMD, Foreground = AppRes("FgMuted"), Width = 60 });
-            sp.Children.Add(new TextBlock
-            {
-                Text = value, FontFamily = Font, FontSize = AppTheme.FontMD,
-                Foreground = color != null ? new SolidColorBrush(Color.Parse(color)) : AppRes("AppFg")
-            });
-            root.Children.Add(sp);
-        }
-
-        AddRow("SN",     req.SN);
-        AddRow("구분",   req.구분);
-        AddRow("채수일", req.채수일);
-        AddRow("확인자", req.확인자, "#66aaee");
-        AddRow("관리번호", req.관리번호);
-        if (!string.IsNullOrEmpty(req.비고))
-            AddRow("비고", req.비고);
 
         return new ScrollViewer { Content = root, HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled };
     }

@@ -9,34 +9,46 @@ namespace ETA.Services.SERVICE2;
 
 public static class WasteDataService
 {
-    // ── 업체명으로 전 항목 분석결과 조회 (날짜 오름차순) ─────────────────────
+    // ── 업체명으로 전 항목 분석결과 조회 (폐수의뢰및결과 테이블, 날짜 오름차순) ──
     public static List<WasteAnalysisResult> GetResults(string 업체명)
     {
-        var dict = new SortedDictionary<string, WasteAnalysisResult>();
-        WasteAnalysisResult Get(string d) =>
-            dict.TryGetValue(d, out var r) ? r : (dict[d] = new WasteAnalysisResult { 채수일 = d });
-
+        var list = new List<WasteAnalysisResult>();
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+            SELECT 채수일, BOD, `TOC`, SS, `T-N`, `T-P`, `N-Hexan`, Phenols
+            FROM `폐수의뢰및결과`
+            WHERE 업체명 = @n
+            ORDER BY 채수일 ASC";
+        cmd.Parameters.AddWithValue("@n", 업체명);
+        using var r = cmd.ExecuteReader();
+        while (r.Read())
+        {
+            var dateRaw = r.IsDBNull(0) ? "" : r.GetValue(0);
+            string date = dateRaw is DateTime dt ? dt.ToString("yyyy-MM-dd") : dateRaw?.ToString() ?? "";
+            if (string.IsNullOrEmpty(date)) continue;
 
-        Fetch(conn, "SELECT 채수일, 결과 FROM `BOD_DATA`      WHERE 업체명=@n ORDER BY 채수일",
-              업체명, (d, v) => Get(d).BOD      = v);
-        Fetch(conn, "SELECT 채수일, 결과 FROM `SS_DATA`       WHERE 업체명=@n ORDER BY 채수일",
-              업체명, (d, v) => Get(d).SS       = v);
-        Fetch(conn, "SELECT 채수일, 농도  FROM `TN_DATA`      WHERE 업체명=@n ORDER BY 채수일",
-              업체명, (d, v) => Get(d).TN       = v);
-        Fetch(conn, "SELECT 채수일, 농도  FROM `TP_DATA`      WHERE 업체명=@n ORDER BY 채수일",
-              업체명, (d, v) => Get(d).TP       = v);
-        Fetch(conn, "SELECT 채수일, 검량선_a FROM `TOC_TCIC_DATA` WHERE 업체명=@n ORDER BY 채수일",
-              업체명, (d, v) => Get(d).TOC_TCIC = v);
-        Fetch(conn, "SELECT 채수일, 검량선_a FROM `TOC_NPOC_DATA` WHERE 업체명=@n ORDER BY 채수일",
-              업체명, (d, v) => Get(d).TOC_NPOC = v);
-        Fetch(conn, "SELECT 채수일, 농도  FROM `Phenols_DATA` WHERE 업체명=@n ORDER BY 채수일",
-              업체명, (d, v) => Get(d).Phenols  = v);
-        Fetch(conn, "SELECT 채수일, 결과 FROM `NHexan_DATA`   WHERE 업체명=@n ORDER BY 채수일",
-              업체명, (d, v) => Get(d).NHexan   = v);
+            list.Add(new WasteAnalysisResult
+            {
+                채수일   = date,
+                BOD      = ParseDouble(r, 1),
+                TOC_TCIC = ParseDouble(r, 2),
+                SS       = ParseDouble(r, 3),
+                TN       = ParseDouble(r, 4),
+                TP       = ParseDouble(r, 5),
+                NHexan   = ParseDouble(r, 6),
+                Phenols  = ParseDouble(r, 7),
+            });
+        }
+        return list;
+    }
 
-        return [.. dict.Values];
+    private static double? ParseDouble(System.Data.Common.DbDataReader r, int i)
+    {
+        if (r.IsDBNull(i)) return null;
+        var s = r.GetValue(i)?.ToString() ?? "";
+        return string.IsNullOrWhiteSpace(s) ? null : double.TryParse(s, out var v) ? v : null;
     }
 
     // ── DATA 테이블 업체명 일괄 변경 (8개 테이블 전체) ───────────────────────

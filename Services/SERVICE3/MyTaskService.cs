@@ -115,6 +115,58 @@ public static class MyTaskService
     }
 
     // =========================================================================
+    //  분석의뢰및결과 — 채취일자 목록 (중복 제거)
+    // =========================================================================
+    public static List<DateTime> GetAnalysisRequestDates()
+    {
+        var result = new List<DateTime>();
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return result;
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT DISTINCT `채취일자` FROM `분석의뢰및결과` ORDER BY `채취일자` DESC";
+            using var rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                var val = rdr.IsDBNull(0) ? "" : rdr.GetValue(0)?.ToString() ?? "";
+                if (DateTime.TryParse(val, out var dt))
+                    result.Add(dt.Date);
+            }
+            Log($"GetAnalysisRequestDates: {result.Count}건");
+        }
+        catch (Exception ex) { Log($"GetAnalysisRequestDates 오류: {ex.Message}"); }
+        return result;
+    }
+
+    // =========================================================================
+    //  폐수의뢰및결과 — 채수일 목록 (중복 제거)
+    // =========================================================================
+    public static List<DateTime> GetWasteRequestDates()
+    {
+        var result = new List<DateTime>();
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return result;
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT DISTINCT `채수일` FROM `폐수의뢰및결과` ORDER BY `채수일` DESC";
+            using var rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                var val = rdr.IsDBNull(0) ? "" : rdr.GetValue(0)?.ToString() ?? "";
+                if (DateTime.TryParse(val, out var dt))
+                    result.Add(dt.Date);
+            }
+            Log($"GetWasteRequestDates: {result.Count}건");
+        }
+        catch (Exception ex) { Log($"GetWasteRequestDates 오류: {ex.Message}"); }
+        return result;
+    }
+
+    // =========================================================================
     //  여수/율촌/세풍 — 해당 구분의 폐수 의뢰 항목 (내 이름 배정 + 미배정 모두)
     // =========================================================================
     public static List<WasteRequestItem> GetWasteItems(string date, string 구분)
@@ -145,7 +197,7 @@ public static class MyTaskService
     }
 
     // =========================================================================
-    //  의뢰목록 — 폐수채수의뢰 (채수 일정)
+    //  의뢰목록 — 폐수의뢰및결과 (채수 일정)
     // =========================================================================
     public record RequestListItem(
         int    Id,
@@ -155,7 +207,8 @@ public static class MyTaskService
         string 채수일,
         string 확인자,
         string 관리번호,
-        string 비고);
+        string 비고,
+        bool   HasResult);
 
     public static List<RequestListItem> GetRequestListItems(string dateStr)
     {
@@ -167,12 +220,14 @@ public static class MyTaskService
             conn.Open();
             using var cmd = conn.CreateCommand();
             cmd.CommandText = @"
-                SELECT Id, SN, 업체명, 구분, 채수일, 확인자, 관리번호, 비고
-                FROM `폐수채수의뢰`
-                WHERE 채수일 = @d
+                SELECT r.Id, r.SN, r.업체명, r.구분, r.채수일, r.확인자, r.관리번호, r.비고,
+                       CASE WHEN res.id IS NOT NULL THEN 1 ELSE 0 END AS HasResult
+                FROM `폐수의뢰및결과` r
+                LEFT JOIN `폐수_결과` res ON res.관리번호 = r.관리번호 AND res.채취일자 = r.채수일
+                WHERE r.채수일 = @d
                 ORDER BY
-                    CASE 구분 WHEN '여수' THEN 0 WHEN '율촌' THEN 1 WHEN '세풍' THEN 2 ELSE 3 END,
-                    순서 ASC";
+                    CASE r.구분 WHEN '여수' THEN 0 WHEN '율촌' THEN 1 WHEN '세풍' THEN 2 ELSE 3 END,
+                    r.순서 ASC";
             cmd.Parameters.AddWithValue("@d", dateStr);
             using var rdr = cmd.ExecuteReader();
             while (rdr.Read())
@@ -185,7 +240,8 @@ public static class MyTaskService
                     rdr.IsDBNull(4) ? "" : rdr.GetString(4),
                     rdr.IsDBNull(5) ? "" : rdr.GetString(5),
                     rdr.IsDBNull(6) ? "" : rdr.GetString(6),
-                    rdr.IsDBNull(7) ? "" : rdr.GetString(7)));
+                    rdr.IsDBNull(7) ? "" : rdr.GetString(7),
+                    Convert.ToInt32(rdr.GetValue(8)) == 1));
             }
             Log($"GetRequestListItems({dateStr}): {result.Count}건");
         }
@@ -203,13 +259,15 @@ public static class MyTaskService
             conn.Open();
             using var cmd = conn.CreateCommand();
             cmd.CommandText = @"
-                SELECT Id, SN, 업체명, 구분, 채수일, 확인자, 관리번호, 비고
-                FROM `폐수채수의뢰`
-                WHERE 채수일 BETWEEN @from AND @to
+                SELECT r.Id, r.SN, r.업체명, r.구분, r.채수일, r.확인자, r.관리번호, r.비고,
+                       CASE WHEN res.id IS NOT NULL THEN 1 ELSE 0 END AS HasResult
+                FROM `폐수의뢰및결과` r
+                LEFT JOIN `폐수_결과` res ON res.관리번호 = r.관리번호 AND res.채취일자 = r.채수일
+                WHERE r.채수일 BETWEEN @from AND @to
                 ORDER BY
-                    채수일 DESC,
-                    CASE 구분 WHEN '여수' THEN 0 WHEN '율촌' THEN 1 WHEN '세풍' THEN 2 ELSE 3 END,
-                    순서 ASC";
+                    r.채수일 DESC,
+                    CASE r.구분 WHEN '여수' THEN 0 WHEN '율촌' THEN 1 WHEN '세풍' THEN 2 ELSE 3 END,
+                    r.순서 ASC";
             cmd.Parameters.AddWithValue("@from", fromDate);
             cmd.Parameters.AddWithValue("@to",   toDate);
             using var rdr = cmd.ExecuteReader();
@@ -223,7 +281,8 @@ public static class MyTaskService
                     rdr.IsDBNull(4) ? "" : rdr.GetString(4),
                     rdr.IsDBNull(5) ? "" : rdr.GetString(5),
                     rdr.IsDBNull(6) ? "" : rdr.GetString(6),
-                    rdr.IsDBNull(7) ? "" : rdr.GetString(7)));
+                    rdr.IsDBNull(7) ? "" : rdr.GetString(7),
+                    Convert.ToInt32(rdr.GetValue(8)) == 1));
             }
             Log($"GetRequestListItemsRange({fromDate}~{toDate}): {result.Count}건");
         }

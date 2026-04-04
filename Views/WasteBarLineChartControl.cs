@@ -24,14 +24,13 @@ internal sealed class WasteBarLineChartControl : Control
 
     internal static readonly (string Label, Color Color, Func<WasteAnalysisResult, double?> Get)[] Series =
     {
-        ("BOD",        Color.Parse("#ff7755"), r => r.BOD),
-        ("TOC(TC-IC)", Color.Parse("#5588ff"), r => r.TOC_TCIC),
-        ("TOC(NPOC)",  Color.Parse("#44aaee"), r => r.TOC_NPOC),
-        ("SS",         Color.Parse("#ffcc33"), r => r.SS),
-        ("T-N",        Color.Parse("#55dd55"), r => r.TN),
-        ("T-P",        Color.Parse("#dd55dd"), r => r.TP),
-        ("Phenols",    Color.Parse("#55ddcc"), r => r.Phenols),
-        ("N-Hexan",    Color.Parse("#ff9944"), r => r.NHexan),
+        ("BOD",     Color.Parse("#ff7755"), r => r.BOD),
+        ("TOC",     Color.Parse("#5588ff"), r => r.TOC_TCIC),
+        ("SS",      Color.Parse("#ffcc33"), r => r.SS),
+        ("T-N",     Color.Parse("#55dd55"), r => r.TN),
+        ("T-P",     Color.Parse("#dd55dd"), r => r.TP),
+        ("Phenols", Color.Parse("#55ddcc"), r => r.Phenols),
+        ("N-Hexan", Color.Parse("#ff9944"), r => r.NHexan),
     };
 
     private readonly string _title;

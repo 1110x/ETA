@@ -1701,6 +1701,7 @@ public partial class MainPage : Window
         new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
 
     private bool _wasteChartIsBar = true; // Bar/Line 토글 상태 유지
+    private int  _wasteChartCount = 30; // 그래프 조회 수량
 
     private Control BuildOrderHistoryPanel()
     {
@@ -1862,12 +1863,12 @@ public partial class MainPage : Window
 
     private Control BuildWasteBarLinePanel(string 업체명, List<ETA.Models.WasteAnalysisResult> results)
     {
-        // 8개 항목 개별 차트 생성 (항목별로 값이 있는 것만 최근 10건)
+        int cnt = _wasteChartCount;
         var charts = new List<WasteSingleSeriesChart>();
         foreach (var (label, color, getValue) in WasteBarLineChartControl.Series)
         {
             var withValue = results.Where(r => getValue(r).HasValue).ToList();
-            var recent    = withValue.Count > 10 ? withValue.Skip(withValue.Count - 10).ToList() : withValue;
+            var recent    = withValue.Count > cnt ? withValue.Skip(withValue.Count - cnt).ToList() : withValue;
             charts.Add(new WasteSingleSeriesChart(label, color, getValue, recent));
         }
 
@@ -1919,6 +1920,26 @@ public partial class MainPage : Window
         };
         topBar.Children.Add(btnBar);
         topBar.Children.Add(btnLine);
+
+        // 그래프 수량 드롭박스
+        var cntCombo = new ComboBox
+        {
+            FontSize = AppTheme.FontSM, FontFamily = _wasteFont,
+            Padding = new Thickness(4, 1), Margin = new Thickness(4, 0, 0, 0),
+            MinWidth = 55, MaxHeight = 24,
+            VerticalAlignment = VerticalAlignment.Center,
+            ItemsSource = new[] { 10, 20, 30, 40, 50 },
+            SelectedItem = _wasteChartCount,
+        };
+        cntCombo.SelectionChanged += (_, _) =>
+        {
+            if (cntCombo.SelectedItem is int v)
+            {
+                _wasteChartCount = v;
+                Show2.Content = BuildWasteBarLinePanel(업체명, results);
+            }
+        };
+        topBar.Children.Add(cntCombo);
 
         // 4열 × 2행 그리드
         var chartGrid = new Grid

@@ -17,7 +17,7 @@ public static class WasteSampleService
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = "SELECT DISTINCT 채수일 FROM `폐수채수의뢰` ORDER BY 채수일 DESC";
+        cmd.CommandText = "SELECT DISTINCT 채수일 FROM `폐수의뢰및결과` ORDER BY 채수일 DESC";
         using var r = cmd.ExecuteReader();
         while (r.Read()) list.Add(r.GetString(0));
         return list;
@@ -31,8 +31,10 @@ public static class WasteSampleService
         conn.Open();
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            SELECT Id, 채수일, 구분, 순서, SN, 업체명, 관리번호, 비고, 확인자
-            FROM `폐수채수의뢰`
+            SELECT Id, 채수일, 구분, 순서, SN, 업체명, 관리번호,
+                   BOD, `TOC`, SS, `T-N`, `T-P`, `N-Hexan`, Phenols,
+                   비고, 확인자
+            FROM `폐수의뢰및결과`
             WHERE 채수일 = @d
             ORDER BY CASE 구분 WHEN '여수' THEN 0 WHEN '율촌' THEN 1 WHEN '세풍' THEN 2 ELSE 3 END,
                      순서 ASC";
@@ -50,7 +52,7 @@ public static class WasteSampleService
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = "SELECT 업체명 FROM `폐수채수의뢰` WHERE 채수일 = @d";
+        cmd.CommandText = "SELECT 업체명 FROM `폐수의뢰및결과` WHERE 채수일 = @d";
         cmd.Parameters.AddWithValue("@d", 채수일);
         using var r = cmd.ExecuteReader();
         while (r.Read()) set.Add(r.GetString(0));
@@ -68,8 +70,10 @@ public static class WasteSampleService
         conn.Open();
         using var cmd = conn.CreateCommand();
         cmd.CommandText = $@"
-            INSERT INTO `폐수채수의뢰` (채수일, 구분, 순서, SN, 업체명, 관리번호, 확인자)
-            VALUES (@d, @g, @s, @sn, @name, @no, @chk);
+            INSERT INTO `폐수의뢰및결과` (채수일, 구분, 순서, SN, 업체명, 관리번호,
+                   BOD, `TOC`, SS, `T-N`, `T-P`, `N-Hexan`, Phenols, 확인자)
+            VALUES (@d, @g, @s, @sn, @name, @no,
+                   '', '', '', '', '', '', '', @chk);
             SELECT {DbConnectionFactory.LastInsertId};";
         cmd.Parameters.AddWithValue("@d",    채수일);
         cmd.Parameters.AddWithValue("@g",    구분);
@@ -97,7 +101,7 @@ public static class WasteSampleService
         string 채수일 = "", 구분 = "";
         using (var cmd = conn.CreateCommand())
         {
-            cmd.CommandText = "SELECT 채수일, 구분 FROM `폐수채수의뢰` WHERE Id=@id";
+            cmd.CommandText = "SELECT 채수일, 구분 FROM `폐수의뢰및결과` WHERE Id=@id";
             cmd.Parameters.AddWithValue("@id", id);
             using var r = cmd.ExecuteReader();
             if (r.Read()) { 채수일 = r.GetString(0); 구분 = r.GetString(1); }
@@ -105,7 +109,7 @@ public static class WasteSampleService
 
         using (var cmd = conn.CreateCommand())
         {
-            cmd.CommandText = "DELETE FROM `폐수채수의뢰` WHERE Id=@id";
+            cmd.CommandText = "DELETE FROM `폐수의뢰및결과` WHERE Id=@id";
             cmd.Parameters.AddWithValue("@id", id);
             cmd.ExecuteNonQuery();
         }
@@ -151,7 +155,7 @@ public static class WasteSampleService
         var ids = new List<int>();
         using (var cmd = conn.CreateCommand())
         {
-            cmd.CommandText = "SELECT Id FROM `폐수채수의뢰` WHERE 채수일=@d AND 구분=@g ORDER BY 순서 ASC";
+            cmd.CommandText = "SELECT Id FROM `폐수의뢰및결과` WHERE 채수일=@d AND 구분=@g ORDER BY 순서 ASC";
             cmd.Parameters.AddWithValue("@d", 채수일);
             cmd.Parameters.AddWithValue("@g", 구분);
             using var r = cmd.ExecuteReader();
@@ -173,7 +177,7 @@ public static class WasteSampleService
             int seq = i + 1;
             string sn = WasteSample.BuildSN(채수일, 구분, seq);
             using var upd = conn.CreateCommand();
-            upd.CommandText = "UPDATE `폐수채수의뢰` SET 순서=@s, SN=@sn WHERE Id=@id";
+            upd.CommandText = "UPDATE `폐수의뢰및결과` SET 순서=@s, SN=@sn WHERE Id=@id";
             upd.Parameters.AddWithValue("@s",  seq);
             upd.Parameters.AddWithValue("@sn", sn);
             upd.Parameters.AddWithValue("@id", ids[i]);
@@ -187,7 +191,7 @@ public static class WasteSampleService
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = "SELECT COALESCE(MAX(순서),0)+1 FROM `폐수채수의뢰` WHERE 채수일=@d AND 구분=@g";
+        cmd.CommandText = "SELECT COALESCE(MAX(순서),0)+1 FROM `폐수의뢰및결과` WHERE 채수일=@d AND 구분=@g";
         cmd.Parameters.AddWithValue("@d", 채수일);
         cmd.Parameters.AddWithValue("@g", 구분);
         return Convert.ToInt32(cmd.ExecuteScalar());
@@ -196,7 +200,7 @@ public static class WasteSampleService
     private static void UpdateSeq(DbConnection conn, WasteSample s)
     {
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = "UPDATE `폐수채수의뢰` SET 순서=@seq WHERE Id=@id";
+        cmd.CommandText = "UPDATE `폐수의뢰및결과` SET 순서=@seq WHERE Id=@id";
         cmd.Parameters.AddWithValue("@seq", s.순서);
         cmd.Parameters.AddWithValue("@id",  s.Id);
         cmd.ExecuteNonQuery();
@@ -206,7 +210,7 @@ public static class WasteSampleService
     private static void Renumber(DbConnection conn, string 채수일, string 구분)
     {
         using var sel = conn.CreateCommand();
-        sel.CommandText = "SELECT Id FROM `폐수채수의뢰` WHERE 채수일=@d AND 구분=@g ORDER BY 순서 ASC";
+        sel.CommandText = "SELECT Id FROM `폐수의뢰및결과` WHERE 채수일=@d AND 구분=@g ORDER BY 순서 ASC";
         sel.Parameters.AddWithValue("@d", 채수일);
         sel.Parameters.AddWithValue("@g", 구분);
         var ids = new List<long>();
@@ -218,7 +222,7 @@ public static class WasteSampleService
             int seq = i + 1;
             string sn = WasteSample.BuildSN(채수일, 구분, seq);
             using var upd = conn.CreateCommand();
-            upd.CommandText = "UPDATE `폐수채수의뢰` SET 순서=@s, SN=@sn WHERE Id=@id";
+            upd.CommandText = "UPDATE `폐수의뢰및결과` SET 순서=@s, SN=@sn WHERE Id=@id";
             upd.Parameters.AddWithValue("@s",   seq);
             upd.Parameters.AddWithValue("@sn",  sn);
             upd.Parameters.AddWithValue("@id",  ids[i]);
@@ -235,7 +239,14 @@ public static class WasteSampleService
         SN       = r.IsDBNull(4) ? "" : r.GetString(4),
         업체명   = r.IsDBNull(5) ? "" : r.GetString(5),
         관리번호 = r.IsDBNull(6) ? "" : r.GetString(6),
-        비고     = r.IsDBNull(7) ? "" : r.GetString(7),
-        확인자   = r.IsDBNull(8) ? "" : r.GetString(8),
+        BOD      = r.IsDBNull(7) ? "" : r.GetString(7),
+        TOC= r.IsDBNull(8) ? "" : r.GetString(8),
+        SS       = r.IsDBNull(9) ? "" : r.GetString(9),
+        TN       = r.IsDBNull(10) ? "" : r.GetString(10),
+        TP       = r.IsDBNull(11) ? "" : r.GetString(11),
+        NHexan   = r.IsDBNull(12) ? "" : r.GetString(12),
+        Phenols  = r.IsDBNull(13) ? "" : r.GetString(13),
+        비고     = r.IsDBNull(14) ? "" : r.GetString(14),
+        확인자   = r.IsDBNull(15) ? "" : r.GetString(15),
     };
 }
