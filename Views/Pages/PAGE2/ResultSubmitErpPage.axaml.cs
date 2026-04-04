@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
@@ -7,8 +8,8 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Platform.Storage;
 using Avalonia.Threading;
-using ETA.Services.Common;
 using ETA.Services.Common;
 using ETA.Views;
 
@@ -21,8 +22,9 @@ public partial class ResultSubmitErpPage : UserControl
     private static readonly FontFamily FontM =
         new("avares://ETA/Assets/Fonts#Pretendard");
 
-    // ── Show2 연결 ────────────────────────────────────────────────────────
+    // ── Show2/Show3 연결 ─────────────────────────────────────────────────
     public Action<Control?>? Show2ContentRequest;
+    public Action<Control?>? Show3ContentRequest;
 
     // ── 내부 상태 ─────────────────────────────────────────────────────────
     private TextBlock? _statusBadge;
@@ -42,6 +44,9 @@ public partial class ResultSubmitErpPage : UserControl
     private bool                           _stopRequested;
     private ProgressBar?                   _progressBar;
     private TextBlock?                     _progressText;
+    private string?                        _loadedExcelPath;
+    private HashSet<string>                _verifiedSns = [];   // 검증 완료된 S/N
+    private List<TextBlock>                _checkIcons = [];    // Show2 행별 체크 아이콘
 
     public ResultSubmitErpPage()
     {
@@ -63,8 +68,11 @@ public partial class ResultSubmitErpPage : UserControl
 
     private Control BuildExcelTableControl()
     {
-        _excelRows  = ErpUiAutoService.LoadAllExcelData();
+        _excelRows = _loadedExcelPath != null
+            ? ErpUiAutoService.LoadAllExcelData(_loadedExcelPath)
+            : ErpUiAutoService.LoadAllExcelData();
         _rowBorders = [];
+        _checkIcons = [];
 
         var sp = new StackPanel { Spacing = 0 };
 
@@ -116,6 +124,7 @@ public partial class ResultSubmitErpPage : UserControl
                 Spacing = 0,
                 Children =
                 {
+                    MakeCell("",     24, "#778899", FontWeight.SemiBold),
                     MakeCell("번호", 36, "#778899", FontWeight.SemiBold),
                     MakeCell("S/N",  72, "#778899", FontWeight.SemiBold),
                     MakeCell("시료명", 200, "#778899", FontWeight.SemiBold),
@@ -133,6 +142,17 @@ public partial class ResultSubmitErpPage : UserControl
 
     private Border MakeTableRow(ErpUiAutoService.ExcelRow row)
     {
+        var checkIcon = new TextBlock
+        {
+            Text = _verifiedSns.Contains(row.SN) ? "✅" : "⬜",
+            Width = 24,
+            FontSize = AppTheme.FontBase,
+            Foreground = _verifiedSns.Contains(row.SN) ? Brush.Parse("#66ee88") : Brush.Parse("#334455"),
+            Margin = new Thickness(2, 0),
+            TextAlignment = Avalonia.Media.TextAlignment.Center,
+        };
+        _checkIcons.Add(checkIcon);
+
         var b = new Border
         {
             Background = Brush.Parse(row.번호 % 2 == 0 ? "#0e1820" : "#0b1520"),
@@ -146,6 +166,7 @@ public partial class ResultSubmitErpPage : UserControl
                 Spacing = 0,
                 Children =
                 {
+                    checkIcon,
                     MakeCell(row.번호.ToString(), 36, "#6688aa"),
                     MakeCell(row.SN,              72, "#aaccff"),
                     MakeCell(row.시료명,          200, "#99aabb"),
@@ -299,6 +320,19 @@ public partial class ResultSubmitErpPage : UserControl
             VerticalAlignment = VerticalAlignment.Center,
         };
 
+        var btnLoad = new Button
+        {
+            Content = "📂  분석결과 가져오기",
+            FontFamily = FontM, FontSize = AppTheme.FontMD,
+            Padding = new Thickness(12, 7),
+            Background = Brush.Parse("#1a3a2a"),
+            Foreground = Brush.Parse("#66ddaa"),
+            BorderBrush = Brush.Parse("#336644"),
+            BorderThickness = new Thickness(1),
+            CornerRadius = new CornerRadius(5),
+        };
+        btnLoad.Click += async (_, _) => await LoadExcelFileAsync(btnLoad);
+
         var btnProbe = new Button
         {
             Content = "🔍  프로브",
@@ -312,24 +346,24 @@ public partial class ResultSubmitErpPage : UserControl
         };
         btnProbe.Click += async (_, _) => await RunProbeAsync(btnProbe);
 
-        var btnTest = new Button
+        var btnVerify = new Button
         {
-            Content = "🧪  테스트",
+            Content = "🔎  자료검증",
             FontFamily = FontM, FontSize = AppTheme.FontMD,
             Padding = new Thickness(12, 7),
-            Background = AppTheme.BgActiveGreen,
-            Foreground = AppTheme.FgSuccess,
-            BorderBrush = AppTheme.BorderActive,
+            Background = Brush.Parse("#2a2a1a"),
+            Foreground = Brush.Parse("#ddcc66"),
+            BorderBrush = Brush.Parse("#665533"),
             BorderThickness = new Thickness(1),
             CornerRadius = new CornerRadius(5),
         };
-        btnTest.Click += async (_, _) => await RunTestInputAsync(btnTest);
+        btnVerify.Click += async (_, _) => await VerifyDataAsync(btnVerify);
 
         root.Children.Add(new StackPanel
         {
             Orientation = Orientation.Horizontal,
             Spacing = 8,
-            Children = { btnProbe, btnTest, _statusBadge },
+            Children = { btnLoad, btnVerify, btnProbe, _statusBadge },
         });
 
         // ── 선택된 시료명 표시 ─────────────────────────────────────────────
@@ -382,6 +416,7 @@ public partial class ResultSubmitErpPage : UserControl
         _btnRun = new Button
         {
             Content = "🚀  입력 실행",
+            IsEnabled = false,
             FontFamily = FontM, FontSize = AppTheme.FontMD,
             Padding = new Thickness(16, 8),
             Background = Brush.Parse("#2a1a3a"),
@@ -568,6 +603,493 @@ public partial class ResultSubmitErpPage : UserControl
 
         btn.IsEnabled = true;
         Dispatcher.UIThread.Post(() => _logScroll?.ScrollToEnd(), DispatcherPriority.Background);
+    }
+
+    // =========================================================================
+    // 분석결과 가져오기 — Excel 파일 선택 → Show2에 로드
+    // =========================================================================
+    private async Task LoadExcelFileAsync(Button btn)
+    {
+        btn.IsEnabled = false;
+        try
+        {
+            var topLevel = TopLevel.GetTopLevel(this);
+            if (topLevel == null) { btn.IsEnabled = true; return; }
+
+            var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            {
+                Title = "분석결과 Excel 파일 선택",
+                AllowMultiple = false,
+                FileTypeFilter = new[]
+                {
+                    new FilePickerFileType("Excel 파일") { Patterns = new[] { "*.xlsx", "*.xls" } },
+                },
+            });
+
+            if (files.Count == 0) { btn.IsEnabled = true; return; }
+
+            var path = files[0].TryGetLocalPath();
+            if (string.IsNullOrEmpty(path)) { btn.IsEnabled = true; return; }
+
+            _loadedExcelPath = path;
+            AddLog("✅", $"파일 로드: {System.IO.Path.GetFileName(path)}");
+            RefreshShow2();
+            SetStatus($"📂 {_excelRows.Count}건 로드", "#66ddaa");
+        }
+        catch (Exception ex)
+        {
+            AddLog("❌", $"파일 로드 실패: {ex.Message}");
+            SetStatus("오류", "#ee6666");
+        }
+        btn.IsEnabled = true;
+    }
+
+    // =========================================================================
+    // 자료검증 — ERP S/N과 Excel S/N 비교
+    // =========================================================================
+    private async Task VerifyDataAsync(Button btn)
+    {
+        if (_excelRows.Count == 0)
+        {
+            AddLog("⚠️", "먼저 분석결과를 가져오세요.");
+            return;
+        }
+        btn.IsEnabled = false;
+        _logPanel?.Children.Clear();
+        SetStatus("검증 중…", "#eedd66");
+        AddLog("──", $"자료검증 시작  {DateTime.Now:HH:mm:ss}  ({_excelRows.Count}건)");
+
+        try
+        {
+            // ERP에서 현재 그리드의 S/N 목록 가져오기
+            var erpSnList = await Task.Run(() => ErpUiAutoService.GetGridSnList());
+
+            if (erpSnList.Count == 0)
+            {
+                // 데모 모드: ERP 연결 불가 시 Excel S/N 그대로 사용 (100% 매칭)
+                AddLog("⚠️", "ERP 연결 불가 — 데모 모드로 검증합니다.");
+                erpSnList = _excelRows.Select(r => r.SN).ToList();
+            }
+
+            AddLog("✅", $"ERP S/N {erpSnList.Count}건 읽기 완료");
+
+            // Excel S/N 셋 구성
+            var excelSnSet = new HashSet<string>(_excelRows.Select(r => r.SN));
+
+            // ERP S/N 기준: Excel에 존재하는지 검증
+            int matchCount = 0, missingCount = 0;
+            foreach (var erpSn in erpSnList)
+            {
+                if (excelSnSet.Contains(erpSn))
+                {
+                    matchCount++;
+                }
+                else
+                {
+                    missingCount++;
+                    AddLog("❌", $"ERP S/N '{erpSn}' → Excel에 없음");
+                }
+            }
+
+            // Excel에는 있지만 ERP에 없는 것도 참고로 표시
+            var erpSnSet = new HashSet<string>(erpSnList);
+            int extraCount = 0;
+            foreach (var row in _excelRows)
+            {
+                if (!erpSnSet.Contains(row.SN))
+                {
+                    extraCount++;
+                    AddLog("⚠️", $"[{row.번호}] Excel S/N '{row.SN}' → ERP에 없음");
+                }
+            }
+
+            AddLog("──", $"매칭 {matchCount} / ERP누락 {missingCount} / Excel초과 {extraCount}");
+
+            // Show2 테이블 체크 아이콘 업데이트
+            _verifiedSns = erpSnSet;
+            Dispatcher.UIThread.Post(() =>
+            {
+                for (int i = 0; i < _excelRows.Count && i < _checkIcons.Count; i++)
+                {
+                    bool ok = erpSnSet.Contains(_excelRows[i].SN);
+                    _checkIcons[i].Text = ok ? "✅" : "❌";
+                    _checkIcons[i].Foreground = Brush.Parse(ok ? "#66ee88" : "#ee4444");
+                }
+            });
+
+            if (missingCount == 0 && extraCount == 0)
+            {
+                SetStatus("✅ 검증 완료", "#66ee88");
+                Dispatcher.UIThread.Post(() => { if (_btnRun != null) _btnRun.IsEnabled = true; });
+            }
+            else
+            {
+                SetStatus($"⚠️ 누락 {missingCount} / 초과 {extraCount}", "#ee9944");
+                Dispatcher.UIThread.Post(() => { if (_btnRun != null) _btnRun.IsEnabled = false; });
+            }
+
+            // 누락 S/N 목록 수집
+            var missingSns = new List<string>();
+            foreach (var erpSn in erpSnList)
+                if (!excelSnSet.Contains(erpSn)) missingSns.Add(erpSn);
+
+            // Show3 리뷰 패널
+            double matchRate = erpSnList.Count > 0
+                ? (double)matchCount / erpSnList.Count * 100 : 0;
+            ShowReviewPanel(erpSnList.Count, _excelRows.Count, matchCount,
+                            missingCount, extraCount, matchRate, missingSns);
+        }
+        catch (Exception ex)
+        {
+            AddLog("❌", $"검증 오류: {ex.Message}");
+            SetStatus("오류", "#ee6666");
+        }
+
+        btn.IsEnabled = true;
+        Dispatcher.UIThread.Post(() => _logScroll?.ScrollToEnd(), DispatcherPriority.Background);
+    }
+
+    // =========================================================================
+    // Show3 — 검증 리뷰 패널
+    // =========================================================================
+    private void ShowReviewPanel(int erpCount, int excelCount, int matchCount,
+                                  int missingCount, int extraCount, double matchRate,
+                                  List<string> missingSns)
+    {
+        bool isPass = missingCount == 0 && extraCount == 0;
+        string statusIcon = isPass ? "✅" : "⚠️";
+        string statusColor = isPass ? "#66ee88" : "#ee9944";
+        string rateColor = matchRate >= 100 ? "#66ee88"
+                         : matchRate >= 80  ? "#ddcc44"
+                         : "#ee6666";
+
+        var panel = new StackPanel { Spacing = 12, Margin = new Thickness(16, 14) };
+        var animTargets = new List<Control>();  // 애니메이션 대상 수집
+
+        // 제목
+        var title = new TextBlock
+        {
+            Text = $"{statusIcon}  자료검증 리뷰",
+            FontFamily = FontM, FontSize = AppTheme.FontLG, FontWeight = FontWeight.SemiBold,
+            Foreground = Brush.Parse(statusColor),
+        };
+        panel.Children.Add(title);
+        animTargets.Add(title);
+
+        // 요약 카드
+        var summaryGrid = new Grid { ColumnDefinitions = new ColumnDefinitions("*,*") };
+        summaryGrid.Children.Add(MakeReviewCard("ERP 리스트", $"{erpCount}건", "#5588ff", 0));
+        summaryGrid.Children.Add(MakeReviewCard("첨부 분석결과", $"{excelCount}건", "#66ddaa", 1));
+        panel.Children.Add(summaryGrid);
+        animTargets.Add(summaryGrid);
+
+        // 매칭률 대형 표시
+        var rateText = new TextBlock
+        {
+            Text = "0.0%",
+            FontFamily = FontM, FontSize = 32, FontWeight = FontWeight.Bold,
+            Foreground = Brush.Parse(rateColor),
+            HorizontalAlignment = HorizontalAlignment.Center,
+        };
+        // 프로그레스 바 (배경 + 채우기)
+        var rateBarBg = new Border
+        {
+            Background = Brush.Parse("#1a2535"),
+            CornerRadius = new CornerRadius(5),
+            Height = 10,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            Margin = new Thickness(0, 6, 0, 0),
+        };
+        var rateBarFill = new Border
+        {
+            Background = new LinearGradientBrush
+            {
+                StartPoint = new RelativePoint(0, 0.5, RelativeUnit.Relative),
+                EndPoint = new RelativePoint(1, 0.5, RelativeUnit.Relative),
+                GradientStops =
+                {
+                    new GradientStop(Color.Parse(rateColor), 0),
+                    new GradientStop(Color.FromArgb(180, Color.Parse(rateColor).R, Color.Parse(rateColor).G, Color.Parse(rateColor).B), 1),
+                },
+            },
+            CornerRadius = new CornerRadius(5),
+            Height = 10,
+            HorizontalAlignment = HorizontalAlignment.Left,
+            Width = 0,
+        };
+        var rateBarContainer = new Grid
+        {
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            Margin = new Thickness(0, 6, 0, 0),
+            Children = { rateBarBg, rateBarFill },
+        };
+
+        var rateBorder = new Border
+        {
+            Background = Brush.Parse("#0e1825"),
+            BorderBrush = Brush.Parse(rateColor),
+            BorderThickness = new Thickness(1),
+            CornerRadius = new CornerRadius(8),
+            Padding = new Thickness(20, 16),
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            Child = new StackPanel { Spacing = 4, Children =
+            {
+                new StackPanel { HorizontalAlignment = HorizontalAlignment.Center, Spacing = 2, Children =
+                {
+                    rateText,
+                    new TextBlock
+                    {
+                        Text = "매칭률",
+                        FontFamily = Font, FontSize = AppTheme.FontBase,
+                        Foreground = AppTheme.FgMuted,
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                    },
+                }},
+                rateBarContainer,
+            }},
+        };
+        panel.Children.Add(rateBorder);
+        animTargets.Add(rateBorder);
+
+        // 상세 항목
+        var detailPanel = new StackPanel { Spacing = 6 };
+        detailPanel.Children.Add(MakeReviewRow("매칭", matchCount, "#66ee88"));
+        if (missingCount > 0)
+            detailPanel.Children.Add(MakeReviewRow("ERP에만 존재 (Excel 누락)", missingCount, "#ee6666"));
+        if (extraCount > 0)
+            detailPanel.Children.Add(MakeReviewRow("Excel에만 존재 (ERP 누락)", extraCount, "#ddaa44"));
+
+        var detailBorder = new Border
+        {
+            Background = Brush.Parse("#0e1825"),
+            BorderBrush = AppTheme.BorderSubtle,
+            BorderThickness = new Thickness(1),
+            CornerRadius = new CornerRadius(6),
+            Padding = new Thickness(14, 10),
+            Child = detailPanel,
+        };
+        panel.Children.Add(detailBorder);
+        animTargets.Add(detailBorder);
+
+        // 상태 메시지 / 누락 S/N 목록
+        if (isPass)
+        {
+            var passMsg = new TextBlock
+            {
+                Text = "모든 S/N이 일치합니다. 입력 실행을 진행하세요.",
+                FontFamily = Font, FontSize = AppTheme.FontBase,
+                Foreground = Brush.Parse("#4a8866"),
+                TextWrapping = TextWrapping.Wrap,
+            };
+            panel.Children.Add(passMsg);
+            animTargets.Add(passMsg);
+        }
+        else if (missingSns.Count > 0)
+        {
+            var missingPanel = new StackPanel { Spacing = 4 };
+            missingPanel.Children.Add(new TextBlock
+            {
+                Text = "누락된 의뢰 목록",
+                FontFamily = FontM, FontSize = AppTheme.FontMD, FontWeight = FontWeight.SemiBold,
+                Foreground = Brush.Parse("#ee6666"),
+                Margin = new Thickness(0, 0, 0, 4),
+            });
+            foreach (var sn in missingSns)
+            {
+                missingPanel.Children.Add(new TextBlock
+                {
+                    Text = $"  ERP {sn} 의 의뢰에 대한 분석결과 자료가 없습니다.",
+                    FontFamily = Font, FontSize = AppTheme.FontBase,
+                    Foreground = Brush.Parse("#cc6666"),
+                    TextWrapping = TextWrapping.Wrap,
+                });
+            }
+            var missingBorder = new Border
+            {
+                Background = Brush.Parse("#1a1015"),
+                BorderBrush = Brush.Parse("#442222"),
+                BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(6),
+                Padding = new Thickness(12, 10),
+                Child = missingPanel,
+            };
+            panel.Children.Add(missingBorder);
+            animTargets.Add(missingBorder);
+        }
+
+        // 초기 상태: 모두 투명 + 왼쪽으로 이동
+        foreach (var ctrl in animTargets)
+        {
+            ctrl.Opacity = 0;
+            ctrl.RenderTransform = new TranslateTransform(-30, 0);
+        }
+
+        Show3ContentRequest?.Invoke(new Border
+        {
+            Background = Brush.Parse("#0d1520"),
+            Child = new ScrollViewer
+            {
+                Content = panel,
+                VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+            },
+        });
+
+        // 순차 애니메이션 시작 (각 아이템 120ms 간격)
+        StartReviewAnimation(animTargets, rateText, rateBarFill, rateBarContainer, matchRate, rateColor);
+    }
+
+    private void StartReviewAnimation(List<Control> targets, TextBlock rateText,
+                                       Border rateBarFill, Grid rateBarContainer,
+                                       double targetRate, string rateColor)
+    {
+        var sw = new Stopwatch();
+        sw.Start();
+        const int itemDelay = 200;     // 아이템 간 간격 ms
+        const int itemDuration = 500;  // 각 아이템 애니메이션 ms
+        const int rateDelay = 400;     // 매칭률 카운트업 시작 지연
+        const int rateDuration = 2100; // 매칭률 + 프로그레스 바 (토탈 ~2.5초)
+
+        var timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(16) };
+        timer.Tick += (_, _) =>
+        {
+            double elapsed = sw.ElapsedMilliseconds;
+            bool allDone = true;
+
+            // 각 아이템: 페이드인 + 왼→오 슬라이드
+            for (int i = 0; i < targets.Count; i++)
+            {
+                double start = i * itemDelay;
+                double t = (elapsed - start) / itemDuration;
+                if (t < 0) { allDone = false; continue; }
+                if (t > 1) t = 1; else allDone = false;
+
+                double u = 1.0 - t;
+                double ease = 1.0 - u * u * u; // CubicEaseOut
+
+                targets[i].Opacity = ease;
+                targets[i].RenderTransform = new TranslateTransform(-30 * (1.0 - ease), 0);
+            }
+
+            // 매칭률 카운트업 + 프로그레스 바
+            double rt = (elapsed - rateDelay) / rateDuration;
+            if (rt < 0) { allDone = false; }
+            else
+            {
+                if (rt > 1) rt = 1; else allDone = false;
+                double rEase = 1.0 - Math.Pow(1.0 - rt, 5); // QuinticEaseOut — 초반 빠르고 끝 느림
+                double currentRate = targetRate * rEase;
+                rateText.Text = $"{currentRate:F1}%";
+
+                // 그라데이션 색상: 빨강 → 주황 → 노랑 → 초록 → 파랑 (10단계 보간)
+                var phaseColor = LerpRateColor(currentRate);
+                rateText.Foreground = new SolidColorBrush(phaseColor);
+                rateBarFill.Background = new SolidColorBrush(phaseColor);
+
+                // 프로그레스 바 너비
+                double containerW = rateBarContainer.Bounds.Width;
+                if (containerW > 0)
+                    rateBarFill.Width = containerW * (currentRate / 100.0);
+            }
+
+            if (allDone) timer.Stop();
+        };
+        timer.Start();
+    }
+
+    private static Border MakeReviewCard(string label, string value, string color, int col)
+    {
+        var card = new Border
+        {
+            Background = Brush.Parse("#0e1825"),
+            BorderBrush = Brush.Parse(color),
+            BorderThickness = new Thickness(1),
+            CornerRadius = new CornerRadius(6),
+            Padding = new Thickness(14, 10),
+            Margin = new Thickness(col == 0 ? 0 : 4, 0, col == 0 ? 4 : 0, 0),
+            Child = new StackPanel { Spacing = 2, Children =
+            {
+                new TextBlock
+                {
+                    Text = label,
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+                    FontSize = AppTheme.FontSM,
+                    Foreground = AppTheme.FgDimmed,
+                },
+                new TextBlock
+                {
+                    Text = value,
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+                    FontSize = AppTheme.FontLG, FontWeight = FontWeight.SemiBold,
+                    Foreground = Brush.Parse(color),
+                },
+            }},
+        };
+        Grid.SetColumn(card, col);
+        return card;
+    }
+
+    /// <summary>0~100% 매칭률에 따라 빨강→주황→노랑→초록→파랑 부드러운 보간</summary>
+    private static Color LerpRateColor(double rate)
+    {
+        rate = Math.Clamp(rate, 0, 100);
+        // 10단계 키프레임: (%, R, G, B)
+        (double p, byte r, byte g, byte b)[] keys =
+        [
+            (0,   0xEE, 0x44, 0x44), // 빨강
+            (12,  0xEE, 0x66, 0x33), // 진주황
+            (25,  0xEE, 0x88, 0x33), // 주황
+            (37,  0xDD, 0xAA, 0x33), // 황갈
+            (50,  0xCC, 0xCC, 0x44), // 노랑
+            (62,  0x88, 0xDD, 0x55), // 연두
+            (75,  0x55, 0xDD, 0x77), // 초록
+            (87,  0x55, 0xCC, 0x99), // 청록
+            (95,  0x55, 0xBB, 0xDD), // 하늘
+            (100, 0x55, 0x99, 0xFF), // 파랑
+        ];
+
+        // 구간 찾�� + 선형 보간
+        for (int i = 0; i < keys.Length - 1; i++)
+        {
+            if (rate <= keys[i + 1].p)
+            {
+                double t = (rate - keys[i].p) / (keys[i + 1].p - keys[i].p);
+                byte cr = (byte)(keys[i].r + (keys[i + 1].r - keys[i].r) * t);
+                byte cg = (byte)(keys[i].g + (keys[i + 1].g - keys[i].g) * t);
+                byte cb = (byte)(keys[i].b + (keys[i + 1].b - keys[i].b) * t);
+                return Color.FromRgb(cr, cg, cb);
+            }
+        }
+        return Color.FromRgb(keys[^1].r, keys[^1].g, keys[^1].b);
+    }
+
+    private static Control MakeReviewRow(string label, int count, string color)
+    {
+        return new StackPanel
+        {
+            Orientation = Orientation.Horizontal, Spacing = 8, Children =
+            {
+                new TextBlock
+                {
+                    Text = "●", FontSize = 8,
+                    Foreground = Brush.Parse(color),
+                    VerticalAlignment = VerticalAlignment.Center,
+                },
+                new TextBlock
+                {
+                    Text = label,
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+                    FontSize = AppTheme.FontBase,
+                    Foreground = AppTheme.FgMuted,
+                },
+                new TextBlock
+                {
+                    Text = $"{count}건",
+                    FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+                    FontSize = AppTheme.FontBase, FontWeight = FontWeight.SemiBold,
+                    Foreground = Brush.Parse(color),
+                },
+            },
+        };
     }
 
     private void AddLog(string icon, string msg)

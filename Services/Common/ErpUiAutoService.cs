@@ -161,13 +161,16 @@ public static class ErpUiAutoService
     public record ExcelRow(int 번호, string SN, string 시료명, string[] Values);
 
     /// <summary>Excel 전체 데이터 로드 (한 번에 열기)</summary>
-    public static List<ExcelRow> LoadAllExcelData()
+    public static List<ExcelRow> LoadAllExcelData() => LoadAllExcelData(ExcelPath);
+
+    /// <summary>지정된 경로의 Excel 데이터 로드</summary>
+    public static List<ExcelRow> LoadAllExcelData(string path)
     {
         var result = new List<ExcelRow>();
         try
         {
-            if (!File.Exists(ExcelPath)) { Log($"[LoadAllExcelData] 파일 없음: {ExcelPath}"); return result; }
-            using var wb = new XLWorkbook(ExcelPath);
+            if (!File.Exists(path)) { Log($"[LoadAllExcelData] 파일 없음: {path}"); return result; }
+            using var wb = new XLWorkbook(path);
             var ws = wb.Worksheet("자료입력");
 
             for (int r = 2; r <= 300; r++)
@@ -600,6 +603,38 @@ public static class ErpUiAutoService
         if (btn == null) return false;
         ClickButton(btn.Hwnd);
         return true;
+    }
+
+    // =========================================================================
+    // ERP 그리드에서 S/N 목록 읽기
+    // =========================================================================
+    /// <summary>ERP 그리드의 보이는 EDIT/STATIC 컨트롤에서 S/N 패턴 텍스트를 수집</summary>
+    public static List<string> GetGridSnList()
+    {
+        var snList = new List<string>();
+        var procs = Process.GetProcessesByName(ProcessName);
+        if (procs.Length == 0) { Log("[GetGridSnList] 프로세스 없음"); return snList; }
+
+        var hwndMain = procs[0].MainWindowHandle;
+        if (hwndMain == IntPtr.Zero) return snList;
+
+        var all = EnumAllChildren(hwndMain);
+
+        // S/N 패턴: MM-DD-숫자 (예: 01-06-1, [율촌]03-15-2)
+        foreach (var c in all)
+        {
+            if (string.IsNullOrWhiteSpace(c.Text)) continue;
+            var text = c.Text.Trim();
+            // S/N 패턴 매칭: 숫자2-숫자2-숫자 (접두사 포함 가능)
+            if (System.Text.RegularExpressions.Regex.IsMatch(text, @"\d{2}-\d{2}-\d+"))
+            {
+                if (!snList.Contains(text))
+                    snList.Add(text);
+            }
+        }
+
+        Log($"[GetGridSnList] {snList.Count}개 S/N 발견");
+        return snList;
     }
 
     // =========================================================================

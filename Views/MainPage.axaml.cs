@@ -2409,6 +2409,7 @@ public partial class MainPage : Window
         {
             _resultSubmitErpPage = new ResultSubmitErpPage();
             _resultSubmitErpPage.Show2ContentRequest = ctrl => Show2.Content = ctrl;
+            _resultSubmitErpPage.Show3ContentRequest = ctrl => Show3.Content = ctrl;
         }
         Show1.Content = _resultSubmitErpPage;
         LogContentChange("Show1", _resultSubmitErpPage);
