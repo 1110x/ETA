@@ -58,6 +58,14 @@ public partial class Login : Window
         }
         catch (Exception ex) { Log($"[Init] MigrateInitialPasswords 실패: {ex}"); }
 
+        try
+        {
+            Log("[Init] SyncAllPhotosToDb 시작");
+            AgentService.SyncAllPhotosToDb();
+            Log("[Init] SyncAllPhotosToDb 완료");
+        }
+        catch (Exception ex) { Log($"[Init] SyncAllPhotosToDb 실패: {ex}"); }
+
 
 
         txtEmail.KeyDown    += (_, e) => { if (e.Key == Key.Enter) txtPassword.Focus(); };

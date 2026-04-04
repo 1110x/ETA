@@ -127,13 +127,16 @@ internal sealed class WasteSingleSeriesChart : Control
         var nonNull = vals.Where(v => v.HasValue).Select(v => v!.Value).ToList();
         if (nonNull.Count == 0) return;
 
-        double maxV = nonNull.Max(), minV = 0;
+        double avg = nonNull.Average();
+        double maxV, minV = 0;
         if (_barMode)
         {
+            maxV = avg > 0 ? avg * 3.0 : nonNull.Max();
             if (maxV <= 0) maxV = 1;
         }
         else
         {
+            maxV = nonNull.Max();
             minV = nonNull.Min();
             if (Math.Abs(maxV - minV) < 1e-9) { minV -= 0.5; maxV += 0.5; }
         }
@@ -167,17 +170,21 @@ internal sealed class WasteSingleSeriesChart : Control
         if (_barMode)
         {
             double barW = Math.Min(slotW * 0.6, 24);
+            var redColor = Color.Parse("#ee3333");
             for (int i = 0; i < n; i++)
             {
                 if (!vals[i].HasValue) continue;
-                double ratio = vals[i]!.Value / maxV;
+                double v = vals[i]!.Value;
+                double ratio = v / maxV;
                 ratio = Math.Clamp(ratio, 0, 1);
-                double barH = ratio * plotH * _animProgress; // 애니메이션 적용
+                double barH = ratio * plotH * _animProgress;
                 double cx = padL + (i + 0.5) * slotW;
                 double bx = cx - barW / 2;
                 double by = padT + plotH - barH;
                 byte alpha = (byte)(200 * _animProgress);
-                var barBrush = new SolidColorBrush(Color.FromArgb(alpha, _color.R, _color.G, _color.B));
+                bool isOutlier = avg > 0 && v > avg * 3.0;
+                var c = isOutlier ? redColor : _color;
+                var barBrush = new SolidColorBrush(Color.FromArgb(alpha, c.R, c.G, c.B));
                 ctx.FillRectangle(barBrush, new Rect(bx, by, barW, barH));
             }
         }

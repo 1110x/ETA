@@ -89,6 +89,53 @@ public static class AgentService
         return false;
     }
 
+    // ── 로컬 사진 → DB 일괄 동기화 (PhotoData가 비어있는 행만) ──────────────
+    public static void SyncAllPhotosToDb()
+    {
+        try
+        {
+            var dir = GetPhotoDirectory();
+            if (!Directory.Exists(dir)) return;
+
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            EnsurePhotoDataColumn(conn);
+
+            // PhotoPath가 있지만 PhotoData가 NULL인 행 조회
+            var targets = new List<(string 사번, string photoPath)>();
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = "SELECT 사번, PhotoPath FROM `Agent` WHERE PhotoPath IS NOT NULL AND PhotoPath <> '' AND (PhotoData IS NULL OR LENGTH(PhotoData) = 0)";
+                using var r = cmd.ExecuteReader();
+                while (r.Read())
+                    targets.Add((r.GetString(0), r.GetString(1)));
+            }
+
+            if (targets.Count == 0) return;
+
+            int synced = 0;
+            foreach (var (사번, photoPath) in targets)
+            {
+                var fullPath = Path.IsPathRooted(photoPath) ? photoPath : Path.Combine(dir, photoPath);
+                if (!File.Exists(fullPath)) continue;
+
+                var data = File.ReadAllBytes(fullPath);
+                if (data.Length == 0) continue;
+
+                using var upd = conn.CreateCommand();
+                upd.CommandText = "UPDATE `Agent` SET PhotoData=@data WHERE 사번=@id";
+                upd.Parameters.AddWithValue("@data", data);
+                upd.Parameters.AddWithValue("@id", 사번);
+                upd.ExecuteNonQuery();
+                synced++;
+            }
+
+            if (synced > 0)
+                Debug.WriteLine($"[Photo] 로컬→DB 일괄 동기화: {synced}건");
+        }
+        catch (Exception ex) { Debug.WriteLine($"[Photo] 일괄 동기화 실패: {ex.Message}"); }
+    }
+
     // ── 담당항목/담당업체 컬럼 마이그레이션 ──────────────────────────────────
     private static void EnsureAssignColumns(DbConnection conn)
     {
