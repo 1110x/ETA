@@ -98,6 +98,57 @@ public partial class MainPage : Window
     // ── 분석의뢰 상세/목록 패널 ──────────────────────────────────────
     private AnalysisRequestDetailPanel?  _analysisRequestDetailPanel;
     private AnalysisRequestListPanel?    _analysisRequestListPanel;
+    // ── 분석계획 (처리시설별 시료 × 분석항목 체크박스) ─────────────────────────
+    private static readonly string[] _analysisPlanItems =
+        { "BOD", "TOC", "SS", "T-N", "T-P", "총대장균군", "COD", "염소이온", "함수율", "중금속", "N-Hexan", "Phenols" };
+
+    private static readonly Dictionary<string, string[]> _facilitySamples = new()
+    {
+        ["중흥처리시설"] = new[]
+        {
+            "농축기 탈리액(주1회 목요일)", "탈수기 탈리액(주1회 목요일)", "유입수(주1회 목요일)",
+            "유입수", "유입수", "유량 조정조",
+            "생물반응조 A", "생물반응조 B", "생물반응조 C", "생물반응조 D", "반송",
+            "슬러지저류조(주1회 목요일)", "고침잉여(주1회 목요일)", "약침잉여(주1회 목요일)",
+            "기존 2차 침전지", "증설 2차 침전지",
+            "약품응집침전지-기존", "약품응집침전지-증설",
+            "MDF 여과기", "A/C 여과기", "방류수", "탈수케이크"
+        },
+        ["4단계"] = new[]
+        {
+            "농축기 탈리액(주1회 목요일)", "탈수기 탈리액(주1회 목요일)",
+            "유입수(주2회 화,목)", "유입수", "유입수",
+            "유량 조정조", "생물반응조",
+            "고속침전지(주2회 화,목)", "복합처리설비(주2회 화,목)",
+            "방류수", "탈수케이크"
+        },
+        ["월내처리시설"] = new[]
+        {
+            "농축기 탈리액(주1회 목요일)", "탈수기 탈리액(주1회 목요일)",
+            "유입수", "유입수", "유입수",
+            "유량 조정조", "생물반응조", "2차 침전지",
+            "가압부상조 유출수", "방류수",
+            "기존반송", "증설반송", "신설저류조", "가압부저류조", "탈수케이크"
+        },
+        ["율촌처리시설"] = new[]
+        {
+            "유입수", "유입수", "유입수", "분배조",
+            "기존 고속응집침전지-유출", "증설 고속응집침전지-유출",
+            "방류수", "탈수케이크"
+        },
+        ["세풍처리시설"] = new[]
+        {
+            "유입수", "유입수", "유입수", "분배조", "방류수"
+        },
+        ["해룡개인산단"] = new[]
+        {
+            "유입수", "유입수", "유입수", "방류수"
+        },
+    };
+
+    // facility → bool[sampleCount][itemCount]
+    private readonly Dictionary<string, List<bool[]>> _facilityPlanState = new();
+    private int _analysisPlanSelectedDay = -1; // -1=전체, 0=월..4=금
 
     public MainPage()
     {
@@ -2394,8 +2445,8 @@ public partial class MainPage : Window
         LogContentChange("Show2", null);
         Show4.Content = _wasteSampleListPage.CompanyTreePanel;
         LogContentChange("Show4", _wasteSampleListPage.CompanyTreePanel as Control);
-        Show3.Content = BuildOrderHistoryPanel();
-        LogContentChange("Show3", Show3.Content as Control);
+        Show3.Content = null;
+        LogContentChange("Show3", null);
         _wasteSampleListPage.LoadData();
         _wasteSampleListPage.LoadCompanyTree();
         _bt1SaveAction = null;
@@ -2545,6 +2596,241 @@ public partial class MainPage : Window
         SetLeftPanelWidth(260);
         SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 8, lowerStar: 2);
         RestoreModeLayout("ResultSubmitZero4");
+    }
+
+    // 처리시설 목록 (분석계획 Show1)
+    private static readonly string[] _facilityNames =
+        { "중흥처리시설", "4단계", "월내처리시설", "율촌처리시설", "세풍처리시설", "해룡개인산단" };
+    private string _selectedFacilityPlan = "중흥처리시설";
+
+    private void AnalysisPlan_Click(object sender, RoutedEventArgs e)
+    {
+        _currentMode = "AnalysisPlan";
+
+        Show1.Content = BuildFacilityListPanel();
+        LogContentChange("Show1", Show1.Content as Control);
+
+        // 첫 번째 시설 기본 선택
+        if (string.IsNullOrEmpty(_selectedFacilityPlan))
+            _selectedFacilityPlan = _facilityNames[0];
+
+        var checkPanel = BuildAnalysisPlanPanel();
+        Show2.Content = checkPanel;
+        LogContentChange("Show2", checkPanel);
+
+        Show3.Content = null;
+        LogContentChange("Show3", null);
+        Show4.Content = null;
+        LogContentChange("Show4", null);
+
+        _bt1SaveAction = null;
+        _analysisPlanSelectedDay = -1;
+        SetSubMenu("새로고침", "월", "화", "수", "목", "금", "전체");
+        SetLeftPanelWidth(200);
+        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 8, lowerStar: 2);
+        RestoreModeLayout("AnalysisPlan");
+    }
+
+    private Control BuildFacilityListPanel()
+    {
+        var font = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
+        var root = new StackPanel { Spacing = 0 };
+
+        root.Children.Add(new Border
+        {
+            Background = AppTheme.BgPrimary,
+            BorderBrush = AppTheme.BorderSubtle,
+            BorderThickness = new Thickness(0, 0, 0, 1),
+            Padding = new Thickness(10, 8),
+            Child = new TextBlock
+            {
+                Text = "처리시설",
+                FontFamily = font, FontWeight = FontWeight.SemiBold,
+                Foreground = AppTheme.FgMuted,
+            }.BindMD()
+        });
+
+        foreach (var name in _facilityNames)
+        {
+            var facilityName = name;
+            var isSelected = facilityName == _selectedFacilityPlan;
+
+            var item = new Border
+            {
+                Background = isSelected ? AppTheme.BgCard : AppTheme.BgSecondary,
+                BorderBrush = isSelected ? AppTheme.BorderAccent : Brushes.Transparent,
+                BorderThickness = new Thickness(3, 0, 0, 0),
+                Padding = new Thickness(12, 10),
+                Cursor = new Cursor(StandardCursorType.Hand),
+                Tag = facilityName,
+                Child = new TextBlock
+                {
+                    Text = facilityName,
+                    FontFamily = font,
+                    Foreground = isSelected ? AppTheme.FgPrimary : AppTheme.FgMuted,
+                    FontWeight = isSelected ? FontWeight.SemiBold : FontWeight.Normal,
+                }.BindMD()
+            };
+
+            item.PointerPressed += (_, _) =>
+            {
+                _selectedFacilityPlan = facilityName;
+                // Show1 갱신 (선택 하이라이트)
+                Show1.Content = BuildFacilityListPanel();
+                LogContentChange("Show1", Show1.Content as Control);
+                // Show2 체크박스 패널 갱신
+                Show2.Content = BuildAnalysisPlanPanel();
+                LogContentChange("Show2", Show2.Content as Control);
+            };
+
+            root.Children.Add(item);
+        }
+
+        return new ScrollViewer
+        {
+            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+            Content = root,
+        };
+    }
+
+    private Control BuildAnalysisPlanPanel()
+    {
+        var font = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
+        var facility = _selectedFacilityPlan;
+
+        if (!_facilitySamples.TryGetValue(facility, out var samples))
+            samples = Array.Empty<string>();
+
+        // 상태 초기화 (처음 진입 시)
+        if (!_facilityPlanState.TryGetValue(facility, out var stateRows))
+        {
+            stateRows = samples.Select(_ => new bool[_analysisPlanItems.Length]).ToList();
+            _facilityPlanState[facility] = stateRows;
+        }
+
+        // 컬럼 정의: 시료명(160) + 항목 12개(각 58)
+        const int firstColW = 160;
+        const int itemColW  = 58;
+        string colDef = firstColW + "," + string.Join(",", Enumerable.Repeat(itemColW, _analysisPlanItems.Length));
+
+        var root = new Grid { RowDefinitions = new RowDefinitions("Auto,*") };
+
+        // ── 고정 헤더 ──────────────────────────────────────────────────────
+        var headerGrid = new Grid { ColumnDefinitions = new ColumnDefinitions(colDef) };
+        headerGrid.Children.Add(new TextBlock
+        {
+            Text = "시료명", FontFamily = font, FontWeight = FontWeight.SemiBold,
+            Foreground = AppTheme.FgMuted,
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin = new Thickness(6, 4),
+        }.BindSM());
+        for (int i = 0; i < _analysisPlanItems.Length; i++)
+        {
+            var hdr = new TextBlock
+            {
+                Text = _analysisPlanItems[i], FontFamily = font, FontWeight = FontWeight.SemiBold,
+                Foreground = AppTheme.FgMuted,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                TextWrapping = TextWrapping.Wrap,
+                Margin = new Thickness(2, 4),
+            }.BindXS();
+            Grid.SetColumn(hdr, i + 1);
+            headerGrid.Children.Add(hdr);
+        }
+        var headerBorder = new Border
+        {
+            Background = AppTheme.BgCard,
+            BorderBrush = AppTheme.BorderSubtle,
+            BorderThickness = new Thickness(0, 0, 0, 1),
+            Child = headerGrid,
+        };
+        Grid.SetRow(headerBorder, 0);
+        root.Children.Add(headerBorder);
+
+        // ── 시료 행 ────────────────────────────────────────────────────────
+        var bodyStack = new StackPanel { Spacing = 1 };
+
+        for (int si = 0; si < samples.Length; si++)
+        {
+            var sampleName = samples[si];
+            var checks     = si < stateRows.Count ? stateRows[si] : new bool[_analysisPlanItems.Length];
+
+            // 요일 필터 투명도
+            bool isActive = IsSampleActiveOnDay(sampleName, _analysisPlanSelectedDay);
+            double opacity = isActive ? 1.0 : 0.35;
+
+            var rowGrid = new Grid
+            {
+                ColumnDefinitions = new ColumnDefinitions(colDef),
+                MinHeight  = 28,
+                Background = isActive ? AppTheme.BgSecondary : AppTheme.BgPrimary,
+                Opacity    = opacity,
+            };
+
+            var nameTb = new TextBlock
+            {
+                Text = sampleName, FontFamily = font,
+                Foreground = AppTheme.FgPrimary,
+                VerticalAlignment = VerticalAlignment.Center,
+                TextTrimming = TextTrimming.CharacterEllipsis,
+                Margin = new Thickness(6, 0),
+            }.BindSM();
+            Grid.SetColumn(nameTb, 0);
+            rowGrid.Children.Add(nameTb);
+
+            for (int ii = 0; ii < _analysisPlanItems.Length; ii++)
+            {
+                int itemIdx = ii;
+                var cb = new CheckBox
+                {
+                    IsChecked = checks[itemIdx],
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment   = VerticalAlignment.Center,
+                    IsEnabled = isActive,
+                };
+                cb.IsCheckedChanged += (_, _) => checks[itemIdx] = cb.IsChecked == true;
+                Grid.SetColumn(cb, itemIdx + 1);
+                rowGrid.Children.Add(cb);
+            }
+
+            bodyStack.Children.Add(rowGrid);
+        }
+
+        if (samples.Length == 0)
+            bodyStack.Children.Add(new TextBlock
+            {
+                Text = "시설을 선택하세요.", FontFamily = font,
+                Foreground = AppTheme.FgWarn, Margin = new Thickness(10),
+            }.BindMD());
+
+        var scroll = new ScrollViewer
+        {
+            Content = bodyStack,
+            HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+            VerticalScrollBarVisibility   = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+        };
+        Grid.SetRow(scroll, 1);
+        root.Children.Add(scroll);
+
+        return root;
+    }
+
+    /// <summary>일정 메모에서 해당 요일 활성 여부 판단 (-1=전체)</summary>
+    private static bool IsSampleActiveOnDay(string name, int dayIdx)
+    {
+        if (dayIdx < 0) return true;
+        bool hasSchedule = name.Contains("주1회") || name.Contains("주2회") || name.Contains("주3회");
+        if (!hasSchedule) return true; // 매일 분석
+        string[] dayNames = { "월", "화", "수", "목", "금", "토", "일" };
+        return name.Contains(dayNames[dayIdx]);
+    }
+
+    private void SetAnalysisPlanDay(int dayIdx)
+    {
+        _analysisPlanSelectedDay = _analysisPlanSelectedDay == dayIdx ? -1 : dayIdx;
+        Show2.Content = BuildAnalysisPlanPanel();
+        LogContentChange("Show2", Show2.Content as Control);
     }
 
 
@@ -2825,14 +3111,6 @@ public partial class MainPage : Window
             {
                 Show4.Content = _quotationPage;
                 LogContentChange("Show4", _quotationPage);
-            };
-
-            // 거래명세서 발행내역 탭으로 전환 → Show2/Show4 초기화
-            _quotationHistoryPanel.StatementTabActivated += () =>
-            {
-                Show2.Content = null;
-                Show4.Content = null;
-                LogContentChange("Show4", null);
             };
 
             // 분석의뢰내역 노드 선택
@@ -3490,6 +3768,10 @@ public partial class MainPage : Window
                 break;
             case "MyTask":          _myTaskPage?.LoadData();             break;
             case "WasteAnalysisInput": _wasteAnalysisInputPage?.LoadData(); break;
+            case "AnalysisPlan":
+                _analysisPlanSelectedDay = -1;
+                Show2.Content = BuildAnalysisPlanPanel();
+                break;
             default: _bt1SaveAction?.Invoke();                          break;
         }
     }
@@ -3519,8 +3801,9 @@ public partial class MainPage : Window
                 break;
             case "WasteSampleList": _wasteSampleListPage?.AddNewDate(); break;
             case "WasteAnalysisInput": _wasteAnalysisInputPage?.VerifyData(); break;
-            case "Repair":       _repairPage?.ApproveSelected();  break;
-            case "RiskManage":   _riskPage?.DeleteSelected();     break;
+            case "Repair":          _repairPage?.ApproveSelected();     break;
+            case "RiskManage":      _riskPage?.DeleteSelected();        break;
+            case "AnalysisPlan":    SetAnalysisPlanDay(0); break; // 월
             default: Debug.WriteLine($"[{_currentMode}] BT2");   break;
         }
     }
@@ -3535,7 +3818,8 @@ public partial class MainPage : Window
             case "Quotation":  _quotationPage?.LoadData(); _quotationHistoryPanel?.LoadData(); break;
             case "TestReport": _ = _testReportPage?.DeleteSampleAsync(); break;
             case "WasteAnalysisInput": _wasteAnalysisInputPage?.ImportData(); break;
-            case "Repair":     _repairPage?.RejectSelected();            break;
+            case "Repair":          _repairPage?.RejectSelected();           break;
+            case "AnalysisPlan":    SetAnalysisPlanDay(1); break; // 화
             default: Debug.WriteLine($"[{_currentMode}] BT3");          break;
         }
     }
@@ -3549,8 +3833,9 @@ public partial class MainPage : Window
             case "Purchase": _purchasePage?.RejectSelected();   break;
             case "TestReport": _testReportPage?.OpenPrintWindow();   break;
             case "WasteAnalysisInput": _wasteAnalysisInputPage?.ExportData(); break;
-            case "Repair":   _repairPage?.CompleteSelected();   break;
-            case "Quotation": await ExportQuotationAsync(); break;
+            case "Repair":          _repairPage?.CompleteSelected();   break;
+            case "Quotation":       await ExportQuotationAsync(); break;
+            case "AnalysisPlan":    SetAnalysisPlanDay(2); break; // 수
             default: Debug.WriteLine($"[{_currentMode}] BT4"); break;
         }
     }
@@ -3559,11 +3844,12 @@ public partial class MainPage : Window
     {
         switch (_currentMode)
         {
-            case "WasteCompany": ShowWasteCompanyData();            break;
-            case "Purchase":     _purchasePage?.CompleteSelected();  break;
-            case "TestReport":   _testReportPage?.OpenPrintWindow();   break;
-            case "Repair":       _repairPage?.DeleteSelected();      break;
-            case "Contract":     _ = ImportContractFromExcelAsync(); break;
+            case "WasteCompany":  ShowWasteCompanyData();            break;
+            case "Purchase":      _purchasePage?.CompleteSelected();  break;
+            case "TestReport":    _testReportPage?.OpenPrintWindow();   break;
+            case "Repair":        _repairPage?.DeleteSelected();      break;
+            case "Contract":      _ = ImportContractFromExcelAsync(); break;
+            case "AnalysisPlan":  SetAnalysisPlanDay(3); break; // 목
             default: Debug.WriteLine($"[{_currentMode}] BT5");      break;
         }
     }
@@ -3622,11 +3908,12 @@ public partial class MainPage : Window
     {
         switch (_currentMode)
         {
-            case "Purchase":   _purchasePage?.DeleteSelected();        break;
-            case "TestReport": _testReportPage?.BatchPrintExcel();     break;
-            case "Quotation":       ShowTradeStatementEditor();    break;
-            case "QuotationIssue":  IssueTradeStatementFromChecklist(); break;
-            default: Debug.WriteLine($"[{_currentMode}] BT6");        break;
+            case "Purchase":        _purchasePage?.DeleteSelected();        break;
+            case "TestReport":      _testReportPage?.BatchPrintExcel();     break;
+            case "Quotation":       ShowTradeStatementEditor();             break;
+            case "QuotationIssue":  IssueTradeStatementFromChecklist();     break;
+            case "AnalysisPlan":    SetAnalysisPlanDay(4); break; // 금
+            default: Debug.WriteLine($"[{_currentMode}] BT6");             break;
         }
     }
 
@@ -4167,6 +4454,7 @@ public partial class MainPage : Window
             case "ResultSubmitMeasure":
                 new MeasurerLoginWindow().Show(this);
                 break;
+            case "AnalysisPlan": SetAnalysisPlanDay(-1); break; // 전체
             default:
                 Debug.WriteLine($"[{_currentMode}] BT7");
                 break;

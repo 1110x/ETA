@@ -7587,3 +7587,265 @@
 [10:51:17] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
 [10:57:50] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
 [10:57:50] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[18:14:49] [AnalysisRequestService] AutoExtend: 오늘(2026-04-05) 이후 210개 행 배정 초기화
+[18:14:49] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[18:15:08] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:08] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:08] [AnalysisRequestService] GetAssignmentCalendar(201000308, 2026-04-05~2026-04-05): 0개 항목
+[18:15:18] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:18] [AnalysisRequestService] GetAssignmentChartData(2026-03-21~2026-06-10): 64개 구간
+[18:15:22] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:22] [AnalysisRequestService] GetAssignmentChartData(2026-02-21~2026-05-10): 64개 구간
+[18:15:33] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:33] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:33] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:33] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:33] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:33] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:33] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:34] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:34] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:34] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:34] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:34] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:34] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:34] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:34] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:34] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:34] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:34] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:34] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:35] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:35] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:35] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:35] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:35] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:35] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:35] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:35] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:35] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:35] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:35] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:35] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:36] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:36] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:36] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:36] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:36] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:36] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:36] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:36] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:36] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:36] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:36] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:36] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:37] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:37] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:37] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:37] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:37] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:37] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:37] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:37] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:37] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:37] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:37] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:37] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:37] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:38] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:38] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:38] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:38] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:38] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:38] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:38] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:38] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:38] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:38] [AnalysisRequestService] GetAssignmentChartData(2026-02-21~2026-05-10): 64개 구간
+[18:15:38] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:15:38] [AnalysisRequestService] GetAssignmentCalendar(201000308, 2026-04-05~2026-04-05): 0개 항목
+[18:15:44] [AnalysisRequestService] UpdateAssignmentByName: 노말헥산 추출물질 → 방찬미 (2026-02-21~2026-04-24)
+[18:15:48] [AnalysisRequestService] UpdateAssignmentByName: 노말헥산 추출물질(광유류) → 방찬미 (2026-02-21~2026-04-24)
+[18:15:51] [AnalysisRequestService] UpdateAssignmentByName: 노말헥산추출물질(동·식물 유지류) → 방찬미 (2026-02-21~2026-04-24)
+[18:15:54] [AnalysisRequestService] UpdateAssignmentByName: 부유물질 → 손현주 (2026-02-21~2026-04-24)
+[18:15:58] [AnalysisRequestService] UpdateAssignmentByName: 색도 → 김가린 (2026-02-21~2026-04-24)
+[18:16:01] [AnalysisRequestService] UpdateAssignmentByName: 생물화학적 산소요구량 → 이재휘 (2026-02-21~2026-04-24)
+[18:16:05] [AnalysisRequestService] UpdateAssignmentByName: 수소이온농도 → 김가린 (2026-02-21~2026-04-24)
+[18:16:09] [AnalysisRequestService] UpdateAssignmentByName: 총 유기탄소 → 정준하 (2026-02-21~2026-04-24)
+[18:16:12] [AnalysisRequestService] UpdateAssignmentByName: 탁도 → 손현주 (2026-02-21~2026-04-24)
+[18:16:15] [AnalysisRequestService] UpdateAssignmentByName: 화학적 산소요구량 → 정대호 (2026-02-21~2026-04-24)
+[18:16:19] [AnalysisRequestService] UpdateAssignmentByName: 시안 → 방찬미 (2026-02-21~2026-04-24)
+[18:16:22] [AnalysisRequestService] UpdateAssignmentByName: 음이온계면활성제 → 이재휘 (2026-02-21~2026-04-24)
+[18:16:25] [AnalysisRequestService] UpdateAssignmentByName: 총인 → 정대호 (2026-02-21~2026-04-24)
+[18:16:29] [AnalysisRequestService] UpdateAssignmentByName: 총질소 → 김가린 (2026-02-21~2026-04-24)
+[18:16:32] [AnalysisRequestService] UpdateAssignmentByName: 퍼클로레이트 → 박은지 (2026-02-21~2026-04-24)
+[18:16:35] [AnalysisRequestService] UpdateAssignmentByName: 페놀류 → 이재휘 (2026-02-21~2026-04-24)
+[18:16:39] [AnalysisRequestService] UpdateAssignmentByName: 불소화합물 → 이재휘 (2026-02-21~2026-04-24)
+[18:16:42] [AnalysisRequestService] UpdateAssignmentByName: 염소이온 → 정대호 (2026-02-21~2026-04-24)
+[18:16:46] [AnalysisRequestService] UpdateAssignmentByName: 황산이온 → 박은지 (2026-02-21~2026-04-24)
+[18:16:49] [AnalysisRequestService] UpdateAssignmentByName: 구리 → 윤민영 (2026-02-21~2026-04-24)
+[18:16:52] [AnalysisRequestService] UpdateAssignmentByName: 납 → 윤민영 (2026-02-21~2026-04-24)
+[18:16:56] [AnalysisRequestService] UpdateAssignmentByName: 니켈 → 윤민영 (2026-02-21~2026-04-24)
+[18:16:57] [AnalysisRequestService] GetShortNames: 0개 로드
+[18:16:57] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:16:57] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:16:57] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:16:57] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:16:57] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:16:58] [AnalysisRequestService] GetShortNames: 0개 로드
+[18:16:58] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:16:58] [AnalysisRequestService] GetAssignmentCalendar(201101234, 2026-04-05~2026-04-05): 2개 항목
+[18:16:59] [AnalysisRequestService] UpdateAssignmentByName: 망간 → 윤민영 (2026-02-21~2026-04-24)
+[18:16:59] [AnalysisRequestService] GetShortNames: 0개 로드
+[18:16:59] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:16:59] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:16:59] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:16:59] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:16:59] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:16:59] [AnalysisRequestService] GetShortNames: 0개 로드
+[18:17:00] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:17:00] [AnalysisRequestService] GetAssignmentCalendar(202104002, 2026-04-05~2026-04-05): 4개 항목
+[18:17:02] [AnalysisRequestService] UpdateAssignmentByName: 바륨 → 윤민영 (2026-02-21~2026-04-24)
+[18:17:05] [AnalysisRequestService] UpdateAssignmentByName: 비소 → 윤민영 (2026-02-21~2026-04-24)
+[18:17:09] [AnalysisRequestService] UpdateAssignmentByName: 아연 → 윤민영 (2026-02-21~2026-04-24)
+[18:17:12] [AnalysisRequestService] UpdateAssignmentByName: 안티몬 → 윤민영 (2026-02-21~2026-04-24)
+[18:17:16] [AnalysisRequestService] UpdateAssignmentByName: 주석 → 윤민영 (2026-02-21~2026-04-24)
+[18:17:19] [AnalysisRequestService] UpdateAssignmentByName: 철 → 윤민영 (2026-02-21~2026-04-24)
+[18:17:22] [AnalysisRequestService] UpdateAssignmentByName: 셀레늄 → 윤민영 (2026-02-21~2026-04-24)
+[18:17:26] [AnalysisRequestService] UpdateAssignmentByName: 수은 → 윤민영 (2026-02-21~2026-04-24)
+[18:17:30] [AnalysisRequestService] UpdateAssignmentByName: 카드뮴 → 윤민영 (2026-02-21~2026-04-24)
+[18:17:33] [AnalysisRequestService] UpdateAssignmentByName: 크롬 → 윤민영 (2026-02-21~2026-04-24)
+[18:17:36] [AnalysisRequestService] UpdateAssignmentByName: 6가크롬 → 유경지 (2026-02-21~2026-04-24)
+[18:17:40] [AnalysisRequestService] UpdateAssignmentByName: 다이에틸헥실프탈레이트 → 이예림 (2026-02-21~2026-04-24)
+[18:17:43] [AnalysisRequestService] UpdateAssignmentByName: 유기인 → 김지은 (2026-02-21~2026-04-24)
+[18:17:47] [AnalysisRequestService] UpdateAssignmentByName: 폴리클로리네이티드비페닐 → 김지은 (2026-02-21~2026-04-24)
+[18:17:51] [AnalysisRequestService] UpdateAssignmentByName: 다이에틸헥실아디페이트 → 이예림 (2026-02-21~2026-04-24)
+[18:17:54] [AnalysisRequestService] UpdateAssignmentByName: 과불화헥산술폰산(PFHxS) → 박은지 (2026-02-21~2026-04-24)
+[18:17:57] [AnalysisRequestService] UpdateAssignmentByName: 과불화옥탄술폰산(PFOS) → 박은지 (2026-02-21~2026-04-24)
+[18:18:01] [AnalysisRequestService] UpdateAssignmentByName: 과불화옥탄산(PFOA) → 박은지 (2026-02-21~2026-04-24)
+[18:18:05] [AnalysisRequestService] UpdateAssignmentByName: 1,4-다이옥산 → 이예림 (2026-02-21~2026-04-24)
+[18:18:08] [AnalysisRequestService] UpdateAssignmentByName: 아크릴로니트릴 → 김지은 (2026-02-21~2026-04-24)
+[18:18:12] [AnalysisRequestService] UpdateAssignmentByName: 염화비닐 → 김지은 (2026-02-21~2026-04-24)
+[18:18:16] [AnalysisRequestService] UpdateAssignmentByName: 브로모포름 → 김지은 (2026-02-21~2026-04-24)
+[18:18:19] [AnalysisRequestService] UpdateAssignmentByName: 1,1-다이클로로에틸렌 → 송준우 (2026-02-21~2026-04-24)
+[18:18:23] [AnalysisRequestService] UpdateAssignmentByName: 다이클로로메탄 → 송준우 (2026-02-21~2026-04-24)
+[18:18:26] [AnalysisRequestService] UpdateAssignmentByName: 클로로폼 → 송준우 (2026-02-21~2026-04-24)
+[18:18:30] [AnalysisRequestService] UpdateAssignmentByName: 1,2-다이클로로에탄 → 송준우 (2026-02-21~2026-04-24)
+[18:18:33] [AnalysisRequestService] UpdateAssignmentByName: 벤젠 → 송준우 (2026-02-21~2026-04-24)
+[18:18:37] [AnalysisRequestService] UpdateAssignmentByName: 사염화탄소 → 송준우 (2026-02-21~2026-04-24)
+[18:18:41] [AnalysisRequestService] UpdateAssignmentByName: 트리클로로에틸렌 → 송준우 (2026-02-21~2026-04-24)
+[18:18:44] [AnalysisRequestService] UpdateAssignmentByName: 톨루엔 → 송준우 (2026-02-21~2026-04-24)
+[18:18:48] [AnalysisRequestService] UpdateAssignmentByName: 테트라클로로에틸렌 → 송준우 (2026-02-21~2026-04-24)
+[18:18:51] [AnalysisRequestService] UpdateAssignmentByName: 자일렌 → 송준우 (2026-02-21~2026-04-24)
+[18:18:55] [AnalysisRequestService] UpdateAssignmentByName: 폼알데하이드 → 이예림 (2026-02-21~2026-04-24)
+[18:18:59] [AnalysisRequestService] UpdateAssignmentByName: 나프탈렌 → 송준우 (2026-02-21~2026-04-24)
+[18:19:02] [AnalysisRequestService] UpdateAssignmentByName: 아크릴아미드 → 이예림 (2026-02-21~2026-04-24)
+[18:19:06] [AnalysisRequestService] UpdateAssignmentByName: 에피클로로하이드린 → 김지은 (2026-02-21~2026-04-24)
+[18:19:09] [AnalysisRequestService] UpdateAssignmentByName: 스타이렌 → 송준우 (2026-02-21~2026-04-24)
+[18:19:13] [AnalysisRequestService] UpdateAssignmentByName: 페놀 → 이예림 (2026-02-21~2026-04-24)
+[18:19:16] [AnalysisRequestService] UpdateAssignmentByName: 펜타클로로페놀 → 이예림 (2026-02-21~2026-04-24)
+[18:19:20] [AnalysisRequestService] UpdateAssignmentByName: 총대장균군 → 손현주 (2026-02-21~2026-04-24)
+[18:19:23] [AnalysisRequestService] UpdateAssignmentByName: 생태독성 → 유경지 (2026-02-21~2026-04-24)
+[18:19:24] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:19:24] [AnalysisRequestService] GetAssignmentChartData(2026-02-21~2026-05-10): 64개 구간
+[18:19:24] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:19:24] [AnalysisRequestService] GetAssignmentCalendar(202104002, 2026-04-05~2026-04-05): 4개 항목
+[18:19:24] [AnalysisRequestService] GetShortNames: 0개 로드
+[18:19:24] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:19:24] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:19:24] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:19:24] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[18:30:59] [AnalysisRequestService] GetShortNames: 0개 로드
+[18:37:50] [AnalysisRequestService] GetShortNames: 0개 로드
+[18:37:50] [AnalysisRequestService] GetManagersByDate(2026-03-24): 69개 담당자 로드
+[18:37:56] [AnalysisRequestService] GetShortNames: 0개 로드
+[18:37:56] [AnalysisRequestService] GetManagersByDate(2026-03-23): 69개 담당자 로드
+[18:37:57] [AnalysisRequestService] GetShortNames: 0개 로드
+[18:37:57] [AnalysisRequestService] GetManagersByDate(2026-03-20): 69개 담당자 로드
+[18:37:58] [AnalysisRequestService] GetShortNames: 0개 로드
+[18:37:58] [AnalysisRequestService] GetManagersByDate(2026-03-19): 69개 담당자 로드
+[18:38:00] [AnalysisRequestService] GetShortNames: 0개 로드
+[18:38:00] [AnalysisRequestService] GetManagersByDate(2026-03-17): 69개 담당자 로드
+[18:38:01] [AnalysisRequestService] GetShortNames: 0개 로드
+[18:38:01] [AnalysisRequestService] GetManagersByDate(2026-03-13): 69개 담당자 로드
+[18:38:04] [AnalysisRequestService] GetShortNames: 0개 로드
+[18:38:04] [AnalysisRequestService] GetManagersByDate(2026-02-28): 69개 담당자 로드
+[18:45:58] [AnalysisRequestService] GetShortNames: 0개 로드
+[18:45:58] [AnalysisRequestService] GetManagersByDate(2026-03-20): 69개 담당자 로드
+[18:45:59] [AnalysisRequestService] GetShortNames: 0개 로드
+[18:45:59] [AnalysisRequestService] GetManagersByDate(2026-03-19): 69개 담당자 로드
+[18:46:01] [AnalysisRequestService] GetShortNames: 0개 로드
+[18:46:01] [AnalysisRequestService] GetManagersByDate(2026-03-17): 69개 담당자 로드
+[18:46:02] [AnalysisRequestService] GetShortNames: 0개 로드
+[18:46:02] [AnalysisRequestService] GetManagersByDate(2026-03-12): 69개 담당자 로드
+[18:46:45] [AnalysisRequestService] GetShortNames: 0개 로드
+[18:46:45] [AnalysisRequestService] GetManagersByDate(2026-02-25): 69개 담당자 로드
+[18:46:47] [AnalysisRequestService] GetShortNames: 0개 로드
+[18:46:47] [AnalysisRequestService] GetManagersByDate(2026-03-09): 69개 담당자 로드
+[18:46:50] [AnalysisRequestService] GetShortNames: 0개 로드
+[18:46:50] [AnalysisRequestService] GetManagersByDate(2026-03-09): 69개 담당자 로드
+[18:48:04] [AnalysisRequestService] GetShortNames: 0개 로드
+[18:48:04] [AnalysisRequestService] GetManagersByDate(2026-03-12): 69개 담당자 로드
+[18:48:11] [AnalysisRequestService] GetShortNames: 0개 로드
+[18:48:11] [AnalysisRequestService] GetManagersByDate(2026-03-31): 69개 담당자 로드
+[18:48:13] [AnalysisRequestService] GetShortNames: 0개 로드
+[18:48:13] [AnalysisRequestService] GetManagersByDate(2026-03-31): 69개 담당자 로드
+[18:48:15] [AnalysisRequestService] GetShortNames: 0개 로드
+[18:48:15] [AnalysisRequestService] GetManagersByDate(2026-03-31): 69개 담당자 로드
+[18:48:16] [AnalysisRequestService] GetShortNames: 0개 로드
+[18:48:16] [AnalysisRequestService] GetManagersByDate(2026-03-27): 69개 담당자 로드
+[18:48:17] [AnalysisRequestService] GetShortNames: 0개 로드
+[18:48:17] [AnalysisRequestService] GetManagersByDate(2026-03-25): 69개 담당자 로드
+[18:48:19] [AnalysisRequestService] GetShortNames: 0개 로드
+[18:48:20] [AnalysisRequestService] GetManagersByDate(2026-03-17): 69개 담당자 로드
+[18:48:20] [AnalysisRequestService] GetShortNames: 0개 로드
+[18:48:20] [AnalysisRequestService] GetManagersByDate(2026-03-12): 69개 담당자 로드
+[18:51:56] [AnalysisRequestService] 완료: 3663건
+[18:51:57] [AnalysisRequestService] 완료: 3663건
+[18:52:08] [AnalysisRequestService] 완료: 3663건
+[18:52:17] [AnalysisRequestService] 완료: 3663건
+[18:52:22] [AnalysisRequestService] 완료: 3663건
+[18:52:22] [AnalysisRequestService] 완료: 3663건
+[18:53:03] [AnalysisRequestService] 완료: 3663건
+[18:53:25] [AnalysisRequestService] 완료: 3663건
+[18:53:26] [AnalysisRequestService] 완료: 3663건
+[18:53:27] [AnalysisRequestService] 완료: 3663건
+[18:53:29] [AnalysisRequestService] 완료: 3663건
+[18:53:35] [AnalysisRequestService] 완료: 3663건
+[18:53:36] [AnalysisRequestService] 완료: 3663건
+[18:53:37] [AnalysisRequestService] 완료: 3663건
+[18:53:37] [AnalysisRequestService] 완료: 3663건
+[18:53:44] [AnalysisRequestService] 완료: 3663건
+[18:53:45] [AnalysisRequestService] 완료: 3663건
+[18:53:45] [AnalysisRequestService] 완료: 3663건
+[18:53:46] [AnalysisRequestService] 완료: 3663건
+[18:53:47] [AnalysisRequestService] 완료: 3663건
+[18:53:47] [AnalysisRequestService] 완료: 3663건
+[18:53:49] [AnalysisRequestService] 완료: 3663건
+[18:53:50] [AnalysisRequestService] 완료: 3663건
+[18:54:04] QuotationHistoryPanel 초기화 완료
+[18:54:04] LoadData() 시작
+[18:54:05] 견적 발행건수=933
+[18:54:05] LoadData() 완료 — 루트노드=6
+[18:54:14] 견적 선택: 머티리얼즈 롯데에너지머티리얼즈(주) 2026년 견적서 [20260226-094135]
+[18:54:53] 견적 선택: 국도화학 3/4 국도화학(주) 익산지점 3EA 견적서 [20260303-155028]
+[18:54:54] 견적 선택: 보임 (주)보임열병합발전 2026년 견적서 [20260303-113022]
+[18:54:59] 견적 선택: 국도화학 3/4 국도화학(주) 익산지점 3EA 견적서 [20260303-155028]
+[18:55:05] 견적 선택: 국도화학 3/4 국도화학(주) 익산지점 3EA 견적서 [20260303-155028]
+[18:55:18] LoadData() 시작
+[18:55:18] 견적 발행건수=933
+[18:55:18] LoadData() 완료 — 루트노드=6
+[18:55:22] 견적 선택: 국도화학 3/4 국도화학(주) 익산지점 3EA 견적서 [20260303-155028]
+[18:55:23] 견적 선택: 보임 (주)보임열병합발전 2026년 견적서 [20260303-113022]
+[18:55:24] 견적 선택: 국도화학 3/4 국도화학(주) 익산지점 3EA 견적서 [20260303-155028]
+[18:55:25] 견적 선택: 보임 (주)보임열병합발전 2026년 견적서 [20260303-113022]
+[19:02:21] [AnalysisRequestService] AutoExtend: 오늘(2026-04-05) 이후 210개 행 배정 초기화
+[19:02:21] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[19:13:33] [AnalysisRequestService] AutoExtend: 오늘(2026-04-05) 이후 210개 행 배정 초기화
+[19:13:33] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[19:18:54] [AnalysisRequestService] AutoExtend: 오늘(2026-04-05) 이후 210개 행 배정 초기화
+[19:18:54] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[19:38:33] [AnalysisRequestService] AutoExtend: 오늘(2026-04-05) 이후 210개 행 배정 초기화
+[19:38:33] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[20:01:12] [AnalysisRequestService] AutoExtend: 오늘(2026-04-05) 이후 210개 행 배정 초기화
+[20:01:12] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음

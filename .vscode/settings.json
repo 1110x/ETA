@@ -1,8 +1,0 @@
-{
-    "chat.tools.terminal.autoApprove": {
-        "/^dotnet build 2>&1 \\| grep \"\\): error CS\" \\| sed 's\\|/Users/azrael/Documents/ETA/\\|\\|' \\| sort -u \\| head -30$/": {
-            "approve": true,
-            "matchCommandLine": true
-        }
-    }
-}

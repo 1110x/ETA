@@ -64,8 +64,25 @@ public static class AgentService
         if (string.IsNullOrEmpty(사번) || string.IsNullOrEmpty(photoPath)) return false;
 
         var dir = GetPhotoDirectory();
-        var fullPath = Path.IsPathRooted(photoPath) ? photoPath : Path.Combine(dir, photoPath);
-        if (File.Exists(fullPath)) return true;   // 이미 있음
+        var fileName = NormalizePhotoPath(photoPath);
+        if (string.IsNullOrEmpty(fileName)) return false;
+
+        // 표준 캐시 경로: 항상 PhotoDirectory + 파일명
+        var cachePath = Path.Combine(dir, fileName);
+        if (File.Exists(cachePath)) return true;
+
+        // 레거시 경로(절대/상대 혼재)도 한 번 시도해서 찾으면 표준 경로로 정리
+        var legacyPath = ResolveLegacyPhotoPath(photoPath);
+        if (!string.IsNullOrEmpty(legacyPath) && File.Exists(legacyPath))
+        {
+            Directory.CreateDirectory(dir);
+            if (!string.Equals(legacyPath, cachePath, StringComparison.OrdinalIgnoreCase))
+                File.Copy(legacyPath, cachePath, overwrite: true);
+
+            // 다른 PC를 위해 DB BLOB도 가능한 즉시 보강
+            try { SavePhotoToDb(사번, File.ReadAllBytes(cachePath)); } catch { }
+            return true;
+        }
 
         try
         {
@@ -80,8 +97,8 @@ public static class AgentService
             if (result is byte[] data && data.Length > 0)
             {
                 Directory.CreateDirectory(dir);
-                File.WriteAllBytes(fullPath, data);
-                Debug.WriteLine($"[Photo] DB에서 로컬 캐시: {fullPath} ({data.Length} bytes)");
+                File.WriteAllBytes(cachePath, data);
+                Debug.WriteLine($"[Photo] DB에서 로컬 캐시: {cachePath} ({data.Length} bytes)");
                 return true;
             }
         }
@@ -290,8 +307,16 @@ public static class AgentService
         int rows = cmd.ExecuteNonQuery();
         Debug.WriteLine($"[DELETE] {rows}행 → {agent.성명}");
 
-        if (rows > 0 && !string.IsNullOrEmpty(agent.PhotoPath) && File.Exists(agent.PhotoPath))
-            try { File.Delete(agent.PhotoPath); } catch { }
+        if (rows > 0 && !string.IsNullOrEmpty(agent.PhotoPath))
+        {
+            var fileName = NormalizePhotoPath(agent.PhotoPath);
+            var photoFile = string.IsNullOrEmpty(fileName)
+                ? ""
+                : Path.Combine(GetPhotoDirectory(), fileName);
+
+            if (!string.IsNullOrEmpty(photoFile) && File.Exists(photoFile))
+                try { File.Delete(photoFile); } catch { }
+        }
 
         return rows > 0;
     }
@@ -768,7 +793,7 @@ public static class AgentService
         cmd.Parameters.AddWithValue("@Email",          a.Email          ?? "");
         cmd.Parameters.AddWithValue("@기타",           a.기타           ?? "");
         cmd.Parameters.AddWithValue("@측정인고유번호", a.측정인고유번호 ?? "");
-        cmd.Parameters.AddWithValue("@PhotoPath",      a.PhotoPath      ?? "");
+        cmd.Parameters.AddWithValue("@PhotoPath",      NormalizePhotoPath(a.PhotoPath));
         cmd.Parameters.AddWithValue("@담당항목",       a.담당항목       ?? "");
         cmd.Parameters.AddWithValue("@담당업체",       a.담당업체       ?? "");
     }
@@ -785,8 +810,48 @@ public static class AgentService
     private static string NormalizePhotoPath(string path)
     {
         if (string.IsNullOrEmpty(path)) return "";
-        // 이미 파일명만 있으면 그대로
-        return Path.IsPathRooted(path) ? Path.GetFileName(path) : path;
+        // 경로가 들어오더라도 DB에는 파일명만 저장한다.
+        return Path.GetFileName(path.Trim());
+    }
+
+    // 레거시 데이터의 PhotoPath 형태(절대/상대/중복 폴더)를 최대한 복구해서 찾는다.
+    private static string ResolveLegacyPhotoPath(string photoPath)
+    {
+        if (string.IsNullOrWhiteSpace(photoPath)) return "";
+
+        var trimmed = photoPath.Trim();
+        var fileName = Path.GetFileName(trimmed);
+        var photoDir = GetPhotoDirectory();
+
+        var candidates = new List<string>();
+        if (Path.IsPathRooted(trimmed))
+            candidates.Add(trimmed);
+
+        candidates.Add(Path.Combine(photoDir, trimmed));
+
+        if (!string.IsNullOrEmpty(fileName))
+            candidates.Add(Path.Combine(photoDir, fileName));
+
+        var docsRoot = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "ETA");
+        candidates.Add(Path.Combine(docsRoot, trimmed));
+
+        if (!string.IsNullOrWhiteSpace(DbPathHelper.SharedPhotoDirectory))
+        {
+            candidates.Add(Path.Combine(DbPathHelper.SharedPhotoDirectory, trimmed));
+            if (!string.IsNullOrEmpty(fileName))
+                candidates.Add(Path.Combine(DbPathHelper.SharedPhotoDirectory, fileName));
+        }
+
+        foreach (var c in candidates.Where(p => !string.IsNullOrWhiteSpace(p)))
+        {
+            try
+            {
+                if (File.Exists(c)) return c;
+            }
+            catch { }
+        }
+
+        return "";
     }
 
     // ── 측정인.kr 자격증명 조회 / 저장 ──────────────────────────────────────

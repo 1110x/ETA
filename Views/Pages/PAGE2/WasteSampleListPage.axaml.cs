@@ -33,6 +33,9 @@ public partial class WasteSampleListPage : UserControl
 
     private string? _selectedDate;
     private Panel?  _detailPanel;
+    private readonly Dictionary<string, List<string>> _datesByMonth = new();
+    private readonly HashSet<string> _loadedMonths = new();
+    private string _maxEnabledMonth = "";
 
     // ── 드래그앤드롭 상태 ──────────────────────────────────────────────────────
     private Grid?   _dragSourceRow;          // 드래그 중인 행
@@ -77,7 +80,15 @@ public partial class WasteSampleListPage : UserControl
 
         try
         {
-            var dates = WasteSampleService.GetDates();   // YYYY-MM-DD 역순
+            // 당월 말일까지 (당월 포함)
+            var maxDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month,
+                DateTime.DaysInMonth(DateTime.Today.Year, DateTime.Today.Month))
+                .ToString("yyyy-MM-dd");
+            var dates = WasteSampleService.GetDatesUpTo(maxDate);
+            _datesByMonth.Clear();
+            _loadedMonths.Clear();
+            // 당월 + 전월 활성화
+            _maxEnabledMonth = DateTime.Today.ToString("yyyy-MM");
 
             // 연-월 그룹핑
             var byMonth = dates
@@ -86,14 +97,12 @@ public partial class WasteSampleListPage : UserControl
 
             foreach (var month in byMonth)
             {
-                var monthNode = MakeMonthNode(month.Key, month.Count());
-                foreach (var d in month.OrderByDescending(x => x))
-                {
-                    var samples   = WasteSampleService.GetByDate(d);
-                    var dateNode  = MakeDateNode(d, samples);
-                    monthNode.Items.Add(dateNode);
-                }
-                monthNode.IsExpanded = true;
+                var monthDates = month.OrderByDescending(x => x).ToList();
+                _datesByMonth[month.Key] = monthDates;
+
+                bool isEnabledMonth = string.CompareOrdinal(month.Key, _maxEnabledMonth) <= 0;
+                var monthNode = MakeMonthNode(month.Key, monthDates.Count, isEnabledMonth);
+                monthNode.IsExpanded = false;
                 DateTreeView.Items.Add(monthNode);
             }
 
@@ -105,40 +114,52 @@ public partial class WasteSampleListPage : UserControl
     // =========================================================================
     // 날짜 트리 노드
     // =========================================================================
-    private static TreeViewItem MakeMonthNode(string ym, int count)
+    private static TreeViewItem MakeMonthNode(string ym, int count, bool isEnabledMonth)
     {
         if (!DateTime.TryParse(ym + "-01", out var d)) d = DateTime.MinValue;
-        return new TreeViewItem
+
+        var node = new TreeViewItem
         {
-            IsExpanded = true,
-            Header = new StackPanel
+            Tag = $"MONTH:{ym}",
+            IsEnabled = isEnabledMonth,
+            IsExpanded = false,
+        };
+
+        var title = $"📅  {d.Year}년 {d.Month}월";
+        if (!isEnabledMonth)
+            title += " (비활성)";
+
+        var titleFg = isEnabledMonth ? AppTheme.FgMuted : AppTheme.FgDimmed;
+
+        node.Header = new StackPanel
+        {
+            Orientation = Orientation.Horizontal, Spacing = 6,
+            Children =
             {
-                Orientation = Orientation.Horizontal, Spacing = 6,
-                Children =
+                new TextBlock
                 {
-                    new TextBlock
+                    Text = title,
+                    FontWeight = FontWeight.SemiBold,
+                    FontFamily = Font, Foreground = titleFg,
+                    VerticalAlignment = VerticalAlignment.Center,
+                }.BindMD(),
+                new Border
+                {
+                    Background = AppTheme.BorderSubtle, CornerRadius = new CornerRadius(8),
+                    Padding = new Thickness(5,1),
+                    Child = new TextBlock
                     {
-                        Text = $"📅  {d.Year}년 {d.Month}월",
-                        FontWeight = FontWeight.SemiBold,
-                        FontFamily = Font, Foreground = AppTheme.FgMuted,
-                        VerticalAlignment = VerticalAlignment.Center,
-                    }.BindMD(),
-                    new Border
-                    {
-                        Background = AppTheme.BorderSubtle, CornerRadius = new CornerRadius(8),
-                        Padding = new Thickness(5,1),
-                        Child = new TextBlock
-                        {
-                            Text = count.ToString(),
-                            FontFamily = Font, Foreground = AppTheme.FgDimmed,
-                        }.BindXS()
-                    }
+                        Text = count.ToString(),
+                        FontFamily = Font, Foreground = AppTheme.FgDimmed,
+                    }.BindXS()
                 }
             }
         };
+
+        return node;
     }
 
-    private static TreeViewItem MakeDateNode(string dateStr, List<WasteSample> samples)
+    private static TreeViewItem MakeDateNode(string dateStr)
     {
         DateTime.TryParse(dateStr, out var d);
         string dow   = d == DateTime.MinValue ? "" : $" ({DayOfWeekKr(d)})";
@@ -164,7 +185,7 @@ public partial class WasteSampleListPage : UserControl
                         Padding = new Thickness(5, 1), VerticalAlignment = VerticalAlignment.Center,
                         Child = new TextBlock
                         {
-                            Text = samples.Count.ToString(),
+                            Text = "선택",
                             FontFamily = Font, Foreground = AppTheme.FgDimmed,
                         }.BindXS(),
                     },
@@ -172,57 +193,7 @@ public partial class WasteSampleListPage : UserControl
             }
         };
 
-        foreach (var s in samples)
-            node.Items.Add(MakeSampleLeafNode(s, dateStr));
-
         return node;
-    }
-
-    private static readonly Dictionary<string, (string Bg, string Fg)> _groupColors = new()
-    {
-        ["여수"] = ("#1e3a5a", "#88aacc"),
-        ["율촌"] = ("#1a3a1a", "#aaccaa"),
-        ["세풍"] = ("#3a2a1a", "#ccaa88"),
-    };
-
-    private static TreeViewItem MakeSampleLeafNode(WasteSample s, string dateStr)
-    {
-        var (bg, fg) = _groupColors.TryGetValue(s.구분, out var gc) ? gc : ("#2a2a3a", "#999");
-
-        var sp = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 5 };
-
-        // 구분 배지
-        sp.Children.Add(new Border
-        {
-            Background      = Brush.Parse(bg),
-            CornerRadius    = new CornerRadius(8),
-            Padding         = new Thickness(5, 1),
-            VerticalAlignment = VerticalAlignment.Center,
-            Child = new TextBlock
-            {
-                Text = s.구분, FontSize = AppTheme.FontSM, FontFamily = Font,
-                Foreground = Brush.Parse(fg),
-            },
-        });
-
-        // SN
-        if (!string.IsNullOrEmpty(s.SN))
-            sp.Children.Add(new TextBlock
-            {
-                Text = s.SN, FontSize = AppTheme.FontSM, FontFamily = Font,
-                Foreground = AppTheme.FgDimmed,
-                VerticalAlignment = VerticalAlignment.Center,
-            });
-
-        // 업체명
-        sp.Children.Add(new TextBlock
-        {
-            Text = s.업체명, FontSize = AppTheme.FontMD, FontFamily = Font,
-            Foreground = AppRes("AppFg"),
-            VerticalAlignment = VerticalAlignment.Center,
-        });
-
-        return new TreeViewItem { Tag = dateStr, Header = sp };
     }
 
     private static string DayOfWeekKr(DateTime d) => d.DayOfWeek switch
@@ -242,10 +213,35 @@ public partial class WasteSampleListPage : UserControl
     public void DateTreeView_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         if (e.AddedItems.Count == 0) return;
-        if (e.AddedItems[0] is not TreeViewItem tvi || tvi.Tag is not string date) return;
+        if (e.AddedItems[0] is not TreeViewItem tvi || tvi.Tag is not string tag) return;
+
+        if (tag.StartsWith("MONTH:", StringComparison.Ordinal))
+        {
+            var ym = tag[6..];
+            // 비활성 월은 무시
+            if (string.CompareOrdinal(ym, _maxEnabledMonth) > 0)
+                return;
+
+            EnsureMonthDatesLoaded(tvi, ym);
+            tvi.IsExpanded = true;
+            return;
+        }
+
+        var date = tag;
 
         _selectedDate = date;
         RefreshDetail();
+    }
+
+    private void EnsureMonthDatesLoaded(TreeViewItem monthNode, string ym)
+    {
+        if (_loadedMonths.Contains(ym)) return;
+        if (!_datesByMonth.TryGetValue(ym, out var dates)) return;
+
+        foreach (var d in dates)
+            monthNode.Items.Add(MakeDateNode(d));
+
+        _loadedMonths.Add(ym);
     }
 
     // =========================================================================
@@ -698,17 +694,25 @@ public partial class WasteSampleListPage : UserControl
         // 없으면 월 노드 새로 생성
         if (monthNode == null)
         {
-            monthNode = MakeMonthNode(ym, 0);
+            bool isEnabledMonth = string.CompareOrdinal(ym, _maxEnabledMonth) <= 0;
+            monthNode = MakeMonthNode(ym, 0, isEnabledMonth);
             monthNode.IsExpanded = true;
             DateTreeView.Items.Insert(0, monthNode);
+            _datesByMonth.TryAdd(ym, new List<string>());
         }
 
         // 날짜 노드가 이미 있으면 스킵
         bool exists = monthNode.Items.OfType<TreeViewItem>().Any(d => (string?)d.Tag == date);
         if (exists) return;
 
-        var newSamples = WasteSampleService.GetByDate(date);
-        monthNode.Items.Insert(0, MakeDateNode(date, newSamples));
+        monthNode.Items.Insert(0, MakeDateNode(date));
+
+        if (_datesByMonth.TryGetValue(ym, out var monthDates))
+            monthDates.Insert(0, date);
+        else
+            _datesByMonth[ym] = new List<string> { date };
+
+        _loadedMonths.Add(ym);
     }
 
     // =========================================================================

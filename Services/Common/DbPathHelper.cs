@@ -37,6 +37,10 @@ public static class DbPathHelper
        Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
        "ETA", "Data", "Attachments");
 
+    // NAS/파일서버 공유 경로(선택): 예) \\NAS\ETA\Data\Photos
+    // 설정 키: Paths:SharedPhotoDirectory
+    public static string SharedPhotoDirectory { get; private set; } = "";
+
     static DbPathHelper()
     {
         // 폴더 없으면 자동 생성
@@ -60,6 +64,13 @@ public static class DbPathHelper
                 $"User={config["MariaDb:User"]};" +
                 $"Password={config["MariaDb:Password"]};" +
                 "CharSet=utf8mb4;SslMode=None;";
+        }
+
+        var sharedPhoto = config["Paths:SharedPhotoDirectory"]?.Trim();
+        if (!string.IsNullOrEmpty(sharedPhoto))
+        {
+            SharedPhotoDirectory = sharedPhoto;
+            try { Directory.CreateDirectory(SharedPhotoDirectory); } catch { }
         }
     }
 }

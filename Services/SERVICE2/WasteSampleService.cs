@@ -23,6 +23,24 @@ public static class WasteSampleService
         return list;
     }
 
+    // ── 날짜 목록 (지정일 이하, 채수일 역순) ─────────────────────────────────
+    public static List<string> GetDatesUpTo(string maxDateInclusive)
+    {
+        var list = new List<string>();
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+            SELECT DISTINCT 채수일
+            FROM `폐수의뢰및결과`
+            WHERE 채수일 <= @maxDate
+            ORDER BY 채수일 DESC";
+        cmd.Parameters.AddWithValue("@maxDate", maxDateInclusive);
+        using var r = cmd.ExecuteReader();
+        while (r.Read()) list.Add(r.GetString(0));
+        return list;
+    }
+
     // ── 날짜별 전체 행 (순서 오름차순) ──────────────────────────────────────
     public static List<WasteSample> GetByDate(string 채수일)
     {

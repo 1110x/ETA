@@ -1379,7 +1379,7 @@ public partial class WasteAnalysisInputPage : UserControl
             }
             else // NHEX 등
             {
-                hLabels  = new[] { "SN", "업체명", "시료량", "결과값", "분���자", "분석일시", "구분" };
+                hLabels  = new[] { "SN", "업체명", "시료량", "결과값", "분석자", "분석일시", "구분" };
                 dataKeys = new[] { "",    "",       "시료량", "",       "@mgr",   "등록일시", "" };
             }
         }

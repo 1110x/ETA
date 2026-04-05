@@ -581,7 +581,7 @@
                     </MenuItem>
 
                     <MenuItem Header="처리시설">
-                        <MenuItem Header="RDP for Zero4" IsEnabled="False" Opacity="0.4"/>
+                        <MenuItem Header="분석계획" Click="AnalysisPlan_Click"/>
                     </MenuItem>
 
                     <MenuItem Header="분석결과입력">

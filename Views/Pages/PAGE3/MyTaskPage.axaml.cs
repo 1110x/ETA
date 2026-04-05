@@ -246,7 +246,7 @@ public partial class MyTaskPage : UserControl
         }
     }
 
-    // ── 측대 트리 ─────────────────────────────────────────────────────────────
+    // ── 수질분석센터 트리 ─────────────────────────────────────────────────────────────
     private void LoadMeokdaeTree(string dateStr)
     {
         var items = MyTaskService.GetMyAnalysisItems(_employeeId, _selectedDate);
