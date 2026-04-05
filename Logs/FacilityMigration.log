@@ -327,3 +327,101 @@
 [17:41:33] [FacilityMigration] DATA 마이그레이션 스킵 (BOD 8572건 존재)
 [17:46:21] [FacilityMigration] DATA 마이그레이션 스킵 (BOD 8572건 존재)
 [17:46:24] [FacilityMigration] DATA 마이그레이션 스킵 (BOD 8572건 존재)
+[20:50:03] [FacilityMigration] DATA 마이그레이션 스킵 (BOD 8572건 존재)
+[20:50:08] [FacilityMigration] DATA 마이그레이션 스킵 (BOD 8572건 존재)
+[21:04:37] [FacilityMigration] DATA 마이그레이션 스킵 (BOD 8572건 존재)
+[21:04:42] [FacilityMigration] DATA 마이그레이션 스킵 (BOD 8572건 존재)
+[21:06:34] [FacilityMigration] DATA 마이그레이션 스킵 (BOD 8572건 존재)
+[21:06:37] [FacilityMigration] DATA 마이그레이션 스킵 (BOD 8572건 존재)
+[21:17:31] [FacilityMigration] DATA 마이그레이션 스킵 (BOD 8572건 존재)
+[21:17:35] [FacilityMigration] DATA 마이그레이션 스킵 (BOD 8572건 존재)
+[21:42:57] [FacilityMigration] DATA 마이그레이션 스킵 (BOD 8572건 존재)
+[21:43:00] [FacilityMigration] DATA 마이그레이션 스킵 (BOD 8572건 존재)
+[21:45:11] [FacilityMigration] DATA 마이그레이션 스킵 (BOD 8572건 존재)
+[21:45:14] [FacilityMigration] DATA 마이그레이션 스킵 (BOD 8572건 존재)
+[22:03:25] [FacilityMigration] DATA 마이그레이션 스킵 (BOD 8572건 존재)
+[22:03:25] [FacilityMigration] 빈 행 8772건 발견 → 수리 실행
+[22:03:25] [FacilityMigration] 빈 행 수리 대상: 7659건
+[22:03:30] [FacilityMigration] 빈 행 수리 BOD_DATA.결과 → BOD: 7659건
+[22:03:30] [FacilityMigration] 빈 행 수리 SS_DATA.결과 → SS: 1143건
+[22:03:31] [FacilityMigration] 빈 행 수리 TN_DATA.농도 → T-N: 973건
+[22:03:32] [FacilityMigration] 빈 행 수리 TP_DATA.농도 → T-P: 955건
+[22:03:33] [FacilityMigration] 빈 행 수리 NHexan_DATA.결과 → N-Hexan: 1317건
+[22:03:33] [FacilityMigration] 빈 행 수리 Phenols_DATA.농도 → Phenols: 557건
+[22:03:34] [FacilityMigration] 빈 행 TOC 수리 (TOC_TCIC_DATA): 513건
+[22:03:34] [FacilityMigration] 빈 행 TOC 수리 (TOC_NPOC_DATA): 75건
+[22:03:34] [FacilityMigration] 빈 행 수리 완료: 총 13192건
+[22:03:38] [FacilityMigration] DATA 마이그레이션 스킵 (BOD 16231건 존재)
+[22:03:38] [FacilityMigration] 빈 행 1113건 발견 → 수리 실행
+[22:03:38] [FacilityMigration] 빈 행 수리 대상: 0건
+[22:08:31] [FacilityMigration] DATA 마이그레이션 스킵 (BOD 16231건 존재)
+[22:08:31] [FacilityMigration] 빈 행 1113건 발견 → 수리 실행
+[22:08:31] [FacilityMigration] 빈 행 수리 대상: 0건
+[22:08:35] [FacilityMigration] DATA 마이그레이션 스킵 (BOD 16231건 존재)
+[22:08:35] [FacilityMigration] 빈 행 1113건 발견 → 수리 실행
+[22:08:35] [FacilityMigration] 빈 행 수리 대상: 0건
+[22:10:12] [FacilityMigration] DATA 마이그레이션 스킵 (BOD 16231건 존재)
+[22:10:12] [FacilityMigration] 빈 행 1113건 발견 → 수리 실행
+[22:10:12] [FacilityMigration] 빈 행 수리 대상: 0건
+[22:10:15] [FacilityMigration] DATA 마이그레이션 스킵 (BOD 16231건 존재)
+[22:10:15] [FacilityMigration] 빈 행 1113건 발견 → 수리 실행
+[22:10:15] [FacilityMigration] 빈 행 수리 대상: 0건
+[22:28:21] [FacilityMigration] BOD_DATA.결과 → BOD: 8757건
+[22:28:24] [FacilityMigration] SS_DATA.결과 → SS: 8676건
+[22:28:27] [FacilityMigration] TN_DATA.농도 → T-N: 8100건
+[22:28:31] [FacilityMigration] TP_DATA.농도 → T-P: 8085건
+[22:28:34] [FacilityMigration] NHexan_DATA.결과 → N-Hexan: 8679건
+[22:28:37] [FacilityMigration] Phenols_DATA.농도 → Phenols: 7432건
+[22:28:40] [FacilityMigration] TOC_TCIC_DATA.검량선_a → TOC: 6817건
+[22:28:40] [FacilityMigration] TOC_NPOC_DATA.검량선_a → TOC (보충): 1건
+[22:28:40] [FacilityMigration] 누락 시료 추가: 185건
+[22:28:40] [FacilityMigration] 마이그레이션 양호 (빈 행 0/17902)
+[22:28:58] [FacilityMigration] 마이그레이션 양호 (빈 행 0/18087)
+[22:53:38] [FacilityMigration] === 폐수의뢰및결과 전면 재구축 시작 ===
+[22:53:38] [FacilityMigration] 기존 데이터 전체 삭제
+[22:53:38] [FacilityMigration] BOD_DATA 고유 시료: 8791건 (중복 제거 후)
+[22:53:42] [FacilityMigration] 시료 행 INSERT 완료: 8791건
+[22:53:46] [FacilityMigration] BOD_DATA.결과 → BOD: 8789건
+[22:53:50] [FacilityMigration] SS_DATA.결과 → SS: 8328건
+[22:53:55] [FacilityMigration] TN_DATA.농도 → T-N: 6046건
+[22:54:00] [FacilityMigration] TP_DATA.농도 → T-P: 6055건
+[22:54:05] [FacilityMigration] NHexan_DATA.결과 → N-Hexan: 8477건
+[22:54:08] [FacilityMigration] Phenols_DATA.농도 → Phenols: 4531건
+[22:54:12] [FacilityMigration] TOC_TCIC_DATA.검량선_a → TOC: 4848건
+[22:54:12] [FacilityMigration] TOC_NPOC_DATA.검량선_a → TOC (보충): 489건
+[22:54:12] [FacilityMigration] === 재구축 완료: 8791행, 47563건 결과값 갱신 ===
+[22:54:21] [FacilityMigration] 마이그레이션 양호 (빈 행 0/8791)
+[23:15:55] [FacilityMigration] 마이그레이션 양호 (빈 행 0/8791)
+[23:16:24] [FacilityMigration] === 폐수의뢰및결과 전면 재구축 시작 ===
+[23:16:24] [FacilityMigration] 기존 데이터 전체 삭제
+[23:16:24] [FacilityMigration] BOD_DATA 고유 시료: 8791건 (중복 제거 후)
+[23:16:29] [FacilityMigration] 시료 행 INSERT 완료: 8791건
+[23:16:34] [FacilityMigration] BOD_DATA.결과 → BOD: 8789건 (비고매칭=940키)
+[23:16:41] [FacilityMigration] SS_DATA.결과 → SS: 8390건 (비고매칭=957키)
+[23:16:47] [FacilityMigration] TN_DATA.농도 → T-N: 6046건 (비고매칭=0키)
+[23:16:52] [FacilityMigration] TP_DATA.농도 → T-P: 6055건 (비고매칭=1키)
+[23:16:58] [FacilityMigration] NHexan_DATA.결과 → N-Hexan: 8506건 (비고매칭=505키)
+[23:17:02] [FacilityMigration] Phenols_DATA.농도 → Phenols: 4531건 (비고매칭=31키)
+[23:17:06] [FacilityMigration] TOC_TCIC_DATA.검량선_a → TOC: 4930건 (비고매칭=810키)
+[23:17:07] [FacilityMigration] TOC_NPOC_DATA.검량선_a → TOC (보충): 505건
+[23:17:07] [FacilityMigration] === 재구축 완료: 8791행, 47752건 결과값 갱신 ===
+[23:17:10] [FacilityMigration] 마이그레이션 양호 (빈 행 0/8791)
+[23:43:44] [FacilityMigration] 빈 행 167건 → SN 기반 수리
+[23:43:44] [FacilityMigration] 빈 행 수리 대상: 167건
+[23:43:45] [FacilityMigration] 빈 행 수리 완료: 총 0건
+[23:43:48] [FacilityMigration] 빈 행 167건 → SN 기반 수리
+[23:43:48] [FacilityMigration] 빈 행 수리 대상: 167건
+[23:43:48] [FacilityMigration] 빈 행 수리 완료: 총 0건
+[00:19:23] [FacilityMigration] BOD_DATA.결과 → BOD: 6334건
+[00:19:27] [FacilityMigration] SS_DATA.결과 → SS: 8402건
+[00:19:31] [FacilityMigration] TN_DATA.농도 → T-N: 8436건
+[00:19:35] [FacilityMigration] TP_DATA.농도 → T-P: 8411건
+[00:19:38] [FacilityMigration] NHexan_DATA.결과 → N-Hexan: 7374건
+[00:19:42] [FacilityMigration] Phenols_DATA.농도 → Phenols: 6810건
+[00:19:44] [FacilityMigration] TOC_TCIC_DATA.검량선_a → TOC: 4426건
+[00:19:44] [FacilityMigration] TOC_NPOC_DATA.검량선_a → TOC (보충): 4건
+[00:19:44] [FacilityMigration] 누락 시료 추가: 849건
+[00:19:44] [FacilityMigration] 마이그레이션 양호 (빈 행 0/8542)
+[00:19:48] [FacilityMigration] 빈 행 21건 → SN 기반 수리
+[00:19:48] [FacilityMigration] 빈 행 수리 대상: 21건
+[00:19:48] [FacilityMigration] 빈 행 수리 완료: 총 0건

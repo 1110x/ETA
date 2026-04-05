@@ -12913,3 +12913,99 @@
 [17:49:02] [AnalysisRequestService] UpdateAssignmentByName: 생태독성 → 유경지 (2026-03-21~2026-04-30)
 [17:49:02] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
 [17:49:02] [AnalysisRequestService] GetAssignmentChartData(2026-03-21~2026-06-10): 64개 구간
+[20:50:09] [AnalysisRequestService] AutoExtend: 오늘(2026-04-05) 이후 210개 행 배정 초기화
+[20:50:09] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[21:02:33] QuotationHistoryPanel 초기화 완료
+[21:02:33] LoadData() 시작
+[21:02:33] 견적 발행건수=933
+[21:02:33] LoadData() 완료 — 루트노드=6
+[21:02:36] 견적 선택: 국도화학 3/4 국도화학(주) 익산지점 3EA 견적서 [20260303-155028]
+[21:02:36] 견적 선택: 보임 (주)보임열병합발전 2026년 견적서 [20260303-113022]
+[21:02:38] 견적 선택: 머티리얼즈 롯데에너지머티리얼즈(주) 2026년 견적서 [20260226-094135]
+[21:02:39] 견적 선택: DL DL케미칼 1분기 정기시료 [20260226-094137]
+[21:02:40] 견적 선택: 용성 LG화학(주) 용성단지 TOC 재분석 4EA 견적서 [20260225-092450]
+[21:02:40] 견적 선택: 용성 LG화학(주) 용성단지 TOC 재분석 4EA 견적서 [20260225-092450]
+[21:02:41] 견적 선택: 포스코리튬 2/27 포스코리튬솔루션 1분기 (6EA) [20260225-141237]
+[21:02:42] 견적 선택: 한세 26년 2월 정기시료(1EA) 견적서(26.02.25) [20260223-170021]
+[21:02:43] 견적 선택: 롯데첨단소재 TOC 의뢰시료(25.12.22, 26.01.13, 26.01.27 총 138EA) 견적서 [20260223-093731]
+[21:02:43] 견적 선택: 화치 1/23 염화비닐 [20260223-083743]
+[21:02:44] 견적 선택: 적량 LG화학-적량 26년 1분기(8EA)+생태독성 참고측정(3EA) [20260220-153528]
+[21:02:45] 견적 선택: 적량 26.02.20 적량 5종 [20260220-151625]
+[21:02:45] 견적 선택: 화치 LG화학-화치단지 2월 의뢰시료 합계(~2/23 까지) [20260220-085212]
+[21:02:46] 견적 선택: 금호 금호미쓰이화학(주) 접수시료(260210, 1EA, 54종) [20260210-154936]
+[21:04:43] [AnalysisRequestService] AutoExtend: 오늘(2026-04-05) 이후 210개 행 배정 초기화
+[21:04:43] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[21:06:38] [AnalysisRequestService] AutoExtend: 오늘(2026-04-05) 이후 210개 행 배정 초기화
+[21:06:38] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[21:17:36] [AnalysisRequestService] AutoExtend: 오늘(2026-04-05) 이후 210개 행 배정 초기화
+[21:17:36] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[21:22:21] QuotationHistoryPanel 초기화 완료
+[21:22:21] LoadData() 시작
+[21:22:21] 견적 발행건수=933
+[21:22:21] LoadData() 완료 — 루트노드=6
+[21:22:25] LoadData() 시작
+[21:22:25] 견적 발행건수=933
+[21:22:25] LoadData() 완료 — 루트노드=6
+[21:22:36] 탭 전환 → 분석의뢰내역
+[21:22:36] LoadAnalysisTreeAsync() 시작
+[21:22:36] [AnalysisRequestService] 완료: 3663건
+[21:22:36] DB 조회 완료: 3663건
+[21:22:37] 트리 완료 — 년노드=7
+[21:22:39] 의뢰 선택: 포스코리튬 비점-유역1 유입수조 []
+[21:22:39] [AnalysisRequestService] GetShortNames: 0개 로드
+[21:22:40] 의뢰 선택: 포스코리튬 비점-유역2 유입수조 []
+[21:22:40] 의뢰 선택: DL HDPE 원폐수 [20260226-094137]
+[21:22:41] 의뢰 선택: 롯데첨단소재 방류수 [20260219-161345]
+[21:22:48] 의뢰 선택: 롯데첨단소재 EP 범핑펀드 [20260219-161345]
+[21:22:49] 의뢰 선택: 롯데첨단소재 정화조 [20260219-161345]
+[21:22:49] 의뢰 선택: 롯데첨단소재 남수천 3번 [20260219-161345]
+[21:22:50] 의뢰 선택: GS #W2.(제2폐수처리장/유입수) [20260210-122314]
+[21:22:52] 의뢰 선택: 포스코리튬 #W1 유입수 []
+[21:22:53] 의뢰 선택: 포스코리튬 #W1 배출수 []
+[21:22:53] 의뢰 선택: 포스코리튬 비점-유역1 유입수조 []
+[21:22:54] 의뢰 선택: 포스코리튬 비점-유역1 처리수조 []
+[21:22:55] 의뢰 선택: 포스코리튬 비점-유역2 유입수조 []
+[21:22:55] 의뢰 선택: 포스코리튬 비점-유역2 처리수조 []
+[21:40:39] [AnalysisRequestService] 완료: 3663건
+[21:40:40] [AnalysisRequestService] 완료: 3663건
+[21:40:49] [AnalysisRequestService] 완료: 3663건
+[21:40:51] [AnalysisRequestService] 완료: 3663건
+[21:40:52] [AnalysisRequestService] 완료: 3663건
+[21:40:55] [AnalysisRequestService] UpdateSamplers: rowId=1 시료채취자-1='박은지'
+[21:40:55] [AnalysisRequestService] 완료: 3663건
+[21:40:56] [AnalysisRequestService] 완료: 3663건
+[21:40:57] [AnalysisRequestService] 완료: 3663건
+[21:40:59] [AnalysisRequestService] UpdateSamplers: rowId=1 시료채취자-1=''
+[21:40:59] [AnalysisRequestService] 완료: 3663건
+[21:40:59] [AnalysisRequestService] 완료: 3663건
+[21:41:05] [AnalysisRequestService] 완료: 3663건
+[21:41:12] [AnalysisRequestService] 완료: 3663건
+[21:41:16] [AnalysisRequestService] 완료: 3663건
+[21:41:19] [AnalysisRequestService] 완료: 3663건
+[21:41:20] [AnalysisRequestService] 완료: 3663건
+[21:41:25] [AnalysisRequestService] 완료: 3663건
+[21:41:25] [AnalysisRequestService] 완료: 3663건
+[21:41:26] [AnalysisRequestService] 완료: 3663건
+[21:41:28] [AnalysisRequestService] 완료: 3663건
+[21:41:28] [AnalysisRequestService] 완료: 3663건
+[21:41:30] [AnalysisRequestService] 완료: 3663건
+[21:43:01] [AnalysisRequestService] AutoExtend: 오늘(2026-04-05) 이후 210개 행 배정 초기화
+[21:43:01] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[21:45:15] [AnalysisRequestService] AutoExtend: 오늘(2026-04-05) 이후 210개 행 배정 초기화
+[21:45:15] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[22:03:39] [AnalysisRequestService] AutoExtend: 오늘(2026-04-05) 이후 210개 행 배정 초기화
+[22:03:39] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[22:08:36] [AnalysisRequestService] AutoExtend: 오늘(2026-04-05) 이후 210개 행 배정 초기화
+[22:08:36] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[22:10:16] [AnalysisRequestService] AutoExtend: 오늘(2026-04-05) 이후 210개 행 배정 초기화
+[22:10:16] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[22:28:59] [AnalysisRequestService] AutoExtend: 오늘(2026-04-05) 이후 210개 행 배정 초기화
+[22:28:59] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[22:54:22] [AnalysisRequestService] AutoExtend: 오늘(2026-04-05) 이후 210개 행 배정 초기화
+[22:54:22] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[23:17:11] [AnalysisRequestService] AutoExtend: 오늘(2026-04-05) 이후 210개 행 배정 초기화
+[23:17:11] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[23:43:49] [AnalysisRequestService] AutoExtend: 오늘(2026-04-05) 이후 210개 행 배정 초기화
+[23:43:49] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[00:19:49] [AnalysisRequestService] AutoExtend: 오늘(2026-04-06) 이후 209개 행 배정 초기화
+[00:19:49] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
