@@ -62,6 +62,7 @@ public partial class MainPage : Window
     private RiskManagePage?   _riskPage;
     private SchedulePage?     _schedulePage;
     private TestReportPage?         _testReportPage;
+    private WasteTestReportPage?    _wasteTestReportPage;
     private ReportsPanel?           _reportsPanel;           // Content4: 출력 보관함
     private DbMigrationPage?           _dbMigrationPage;
     private DbMigrationPointPanel?     _dbMigrationPointPanel;
@@ -2912,13 +2913,13 @@ public partial class MainPage : Window
         LogContentChange("Show2", _riskPage.UsageControl);
         Show3.Content = _riskPage.FormControl;
         LogContentChange("Show3", _riskPage.FormControl);
-        Show4.Content = null;
-        LogContentChange("Show4", null);
+        Show4.Content = _riskPage.DetailControl;
+        LogContentChange("Show4", _riskPage.DetailControl);
         _bt1SaveAction = null;
 
         SetSubMenu("새로고침", "삭제", "", "", "", "", "", "");
         SetLeftPanelWidth(320);
-        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 5, lowerStar: 5);
+        SetContentLayout(content2Star: 1, content4Star: 1, upperStar: 5, lowerStar: 5);
         RestoreModeLayout("RiskManage", minLowerStar: 3);
     }
 
@@ -2934,8 +2935,8 @@ public partial class MainPage : Window
         LogContentChange("Show2", _riskPage.UsageControl);
         Show3.Content = _riskPage.FormControl;
         LogContentChange("Show3", _riskPage.FormControl);
-        Show4.Content = null;
-        LogContentChange("Show4", null);
+        Show4.Content = _riskPage.DetailControl;
+        LogContentChange("Show4", _riskPage.DetailControl);
         _bt1SaveAction = null;
 
         SetSubMenu("새로고침", "삭제", "", "", "", "", "", "");
@@ -3483,6 +3484,39 @@ public partial class MainPage : Window
 
         Avalonia.Threading.Dispatcher.UIThread.Post(
             () => _testReportPage.LoadData(),
+            Avalonia.Threading.DispatcherPriority.Render);
+    }
+
+    private void WasteTestReport_Click(object? sender, RoutedEventArgs e)
+    {
+        _currentMode = "WasteTestReport";
+
+        if (_wasteTestReportPage == null)
+        {
+            _wasteTestReportPage = new WasteTestReportPage();
+            _wasteTestReportPage.ResultGridChanged += panel =>
+            {
+                Show2.Content = panel;
+                LogContentChange("Show2", panel);
+            };
+        }
+
+        Show1.Content = _wasteTestReportPage;
+        LogContentChange("Show1", _wasteTestReportPage);
+        Show2.Content = null;
+        LogContentChange("Show2", null);
+        Show3.Content = null;
+        LogContentChange("Show3", null);
+        Show4.Content = null;
+        LogContentChange("Show4", null);
+        _bt1SaveAction = null;
+
+        SetSubMenu("새로고침", "", "", "", "", "");
+        SetContentLayout(content2Star: 8, content4Star: 0, upperStar: 9, lowerStar: 1);
+        RestoreModeLayout("WasteTestReport");
+
+        Avalonia.Threading.Dispatcher.UIThread.Post(
+            () => _wasteTestReportPage.LoadData(),
             Avalonia.Threading.DispatcherPriority.Render);
     }
 

@@ -1606,6 +1606,37 @@ public static class AnalysisRequestService
     }
 
     // =====================================================================
+    //  당월 분석항목별 의뢰 건수 — 시약 적정사용량 산정용
+    // =====================================================================
+    /// <summary>이번달 1일~오늘까지 특정 분석항목의 의뢰 건수 (값이 'O'인 행 수)</summary>
+    public static int GetMonthlyAnalyteCount(string analyteName)
+    {
+        if (string.IsNullOrEmpty(analyteName)) return 0;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return 0;
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            if (!DbConnectionFactory.TableExists(conn, "분석의뢰및결과")) return 0;
+            if (!DbConnectionFactory.ColumnExists(conn, "분석의뢰및결과", analyteName)) return 0;
+
+            var today = DateTime.Today;
+            var monthStart = new DateTime(today.Year, today.Month, 1).ToString("yyyy-MM-dd");
+            var todayStr   = today.ToString("yyyy-MM-dd");
+
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = $@"
+                SELECT COUNT(*) FROM `분석의뢰및결과`
+                WHERE `{analyteName}` = 'O'
+                  AND `채취일자` >= @start AND `채취일자` <= @end";
+            cmd.Parameters.AddWithValue("@start", monthStart);
+            cmd.Parameters.AddWithValue("@end",   todayStr);
+            return Convert.ToInt32(cmd.ExecuteScalar());
+        }
+        catch (Exception ex) { Log($"GetMonthlyAnalyteCount 오류: {ex.Message}"); return 0; }
+    }
+
+    // =====================================================================
     //  채수담당자 등록 — 시료채취1/채수담당자/시료채취자1 컬럼 중 존재하는 것에 저장
     // =====================================================================
     public static void UpdateSamplers(int rowId, IEnumerable<string> names)

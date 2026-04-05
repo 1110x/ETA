@@ -36,10 +36,11 @@ public class RiskManagePage
         "#1a6655", "#7a4410", "#556677", "#334455",
     };
 
-    // ── 3패널 ──────────────────────────────────────────────────────────────
-    public Control TreeControl  { get; }   // Show1
-    public Control UsageControl { get; }   // Show2
-    public Control FormControl  { get; }   // Show3
+    // ── 4패널 ──────────────────────────────────────────────────────────────
+    public Control TreeControl   { get; }   // Show1
+    public Control UsageControl  { get; }   // Show2
+    public Control FormControl   { get; }   // Show3
+    public Control DetailControl { get; }   // Show4 — 분석항목 연결
 
     // ── Show1 내부 상태 ───────────────────────────────────────────────────
     private string _category = "시약";
@@ -52,6 +53,9 @@ public class RiskManagePage
         Margin = new Thickness(0, 4, 0, 4),
     };
     private Border? _selectedCard;
+
+    // ── Show4 — 분석항목 연결 패널 ──────────────────────────────────────────
+    private readonly StackPanel _analytePanel = new() { Spacing = 4 };
 
     // ── Show2 — 사용량 패널 ───────────────────────────────────────────────
     private readonly StackPanel _usagePanel = new() { Spacing = 4 };
@@ -96,11 +100,13 @@ public class RiskManagePage
         _searchBox = MakeTxb("🔍  검색...");
         _searchBox.TextChanged += (_, _) => RenderList();
 
-        TreeControl  = BuildListPanel();
-        UsageControl = BuildUsagePanel();
-        FormControl  = BuildFormPanel();
+        TreeControl   = BuildListPanel();
+        UsageControl  = BuildUsagePanel();
+        FormControl   = BuildFormPanel();
+        DetailControl = BuildAnalytePanel();
 
         ShowUsagePlaceholder();
+        ShowAnalytePlaceholder();
 
         // 최초 실행 시 Excel → DB 자동 가져오기 후 목록 렌더
         Task.Run(() => ImportReagentsIfEmpty())
@@ -284,6 +290,7 @@ public class RiskManagePage
                 HighlightCard(card, color);
                 LoadReagentToForm(captured);
                 UpdateUsagePanel(captured);
+                UpdateAnalytePanel(captured);
             }
         }, RoutingStrategies.Tunnel);
 
@@ -540,6 +547,189 @@ public class RiskManagePage
     }
 
     // =========================================================================
+    // Show4 — 분석항목 연결 패널
+    // =========================================================================
+    private Control BuildAnalytePanel()
+    {
+        var scroll = new ScrollViewer
+        {
+            Content = _analytePanel,
+            VerticalScrollBarVisibility   = ScrollBarVisibility.Auto,
+            HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+        };
+        return new Border { Padding = new Thickness(14, 12), Child = scroll };
+    }
+
+    private void ShowAnalytePlaceholder()
+    {
+        _analytePanel.Children.Clear();
+        _analytePanel.Children.Add(new TextBlock
+        {
+            Text = "시약을 선택하면\n연결된 분석항목이 표시됩니다",
+            FontSize = AppTheme.FontBase, FontFamily = FontR,
+            Foreground = AppTheme.FgDimmed,
+            TextAlignment = TextAlignment.Center,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            TextWrapping = TextWrapping.Wrap,
+            Margin = new Thickness(0, 30, 0, 0),
+        });
+    }
+
+    private void UpdateAnalytePanel(Reagent item)
+    {
+        _analytePanel.Children.Clear();
+
+        _analytePanel.Children.Add(new TextBlock
+        {
+            Text = "분석항목 연결", FontSize = AppTheme.FontBase, FontWeight = FontWeight.Bold,
+            FontFamily = FontM, Foreground = AppTheme.FgInfo,
+            Margin = new Thickness(0, 0, 0, 4),
+        });
+        _analytePanel.Children.Add(new TextBlock
+        {
+            Text = $"{item.품목명} — 시료당 소요량 기반 적정사용량 산정",
+            FontSize = AppTheme.FontXS, FontFamily = FontR,
+            Foreground = AppTheme.FgDimmed,
+            TextWrapping = TextWrapping.Wrap,
+            Margin = new Thickness(0, 0, 0, 10),
+        });
+
+        // 연결된 분석항목 목록
+        var links = ReagentAnalyteService.GetByReagentId(item.Id);
+        int totalEstimate = 0;
+
+        if (links.Count > 0)
+        {
+            // 헤더
+            var headerGrid = new Grid
+            {
+                ColumnDefinitions = new ColumnDefinitions("*,60,60,60,30"),
+                Margin = new Thickness(0, 0, 0, 4),
+            };
+            AddColText(headerGrid, "분석항목", 0, AppTheme.FgDimmed, FontWeight.SemiBold);
+            AddColText(headerGrid, "소요량", 1, AppTheme.FgDimmed, FontWeight.SemiBold);
+            AddColText(headerGrid, "의뢰수", 2, AppTheme.FgDimmed, FontWeight.SemiBold);
+            AddColText(headerGrid, "산정량", 3, AppTheme.FgDimmed, FontWeight.SemiBold);
+            _analytePanel.Children.Add(headerGrid);
+
+            foreach (var link in links)
+            {
+                int monthlyCount = ETA.Services.SERVICE1.AnalysisRequestService.GetMonthlyAnalyteCount(link.분석항목);
+                int estimate = (int)Math.Ceiling(link.시료당소요량 * monthlyCount);
+                totalEstimate += estimate;
+
+                var rowGrid = new Grid
+                {
+                    ColumnDefinitions = new ColumnDefinitions("*,60,60,60,30"),
+                    Margin = new Thickness(0, 1, 0, 1),
+                };
+
+                // 항목명 (약칭 표시)
+                AddColText(rowGrid, link.분석항목, 0, AppTheme.FgPrimary, FontWeight.Normal);
+                // 시료당 소요량
+                AddColText(rowGrid, link.시료당소요량.ToString("F1"), 1, AppTheme.FgMuted, FontWeight.Normal);
+                // 이번달 의뢰 건수
+                AddColText(rowGrid, monthlyCount.ToString(), 2,
+                    monthlyCount > 0 ? new SolidColorBrush(Color.Parse("#4488ff")) : AppTheme.FgMuted,
+                    FontWeight.Normal);
+                // 적정사용량 산정
+                AddColText(rowGrid, estimate.ToString(), 3,
+                    new SolidColorBrush(Color.Parse("#ccaa44")), FontWeight.SemiBold);
+
+                // 삭제 버튼
+                var btnDel = new Button
+                {
+                    Content = "✕", FontSize = AppTheme.FontXS,
+                    Padding = new Thickness(4, 2),
+                    Background = Brushes.Transparent,
+                    Foreground = new SolidColorBrush(Color.Parse("#884444")),
+                    VerticalAlignment = VerticalAlignment.Center,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
+                };
+                var capturedLink = link;
+                var capturedItem = item;
+                btnDel.Click += (_, _) =>
+                {
+                    ReagentAnalyteService.Delete(capturedLink.Id);
+                    UpdateAnalytePanel(capturedItem);
+                };
+                Grid.SetColumn(btnDel, 4);
+                rowGrid.Children.Add(btnDel);
+
+                var rowBorder = new Border
+                {
+                    Child = rowGrid,
+                    Padding = new Thickness(4, 4),
+                    CornerRadius = new CornerRadius(3),
+                    Background = new SolidColorBrush(Color.Parse("#141428")),
+                    Margin = new Thickness(0, 1),
+                };
+                _analytePanel.Children.Add(rowBorder);
+            }
+        }
+        else
+        {
+            _analytePanel.Children.Add(new TextBlock
+            {
+                Text = "연결된 분석항목이 없습니다.\nShow3 폼에서 분석항목을 추가하세요.",
+                FontSize = AppTheme.FontSM, FontFamily = FontR,
+                Foreground = AppTheme.FgDimmed,
+                TextWrapping = TextWrapping.Wrap,
+                Margin = new Thickness(0, 10, 0, 0),
+            });
+        }
+
+        // 합계 표시
+        if (totalEstimate > 0)
+        {
+            _analytePanel.Children.Add(new Border { Height = 1, Background = AppTheme.BorderSubtle, Margin = new Thickness(0, 8) });
+            var sumGrid = new Grid
+            {
+                ColumnDefinitions = new ColumnDefinitions("*,60,60,60,30"),
+            };
+            AddColText(sumGrid, "합계 (적정사용량)", 0, AppTheme.FgPrimary, FontWeight.Bold);
+            AddColText(sumGrid, totalEstimate.ToString(), 3,
+                new SolidColorBrush(Color.Parse("#ffaa44")), FontWeight.Bold);
+            _analytePanel.Children.Add(sumGrid);
+
+            // 재고 대비 안내
+            string status;
+            IBrush statusColor;
+            if (item.재고량 >= totalEstimate)
+            {
+                status = $"재고({item.재고량}) >= 적정({totalEstimate}) — 충분";
+                statusColor = new SolidColorBrush(Color.Parse("#44cc88"));
+            }
+            else
+            {
+                status = $"재고({item.재고량}) < 적정({totalEstimate}) — 부족 ({totalEstimate - item.재고량} 추가 필요)";
+                statusColor = new SolidColorBrush(Color.Parse("#ff6666"));
+            }
+            _analytePanel.Children.Add(new TextBlock
+            {
+                Text = status, FontSize = AppTheme.FontSM, FontFamily = FontM,
+                Foreground = statusColor,
+                TextWrapping = TextWrapping.Wrap,
+                Margin = new Thickness(0, 6, 0, 0),
+            });
+        }
+    }
+
+    private static void AddColText(Grid grid, string text, int col, IBrush fg, FontWeight weight)
+    {
+        var tb = new TextBlock
+        {
+            Text = text, FontSize = AppTheme.FontSM, FontFamily = FontR,
+            Foreground = fg, FontWeight = weight,
+            VerticalAlignment = VerticalAlignment.Center,
+            TextTrimming = TextTrimming.CharacterEllipsis,
+        };
+        Grid.SetColumn(tb, col);
+        grid.Children.Add(tb);
+    }
+
+    // =========================================================================
     // Show3 — 폼 패널
     // =========================================================================
     private Control BuildFormPanel()
@@ -637,6 +827,86 @@ public class RiskManagePage
             ("당월 사용량",    _rCurrUse,  v("당월사용량")),
             ("전월 사용량",    _rPrevUse,  v("전월사용량")),
         }));
+
+        // ── 분석항목 연결 (기존 시약 수정 시만) ──────────────────────────
+        if (!isNew)
+        {
+            AddSectionHeader("분석항목 연결");
+
+            var analyteRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
+
+            // 분석항목 드롭다운
+            var cbAnalyte = new ComboBox
+            {
+                FontSize = AppTheme.FontSM, FontFamily = FontR,
+                MinWidth = 160, MaxDropDownHeight = 300,
+                PlaceholderText = "분석항목 선택",
+            };
+
+            // 분석항목 목록 로드
+            try
+            {
+                var analytes = ETA.Services.SERVICE1.AnalysisRequestService.GetOrderedAnalytes();
+                foreach (var (fullName, shortName) in analytes)
+                {
+                    string display = fullName == shortName ? fullName : $"{shortName} ({fullName})";
+                    cbAnalyte.Items.Add(new ComboBoxItem { Content = display, Tag = fullName });
+                }
+            }
+            catch { }
+
+            // 시료당 소요량 입력
+            var tbAmount = MakeTxb("시료당 소요량");
+            tbAmount.Width = 100;
+            tbAmount.Text = "0";
+
+            // 단위 표시
+            var unitLabel = new TextBlock
+            {
+                Text = string.IsNullOrEmpty(item!.단위) ? item.규격 : item.단위,
+                FontSize = AppTheme.FontSM, FontFamily = FontR,
+                Foreground = AppTheme.FgDimmed,
+                VerticalAlignment = VerticalAlignment.Center,
+            };
+
+            // 추가 버튼
+            var btnAdd = MakeBtn("+ 추가", "#1a2a3a", "#88aaff");
+            var capturedItem = item;
+            btnAdd.Click += (_, _) =>
+            {
+                if (cbAnalyte.SelectedItem is not ComboBoxItem sel) return;
+                string analyteName = sel.Tag?.ToString() ?? "";
+                if (string.IsNullOrEmpty(analyteName)) return;
+                double amount = 0;
+                double.TryParse(tbAmount.Text?.Trim(), out amount);
+
+                // 중복 체크
+                var existing = ReagentAnalyteService.GetByReagentId(capturedItem.Id);
+                if (existing.Any(e => e.분석항목 == analyteName))
+                {
+                    // 이미 있으면 소요량 업데이트
+                    var ex = existing.First(e => e.분석항목 == analyteName);
+                    ex.시료당소요량 = amount;
+                    ReagentAnalyteService.Update(ex);
+                }
+                else
+                {
+                    ReagentAnalyteService.Insert(new ReagentAnalyte
+                    {
+                        시약Id = capturedItem.Id,
+                        분석항목 = analyteName,
+                        시료당소요량 = amount,
+                    });
+                }
+                UpdateAnalytePanel(capturedItem);
+            };
+
+            analyteRow.Children.Add(cbAnalyte);
+            analyteRow.Children.Add(tbAmount);
+            analyteRow.Children.Add(unitLabel);
+            analyteRow.Children.Add(btnAdd);
+            _formPanel.Children.Add(analyteRow);
+        }
 
         // ── 버튼 ─────────────────────────────────────────────────────────
         var btnRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, Margin = new Thickness(0, 10, 0, 0) };
@@ -881,16 +1151,49 @@ public class RiskManagePage
         if (ReagentService.Count() > 0) return;
 
         var reagents = RiskExcelService.GetReagents();
-        foreach (var r in reagents)
+        var history  = RiskExcelService.GetReagentHistory();
+
+        for (int i = 0; i < reagents.Count; i++)
         {
-            ReagentService.Insert(new Reagent
+            var r = reagents[i];
+
+            // 해당 시약의 최근 이력에서 재고/사용중 가져오기
+            var latest = history
+                .Where(h => h.ReagentIndex == i)
+                .OrderByDescending(h => h.일자)
+                .FirstOrDefault();
+
+            var item = new Reagent
             {
+                ITEM_NO = r.ITEM_NO,
                 품목명  = r.국문명,
                 영문명  = r.영문명,
                 화학식  = r.화학식,
                 CAS번호 = r.CAS번호,
+                규격    = $"{r.규격}{r.단위}",
+                단위    = r.단위,
+                위험등급 = r.등급,
+                재고량  = latest?.재고 ?? 0,
                 등록일  = DateTime.Today.ToString("yyyy-MM-dd"),
-            });
+            };
+            ReagentService.Insert(item);
+
+            // 이력 데이터 가져오기 (입고 또는 출고가 있는 날만)
+            var itemHistory = history
+                .Where(h => h.ReagentIndex == i && (h.입고 > 0 || h.출고 > 0))
+                .ToList();
+            foreach (var h in itemHistory)
+            {
+                ReagentHistoryService.Insert(new ReagentHistory
+                {
+                    시약Id = item.Id,
+                    일자   = h.일자.ToString("yyyy-MM-dd"),
+                    입고   = h.입고,
+                    출고   = h.출고,
+                    재고   = h.재고,
+                    사용중 = h.사용중,
+                });
+            }
         }
     }
 

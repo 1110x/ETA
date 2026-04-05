@@ -70,7 +70,11 @@ public static class DbPathHelper
         if (!string.IsNullOrEmpty(sharedPhoto))
         {
             SharedPhotoDirectory = sharedPhoto;
-            try { Directory.CreateDirectory(SharedPhotoDirectory); } catch { }
+            // Windows UNC 경로는 macOS/Linux에서 생성하면 로컬에 잘못된 폴더가 만들어짐
+            if (OperatingSystem.IsWindows())
+            {
+                try { Directory.CreateDirectory(SharedPhotoDirectory); } catch { }
+            }
         }
     }
 }
