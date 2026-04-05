@@ -425,9 +425,54 @@ public partial class MainPage : Window
         RunExpandAnimation();
         LoadProfileInfo();
 
-        // 서버 연결 시 오늘까지 업무분장 자동 연장
+        // 서버 연결 시 업무분장 자동 연장 (6개월 후까지, 프로그레스바 표시)
         if (DbConnectionFactory.IsMariaDb)
-            AnalysisRequestService.AutoExtendAssignmentsToToday();
+        {
+            var overlay = new StackPanel
+            {
+                Orientation = Orientation.Horizontal, Spacing = 8,
+                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Bottom,
+                Margin = new Thickness(0, 0, 0, 8),
+            };
+            var pb = new ProgressBar
+            {
+                Minimum = 0, Maximum = 1, Value = 0,
+                Height = 6, Width = 200, CornerRadius = new CornerRadius(3),
+                Foreground = new SolidColorBrush(Color.Parse("#ff8844")),
+                Background = new SolidColorBrush(Color.Parse("#333")),
+                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+            };
+            var lbl = new TextBlock
+            {
+                FontSize = 11, Foreground = new SolidColorBrush(Color.Parse("#ff8844")),
+                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                Text = "분장표 동기화 중...",
+            };
+            overlay.Children.Add(pb);
+            overlay.Children.Add(lbl);
+
+            // MainPage의 최상위 패널에 추가
+            if (this.Content is Panel rootPanel)
+                rootPanel.Children.Add(overlay);
+
+            _ = Task.Run(() =>
+            {
+                AnalysisRequestService.AutoExtendAssignmentsToToday((pct, name) =>
+                {
+                    Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                    {
+                        pb.Value = pct;
+                        lbl.Text = string.IsNullOrEmpty(name) ? "분장표 동기화 중..." : $"{(int)(pct * 100)}% {name}";
+                    });
+                });
+                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                {
+                    if (this.Content is Panel rp)
+                        rp.Children.Remove(overlay);
+                });
+            });
+        }
 
         // 저장된 글자 크기 복원
         var savedScale = LoadFontScale();

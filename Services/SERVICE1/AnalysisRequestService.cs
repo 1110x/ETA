@@ -1360,6 +1360,8 @@ public static class AnalysisRequestService
     // =====================================================================
     public static void UpdateAssignmentByName(string analyteFullName, string managerName, DateTime start, DateTime end)
     {
+        // 항목명/_id 컬럼에 쓰면 날짜가 이름으로 덮어씌워지는 치명적 버그 방지
+        if (analyteFullName == "항목명" || analyteFullName.StartsWith("_")) return;
         if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
         try
         {
@@ -1391,8 +1393,9 @@ public static class AnalysisRequestService
                     var columns = DbConnectionFactory.GetColumnNames(conn, "분장표준처리");
                     var insertCols = new List<string> { "`항목명`" };
                     var vals = new List<string> { "@date" };
-                    foreach (var c in columns.Skip(1))
+                    foreach (var c in columns)
                     {
+                        if (c == "항목명" || c.StartsWith("_")) continue;
                         insertCols.Add($"`{c}`");
                         if (string.Equals(c, analyteFullName, StringComparison.OrdinalIgnoreCase))
                             vals.Add("@mgr");
@@ -1412,6 +1415,105 @@ public static class AnalysisRequestService
         catch (Exception ex) { Log($"UpdateAssignmentByName 오류: {ex.Message}"); }
     }
 
+    /// <summary>분장표에서 특정 항목의 날짜 범위를 NULL로 지움 (축소 시 사용)</summary>
+    public static void ClearAssignmentByName(string analyteFullName, DateTime start, DateTime end)
+    {
+        if (analyteFullName == "항목명" || analyteFullName.StartsWith("_")) return;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            for (DateTime date = start; date <= end; date = date.AddDays(1))
+            {
+                string dateKey = date.ToString("yyyy-MM-dd");
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = $"UPDATE `분장표준처리` SET `{analyteFullName}` = NULL WHERE `항목명` = @date";
+                cmd.Parameters.AddWithValue("@date", dateKey);
+                cmd.ExecuteNonQuery();
+            }
+            Log($"ClearAssignmentByName: {analyteFullName} ({start:yyyy-MM-dd}~{end:yyyy-MM-dd}) → NULL");
+        }
+        catch (Exception ex) { Log($"ClearAssignmentByName 오류: {ex.Message}"); }
+    }
+
+    /// <summary>분장표에서 항목명이 날짜가 아닌 깨진 행을 삭제</summary>
+    public static int CleanupCorruptedRows()
+    {
+        int deleted = 0;
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return deleted;
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            // 날짜 패턴(yyyy-MM-dd)이 아닌 행 삭제
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "DELETE FROM `분장표준처리` WHERE `항목명` NOT REGEXP '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'";
+            deleted = cmd.ExecuteNonQuery();
+            if (deleted > 0)
+                Log($"CleanupCorruptedRows: {deleted}개 깨진 행 삭제");
+        }
+        catch (Exception ex) { Log($"CleanupCorruptedRows 오류: {ex.Message}"); }
+        return deleted;
+    }
+
+    /// <summary>특정 날짜 이후 행을 모두 삭제하고, 마지막 담당자로 재생성</summary>
+    /// <param name="progress">진행률 콜백 (0.0~1.0, 항목명)</param>
+    public static void RebuildAssignmentsFrom(DateTime fromDate, Action<double, string>? progress = null)
+    {
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+
+            // 1) fromDate 이후 행 전부 삭제
+            progress?.Invoke(0, "기존 데이터 삭제 중...");
+            using (var del = conn.CreateCommand())
+            {
+                del.CommandText = "DELETE FROM `분장표준처리` WHERE `항목명` >= @d";
+                del.Parameters.AddWithValue("@d", fromDate.ToString("yyyy-MM-dd"));
+                int cnt = del.ExecuteNonQuery();
+                Log($"RebuildAssignmentsFrom: {fromDate:yyyy-MM-dd} 이후 {cnt}개 행 삭제");
+            }
+
+            // 2) fromDate 직전일의 담당자 정보 가져오기
+            var prevDate = fromDate.AddDays(-1);
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT * FROM `분장표준처리` WHERE `항목명` = @d";
+            cmd.Parameters.AddWithValue("@d", prevDate.ToString("yyyy-MM-dd"));
+            using var rdr = cmd.ExecuteReader();
+
+            var lastManagers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            if (rdr.Read())
+            {
+                for (int i = 0; i < rdr.FieldCount; i++)
+                {
+                    string col = rdr.GetName(i).Trim();
+                    if (col == "항목명" || col.StartsWith("_")) continue;
+                    string val = rdr.IsDBNull(i) ? "" : rdr.GetValue(i)?.ToString()?.Trim() ?? "";
+                    if (!string.IsNullOrEmpty(val))
+                        lastManagers[col] = val;
+                }
+            }
+            rdr.Close();
+
+            // 3) fromDate ~ 3개월 후 말까지 동일 담당자로 채우기 (4월→7월말)
+            var yearEnd = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).AddMonths(4).AddDays(-1);
+            var items = lastManagers
+                .Where(kv => kv.Key != "기타업무" && kv.Key != "담당계약업체" && kv.Key != "항목명")
+                .ToList();
+            for (int i = 0; i < items.Count; i++)
+            {
+                var kv = items[i];
+                progress?.Invoke((double)(i + 1) / items.Count, kv.Key);
+                UpdateAssignmentByName(kv.Key, kv.Value, fromDate, yearEnd);
+            }
+            Log($"RebuildAssignmentsFrom: {fromDate:yyyy-MM-dd}~{yearEnd:yyyy-MM-dd} {lastManagers.Count}개 항목 재생성 완료");
+        }
+        catch (Exception ex) { Log($"RebuildAssignmentsFrom 오류: {ex.Message}"); }
+    }
+
     // =====================================================================
     //  업무분장표 — 오늘까지 미배정 구간을 이전 담당자로 자동 연장
     //
@@ -1419,26 +1521,37 @@ public static class AnalysisRequestService
     //  각 분석항목의 마지막 배정 이후 ~ 오늘 사이 빈 구간을
     //  직전 담당자로 채워 "오늘 미배정 항목 없음"을 보장.
     // =====================================================================
-    public static void AutoExtendAssignmentsToToday()
+    public static void AutoExtendAssignmentsToToday(Action<double, string>? progress = null)
     {
         if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
 
+        // 먼저 깨진 행 정리
+        progress?.Invoke(0, "데이터 정리 중...");
+        CleanupCorruptedRows();
+
         var today = DateTime.Today;
-        var rangeStart = new DateTime(today.Year, today.Month, 1);
-        var rangeEnd   = rangeStart.AddMonths(1).AddDays(-1);
+        var extendTo = new DateTime(today.Year, today.Month, 1).AddMonths(7).AddDays(-1); // 6개월 후 말까지
+        var rangeStart = new DateTime(today.Year, today.Month, 1).AddMonths(-1);
+        var rangeEnd   = extendTo;
 
         try
         {
+            progress?.Invoke(0.05, "분장 데이터 조회 중...");
             var spans    = GetAssignmentChartData(rangeStart, rangeEnd);
             var analytes = GetOrderedAnalytes()
                 .Where(a => !a.fullName.StartsWith("_")
                          && a.fullName != "기타업무"
-                         && a.fullName != "담당계약업체")
+                         && a.fullName != "담당계약업체"
+                         && a.fullName != "항목명")
                 .ToList();
 
+            Log($"AutoExtend: range={rangeStart:yyyy-MM-dd}~{rangeEnd:yyyy-MM-dd}, spans={spans.Count}개, analytes={analytes.Count}개");
+
             int extended = 0;
-            foreach (var (fullName, _) in analytes)
+            for (int i = 0; i < analytes.Count; i++)
             {
+                var (fullName, _) = analytes[i];
+
                 var itemSpans = spans
                     .Where(s => string.Equals(s.FullName, fullName, StringComparison.OrdinalIgnoreCase))
                     .OrderBy(s => s.Start)
@@ -1449,15 +1562,22 @@ public static class AnalysisRequestService
                 var lastSpan  = itemSpans[^1];
                 var gapStart  = lastSpan.End.AddDays(1);
 
-                if (gapStart <= today)
+                if (gapStart <= extendTo)
                 {
-                    UpdateAssignmentByName(fullName, lastSpan.Manager, gapStart, today);
+                    progress?.Invoke(0.1 + 0.9 * (i + 1) / analytes.Count, fullName);
+                    UpdateAssignmentByName(fullName, lastSpan.Manager, gapStart, extendTo);
                     extended++;
+                }
+                else
+                {
+                    progress?.Invoke(0.1 + 0.9 * (i + 1) / analytes.Count, "");
                 }
             }
 
             if (extended > 0)
-                Log($"AutoExtendAssignmentsToToday: {extended}개 항목 오늘({today:yyyy-MM-dd})까지 자동 연장");
+                Log($"AutoExtend: {extended}개 항목 {extendTo:yyyy-MM-dd}까지 자동 연장");
+            else
+                Log($"AutoExtend: 연장 대상 없음");
         }
         catch (Exception ex) { Log($"AutoExtendAssignmentsToToday 오류: {ex.Message}"); }
     }

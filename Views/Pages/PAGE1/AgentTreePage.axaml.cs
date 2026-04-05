@@ -110,6 +110,11 @@ public partial class AgentTreePage : UserControl
     private readonly List<(LinearGradientBrush bgBrush, LinearGradientBrush borderBrush, Color baseColor)> _chartShimmerBars = new();
     // 드래그로 변경된 경계 — (항목명, 원래시작일, 원래종료일, 새시작일, 새종료일, 담당자)
     private readonly List<(string FullName, string Manager, DateTime OrigStart, DateTime OrigEnd, DateTime NewStart, DateTime NewEnd)> _chartPendingChanges = new();
+    private readonly List<Action> _chartPendingActions = new();
+    private ProgressBar? _chartProgressBar;
+    private TextBlock? _chartProgressLabel;
+    /// <summary>로컬 캐시 — null이면 DB에서 로드, 편집 시 로컬만 수정</summary>
+    private List<AnalysisRequestService.AssignmentSpan>? _chartCachedSpans;
 
     public AgentTreePage()
     {
@@ -3829,10 +3834,9 @@ public partial class AgentTreePage : UserControl
     public Control BuildAssignmentChart()
     {
         var today = DateTime.Today;
-        // 2개월 표시: 현재 월을 포함하는 짝수 블록 (1-2, 3-4, 5-6, ...)
-        int startMonth = today.Month % 2 == 1 ? today.Month : today.Month - 1;
-        _chartRangeStart = new DateTime(today.Year, startMonth, 1);
-        _chartRangeEnd   = _chartRangeStart.AddMonths(2).AddDays(-1);
+        // 이번달 기준: 전월 20일 ~ +2개월 10일 (4월→3/20~6/10, 약 80일)
+        _chartRangeStart = new DateTime(today.Year, today.Month, 1).AddDays(-11); // 전월 20일
+        _chartRangeEnd   = new DateTime(today.Year, today.Month, 1).AddMonths(2).AddDays(9); // +2개월 10일
         bool isH1 = today.Month <= 6;
 
         var root = new Grid { RowDefinitions = new RowDefinitions("Auto,Auto,Auto,*") };
@@ -3863,10 +3867,10 @@ public partial class AgentTreePage : UserControl
         var btnH1    = MakeBtn("상반기", isH1 ? "#2a4a3a" : "#2a2a2a", isH1 ? "#88ddaa" : "#666", isH1 ? "#3a6a4a" : "#444", 52);
         var btnH2    = MakeBtn("하반기", !isH1 ? "#2a4a3a" : "#2a2a2a", !isH1 ? "#88ddaa" : "#666", !isH1 ? "#3a6a4a" : "#444", 52);
         var btnApply = MakeBtn("반영", "#4a2a1a", "#ffaa66", "#6a4a2a", 48);
+        var btnCleanup = MakeBtn("정리", "#4a1a1a", "#ff6666", "#6a2a2a", 48);
 
-        var month2End = _chartRangeStart.AddMonths(1);
         var txbMonth = new TextBlock {
-            Text = $"{_chartRangeStart:yyyy년 M월} – {month2End:M월}", FontSize = AppTheme.FontMD,
+            Text = $"{_chartRangeStart:M/dd} – {_chartRangeEnd:M/dd}", FontSize = AppTheme.FontMD,
             FontFamily = kbFont, Foreground = AppTheme.FgSecondary,
             VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(8, 0, 0, 0) };
 
@@ -3877,6 +3881,7 @@ public partial class AgentTreePage : UserControl
         header.Children.Add(btnH1);
         header.Children.Add(btnH2);
         header.Children.Add(btnApply);
+        if (CanEdit) header.Children.Add(btnCleanup);
         Grid.SetRow(header, 0);
         root.Children.Add(header);
 
@@ -3935,38 +3940,112 @@ public partial class AgentTreePage : UserControl
 
         void Navigate()
         {
-            var m2e = _chartRangeStart.AddMonths(1);
-            txbMonth.Text = $"{_chartRangeStart:yyyy년 M월} – {m2e:M월}";
-            _chartRangeEnd = _chartRangeStart.AddMonths(2).AddDays(-1);
+            txbMonth.Text = $"{_chartRangeStart:M/dd} – {_chartRangeEnd:M/dd}";
+            _chartCachedSpans = null; // 범위 변경 시 DB 재로드
             UpdateHalfBtnStyle();
             RefreshBody();
             btnApply.IsEnabled = true; btnApply.Content = "반영";
         }
 
-        // ◀ ▶: 2개월씩 이동
+        // ◀ ▶: 1개월씩 이동
         btnPrev.Click += (_, _) =>
-        { _chartRangeStart = _chartRangeStart.AddMonths(-2); Navigate(); };
+        { _chartRangeStart = _chartRangeStart.AddMonths(-1); _chartRangeEnd = _chartRangeEnd.AddMonths(-1); Navigate(); };
         btnNext.Click += (_, _) =>
-        { _chartRangeStart = _chartRangeStart.AddMonths(2); Navigate(); };
+        { _chartRangeStart = _chartRangeStart.AddMonths(1); _chartRangeEnd = _chartRangeEnd.AddMonths(1); Navigate(); };
         btnToday.Click += (_, _) =>
         {
-            int sm = today.Month % 2 == 1 ? today.Month : today.Month - 1;
-            _chartRangeStart = new DateTime(today.Year, sm, 1); Navigate();
+            var t = DateTime.Today;
+            _chartRangeStart = new DateTime(t.Year, t.Month, 1).AddDays(-11);
+            _chartRangeEnd = new DateTime(t.Year, t.Month, 1).AddMonths(2).AddDays(9);
+            Navigate();
         };
         btnH1.Click += (_, _) =>
         { _chartRangeStart = new DateTime(_chartRangeStart.Year, 1, 1); Navigate(); };
         btnH2.Click += (_, _) =>
         { _chartRangeStart = new DateTime(_chartRangeStart.Year, 7, 1); Navigate(); };
-        btnApply.Click += (_, _) =>
+        btnApply.Click += async (_, _) =>
         {
-            // 드래그로 변경된 경계 적용
-            foreach (var pc in _chartPendingChanges)
-                AnalysisRequestService.UpdateAssignmentByName(pc.FullName, pc.Manager, pc.NewStart, pc.NewEnd);
+            if (_chartPendingActions.Count == 0) return;
+            btnApply.IsEnabled = false;
+            var pb = _chartProgressBar;
+            var pl = _chartProgressLabel;
+            if (pb != null) { pb.IsVisible = true; pb.Value = 0; }
+            if (pl != null) { pl.IsVisible = true; pl.Text = "반영 중..."; }
+
+            var actions = _chartPendingActions.ToList();
+            _chartPendingActions.Clear();
             _chartPendingChanges.Clear();
-            AnalysisRequestService.AutoExtendAssignmentsToToday();
+
+            await Task.Run(() =>
+            {
+                for (int i = 0; i < actions.Count; i++)
+                {
+                    actions[i]();
+                    var pct = (double)(i + 1) / actions.Count;
+                    Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                    {
+                        if (pb != null) pb.Value = pct;
+                        if (pl != null) pl.Text = $"반영 중... {(int)(pct * 100)}%";
+                    });
+                }
+            });
+
+            if (pb != null) pb.IsVisible = false;
+            if (pl != null) pl.IsVisible = false;
+            _chartCachedSpans = null; // DB에서 다시 로드
             RefreshBody();
             RefreshShow3AfterChartUpdate();
-            btnApply.IsEnabled = false; btnApply.Content = "반영됨";
+            btnApply.IsEnabled = true; btnApply.Content = "반영됨";
+        };
+        // 프로그레스바 (헤더에 인라인)
+        var progressBar = new ProgressBar
+        {
+            Minimum = 0, Maximum = 1, Value = 0,
+            Height = 6, Width = 150, CornerRadius = new CornerRadius(3),
+            Foreground = new SolidColorBrush(Color.Parse("#ff8844")),
+            Background = new SolidColorBrush(Color.Parse("#333")),
+            VerticalAlignment = VerticalAlignment.Center,
+            IsVisible = false,
+        };
+        var progressLabel = new TextBlock
+        {
+            FontSize = AppTheme.FontXS, FontFamily = kbFont,
+            Foreground = new SolidColorBrush(Color.Parse("#ff8844")),
+            VerticalAlignment = VerticalAlignment.Center,
+            IsVisible = false,
+        };
+        _chartProgressBar = progressBar;
+        _chartProgressLabel = progressLabel;
+        header.Children.Add(progressBar);
+        header.Children.Add(progressLabel);
+
+        btnCleanup.Click += async (_, _) =>
+        {
+            btnCleanup.IsEnabled = false;
+            btnCleanup.Content = "처리중...";
+            progressBar.IsVisible = true;
+            progressLabel.IsVisible = true;
+            progressBar.Value = 0;
+
+            await Task.Run(() =>
+            {
+                AnalysisRequestService.CleanupCorruptedRows();
+                AnalysisRequestService.RebuildAssignmentsFrom(new DateTime(2026, 4, 3), (pct, name) =>
+                {
+                    Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                    {
+                        progressBar.Value = pct;
+                        progressLabel.Text = $"{(int)(pct * 100)}% {name}";
+                    });
+                });
+            });
+
+            progressBar.IsVisible = false;
+            progressLabel.IsVisible = false;
+            btnCleanup.Content = "정리";
+            btnCleanup.IsEnabled = true;
+            RefreshBody();
+            RefreshShow3AfterChartUpdate();
         };
 
         // 탭 클릭
@@ -4043,11 +4122,13 @@ public partial class AgentTreePage : UserControl
         body.Children.Clear();
         var kbFont = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
 
-        // 2개월 범위
-        DateTime rangeEnd = _chartRangeStart.AddMonths(2).AddDays(-1);
+        DateTime rangeEnd = _chartRangeEnd;
         int totalDays = (int)(rangeEnd - _chartRangeStart).TotalDays + 1;
 
-        var spans = AnalysisRequestService.GetAssignmentChartData(_chartRangeStart, rangeEnd);
+        // 캐시가 없으면 DB에서 로드, 있으면 캐시 사용 (로컬 편집 반영)
+        if (_chartCachedSpans == null)
+            _chartCachedSpans = AnalysisRequestService.GetAssignmentChartData(_chartRangeStart, rangeEnd);
+        var spans = _chartCachedSpans;
         var analytes = AnalysisRequestService.GetOrderedAnalytes()
             .Where(a => !a.fullName.StartsWith("_") && a.fullName != "기타업무" && a.fullName != "담당계약업체" && a.fullName != "항목명")
             .ToList();
@@ -4059,21 +4140,28 @@ public partial class AgentTreePage : UserControl
         var monthHeaderRow = new Grid { ColumnDefinitions = new ColumnDefinitions($"{GC_LABEL_W},*"), Height = 18 };
         var monthHeaderCanvas = new Canvas { Width = trackW, Height = 18, ClipToBounds = true };
         Grid.SetColumn(monthHeaderCanvas, 1);
+        // 범위에 포함되는 월 구분 표시
+        var monthColors = new[] { "#90b0d0", "#b0a090", "#a0c090", "#c0a0b0" };
         int dayOffset = 0;
-        for (int m = 0; m < 2; m++)
+        var curMonth = new DateTime(_chartRangeStart.Year, _chartRangeStart.Month, 1);
+        int mIdx = 0;
+        while (curMonth <= rangeEnd)
         {
-            var mdt = _chartRangeStart.AddMonths(m);
-            int mDays = DateTime.DaysInMonth(mdt.Year, mdt.Month);
+            var nextMonth = curMonth.AddMonths(1);
+            // 이 월이 범위 내에서 차지하는 일수
+            var mStart = curMonth < _chartRangeStart ? _chartRangeStart : curMonth;
+            var mEnd = nextMonth.AddDays(-1) > rangeEnd ? rangeEnd : nextMonth.AddDays(-1);
+            int mDays = (int)(mEnd - mStart).TotalDays + 1;
             double mw = mDays * GC_DAY_W;
+
             monthHeaderCanvas.Children.Add(new TextBlock
             {
-                Text = $"{mdt:M월}", FontSize = AppTheme.FontXS, FontWeight = FontWeight.Bold,
+                Text = $"{curMonth:M월}", FontSize = AppTheme.FontXS, FontWeight = FontWeight.Bold,
                 Width = mw, FontFamily = kbFont, TextAlignment = TextAlignment.Center,
-                Foreground = new SolidColorBrush(Color.Parse(m == 0 ? "#90b0d0" : "#b0a090")),
+                Foreground = new SolidColorBrush(Color.Parse(monthColors[mIdx % monthColors.Length])),
                 [Canvas.LeftProperty] = dayOffset * GC_DAY_W, [Canvas.TopProperty] = 1.0,
             });
-            // 월 경계선
-            if (m > 0)
+            if (mIdx > 0)
             {
                 monthHeaderCanvas.Children.Add(new Avalonia.Controls.Shapes.Line
                 {
@@ -4083,6 +4171,8 @@ public partial class AgentTreePage : UserControl
                 });
             }
             dayOffset += mDays;
+            curMonth = nextMonth;
+            mIdx++;
         }
         monthHeaderRow.Children.Add(monthHeaderCanvas);
         fixedHeader.Children.Add(monthHeaderRow);
@@ -4091,15 +4181,13 @@ public partial class AgentTreePage : UserControl
         var dateRow = new Grid { ColumnDefinitions = new ColumnDefinitions($"{GC_LABEL_W},*"), Height = GC_DATE_H };
         var dateCanvas = new Canvas { Width = trackW, Height = GC_DATE_H, ClipToBounds = true };
         Grid.SetColumn(dateCanvas, 1);
-        int month1Days = DateTime.DaysInMonth(_chartRangeStart.Year, _chartRangeStart.Month);
         for (int d = 0; d < totalDays; d++)
         {
             var dt = _chartRangeStart.AddDays(d);
             bool isSun = dt.DayOfWeek == DayOfWeek.Sunday;
             bool isSat = dt.DayOfWeek == DayOfWeek.Saturday;
             bool isToday = dt.Date == DateTime.Today;
-            bool isMonth1 = d < month1Days;
-            string color = isToday ? "#70d070" : isSun ? "#c07070" : isSat ? "#7090c0" : (isMonth1 ? "#808890" : "#888078");
+            string color = isToday ? "#70d070" : isSun ? "#c07070" : isSat ? "#7090c0" : "#808890";
             dateCanvas.Children.Add(new TextBlock
             {
                 Text = dt.Day.ToString(), FontSize = AppTheme.FontXS, Width = GC_DAY_W,
@@ -4108,8 +4196,8 @@ public partial class AgentTreePage : UserControl
                 FontWeight = isToday ? FontWeight.Bold : FontWeight.Normal,
                 [Canvas.LeftProperty] = d * GC_DAY_W, [Canvas.TopProperty] = 2.0,
             });
-            // 월 경계선
-            if (d == month1Days)
+            // 월 1일 경계선
+            if (dt.Day == 1)
             {
                 dateCanvas.Children.Add(new Avalonia.Controls.Shapes.Line
                 {
@@ -4162,7 +4250,7 @@ public partial class AgentTreePage : UserControl
             rowGrid.Children.Add(labelPanel);
 
             // 트랙 캔버스
-            var track = new Canvas { Width = trackW, Height = GC_ROW_H, ClipToBounds = true };
+            var track = new Canvas { Width = trackW, Height = GC_ROW_H, ClipToBounds = true, UseLayoutRounding = true };
             Grid.SetColumn(track, 1);
             double barY = (GC_ROW_H - GC_BAR_H) / 2;
 
@@ -4194,35 +4282,46 @@ public partial class AgentTreePage : UserControl
 
                     if (hitSpan != null)
                     {
-                        // 기존 스팬 전체를 새 담당자로 변경
-                        AnalysisRequestService.UpdateAssignmentByName(captFullDrop, dropName, hitSpan.Start, hitSpan.End);
+                        var hs = hitSpan;
+                        ApplySpanChangeToCache(captFullDrop, dropName, hs.Start, hs.End);
+                        _chartPendingActions.Add(() =>
+                            AnalysisRequestService.UpdateAssignmentByName(captFullDrop, dropName, hs.Start, hs.End));
                     }
                     else
                     {
-                        // 빈 영역 → 해당 날짜에 담당자 배정
-                        AnalysisRequestService.UpdateAssignmentByName(captFullDrop, dropName, dropDate, dropDate);
+                        var dd = dropDate;
+                        ApplySpanChangeToCache(captFullDrop, dropName, dd, dd);
+                        _chartPendingActions.Add(() =>
+                            AnalysisRequestService.UpdateAssignmentByName(captFullDrop, dropName, dd, dd));
                     }
                     RefreshChartTable(captHeaderDrop, captBodyDrop);
-                    RefreshShow3AfterChartUpdate();
                 });
             }
 
-            // 오늘 하이라이트
+            // 오늘 하이라이트 (붉은색 세로선)
             if (DateTime.Today >= _chartRangeStart && DateTime.Today <= rangeEnd)
             {
                 int ti = (int)(DateTime.Today - _chartRangeStart).TotalDays;
-                track.Children.Add(new Avalonia.Controls.Shapes.Rectangle
-                { Width = GC_DAY_W, Height = GC_ROW_H, Fill = new SolidColorBrush(Color.Parse("#0d1a0d")),
-                  [Canvas.LeftProperty] = ti * GC_DAY_W });
+                double todayX = ti * GC_DAY_W + GC_DAY_W / 2;
+                track.Children.Add(new Avalonia.Controls.Shapes.Line
+                {
+                    StartPoint = new Point(todayX, 0), EndPoint = new Point(todayX, GC_ROW_H),
+                    Stroke = new SolidColorBrush(Color.Parse("#cc4444")), StrokeThickness = 1.5,
+                    Opacity = 0.7,
+                });
             }
 
-            // 월 경계선
-            track.Children.Add(new Avalonia.Controls.Shapes.Line
+            // 월 경계선 (1일마다)
+            for (int d = 0; d < totalDays; d++)
             {
-                StartPoint = new Point(month1Days * GC_DAY_W, 0),
-                EndPoint = new Point(month1Days * GC_DAY_W, GC_ROW_H),
-                Stroke = new SolidColorBrush(Color.Parse("#282c30")), StrokeThickness = 1,
-            });
+                if (_chartRangeStart.AddDays(d).Day == 1)
+                    track.Children.Add(new Avalonia.Controls.Shapes.Line
+                    {
+                        StartPoint = new Point(d * GC_DAY_W, 0),
+                        EndPoint = new Point(d * GC_DAY_W, GC_ROW_H),
+                        Stroke = new SolidColorBrush(Color.Parse("#282c30")), StrokeThickness = 1,
+                    });
+            }
 
             // 수평 트랙 라인
             track.Children.Add(new Avalonia.Controls.Shapes.Line
@@ -4240,8 +4339,8 @@ public partial class AgentTreePage : UserControl
             foreach (var sp in itemSpans)
             {
                 var baseColor = GetChosungColor(sp.Manager);
-                double sx = Math.Max(0, (sp.Start - _chartRangeStart).TotalDays) * GC_DAY_W;
-                double ex = (Math.Min(totalDays - 1, (sp.End - _chartRangeStart).TotalDays) + 1) * GC_DAY_W;
+                double sx = Math.Round(Math.Max(0, (sp.Start - _chartRangeStart).Days) * GC_DAY_W);
+                double ex = Math.Round((Math.Min(totalDays - 1, (sp.End - _chartRangeStart).Days) + 1) * GC_DAY_W);
                 double w = ex - sx;
                 if (w < 1) continue;
 
@@ -4315,10 +4414,39 @@ public partial class AgentTreePage : UserControl
                         lb.SelectionChanged += (_, _) =>
                         {
                             if (lb.SelectedItem is not string nm) return;
-                            AnalysisRequestService.UpdateAssignmentByName(captFull, nm, captSp.Start, captSp.End);
+                            var cFull = captFull; var cStart = captSp.Start; var cEnd = captSp.End;
+                            ApplySpanChangeToCache(cFull, nm, cStart, cEnd);
+                            _chartPendingActions.Add(() =>
+                                AnalysisRequestService.UpdateAssignmentByName(cFull, nm, cStart, cEnd));
                             fly.Hide();
                             RefreshChartTable(captHeader, captBody);
-                            RefreshShow3AfterChartUpdate();
+                        };
+                        fly.ShowAt((Control)s!);
+                    };
+
+                    // 우클릭 → 담당자 삭제
+                    bar.PointerPressed += (s, e) =>
+                    {
+                        if (!e.GetCurrentPoint((Control)s!).Properties.IsRightButtonPressed) return;
+                        e.Handled = true;
+                        var delBtn = new Button
+                        {
+                            Content = $"{captSp.Manager} 삭제 ({captSp.Start:M/d}~{captSp.End:M/d})",
+                            FontSize = AppTheme.FontSM, FontFamily = kbFont,
+                            Background = new SolidColorBrush(Color.Parse("#3a1a1a")),
+                            Foreground = new SolidColorBrush(Color.Parse("#ff6666")),
+                            BorderBrush = new SolidColorBrush(Color.Parse("#6a2a2a")),
+                            Padding = new Thickness(12, 6),
+                        };
+                        var fly = new Flyout { Content = delBtn, Placement = PlacementMode.Bottom };
+                        delBtn.Click += (_, _) =>
+                        {
+                            var cFull = captFull; var cStart = captSp.Start; var cEnd = captSp.End;
+                            ClearSpanFromCache(cFull, cStart, cEnd);
+                            _chartPendingActions.Add(() =>
+                                AnalysisRequestService.ClearAssignmentByName(cFull, cStart, cEnd));
+                            fly.Hide();
+                            RefreshChartTable(captHeader, captBody);
                         };
                         fly.ShowAt((Control)s!);
                     };
@@ -4332,8 +4460,8 @@ public partial class AgentTreePage : UserControl
                 for (int idx = 0; idx < itemSpans.Count; idx++)
                 {
                     var sp2 = itemSpans[idx];
-                    double spSx = Math.Max(0, (sp2.Start - _chartRangeStart).TotalDays) * GC_DAY_W;
-                    double spEx = (Math.Min(totalDays - 1, (sp2.End - _chartRangeStart).TotalDays) + 1) * GC_DAY_W;
+                    double spSx = Math.Round(Math.Max(0, (sp2.Start - _chartRangeStart).Days) * GC_DAY_W);
+                    double spEx = Math.Round((Math.Min(totalDays - 1, (sp2.End - _chartRangeStart).Days) + 1) * GC_DAY_W);
 
                     // 이전/다음 바 참조 (경계 제한용)
                     var prevSpan = idx > 0 ? itemSpans[idx - 1] : (AnalysisRequestService.AssignmentSpan?)null;
@@ -4341,11 +4469,11 @@ public partial class AgentTreePage : UserControl
 
                     // --- 좌측 핸들 (시작일 변경) ---
                     AddEdgeHandle(track, spSx, barY, sp2, fullName, isLeft: true,
-                        prevSpan, nextSpan, kbFont, fixedHeader, body);
+                        prevSpan, nextSpan, kbFont, fixedHeader, body, rangeEnd);
 
                     // --- 우측 핸들 (종료일 변경) ---
                     AddEdgeHandle(track, spEx, barY, sp2, fullName, isLeft: false,
-                        prevSpan, nextSpan, kbFont, fixedHeader, body);
+                        prevSpan, nextSpan, kbFont, fixedHeader, body, rangeEnd);
                 }
             }
 
@@ -4395,10 +4523,45 @@ public partial class AgentTreePage : UserControl
     }
 
     /// <summary>바 양쪽 끝 드래그 핸들 생성 (좌측=시작일, 우측=종료일)</summary>
+    /// <summary>캐시 스팬을 로컬 수정 (화면 즉시 반영용)</summary>
+    private void ApplySpanChangeToCache(string fullName, string manager, DateTime newStart, DateTime newEnd)
+    {
+        if (_chartCachedSpans == null) return;
+        // 해당 fullName의 겹치는 스팬 제거 후 새 스팬 추가
+        _chartCachedSpans.RemoveAll(s =>
+            string.Equals(s.FullName, fullName, StringComparison.OrdinalIgnoreCase)
+            && s.Start <= newEnd && s.End >= newStart);
+        if (!string.IsNullOrEmpty(manager))
+        {
+            var info = AnalysisRequestService.GetStandardDaysInfo();
+            string shortName = info.TryGetValue(fullName, out var v) ? v.shortName : fullName;
+            _chartCachedSpans.Add(new AnalysisRequestService.AssignmentSpan(fullName, shortName, manager, newStart, newEnd));
+        }
+    }
+
+    /// <summary>캐시에서 스팬 구간 삭제 (화면 즉시 반영용)</summary>
+    private void ClearSpanFromCache(string fullName, DateTime start, DateTime end)
+    {
+        if (_chartCachedSpans == null) return;
+        var toModify = _chartCachedSpans
+            .Where(s => string.Equals(s.FullName, fullName, StringComparison.OrdinalIgnoreCase)
+                && s.Start <= end && s.End >= start)
+            .ToList();
+        foreach (var s in toModify)
+        {
+            _chartCachedSpans.Remove(s);
+            // 잘려서 남는 부분 재추가
+            if (s.Start < start)
+                _chartCachedSpans.Add(new AnalysisRequestService.AssignmentSpan(s.FullName, s.ShortName, s.Manager, s.Start, start.AddDays(-1)));
+            if (s.End > end)
+                _chartCachedSpans.Add(new AnalysisRequestService.AssignmentSpan(s.FullName, s.ShortName, s.Manager, end.AddDays(1), s.End));
+        }
+    }
+
     private void AddEdgeHandle(Canvas track, double edgeX, double barY,
         AnalysisRequestService.AssignmentSpan span, string fullName, bool isLeft,
         AnalysisRequestService.AssignmentSpan? prevSpan, AnalysisRequestService.AssignmentSpan? nextSpan,
-        FontFamily kbFont, StackPanel fixedHeader, StackPanel body)
+        FontFamily kbFont, StackPanel fixedHeader, StackPanel body, DateTime chartRangeEnd)
     {
         const double HANDLE_W = 10;
         var handle = new Avalonia.Controls.Shapes.Rectangle
@@ -4426,6 +4589,7 @@ public partial class AgentTreePage : UserControl
             dragging = true;
             dragStartX = e.GetPosition(track).X;
             origDate = isLeft ? captSpan.Start : captSpan.End;
+            e.Pointer.Capture((IInputElement)s!);
             e.Handled = true;
         };
 
@@ -4448,7 +4612,7 @@ public partial class AgentTreePage : UserControl
             else
             {
                 // 종료일: 자기 시작일 이후, 다음 바 종료일 이전
-                DateTime maxDate = nextSpan != null ? nextSpan.End : _chartRangeStart.AddMonths(2).AddDays(-1);
+                DateTime maxDate = nextSpan != null ? nextSpan.End : chartRangeEnd;
                 if (newDate < captSpan.Start) newDate = captSpan.Start;
                 if (newDate > maxDate) newDate = maxDate;
             }
@@ -4482,6 +4646,7 @@ public partial class AgentTreePage : UserControl
         {
             if (!dragging) return;
             dragging = false;
+            e.Pointer.Capture(null);
 
             double curX = e.GetPosition(track).X;
             int dayDelta = (int)Math.Round((curX - dragStartX) / GC_DAY_W);
@@ -4497,27 +4662,108 @@ public partial class AgentTreePage : UserControl
                 if (newDate > captSpan.End) newDate = captSpan.End;
                 newStart = newDate;
                 newEnd = captSpan.End;
-
-                // 이전 바 종료일도 조정
-                if (prevSpan != null)
-                    _chartPendingChanges.Add((captFn, prevSpan.Manager, prevSpan.Start, prevSpan.End,
-                        prevSpan.Start, newDate.AddDays(-1)));
             }
             else
             {
-                DateTime maxDate = nextSpan != null ? nextSpan.End : _chartRangeStart.AddMonths(2).AddDays(-1);
+                DateTime maxDate = nextSpan != null ? nextSpan.End : chartRangeEnd;
                 if (newDate < captSpan.Start) newDate = captSpan.Start;
                 if (newDate > maxDate) newDate = maxDate;
                 newStart = captSpan.Start;
                 newEnd = newDate;
-
-                // 다음 바 시작일도 조정
-                if (nextSpan != null)
-                    _chartPendingChanges.Add((captFn, nextSpan.Manager, nextSpan.Start, nextSpan.End,
-                        newDate.AddDays(1), nextSpan.End));
             }
 
-            _chartPendingChanges.Add((captFn, captSpan.Manager, captSpan.Start, captSpan.End, newStart, newEnd));
+            bool shiftHeld = e.KeyModifiers.HasFlag(KeyModifiers.Shift);
+
+            if (shiftHeld)
+            {
+                // Shift+드래그: 전체 항목 일괄
+                var captNewStart = newStart; var captNewEnd = newEnd;
+                var captIsLeft = isLeft; var captCaptSpan = captSpan;
+                var captChartStart = _chartRangeStart; var captChartEnd = chartRangeEnd;
+
+                // 캐시에서 전체 항목 즉시 수정 (화면 반영)
+                if (_chartCachedSpans != null)
+                {
+                    var analytes = _chartCachedSpans.Select(sp => sp.FullName).Distinct().ToList();
+                    foreach (var fn in analytes)
+                    {
+                        var itemSpans = _chartCachedSpans
+                            .Where(sp2 => string.Equals(sp2.FullName, fn, StringComparison.OrdinalIgnoreCase))
+                            .OrderBy(sp2 => sp2.Start).ToList();
+                        var target = captIsLeft
+                            ? itemSpans.FirstOrDefault(sp2 => sp2.Start == captCaptSpan.Start)
+                            : itemSpans.FirstOrDefault(sp2 => sp2.End == captCaptSpan.End);
+                        if (target == null) continue;
+
+                        DateTime tNewStart = captIsLeft ? captNewStart : target.Start;
+                        DateTime tNewEnd = captIsLeft ? target.End : captNewEnd;
+
+                        if (captIsLeft && tNewStart > target.Start)
+                            ClearSpanFromCache(fn, target.Start, tNewStart.AddDays(-1));
+                        if (!captIsLeft && tNewEnd < target.End)
+                            ClearSpanFromCache(fn, tNewEnd.AddDays(1), target.End);
+                        ApplySpanChangeToCache(fn, target.Manager, tNewStart, tNewEnd);
+                    }
+                }
+
+                // DB 반영 액션 — 항목별로 분리 등록 (프로그레스바 표시용)
+                var allSpansSnap = AnalysisRequestService.GetAssignmentChartData(captChartStart, captChartEnd);
+                var analytes2 = allSpansSnap.Select(sp => sp.FullName).Distinct().ToList();
+                foreach (var fn2 in analytes2)
+                {
+                    var fnLocal = fn2;
+                    var itemSpans2 = allSpansSnap
+                        .Where(sp2 => string.Equals(sp2.FullName, fnLocal, StringComparison.OrdinalIgnoreCase))
+                        .OrderBy(sp2 => sp2.Start).ToList();
+                    var target2 = captIsLeft
+                        ? itemSpans2.FirstOrDefault(sp2 => sp2.Start == captCaptSpan.Start)
+                        : itemSpans2.FirstOrDefault(sp2 => sp2.End == captCaptSpan.End);
+                    if (target2 == null) continue;
+
+                    DateTime tNewStart2 = captIsLeft ? captNewStart : target2.Start;
+                    DateTime tNewEnd2 = captIsLeft ? target2.End : captNewEnd;
+                    var tgt = target2;
+
+                    _chartPendingActions.Add(() =>
+                    {
+                        if (captIsLeft && tNewStart2 > tgt.Start)
+                            AnalysisRequestService.ClearAssignmentByName(fnLocal, tgt.Start, tNewStart2.AddDays(-1));
+                        if (!captIsLeft && tNewEnd2 < tgt.End)
+                            AnalysisRequestService.ClearAssignmentByName(fnLocal, tNewEnd2.AddDays(1), tgt.End);
+                        AnalysisRequestService.UpdateAssignmentByName(fnLocal, tgt.Manager, tNewStart2, tNewEnd2);
+                    });
+                }
+            }
+            else
+            {
+                // 개별 — 캐시 즉시 수정 (화면 반영)
+                if (isLeft && newStart > captSpan.Start)
+                    ClearSpanFromCache(captFn, captSpan.Start, newStart.AddDays(-1));
+                if (!isLeft && newEnd < captSpan.End)
+                    ClearSpanFromCache(captFn, newEnd.AddDays(1), captSpan.End);
+                ApplySpanChangeToCache(captFn, captSpan.Manager, newStart, newEnd);
+
+                // DB 반영 액션 등록
+                var captNewStart = newStart; var captNewEnd = newEnd;
+                var captNewDate = newDate;
+                _chartPendingActions.Add(() =>
+                {
+                    if (isLeft && captNewStart > captSpan.Start)
+                        AnalysisRequestService.ClearAssignmentByName(captFn, captSpan.Start, captNewStart.AddDays(-1));
+                    if (!isLeft && captNewEnd < captSpan.End)
+                        AnalysisRequestService.ClearAssignmentByName(captFn, captNewEnd.AddDays(1), captSpan.End);
+
+                    if (prevSpan != null && isLeft)
+                        AnalysisRequestService.UpdateAssignmentByName(captFn, prevSpan.Manager, prevSpan.Start, captNewDate.AddDays(-1));
+                    if (nextSpan != null && !isLeft)
+                        AnalysisRequestService.UpdateAssignmentByName(captFn, nextSpan.Manager, captNewDate.AddDays(1), nextSpan.End);
+                    AnalysisRequestService.UpdateAssignmentByName(captFn, captSpan.Manager, captNewStart, captNewEnd);
+                });
+            }
+
+            // 화면 즉시 갱신 (캐시 기반)
+            RefreshChartTable(fixedHeader, body);
+            RefreshShow3AfterChartUpdate();
         };
 
         track.Children.Add(handle);
