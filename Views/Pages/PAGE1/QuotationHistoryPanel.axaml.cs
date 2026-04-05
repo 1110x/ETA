@@ -103,6 +103,7 @@ public partial class QuotationHistoryPanel : UserControl
             Background = Brushes.Transparent,
             BorderThickness = new Thickness(0),
             SelectionMode = SelectionMode.Multiple,  // Ctrl+클릭 다중선택
+            ClipToBounds = false,
         };
         _treeQuotation.SelectionChanged += OnQuotationNodeSelected;
         _treeQuotation.KeyDown         += (_, e) => HandleTreeKeyDown(_treeQuotation, e);
@@ -113,6 +114,7 @@ public partial class QuotationHistoryPanel : UserControl
             BorderThickness = new Thickness(0),
             IsVisible = false,
             SelectionMode = SelectionMode.Multiple,
+            ClipToBounds = false,
         };
         _treeAnalysis.SelectionChanged += OnAnalysisNodeSelected;
         _treeAnalysis.KeyDown          += (_, e) => HandleTreeKeyDown(_treeAnalysis, e);
@@ -697,9 +699,10 @@ public partial class QuotationHistoryPanel : UserControl
             Text              = issued ? "🔵" : "🔴",
             FontFamily        = Font,
             VerticalAlignment = VerticalAlignment.Center,
-            Margin            = new Thickness(0, 0, 3, 0),
+            MinWidth          = 16,
+            Margin            = new Thickness(0, 0, 6, 0),
             [Grid.ColumnProperty] = 0,
-        }, "FontSizeXS"));
+        }, "FontSizeSM"));
 
         topRow.Children.Add(new Border
         {

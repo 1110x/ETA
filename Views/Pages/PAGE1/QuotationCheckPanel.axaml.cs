@@ -153,19 +153,37 @@ public partial class QuotationCheckPanel : UserControl
             };
             Grid.SetColumn(columnContainer, columnIndex);
 
-            // 헤더: 카테고리명 + 항목수
+            // 헤더: 카테고리명 + 전체 체크박스 (가로 배치)
+            var catChk = new CheckBox
+            {
+                Content = $"전체 ({group.Count()})",
+                IsChecked = false,
+                FontSize = AppFonts.Base,
+                FontWeight = FontWeight.SemiBold,
+                Foreground = Brush.Parse("#88bb88"),
+                Margin = new Avalonia.Thickness(6, 0, 0, 0),
+                Padding = new Avalonia.Thickness(2, 2),
+                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+            };
+            var headerPanel = new StackPanel
+            {
+                Orientation = Avalonia.Layout.Orientation.Horizontal,
+                Margin = new Avalonia.Thickness(0, 0, 0, 6),
+                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+            };
             var headerText = new TextBlock
             {
                 Text = $"{catKey}",
                 FontSize = AppFonts.MD,
                 FontWeight = FontWeight.SemiBold,
                 Foreground = AppTheme.FgInfo,
-                Margin = new Avalonia.Thickness(0, 0, 0, 6),
                 TextWrapping = TextWrapping.Wrap,
-                TextAlignment = TextAlignment.Center,
+                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
             };
-            Grid.SetRow(headerText, 0);
-            columnContainer.Children.Add(headerText);
+            headerPanel.Children.Add(headerText);
+            headerPanel.Children.Add(catChk);
+            Grid.SetRow(headerPanel, 0);
+            columnContainer.Children.Add(headerPanel);
 
             // Border: 컬럼 시각적 구분
             var columnBorder = new Border
@@ -192,18 +210,7 @@ public partial class QuotationCheckPanel : UserControl
                 Orientation = Avalonia.Layout.Orientation.Vertical,
             };
 
-            // 카테고리 헤더 체크박스 (StackPanel 최상단)
-            var catChk = new CheckBox
-            {
-                Content = $"전체 ({group.Count()})",
-                IsChecked = false,
-                FontSize = AppFonts.Base,
-                FontWeight = FontWeight.SemiBold,
-                Foreground = Brush.Parse("#88bb88"),
-                Margin = new Avalonia.Thickness(0, 0, 0, 4),
-                Padding = new Avalonia.Thickness(2, 2),
-            };
-            itemsStack.Children.Add(catChk);
+            // (catChk는 헤더 패널로 이동됨)
 
             // 항목 체크박스들
             foreach (var item in group.OrderBy(a => a.ES))

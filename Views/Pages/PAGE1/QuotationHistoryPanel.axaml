@@ -36,13 +36,28 @@
 
         <!-- TreeViewItem -->
         <Style Selector="TreeViewItem">
-            <Setter Property="Padding"    Value="1,0" />
+            <Setter Property="Padding"       Value="1,0" />
+            <Setter Property="Margin"        Value="0" />
+            <Setter Property="MinHeight"     Value="0" />
+            <Setter Property="FontSize"      Value="{DynamicResource FontSizeBase}" />
+            <Setter Property="Foreground"    Value="{DynamicResource TreeFg}" />
+            <Setter Property="FontFamily"    Value="avares://ETA/Assets/Fonts#Pretendard" />
+            <Setter Property="Background"    Value="Transparent" />
+            <Setter Property="ClipToBounds"  Value="False" />
+        </Style>
+        <!-- 리프 노드: expander(▶) 토글버튼 공간 제거 -->
+        <Style Selector="TreeViewItem /template/ ToggleButton#PART_ExpandCollapseChevron">
+            <Setter Property="Width"      Value="12" />
+            <Setter Property="MinWidth"   Value="0" />
+            <Setter Property="Padding"    Value="0" />
             <Setter Property="Margin"     Value="0" />
-            <Setter Property="MinHeight"  Value="0" />
-            <Setter Property="FontSize"   Value="{DynamicResource FontSizeBase}" />
-            <Setter Property="Foreground" Value="{DynamicResource TreeFg}" />
-            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#Pretendard" />
-            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Opacity"    Value="0" />
+        </Style>
+        <!-- 부모 노드: expander 원래대로 -->
+        <Style Selector="TreeViewItem:hasitems /template/ ToggleButton#PART_ExpandCollapseChevron">
+            <Setter Property="Width"      Value="19" />
+            <Setter Property="MinWidth"   Value="19" />
+            <Setter Property="Opacity"    Value="1" />
         </Style>
         <Style Selector="TreeViewItem /template/ ContentPresenter#PART_HeaderPresenter">
             <Setter Property="Padding"    Value="2,1" />
@@ -127,8 +142,9 @@
                 x:Name="treeHostBorder"
                 Background="{DynamicResource PanelInnerBg}"
                 CornerRadius="0,0,6,6"
-                Padding="2,2">
-            <Grid x:Name="treeHost" Background="Transparent" />
+                Padding="2,2"
+                ClipToBounds="False">
+            <Grid x:Name="treeHost" Background="Transparent" ClipToBounds="False" />
         </Border>
 
         <!-- ⑤ 하단 정보 -->

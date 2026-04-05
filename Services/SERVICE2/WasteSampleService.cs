@@ -272,6 +272,50 @@ public static class WasteSampleService
         확인자   = r.IsDBNull(15) ? "" : r.GetString(15),
     };
 
+    // ── *_DATA 원시 측정값 조회 ──────────────────────────────────────────────
+
+    /// <summary>*_DATA 테이블에서 채수일+SN 기준 전체 컬럼을 Dictionary로 반환</summary>
+    public static Dictionary<string, string>? GetRawData(string tableName, string 채수일, string sn)
+    {
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+
+            // 테이블 존재 확인
+            if (!DbConnectionFactory.TableExists(conn, tableName))
+            {
+                System.Diagnostics.Debug.WriteLine($"[GetRawData] 테이블 없음: {tableName}");
+                return null;
+            }
+
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = $"SELECT * FROM `{tableName}` WHERE 채수일=@d AND SN=@sn LIMIT 1";
+            cmd.Parameters.AddWithValue("@d", 채수일);
+            cmd.Parameters.AddWithValue("@sn", sn);
+            using var reader = cmd.ExecuteReader();
+            if (!reader.Read())
+            {
+                System.Diagnostics.Debug.WriteLine($"[GetRawData] 데이터 없음: {tableName} 채수일={채수일} SN={sn}");
+                return null;
+            }
+            var dict = new Dictionary<string, string>();
+            for (int i = 0; i < reader.FieldCount; i++)
+            {
+                var name = reader.GetName(i);
+                var val = reader.IsDBNull(i) ? "" : reader.GetValue(i)?.ToString() ?? "";
+                dict[name] = val;
+            }
+            System.Diagnostics.Debug.WriteLine($"[GetRawData] {tableName} SN={sn}: {dict.Count}개 컬럼 로드");
+            return dict;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[GetRawData] 오류: {tableName} - {ex.Message}");
+            return null;
+        }
+    }
+
     // ── *_DATA 원시 측정값 UPSERT ─────────────────────────────────────────────
 
     /// <summary>BOD_DATA에 원시 측정값 UPSERT (채수일+SN 기준)</summary>
@@ -370,6 +414,65 @@ public static class WasteSampleService
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"[UpsertSimpleData:{tableName}] 오류: {ex.Message}");
+        }
+    }
+
+    /// <summary>SS_DATA 전용 UPSERT (전무게/후무게/무게차/희석배수 포함)</summary>
+    public static void UpsertSsData(
+        string 채수일, string sn, string 업체명, string 구분,
+        string 시료량, string 전무게, string 후무게, string 무게차, string 희석배수, string 결과)
+    {
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+
+            // 컬럼 존재 확인 및 추가
+            foreach (var col in new[] { "전무게", "후무게", "무게차", "희석배수" })
+            {
+                if (!DbConnectionFactory.ColumnExists(conn, "SS_DATA", col))
+                {
+                    using var alt = conn.CreateCommand();
+                    alt.CommandText = $"ALTER TABLE `SS_DATA` ADD COLUMN `{col}` TEXT DEFAULT ''";
+                    alt.ExecuteNonQuery();
+                }
+            }
+
+            using var chk = conn.CreateCommand();
+            chk.CommandText = "SELECT COUNT(*) FROM `SS_DATA` WHERE 채수일=@d AND SN=@sn";
+            chk.Parameters.AddWithValue("@d", 채수일);
+            chk.Parameters.AddWithValue("@sn", sn);
+            bool exists = Convert.ToInt32(chk.ExecuteScalar()) > 0;
+
+            using var cmd = conn.CreateCommand();
+            if (exists)
+            {
+                cmd.CommandText = $@"UPDATE `SS_DATA`
+                    SET 시료량=@vol, `전무게`=@pre, `후무게`=@post, `무게차`=@diff, `희석배수`=@dil, `결과`=@r,
+                        등록일시={DbConnectionFactory.NowExpr}
+                    WHERE 채수일=@d AND SN=@sn";
+            }
+            else
+            {
+                cmd.CommandText = $@"INSERT INTO `SS_DATA`
+                    (채수일, SN, 업체명, 구분, 시료량, `전무게`, `후무게`, `무게차`, `희석배수`, `결과`, 등록일시)
+                    VALUES (@d, @sn, @nm, @gu, @vol, @pre, @post, @diff, @dil, @r, {DbConnectionFactory.NowExpr})";
+                cmd.Parameters.AddWithValue("@nm", 업체명);
+                cmd.Parameters.AddWithValue("@gu", 구분);
+            }
+            cmd.Parameters.AddWithValue("@d", 채수일);
+            cmd.Parameters.AddWithValue("@sn", sn);
+            cmd.Parameters.AddWithValue("@vol", 시료량);
+            cmd.Parameters.AddWithValue("@pre", 전무게);
+            cmd.Parameters.AddWithValue("@post", 후무게);
+            cmd.Parameters.AddWithValue("@diff", 무게차);
+            cmd.Parameters.AddWithValue("@dil", 희석배수);
+            cmd.Parameters.AddWithValue("@r", 결과);
+            cmd.ExecuteNonQuery();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[UpsertSsData] 오류: {ex.Message}");
         }
     }
 

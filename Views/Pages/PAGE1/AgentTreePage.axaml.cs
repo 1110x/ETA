@@ -100,14 +100,12 @@ public partial class AgentTreePage : UserControl
     private const double TL_MILESTONE_H = 60.0;
 
     // ── 업무분장표 상수 ─────────────────────────────────────────────────────
-    private const double GC_LABEL_W   = 56.0;
+    private const double GC_LABEL_W   = 120.0;
     private const double GC_DAY_W     = 22.0;
     private const double GC_ROW_H     = 28.0;   // 컴팩트 행
     private const double GC_BAR_H     = 18.0;   // 바 높이
     private const double GC_DATE_H    = 20.0;   // 하단 날짜 영역
-    private const double GC_HANDLE_R  = 5.0;    // 드래그 핸들 반지름
-    private const double GC_VBRANCH_H = 22.0;   // V분기 높이
-    private const double GC_VBRANCH_W = 36.0;   // V분기 퍼짐
+    private string _chartTab = "분석항목";          // 현재 업무분장표 탭
 
     public AgentTreePage()
     {
@@ -3816,17 +3814,17 @@ public partial class AgentTreePage : UserControl
         var today = DateTime.Today;
         _chartRangeStart = new DateTime(today.Year, today.Month, 1);
         _chartRangeEnd   = _chartRangeStart.AddMonths(1).AddDays(-1);
+        bool isH1 = today.Month <= 6;
 
-        var root = new Grid { RowDefinitions = new RowDefinitions("Auto,*") };
-
-        // ── 헤더 ────────────────────────────────────────────────────────────
-        var header = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Margin = new Thickness(8, 6, 8, 4) };
+        var root = new Grid { RowDefinitions = new RowDefinitions("Auto,Auto,*") };
         var kbFont = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
-        var kbFontM = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
+
+        // ── Row 0: 헤더 ─────────────────────────────────────────────────────
+        var header = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Margin = new Thickness(8, 6, 8, 4) };
 
         header.Children.Add(new TextBlock {
             Text = "업무분장표", FontSize = AppTheme.FontXL, FontWeight = FontWeight.Bold,
-            FontFamily = kbFontM, Foreground = AppTheme.FgInfo,
+            FontFamily = kbFont, Foreground = AppTheme.FgInfo,
             VerticalAlignment = VerticalAlignment.Center });
 
         Button MakeBtn(string text, string bg, string fg, string bd, int w = 30) => new()
@@ -3843,8 +3841,9 @@ public partial class AgentTreePage : UserControl
         var btnPrev  = MakeBtn("◀", "#2a3a5a", "#88aacc", "#3a5a8a");
         var btnNext  = MakeBtn("▶", "#2a3a5a", "#88aacc", "#3a5a8a");
         var btnToday = MakeBtn("이번달", "#2a3a2a", "#88cc88", "#3a6a3a", 52);
+        var btnH1    = MakeBtn("상반기", isH1 ? "#2a4a3a" : "#2a2a2a", isH1 ? "#88ddaa" : "#666", isH1 ? "#3a6a4a" : "#444", 52);
+        var btnH2    = MakeBtn("하반기", !isH1 ? "#2a4a3a" : "#2a2a2a", !isH1 ? "#88ddaa" : "#666", !isH1 ? "#3a6a4a" : "#444", 52);
         var btnApply = MakeBtn("반영", "#4a2a1a", "#ffaa66", "#6a4a2a", 48);
-        btnApply.FontFamily = kbFontM;
 
         var txbMonth = new TextBlock {
             Text = _chartRangeStart.ToString("yyyy년 MM월"), FontSize = AppTheme.FontMD,
@@ -3855,88 +3854,184 @@ public partial class AgentTreePage : UserControl
         header.Children.Add(txbMonth);
         header.Children.Add(btnNext);
         header.Children.Add(btnToday);
+        header.Children.Add(btnH1);
+        header.Children.Add(btnH2);
         header.Children.Add(btnApply);
         Grid.SetRow(header, 0);
         root.Children.Add(header);
 
-        // ── 본문: StackPanel 기반 행 ────────────────────────────────────────
+        // ── Row 1: 카테고리 탭 ──────────────────────────────────────────────
+        var tabBar = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4, Margin = new Thickness(8, 0, 8, 4) };
+        string[] tabNames = ["분석항목", "계약업체", "일반업무"];
+        var tabBtns = new Button[tabNames.Length];
+        for (int t = 0; t < tabNames.Length; t++)
+        {
+            bool active = tabNames[t] == _chartTab;
+            var tb = MakeBtn(tabNames[t], active ? "#2a4a5a" : "#1a1a1a", active ? "#88ccee" : "#666", active ? "#3a6a8a" : "#333", 64);
+            tb.FontWeight = active ? FontWeight.Bold : FontWeight.Normal;
+            tabBtns[t] = tb;
+            tabBar.Children.Add(tb);
+        }
+        Grid.SetRow(tabBar, 1);
+        root.Children.Add(tabBar);
+
+        // ── Row 2: 본문 ─────────────────────────────────────────────────────
         var body = new StackPanel { Spacing = 0 };
         var scroll = new ScrollViewer {
             HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
             VerticalScrollBarVisibility   = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
             Content = body, Margin = new Thickness(4, 0, 4, 4) };
-        Grid.SetRow(scroll, 1);
+        Grid.SetRow(scroll, 2);
         root.Children.Add(scroll);
 
-        RefreshAssignmentChartSlider(body);
+        // 탭별 렌더링
+        void RefreshBody()
+        {
+            switch (_chartTab)
+            {
+                case "분석항목": RefreshChartTable(body); break;
+                case "계약업체": RefreshChartContractTab(body); break;
+                case "일반업무": RefreshChartGeneralTab(body); break;
+            }
+        }
+        RefreshBody();
 
         // ── 이벤트 ─────────────────────────────────────────────────────────
+        void UpdateHalfBtnStyle()
+        {
+            bool h1 = _chartRangeStart.Month <= 6;
+            btnH1.Background = new SolidColorBrush(Color.Parse(h1 ? "#2a4a3a" : "#2a2a2a"));
+            btnH1.Foreground = new SolidColorBrush(Color.Parse(h1 ? "#88ddaa" : "#666"));
+            btnH1.BorderBrush = new SolidColorBrush(Color.Parse(h1 ? "#3a6a4a" : "#444"));
+            btnH2.Background = new SolidColorBrush(Color.Parse(!h1 ? "#2a4a3a" : "#2a2a2a"));
+            btnH2.Foreground = new SolidColorBrush(Color.Parse(!h1 ? "#88ddaa" : "#666"));
+            btnH2.BorderBrush = new SolidColorBrush(Color.Parse(!h1 ? "#3a6a4a" : "#444"));
+        }
+
         void Navigate()
         {
             txbMonth.Text = _chartRangeStart.ToString("yyyy년 MM월");
-            RefreshAssignmentChartSlider(body);
+            _chartRangeEnd = _chartRangeStart.AddMonths(1).AddDays(-1);
+            UpdateHalfBtnStyle();
+            RefreshBody();
             btnApply.IsEnabled = true; btnApply.Content = "반영";
         }
+
+        // ◀ ▶: 자유 이동 (연도/반기 경계 자동 처리)
         btnPrev.Click += (_, _) =>
-        { _chartRangeStart = _chartRangeStart.AddMonths(-1); _chartRangeEnd = _chartRangeStart.AddMonths(1).AddDays(-1); Navigate(); };
+        { _chartRangeStart = _chartRangeStart.AddMonths(-1); Navigate(); };
         btnNext.Click += (_, _) =>
-        { _chartRangeStart = _chartRangeStart.AddMonths(1); _chartRangeEnd = _chartRangeStart.AddMonths(1).AddDays(-1); Navigate(); };
+        { _chartRangeStart = _chartRangeStart.AddMonths(1); Navigate(); };
         btnToday.Click += (_, _) =>
-        { _chartRangeStart = new DateTime(today.Year, today.Month, 1); _chartRangeEnd = _chartRangeStart.AddMonths(1).AddDays(-1); Navigate(); };
+        { _chartRangeStart = new DateTime(today.Year, today.Month, 1); Navigate(); };
+        btnH1.Click += (_, _) =>
+        { _chartRangeStart = new DateTime(_chartRangeStart.Year, 1, 1); Navigate(); };
+        btnH2.Click += (_, _) =>
+        { _chartRangeStart = new DateTime(_chartRangeStart.Year, 7, 1); Navigate(); };
         btnApply.Click += (_, _) =>
         {
             AnalysisRequestService.AutoExtendAssignmentsToToday();
-            RefreshAssignmentChartSlider(body);
+            RefreshBody();
             RefreshShow3AfterChartUpdate();
             btnApply.IsEnabled = false; btnApply.Content = "반영됨";
         };
 
+        // 탭 클릭
+        void UpdateTabStyle()
+        {
+            for (int i = 0; i < tabNames.Length; i++)
+            {
+                bool a = tabNames[i] == _chartTab;
+                tabBtns[i].Background = new SolidColorBrush(Color.Parse(a ? "#2a4a5a" : "#1a1a1a"));
+                tabBtns[i].Foreground = new SolidColorBrush(Color.Parse(a ? "#88ccee" : "#666"));
+                tabBtns[i].BorderBrush = new SolidColorBrush(Color.Parse(a ? "#3a6a8a" : "#333"));
+                tabBtns[i].FontWeight = a ? FontWeight.Bold : FontWeight.Normal;
+            }
+        }
+        for (int t = 0; t < tabNames.Length; t++)
+        {
+            var tn = tabNames[t];
+            tabBtns[t].Click += (_, _) => { _chartTab = tn; UpdateTabStyle(); RefreshBody(); };
+        }
+
         return root;
     }
 
-    /// <summary>슬라이더 기반 업무분장표 렌더링</summary>
-    private void RefreshAssignmentChartSlider(StackPanel body)
+    // ── 초성별 색상 매핑 ─────────────────────────────────────────────────
+    private static readonly (string Bg, string Fg)[] _chosungColors =
+    [
+        ("#2a3a5a", "#88bbee"), // ㄱ
+        ("#3a2a4a", "#bb88dd"), // ㄴ
+        ("#2a4a3a", "#88ddaa"), // ㄷ
+        ("#4a3a2a", "#ddaa88"), // ㄹ
+        ("#3a3a5a", "#9999dd"), // ㅁ
+        ("#4a4a2a", "#bbbb88"), // ㅂ
+        ("#4a2a3a", "#dd88aa"), // ㅅ
+        ("#2a4a4a", "#88cccc"), // ㅇ
+        ("#3a4a2a", "#aacc88"), // ㅈ
+        ("#4a2a4a", "#cc88cc"), // ㅊ
+        ("#2a3a4a", "#88aacc"), // ㅋ
+        ("#3a2a3a", "#aa88aa"), // ㅌ
+        ("#4a3a3a", "#ccaa99"), // ㅍ
+        ("#3a4a3a", "#99cc99"), // ㅎ
+    ];
+    private static readonly char[] _chosungTable =
+        ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+
+    private static (string Bg, string Fg) GetChosungColor(string name)
+    {
+        if (string.IsNullOrEmpty(name)) return ("#333", "#888");
+        char first = name[0];
+        if (first >= 0xAC00 && first <= 0xD7A3)
+        {
+            int idx = (first - 0xAC00) / (21 * 28);
+            // 쌍자음 → 기본 자음으로 매핑
+            int colorIdx = _chosungTable[idx] switch
+            {
+                'ㄱ' or 'ㄲ' => 0, 'ㄴ' => 1, 'ㄷ' or 'ㄸ' => 2, 'ㄹ' => 3,
+                'ㅁ' => 4, 'ㅂ' or 'ㅃ' => 5, 'ㅅ' or 'ㅆ' => 6, 'ㅇ' => 7,
+                'ㅈ' or 'ㅉ' => 8, 'ㅊ' => 9, 'ㅋ' => 10, 'ㅌ' => 11,
+                'ㅍ' => 12, 'ㅎ' => 13, _ => 7,
+            };
+            return _chosungColors[colorIdx];
+        }
+        return ("#333", "#aaa");
+    }
+
+    /// <summary>업무분장표 테이블 렌더링 — 분석항목 탭</summary>
+    private void RefreshChartTable(StackPanel body)
     {
         body.Children.Clear();
-        var kbFont  = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
-        var kbFontM = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
+        var kbFont = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
 
-        // 표시 범위: 해당월 -5일 ~ +5일
-        DateTime dispStart = _chartRangeStart.AddDays(-5);
-        DateTime dispEnd   = _chartRangeEnd.AddDays(5);
-        int dispDays = (int)(dispEnd - dispStart).TotalDays + 1;
-        int monthDays = (int)(_chartRangeEnd - _chartRangeStart).TotalDays + 1;
+        int monthDays = DateTime.DaysInMonth(_chartRangeStart.Year, _chartRangeStart.Month);
+        DateTime monthEnd = new DateTime(_chartRangeStart.Year, _chartRangeStart.Month, monthDays);
 
-        var spans    = AnalysisRequestService.GetAssignmentChartData(dispStart, dispEnd);
+        var spans = AnalysisRequestService.GetAssignmentChartData(_chartRangeStart, monthEnd);
         var analytes = AnalysisRequestService.GetOrderedAnalytes()
-            .Where(a => !a.fullName.StartsWith("_") && a.fullName != "기타업무" && a.fullName != "담당계약업체")
+            .Where(a => !a.fullName.StartsWith("_") && a.fullName != "기타업무" && a.fullName != "담당계약업체" && a.fullName != "항목명")
             .ToList();
         if (analytes.Count == 0) return;
 
-        // 담당자 색상
-        var mc = new Dictionary<string, (string Bg, string Fg)>();
-        string[] bgP = ["#2a4a6a","#4a2a5a","#2a5a3a","#5a3a2a","#3a3a5a","#4a5a2a","#5a2a4a","#2a5a5a","#5a4a3a","#3a5a4a"];
-        string[] fgP = ["#88bbee","#cc88dd","#88dd99","#ddaa88","#9999dd","#bbcc88","#dd88bb","#88ddcc","#ddbb88","#88ccaa"];
-        int ci = 0;
+        double trackW = monthDays * GC_DAY_W;
 
-        double trackW = dispDays * GC_DAY_W;
-
-        // ── 날짜 눈금 (상단) ────────────────────────────────────────────────
+        // ── 날짜 헤더 ────────────────────────────────────────────────────
         var dateRow = new Grid { ColumnDefinitions = new ColumnDefinitions($"{GC_LABEL_W},*"), Height = GC_DATE_H };
         var dateCanvas = new Canvas { Width = trackW, Height = GC_DATE_H, ClipToBounds = true };
         Grid.SetColumn(dateCanvas, 1);
-        for (int d = 0; d < dispDays; d++)
+        for (int d = 0; d < monthDays; d++)
         {
-            var dt = dispStart.AddDays(d);
-            bool inMonth = dt >= _chartRangeStart && dt <= _chartRangeEnd;
+            var dt = _chartRangeStart.AddDays(d);
             bool isSun = dt.DayOfWeek == DayOfWeek.Sunday;
             bool isSat = dt.DayOfWeek == DayOfWeek.Saturday;
-            string color = !inMonth ? "#444" : isSun ? "#cc6666" : isSat ? "#6688cc" : "#999";
+            bool isToday = dt.Date == DateTime.Today;
+            string color = isToday ? "#66ee66" : isSun ? "#cc6666" : isSat ? "#6688cc" : "#999";
             dateCanvas.Children.Add(new TextBlock
             {
-                Text = dt.Day.ToString(), FontSize = AppTheme.FontXS, Width = GC_DAY_W,
+                Text = (d + 1).ToString(), FontSize = AppTheme.FontXS, Width = GC_DAY_W,
                 FontFamily = kbFont, TextAlignment = TextAlignment.Center,
                 Foreground = new SolidColorBrush(Color.Parse(color)),
+                FontWeight = isToday ? FontWeight.Bold : FontWeight.Normal,
                 [Canvas.LeftProperty] = d * GC_DAY_W, [Canvas.TopProperty] = 2.0,
             });
         }
@@ -3952,49 +4047,47 @@ public partial class AgentTreePage : UserControl
                 Height = GC_ROW_H, Margin = new Thickness(0, 0, 0, 1),
             };
 
-            // 라벨
+            // 라벨: 약칭 배지 + 전체명
             var (lbBg, lbFg) = BadgeColorHelper.GetBadgeColor(shortName);
-            var label = new Border
+            var labelPanel = new StackPanel
             {
-                Height = GC_BAR_H, CornerRadius = new CornerRadius(3),
+                Orientation = Orientation.Horizontal, Spacing = 4,
+                VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(2, 0),
+            };
+            labelPanel.Children.Add(new Border
+            {
+                Height = 16, MinWidth = 32, CornerRadius = new CornerRadius(3),
                 Background = new SolidColorBrush(Color.Parse(lbBg)),
-                Padding = new Thickness(3, 0), VerticalAlignment = VerticalAlignment.Center,
+                Padding = new Thickness(4, 0),
                 Child = new TextBlock
                 {
-                    Text = shortName, FontSize = AppTheme.FontXS, FontFamily = kbFontM,
+                    Text = shortName, FontSize = AppTheme.FontXS, FontFamily = kbFont,
                     Foreground = new SolidColorBrush(Color.Parse(lbFg)),
-                    TextTrimming = TextTrimming.CharacterEllipsis,
                     VerticalAlignment = VerticalAlignment.Center,
+                    TextAlignment = TextAlignment.Center,
                 },
-            };
-            Grid.SetColumn(label, 0);
-            rowGrid.Children.Add(label);
+            });
+            labelPanel.Children.Add(new TextBlock
+            {
+                Text = fullName, FontSize = AppTheme.FontXS, FontFamily = kbFont,
+                Foreground = AppTheme.FgMuted,
+                VerticalAlignment = VerticalAlignment.Center,
+                TextTrimming = TextTrimming.CharacterEllipsis,
+            });
+            Grid.SetColumn(labelPanel, 0);
+            rowGrid.Children.Add(labelPanel);
 
             // 트랙 캔버스
             var track = new Canvas { Width = trackW, Height = GC_ROW_H, ClipToBounds = true };
             Grid.SetColumn(track, 1);
             double barY = (GC_ROW_H - GC_BAR_H) / 2;
 
-            // 월 외 구간 어둡게
-            int preOff = (int)(_chartRangeStart - dispStart).TotalDays;
-            int postOff = (int)(_chartRangeEnd - dispStart).TotalDays + 1;
-            if (preOff > 0)
-                track.Children.Add(new Avalonia.Controls.Shapes.Rectangle
-                { Width = preOff * GC_DAY_W, Height = GC_ROW_H, Fill = new SolidColorBrush(Color.Parse("#0a0a0a")), Opacity = 0.5 });
-            if (postOff < dispDays)
-                track.Children.Add(new Avalonia.Controls.Shapes.Rectangle
-                {
-                    Width = (dispDays - postOff) * GC_DAY_W, Height = GC_ROW_H,
-                    Fill = new SolidColorBrush(Color.Parse("#0a0a0a")), Opacity = 0.5,
-                    [Canvas.LeftProperty] = postOff * GC_DAY_W,
-                });
-
             // 오늘 하이라이트
-            if (DateTime.Today >= dispStart && DateTime.Today <= dispEnd)
+            if (DateTime.Today >= _chartRangeStart && DateTime.Today <= monthEnd)
             {
-                int ti = (int)(DateTime.Today - dispStart).TotalDays;
+                int ti = (int)(DateTime.Today - _chartRangeStart).TotalDays;
                 track.Children.Add(new Avalonia.Controls.Shapes.Rectangle
-                { Width = GC_DAY_W, Height = GC_ROW_H, Fill = AppTheme.BgActiveGreen,
+                { Width = GC_DAY_W, Height = GC_ROW_H, Fill = new SolidColorBrush(Color.Parse("#0d1f0d")),
                   [Canvas.LeftProperty] = ti * GC_DAY_W });
             }
 
@@ -4006,183 +4099,231 @@ public partial class AgentTreePage : UserControl
                 Stroke = AppTheme.BorderSubtle, StrokeThickness = 1,
             });
 
-            // 스팬 바 (담당자별 색상 바 + 이름)
+            // 스팬 바 (담당자별 초성 색상 + 이름)
             var itemSpans = spans
                 .Where(s => string.Equals(s.FullName, fullName, StringComparison.OrdinalIgnoreCase))
                 .OrderBy(s => s.Start).ToList();
 
             foreach (var sp in itemSpans)
             {
-                if (!mc.TryGetValue(sp.Manager, out var c))
-                { c = (bgP[ci % bgP.Length], fgP[ci % fgP.Length]); mc[sp.Manager] = c; ci++; }
-
-                double sx = Math.Max(0, (sp.Start - dispStart).TotalDays) * GC_DAY_W;
-                double ex = (Math.Min(dispDays - 1, (sp.End - dispStart).TotalDays) + 1) * GC_DAY_W;
+                var (bg, fg) = GetChosungColor(sp.Manager);
+                double sx = Math.Max(0, (sp.Start - _chartRangeStart).TotalDays) * GC_DAY_W;
+                double ex = (Math.Min(monthDays - 1, (sp.End - _chartRangeStart).TotalDays) + 1) * GC_DAY_W;
                 double w = ex - sx;
                 if (w < 1) continue;
 
-                track.Children.Add(new Border
+                var captBody = body; var captFull = fullName; var captSp = sp;
+                var bar = new Border
                 {
                     Width = w, Height = GC_BAR_H,
-                    Background = new SolidColorBrush(Color.Parse(c.Item1)),
+                    Background = new SolidColorBrush(Color.Parse(bg)),
                     CornerRadius = new CornerRadius(3), Padding = new Thickness(4, 0), ClipToBounds = true,
+                    Cursor = CanEdit ? new Cursor(StandardCursorType.Hand) : Cursor.Default,
                     Child = new TextBlock
                     {
                         Text = sp.Manager, FontSize = AppTheme.FontXS, FontFamily = kbFont,
-                        Foreground = new SolidColorBrush(Color.Parse(c.Item2)),
+                        Foreground = new SolidColorBrush(Color.Parse(fg)),
                         TextTrimming = TextTrimming.CharacterEllipsis,
                         VerticalAlignment = VerticalAlignment.Center,
+                        TextAlignment = TextAlignment.Center,
                     },
                     [Canvas.LeftProperty] = sx, [Canvas.TopProperty] = barY,
-                });
+                };
+
+                // 클릭 → 담당자 변경 Flyout
+                if (CanEdit)
+                {
+                    bar.PointerPressed += (_, _) =>
+                    {
+                        var names = AgentService.GetAllNames();
+                        var lb = new ListBox { MaxHeight = 200, MinWidth = 120, ItemsSource = names,
+                            FontSize = AppTheme.FontBase, FontFamily = kbFont,
+                            Background = AppTheme.BgPrimary, Foreground = AppTheme.FgSecondary };
+                        var fly = new Flyout { Content = lb, Placement = PlacementMode.Bottom };
+                        lb.SelectionChanged += (_, _) =>
+                        {
+                            if (lb.SelectedItem is not string nm) return;
+                            AnalysisRequestService.UpdateAssignmentByName(captFull, nm, captSp.Start, captSp.End);
+                            fly.Hide();
+                            RefreshChartTable(captBody);
+                            RefreshShow3AfterChartUpdate();
+                        };
+                        fly.ShowAt(bar);
+                    };
+                }
+                track.Children.Add(bar);
             }
 
-            // 경계 슬라이더 (드래그 가능한 경계선 + 메모 라벨)
+            // 경계 세로선 (시각적으로만)
             for (int i = 0; i < itemSpans.Count - 1; i++)
             {
-                var ls = itemSpans[i];
-                var rs = itemSpans[i + 1];
-                DateTime bnd = rs.Start;
-                double bx = (bnd - dispStart).TotalDays * GC_DAY_W;
-
-                // 경계 수직선
+                DateTime bnd = itemSpans[i + 1].Start;
+                double bx = (bnd - _chartRangeStart).TotalDays * GC_DAY_W;
                 track.Children.Add(new Avalonia.Controls.Shapes.Line
                 {
-                    StartPoint = new Point(bx, barY - 2), EndPoint = new Point(bx, barY + GC_BAR_H + 2),
-                    Stroke = AppTheme.FgWarn, StrokeThickness = 2,
+                    StartPoint = new Point(bx, barY - 1), EndPoint = new Point(bx, barY + GC_BAR_H + 1),
+                    Stroke = AppTheme.FgWarn, StrokeThickness = 1.5,
                 });
-
-                // 메모 라벨 (엑셀 메모 스타일 — 경계선 위)
-                string memoText = $"{ls.Manager} → {rs.Manager}\n{bnd:MM/dd}";
-                var memo = new Border
-                {
-                    Background = new SolidColorBrush(Color.Parse("#332a1a")),
-                    BorderBrush = AppTheme.BorderWarn,
-                    BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(3),
-                    Padding = new Thickness(4, 1), IsVisible = false,
-                    Child = new TextBlock
-                    {
-                        Text = memoText, FontSize = AppTheme.FontXS, FontFamily = kbFont,
-                        Foreground = new SolidColorBrush(Color.Parse("#ffcc88")),
-                    },
-                };
-                Canvas.SetLeft(memo, bx - 30);
-                Canvas.SetTop(memo, barY - 32);
-                track.Children.Add(memo);
-
-                // 드래그 핸들 (투명 넓은 영역)
-                var capturedBody = body;
-                var capturedFull = fullName;
-                var capturedLMgr = ls.Manager;
-                var capturedRMgr = rs.Manager;
-                var capturedBnd  = bnd;
-                var capturedMemo = memo;
-
-                var handle = new Border
-                {
-                    Width = 14, Height = GC_BAR_H + 10,
-                    Background = Brushes.Transparent,
-                    Cursor = new Cursor(StandardCursorType.SizeWestEast),
-                };
-                Canvas.SetLeft(handle, bx - 7);
-                Canvas.SetTop(handle, barY - 5);
-                track.Children.Add(handle);
-
-                double dragSx = 0; bool dragging = false;
-
-                handle.PointerEntered += (_, _) => capturedMemo.IsVisible = true;
-                handle.PointerExited += (_, _) => { if (!dragging) capturedMemo.IsVisible = false; };
-
-                handle.PointerPressed += (s, e) =>
-                {
-                    if (s is not Border b) return;
-                    dragging = true; dragSx = e.GetPosition(track).X;
-                    e.Pointer.Capture(b); e.Handled = true;
-                };
-                handle.PointerMoved += (s, e) =>
-                {
-                    if (!dragging || s is not Border b) return;
-                    double cur = e.GetPosition(track).X;
-                    double nc = Canvas.GetLeft(b) + 7 + (cur - dragSx);
-                    double minX = preOff * GC_DAY_W + GC_DAY_W;
-                    double maxX = postOff * GC_DAY_W - GC_DAY_W;
-                    nc = Math.Clamp(nc, minX, maxX);
-                    Canvas.SetLeft(b, nc - 7);
-                    dragSx = cur;
-                    int dayIdx = (int)(nc / GC_DAY_W);
-                    var nd = dispStart.AddDays(dayIdx);
-                    ((capturedMemo.Child as TextBlock)!).Text = $"{capturedLMgr} → {capturedRMgr}\n{nd:MM/dd}";
-                    Canvas.SetLeft(capturedMemo, nc - 30);
-                    capturedMemo.IsVisible = true;
-                    e.Handled = true;
-                };
-                handle.PointerReleased += (s, e) =>
-                {
-                    if (!dragging || s is not Border b) return;
-                    dragging = false; e.Pointer.Capture(null);
-                    capturedMemo.IsVisible = false;
-                    double fc = Canvas.GetLeft(b) + 7;
-                    int dayIdx = (int)(fc / GC_DAY_W);
-                    var nb = dispStart.AddDays(dayIdx);
-                    if (nb != capturedBnd && nb >= _chartRangeStart && nb <= _chartRangeEnd)
-                    {
-                        if (nb > capturedBnd)
-                            AnalysisRequestService.UpdateAssignmentByName(capturedFull, capturedLMgr, capturedBnd, nb.AddDays(-1));
-                        else
-                            AnalysisRequestService.UpdateAssignmentByName(capturedFull, capturedRMgr, nb, capturedBnd.AddDays(-1));
-                        RefreshAssignmentChartSlider(capturedBody);
-                        RefreshShow3AfterChartUpdate();
-                    }
-                    else RefreshAssignmentChartSlider(capturedBody);
-                    e.Handled = true;
-                };
-            }
-
-            // "+" 미배정 구간 (미래)
-            DateTime gapStart = itemSpans.Count > 0 ? itemSpans[^1].End.AddDays(1) : _chartRangeStart;
-            if (gapStart <= DateTime.Today && DateTime.Today < _chartRangeEnd)
-                gapStart = DateTime.Today.AddDays(1);
-            if (gapStart <= _chartRangeEnd)
-            {
-                double gx = (gapStart - dispStart).TotalDays * GC_DAY_W;
-                double ge = (postOff) * GC_DAY_W;
-                double gcx = (gx + ge) / 2;
-                var captFull2 = fullName; var captStart2 = gapStart; var captBody2 = body;
-                var plus = new Button
-                {
-                    Width = 20, Height = 20, Content = "+", FontSize = AppTheme.FontMD,
-                    Padding = new Thickness(0), CornerRadius = new CornerRadius(10),
-                    Background = AppTheme.BgActiveGreen,
-                    Foreground = AppTheme.FgSuccess,
-                    BorderBrush = AppTheme.BorderActive,
-                    BorderThickness = new Thickness(1), FontFamily = kbFontM,
-                    Cursor = new Cursor(StandardCursorType.Hand),
-                    HorizontalContentAlignment = HorizontalAlignment.Center,
-                    VerticalContentAlignment = VerticalAlignment.Center,
-                };
-                Canvas.SetLeft(plus, gcx - 10);
-                Canvas.SetTop(plus, barY);
-                track.Children.Add(plus);
-
-                var names = AgentService.GetAllNames();
-                var lb = new ListBox { MaxHeight = 200, MinWidth = 120, ItemsSource = names,
-                    FontSize = AppTheme.FontBase, FontFamily = kbFont,
-                    Background = AppTheme.BgPrimary,
-                    Foreground = AppTheme.FgSecondary };
-                var fly = new Flyout { Content = lb, Placement = PlacementMode.Bottom };
-                plus.Flyout = fly;
-                lb.SelectionChanged += (_, _) =>
-                {
-                    if (lb.SelectedItem is not string nm) return;
-                    AnalysisRequestService.UpdateAssignmentByName(captFull2, nm, captStart2, _chartRangeEnd);
-                    fly.Hide();
-                    RefreshAssignmentChartSlider(captBody2);
-                    RefreshShow3AfterChartUpdate();
-                };
             }
 
             rowGrid.Children.Add(track);
             body.Children.Add(rowGrid);
+        }
+    }
+
+    /// <summary>업무분장표 — 계약업체 탭</summary>
+    private void RefreshChartContractTab(StackPanel body)
+    {
+        body.Children.Clear();
+        var kbFont = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
+
+        // Agent별 담당업체 목록 조회
+        var agents = AgentService.GetAllItems().Where(a => !string.IsNullOrWhiteSpace(a.담당업체)).ToList();
+        if (agents.Count == 0)
+        {
+            body.Children.Add(new TextBlock
+            {
+                Text = "배정된 계약업체가 없습니다.", FontSize = AppTheme.FontSM,
+                Foreground = AppTheme.FgMuted, Margin = new Thickness(12, 20),
+            });
+            return;
+        }
+
+        // 직원별 행: 이름 | 담당업체 목록
+        foreach (var agent in agents.OrderBy(a => a.성명))
+        {
+            var rowGrid = new Grid
+            {
+                ColumnDefinitions = new ColumnDefinitions($"{GC_LABEL_W},*"),
+                MinHeight = GC_ROW_H, Margin = new Thickness(0, 0, 0, 1),
+            };
+
+            // 이름 배지
+            var (bg, fg) = GetChosungColor(agent.성명);
+            var label = new Border
+            {
+                Height = GC_BAR_H, CornerRadius = new CornerRadius(3),
+                Background = new SolidColorBrush(Color.Parse(bg)),
+                Padding = new Thickness(3, 0), VerticalAlignment = VerticalAlignment.Center,
+                Child = new TextBlock
+                {
+                    Text = agent.성명, FontSize = AppTheme.FontXS, FontFamily = kbFont,
+                    Foreground = new SolidColorBrush(Color.Parse(fg)),
+                    VerticalAlignment = VerticalAlignment.Center,
+                },
+            };
+            Grid.SetColumn(label, 0);
+            rowGrid.Children.Add(label);
+
+            // 업체 칩 목록
+            var chips = new WrapPanel { Margin = new Thickness(4, 2), };
+            foreach (var company in agent.담당업체목록)
+            {
+                chips.Children.Add(new Border
+                {
+                    Background = new SolidColorBrush(Color.Parse("#1a2a3a")),
+                    CornerRadius = new CornerRadius(3),
+                    Padding = new Thickness(6, 2), Margin = new Thickness(2, 1),
+                    Child = new TextBlock
+                    {
+                        Text = company, FontSize = AppTheme.FontXS, FontFamily = kbFont,
+                        Foreground = new SolidColorBrush(Color.Parse("#88bbdd")),
+                    },
+                });
+            }
+            Grid.SetColumn(chips, 1);
+            rowGrid.Children.Add(chips);
+            body.Children.Add(rowGrid);
+        }
+    }
+
+    /// <summary>업무분장표 — 일반업무 탭</summary>
+    private void RefreshChartGeneralTab(StackPanel body)
+    {
+        body.Children.Clear();
+        var kbFont = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
+
+        var tasks = ETA.Services.Common.GeneralTaskService.GetAll();
+        if (tasks.Count == 0)
+        {
+            body.Children.Add(new TextBlock
+            {
+                Text = "등록된 일반업무가 없습니다.", FontSize = AppTheme.FontSM,
+                Foreground = AppTheme.FgMuted, Margin = new Thickness(12, 20),
+            });
+            return;
+        }
+
+        // 헤더
+        var hdr = new Grid
+        {
+            ColumnDefinitions = new ColumnDefinitions("*,80,80,80"),
+            Height = GC_DATE_H, Margin = new Thickness(0, 0, 0, 2),
+        };
+        string[] hLabels = ["업무명", "담당자", "상태", "마감일"];
+        for (int i = 0; i < hLabels.Length; i++)
+        {
+            var tb = new TextBlock
+            {
+                Text = hLabels[i], FontSize = AppTheme.FontXS, FontFamily = kbFont,
+                Foreground = AppTheme.FgMuted, FontWeight = FontWeight.SemiBold,
+                Margin = new Thickness(4, 0),
+            };
+            Grid.SetColumn(tb, i);
+            hdr.Children.Add(tb);
+        }
+        body.Children.Add(hdr);
+
+        // 행
+        int idx = 0;
+        foreach (var task in tasks.OrderBy(t => t.상태 == "완료" ? 1 : 0).ThenBy(t => t.마감일))
+        {
+            var row = new Grid
+            {
+                ColumnDefinitions = new ColumnDefinitions("*,80,80,80"),
+                MinHeight = GC_ROW_H, Margin = new Thickness(0, 0, 0, 1),
+                Background = idx++ % 2 == 0 ? AppRes("GridRowBg") : AppRes("GridRowAltBg"),
+            };
+
+            bool done = task.상태 == "완료";
+            var fgColor = done ? AppTheme.FgMuted : AppTheme.FgSecondary;
+
+            row.Children.Add(new TextBlock
+            {
+                Text = task.업무명, FontSize = AppTheme.FontSM, FontFamily = kbFont,
+                Foreground = fgColor, VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(4, 0), TextTrimming = TextTrimming.CharacterEllipsis,
+            });
+
+            var nameBlock = new TextBlock
+            {
+                Text = task.담당자명, FontSize = AppTheme.FontSM, FontFamily = kbFont,
+                Foreground = fgColor, VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(4, 0),
+            };
+            Grid.SetColumn(nameBlock, 1);
+            row.Children.Add(nameBlock);
+
+            string statusIcon = task.상태 switch { "완료" => "✅", "진행" => "🔵", _ => "⏳" };
+            var statusBlock = new TextBlock
+            {
+                Text = $"{statusIcon} {task.상태}", FontSize = AppTheme.FontXS, FontFamily = kbFont,
+                Foreground = fgColor, VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(4, 0),
+            };
+            Grid.SetColumn(statusBlock, 2);
+            row.Children.Add(statusBlock);
+
+            var deadlineBlock = new TextBlock
+            {
+                Text = task.마감일, FontSize = AppTheme.FontXS, FontFamily = kbFont,
+                Foreground = fgColor, VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(4, 0),
+            };
+            Grid.SetColumn(deadlineBlock, 3);
+            row.Children.Add(deadlineBlock);
+
+            body.Children.Add(row);
         }
     }
 

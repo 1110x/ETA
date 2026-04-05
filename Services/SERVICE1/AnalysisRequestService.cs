@@ -466,19 +466,22 @@ public static class AnalysisRequestService
 
             while (rdr.Read())
             {
-                string label = rdr.IsDBNull(0) ? "" : rdr.GetValue(0)?.ToString()?.Trim() ?? "";
+                string label = rdr["항목명"]?.ToString()?.Trim() ?? "";
                 if (label == "약칭")
                 {
-                    for (int i = 1; i < fc; i++)
+                    for (int i = 0; i < fc; i++)
+                    {
+                        if (headers[i].StartsWith("_") || headers[i] == "항목명") continue;
                         shortArr[i] = rdr.IsDBNull(i) ? "" : rdr.GetValue(i)?.ToString()?.Trim() ?? "";
+                    }
                     break;
                 }
             }
 
-            for (int i = 1; i < fc; i++)
+            for (int i = 0; i < fc; i++)
             {
                 string fullName = headers[i];
-                if (string.IsNullOrWhiteSpace(fullName) || fullName.StartsWith("_")) continue;
+                if (string.IsNullOrWhiteSpace(fullName) || fullName.StartsWith("_") || fullName == "항목명") continue;
                 string shortName = string.IsNullOrWhiteSpace(shortArr[i]) ? fullName : shortArr[i];
                 result.Add((fullName, shortName));
             }
@@ -507,9 +510,10 @@ public static class AnalysisRequestService
             using var rdr = cmd.ExecuteReader();
             if (rdr.Read())
             {
-                for (int i = 1; i < rdr.FieldCount; i++)
+                for (int i = 0; i < rdr.FieldCount; i++)
                 {
                     string colHeader = rdr.GetName(i).Trim();
+                    if (colHeader.StartsWith("_") || colHeader == "항목명") continue;
                     string abbr      = rdr.IsDBNull(i) ? "" : rdr.GetValue(i)?.ToString()?.Trim() ?? "";
                     if (!string.IsNullOrEmpty(colHeader) && !string.IsNullOrEmpty(abbr))
                         result[colHeader] = abbr;
@@ -605,12 +609,13 @@ public static class AnalysisRequestService
 
             while (rdr.Read())
             {
-                string label = rdr.IsDBNull(0) ? "" : rdr.GetValue(0)?.ToString()?.Trim() ?? "";
+                string label = rdr["항목명"]?.ToString()?.Trim() ?? "";
 
                 if (!daysSet && label == "표준처리기한")
                 {
-                    for (int i = 1; i < fc; i++)
+                    for (int i = 0; i < fc; i++)
                     {
+                        if (headers[i].StartsWith("_") || headers[i] == "항목명") continue;
                         var v = rdr.IsDBNull(i) ? "" : rdr.GetValue(i)?.ToString()?.Trim() ?? "";
                         int.TryParse(v, out daysArr[i]);
                     }
@@ -620,8 +625,11 @@ public static class AnalysisRequestService
 
                 if (!shortSet && label == "약칭")
                 {
-                    for (int i = 1; i < fc; i++)
+                    for (int i = 0; i < fc; i++)
+                    {
+                        if (headers[i].StartsWith("_") || headers[i] == "항목명") continue;
                         shortArr[i] = rdr.IsDBNull(i) ? "" : rdr.GetValue(i)?.ToString()?.Trim() ?? "";
+                    }
                     shortSet = true;
                     continue;
                 }
@@ -629,10 +637,10 @@ public static class AnalysisRequestService
                 if (daysSet && shortSet) break;
             }
 
-            for (int i = 1; i < fc; i++)
+            for (int i = 0; i < fc; i++)
             {
                 string fullName = headers[i];
-                if (string.IsNullOrEmpty(fullName)) continue;
+                if (string.IsNullOrEmpty(fullName) || fullName.StartsWith("_") || fullName == "항목명") continue;
                 string shortName = string.IsNullOrEmpty(shortArr[i]) ? fullName : shortArr[i];
                 result[fullName] = (daysArr[i], shortName);
             }
@@ -675,9 +683,10 @@ public static class AnalysisRequestService
             using var rdr = cmd.ExecuteReader();
             if (rdr.Read())
             {
-                for (int i = 1; i < rdr.FieldCount; i++) // col0 = 항목명 건너뜀
+                for (int i = 0; i < rdr.FieldCount; i++)
                 {
                     string colName = rdr.GetName(i).Trim();
+                    if (colName.StartsWith("_") || colName == "항목명") continue;
                     string manager = rdr.IsDBNull(i) ? "" : rdr.GetValue(i)?.ToString()?.Trim() ?? "";
                     if (!string.IsNullOrEmpty(colName))
                         result[colName] = manager;
@@ -896,10 +905,12 @@ public static class AnalysisRequestService
                 using var rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    var dateStr = rdr.IsDBNull(0) ? "" : rdr.GetValue(0)?.ToString()?.Trim() ?? "";
-                    for (int i = 1; i < rdr.FieldCount; i++)
+                    var dateStr = rdr["항목명"]?.ToString()?.Trim() ?? "";
+                    for (int i = 0; i < rdr.FieldCount; i++)
                     {
-                        if (!string.Equals(rdr.GetName(i).Trim(), analyteFullName,
+                        string cn = rdr.GetName(i).Trim();
+                        if (cn.StartsWith("_") || cn == "항목명") continue;
+                        if (!string.Equals(cn, analyteFullName,
                             StringComparison.OrdinalIgnoreCase)) continue;
                         var val = rdr.IsDBNull(i) ? "" : rdr.GetValue(i)?.ToString()?.Trim() ?? "";
                         if (!string.IsNullOrEmpty(val) && !string.IsNullOrEmpty(dateStr))
@@ -1239,12 +1250,13 @@ public static class AnalysisRequestService
             using var rdr = cmd.ExecuteReader();
             while (rdr.Read())
             {
-                string dateStr = rdr.IsDBNull(0) ? "" : rdr.GetValue(0)?.ToString() ?? "";
+                string dateStr = rdr["항목명"]?.ToString()?.Trim() ?? "";
                 if (!DateTime.TryParse(dateStr, out var dt)) continue;
 
-                for (int i = 1; i < rdr.FieldCount; i++)
+                for (int i = 0; i < rdr.FieldCount; i++)
                 {
                     string colName = rdr.GetName(i).Trim();
+                    if (colName.StartsWith("_") || colName == "항목명") continue;
                     string mgr     = rdr.IsDBNull(i) ? "" : rdr.GetValue(i)?.ToString()?.Trim() ?? "";
                     if (mgr != managerName) continue;
 
@@ -1286,22 +1298,23 @@ public static class AnalysisRequestService
             var info = GetStandardDaysInfo();
 
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = "SELECT * FROM `분장표준처리` WHERE `항목명` BETWEEN @s AND @e ORDER BY `항목명`";
+            cmd.CommandText =
+                "SELECT * FROM `분장표준처리` WHERE `항목명` BETWEEN @s AND @e ORDER BY `항목명`";
             cmd.Parameters.AddWithValue("@s", rangeStart.ToString("yyyy-MM-dd"));
             cmd.Parameters.AddWithValue("@e", rangeEnd.ToString("yyyy-MM-dd"));
 
-            // date → column → manager
             var dateRows = new List<(DateTime Date, Dictionary<string, string> Managers)>();
             using var rdr = cmd.ExecuteReader();
             while (rdr.Read())
             {
-                string dateStr = rdr.IsDBNull(0) ? "" : rdr.GetValue(0)?.ToString() ?? "";
+                string dateStr = rdr["항목명"]?.ToString()?.Trim() ?? "";
                 if (!DateTime.TryParse(dateStr, out var dt)) continue;
 
                 var managers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-                for (int i = 1; i < rdr.FieldCount; i++)
+                for (int i = 0; i < rdr.FieldCount; i++)
                 {
                     string col = rdr.GetName(i).Trim();
+                    if (col.StartsWith("_") || col == "항목명") continue;
                     string mgr = rdr.IsDBNull(i) ? "" : rdr.GetValue(i)?.ToString()?.Trim() ?? "";
                     managers[col] = mgr;
                 }
@@ -1313,7 +1326,7 @@ public static class AnalysisRequestService
             {
                 string col = kv.Key;
                 string shortName = kv.Value.shortName;
-                if (col.StartsWith("_") || col == "기타업무" || col == "담당계약업체") continue;
+                if (col.StartsWith("_") || col == "기타업무" || col == "담당계약업체" || col == "항목명") continue;
 
                 string currentMgr = "";
                 DateTime spanStart = rangeStart;

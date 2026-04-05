@@ -129,6 +129,9 @@ public partial class MainPage : Window
             if (show2Border != null)    TextShimmer.AttachPanelHover(show2Border);
             if (show3Border != null)    TextShimmer.AttachPanelHover(show3Border);
             if (content4Border != null) TextShimmer.AttachPanelHover(content4Border);
+
+            // 디폴트 화면: 비용부담금 > 폐수배출업소
+            WasteCompany_Click(null, new Avalonia.Interactivity.RoutedEventArgs());
         };
     }
 
@@ -2414,10 +2417,10 @@ public partial class MainPage : Window
             };
         }
 
-        // 메뉴 Tag로 카테고리 자동 선택
-        string? category = (sender as MenuItem)?.Tag?.ToString();
-        if (!string.IsNullOrEmpty(category))
-            _wasteAnalysisInputPage.SelectCategoryByKey(category);
+        // 메뉴 Tag로 입력 모드 설정 (수질분석센터/비용부담금/처리시설)
+        string? inputMode = (sender as MenuItem)?.Tag?.ToString();
+        if (!string.IsNullOrEmpty(inputMode))
+            _wasteAnalysisInputPage.SetInputMode(inputMode);
 
         Show1.Content = _wasteAnalysisInputPage;
         LogContentChange("Show1", _wasteAnalysisInputPage);
