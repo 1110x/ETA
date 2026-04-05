@@ -56,6 +56,15 @@ public static class AppFonts
     public static TextBlock BindFs(this TextBlock tb, string key)
         => Fs(tb, key);
 
+    // ── Button FontSize 반응형 바인딩 ────────────────────────────────────
+    public static Button BindXS(this Button b) { b.Bind(Button.FontSizeProperty, Obs("FontSizeXS")); return b; }
+    public static Button BindSM(this Button b) { b.Bind(Button.FontSizeProperty, Obs("FontSizeSM")); return b; }
+    public static Button BindBase(this Button b) { b.Bind(Button.FontSizeProperty, Obs("FontSizeBase")); return b; }
+
+    // ── TextBox FontSize 반응형 바인딩 ───────────────────────────────────
+    public static TextBox BindSM(this TextBox t) { t.Bind(TextBox.FontSizeProperty, Obs("FontSizeSM")); return t; }
+    public static TextBox BindBase(this TextBox t) { t.Bind(TextBox.FontSizeProperty, Obs("FontSizeBase")); return t; }
+
     private static TextBlock Fs(TextBlock tb, string key)
     {
         tb.Bind(TextBlock.FontSizeProperty, Obs(key));

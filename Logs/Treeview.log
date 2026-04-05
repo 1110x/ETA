@@ -6024,3 +6024,1566 @@
 [23:52:52] [AnalysisRequestService] 완료: 3696건
 [23:52:57] [AnalysisRequestService] 완료: 3696건
 [23:52:58] [AnalysisRequestService] 완료: 3696건
+[21:20:56] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:20:56] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[21:21:26] QuotationHistoryPanel 초기화 완료
+[21:21:26] LoadData() 시작
+[21:21:26] 견적 발행건수=933
+[21:21:27] LoadData() 완료 — 루트노드=6
+[21:21:31] QuotationHistoryPanel 초기화 완료
+[21:21:31] LoadData() 시작
+[21:21:31] 견적 발행건수=933
+[21:21:32] LoadData() 완료 — 루트노드=6
+[21:30:22] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:30:22] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:30:22] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:30:22] [AnalysisRequestService] GetAssignmentCalendar(201000308, 2026-04-03~2026-04-03): 0개 항목
+[21:30:23] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:30:23] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:30:23] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:30:23] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:30:23] [AnalysisRequestService] GetAssignmentCalendar(201101234, 2026-04-03~2026-04-03): 0개 항목
+[21:30:24] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:30:24] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:30:24] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:30:24] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:30:24] [AnalysisRequestService] GetAssignmentCalendar(202104002, 2026-04-03~2026-04-03): 0개 항목
+[21:30:25] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:30:25] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:30:25] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:30:25] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:30:25] [AnalysisRequestService] GetAssignmentCalendar(202202011, 2026-04-03~2026-04-03): 0개 항목
+[21:30:25] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:30:25] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:30:25] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:30:25] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:30:25] [AnalysisRequestService] GetAssignmentCalendar(202204016, 2026-04-03~2026-04-03): 0개 항목
+[21:30:26] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:30:26] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:30:26] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:30:26] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:30:26] [AnalysisRequestService] GetAssignmentCalendar(202301126, 2026-04-03~2026-04-03): 0개 항목
+[21:30:27] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:30:27] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:30:27] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:30:27] [AnalysisRequestService] GetAssignmentCalendar(202303008, 2026-04-03~2026-04-03): 0개 항목
+[21:30:28] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:30:28] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:30:28] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:30:28] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:30:28] [AnalysisRequestService] GetAssignmentCalendar(202309008, 2026-04-03~2026-04-03): 0개 항목
+[21:30:29] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:30:29] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:30:29] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:30:29] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:30:29] [AnalysisRequestService] GetAssignmentCalendar(202311039, 2026-04-03~2026-04-03): 0개 항목
+[21:30:29] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:30:29] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:30:29] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:30:29] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:30:29] [AnalysisRequestService] GetAssignmentCalendar(202311039, 2026-04-03~2026-04-03): 0개 항목
+[21:30:30] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:30:30] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:30:30] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:30:30] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:30:30] [AnalysisRequestService] GetAssignmentCalendar(202500340, 2026-04-03~2026-04-03): 0개 항목
+[21:30:30] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:30:30] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:30:30] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:30:30] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:30:30] [AnalysisRequestService] GetAssignmentCalendar(202500323, 2026-04-03~2026-04-03): 0개 항목
+[21:30:32] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:30:32] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:30:32] [AnalysisRequestService] GetAssignmentCalendar(12345, 2026-04-03~2026-04-03): 0개 항목
+[21:30:32] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:30:32] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:30:32] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:30:32] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:30:32] [AnalysisRequestService] GetAssignmentCalendar(202500323, 2026-04-03~2026-04-03): 0개 항목
+[21:30:34] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:30:34] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:30:34] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:30:34] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:30:34] [AnalysisRequestService] GetAssignmentCalendar(202500323, 2026-04-03~2026-04-03): 0개 항목
+[21:33:33] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:33:33] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:33:33] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:33:33] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:33:33] [AnalysisRequestService] GetAssignmentCalendar(201101234, 2026-04-03~2026-04-03): 0개 항목
+[21:33:33] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:33:33] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:33:33] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:33:33] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:33:33] [AnalysisRequestService] GetAssignmentCalendar(202104002, 2026-04-03~2026-04-03): 0개 항목
+[21:33:34] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:33:34] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:33:34] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:33:34] [AnalysisRequestService] GetAssignmentCalendar(202106024, 2026-04-03~2026-04-03): 0개 항목
+[21:33:35] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:33:35] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:33:35] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:33:35] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:33:35] [AnalysisRequestService] GetAssignmentCalendar(202301126, 2026-04-03~2026-04-03): 0개 항목
+[21:33:36] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:33:36] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:33:36] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:33:36] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:33:36] [AnalysisRequestService] GetAssignmentCalendar(202309008, 2026-04-03~2026-04-03): 0개 항목
+[21:34:04] [AnalysisRequestService] GetManagersByDate(2026-01-28): 70개 담당자 로드
+[21:34:04] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:34:05] [AnalysisRequestService] GetManagersByDate(2026-01-28): 70개 담당자 로드
+[21:34:05] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:34:05] [AnalysisRequestService] GetManagersByDate(2026-01-28): 70개 담당자 로드
+[21:34:05] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:34:06] [AnalysisRequestService] GetManagersByDate(2026-01-28): 70개 담당자 로드
+[21:34:06] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:34:06] [AnalysisRequestService] GetManagersByDate(2026-01-28): 70개 담당자 로드
+[21:34:06] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:34:07] [AnalysisRequestService] GetManagersByDate(2026-01-28): 70개 담당자 로드
+[21:34:07] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:34:08] [AnalysisRequestService] GetManagersByDate(2026-01-28): 70개 담당자 로드
+[21:34:08] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:34:08] [AnalysisRequestService] GetManagersByDate(2026-01-28): 70개 담당자 로드
+[21:34:08] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:37:22] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:37:22] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:37:22] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:37:22] [AnalysisRequestService] GetAssignmentCalendar(201000308, 2026-04-03~2026-04-03): 0개 항목
+[21:37:23] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:37:23] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:37:23] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:37:23] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:37:23] [AnalysisRequestService] GetAssignmentCalendar(201101234, 2026-04-03~2026-04-03): 0개 항목
+[21:37:24] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:37:24] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:37:24] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:37:24] [AnalysisRequestService] GetAssignmentCalendar(202106024, 2026-04-03~2026-04-03): 0개 항목
+[21:37:25] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:37:25] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:37:25] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:37:25] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:37:25] [AnalysisRequestService] GetAssignmentCalendar(202202011, 2026-04-03~2026-04-03): 0개 항목
+[21:37:25] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:37:25] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:37:25] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:37:25] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:37:25] [AnalysisRequestService] GetAssignmentCalendar(202204016, 2026-04-03~2026-04-03): 0개 항목
+[21:37:26] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:37:26] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:37:26] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:37:26] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:37:26] [AnalysisRequestService] GetAssignmentCalendar(202301126, 2026-04-03~2026-04-03): 0개 항목
+[21:37:27] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:37:27] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:37:27] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:37:27] [AnalysisRequestService] GetAssignmentCalendar(202303008, 2026-04-03~2026-04-03): 0개 항목
+[21:37:27] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:37:27] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:37:27] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:37:27] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:37:27] [AnalysisRequestService] GetAssignmentCalendar(202309008, 2026-04-03~2026-04-03): 0개 항목
+[21:37:28] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:37:28] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:37:28] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:37:28] [AnalysisRequestService] GetAssignmentCalendar(202311016, 2026-04-03~2026-04-03): 0개 항목
+[21:37:28] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:37:28] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:37:28] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:37:28] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:37:28] [AnalysisRequestService] GetAssignmentCalendar(202500340, 2026-04-03~2026-04-03): 0개 항목
+[21:37:30] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:37:30] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:37:30] [AnalysisRequestService] GetAssignmentCalendar(12345, 2026-04-03~2026-04-03): 0개 항목
+[21:37:30] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:37:31] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:37:31] [AnalysisRequestService] GetAssignmentCalendar(12345, 2026-04-03~2026-04-03): 0개 항목
+[21:50:36] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:50:36] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[21:50:47] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:50:47] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:50:47] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:50:47] [AnalysisRequestService] GetAssignmentCalendar(201000308, 2026-04-03~2026-04-03): 0개 항목
+[21:50:48] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:50:48] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:50:48] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:50:48] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:50:48] [AnalysisRequestService] GetAssignmentCalendar(202104002, 2026-04-03~2026-04-03): 0개 항목
+[21:50:48] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:50:49] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:50:49] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:50:49] [AnalysisRequestService] GetAssignmentCalendar(202106024, 2026-04-03~2026-04-03): 0개 항목
+[21:50:49] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:50:49] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:50:49] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:50:49] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:50:49] [AnalysisRequestService] GetAssignmentCalendar(202202011, 2026-04-03~2026-04-03): 0개 항목
+[21:51:15] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:51:15] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:51:15] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:51:15] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:51:15] [AnalysisRequestService] GetAssignmentCalendar(202104002, 2026-04-03~2026-04-03): 0개 항목
+[21:51:15] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:51:15] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:51:15] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:51:15] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:51:15] [AnalysisRequestService] GetAssignmentCalendar(202202011, 2026-04-03~2026-04-03): 0개 항목
+[21:51:16] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:51:16] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:51:16] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:51:16] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:51:16] [AnalysisRequestService] GetAssignmentCalendar(202204016, 2026-04-03~2026-04-03): 0개 항목
+[21:51:52] QuotationHistoryPanel 초기화 완료
+[21:51:52] LoadData() 시작
+[21:51:52] 견적 발행건수=933
+[21:51:52] LoadData() 완료 — 루트노드=6
+[21:51:56] 견적 선택: 국도화학 3/4 국도화학(주) 익산지점 3EA 견적서 [20260303-155028]
+[21:51:57] 견적 선택: 보임 (주)보임열병합발전 2026년 견적서 [20260303-113022]
+[21:52:00] 견적 선택: DL DL케미칼 1분기 정기시료 [20260226-094137]
+[21:52:00] 견적 선택: 롯데첨단소재 TOC 의뢰시료(25.12.22, 26.01.13, 26.01.27 총 138EA) 견적서 [20260223-093731]
+[21:52:01] 견적 선택: 화치 1/23 염화비닐 [20260223-083743]
+[21:52:01] 견적 선택: 적량 적량단지 정기시료 5종 (01/02, 01/19, 02/06, 02/20 총 4EA) [20260220-1553220]
+[21:52:02] 견적 선택: 화치 LG화학-화치단지 2월 의뢰시료 합계(~2/23 까지) [20260220-085212]
+[21:52:03] 견적 선택: GS GS칼텍스 1분기 정기시료 [20260210-122314]
+[21:52:03] 견적 선택: 에코랩스 에코랩스(주) 12회 접수시료(3지점, 6개 항목) 견적서 [20260209-172754]
+[21:52:04] 견적 선택: 화치 2/9 bcs 수질관리p [20260209-123425]
+[21:52:04] 견적 선택: 롯데첨단소재 2026년 1분기(7EA_26.02.20) 견적서 [20260219-161345]
+[21:52:04] 견적 선택: 화치 LG화학-화치단지 2월 의뢰시료 합계(~2/23 까지) [20260220-085212]
+[21:52:05] 견적 선택: 적량 적량단지 정기시료 5종 (01/02, 01/19, 02/06, 02/20 총 4EA) [20260220-1553220]
+[21:52:05] 견적 선택: 화치 1/23 염화비닐 [20260223-083743]
+[21:52:06] 견적 선택: 한세 26년 2월 정기시료(1EA) 견적서(26.02.25) [20260223-170021]
+[21:52:06] 견적 선택: 용성 LG화학(주) 용성단지 TOC 재분석 4EA 견적서 [20260225-092450]
+[21:52:06] 견적 선택: DL DL케미칼 1분기 정기시료 [20260226-094137]
+[21:53:54] QuotationHistoryPanel 초기화 완료
+[21:53:54] LoadData() 시작
+[21:53:54] 견적 발행건수=933
+[21:53:54] LoadData() 완료 — 루트노드=6
+[21:54:55] [AnalysisRequestService] GetManagersByDate(2026-02-27): 70개 담당자 로드
+[21:54:55] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:54:56] [AnalysisRequestService] GetManagersByDate(2026-02-27): 70개 담당자 로드
+[21:54:56] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:54:56] [AnalysisRequestService] GetManagersByDate(2026-02-27): 70개 담당자 로드
+[21:54:56] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:54:57] [AnalysisRequestService] GetManagersByDate(2026-02-27): 70개 담당자 로드
+[21:54:57] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:54:57] [AnalysisRequestService] GetManagersByDate(2026-02-27): 70개 담당자 로드
+[21:54:57] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:54:58] [AnalysisRequestService] GetManagersByDate(2026-02-27): 70개 담당자 로드
+[21:54:58] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:54:59] [AnalysisRequestService] GetManagersByDate(2026-02-27): 70개 담당자 로드
+[21:54:59] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:54:59] [AnalysisRequestService] GetManagersByDate(2026-02-26): 70개 담당자 로드
+[21:54:59] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:55:00] [AnalysisRequestService] GetManagersByDate(2026-02-26): 70개 담당자 로드
+[21:55:00] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:55:00] [AnalysisRequestService] GetManagersByDate(2026-02-26): 70개 담당자 로드
+[21:55:00] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:55:01] [AnalysisRequestService] GetManagersByDate(2026-02-26): 70개 담당자 로드
+[21:55:01] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:55:02] [AnalysisRequestService] GetManagersByDate(2026-02-26): 70개 담당자 로드
+[21:55:02] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:59:04] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:59:04] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[21:59:11] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:59:11] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:59:11] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:59:11] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:59:11] [AnalysisRequestService] GetAssignmentCalendar(202104002, 2026-04-03~2026-04-03): 0개 항목
+[21:59:12] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:59:12] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:59:12] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:59:12] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:59:12] [AnalysisRequestService] GetAssignmentCalendar(202204016, 2026-04-03~2026-04-03): 0개 항목
+[21:59:13] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:59:13] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:59:13] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:59:13] [AnalysisRequestService] GetAssignmentCalendar(202303008, 2026-04-03~2026-04-03): 0개 항목
+[21:59:13] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:59:13] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:59:13] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:59:13] [AnalysisRequestService] GetAssignmentCalendar(202303008, 2026-04-03~2026-04-03): 0개 항목
+[21:59:14] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:59:14] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:59:14] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:59:14] [AnalysisRequestService] GetAssignmentCalendar(202311016, 2026-04-03~2026-04-03): 0개 항목
+[21:59:14] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:59:14] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:59:14] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:59:14] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:59:14] [AnalysisRequestService] GetAssignmentCalendar(202311039, 2026-04-03~2026-04-03): 0개 항목
+[21:59:15] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:59:15] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:59:15] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:59:15] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:59:15] [AnalysisRequestService] GetAssignmentCalendar(202500340, 2026-04-03~2026-04-03): 0개 항목
+[21:59:16] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:59:16] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:59:16] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:59:16] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:59:16] [AnalysisRequestService] GetAssignmentCalendar(202500323, 2026-04-03~2026-04-03): 0개 항목
+[21:59:16] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:59:16] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:59:16] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:59:17] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:59:17] [AnalysisRequestService] GetAssignmentCalendar(202500323, 2026-04-03~2026-04-03): 0개 항목
+[21:59:17] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:59:17] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:59:17] [AnalysisRequestService] GetAssignmentCalendar(12345, 2026-04-03~2026-04-03): 0개 항목
+[21:59:18] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:59:18] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:59:18] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:59:18] [AnalysisRequestService] GetAssignmentCalendar(202303008, 2026-04-03~2026-04-03): 0개 항목
+[21:59:18] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:59:18] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:59:18] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:59:18] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:59:18] [AnalysisRequestService] GetAssignmentCalendar(202204016, 2026-04-03~2026-04-03): 0개 항목
+[22:00:02] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:00:02] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:00:02] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:00:02] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:00:02] [AnalysisRequestService] GetAssignmentCalendar(201101234, 2026-04-03~2026-04-03): 0개 항목
+[22:00:02] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:00:02] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:00:02] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:00:02] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:00:02] [AnalysisRequestService] GetAssignmentCalendar(202104002, 2026-04-03~2026-04-03): 0개 항목
+[22:00:03] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:00:03] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:00:03] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:00:03] [AnalysisRequestService] GetAssignmentCalendar(202106024, 2026-04-03~2026-04-03): 0개 항목
+[22:00:03] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:00:03] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:00:03] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:00:03] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:00:03] [AnalysisRequestService] GetAssignmentCalendar(202204016, 2026-04-03~2026-04-03): 0개 항목
+[22:00:04] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:00:04] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:00:04] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:00:04] [AnalysisRequestService] GetAssignmentCalendar(202303008, 2026-04-03~2026-04-03): 0개 항목
+[22:00:04] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:00:04] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:00:04] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:00:04] [AnalysisRequestService] GetAssignmentCalendar(202311016, 2026-04-03~2026-04-03): 0개 항목
+[22:00:05] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:00:05] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:00:05] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:00:05] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:00:05] [AnalysisRequestService] GetAssignmentCalendar(202500323, 2026-04-03~2026-04-03): 0개 항목
+[22:10:01] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:10:01] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[22:12:37] QuotationHistoryPanel 초기화 완료
+[22:12:37] LoadData() 시작
+[22:12:37] 견적 발행건수=933
+[22:12:38] LoadData() 완료 — 루트노드=6
+[22:14:00] LoadData() 시작
+[22:14:00] 견적 발행건수=933
+[22:14:00] LoadData() 완료 — 루트노드=6
+[22:14:04] 탭 전환 → 분석의뢰내역
+[22:14:04] LoadAnalysisTreeAsync() 시작
+[22:14:04] [AnalysisRequestService] 완료: 3663건
+[22:14:04] DB 조회 완료: 3663건
+[22:14:05] 트리 완료 — 년노드=7
+[22:14:05] 탭 전환 → 견적발행내역
+[22:14:07] 견적 선택: 국도화학 3/4 국도화학(주) 익산지점 3EA 견적서 [20260303-155028]
+[22:14:08] 견적 선택: 국도화학 3/4 국도화학(주) 익산지점 3EA 견적서 [20260303-155028]
+[22:15:15] 견적 선택: 롯데첨단소재 TOC 의뢰시료(25.12.22, 26.01.13, 26.01.27 총 138EA) 견적서 [20260223-093731]
+[22:15:16] 견적 선택: 화치 1/23 염화비닐 [20260223-083743]
+[22:21:16] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:21:16] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[22:23:33] QuotationHistoryPanel 초기화 완료
+[22:23:33] LoadData() 시작
+[22:23:33] 견적 발행건수=933
+[22:23:33] LoadData() 완료 — 루트노드=6
+[22:28:00] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:28:00] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:28:00] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:28:00] [AnalysisRequestService] GetAssignmentCalendar(201000308, 2026-04-03~2026-04-03): 0개 항목
+[22:28:01] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:28:01] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:28:01] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:28:01] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:28:01] [AnalysisRequestService] GetAssignmentCalendar(202104002, 2026-04-03~2026-04-03): 0개 항목
+[22:28:01] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:28:01] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:28:01] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:28:01] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:28:01] [AnalysisRequestService] GetAssignmentCalendar(202104002, 2026-04-03~2026-04-03): 0개 항목
+[22:28:02] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:28:02] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:28:02] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:28:02] [AnalysisRequestService] GetAssignmentCalendar(202106024, 2026-04-03~2026-04-03): 0개 항목
+[22:28:03] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:28:03] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:28:03] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:28:03] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:28:03] [AnalysisRequestService] GetAssignmentCalendar(202204016, 2026-04-03~2026-04-03): 0개 항목
+[22:28:04] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:28:04] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:28:04] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:28:04] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:28:04] [AnalysisRequestService] GetAssignmentCalendar(202301126, 2026-04-03~2026-04-03): 0개 항목
+[22:28:05] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:28:05] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:28:05] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:28:05] [AnalysisRequestService] GetAssignmentCalendar(202303008, 2026-04-03~2026-04-03): 0개 항목
+[22:28:05] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:28:05] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:28:05] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:28:05] [AnalysisRequestService] GetAssignmentCalendar(202303008, 2026-04-03~2026-04-03): 0개 항목
+[22:28:06] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:28:06] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:28:06] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:28:06] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:28:06] [AnalysisRequestService] GetAssignmentCalendar(202309008, 2026-04-03~2026-04-03): 0개 항목
+[22:28:06] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:28:06] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:28:06] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:28:06] [AnalysisRequestService] GetAssignmentCalendar(202311016, 2026-04-03~2026-04-03): 0개 항목
+[22:28:07] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:28:07] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:28:07] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:28:07] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:28:07] [AnalysisRequestService] GetAssignmentCalendar(202311039, 2026-04-03~2026-04-03): 0개 항목
+[22:28:08] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:28:08] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:28:08] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:28:08] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:28:08] [AnalysisRequestService] GetAssignmentCalendar(202500340, 2026-04-03~2026-04-03): 0개 항목
+[22:28:08] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:28:08] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:28:08] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:28:08] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:28:08] [AnalysisRequestService] GetAssignmentCalendar(202500340, 2026-04-03~2026-04-03): 0개 항목
+[22:28:09] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:28:09] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:28:09] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:28:09] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:28:09] [AnalysisRequestService] GetAssignmentCalendar(202500323, 2026-04-03~2026-04-03): 0개 항목
+[22:28:10] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:28:10] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:28:10] [AnalysisRequestService] GetAssignmentCalendar(12345, 2026-04-03~2026-04-03): 0개 항목
+[22:29:05] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:29:05] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[22:29:12] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:29:12] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:29:12] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:29:12] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:29:12] [AnalysisRequestService] GetAssignmentCalendar(202104002, 2026-04-03~2026-04-03): 0개 항목
+[22:29:12] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:29:12] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:29:12] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:29:12] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:29:12] [AnalysisRequestService] GetAssignmentCalendar(202202011, 2026-04-03~2026-04-03): 0개 항목
+[22:29:13] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:29:13] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:29:13] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:29:13] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:29:13] [AnalysisRequestService] GetAssignmentCalendar(202301126, 2026-04-03~2026-04-03): 0개 항목
+[22:29:14] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:29:14] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:29:14] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:29:14] [AnalysisRequestService] GetAssignmentCalendar(202311016, 2026-04-03~2026-04-03): 0개 항목
+[22:42:46] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:42:46] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[22:43:08] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-04-03): 0개 할당
+[22:43:33] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:43:33] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:43:33] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:43:33] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:43:33] [AnalysisRequestService] GetAssignmentCalendar(202104002, 2026-04-03~2026-04-03): 0개 항목
+[22:43:33] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:43:33] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:43:33] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:43:33] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:43:33] [AnalysisRequestService] GetAssignmentCalendar(202202011, 2026-04-03~2026-04-03): 0개 항목
+[22:43:34] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:43:34] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:43:34] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:43:34] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:43:34] [AnalysisRequestService] GetAssignmentCalendar(202204016, 2026-04-03~2026-04-03): 0개 항목
+[22:43:35] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:43:35] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:43:35] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:43:35] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:43:35] [AnalysisRequestService] GetAssignmentCalendar(202301126, 2026-04-03~2026-04-03): 0개 항목
+[22:43:35] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:43:35] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:43:35] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:43:35] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:43:35] [AnalysisRequestService] GetAssignmentCalendar(202309008, 2026-04-03~2026-04-03): 0개 항목
+[22:43:36] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:43:36] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:43:36] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:43:36] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:43:36] [AnalysisRequestService] GetAssignmentCalendar(202311039, 2026-04-03~2026-04-03): 0개 항목
+[22:43:37] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:43:37] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:43:37] [AnalysisRequestService] GetShortNames: 67개 로드
+[22:43:37] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:43:37] [AnalysisRequestService] GetAssignmentCalendar(202500323, 2026-04-03~2026-04-03): 0개 항목
+[22:43:38] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:43:38] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:43:38] [AnalysisRequestService] GetAssignmentCalendar(12345, 2026-04-03~2026-04-03): 0개 항목
+[23:17:04] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:17:04] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[23:20:02] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:20:02] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[23:20:20] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:20:20] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[23:21:30] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:21:30] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:21:30] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:21:30] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:21:30] [AnalysisRequestService] GetAssignmentCalendar(201101234, 2026-04-03~2026-04-03): 0개 항목
+[23:22:21] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:22:21] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:22:21] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:22:21] [AnalysisRequestService] GetAssignmentCalendar(202303008, 2026-04-03~2026-04-03): 0개 항목
+[23:22:21] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:22:21] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:22:21] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:22:21] [AnalysisRequestService] GetAssignmentCalendar(202311016, 2026-04-03~2026-04-03): 0개 항목
+[23:22:22] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:22:22] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:22:22] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:22:22] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:22:22] [AnalysisRequestService] GetAssignmentCalendar(202311039, 2026-04-03~2026-04-03): 0개 항목
+[23:22:22] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:22:22] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:22:22] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:22:22] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:22:22] [AnalysisRequestService] GetAssignmentCalendar(202500340, 2026-04-03~2026-04-03): 0개 항목
+[23:22:23] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:22:23] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:22:23] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:22:23] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:22:23] [AnalysisRequestService] GetAssignmentCalendar(202500323, 2026-04-03~2026-04-03): 0개 항목
+[23:22:24] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:22:24] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:22:24] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:22:24] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:22:24] [AnalysisRequestService] GetAssignmentCalendar(202311039, 2026-04-03~2026-04-03): 0개 항목
+[23:22:24] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:22:24] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:22:24] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:22:24] [AnalysisRequestService] GetAssignmentCalendar(202311016, 2026-04-03~2026-04-03): 0개 항목
+[23:22:24] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:22:24] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:22:24] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:22:25] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:22:25] [AnalysisRequestService] GetAssignmentCalendar(202309008, 2026-04-03~2026-04-03): 0개 항목
+[23:22:25] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:22:25] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:22:25] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:22:25] [AnalysisRequestService] GetAssignmentCalendar(202303008, 2026-04-03~2026-04-03): 0개 항목
+[23:23:28] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:23:28] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:23:28] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:23:28] [AnalysisRequestService] GetAssignmentCalendar(201000308, 2026-04-03~2026-04-03): 0개 항목
+[23:23:31] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:23:31] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:23:31] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:23:31] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:23:31] [AnalysisRequestService] GetAssignmentCalendar(201101234, 2026-04-03~2026-04-03): 0개 항목
+[23:23:50] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:23:50] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:23:50] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:23:50] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:23:50] [AnalysisRequestService] GetAssignmentCalendar(202104002, 2026-04-03~2026-04-03): 0개 항목
+[23:23:51] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:23:51] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:23:51] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:24:06] [AnalysisRequestService] GetAssignmentsForAgent(202104002/방찬미, 2026-04-03): 0개 할당
+[23:33:36] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:33:36] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[23:33:51] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:33:51] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:33:51] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:33:51] [AnalysisRequestService] GetAssignmentCalendar(202106024, 2026-04-03~2026-04-03): 0개 항목
+[23:33:51] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:33:51] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:33:51] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:33:51] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:33:51] [AnalysisRequestService] GetAssignmentCalendar(202202011, 2026-04-03~2026-04-03): 0개 항목
+[23:33:52] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:33:52] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:33:52] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:33:52] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:33:52] [AnalysisRequestService] GetAssignmentCalendar(202301126, 2026-04-03~2026-04-03): 0개 항목
+[23:33:52] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:33:52] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:33:52] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:33:52] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:33:52] [AnalysisRequestService] GetAssignmentCalendar(202309008, 2026-04-03~2026-04-03): 0개 항목
+[23:33:53] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:33:53] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:33:53] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:33:53] [AnalysisRequestService] GetAssignmentCalendar(202311016, 2026-04-03~2026-04-03): 0개 항목
+[23:36:05] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:36:05] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:36:05] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:36:05] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:36:05] [AnalysisRequestService] GetAssignmentCalendar(202204016, 2026-04-03~2026-04-03): 0개 항목
+[23:36:06] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:36:06] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:36:06] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:36:06] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:36:06] [AnalysisRequestService] GetAssignmentCalendar(202301126, 2026-04-03~2026-04-03): 0개 항목
+[23:39:58] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:39:58] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:39:58] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:39:58] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:39:58] [AnalysisRequestService] GetAssignmentCalendar(202500323, 2026-04-03~2026-04-03): 0개 항목
+[23:42:53] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:42:53] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[23:44:59] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:44:59] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:44:59] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:44:59] [AnalysisRequestService] GetAssignmentCalendar(202311016, 2026-04-03~2026-04-03): 0개 항목
+[23:45:00] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:45:00] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:45:00] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:45:00] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:45:00] [AnalysisRequestService] GetAssignmentCalendar(202204016, 2026-04-03~2026-04-03): 0개 항목
+[23:45:01] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:45:01] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:45:01] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:45:01] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:45:01] [AnalysisRequestService] GetAssignmentCalendar(202202011, 2026-04-03~2026-04-03): 0개 항목
+[23:45:02] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:45:02] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:45:02] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:45:02] [AnalysisRequestService] GetAssignmentCalendar(202106024, 2026-04-03~2026-04-03): 0개 항목
+[23:45:03] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:45:03] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:45:03] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:45:03] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:45:03] [AnalysisRequestService] GetAssignmentCalendar(201101234, 2026-04-03~2026-04-03): 0개 항목
+[23:45:03] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:45:03] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:45:03] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:45:03] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:45:03] [AnalysisRequestService] GetAssignmentCalendar(202202011, 2026-04-03~2026-04-03): 0개 항목
+[23:45:04] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:45:04] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:45:04] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:45:04] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:45:04] [AnalysisRequestService] GetAssignmentCalendar(202309008, 2026-04-03~2026-04-03): 0개 항목
+[23:45:04] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:45:04] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:45:04] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:45:04] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:45:04] [AnalysisRequestService] GetAssignmentCalendar(202311039, 2026-04-03~2026-04-03): 0개 항목
+[23:48:57] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:48:57] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[23:49:09] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:49:09] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:49:09] [AnalysisRequestService] GetShortNames: 67개 로드
+[23:49:09] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:49:09] [AnalysisRequestService] GetAssignmentCalendar(201101234, 2026-04-03~2026-04-03): 0개 항목
+[23:52:07] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:52:07] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[23:55:06] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:55:06] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[23:57:21] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[23:57:21] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[00:02:37] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:02:37] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[00:03:39] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:03:39] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:03:39] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:03:39] [AnalysisRequestService] GetAssignmentCalendar(202106024, 2026-04-04~2026-04-04): 0개 항목
+[00:06:31] QuotationHistoryPanel 초기화 완료
+[00:06:31] LoadData() 시작
+[00:06:31] 견적 발행건수=933
+[00:06:31] LoadData() 완료 — 루트노드=6
+[00:06:36] QuotationHistoryPanel 초기화 완료
+[00:06:36] LoadData() 시작
+[00:06:36] 견적 발행건수=933
+[00:06:36] LoadData() 완료 — 루트노드=6
+[00:07:37] 견적 선택: DL DL케미칼 1분기 정기시료 [20260226-094137]
+[00:07:38] 견적 선택: 포스코리튬 2/27 포스코리튬솔루션 1분기 (6EA) [20260225-141237]
+[00:07:39] 견적 선택: 한세 26년 2월 정기시료(1EA) 견적서(26.02.25) [20260223-170021]
+[00:07:39] 견적 선택: 롯데첨단소재 TOC 의뢰시료(25.12.22, 26.01.13, 26.01.27 총 138EA) 견적서 [20260223-093731]
+[00:07:40] 견적 선택: 적량 LG화학-적량 26년 1분기(8EA)+생태독성 참고측정(3EA) [20260220-153528]
+[00:07:41] 견적 선택: 적량 적량단지 정기시료 5종 (01/02, 01/19, 02/06, 02/20 총 4EA) [20260220-1553220]
+[00:07:41] 견적 선택: 적량 26.02.20 적량 5종 [20260220-151625]
+[00:07:42] 견적 선택: 롯데첨단소재 2026년 1분기(7EA_26.02.20) 견적서 [20260219-161345]
+[00:07:42] 견적 선택: 금호 금호미쓰이화학(주) 접수시료(260210, 1EA, 54종) [20260210-154936]
+[00:15:18] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:15:18] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[00:15:28] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:15:28] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:15:28] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:15:28] [AnalysisRequestService] GetAssignmentCalendar(201000308, 2026-04-04~2026-04-04): 0개 항목
+[00:15:43] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:15:43] [AnalysisRequestService] AddAssignment 오류: Column '항목명' specified twice
+[00:15:43] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:16:13] [AnalysisRequestService] ClearAnalyteFromAgent: 201000308(정승욱) 항목='온도' from=2026-04-04
+[00:17:19] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:17:19] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:17:19] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:17:19] [AnalysisRequestService] GetAssignmentCalendar(202106024, 2026-04-04~2026-04-04): 0개 항목
+[00:17:58] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:17:58] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:17:58] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:17:58] [AnalysisRequestService] GetAssignmentCalendar(201000308, 2026-04-04~2026-04-04): 0개 항목
+[00:17:59] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:17:59] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:17:59] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:17:59] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:17:59] [AnalysisRequestService] GetAssignmentCalendar(201101234, 2026-04-04~2026-04-04): 0개 항목
+[00:18:00] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:18:00] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:00] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:18:00] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:00] [AnalysisRequestService] GetAssignmentCalendar(202104002, 2026-04-04~2026-04-04): 0개 항목
+[00:18:02] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:02] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:18:02] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:02] [AnalysisRequestService] GetAssignmentCalendar(202106024, 2026-04-04~2026-04-04): 0개 항목
+[00:18:13] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:18:13] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:13] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:18:13] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:13] [AnalysisRequestService] GetAssignmentCalendar(202202011, 2026-04-04~2026-04-04): 0개 항목
+[00:18:15] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:18:15] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:15] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:18:15] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:15] [AnalysisRequestService] GetAssignmentCalendar(202204016, 2026-04-04~2026-04-04): 0개 항목
+[00:18:16] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:18:16] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:16] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:18:16] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:16] [AnalysisRequestService] GetAssignmentCalendar(202301126, 2026-04-04~2026-04-04): 0개 항목
+[00:18:17] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:18:17] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:17] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:18:17] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:17] [AnalysisRequestService] GetAssignmentCalendar(202204016, 2026-04-04~2026-04-04): 0개 항목
+[00:18:18] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:18:18] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:18] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:18:18] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:18] [AnalysisRequestService] GetAssignmentCalendar(202301126, 2026-04-04~2026-04-04): 0개 항목
+[00:18:20] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:20] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:18:20] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:20] [AnalysisRequestService] GetAssignmentCalendar(202303008, 2026-04-04~2026-04-04): 0개 항목
+[00:18:20] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:18:20] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:20] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:18:20] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:20] [AnalysisRequestService] GetAssignmentCalendar(202309008, 2026-04-04~2026-04-04): 0개 항목
+[00:18:22] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:22] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:18:22] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:22] [AnalysisRequestService] GetAssignmentCalendar(202303008, 2026-04-04~2026-04-04): 0개 항목
+[00:18:23] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:18:23] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:23] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:18:23] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:23] [AnalysisRequestService] GetAssignmentCalendar(202309008, 2026-04-04~2026-04-04): 0개 항목
+[00:18:23] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:18:23] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:23] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:18:23] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:23] [AnalysisRequestService] GetAssignmentCalendar(202309008, 2026-04-04~2026-04-04): 0개 항목
+[00:18:24] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:18:24] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:24] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:18:24] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:24] [AnalysisRequestService] GetAssignmentCalendar(202311039, 2026-04-04~2026-04-04): 0개 항목
+[00:18:26] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:18:26] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:26] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:18:26] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:26] [AnalysisRequestService] GetAssignmentCalendar(202500340, 2026-04-04~2026-04-04): 0개 항목
+[00:18:27] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:18:27] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:27] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:18:27] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:27] [AnalysisRequestService] GetAssignmentCalendar(202500323, 2026-04-04~2026-04-04): 0개 항목
+[00:18:28] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:18:28] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:28] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:18:28] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:28] [AnalysisRequestService] GetAssignmentCalendar(202500323, 2026-04-04~2026-04-04): 0개 항목
+[00:18:29] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:29] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:29] [AnalysisRequestService] GetAssignmentCalendar(12345, 2026-04-04~2026-04-04): 0개 항목
+[00:18:30] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:18:30] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:30] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:18:30] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:30] [AnalysisRequestService] GetAssignmentCalendar(202500323, 2026-04-04~2026-04-04): 0개 항목
+[00:18:46] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:18:46] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[00:23:17] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:23:17] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[00:24:01] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:24:01] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[00:24:54] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:24:54] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[00:25:16] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:25:16] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:25:16] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:25:16] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:25:16] [AnalysisRequestService] GetAssignmentCalendar(202202011, 2026-04-04~2026-04-04): 0개 항목
+[00:25:20] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:25:20] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:25:20] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:25:20] [AnalysisRequestService] GetAssignmentCalendar(202303008, 2026-04-04~2026-04-04): 0개 항목
+[00:25:38] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:25:38] [AnalysisRequestService] GetAssignmentChartData(2026-03-27~2026-05-05): 0개 구간
+[00:26:00] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:26:00] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[00:26:50] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:26:50] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[00:28:46] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:28:46] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[00:29:46] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:29:46] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[00:30:01] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:30:01] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:30:01] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:30:01] [AnalysisRequestService] GetAssignmentCalendar(201000308, 2026-04-04~2026-04-04): 0개 항목
+[00:36:51] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:36:51] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[00:39:28] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:39:28] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[00:41:28] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:41:28] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[00:43:47] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:43:47] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[00:44:10] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:44:10] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:44:10] [AnalysisRequestService] GetShortNames: 67개 로드
+[00:44:10] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:44:10] [AnalysisRequestService] GetAssignmentCalendar(202204016, 2026-04-04~2026-04-04): 0개 항목
+[00:52:28] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:52:28] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[00:54:49] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:54:49] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[00:57:17] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[00:57:17] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[01:00:02] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:00:02] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[01:02:34] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:02:34] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[01:03:38] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:03:38] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[01:05:15] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:05:15] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[01:06:45] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:06:45] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[01:08:08] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:08:08] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[01:10:04] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:10:04] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[01:12:46] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:12:46] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[01:15:03] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:15:03] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[01:18:01] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:18:01] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[01:24:10] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:24:10] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[01:25:18] [AnalysisRequestService] GetManagersByDate(2026-02-27): 70개 담당자 로드
+[01:25:18] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:19] [AnalysisRequestService] GetManagersByDate(2026-02-27): 70개 담당자 로드
+[01:25:19] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:20] [AnalysisRequestService] GetManagersByDate(2026-02-27): 70개 담당자 로드
+[01:25:20] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:21] [AnalysisRequestService] GetManagersByDate(2026-02-27): 70개 담당자 로드
+[01:25:21] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:21] [AnalysisRequestService] GetManagersByDate(2026-02-27): 70개 담당자 로드
+[01:25:21] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:22] [AnalysisRequestService] GetManagersByDate(2026-02-26): 70개 담당자 로드
+[01:25:22] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:23] [AnalysisRequestService] GetManagersByDate(2026-02-26): 70개 담당자 로드
+[01:25:23] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:24] [AnalysisRequestService] GetManagersByDate(2026-02-26): 70개 담당자 로드
+[01:25:24] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:24] [AnalysisRequestService] GetManagersByDate(2026-02-26): 70개 담당자 로드
+[01:25:24] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:25] [AnalysisRequestService] GetManagersByDate(2026-02-25): 70개 담당자 로드
+[01:25:25] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:26] [AnalysisRequestService] GetManagersByDate(2026-02-23): 70개 담당자 로드
+[01:25:26] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:27] [AnalysisRequestService] GetManagersByDate(2026-02-20): 70개 담당자 로드
+[01:25:27] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:27] [AnalysisRequestService] GetManagersByDate(2026-02-20): 70개 담당자 로드
+[01:25:27] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:28] [AnalysisRequestService] GetManagersByDate(2026-02-20): 70개 담당자 로드
+[01:25:28] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:29] [AnalysisRequestService] GetManagersByDate(2026-02-20): 70개 담당자 로드
+[01:25:29] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:30] [AnalysisRequestService] GetManagersByDate(2026-02-10): 70개 담당자 로드
+[01:25:30] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:31] [AnalysisRequestService] GetManagersByDate(2026-02-10): 70개 담당자 로드
+[01:25:31] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:32] [AnalysisRequestService] GetManagersByDate(2026-02-10): 70개 담당자 로드
+[01:25:32] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:33] [AnalysisRequestService] GetManagersByDate(2026-02-10): 70개 담당자 로드
+[01:25:33] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:34] [AnalysisRequestService] GetManagersByDate(2026-02-10): 70개 담당자 로드
+[01:25:34] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:37] [AnalysisRequestService] GetManagersByDate(2026-02-10): 70개 담당자 로드
+[01:25:37] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:38] [AnalysisRequestService] GetManagersByDate(2026-02-10): 70개 담당자 로드
+[01:25:38] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:38] [AnalysisRequestService] GetManagersByDate(2026-02-10): 70개 담당자 로드
+[01:25:38] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:40] [AnalysisRequestService] GetManagersByDate(2026-02-10): 70개 담당자 로드
+[01:25:40] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:40] [AnalysisRequestService] GetManagersByDate(2026-02-10): 70개 담당자 로드
+[01:25:40] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:41] [AnalysisRequestService] GetManagersByDate(2026-02-10): 70개 담당자 로드
+[01:25:41] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:42] [AnalysisRequestService] GetManagersByDate(2026-02-10): 70개 담당자 로드
+[01:25:42] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:43] [AnalysisRequestService] GetManagersByDate(2026-02-10): 70개 담당자 로드
+[01:25:43] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:43] [AnalysisRequestService] GetManagersByDate(2026-02-10): 70개 담당자 로드
+[01:25:43] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:43] [AnalysisRequestService] GetManagersByDate(2026-02-10): 70개 담당자 로드
+[01:25:43] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:44] [AnalysisRequestService] GetManagersByDate(2026-02-10): 70개 담당자 로드
+[01:25:44] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:45] [AnalysisRequestService] GetManagersByDate(2026-02-10): 70개 담당자 로드
+[01:25:45] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:45] [AnalysisRequestService] GetManagersByDate(2026-02-10): 70개 담당자 로드
+[01:25:45] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:46] [AnalysisRequestService] GetManagersByDate(2026-02-10): 70개 담당자 로드
+[01:25:46] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:46] [AnalysisRequestService] GetManagersByDate(2026-02-10): 70개 담당자 로드
+[01:25:46] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:47] [AnalysisRequestService] GetManagersByDate(2026-02-10): 70개 담당자 로드
+[01:25:47] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:48] [AnalysisRequestService] GetManagersByDate(2026-02-09): 70개 담당자 로드
+[01:25:48] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:49] [AnalysisRequestService] GetManagersByDate(2026-02-09): 70개 담당자 로드
+[01:25:49] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:50] [AnalysisRequestService] GetManagersByDate(2026-02-05): 70개 담당자 로드
+[01:25:50] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:58] [AnalysisRequestService] GetManagersByDate(2025-12-30): 70개 담당자 로드
+[01:25:58] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:25:58] [AnalysisRequestService] GetManagersByDate(2025-12-30): 70개 담당자 로드
+[01:25:58] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:26:00] [AnalysisRequestService] GetManagersByDate(2025-12-30): 70개 담당자 로드
+[01:26:00] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:26:01] [AnalysisRequestService] GetManagersByDate(2025-12-30): 70개 담당자 로드
+[01:26:01] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:26:02] [AnalysisRequestService] GetManagersByDate(2025-12-30): 70개 담당자 로드
+[01:26:02] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:26:04] [AnalysisRequestService] GetManagersByDate(2025-12-30): 70개 담당자 로드
+[01:26:04] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:26:05] [AnalysisRequestService] GetManagersByDate(2025-12-29): 70개 담당자 로드
+[01:26:05] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:26:06] [AnalysisRequestService] GetManagersByDate(2025-12-29): 70개 담당자 로드
+[01:26:06] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:26:07] [AnalysisRequestService] GetManagersByDate(2025-12-24): 70개 담당자 로드
+[01:26:07] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:26:08] [AnalysisRequestService] GetManagersByDate(2025-12-24): 70개 담당자 로드
+[01:26:08] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:26:09] [AnalysisRequestService] GetManagersByDate(2025-12-23): 70개 담당자 로드
+[01:26:09] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:26:10] [AnalysisRequestService] GetManagersByDate(2025-12-23): 70개 담당자 로드
+[01:26:10] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:26:11] [AnalysisRequestService] GetManagersByDate(2025-12-23): 70개 담당자 로드
+[01:26:11] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:26:12] [AnalysisRequestService] GetManagersByDate(2025-12-19): 70개 담당자 로드
+[01:26:12] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:26:13] [AnalysisRequestService] GetManagersByDate(2025-12-16): 70개 담당자 로드
+[01:26:13] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:26:14] [AnalysisRequestService] GetManagersByDate(2025-12-11): 70개 담당자 로드
+[01:26:14] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:26:16] [AnalysisRequestService] GetManagersByDate(2025-12-10): 70개 담당자 로드
+[01:26:16] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:26:17] [AnalysisRequestService] GetManagersByDate(2025-12-09): 70개 담당자 로드
+[01:26:17] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:26:17] [AnalysisRequestService] GetManagersByDate(2025-12-05): 70개 담당자 로드
+[01:26:17] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:26:18] [AnalysisRequestService] GetManagersByDate(2025-12-05): 70개 담당자 로드
+[01:26:18] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:26:19] [AnalysisRequestService] GetManagersByDate(2025-12-05): 70개 담당자 로드
+[01:26:19] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:26:20] [AnalysisRequestService] GetManagersByDate(2025-12-05): 70개 담당자 로드
+[01:26:20] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:26:21] [AnalysisRequestService] GetManagersByDate(2025-12-04): 70개 담당자 로드
+[01:26:21] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:26:22] [AnalysisRequestService] GetManagersByDate(2025-12-02): 70개 담당자 로드
+[01:26:22] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:26:23] [AnalysisRequestService] GetManagersByDate(2025-12-02): 70개 담당자 로드
+[01:26:23] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:26:25] [AnalysisRequestService] GetManagersByDate(2025-12-02): 70개 담당자 로드
+[01:26:25] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:28:06] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:28:06] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:28:06] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:28:06] [AnalysisRequestService] GetAssignmentCalendar(201000308, 2026-04-04~2026-04-04): 0개 항목
+[01:28:07] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:28:07] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:28:07] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:28:07] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:28:07] [AnalysisRequestService] GetAssignmentCalendar(202104002, 2026-04-04~2026-04-04): 0개 항목
+[01:28:08] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:28:08] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:28:08] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:28:08] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:28:08] [AnalysisRequestService] GetAssignmentCalendar(202104002, 2026-04-04~2026-04-04): 0개 항목
+[01:28:08] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:28:08] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:28:08] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:28:08] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:28:08] [AnalysisRequestService] GetAssignmentCalendar(202202011, 2026-04-04~2026-04-04): 0개 항목
+[01:28:09] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:28:09] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:28:09] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:28:09] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:28:09] [AnalysisRequestService] GetAssignmentCalendar(202204016, 2026-04-04~2026-04-04): 0개 항목
+[01:28:09] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:28:09] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:28:09] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:28:09] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:28:09] [AnalysisRequestService] GetAssignmentCalendar(202301126, 2026-04-04~2026-04-04): 0개 항목
+[01:28:10] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:28:10] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:28:10] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:28:10] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:28:10] [AnalysisRequestService] GetAssignmentCalendar(202309008, 2026-04-04~2026-04-04): 0개 항목
+[01:28:12] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:28:12] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:28:12] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:28:12] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:28:12] [AnalysisRequestService] GetAssignmentCalendar(202311039, 2026-04-04~2026-04-04): 0개 항목
+[01:28:12] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:28:12] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:28:12] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:28:12] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:28:12] [AnalysisRequestService] GetAssignmentCalendar(202500340, 2026-04-04~2026-04-04): 0개 항목
+[01:28:13] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:28:13] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:28:13] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:28:13] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:28:13] [AnalysisRequestService] GetAssignmentCalendar(202500340, 2026-04-04~2026-04-04): 0개 항목
+[01:31:36] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:31:36] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:31:36] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:31:36] [AnalysisRequestService] GetAssignmentCalendar(201000308, 2026-04-04~2026-04-04): 0개 항목
+[01:32:09] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:32:09] [AnalysisRequestService] AddAssignment 오류: Column '항목명' specified twice
+[01:32:09] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:32:16] [AnalysisRequestService] ClearAnalyteFromAgent: 201000308(정승욱) 항목='온도' from=2026-04-04
+[01:39:57] [AnalysisRequestService] 완료: 3663건
+[01:39:57] [AnalysisRequestService] 완료: 3663건
+[01:41:31] [AnalysisRequestService] 완료: 3663건
+[01:41:34] [AnalysisRequestService] 완료: 3663건
+[01:42:00] [AnalysisRequestService] 완료: 3663건
+[01:42:01] [AnalysisRequestService] 완료: 3663건
+[01:42:09] [AnalysisRequestService] 완료: 3663건
+[01:42:16] [AnalysisRequestService] 완료: 3663건
+[01:42:23] [AnalysisRequestService] 완료: 3663건
+[01:42:24] [AnalysisRequestService] 완료: 3663건
+[01:42:26] [AnalysisRequestService] 완료: 3663건
+[01:42:28] [AnalysisRequestService] 완료: 3663건
+[01:42:30] [AnalysisRequestService] 완료: 3663건
+[01:42:36] [AnalysisRequestService] 완료: 3663건
+[01:42:36] [AnalysisRequestService] 완료: 3663건
+[01:42:37] [AnalysisRequestService] 완료: 3663건
+[01:42:37] [AnalysisRequestService] 완료: 3663건
+[01:42:37] [AnalysisRequestService] 완료: 3663건
+[01:42:38] [AnalysisRequestService] 완료: 3663건
+[01:42:38] [AnalysisRequestService] 완료: 3663건
+[01:42:39] [AnalysisRequestService] 완료: 3663건
+[01:42:39] [AnalysisRequestService] 완료: 3663건
+[01:42:39] [AnalysisRequestService] 완료: 3663건
+[01:42:39] [AnalysisRequestService] 완료: 3663건
+[01:42:40] [AnalysisRequestService] 완료: 3663건
+[01:42:40] [AnalysisRequestService] 완료: 3663건
+[01:42:40] [AnalysisRequestService] 완료: 3663건
+[01:42:40] [AnalysisRequestService] 완료: 3663건
+[01:42:41] [AnalysisRequestService] 완료: 3663건
+[01:42:41] [AnalysisRequestService] 완료: 3663건
+[01:42:42] [AnalysisRequestService] 완료: 3663건
+[01:42:42] [AnalysisRequestService] 완료: 3663건
+[01:42:42] [AnalysisRequestService] 완료: 3663건
+[01:42:42] [AnalysisRequestService] 완료: 3663건
+[01:42:42] [AnalysisRequestService] 완료: 3663건
+[01:42:42] [AnalysisRequestService] 완료: 3663건
+[01:42:43] [AnalysisRequestService] 완료: 3663건
+[01:42:44] [AnalysisRequestService] 완료: 3663건
+[01:42:45] [AnalysisRequestService] 완료: 3663건
+[01:42:45] [AnalysisRequestService] 완료: 3663건
+[01:42:45] [AnalysisRequestService] 완료: 3663건
+[01:42:45] [AnalysisRequestService] 완료: 3663건
+[01:42:46] [AnalysisRequestService] 완료: 3663건
+[01:42:46] [AnalysisRequestService] 완료: 3663건
+[01:42:46] [AnalysisRequestService] 완료: 3663건
+[01:42:46] [AnalysisRequestService] 완료: 3663건
+[01:42:46] [AnalysisRequestService] 완료: 3663건
+[01:42:47] [AnalysisRequestService] 완료: 3663건
+[01:42:47] [AnalysisRequestService] 완료: 3663건
+[01:42:47] [AnalysisRequestService] 완료: 3663건
+[01:42:47] [AnalysisRequestService] 완료: 3663건
+[01:42:50] [AnalysisRequestService] 완료: 3663건
+[01:43:10] [AnalysisRequestService] 완료: 3663건
+[01:44:27] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:44:27] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[01:44:36] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:44:36] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:44:36] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:44:36] [AnalysisRequestService] GetAssignmentCalendar(201000308, 2026-04-04~2026-04-04): 0개 항목
+[01:44:37] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:44:37] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:44:37] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:44:37] [AnalysisRequestService] GetAssignmentCalendar(202106024, 2026-04-04~2026-04-04): 0개 항목
+[01:44:38] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:44:38] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:44:38] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:44:38] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:44:38] [AnalysisRequestService] GetAssignmentCalendar(202202011, 2026-04-04~2026-04-04): 0개 항목
+[01:44:38] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:44:38] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:44:38] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:44:38] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:44:38] [AnalysisRequestService] GetAssignmentCalendar(202202011, 2026-04-04~2026-04-04): 0개 항목
+[01:44:39] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:44:39] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:44:39] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:44:39] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:44:39] [AnalysisRequestService] GetAssignmentCalendar(202204016, 2026-04-04~2026-04-04): 0개 항목
+[01:44:40] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:44:40] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:44:40] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:44:40] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:44:40] [AnalysisRequestService] GetAssignmentCalendar(202301126, 2026-04-04~2026-04-04): 0개 항목
+[01:44:40] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:44:40] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:44:40] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:44:40] [AnalysisRequestService] GetAssignmentCalendar(202303008, 2026-04-04~2026-04-04): 0개 항목
+[01:44:41] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:44:41] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:44:41] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:44:41] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:44:41] [AnalysisRequestService] GetAssignmentCalendar(202309008, 2026-04-04~2026-04-04): 0개 항목
+[01:44:43] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:44:43] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:44:43] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:44:43] [AnalysisRequestService] GetAssignmentCalendar(202311016, 2026-04-04~2026-04-04): 0개 항목
+[01:44:43] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:44:44] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:44:44] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:44:44] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:44:44] [AnalysisRequestService] GetAssignmentCalendar(202311039, 2026-04-04~2026-04-04): 0개 항목
+[01:44:44] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:44:44] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:44:44] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:44:44] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:44:44] [AnalysisRequestService] GetAssignmentCalendar(202500340, 2026-04-04~2026-04-04): 0개 항목
+[01:44:45] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:44:45] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:44:45] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:44:45] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:44:45] [AnalysisRequestService] GetAssignmentCalendar(202500340, 2026-04-04~2026-04-04): 0개 항목
+[01:44:46] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:44:46] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:44:46] [AnalysisRequestService] GetShortNames: 67개 로드
+[01:44:46] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:44:46] [AnalysisRequestService] GetAssignmentCalendar(202500323, 2026-04-04~2026-04-04): 0개 항목
+[01:52:22] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:52:22] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[01:57:59] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[01:57:59] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[10:58:40] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[10:58:40] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[11:02:00] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-04-04): 0개 할당
+[11:14:22] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[11:14:22] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[11:14:26] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-04-04): 0개 할당
+[11:14:33] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[11:14:33] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2025-12-29): 0개 할당
+[11:19:32] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[11:19:32] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[11:19:35] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-04-04): 0개 할당
+[11:19:42] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-04-04): 0개 할당
+[11:32:38] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[11:32:38] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[11:32:44] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-04-04): 0개 할당
+[11:32:45] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-04-04): 0개 할당
+[11:32:52] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-04-04): 0개 할당
+[11:33:52] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[11:33:52] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[11:38:44] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[11:38:44] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[11:39:09] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-04-04): 0개 할당
+[11:42:16] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[11:42:16] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[11:42:18] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-04-04): 0개 할당
+[11:43:33] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[11:43:33] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[11:43:34] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-04-04): 0개 할당
+[11:45:14] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[11:45:14] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[11:49:37] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[11:49:37] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[11:51:42] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[11:51:42] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[11:53:44] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[11:53:44] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[11:53:51] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-04-04): 0개 할당
+[12:00:14] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[12:00:14] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[12:02:21] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[12:02:21] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[12:02:31] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-04-04): 0개 할당
+[12:04:25] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[12:04:25] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[12:04:26] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-04-04): 0개 할당
+[12:06:00] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[12:06:00] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[12:06:01] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-04-04): 0개 할당
+[12:09:37] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[12:09:37] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[12:09:39] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-04-04): 0개 할당
+[12:13:18] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[12:13:18] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[12:13:47] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-04-04): 0개 할당
+[12:16:28] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[12:16:28] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[12:16:29] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-04-04): 0개 할당
+[12:32:38] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[12:32:38] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[12:38:39] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[12:38:39] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[12:38:45] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-04-04): 0개 할당
+[13:00:30] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[13:00:30] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[13:00:32] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-04-04): 0개 할당
+[13:01:24] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[13:01:24] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[13:01:31] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-04-04): 0개 할당
+[13:07:24] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[13:07:24] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[13:07:32] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-04-04): 0개 할당
+[13:08:09] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[13:08:09] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[13:13:05] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[13:13:05] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[13:15:46] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[13:15:46] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[13:16:04] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-04-04): 0개 할당
+[13:16:08] [AnalysisRequestService] GetShortNames: 67개 로드
+[13:16:08] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[13:16:08] [AnalysisRequestService] GetShortNames: 67개 로드
+[13:16:08] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[13:16:08] [AnalysisRequestService] GetAssignmentCalendar(201101234, 2026-04-04~2026-04-04): 0개 항목
+[13:16:08] [AnalysisRequestService] GetShortNames: 67개 로드
+[13:16:08] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[13:16:08] [AnalysisRequestService] GetShortNames: 67개 로드
+[13:16:08] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[13:16:08] [AnalysisRequestService] GetAssignmentCalendar(201101234, 2026-04-04~2026-04-04): 0개 항목
+[13:16:09] [AnalysisRequestService] GetShortNames: 67개 로드
+[13:16:09] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[13:16:09] [AnalysisRequestService] GetShortNames: 67개 로드
+[13:16:09] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[13:16:09] [AnalysisRequestService] GetAssignmentCalendar(202104002, 2026-04-04~2026-04-04): 0개 항목
+[13:16:09] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[13:16:09] [AnalysisRequestService] GetShortNames: 67개 로드
+[13:16:09] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[13:16:09] [AnalysisRequestService] GetAssignmentCalendar(202106024, 2026-04-04~2026-04-04): 0개 항목
+[13:16:10] [AnalysisRequestService] GetShortNames: 67개 로드
+[13:16:10] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[13:16:10] [AnalysisRequestService] GetShortNames: 67개 로드
+[13:16:10] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[13:16:10] [AnalysisRequestService] GetAssignmentCalendar(202204016, 2026-04-04~2026-04-04): 0개 항목
+[13:16:11] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[13:16:11] [AnalysisRequestService] GetShortNames: 67개 로드
+[13:16:11] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[13:16:11] [AnalysisRequestService] GetAssignmentCalendar(202311016, 2026-04-04~2026-04-04): 0개 항목
+[13:16:11] [AnalysisRequestService] GetShortNames: 67개 로드
+[13:16:11] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[13:16:11] [AnalysisRequestService] GetShortNames: 67개 로드
+[13:16:11] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[13:16:11] [AnalysisRequestService] GetAssignmentCalendar(202311039, 2026-04-04~2026-04-04): 0개 항목
+[13:16:12] [AnalysisRequestService] GetShortNames: 67개 로드
+[13:16:12] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[13:16:12] [AnalysisRequestService] GetShortNames: 67개 로드
+[13:16:12] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[13:16:12] [AnalysisRequestService] GetAssignmentCalendar(202500323, 2026-04-04~2026-04-04): 0개 항목
+[13:16:46] QuotationHistoryPanel 초기화 완료
+[13:16:46] LoadData() 시작
+[13:16:46] 견적 발행건수=933
+[13:16:46] LoadData() 완료 — 루트노드=6
+[13:16:49] 견적 선택: 국도화학 3/4 국도화학(주) 익산지점 3EA 견적서 [20260303-155028]
+[13:16:49] 견적 선택: 보임 (주)보임열병합발전 2026년 견적서 [20260303-113022]
+[13:17:13] [AnalysisRequestService] GetManagersByDate(2026-02-27): 70개 담당자 로드
+[13:17:13] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[13:17:52] [AnalysisRequestService] 완료: 3663건
+[13:17:52] [AnalysisRequestService] 완료: 3663건
+[13:17:59] [AnalysisRequestService] 완료: 3663건
+[13:18:01] [AnalysisRequestService] 완료: 3663건
+[13:18:04] [AnalysisRequestService] 완료: 3663건
+[13:18:11] [AnalysisRequestService] UpdateSamplers: rowId=1 시료채취자-1='정승욱, 박은지'
+[13:18:11] [AnalysisRequestService] 완료: 3663건
+[13:18:14] [AnalysisRequestService] 완료: 3663건
+[13:18:15] [AnalysisRequestService] 완료: 3663건
+[21:28:35] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-04-04): 0개 할당
+[21:34:31] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:34:31] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[21:36:56] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:36:56] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[21:39:34] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:39:34] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[21:43:59] [AnalysisRequestService] GetAssignmentsForAgent(201000308/정승욱, 2026-04-04): 0개 할당
+[21:44:17] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:44:17] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:44:17] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:44:17] [AnalysisRequestService] GetAssignmentCalendar(201000308, 2026-04-04~2026-04-04): 0개 항목
+[21:44:18] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:44:18] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:44:18] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:44:18] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:44:18] [AnalysisRequestService] GetAssignmentCalendar(201101234, 2026-04-04~2026-04-04): 0개 항목
+[21:44:19] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:44:19] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:44:19] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:44:19] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:44:19] [AnalysisRequestService] GetAssignmentCalendar(202104002, 2026-04-04~2026-04-04): 0개 항목
+[21:44:21] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:44:22] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:44:22] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:44:22] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:44:22] [AnalysisRequestService] GetAssignmentCalendar(202202011, 2026-04-04~2026-04-04): 0개 항목
+[21:44:22] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:44:22] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:44:22] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:44:22] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:44:22] [AnalysisRequestService] GetAssignmentCalendar(202204016, 2026-04-04~2026-04-04): 0개 항목
+[21:44:23] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:44:23] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:44:23] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:44:23] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:44:24] [AnalysisRequestService] GetAssignmentCalendar(202204016, 2026-04-04~2026-04-04): 0개 항목
+[21:44:24] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:44:24] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:44:24] [AnalysisRequestService] GetShortNames: 67개 로드
+[21:44:24] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:44:24] [AnalysisRequestService] GetAssignmentCalendar(202301126, 2026-04-04~2026-04-04): 0개 항목
+[21:59:43] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[21:59:43] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[22:04:30] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:04:30] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[22:04:44] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:04:44] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[22:04:57] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:04:57] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[22:06:21] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:06:21] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[22:08:37] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:08:37] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[22:12:54] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:12:54] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[22:15:16] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:15:16] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[22:16:21] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:16:21] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[22:19:09] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:19:09] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[22:21:23] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:21:23] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[22:22:54] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:22:54] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[22:25:16] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:25:16] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[22:25:49] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:25:49] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[22:28:50] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:28:50] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[22:30:38] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[22:30:38] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[06:14:51] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:14:51] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[06:21:34] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:21:34] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[06:30:26] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:30:26] [AnalysisRequestService] GetShortNames: 67개 로드
+[06:30:26] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:30:26] [AnalysisRequestService] GetAssignmentCalendar(202106024, 2026-04-05~2026-04-05): 0개 항목
+[06:30:26] [AnalysisRequestService] GetShortNames: 67개 로드
+[06:30:26] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:30:26] [AnalysisRequestService] GetShortNames: 67개 로드
+[06:30:26] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:30:26] [AnalysisRequestService] GetAssignmentCalendar(202202011, 2026-04-05~2026-04-05): 0개 항목
+[06:30:27] [AnalysisRequestService] GetShortNames: 67개 로드
+[06:30:27] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:30:27] [AnalysisRequestService] GetShortNames: 67개 로드
+[06:30:27] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:30:27] [AnalysisRequestService] GetAssignmentCalendar(202204016, 2026-04-05~2026-04-05): 0개 항목
+[06:30:28] [AnalysisRequestService] GetShortNames: 67개 로드
+[06:30:28] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:30:28] [AnalysisRequestService] GetShortNames: 67개 로드
+[06:30:28] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:30:28] [AnalysisRequestService] GetAssignmentCalendar(202301126, 2026-04-05~2026-04-05): 0개 항목
+[06:30:29] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:30:29] [AnalysisRequestService] GetShortNames: 67개 로드
+[06:30:29] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:30:29] [AnalysisRequestService] GetAssignmentCalendar(202303008, 2026-04-05~2026-04-05): 0개 항목
+[06:30:30] [AnalysisRequestService] GetShortNames: 67개 로드
+[06:30:30] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:30:30] [AnalysisRequestService] GetShortNames: 67개 로드
+[06:30:30] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:30:30] [AnalysisRequestService] GetAssignmentCalendar(202309008, 2026-04-05~2026-04-05): 0개 항목
+[06:31:06] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:31:06] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[06:31:23] [AnalysisRequestService] GetShortNames: 67개 로드
+[06:31:23] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:31:23] [AnalysisRequestService] GetShortNames: 67개 로드
+[06:31:23] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:31:23] [AnalysisRequestService] GetAssignmentCalendar(201101234, 2026-04-05~2026-04-05): 0개 항목
+[06:31:24] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:31:24] [AnalysisRequestService] GetShortNames: 67개 로드
+[06:31:24] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:31:24] [AnalysisRequestService] GetAssignmentCalendar(202106024, 2026-04-05~2026-04-05): 0개 항목
+[06:31:25] [AnalysisRequestService] GetShortNames: 67개 로드
+[06:31:25] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:31:25] [AnalysisRequestService] GetShortNames: 67개 로드
+[06:31:25] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:31:25] [AnalysisRequestService] GetAssignmentCalendar(202202011, 2026-04-05~2026-04-05): 0개 항목
+[06:31:26] [AnalysisRequestService] GetShortNames: 67개 로드
+[06:31:26] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:31:26] [AnalysisRequestService] GetShortNames: 67개 로드
+[06:31:26] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:31:26] [AnalysisRequestService] GetAssignmentCalendar(202204016, 2026-04-05~2026-04-05): 0개 항목
+[06:31:26] [AnalysisRequestService] GetShortNames: 67개 로드
+[06:31:26] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:31:26] [AnalysisRequestService] GetShortNames: 67개 로드
+[06:31:26] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:31:26] [AnalysisRequestService] GetAssignmentCalendar(202301126, 2026-04-05~2026-04-05): 0개 항목
+[06:31:33] [AnalysisRequestService] GetShortNames: 67개 로드
+[06:31:33] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:31:33] [AnalysisRequestService] GetShortNames: 67개 로드
+[06:31:33] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:31:33] [AnalysisRequestService] GetAssignmentCalendar(202202011, 2026-04-05~2026-04-05): 0개 항목
+[06:31:33] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:31:33] [AnalysisRequestService] GetShortNames: 67개 로드
+[06:31:33] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:31:33] [AnalysisRequestService] GetAssignmentCalendar(202303008, 2026-04-05~2026-04-05): 0개 항목
+[06:31:34] [AnalysisRequestService] GetShortNames: 67개 로드
+[06:31:34] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:31:34] [AnalysisRequestService] GetShortNames: 67개 로드
+[06:31:34] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:31:34] [AnalysisRequestService] GetAssignmentCalendar(202500340, 2026-04-05~2026-04-05): 0개 항목
+[06:32:02] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:32:02] [AnalysisRequestService] GetShortNames: 67개 로드
+[06:32:02] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:32:02] [AnalysisRequestService] GetAssignmentCalendar(202106024, 2026-04-05~2026-04-05): 0개 항목
+[06:32:03] [AnalysisRequestService] GetShortNames: 67개 로드
+[06:32:03] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:32:03] [AnalysisRequestService] GetShortNames: 67개 로드
+[06:32:03] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:32:03] [AnalysisRequestService] GetAssignmentCalendar(202301126, 2026-04-05~2026-04-05): 0개 항목
+[06:32:03] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:32:03] [AnalysisRequestService] GetShortNames: 67개 로드
+[06:32:03] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:32:03] [AnalysisRequestService] GetAssignmentCalendar(202311016, 2026-04-05~2026-04-05): 0개 항목
+[06:54:33] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[06:54:33] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[07:04:29] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[07:04:29] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[07:08:05] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[07:08:05] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[07:20:18] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[07:20:18] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[07:29:24] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[07:29:24] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[07:33:28] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[07:33:28] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[07:38:24] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[07:38:24] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[07:49:24] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[07:49:24] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[07:56:21] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[07:56:21] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[08:05:03] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[08:05:03] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[08:09:54] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[08:09:54] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[08:14:30] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[08:14:30] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[08:27:59] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[08:27:59] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[08:29:55] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[08:29:55] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[08:39:47] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[08:39:47] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[08:42:27] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[08:42:27] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[08:46:10] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[08:46:10] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[08:56:46] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[08:56:46] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[09:10:25] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[09:10:25] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[09:17:29] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[09:17:29] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[09:21:06] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[09:21:06] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[09:23:08] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[09:23:08] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[09:28:06] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[09:28:06] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[09:33:17] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[09:33:17] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[09:34:09] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[09:34:09] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[09:34:52] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[09:34:52] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[09:35:24] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[09:35:24] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[09:40:25] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[09:40:25] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[09:40:25] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[09:40:25] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[09:40:26] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[09:40:26] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[09:40:54] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[09:40:54] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[09:40:55] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[09:40:55] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[09:40:55] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[09:40:55] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[09:45:11] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[09:45:11] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[09:45:12] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[09:45:12] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[09:45:12] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[09:45:12] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[09:45:15] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[09:45:15] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[09:45:15] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[09:45:15] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[09:45:16] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[09:45:16] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[09:45:51] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[09:45:51] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[09:48:05] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[09:48:05] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[09:48:06] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[09:48:06] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[09:48:23] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[09:48:23] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[09:48:24] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[09:48:24] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[09:48:24] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[09:48:24] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[09:49:34] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[09:49:34] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[10:20:25] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[10:20:25] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[10:51:17] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[10:51:17] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간
+[10:57:50] [AnalysisRequestService] GetStandardDaysInfo: 70개 로드 (days=False, short=False)
+[10:57:50] [AnalysisRequestService] GetAssignmentChartData(2026-04-01~2026-04-30): 0개 구간

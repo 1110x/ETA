@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(dotnet build:*)",
-      "Bash(node -e \":*)"
+      "Bash(node -e \":*)",
+      "Bash(curl -L -o Pretendard-Regular.otf \"https://github.com/orioncactus/pretendard/raw/main/packages/pretendard/dist/public/static/Pretendard-Regular.otf\")",
+      "Bash(curl -L -o Pretendard-Medium.otf \"https://github.com/orioncactus/pretendard/raw/main/packages/pretendard/dist/public/static/Pretendard-Medium.otf\")",
+      "Bash(curl -L -o Pretendard-SemiBold.otf \"https://github.com/orioncactus/pretendard/raw/main/packages/pretendard/dist/public/static/Pretendard-SemiBold.otf\")",
+      "Bash(curl -L -o Pretendard-Bold.otf \"https://github.com/orioncactus/pretendard/raw/main/packages/pretendard/dist/public/static/Pretendard-Bold.otf\")"
     ]
   }
 }

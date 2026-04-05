@@ -430,22 +430,40 @@
             <Setter Property="MinWidth"   Value="110"/>
         </Style>
 
-        <!-- Slider: 깔끔한 원형 Thumb + 얇은 트랙 -->
+        <!-- Slider: 깔끔한 원형 Thumb + 얇은 트랙 (Fluent 테마 대응) -->
+        <!-- Row0(8) + Thumb(14) + Row2(8) = 30px → thumb 수직 정중앙 -->
         <Style Selector="Slider">
+            <Style.Resources>
+                <GridLength x:Key="SliderPreContentMargin">8</GridLength>
+                <GridLength x:Key="SliderPostContentMargin">8</GridLength>
+                <x:Double x:Key="SliderHorizontalHeight">30</x:Double>
+                <x:Double x:Key="SliderHorizontalThumbWidth">14</x:Double>
+                <x:Double x:Key="SliderHorizontalThumbHeight">14</x:Double>
+            </Style.Resources>
             <Setter Property="Foreground" Value="#6366F1"/>
-            <Setter Property="Height" Value="24"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="ClipToBounds" Value="False"/>
         </Style>
-        <!-- Thumb 내부 Border → 완전한 원형 -->
-        <Style Selector="Slider /template/ Thumb /template/ Border">
-            <Setter Property="Width"        Value="14"/>
-            <Setter Property="Height"       Value="14"/>
-            <Setter Property="CornerRadius" Value="7"/>
-            <Setter Property="Background"   Value="#6366F1"/>
+        <!-- 커스텀 원형 Thumb -->
+        <Style Selector="Slider /template/ Thumb">
+            <Setter Property="Width" Value="14"/>
+            <Setter Property="Height" Value="14"/>
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Ellipse Width="14" Height="14" Fill="#6366F1"/>
+                </ControlTemplate>
+            </Setter>
         </Style>
-        <!-- 트랙 배경 얇게 -->
-        <Style Selector="Slider:horizontal /template/ Border#TrackBackground">
-            <Setter Property="Height"       Value="4"/>
-            <Setter Property="CornerRadius" Value="2"/>
+        <!-- 트랙 배경 얇게 (RepeatButton 내부 두 단계 /template/) -->
+        <Style Selector="Slider:horizontal /template/ RepeatButton /template/ Border#TrackBackground">
+            <Setter Property="Height"            Value="4"/>
+            <Setter Property="CornerRadius"      Value="2"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <!-- ComboBox MinHeight 제거 (Fluent 기본 32px 무력화) -->
+        <Style Selector="ComboBox#cboTheme">
+            <Setter Property="MinHeight" Value="0"/>
+            <Setter Property="Padding"   Value="8,0"/>
         </Style>
 
         <!-- ScrollBar -->
@@ -553,7 +571,7 @@
                         <MenuItem Header="DB Migration" Click="DbMigration_Click"/>
                     </MenuItem>
 
-                    <MenuItem Header="비용부담금 관리">
+                    <MenuItem Header="비용부담금">
                         <MenuItem Header="폐수배출업소"   Click="WasteCompany_Click"/>
                         <MenuItem Header="자료 조회"      Click="WasteDataQuery_Click" IsEnabled="False" Opacity="0.4"/>
                         <MenuItem Header="분석의뢰리스트" Click="WasteSampleList_Click"/>
@@ -562,15 +580,11 @@
                         <MenuItem Header="테스트"      IsEnabled="False" Opacity="0.4"/>
                     </MenuItem>
 
-                    <MenuItem Header="분석결과입력">
-                        <MenuItem Header="입력" Click="WasteAnalysisInput_Click"/>
-                    </MenuItem>
-
                     <MenuItem Header="처리시설">
                         <MenuItem Header="RDP for Zero4" IsEnabled="False" Opacity="0.4"/>
                     </MenuItem>
 
-                    <MenuItem Header="측정결과 입력" Click="ProcessingFacility_Click" IsEnabled="False" Opacity="0.4"/>
+                    <MenuItem Header="분석결과입력" Click="WasteAnalysisInput_Click"/>
 
                     <MenuItem Header="결과 제출">
                         <MenuItem Header="측정인" Click="ResultSubmitMeasure_Click"/>
@@ -578,7 +592,7 @@
                         <MenuItem Header="Zero4"  Click="ResultSubmitZero4_Click"  IsEnabled="False" Opacity="0.4"/>
                     </MenuItem>
 
-                    <MenuItem Header="일반업무관리">
+                    <MenuItem Header="일정업무관리">
                         <MenuItem Header="보수요청"    Click="Repair_Click"/>
                         <MenuItem Header="물품구매"    Click="Purchase_Click"/>
                         <MenuItem Header="계약업체 채수" IsEnabled="False" Opacity="0.4"/>
@@ -601,6 +615,7 @@
                             Orientation="Horizontal"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"
+                            ClipToBounds="False"
                             Spacing="4"
                             Margin="0,0,12,0">
 
@@ -614,8 +629,9 @@
                             Minimum="0.9" Maximum="1.1" Value="1.0"
                             SmallChange="0.01" LargeChange="0.05"
                             TickFrequency="0.01" IsSnapToTickEnabled="True"
-                            Width="100" Height="26"
+                            Width="100"
                             VerticalAlignment="Center"
+                            ClipToBounds="False"
                             ValueChanged="SldFontSize_ValueChanged"/>
                     <TextBlock Text="가"
                                FontSize="13"
@@ -641,7 +657,7 @@
                     <!-- 테마 선택 -->
                     <TextBlock Text="🎨" FontSize="13" VerticalAlignment="Center" Margin="0,0,4,0"/>
                     <ComboBox x:Name="cboTheme"
-                              Width="130" Height="24"
+                              Width="130" Height="26"
                               FontSize="{DynamicResource FontSizeSM}"
                               VerticalAlignment="Center"
                               SelectedIndex="0"
@@ -650,6 +666,10 @@
                         <ComboBoxItem Content="☀️ Soft Light"/>
                         <ComboBoxItem Content="🌊 Ocean"/>
                         <ComboBoxItem Content="🍃 Forest"/>
+                        <ComboBoxItem Content="🕷️ Deadpool"/>
+                        <ComboBoxItem Content="🐝 Bumblebee"/>
+                        <ComboBoxItem Content="💪 Hulk"/>
+                        <ComboBoxItem Content="🦾 Iron Man"/>
                     </ComboBox>
                 </StackPanel>
             </Grid>

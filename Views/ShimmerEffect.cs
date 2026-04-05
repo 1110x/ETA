@@ -15,7 +15,7 @@ namespace ETA.Views;
 /// </summary>
 public static class TextShimmer
 {
-    private static readonly Dictionary<Control, (DispatcherTimer timer, TextBlock[] targets)> _active = new();
+    private static readonly Dictionary<Control, (DispatcherTimer timer, TextBlock[] targets, IBrush?[] origBrushes)> _active = new();
 
     public static void AttachHover(Control control)
     {
@@ -35,8 +35,10 @@ public static class TextShimmer
 
         // 현재 실제 색상을 기준으로 그라데이션 생성
         var brushes = new LinearGradientBrush[textBlocks.Length];
+        var origBrushes = new IBrush?[textBlocks.Length];
         for (int i = 0; i < textBlocks.Length; i++)
         {
+            origBrushes[i] = textBlocks[i].Foreground;  // 원본 저장
             var cur = (textBlocks[i].Foreground as ISolidColorBrush)?.Color ?? Color.Parse("#d8d8e0");
             brushes[i] = new LinearGradientBrush
             {
@@ -74,7 +76,7 @@ public static class TextShimmer
             }
         };
         timer.Start();
-        _active[control] = (timer, textBlocks);
+        _active[control] = (timer, textBlocks, origBrushes);
     }
 
     private static void StopHover(Control control)
@@ -82,9 +84,14 @@ public static class TextShimmer
         if (!_active.TryGetValue(control, out var state)) return;
         state.timer.Stop();
 
-        // ClearValue로 스타일 상속 복원
-        foreach (var tb in state.targets)
-            tb.ClearValue(TextBlock.ForegroundProperty);
+        // 원본 brush로 복원 (ClearValue 대신)
+        for (int i = 0; i < state.targets.Length; i++)
+        {
+            if (state.origBrushes[i] != null)
+                state.targets[i].Foreground = state.origBrushes[i];
+            else
+                state.targets[i].ClearValue(TextBlock.ForegroundProperty);
+        }
 
         _active.Remove(control);
     }
@@ -115,8 +122,10 @@ public static class TextShimmer
         if (textBlocks.Length == 0) return;
 
         var brushes = new LinearGradientBrush[textBlocks.Length];
+        var origBrushes = new IBrush?[textBlocks.Length];
         for (int i = 0; i < textBlocks.Length; i++)
         {
+            origBrushes[i] = textBlocks[i].Foreground;  // 원본 저장
             var cur = (textBlocks[i].Foreground as ISolidColorBrush)?.Color ?? Color.Parse("#d8d8e0");
             brushes[i] = new LinearGradientBrush
             {
@@ -157,7 +166,7 @@ public static class TextShimmer
         _panelActive[panel] = timer;
 
         // 패널 호버 시 보더 글로우 효과 (TranslateTransform 없이 순수 색상만)
-        _active[panel] = (timer, textBlocks);
+        _active[panel] = (timer, textBlocks, origBrushes);
     }
 
     private static void StopPanelShimmer(Control panel)
@@ -168,9 +177,71 @@ public static class TextShimmer
 
         if (_active.TryGetValue(panel, out var state))
         {
-            foreach (var tb in state.targets)
-                tb.ClearValue(TextBlock.ForegroundProperty);
+            // 원본 brush로 복원
+            for (int i = 0; i < state.targets.Length; i++)
+            {
+                if (state.origBrushes[i] != null)
+                    state.targets[i].Foreground = state.origBrushes[i];
+                else
+                    state.targets[i].ClearValue(TextBlock.ForegroundProperty);
+            }
             _active.Remove(panel);
         }
+    }
+
+    // ── 전역 shimmer 부착 ────────────────────────────────────────────────
+    // Window 전체 비주얼 트리를 순회하여 주요 컨트롤에 호버 shimmer를 자동 부착.
+    // 이미 부착된 컨트롤은 중복 방지(_attached HashSet).
+
+    private static readonly HashSet<Control> _attached = new();
+
+    /// <summary>
+    /// 윈도우 내 모든 주요 인터랙티브 컨트롤에 호버 shimmer를 자동 부착합니다.
+    /// 테마 변경 시 호출해도 안전 (중복 부착 방지).
+    /// </summary>
+    public static void AttachAll(Control root)
+    {
+        foreach (var ctrl in root.GetVisualDescendants().OfType<Control>())
+        {
+            // 이미 등록된 컨트롤 스킵
+            if (_attached.Contains(ctrl)) continue;
+
+            bool attach = ctrl is Button
+                       || ctrl is TreeViewItem
+                       || ctrl is ListBoxItem
+                       || ctrl is ComboBox
+                       || ctrl is ComboBoxItem
+                       || ctrl is MenuItem
+                       || ctrl is TabItem
+                       || ctrl is Expander;
+
+            // 독립 TextBlock (부모가 Button/ListBoxItem 등이 아닌 경우)
+            if (!attach && ctrl is TextBlock tb && tb.Text?.Length > 0)
+            {
+                var parent = tb.Parent;
+                if (parent is not Button && parent is not TreeViewItem
+                    && parent is not ListBoxItem && parent is not ComboBoxItem
+                    && parent is not MenuItem && parent is not TabItem)
+                {
+                    attach = true;
+                }
+            }
+
+            if (attach)
+            {
+                _attached.Add(ctrl);
+                AttachHover(ctrl);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 새로 생성된 컨트롤(동적 UI)에 shimmer를 부착합니다.
+    /// </summary>
+    public static void AttachIfNew(Control ctrl)
+    {
+        if (_attached.Contains(ctrl)) return;
+        _attached.Add(ctrl);
+        AttachHover(ctrl);
     }
 }

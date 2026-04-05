@@ -1476,4 +1476,64 @@ public static class AnalysisRequestService
         }
         catch (Exception ex) { Log($"UpdateSamplers 오류: {ex.Message}"); }
     }
+
+    // =====================================================================
+    //  날짜별 레코드 조회 (분석결과입력 자동분류용)
+    // =====================================================================
+    public static List<AnalysisRequestRecord> GetByDate(string date)
+    {
+        var list = new List<AnalysisRequestRecord>();
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            if (!DbConnectionFactory.TableExists(conn, "분석의뢰및결과")) return list;
+
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = $@"
+                SELECT {DbConnectionFactory.RowId},
+                       COALESCE(`약칭`, ''),
+                       COALESCE(`시료명`, ''),
+                       COALESCE(`견적번호`, ''),
+                       COALESCE(`채취일자`, '')
+                FROM `분석의뢰및결과`
+                WHERE `채취일자` = @d
+                ORDER BY {DbConnectionFactory.RowId}";
+            cmd.Parameters.AddWithValue("@d", date);
+            using var rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                list.Add(new AnalysisRequestRecord
+                {
+                    Id       = Convert.ToInt32(rdr.GetValue(0)),
+                    약칭     = rdr.GetString(1),
+                    시료명   = rdr.GetString(2),
+                    접수번호 = rdr.GetString(3),
+                    채취일자 = rdr.GetString(4),
+                });
+            }
+        }
+        catch (Exception ex) { Log($"GetByDate 오류: {ex.Message}"); }
+        return list;
+    }
+
+    // =====================================================================
+    //  단일 컬럼 결과값 업데이트 (분석결과입력용)
+    // =====================================================================
+    public static void UpdateResultValue(int rowId, string columnName, string value)
+    {
+        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = $"UPDATE `분석의뢰및결과` SET `{columnName}` = @v WHERE {DbConnectionFactory.RowId} = @id";
+            cmd.Parameters.AddWithValue("@v", value);
+            cmd.Parameters.AddWithValue("@id", rowId);
+            cmd.ExecuteNonQuery();
+        }
+        catch (Exception ex) { Log($"UpdateResultValue 오류: {ex.Message}"); }
+    }
 }

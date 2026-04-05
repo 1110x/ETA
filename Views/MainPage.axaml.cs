@@ -54,6 +54,7 @@ public partial class MainPage : Window
     private ProcessingFacilityPage?      _processingFacilityPage;
     private ResultSubmitMeasurePage?     _resultSubmitMeasurePage;
     private TestReportPage?              _resultSubmitMeasureTestReport;
+    private WasteAnalysisInputPage?      _wasteAnalysisInputPage;
     private ResultSubmitErpPage?         _resultSubmitErpPage;
     private ResultSubmitZero4Page?       _resultSubmitZero4Page;
     private PurchasePage?      _purchasePage;
@@ -117,12 +118,16 @@ public partial class MainPage : Window
         TextShimmer.AttachHover(BT5); TextShimmer.AttachHover(BT6);
         TextShimmer.AttachHover(BT7); TextShimmer.AttachHover(BT8);
 
-        // Show1 / Show4 패널 호버 shimmer
+        // Show1~4 패널 호버 shimmer
         this.Loaded += (_, _) =>
         {
             var show1Border = this.FindControl<Border>("Show1Border");
+            var show2Border = this.FindControl<Border>("Content2Border");
+            var show3Border = this.FindControl<Border>("LowerBorder");
             var content4Border = this.FindControl<Border>("Content4Border");
             if (show1Border != null)    TextShimmer.AttachPanelHover(show1Border);
+            if (show2Border != null)    TextShimmer.AttachPanelHover(show2Border);
+            if (show3Border != null)    TextShimmer.AttachPanelHover(show3Border);
             if (content4Border != null) TextShimmer.AttachPanelHover(content4Border);
         };
     }
@@ -427,9 +432,20 @@ public partial class MainPage : Window
         if (sldFontSize != null) sldFontSize.Value = savedScale;
         if (txbFontScale != null) txbFontScale.Text = $"{(int)(savedScale * 100)}%";
 
-        // MenuItem 호버 시 텍스트 그라데이션 효과
+        // MenuItem 호버 시 텍스트 그라데이션 효과 (최상위 + 서브메뉴 열릴 때 동적 부착)
         foreach (var mi in this.GetVisualDescendants().OfType<MenuItem>())
+        {
             TextShimmer.AttachHover(mi);
+            mi.SubmenuOpened += (_, _) =>
+            {
+                // 서브메뉴가 팝업으로 열리면 비주얼 트리에 새 MenuItem이 생김
+                Dispatcher.UIThread.Post(() =>
+                {
+                    foreach (var sub in mi.GetVisualDescendants().OfType<MenuItem>())
+                        TextShimmer.AttachIfNew(sub);
+                }, DispatcherPriority.Background);
+            };
+        }
 
     }
 
@@ -1490,6 +1506,9 @@ public partial class MainPage : Window
         double content2Star = 1, double content4Star = 1,
         double upperStar   = 4, double lowerStar    = 1)
     {
+        // 다른 모드 진입 시 하단분할 레이아웃 복원
+        ResetDefaultSplitLayout();
+
         var rightGrid = this.FindControl<Grid>("RightSplitGrid");
         if (rightGrid == null) return;
 
@@ -1525,6 +1544,97 @@ public partial class MainPage : Window
             var hSplitter = this.FindControl<GridSplitter>("HorizontalSplitter");
             if (hSplitter != null) hSplitter.IsVisible = content4Star > 0;
         }
+    }
+
+    /// <summary>Show4가 숨겨져 있으면 최소 비율로 보이게 복원</summary>
+    private void EnsureShow4Visible()
+    {
+        var rightGrid = this.FindControl<Grid>("RightSplitGrid");
+        if (rightGrid == null || rightGrid.ColumnDefinitions.Count < 3) return;
+
+        var col2 = rightGrid.ColumnDefinitions[2];
+        if (col2.Width.Value < 0.1)
+        {
+            col2.Width = new GridLength(2, GridUnitType.Star);
+            var c4 = this.FindControl<Border>("Content4Border");
+            if (c4 != null) c4.IsVisible = true;
+            var hs = this.FindControl<GridSplitter>("HorizontalSplitter");
+            if (hs != null) hs.IsVisible = true;
+        }
+    }
+
+    private bool _bottomSplitActive;
+
+    /// <summary>Show2를 전체폭 상단, Show3+Show4를 하단 병렬로 배치</summary>
+    private void ApplyBottomSplitLayout()
+    {
+        var rightGrid = this.FindControl<Grid>("RightSplitGrid");
+        var c2 = this.FindControl<Border>("Content2Border");
+        var c4 = this.FindControl<Border>("Content4Border");
+        var lower = this.FindControl<Border>("LowerBorder");
+        var hSplitter = this.FindControl<GridSplitter>("HorizontalSplitter");
+        if (rightGrid == null || c2 == null || c4 == null || lower == null) return;
+
+        // Show2: Row=0, 전체 컬럼
+        Grid.SetColumnSpan(c2, 3);
+
+        // Show4: Row=2, Col=2 (하단 우측)
+        Grid.SetRow(c4, 2);
+        Grid.SetColumn(c4, 2);
+        c4.IsVisible = true;
+        c4.Margin = new Thickness(1, 0, 0, 0);
+
+        // Show3: Row=2, Col=0 (하단 좌측, ColumnSpan 1)
+        Grid.SetColumnSpan(lower, 1);
+
+        // 상단 좌우 스플리터 숨기기, 하단에서 좌우 분할 사용
+        if (hSplitter != null)
+        {
+            Grid.SetRow(hSplitter, 2);
+            hSplitter.IsVisible = true;
+        }
+
+        // 컬럼 비율: Show3(좌) 5 : Show4(우) 2
+        if (rightGrid.ColumnDefinitions.Count >= 3)
+        {
+            rightGrid.ColumnDefinitions[0].Width = new GridLength(5, GridUnitType.Star);
+            rightGrid.ColumnDefinitions[2].Width = new GridLength(2, GridUnitType.Star);
+        }
+
+        _bottomSplitActive = true;
+    }
+
+    /// <summary>기본 레이아웃 복원 (Show2+Show4 상단, Show3 하단 전체폭)</summary>
+    private void ResetDefaultSplitLayout()
+    {
+        if (!_bottomSplitActive) return;
+
+        var rightGrid = this.FindControl<Grid>("RightSplitGrid");
+        var c2 = this.FindControl<Border>("Content2Border");
+        var c4 = this.FindControl<Border>("Content4Border");
+        var lower = this.FindControl<Border>("LowerBorder");
+        var hSplitter = this.FindControl<GridSplitter>("HorizontalSplitter");
+        if (rightGrid == null || c2 == null || c4 == null || lower == null) return;
+
+        // Show2: Row=0, Col=0
+        Grid.SetColumnSpan(c2, 1);
+
+        // Show4: Row=0, Col=2 (상단 우측)
+        Grid.SetRow(c4, 0);
+        Grid.SetColumn(c4, 2);
+        c4.Margin = new Thickness(1, 0, 0, 0);
+
+        // Show3: Row=2, ColumnSpan=3 (하단 전체폭)
+        Grid.SetColumnSpan(lower, 3);
+
+        // 스플리터 원위치
+        if (hSplitter != null)
+        {
+            Grid.SetRow(hSplitter, 0);
+            hSplitter.IsVisible = true;
+        }
+
+        _bottomSplitActive = false;
     }
 
 
@@ -2283,91 +2393,46 @@ public partial class MainPage : Window
     private void WasteAnalysisInput_Click(object? sender, RoutedEventArgs e)
     {
         _currentMode = "WasteAnalysisInput";
-        Show1.Content = BuildAnalysisInputCategoryPanel();
-        LogContentChange("Show1", Show1.Content as Control);
-        Show2.Content = null;
-        Show3.Content = null;
-        Show4.Content = null;
-        SetSubMenu("", "", "", "", "", "", "");
-        SetLeftPanelWidth(260);
-        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 8, lowerStar: 2);
-        RestoreModeLayout("WasteAnalysisInput");
-    }
 
-    private Control BuildAnalysisInputCategoryPanel()
-    {
-        var root = new StackPanel { Spacing = 8, Margin = new Thickness(10) };
-
-        root.Children.Add(new TextBlock
+        if (_wasteAnalysisInputPage == null)
         {
-            Text = "분석결과입력",
-            FontSize = AppTheme.FontXL, FontWeight = FontWeight.Bold,
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
-            Foreground = (Brush)Application.Current!.Resources["AppFg"]!,
-            Margin = new Thickness(0, 0, 0, 8),
-        });
-
-        var categories = new (string Label, string Icon, string Bg, string Fg, string Bd)[]
-        {
-            ("수질분석센터", "🧪", "#1a1a2a", "#aaccff", "#3a5a8a"),
-            ("폐수배출업소", "🏭", "#1a2a1a", "#aaccaa", "#3a6a3a"),
-            ("처리시설",     "⚙️", "#2a1a2a", "#ccaaff", "#6a3a8a"),
-        };
-
-        foreach (var c in categories)
-        {
-            var captured = c;
-            var btn = new Button
+            _wasteAnalysisInputPage = new WasteAnalysisInputPage();
+            _wasteAnalysisInputPage.ListPanelChanged += panel =>
             {
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-                HorizontalContentAlignment = HorizontalAlignment.Left,
-                Padding = new Thickness(14, 10),
-                Background = new SolidColorBrush(Color.Parse(c.Bg)),
-                Foreground = new SolidColorBrush(Color.Parse(c.Fg)),
-                BorderThickness = new Thickness(1),
-                BorderBrush = new SolidColorBrush(Color.Parse(c.Bd)),
-                CornerRadius = new CornerRadius(6),
-                Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
-                Content = new StackPanel
-                {
-                    Orientation = Orientation.Horizontal,
-                    Spacing = 10,
-                    Children =
-                    {
-                        new TextBlock
-                        {
-                            Text = c.Icon, FontSize = 18,
-                            VerticalAlignment = VerticalAlignment.Center,
-                        },
-                        new TextBlock
-                        {
-                            Text = c.Label, FontSize = AppTheme.FontLG,
-                            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
-                            Foreground = new SolidColorBrush(Color.Parse(c.Fg)),
-                            VerticalAlignment = VerticalAlignment.Center,
-                        },
-                    },
-                },
+                Show2.Content = panel;
+                LogContentChange("Show2", panel);
             };
-            btn.Click += (_, _) => OnAnalysisInputCategorySelected(captured.Label);
-            root.Children.Add(btn);
+            _wasteAnalysisInputPage.EditPanelChanged += panel =>
+            {
+                Show3.Content = panel;
+                LogContentChange("Show3", panel);
+            };
+            _wasteAnalysisInputPage.StatsPanelChanged += panel =>
+            {
+                Show4.Content = panel;
+                LogContentChange("Show4", panel);
+            };
         }
 
-        return root;
-    }
+        // 메뉴 Tag로 카테고리 자동 선택
+        string? category = (sender as MenuItem)?.Tag?.ToString();
+        if (!string.IsNullOrEmpty(category))
+            _wasteAnalysisInputPage.SelectCategoryByKey(category);
 
-    private void OnAnalysisInputCategorySelected(string category)
-    {
-        // TODO: 카테고리별 분석결과 입력 화면 구현
-        Show2.Content = new TextBlock
-        {
-            Text = $"📋 {category} — 분석결과 입력",
-            FontSize = AppTheme.FontLG,
-            FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
-            Foreground = (Brush)Application.Current!.Resources["AppFg"]!,
-            Margin = new Thickness(10),
-        };
-        LogContentChange("Show2", Show2.Content as Control);
+        Show1.Content = _wasteAnalysisInputPage;
+        LogContentChange("Show1", _wasteAnalysisInputPage);
+        Show2.Content = null; Show3.Content = null; Show4.Content = null;
+        SetSubMenu("새로고침", "검증", "입력", "출력", "", "", "");
+        SetLeftPanelWidth(260);
+
+        // 레이아웃: Show2 전체폭 상단, Show3+Show4 하단 병렬
+        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 6, lowerStar: 4);
+        RestoreModeLayout("WasteAnalysisInput", minLowerStar: 2);
+        ApplyBottomSplitLayout();
+
+        Avalonia.Threading.Dispatcher.UIThread.Post(
+            () => _wasteAnalysisInputPage.LoadData(),
+            Avalonia.Threading.DispatcherPriority.Render);
     }
 
     private void ResultSubmitMeasure_Click(object? sender, RoutedEventArgs e)
@@ -3376,6 +3441,7 @@ public partial class MainPage : Window
                 _wasteSampleListPage?.LoadCompanyTree();
                 break;
             case "MyTask":          _myTaskPage?.LoadData();             break;
+            case "WasteAnalysisInput": _wasteAnalysisInputPage?.LoadData(); break;
             default: _bt1SaveAction?.Invoke();                          break;
         }
     }
@@ -3404,6 +3470,7 @@ public partial class MainPage : Window
                 Show2.Content = _quotationNewPanel;
                 break;
             case "WasteSampleList": _wasteSampleListPage?.AddNewDate(); break;
+            case "WasteAnalysisInput": _wasteAnalysisInputPage?.VerifyData(); break;
             case "Repair":       _repairPage?.ApproveSelected();  break;
             case "RiskManage":   _riskPage?.DeleteSelected();     break;
             default: Debug.WriteLine($"[{_currentMode}] BT2");   break;
@@ -3419,6 +3486,7 @@ public partial class MainPage : Window
             case "Purchase":   _purchasePage?.ApproveSelected();         break;
             case "Quotation":  _quotationPage?.LoadData(); _quotationHistoryPanel?.LoadData(); break;
             case "TestReport": _ = _testReportPage?.DeleteSampleAsync(); break;
+            case "WasteAnalysisInput": _wasteAnalysisInputPage?.ImportData(); break;
             case "Repair":     _repairPage?.RejectSelected();            break;
             default: Debug.WriteLine($"[{_currentMode}] BT3");          break;
         }
@@ -3432,6 +3500,7 @@ public partial class MainPage : Window
             case "Contract": if (_contractPage   != null) await _contractPage.DeleteSelectedAsync();   break;
             case "Purchase": _purchasePage?.RejectSelected();   break;
             case "TestReport": _testReportPage?.OpenPrintWindow();   break;
+            case "WasteAnalysisInput": _wasteAnalysisInputPage?.ExportData(); break;
             case "Repair":   _repairPage?.CompleteSelected();   break;
             case "Quotation": await ExportQuotationAsync(); break;
             default: Debug.WriteLine($"[{_currentMode}] BT4"); break;
@@ -4165,6 +4234,10 @@ public partial class MainPage : Window
             1 => LightPalette(),
             2 => OceanPalette(),
             3 => ForestPalette(),
+            4 => DeadpoolPalette(),
+            5 => BumblebeePalette(),
+            6 => HulkPalette(),
+            7 => IronManPalette(),
             _ => DarkPalette(),
         };
 
@@ -4176,6 +4249,9 @@ public partial class MainPage : Window
             if (Application.Current != null)
                 Application.Current.Resources[key] = brush;
         }
+
+        // ── 모든 테마에서 shimmer 활성화 ──
+        Dispatcher.UIThread.Post(() => TextShimmer.AttachAll(this), DispatcherPriority.Background);
     }
 
     /// <summary>현재 테마 브러시를 Window.Resources 에서 읽는 헬퍼</summary>
@@ -4491,6 +4567,306 @@ public partial class MainPage : Window
         ["ThemeBgDanger"]        = "#3a1a1a",
     };
 
+    // ── 데드풀 팔레트 (마룬/크림슨 + 제트블랙, 고대비) ──────────────────
+    private static System.Collections.Generic.Dictionary<string, string> DeadpoolPalette() => new()
+    {
+        ["AppBg"]            = "#0e0606",
+        ["PanelBg"]          = "#1c0c0c",
+        ["PanelInnerBg"]     = "#140808",
+        ["MenuBarBg"]        = "#2a0e0e",
+        ["MenuItemBg"]       = "#2a0e0e",
+        ["MenuItemHover"]    = "#4a1616",
+        ["SubMenuBg"]        = "#140808",
+        ["SubMenuItemBg"]    = "#1c0c0c",
+        ["SubMenuItemHover"] = "#4a1616",
+        ["SubBtnBg"]         = "#1c0c0c",
+        ["SubBtnHover"]      = "#4a1616",
+        ["SplitterColor"]    = "#040101",
+        ["AppFg"]            = "#e0c8c8",
+        ["FgMuted"]          = "#8a5555",
+        ["FgHover"]          = "#dd3333",
+        ["TreeFg"]           = "#ccaaaa",
+        ["TreeSelBg"]        = "#6a1818",
+        ["TreeSelFg"]        = "#ffd0d0",
+        ["GridHeaderBg"]     = "#200a0a",
+        ["GridRowBg"]        = "#1c0c0c",
+        ["GridRowAltBg"]     = "#140808",
+        ["InputBg"]          = "#140808",
+        ["InputBorder"]      = "#4a2020",
+        ["InputFg"]          = "#eed8d8",
+        ["TreeHoverBg"]      = "#2a0e0e",
+        ["Panel4Bg"]         = "#140808",
+        ["TabActiveBg"]      = "#6a1818",
+        ["TabActiveFg"]      = "#ff4040",
+        ["BtnBg"]            = "#1c0c0c",
+        ["BtnFg"]            = "#bb8888",
+        ["BtnBorder"]        = "#4a2020",
+        ["BtnHoverBg"]       = "#4a1616",
+        ["BtnPrimaryBg"]     = "#6a1818",
+        ["BtnPrimaryFg"]     = "#ff4040",
+        ["BtnPrimaryBorder"] = "#bb1111",
+        ["BtnPrimaryHover"]  = "#7a2222",
+        ["BtnDangerBg"]      = "#500808",
+        ["BtnDangerFg"]      = "#ff3333",
+        ["BtnDangerBorder"]  = "#991111",
+        ["BtnDangerHover"]   = "#601010",
+        ["BtnSuccessBg"]     = "#1c0c0c",
+        ["BtnSuccessFg"]     = "#ee7777",
+        ["BtnSuccessBorder"] = "#773333",
+        ["BtnSuccessHover"]  = "#2a1414",
+        ["ThemeBorderDefault"]   = "#4a2020",
+        ["ThemeBorderSubtle"]    = "#2a1010",
+        ["ThemeBorderMuted"]     = "#381818",
+        ["ThemeBorderActive"]    = "#bb1111",
+        ["ThemeBorderInfo"]      = "#aa2222",
+        ["ThemeBorderAccent"]    = "#881111",
+        ["ThemeBorderDanger"]    = "#991111",
+        ["ThemeBorderWarn"]      = "#774422",
+        ["ThemeBorderSeparator"] = "#2a0e0e",
+        ["ThemeBorderPanel"]     = "#381414",
+        ["ThemeFgPrimary"]       = "#eed8d8",
+        ["ThemeFgSecondary"]     = "#bb8888",
+        ["ThemeFgMuted"]         = "#8a5555",
+        ["ThemeFgDimmed"]        = "#553030",
+        ["ThemeFgSuccess"]       = "#ee7777",
+        ["ThemeFgInfo"]          = "#dd4444",
+        ["ThemeFgDanger"]        = "#ff3333",
+        ["ThemeFgWarn"]          = "#ee8844",
+        ["ThemeFgLink"]          = "#ff4040",
+        ["ThemeBgPrimary"]       = "#0e0606",
+        ["ThemeBgSecondary"]     = "#140808",
+        ["ThemeBgCard"]          = "#1c0c0c",
+        ["ThemeBgInput"]         = "#120707",
+        ["ThemeBgActiveGreen"]   = "#1c0c0c",
+        ["ThemeBgActiveBlue"]    = "#2a1010",
+        ["ThemeBgDanger"]        = "#500808",
+    };
+
+    // ── 범블비 팔레트 (오렌지 옐로우 + 건메탈/차콜 + 시안 포인트) ────────
+    private static System.Collections.Generic.Dictionary<string, string> BumblebeePalette() => new()
+    {
+        ["AppBg"]            = "#0e0c02",
+        ["PanelBg"]          = "#1c1804",
+        ["PanelInnerBg"]     = "#141202",
+        ["MenuBarBg"]        = "#2c2606",
+        ["MenuItemBg"]       = "#2c2606",
+        ["MenuItemHover"]    = "#443808",
+        ["SubMenuBg"]        = "#141202",
+        ["SubMenuItemBg"]    = "#1c1804",
+        ["SubMenuItemHover"] = "#443808",
+        ["SubBtnBg"]         = "#1c1804",
+        ["SubBtnHover"]      = "#443808",
+        ["SplitterColor"]    = "#060500",
+        ["AppFg"]            = "#f5eeb0",
+        ["FgMuted"]          = "#a09020",
+        ["FgHover"]          = "#ffe600",
+        ["TreeFg"]           = "#eee080",
+        ["TreeSelBg"]        = "#665500",
+        ["TreeSelFg"]        = "#ffee55",
+        ["GridHeaderBg"]     = "#1e1c04",
+        ["GridRowBg"]        = "#1c1804",
+        ["GridRowAltBg"]     = "#141202",
+        ["InputBg"]          = "#141202",
+        ["InputBorder"]      = "#554a08",
+        ["InputFg"]          = "#fff8cc",
+        ["TreeHoverBg"]      = "#2c2606",
+        ["Panel4Bg"]         = "#141202",
+        ["TabActiveBg"]      = "#665500",
+        ["TabActiveFg"]      = "#ffdd00",
+        ["BtnBg"]            = "#1c1804",
+        ["BtnFg"]            = "#ddd050",
+        ["BtnBorder"]        = "#554a08",
+        ["BtnHoverBg"]       = "#443808",
+        ["BtnPrimaryBg"]     = "#665500",
+        ["BtnPrimaryFg"]     = "#ffdd00",
+        ["BtnPrimaryBorder"] = "#ddbb00",
+        ["BtnPrimaryHover"]  = "#776608",
+        ["BtnDangerBg"]      = "#3a1a04",
+        ["BtnDangerFg"]      = "#ff6622",
+        ["BtnDangerBorder"]  = "#994410",
+        ["BtnDangerHover"]   = "#4a2408",
+        ["BtnSuccessBg"]     = "#1a2808",
+        ["BtnSuccessFg"]     = "#aadd22",
+        ["BtnSuccessBorder"] = "#668c11",
+        ["BtnSuccessHover"]  = "#223410",
+        ["ThemeBorderDefault"]   = "#554a08",
+        ["ThemeBorderSubtle"]    = "#332e04",
+        ["ThemeBorderMuted"]     = "#443a06",
+        ["ThemeBorderActive"]    = "#ddbb00",
+        ["ThemeBorderInfo"]      = "#44ccee",
+        ["ThemeBorderAccent"]    = "#ccaa00",
+        ["ThemeBorderDanger"]    = "#994410",
+        ["ThemeBorderWarn"]      = "#aa8800",
+        ["ThemeBorderSeparator"] = "#2c2606",
+        ["ThemeBorderPanel"]     = "#443a06",
+        ["ThemeFgPrimary"]       = "#fff8cc",
+        ["ThemeFgSecondary"]     = "#ddd050",
+        ["ThemeFgMuted"]         = "#a09020",
+        ["ThemeFgDimmed"]        = "#665820",
+        ["ThemeFgSuccess"]       = "#aadd22",
+        ["ThemeFgInfo"]          = "#44ccee",
+        ["ThemeFgDanger"]        = "#ff6622",
+        ["ThemeFgWarn"]          = "#ffbb00",
+        ["ThemeFgLink"]          = "#ffe600",
+        ["ThemeBgPrimary"]       = "#0e0c02",
+        ["ThemeBgSecondary"]     = "#141202",
+        ["ThemeBgCard"]          = "#1c1804",
+        ["ThemeBgInput"]         = "#121002",
+        ["ThemeBgActiveGreen"]   = "#1a2808",
+        ["ThemeBgActiveBlue"]    = "#141e2c",
+        ["ThemeBgDanger"]        = "#3a1a04",
+    };
+
+    // ── 헐크 팔레트 (강렬한 녹색 + 퍼플 포인트) ────────────────────────
+    private static System.Collections.Generic.Dictionary<string, string> HulkPalette() => new()
+    {
+        ["AppBg"]            = "#040e04",
+        ["PanelBg"]          = "#0c1c0c",
+        ["PanelInnerBg"]     = "#081408",
+        ["MenuBarBg"]        = "#143014",
+        ["MenuItemBg"]       = "#143014",
+        ["MenuItemHover"]    = "#1e4a1e",
+        ["SubMenuBg"]        = "#081408",
+        ["SubMenuItemBg"]    = "#0c1c0c",
+        ["SubMenuItemHover"] = "#1e4a1e",
+        ["SubBtnBg"]         = "#0c1c0c",
+        ["SubBtnHover"]      = "#1e4a1e",
+        ["SplitterColor"]    = "#020602",
+        ["AppFg"]            = "#c0f0c0",
+        ["FgMuted"]          = "#449944",
+        ["FgHover"]          = "#44ff44",
+        ["TreeFg"]           = "#88dd88",
+        ["TreeSelBg"]        = "#116611",
+        ["TreeSelFg"]        = "#88ff88",
+        ["GridHeaderBg"]     = "#0a220a",
+        ["GridRowBg"]        = "#0c1c0c",
+        ["GridRowAltBg"]     = "#081408",
+        ["InputBg"]          = "#081408",
+        ["InputBorder"]      = "#1a551a",
+        ["InputFg"]          = "#ccffcc",
+        ["TreeHoverBg"]      = "#143014",
+        ["Panel4Bg"]         = "#081408",
+        ["TabActiveBg"]      = "#116611",
+        ["TabActiveFg"]      = "#44ff44",
+        ["BtnBg"]            = "#0c1c0c",
+        ["BtnFg"]            = "#66cc66",
+        ["BtnBorder"]        = "#1a551a",
+        ["BtnHoverBg"]       = "#1e4a1e",
+        ["BtnPrimaryBg"]     = "#116611",
+        ["BtnPrimaryFg"]     = "#44ff44",
+        ["BtnPrimaryBorder"] = "#22bb22",
+        ["BtnPrimaryHover"]  = "#1a7a1a",
+        ["BtnDangerBg"]      = "#280e28",
+        ["BtnDangerFg"]      = "#dd55cc",
+        ["BtnDangerBorder"]  = "#883388",
+        ["BtnDangerHover"]   = "#331633",
+        ["BtnSuccessBg"]     = "#083808",
+        ["BtnSuccessFg"]     = "#44ee44",
+        ["BtnSuccessBorder"] = "#22cc22",
+        ["BtnSuccessHover"]  = "#0e4a0e",
+        ["ThemeBorderDefault"]   = "#1a551a",
+        ["ThemeBorderSubtle"]    = "#0e330e",
+        ["ThemeBorderMuted"]     = "#144414",
+        ["ThemeBorderActive"]    = "#22bb22",
+        ["ThemeBorderInfo"]      = "#8844cc",
+        ["ThemeBorderAccent"]    = "#33dd33",
+        ["ThemeBorderDanger"]    = "#883388",
+        ["ThemeBorderWarn"]      = "#558811",
+        ["ThemeBorderSeparator"] = "#143014",
+        ["ThemeBorderPanel"]     = "#1e4a1e",
+        ["ThemeFgPrimary"]       = "#ccffcc",
+        ["ThemeFgSecondary"]     = "#66cc66",
+        ["ThemeFgMuted"]         = "#449944",
+        ["ThemeFgDimmed"]        = "#226622",
+        ["ThemeFgSuccess"]       = "#44ee44",
+        ["ThemeFgInfo"]          = "#aa66dd",
+        ["ThemeFgDanger"]        = "#dd55cc",
+        ["ThemeFgWarn"]          = "#ccbb11",
+        ["ThemeFgLink"]          = "#44ff44",
+        ["ThemeBgPrimary"]       = "#040e04",
+        ["ThemeBgSecondary"]     = "#081408",
+        ["ThemeBgCard"]          = "#0c1c0c",
+        ["ThemeBgInput"]         = "#061206",
+        ["ThemeBgActiveGreen"]   = "#083808",
+        ["ThemeBgActiveBlue"]    = "#0e1430",
+        ["ThemeBgDanger"]        = "#280e28",
+    };
+
+    // ── 아이언맨 팔레트 (크롬/메탈릭 실버 + 레드/골드/아크리액터 블루) ───
+    private static System.Collections.Generic.Dictionary<string, string> IronManPalette() => new()
+    {
+        ["AppBg"]            = "#18181c",
+        ["PanelBg"]          = "#26262c",
+        ["PanelInnerBg"]     = "#1e1e24",
+        ["MenuBarBg"]        = "#303038",
+        ["MenuItemBg"]       = "#303038",
+        ["MenuItemHover"]    = "#3c3c46",
+        ["SubMenuBg"]        = "#1e1e24",
+        ["SubMenuItemBg"]    = "#26262c",
+        ["SubMenuItemHover"] = "#3c3c46",
+        ["SubBtnBg"]         = "#26262c",
+        ["SubBtnHover"]      = "#3c3c46",
+        ["SplitterColor"]    = "#0a0a0e",
+        ["AppFg"]            = "#e0dde4",
+        ["FgMuted"]          = "#8888a0",
+        ["FgHover"]          = "#dd3322",
+        ["TreeFg"]           = "#c8c8d4",
+        ["TreeSelBg"]        = "#5a1818",
+        ["TreeSelFg"]        = "#ffd0c0",
+        ["GridHeaderBg"]     = "#222228",
+        ["GridRowBg"]        = "#26262c",
+        ["GridRowAltBg"]     = "#1e1e24",
+        ["InputBg"]          = "#1e1e24",
+        ["InputBorder"]      = "#4a4a58",
+        ["InputFg"]          = "#e8e8f0",
+        ["TreeHoverBg"]      = "#303038",
+        ["Panel4Bg"]         = "#1e1e24",
+        ["TabActiveBg"]      = "#5a1818",
+        ["TabActiveFg"]      = "#ff4433",
+        ["BtnBg"]            = "#26262c",
+        ["BtnFg"]            = "#b0b0c0",
+        ["BtnBorder"]        = "#4a4a58",
+        ["BtnHoverBg"]       = "#3c3c46",
+        ["BtnPrimaryBg"]     = "#5a1818",
+        ["BtnPrimaryFg"]     = "#ff4433",
+        ["BtnPrimaryBorder"] = "#cc2211",
+        ["BtnPrimaryHover"]  = "#6a2222",
+        ["BtnDangerBg"]      = "#4a1010",
+        ["BtnDangerFg"]      = "#ff3322",
+        ["BtnDangerBorder"]  = "#aa1111",
+        ["BtnDangerHover"]   = "#5a1818",
+        ["BtnSuccessBg"]     = "#0e2a3a",
+        ["BtnSuccessFg"]     = "#44ccff",
+        ["BtnSuccessBorder"] = "#2288bb",
+        ["BtnSuccessHover"]  = "#163848",
+        ["ThemeBorderDefault"]   = "#4a4a58",
+        ["ThemeBorderSubtle"]    = "#303038",
+        ["ThemeBorderMuted"]     = "#3a3a44",
+        ["ThemeBorderActive"]    = "#cc2211",
+        ["ThemeBorderInfo"]      = "#44aaee",
+        ["ThemeBorderAccent"]    = "#ddaa22",
+        ["ThemeBorderDanger"]    = "#aa1111",
+        ["ThemeBorderWarn"]      = "#ddaa22",
+        ["ThemeBorderSeparator"] = "#303038",
+        ["ThemeBorderPanel"]     = "#3a3a44",
+        ["ThemeFgPrimary"]       = "#e8e8f0",
+        ["ThemeFgSecondary"]     = "#b0b0c0",
+        ["ThemeFgMuted"]         = "#8888a0",
+        ["ThemeFgDimmed"]        = "#555566",
+        ["ThemeFgSuccess"]       = "#44ccff",
+        ["ThemeFgInfo"]          = "#44aaee",
+        ["ThemeFgDanger"]        = "#ff3322",
+        ["ThemeFgWarn"]          = "#ddaa22",
+        ["ThemeFgLink"]          = "#dd3322",
+        ["ThemeBgPrimary"]       = "#18181c",
+        ["ThemeBgSecondary"]     = "#1e1e24",
+        ["ThemeBgCard"]          = "#26262c",
+        ["ThemeBgInput"]         = "#1c1c22",
+        ["ThemeBgActiveGreen"]   = "#0e2a3a",
+        ["ThemeBgActiveBlue"]    = "#0e1e3a",
+        ["ThemeBgDanger"]        = "#4a1010",
+    };
+
     // ── Quotation 이벤트 핸들러 (중복 구독 방지용 named handler) ─────────
     private void OnCheckSelectionChanged(System.Collections.Generic.List<ETA.Models.AnalysisItem> items)
     {
@@ -4545,7 +4921,8 @@ public partial class MainPage : Window
                 "Show4" => Show4,
                 _ => null,
             };
-            // (shimmer 제거됨)
+            if (target is Control targetCtrl)
+                Dispatcher.UIThread.Post(() => TextShimmer.AttachAll(targetCtrl), DispatcherPriority.Background);
         }
     }
 

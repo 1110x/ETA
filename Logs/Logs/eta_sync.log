@@ -506,3 +506,2298 @@
 [2026-04-02 23:50:16] [Progress] 82% — 데이터 준비 완료
 [2026-04-02 23:50:16] [Progress] 96% — 시스템 준비 완료
 [2026-04-02 23:50:16] [Progress] 100% — ✓ 완료!
+[2026-04-03 21:20:37] ========== 로그인 창 시작 ==========
+[2026-04-03 21:20:37] [Init] MigrateAccountColumns 시작
+[2026-04-03 21:20:38] [Init] MigrateAccountColumns 완료
+[2026-04-03 21:20:38] [Init] MigrateInitialPasswords 시작
+[2026-04-03 21:20:38] [Init] MigrateInitialPasswords 완료
+[2026-04-03 21:20:52] ---------- 로그인 시도 ----------
+[2026-04-03 21:20:52] [DoLogin] DB 모드: MariaDB
+[2026-04-03 21:20:52] [DoLogin] 사번 입력값: '201000308'
+[2026-04-03 21:20:52] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-03 21:20:52] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-03 21:20:52] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-03 21:20:54] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-03 21:20:54] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-03 21:20:54] [DebugCheck] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db
+[2026-04-03 21:20:54] [DebugCheck] DB 존재: True
+[2026-04-03 21:20:54] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-03 21:20:54] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-03 21:20:54] [DoLogin] ValidateLogin 호출
+[2026-04-03 21:20:54] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-03 21:20:54] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-03 21:20:54] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-03 21:20:54] [Lottie] 재생 시작
+[2026-04-03 21:20:54] [Progress] 0% — DB 연결 중...
+[2026-04-03 21:20:54] [Progress] 22% — DB 연결 완료
+[2026-04-03 21:20:55] [Progress] 22% — 테이블 초기화 중...
+[2026-04-03 21:20:55] [Progress] 55% — 테이블 준비 완료
+[2026-04-03 21:20:55] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-03 21:20:55] [Progress] 82% — 데이터 준비 완료
+[2026-04-03 21:20:55] [Progress] 96% — 시스템 준비 완료
+[2026-04-03 21:20:55] [Progress] 100% — ✓ 완료!
+[2026-04-03 21:50:20] ========== 로그인 창 시작 ==========
+[2026-04-03 21:50:20] [Init] MigrateAccountColumns 시작
+[2026-04-03 21:50:20] [Init] MigrateAccountColumns 완료
+[2026-04-03 21:50:20] [Init] MigrateInitialPasswords 시작
+[2026-04-03 21:50:20] [Init] MigrateInitialPasswords 완료
+[2026-04-03 21:50:33] ---------- 로그인 시도 ----------
+[2026-04-03 21:50:33] [DoLogin] DB 모드: MariaDB
+[2026-04-03 21:50:33] [DoLogin] 사번 입력값: '201000308'
+[2026-04-03 21:50:33] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-03 21:50:33] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-03 21:50:33] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-03 21:50:35] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-03 21:50:35] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-03 21:50:35] [DebugCheck] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db
+[2026-04-03 21:50:35] [DebugCheck] DB 존재: True
+[2026-04-03 21:50:35] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-03 21:50:35] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-03 21:50:35] [DoLogin] ValidateLogin 호출
+[2026-04-03 21:50:35] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-03 21:50:35] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-03 21:50:35] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-03 21:50:35] [Lottie] 재생 시작
+[2026-04-03 21:50:35] [Progress] 0% — DB 연결 중...
+[2026-04-03 21:50:35] [Progress] 22% — DB 연결 완료
+[2026-04-03 21:50:35] [Progress] 22% — 테이블 초기화 중...
+[2026-04-03 21:50:35] [Progress] 55% — 테이블 준비 완료
+[2026-04-03 21:50:35] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-03 21:50:35] [Progress] 82% — 데이터 준비 완료
+[2026-04-03 21:50:36] [Progress] 96% — 시스템 준비 완료
+[2026-04-03 21:50:36] [Progress] 100% — ✓ 완료!
+[2026-04-03 21:58:44] ========== 로그인 창 시작 ==========
+[2026-04-03 21:58:44] [Init] MigrateAccountColumns 시작
+[2026-04-03 21:58:45] [Init] MigrateAccountColumns 완료
+[2026-04-03 21:58:45] [Init] MigrateInitialPasswords 시작
+[2026-04-03 21:58:45] [Init] MigrateInitialPasswords 완료
+[2026-04-03 21:59:00] ---------- 로그인 시도 ----------
+[2026-04-03 21:59:00] [DoLogin] DB 모드: MariaDB
+[2026-04-03 21:59:00] [DoLogin] 사번 입력값: '201000308'
+[2026-04-03 21:59:00] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-03 21:59:00] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-03 21:59:00] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-03 21:59:02] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-03 21:59:02] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-03 21:59:02] [DebugCheck] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db
+[2026-04-03 21:59:02] [DebugCheck] DB 존재: True
+[2026-04-03 21:59:02] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-03 21:59:02] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-03 21:59:02] [DoLogin] ValidateLogin 호출
+[2026-04-03 21:59:02] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-03 21:59:02] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-03 21:59:02] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-03 21:59:03] [Lottie] 재생 시작
+[2026-04-03 21:59:03] [Progress] 0% — DB 연결 중...
+[2026-04-03 21:59:03] [Progress] 22% — DB 연결 완료
+[2026-04-03 21:59:03] [Progress] 22% — 테이블 초기화 중...
+[2026-04-03 21:59:03] [Progress] 55% — 테이블 준비 완료
+[2026-04-03 21:59:03] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-03 21:59:03] [Progress] 82% — 데이터 준비 완료
+[2026-04-03 21:59:03] [Progress] 96% — 시스템 준비 완료
+[2026-04-03 21:59:03] [Progress] 100% — ✓ 완료!
+[2026-04-03 22:09:45] ========== 로그인 창 시작 ==========
+[2026-04-03 22:09:45] [Init] MigrateAccountColumns 시작
+[2026-04-03 22:09:45] [Init] MigrateAccountColumns 완료
+[2026-04-03 22:09:45] [Init] MigrateInitialPasswords 시작
+[2026-04-03 22:09:45] [Init] MigrateInitialPasswords 완료
+[2026-04-03 22:09:57] ---------- 로그인 시도 ----------
+[2026-04-03 22:09:57] [DoLogin] DB 모드: MariaDB
+[2026-04-03 22:09:57] [DoLogin] 사번 입력값: '201000308'
+[2026-04-03 22:09:57] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-03 22:09:57] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-03 22:09:57] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-03 22:09:59] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-03 22:09:59] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-03 22:09:59] [DebugCheck] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db
+[2026-04-03 22:09:59] [DebugCheck] DB 존재: True
+[2026-04-03 22:09:59] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-03 22:09:59] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-03 22:09:59] [DoLogin] ValidateLogin 호출
+[2026-04-03 22:09:59] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-03 22:09:59] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-03 22:09:59] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-03 22:10:00] [Lottie] 재생 시작
+[2026-04-03 22:10:00] [Progress] 0% — DB 연결 중...
+[2026-04-03 22:10:00] [Progress] 22% — DB 연결 완료
+[2026-04-03 22:10:00] [Progress] 22% — 테이블 초기화 중...
+[2026-04-03 22:10:00] [Progress] 55% — 테이블 준비 완료
+[2026-04-03 22:10:00] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-03 22:10:00] [Progress] 82% — 데이터 준비 완료
+[2026-04-03 22:10:00] [Progress] 96% — 시스템 준비 완료
+[2026-04-03 22:10:01] [Progress] 100% — ✓ 완료!
+[2026-04-03 22:21:04] ========== 로그인 창 시작 ==========
+[2026-04-03 22:21:04] [Init] MigrateAccountColumns 시작
+[2026-04-03 22:21:04] [Init] MigrateAccountColumns 완료
+[2026-04-03 22:21:04] [Init] MigrateInitialPasswords 시작
+[2026-04-03 22:21:04] [Init] MigrateInitialPasswords 완료
+[2026-04-03 22:21:13] ---------- 로그인 시도 ----------
+[2026-04-03 22:21:13] [DoLogin] DB 모드: MariaDB
+[2026-04-03 22:21:13] [DoLogin] 사번 입력값: '201000308'
+[2026-04-03 22:21:13] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-03 22:21:13] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-03 22:21:13] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-03 22:21:15] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-03 22:21:15] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-03 22:21:15] [DebugCheck] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db
+[2026-04-03 22:21:15] [DebugCheck] DB 존재: True
+[2026-04-03 22:21:15] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-03 22:21:15] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-03 22:21:15] [DoLogin] ValidateLogin 호출
+[2026-04-03 22:21:15] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-03 22:21:15] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-03 22:21:15] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-03 22:21:15] [Lottie] 재생 시작
+[2026-04-03 22:21:15] [Progress] 0% — DB 연결 중...
+[2026-04-03 22:21:15] [Progress] 22% — DB 연결 완료
+[2026-04-03 22:21:15] [Progress] 22% — 테이블 초기화 중...
+[2026-04-03 22:21:15] [Progress] 55% — 테이블 준비 완료
+[2026-04-03 22:21:15] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-03 22:21:15] [Progress] 82% — 데이터 준비 완료
+[2026-04-03 22:21:16] [Progress] 96% — 시스템 준비 완료
+[2026-04-03 22:21:16] [Progress] 100% — ✓ 완료!
+[2026-04-03 22:28:53] ========== 로그인 창 시작 ==========
+[2026-04-03 22:28:53] [Init] MigrateAccountColumns 시작
+[2026-04-03 22:28:53] [Init] MigrateAccountColumns 완료
+[2026-04-03 22:28:53] [Init] MigrateInitialPasswords 시작
+[2026-04-03 22:28:53] [Init] MigrateInitialPasswords 완료
+[2026-04-03 22:29:02] ---------- 로그인 시도 ----------
+[2026-04-03 22:29:02] [DoLogin] DB 모드: MariaDB
+[2026-04-03 22:29:02] [DoLogin] 사번 입력값: '201000308'
+[2026-04-03 22:29:02] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-03 22:29:02] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-03 22:29:02] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-03 22:29:03] [DoLogin] 중복 호출 차단
+[2026-04-03 22:29:04] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-03 22:29:04] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-03 22:29:04] [DebugCheck] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db
+[2026-04-03 22:29:04] [DebugCheck] DB 존재: True
+[2026-04-03 22:29:04] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-03 22:29:04] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-03 22:29:04] [DoLogin] ValidateLogin 호출
+[2026-04-03 22:29:04] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-03 22:29:04] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-03 22:29:04] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-03 22:29:04] [Lottie] 재생 시작
+[2026-04-03 22:29:04] [Progress] 0% — DB 연결 중...
+[2026-04-03 22:29:04] [Progress] 22% — DB 연결 완료
+[2026-04-03 22:29:04] [Progress] 22% — 테이블 초기화 중...
+[2026-04-03 22:29:04] [Progress] 55% — 테이블 준비 완료
+[2026-04-03 22:29:04] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-03 22:29:04] [Progress] 82% — 데이터 준비 완료
+[2026-04-03 22:29:04] [Progress] 96% — 시스템 준비 완료
+[2026-04-03 22:29:05] [Progress] 100% — ✓ 완료!
+[2026-04-03 22:42:30] ========== 로그인 창 시작 ==========
+[2026-04-03 22:42:30] [Init] MigrateAccountColumns 시작
+[2026-04-03 22:42:31] [Init] MigrateAccountColumns 완료
+[2026-04-03 22:42:31] [Init] MigrateInitialPasswords 시작
+[2026-04-03 22:42:31] [Init] MigrateInitialPasswords 완료
+[2026-04-03 22:42:42] ---------- 로그인 시도 ----------
+[2026-04-03 22:42:42] [DoLogin] DB 모드: MariaDB
+[2026-04-03 22:42:42] [DoLogin] 사번 입력값: '201000308'
+[2026-04-03 22:42:42] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-03 22:42:42] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-03 22:42:42] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-03 22:42:44] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-03 22:42:44] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-03 22:42:44] [DebugCheck] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db
+[2026-04-03 22:42:44] [DebugCheck] DB 존재: True
+[2026-04-03 22:42:44] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-03 22:42:44] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-03 22:42:44] [DoLogin] ValidateLogin 호출
+[2026-04-03 22:42:44] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-03 22:42:44] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-03 22:42:44] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-03 22:42:44] [Lottie] 재생 시작
+[2026-04-03 22:42:44] [Progress] 0% — DB 연결 중...
+[2026-04-03 22:42:44] [Progress] 22% — DB 연결 완료
+[2026-04-03 22:42:44] [Progress] 22% — 테이블 초기화 중...
+[2026-04-03 22:42:45] [Progress] 55% — 테이블 준비 완료
+[2026-04-03 22:42:45] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-03 22:42:45] [Progress] 82% — 데이터 준비 완료
+[2026-04-03 22:42:45] [Progress] 96% — 시스템 준비 완료
+[2026-04-03 22:42:45] [Progress] 100% — ✓ 완료!
+[2026-04-03 23:16:50] ========== 로그인 창 시작 ==========
+[2026-04-03 23:16:50] [Init] MigrateAccountColumns 시작
+[2026-04-03 23:16:51] [Init] MigrateAccountColumns 완료
+[2026-04-03 23:16:51] [Init] MigrateInitialPasswords 시작
+[2026-04-03 23:16:51] [Init] MigrateInitialPasswords 완료
+[2026-04-03 23:17:01] ---------- 로그인 시도 ----------
+[2026-04-03 23:17:01] [DoLogin] DB 모드: MariaDB
+[2026-04-03 23:17:01] [DoLogin] 사번 입력값: '201000308'
+[2026-04-03 23:17:01] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-03 23:17:01] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-03 23:17:01] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-03 23:17:02] [DoLogin] 중복 호출 차단
+[2026-04-03 23:17:03] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-03 23:17:03] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-03 23:17:03] [DebugCheck] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db
+[2026-04-03 23:17:03] [DebugCheck] DB 존재: True
+[2026-04-03 23:17:03] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-03 23:17:03] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-03 23:17:03] [DoLogin] ValidateLogin 호출
+[2026-04-03 23:17:03] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-03 23:17:03] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-03 23:17:03] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-03 23:17:03] [Lottie] 재생 시작
+[2026-04-03 23:17:03] [Progress] 0% — DB 연결 중...
+[2026-04-03 23:17:03] [Progress] 22% — DB 연결 완료
+[2026-04-03 23:17:03] [Progress] 22% — 테이블 초기화 중...
+[2026-04-03 23:17:03] [Progress] 55% — 테이블 준비 완료
+[2026-04-03 23:17:03] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-03 23:17:03] [Progress] 82% — 데이터 준비 완료
+[2026-04-03 23:17:03] [Progress] 96% — 시스템 준비 완료
+[2026-04-03 23:17:04] [Progress] 100% — ✓ 완료!
+[2026-04-03 23:19:38] ========== 로그인 창 시작 ==========
+[2026-04-03 23:19:38] [Init] MigrateAccountColumns 시작
+[2026-04-03 23:19:38] [Init] MigrateAccountColumns 완료
+[2026-04-03 23:19:38] [Init] MigrateInitialPasswords 시작
+[2026-04-03 23:19:39] [Init] MigrateInitialPasswords 완료
+[2026-04-03 23:19:50] ---------- 로그인 시도 ----------
+[2026-04-03 23:19:50] [DoLogin] DB 모드: MariaDB
+[2026-04-03 23:19:50] [DoLogin] 사번 입력값: '20100030'
+[2026-04-03 23:19:50] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-03 23:19:50] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-03 23:19:50] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-03 23:19:51] [DoLogin] 중복 호출 차단
+[2026-04-03 23:19:52] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-03 23:19:52] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-03 23:19:52] [DebugCheck] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db
+[2026-04-03 23:19:52] [DebugCheck] DB 존재: True
+[2026-04-03 23:19:52] [DebugCheck] 20100030 → DB에 레코드 없음!
+[2026-04-03 23:19:52] [DoLogin] ValidateLogin 호출
+[2026-04-03 23:19:52] [DoLogin] ValidateLogin 결과 → success=False, mustChangePw=False, message='등록되지 않은 사번입니다.'
+[2026-04-03 23:19:52] [DoLogin] 로그인 실패: 등록되지 않은 사번입니다.
+[2026-04-03 23:20:00] ---------- 로그인 시도 ----------
+[2026-04-03 23:20:00] [DoLogin] DB 모드: MariaDB
+[2026-04-03 23:20:00] [DoLogin] 사번 입력값: '201000308'
+[2026-04-03 23:20:00] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-03 23:20:00] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-03 23:20:00] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-03 23:20:01] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-03 23:20:01] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-03 23:20:01] [DebugCheck] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db
+[2026-04-03 23:20:01] [DebugCheck] DB 존재: True
+[2026-04-03 23:20:01] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-03 23:20:01] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-03 23:20:01] [DoLogin] ValidateLogin 호출
+[2026-04-03 23:20:01] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-03 23:20:01] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-03 23:20:01] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-03 23:20:01] [Lottie] 재생 시작
+[2026-04-03 23:20:01] [Progress] 0% — DB 연결 중...
+[2026-04-03 23:20:01] [Progress] 22% — DB 연결 완료
+[2026-04-03 23:20:01] [Progress] 22% — 테이블 초기화 중...
+[2026-04-03 23:20:01] [Progress] 55% — 테이블 준비 완료
+[2026-04-03 23:20:01] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-03 23:20:01] [Progress] 82% — 데이터 준비 완료
+[2026-04-03 23:20:02] [Progress] 96% — 시스템 준비 완료
+[2026-04-03 23:20:02] [Progress] 100% — ✓ 완료!
+[2026-04-03 23:20:10] ========== 로그인 창 시작 ==========
+[2026-04-03 23:20:10] [Init] MigrateAccountColumns 시작
+[2026-04-03 23:20:10] [Init] MigrateAccountColumns 완료
+[2026-04-03 23:20:10] [Init] MigrateInitialPasswords 시작
+[2026-04-03 23:20:10] [Init] MigrateInitialPasswords 완료
+[2026-04-03 23:20:17] ---------- 로그인 시도 ----------
+[2026-04-03 23:20:17] [DoLogin] DB 모드: MariaDB
+[2026-04-03 23:20:17] [DoLogin] 사번 입력값: '201000308'
+[2026-04-03 23:20:17] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-03 23:20:17] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-03 23:20:17] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-03 23:20:18] [DoLogin] 중복 호출 차단
+[2026-04-03 23:20:18] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-03 23:20:18] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-03 23:20:18] [DebugCheck] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db
+[2026-04-03 23:20:18] [DebugCheck] DB 존재: True
+[2026-04-03 23:20:18] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-03 23:20:18] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-03 23:20:18] [DoLogin] ValidateLogin 호출
+[2026-04-03 23:20:18] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-03 23:20:18] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-03 23:20:18] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-03 23:20:19] [Lottie] 재생 시작
+[2026-04-03 23:20:19] [Progress] 0% — DB 연결 중...
+[2026-04-03 23:20:19] [Progress] 22% — DB 연결 완료
+[2026-04-03 23:20:19] [Progress] 22% — 테이블 초기화 중...
+[2026-04-03 23:20:19] [Progress] 55% — 테이블 준비 완료
+[2026-04-03 23:20:19] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-03 23:20:19] [Progress] 82% — 데이터 준비 완료
+[2026-04-03 23:20:19] [Progress] 96% — 시스템 준비 완료
+[2026-04-03 23:20:20] [Progress] 100% — ✓ 완료!
+[2026-04-03 23:33:31] ========== 로그인 창 시작 ==========
+[2026-04-03 23:33:31] [Init] MigrateAccountColumns 시작
+[2026-04-03 23:33:32] [Init] MigrateAccountColumns 완료
+[2026-04-03 23:33:32] [Init] MigrateInitialPasswords 시작
+[2026-04-03 23:33:32] [Init] MigrateInitialPasswords 완료
+[2026-04-03 23:33:35] [EasterEgg] 관리자 자동 로그인
+[2026-04-03 23:33:35] [Lottie] 재생 시작
+[2026-04-03 23:33:35] [Progress] 0% — DB 연결 중...
+[2026-04-03 23:33:35] [Progress] 22% — DB 연결 완료
+[2026-04-03 23:33:35] [Progress] 22% — 테이블 초기화 중...
+[2026-04-03 23:33:35] [Progress] 55% — 테이블 준비 완료
+[2026-04-03 23:33:35] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-03 23:33:35] [Progress] 82% — 데이터 준비 완료
+[2026-04-03 23:33:36] [Progress] 96% — 시스템 준비 완료
+[2026-04-03 23:33:36] [Progress] 100% — ✓ 완료!
+[2026-04-03 23:42:39] ========== 로그인 창 시작 ==========
+[2026-04-03 23:42:39] [Init] MigrateAccountColumns 시작
+[2026-04-03 23:42:39] [Init] MigrateAccountColumns 완료
+[2026-04-03 23:42:39] [Init] MigrateInitialPasswords 시작
+[2026-04-03 23:42:40] [Init] MigrateInitialPasswords 완료
+[2026-04-03 23:42:49] ---------- 로그인 시도 ----------
+[2026-04-03 23:42:49] [DoLogin] DB 모드: MariaDB
+[2026-04-03 23:42:49] [DoLogin] 사번 입력값: '201000308'
+[2026-04-03 23:42:49] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-03 23:42:49] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-03 23:42:49] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-03 23:42:51] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-03 23:42:51] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-03 23:42:51] [DebugCheck] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db
+[2026-04-03 23:42:51] [DebugCheck] DB 존재: True
+[2026-04-03 23:42:51] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-03 23:42:51] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-03 23:42:51] [DoLogin] ValidateLogin 호출
+[2026-04-03 23:42:51] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-03 23:42:51] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-03 23:42:51] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-03 23:42:52] [Lottie] 재생 시작
+[2026-04-03 23:42:52] [Progress] 0% — DB 연결 중...
+[2026-04-03 23:42:52] [Progress] 22% — DB 연결 완료
+[2026-04-03 23:42:52] [Progress] 22% — 테이블 초기화 중...
+[2026-04-03 23:42:52] [Progress] 55% — 테이블 준비 완료
+[2026-04-03 23:42:52] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-03 23:42:52] [Progress] 82% — 데이터 준비 완료
+[2026-04-03 23:42:52] [Progress] 96% — 시스템 준비 완료
+[2026-04-03 23:42:52] [Progress] 100% — ✓ 완료!
+[2026-04-03 23:48:44] ========== 로그인 창 시작 ==========
+[2026-04-03 23:48:44] [Init] MigrateAccountColumns 시작
+[2026-04-03 23:48:44] [Init] MigrateAccountColumns 완료
+[2026-04-03 23:48:44] [Init] MigrateInitialPasswords 시작
+[2026-04-03 23:48:44] [Init] MigrateInitialPasswords 완료
+[2026-04-03 23:48:55] [EasterEgg] 관리자 자동 로그인
+[2026-04-03 23:48:56] [Lottie] 재생 시작
+[2026-04-03 23:48:56] [Progress] 0% — DB 연결 중...
+[2026-04-03 23:48:56] [Progress] 22% — DB 연결 완료
+[2026-04-03 23:48:56] [Progress] 22% — 테이블 초기화 중...
+[2026-04-03 23:48:56] [Progress] 55% — 테이블 준비 완료
+[2026-04-03 23:48:56] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-03 23:48:56] [Progress] 82% — 데이터 준비 완료
+[2026-04-03 23:48:56] [Progress] 96% — 시스템 준비 완료
+[2026-04-03 23:48:57] [Progress] 100% — ✓ 완료!
+[2026-04-03 23:51:45] ========== 로그인 창 시작 ==========
+[2026-04-03 23:51:45] [Init] MigrateAccountColumns 시작
+[2026-04-03 23:51:45] [Init] MigrateAccountColumns 완료
+[2026-04-03 23:51:45] [Init] MigrateInitialPasswords 시작
+[2026-04-03 23:51:45] [Init] MigrateInitialPasswords 완료
+[2026-04-03 23:52:01] ========== 로그인 창 시작 ==========
+[2026-04-03 23:52:01] [Init] MigrateAccountColumns 시작
+[2026-04-03 23:52:01] [Init] MigrateAccountColumns 완료
+[2026-04-03 23:52:01] [Init] MigrateInitialPasswords 시작
+[2026-04-03 23:52:01] [Init] MigrateInitialPasswords 완료
+[2026-04-03 23:52:05] [EasterEgg] 관리자 자동 로그인
+[2026-04-03 23:52:06] [Lottie] 재생 시작
+[2026-04-03 23:52:06] [Progress] 0% — DB 연결 중...
+[2026-04-03 23:52:06] [Progress] 22% — DB 연결 완료
+[2026-04-03 23:52:06] [Progress] 22% — 테이블 초기화 중...
+[2026-04-03 23:52:06] [Progress] 55% — 테이블 준비 완료
+[2026-04-03 23:52:06] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-03 23:52:06] [Progress] 82% — 데이터 준비 완료
+[2026-04-03 23:52:06] [Progress] 96% — 시스템 준비 완료
+[2026-04-03 23:52:07] [Progress] 100% — ✓ 완료!
+[2026-04-03 23:55:01] ========== 로그인 창 시작 ==========
+[2026-04-03 23:55:01] [Init] MigrateAccountColumns 시작
+[2026-04-03 23:55:01] [Init] MigrateAccountColumns 완료
+[2026-04-03 23:55:01] [Init] MigrateInitialPasswords 시작
+[2026-04-03 23:55:01] [Init] MigrateInitialPasswords 완료
+[2026-04-03 23:55:05] [EasterEgg] 관리자 자동 로그인
+[2026-04-03 23:55:05] [Lottie] 재생 시작
+[2026-04-03 23:55:05] [Progress] 0% — DB 연결 중...
+[2026-04-03 23:55:05] [Progress] 22% — DB 연결 완료
+[2026-04-03 23:55:05] [Progress] 22% — 테이블 초기화 중...
+[2026-04-03 23:55:05] [Progress] 55% — 테이블 준비 완료
+[2026-04-03 23:55:05] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-03 23:55:05] [Progress] 82% — 데이터 준비 완료
+[2026-04-03 23:55:06] [Progress] 96% — 시스템 준비 완료
+[2026-04-03 23:55:06] [Progress] 100% — ✓ 완료!
+[2026-04-03 23:56:48] ========== 로그인 창 시작 ==========
+[2026-04-03 23:56:48] [Init] MigrateAccountColumns 시작
+[2026-04-03 23:56:48] [Init] MigrateAccountColumns 완료
+[2026-04-03 23:56:48] [Init] MigrateInitialPasswords 시작
+[2026-04-03 23:56:48] [Init] MigrateInitialPasswords 완료
+[2026-04-03 23:57:13] ========== 로그인 창 시작 ==========
+[2026-04-03 23:57:13] [Init] MigrateAccountColumns 시작
+[2026-04-03 23:57:13] [Init] MigrateAccountColumns 완료
+[2026-04-03 23:57:13] [Init] MigrateInitialPasswords 시작
+[2026-04-03 23:57:13] [Init] MigrateInitialPasswords 완료
+[2026-04-03 23:57:19] [EasterEgg] 관리자 자동 로그인
+[2026-04-03 23:57:19] [Lottie] 재생 시작
+[2026-04-03 23:57:19] [Progress] 0% — DB 연결 중...
+[2026-04-03 23:57:19] [Progress] 22% — DB 연결 완료
+[2026-04-03 23:57:20] [Progress] 22% — 테이블 초기화 중...
+[2026-04-03 23:57:20] [Progress] 55% — 테이블 준비 완료
+[2026-04-03 23:57:20] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-03 23:57:20] [Progress] 82% — 데이터 준비 완료
+[2026-04-03 23:57:20] [Progress] 96% — 시스템 준비 완료
+[2026-04-03 23:57:20] [Progress] 100% — ✓ 완료!
+[2026-04-04 00:02:30] ========== 로그인 창 시작 ==========
+[2026-04-04 00:02:30] [Init] MigrateAccountColumns 시작
+[2026-04-04 00:02:30] [Init] MigrateAccountColumns 완료
+[2026-04-04 00:02:30] [Init] MigrateInitialPasswords 시작
+[2026-04-04 00:02:30] [Init] MigrateInitialPasswords 완료
+[2026-04-04 00:02:36] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 00:02:36] [Lottie] 재생 시작
+[2026-04-04 00:02:36] [Progress] 0% — DB 연결 중...
+[2026-04-04 00:02:36] [Progress] 22% — DB 연결 완료
+[2026-04-04 00:02:36] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 00:02:36] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 00:02:36] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 00:02:36] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 00:02:37] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 00:02:37] [Progress] 100% — ✓ 완료!
+[2026-04-04 00:15:13] ========== 로그인 창 시작 ==========
+[2026-04-04 00:15:13] [Init] MigrateAccountColumns 시작
+[2026-04-04 00:15:13] [Init] MigrateAccountColumns 완료
+[2026-04-04 00:15:13] [Init] MigrateInitialPasswords 시작
+[2026-04-04 00:15:13] [Init] MigrateInitialPasswords 완료
+[2026-04-04 00:15:17] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 00:15:17] [Lottie] 재생 시작
+[2026-04-04 00:15:17] [Progress] 0% — DB 연결 중...
+[2026-04-04 00:15:17] [Progress] 22% — DB 연결 완료
+[2026-04-04 00:15:17] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 00:15:17] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 00:15:17] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 00:15:17] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 00:15:18] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 00:15:18] [Progress] 100% — ✓ 완료!
+[2026-04-04 00:18:42] ========== 로그인 창 시작 ==========
+[2026-04-04 00:18:42] [Init] MigrateAccountColumns 시작
+[2026-04-04 00:18:42] [Init] MigrateAccountColumns 완료
+[2026-04-04 00:18:42] [Init] MigrateInitialPasswords 시작
+[2026-04-04 00:18:42] [Init] MigrateInitialPasswords 완료
+[2026-04-04 00:18:44] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 00:18:45] [Lottie] 재생 시작
+[2026-04-04 00:18:45] [Progress] 0% — DB 연결 중...
+[2026-04-04 00:18:45] [Progress] 22% — DB 연결 완료
+[2026-04-04 00:18:45] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 00:18:45] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 00:18:45] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 00:18:45] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 00:18:45] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 00:18:45] [Progress] 100% — ✓ 완료!
+[2026-04-04 00:21:36] ========== 로그인 창 시작 ==========
+[2026-04-04 00:21:36] [Init] MigrateAccountColumns 시작
+[2026-04-04 00:21:36] [Init] MigrateAccountColumns 완료
+[2026-04-04 00:21:36] [Init] MigrateInitialPasswords 시작
+[2026-04-04 00:21:36] [Init] MigrateInitialPasswords 완료
+[2026-04-04 00:23:10] ========== 로그인 창 시작 ==========
+[2026-04-04 00:23:10] [Init] MigrateAccountColumns 시작
+[2026-04-04 00:23:10] [Init] MigrateAccountColumns 완료
+[2026-04-04 00:23:10] [Init] MigrateInitialPasswords 시작
+[2026-04-04 00:23:11] [Init] MigrateInitialPasswords 완료
+[2026-04-04 00:23:16] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 00:23:16] [Lottie] 재생 시작
+[2026-04-04 00:23:16] [Progress] 0% — DB 연결 중...
+[2026-04-04 00:23:16] [Progress] 22% — DB 연결 완료
+[2026-04-04 00:23:16] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 00:23:16] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 00:23:16] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 00:23:16] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 00:23:16] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 00:23:17] [Progress] 100% — ✓ 완료!
+[2026-04-04 00:23:55] ========== 로그인 창 시작 ==========
+[2026-04-04 00:23:55] [Init] MigrateAccountColumns 시작
+[2026-04-04 00:23:55] [Init] MigrateAccountColumns 완료
+[2026-04-04 00:23:55] [Init] MigrateInitialPasswords 시작
+[2026-04-04 00:23:56] [Init] MigrateInitialPasswords 완료
+[2026-04-04 00:23:59] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 00:24:00] [Lottie] 재생 시작
+[2026-04-04 00:24:00] [Progress] 0% — DB 연결 중...
+[2026-04-04 00:24:00] [Progress] 22% — DB 연결 완료
+[2026-04-04 00:24:00] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 00:24:00] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 00:24:00] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 00:24:00] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 00:24:00] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 00:24:00] [Progress] 100% — ✓ 완료!
+[2026-04-04 00:24:49] ========== 로그인 창 시작 ==========
+[2026-04-04 00:24:49] [Init] MigrateAccountColumns 시작
+[2026-04-04 00:24:49] [Init] MigrateAccountColumns 완료
+[2026-04-04 00:24:49] [Init] MigrateInitialPasswords 시작
+[2026-04-04 00:24:50] [Init] MigrateInitialPasswords 완료
+[2026-04-04 00:24:52] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 00:24:53] [Lottie] 재생 시작
+[2026-04-04 00:24:53] [Progress] 0% — DB 연결 중...
+[2026-04-04 00:24:53] [Progress] 22% — DB 연결 완료
+[2026-04-04 00:24:53] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 00:24:53] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 00:24:53] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 00:24:53] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 00:24:53] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 00:24:53] [Progress] 100% — ✓ 완료!
+[2026-04-04 00:25:56] ========== 로그인 창 시작 ==========
+[2026-04-04 00:25:56] [Init] MigrateAccountColumns 시작
+[2026-04-04 00:25:56] [Init] MigrateAccountColumns 완료
+[2026-04-04 00:25:56] [Init] MigrateInitialPasswords 시작
+[2026-04-04 00:25:56] [Init] MigrateInitialPasswords 완료
+[2026-04-04 00:25:59] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 00:25:59] [Lottie] 재생 시작
+[2026-04-04 00:25:59] [Progress] 0% — DB 연결 중...
+[2026-04-04 00:25:59] [Progress] 22% — DB 연결 완료
+[2026-04-04 00:25:59] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 00:25:59] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 00:25:59] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 00:25:59] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 00:26:00] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 00:26:00] [Progress] 100% — ✓ 완료!
+[2026-04-04 00:26:29] ========== 로그인 창 시작 ==========
+[2026-04-04 00:26:29] [Init] MigrateAccountColumns 시작
+[2026-04-04 00:26:29] [Init] MigrateAccountColumns 완료
+[2026-04-04 00:26:29] [Init] MigrateInitialPasswords 시작
+[2026-04-04 00:26:29] [Init] MigrateInitialPasswords 완료
+[2026-04-04 00:26:46] ========== 로그인 창 시작 ==========
+[2026-04-04 00:26:46] [Init] MigrateAccountColumns 시작
+[2026-04-04 00:26:46] [Init] MigrateAccountColumns 완료
+[2026-04-04 00:26:46] [Init] MigrateInitialPasswords 시작
+[2026-04-04 00:26:46] [Init] MigrateInitialPasswords 완료
+[2026-04-04 00:26:49] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 00:26:49] [Lottie] 재생 시작
+[2026-04-04 00:26:49] [Progress] 0% — DB 연결 중...
+[2026-04-04 00:26:49] [Progress] 22% — DB 연결 완료
+[2026-04-04 00:26:49] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 00:26:49] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 00:26:49] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 00:26:49] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 00:26:49] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 00:26:50] [Progress] 100% — ✓ 완료!
+[2026-04-04 00:28:41] ========== 로그인 창 시작 ==========
+[2026-04-04 00:28:41] [Init] MigrateAccountColumns 시작
+[2026-04-04 00:28:41] [Init] MigrateAccountColumns 완료
+[2026-04-04 00:28:41] [Init] MigrateInitialPasswords 시작
+[2026-04-04 00:28:41] [Init] MigrateInitialPasswords 완료
+[2026-04-04 00:28:44] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 00:28:45] [Lottie] 재생 시작
+[2026-04-04 00:28:45] [Progress] 0% — DB 연결 중...
+[2026-04-04 00:28:45] [Progress] 22% — DB 연결 완료
+[2026-04-04 00:28:45] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 00:28:45] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 00:28:45] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 00:28:45] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 00:28:45] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 00:28:45] [Progress] 100% — ✓ 완료!
+[2026-04-04 00:29:41] ========== 로그인 창 시작 ==========
+[2026-04-04 00:29:41] [Init] MigrateAccountColumns 시작
+[2026-04-04 00:29:41] [Init] MigrateAccountColumns 완료
+[2026-04-04 00:29:41] [Init] MigrateInitialPasswords 시작
+[2026-04-04 00:29:42] [Init] MigrateInitialPasswords 완료
+[2026-04-04 00:29:45] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 00:29:45] [Lottie] 재생 시작
+[2026-04-04 00:29:45] [Progress] 0% — DB 연결 중...
+[2026-04-04 00:29:45] [Progress] 22% — DB 연결 완료
+[2026-04-04 00:29:45] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 00:29:45] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 00:29:45] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 00:29:45] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 00:29:45] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 00:29:46] [Progress] 100% — ✓ 완료!
+[2026-04-04 00:39:22] ========== 로그인 창 시작 ==========
+[2026-04-04 00:39:22] [Init] MigrateAccountColumns 시작
+[2026-04-04 00:39:22] [Init] MigrateAccountColumns 완료
+[2026-04-04 00:39:22] [Init] MigrateInitialPasswords 시작
+[2026-04-04 00:39:22] [Init] MigrateInitialPasswords 완료
+[2026-04-04 00:39:26] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 00:39:27] [Lottie] 재생 시작
+[2026-04-04 00:39:27] [Progress] 0% — DB 연결 중...
+[2026-04-04 00:39:27] [Progress] 22% — DB 연결 완료
+[2026-04-04 00:39:27] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 00:39:27] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 00:39:27] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 00:39:27] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 00:39:27] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 00:39:27] [Progress] 100% — ✓ 완료!
+[2026-04-04 00:41:18] ========== 로그인 창 시작 ==========
+[2026-04-04 00:41:18] [Init] MigrateAccountColumns 시작
+[2026-04-04 00:41:18] [Init] MigrateAccountColumns 완료
+[2026-04-04 00:41:18] [Init] MigrateInitialPasswords 시작
+[2026-04-04 00:41:18] [Init] MigrateInitialPasswords 완료
+[2026-04-04 00:41:27] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 00:41:27] [Lottie] 재생 시작
+[2026-04-04 00:41:27] [Progress] 0% — DB 연결 중...
+[2026-04-04 00:41:27] [Progress] 22% — DB 연결 완료
+[2026-04-04 00:41:27] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 00:41:27] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 00:41:28] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 00:41:28] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 00:41:28] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 00:41:28] [Progress] 100% — ✓ 완료!
+[2026-04-04 00:43:42] ========== 로그인 창 시작 ==========
+[2026-04-04 00:43:42] [Init] MigrateAccountColumns 시작
+[2026-04-04 00:43:43] [Init] MigrateAccountColumns 완료
+[2026-04-04 00:43:43] [Init] MigrateInitialPasswords 시작
+[2026-04-04 00:43:43] [Init] MigrateInitialPasswords 완료
+[2026-04-04 00:43:46] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 00:43:46] [Lottie] 재생 시작
+[2026-04-04 00:43:46] [Progress] 0% — DB 연결 중...
+[2026-04-04 00:43:46] [Progress] 22% — DB 연결 완료
+[2026-04-04 00:43:46] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 00:43:46] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 00:43:46] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 00:43:46] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 00:43:46] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 00:43:47] [Progress] 100% — ✓ 완료!
+[2026-04-04 00:52:22] ========== 로그인 창 시작 ==========
+[2026-04-04 00:52:22] [Init] MigrateAccountColumns 시작
+[2026-04-04 00:52:23] [Init] MigrateAccountColumns 완료
+[2026-04-04 00:52:23] [Init] MigrateInitialPasswords 시작
+[2026-04-04 00:52:23] [Init] MigrateInitialPasswords 완료
+[2026-04-04 00:52:26] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 00:52:26] [Lottie] 재생 시작
+[2026-04-04 00:52:26] [Progress] 0% — DB 연결 중...
+[2026-04-04 00:52:26] [Progress] 22% — DB 연결 완료
+[2026-04-04 00:52:27] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 00:52:27] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 00:52:27] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 00:52:27] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 00:52:27] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 00:52:27] [Progress] 100% — ✓ 완료!
+[2026-04-04 00:54:44] ========== 로그인 창 시작 ==========
+[2026-04-04 00:54:44] [Init] MigrateAccountColumns 시작
+[2026-04-04 00:54:44] [Init] MigrateAccountColumns 완료
+[2026-04-04 00:54:44] [Init] MigrateInitialPasswords 시작
+[2026-04-04 00:54:44] [Init] MigrateInitialPasswords 완료
+[2026-04-04 00:54:47] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 00:54:48] [Lottie] 재생 시작
+[2026-04-04 00:54:48] [Progress] 0% — DB 연결 중...
+[2026-04-04 00:54:48] [Progress] 22% — DB 연결 완료
+[2026-04-04 00:54:48] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 00:54:48] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 00:54:48] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 00:54:48] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 00:54:48] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 00:54:49] [Progress] 100% — ✓ 완료!
+[2026-04-04 00:57:11] ========== 로그인 창 시작 ==========
+[2026-04-04 00:57:11] [Init] MigrateAccountColumns 시작
+[2026-04-04 00:57:11] [Init] MigrateAccountColumns 완료
+[2026-04-04 00:57:11] [Init] MigrateInitialPasswords 시작
+[2026-04-04 00:57:12] [Init] MigrateInitialPasswords 완료
+[2026-04-04 00:57:15] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 00:57:15] [Lottie] 재생 시작
+[2026-04-04 00:57:15] [Progress] 0% — DB 연결 중...
+[2026-04-04 00:57:15] [Progress] 22% — DB 연결 완료
+[2026-04-04 00:57:16] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 00:57:16] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 00:57:16] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 00:57:16] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 00:57:16] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 00:57:16] [Progress] 100% — ✓ 완료!
+[2026-04-04 00:59:19] ========== 로그인 창 시작 ==========
+[2026-04-04 00:59:19] [Init] MigrateAccountColumns 시작
+[2026-04-04 00:59:19] [Init] MigrateAccountColumns 완료
+[2026-04-04 00:59:19] [Init] MigrateInitialPasswords 시작
+[2026-04-04 00:59:19] [Init] MigrateInitialPasswords 완료
+[2026-04-04 00:59:58] ========== 로그인 창 시작 ==========
+[2026-04-04 00:59:58] [Init] MigrateAccountColumns 시작
+[2026-04-04 00:59:58] [Init] MigrateAccountColumns 완료
+[2026-04-04 00:59:58] [Init] MigrateInitialPasswords 시작
+[2026-04-04 00:59:58] [Init] MigrateInitialPasswords 완료
+[2026-04-04 01:00:01] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 01:00:01] [Lottie] 재생 시작
+[2026-04-04 01:00:01] [Progress] 0% — DB 연결 중...
+[2026-04-04 01:00:01] [Progress] 22% — DB 연결 완료
+[2026-04-04 01:00:01] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 01:00:01] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 01:00:01] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 01:00:01] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 01:00:01] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 01:00:02] [Progress] 100% — ✓ 완료!
+[2026-04-04 01:02:28] ========== 로그인 창 시작 ==========
+[2026-04-04 01:02:28] [Init] MigrateAccountColumns 시작
+[2026-04-04 01:02:29] [Init] MigrateAccountColumns 완료
+[2026-04-04 01:02:29] [Init] MigrateInitialPasswords 시작
+[2026-04-04 01:02:29] [Init] MigrateInitialPasswords 완료
+[2026-04-04 01:02:32] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 01:02:32] [Lottie] 재생 시작
+[2026-04-04 01:02:32] [Progress] 0% — DB 연결 중...
+[2026-04-04 01:02:32] [Progress] 22% — DB 연결 완료
+[2026-04-04 01:02:33] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 01:02:33] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 01:02:33] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 01:02:33] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 01:02:33] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 01:02:33] [Progress] 100% — ✓ 완료!
+[2026-04-04 01:03:34] ========== 로그인 창 시작 ==========
+[2026-04-04 01:03:34] [Init] MigrateAccountColumns 시작
+[2026-04-04 01:03:34] [Init] MigrateAccountColumns 완료
+[2026-04-04 01:03:34] [Init] MigrateInitialPasswords 시작
+[2026-04-04 01:03:34] [Init] MigrateInitialPasswords 완료
+[2026-04-04 01:03:37] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 01:03:37] [Lottie] 재생 시작
+[2026-04-04 01:03:37] [Progress] 0% — DB 연결 중...
+[2026-04-04 01:03:37] [Progress] 22% — DB 연결 완료
+[2026-04-04 01:03:37] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 01:03:37] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 01:03:37] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 01:03:37] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 01:03:37] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 01:03:38] [Progress] 100% — ✓ 완료!
+[2026-04-04 01:04:49] ========== 로그인 창 시작 ==========
+[2026-04-04 01:04:49] [Init] MigrateAccountColumns 시작
+[2026-04-04 01:04:49] [Init] MigrateAccountColumns 완료
+[2026-04-04 01:04:49] [Init] MigrateInitialPasswords 시작
+[2026-04-04 01:04:49] [Init] MigrateInitialPasswords 완료
+[2026-04-04 01:05:09] ========== 로그인 창 시작 ==========
+[2026-04-04 01:05:09] [Init] MigrateAccountColumns 시작
+[2026-04-04 01:05:09] [Init] MigrateAccountColumns 완료
+[2026-04-04 01:05:09] [Init] MigrateInitialPasswords 시작
+[2026-04-04 01:05:09] [Init] MigrateInitialPasswords 완료
+[2026-04-04 01:05:13] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 01:05:13] [Lottie] 재생 시작
+[2026-04-04 01:05:13] [Progress] 0% — DB 연결 중...
+[2026-04-04 01:05:13] [Progress] 22% — DB 연결 완료
+[2026-04-04 01:05:14] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 01:05:14] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 01:05:14] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 01:05:14] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 01:05:14] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 01:05:14] [Progress] 100% — ✓ 완료!
+[2026-04-04 01:06:38] ========== 로그인 창 시작 ==========
+[2026-04-04 01:06:38] [Init] MigrateAccountColumns 시작
+[2026-04-04 01:06:38] [Init] MigrateAccountColumns 완료
+[2026-04-04 01:06:38] [Init] MigrateInitialPasswords 시작
+[2026-04-04 01:06:38] [Init] MigrateInitialPasswords 완료
+[2026-04-04 01:06:44] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 01:06:44] [Lottie] 재생 시작
+[2026-04-04 01:06:44] [Progress] 0% — DB 연결 중...
+[2026-04-04 01:06:44] [Progress] 22% — DB 연결 완료
+[2026-04-04 01:06:44] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 01:06:44] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 01:06:44] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 01:06:44] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 01:06:44] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 01:06:45] [Progress] 100% — ✓ 완료!
+[2026-04-04 01:08:01] ========== 로그인 창 시작 ==========
+[2026-04-04 01:08:01] [Init] MigrateAccountColumns 시작
+[2026-04-04 01:08:01] [Init] MigrateAccountColumns 완료
+[2026-04-04 01:08:01] [Init] MigrateInitialPasswords 시작
+[2026-04-04 01:08:02] [Init] MigrateInitialPasswords 완료
+[2026-04-04 01:08:06] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 01:08:07] [Lottie] 재생 시작
+[2026-04-04 01:08:07] [Progress] 0% — DB 연결 중...
+[2026-04-04 01:08:07] [Progress] 22% — DB 연결 완료
+[2026-04-04 01:08:07] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 01:08:07] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 01:08:07] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 01:08:07] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 01:08:07] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 01:08:07] [Progress] 100% — ✓ 완료!
+[2026-04-04 01:09:57] ========== 로그인 창 시작 ==========
+[2026-04-04 01:09:57] [Init] MigrateAccountColumns 시작
+[2026-04-04 01:09:57] [Init] MigrateAccountColumns 완료
+[2026-04-04 01:09:57] [Init] MigrateInitialPasswords 시작
+[2026-04-04 01:09:57] [Init] MigrateInitialPasswords 완료
+[2026-04-04 01:10:02] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 01:10:02] [Lottie] 재생 시작
+[2026-04-04 01:10:02] [Progress] 0% — DB 연결 중...
+[2026-04-04 01:10:03] [Progress] 22% — DB 연결 완료
+[2026-04-04 01:10:03] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 01:10:03] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 01:10:03] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 01:10:03] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 01:10:03] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 01:10:03] [Progress] 100% — ✓ 완료!
+[2026-04-04 01:12:37] ========== 로그인 창 시작 ==========
+[2026-04-04 01:12:37] [Init] MigrateAccountColumns 시작
+[2026-04-04 01:12:37] [Init] MigrateAccountColumns 완료
+[2026-04-04 01:12:37] [Init] MigrateInitialPasswords 시작
+[2026-04-04 01:12:37] [Init] MigrateInitialPasswords 완료
+[2026-04-04 01:12:45] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 01:12:45] [Lottie] 재생 시작
+[2026-04-04 01:12:45] [Progress] 0% — DB 연결 중...
+[2026-04-04 01:12:45] [Progress] 22% — DB 연결 완료
+[2026-04-04 01:12:45] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 01:12:45] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 01:12:45] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 01:12:45] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 01:12:45] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 01:12:46] [Progress] 100% — ✓ 완료!
+[2026-04-04 01:14:56] ========== 로그인 창 시작 ==========
+[2026-04-04 01:14:56] [Init] MigrateAccountColumns 시작
+[2026-04-04 01:14:56] [Init] MigrateAccountColumns 완료
+[2026-04-04 01:14:56] [Init] MigrateInitialPasswords 시작
+[2026-04-04 01:14:56] [Init] MigrateInitialPasswords 완료
+[2026-04-04 01:15:01] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 01:15:01] [Lottie] 재생 시작
+[2026-04-04 01:15:01] [Progress] 0% — DB 연결 중...
+[2026-04-04 01:15:01] [Progress] 22% — DB 연결 완료
+[2026-04-04 01:15:02] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 01:15:02] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 01:15:02] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 01:15:02] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 01:15:02] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 01:15:02] [Progress] 100% — ✓ 완료!
+[2026-04-04 01:17:57] ========== 로그인 창 시작 ==========
+[2026-04-04 01:17:57] [Init] MigrateAccountColumns 시작
+[2026-04-04 01:17:57] [Init] MigrateAccountColumns 완료
+[2026-04-04 01:17:57] [Init] MigrateInitialPasswords 시작
+[2026-04-04 01:17:57] [Init] MigrateInitialPasswords 완료
+[2026-04-04 01:18:00] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 01:18:00] [Lottie] 재생 시작
+[2026-04-04 01:18:00] [Progress] 0% — DB 연결 중...
+[2026-04-04 01:18:00] [Progress] 22% — DB 연결 완료
+[2026-04-04 01:18:00] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 01:18:00] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 01:18:01] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 01:18:01] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 01:18:01] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 01:18:01] [Progress] 100% — ✓ 완료!
+[2026-04-04 01:24:04] ========== 로그인 창 시작 ==========
+[2026-04-04 01:24:04] [Init] MigrateAccountColumns 시작
+[2026-04-04 01:24:05] [Init] MigrateAccountColumns 완료
+[2026-04-04 01:24:05] [Init] MigrateInitialPasswords 시작
+[2026-04-04 01:24:05] [Init] MigrateInitialPasswords 완료
+[2026-04-04 01:24:08] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 01:24:09] [Lottie] 재생 시작
+[2026-04-04 01:24:09] [Progress] 0% — DB 연결 중...
+[2026-04-04 01:24:09] [Progress] 22% — DB 연결 완료
+[2026-04-04 01:24:09] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 01:24:09] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 01:24:09] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 01:24:09] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 01:24:09] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 01:24:10] [Progress] 100% — ✓ 완료!
+[2026-04-04 01:44:21] ========== 로그인 창 시작 ==========
+[2026-04-04 01:44:21] [Init] MigrateAccountColumns 시작
+[2026-04-04 01:44:22] [Init] MigrateAccountColumns 완료
+[2026-04-04 01:44:22] [Init] MigrateInitialPasswords 시작
+[2026-04-04 01:44:22] [Init] MigrateInitialPasswords 완료
+[2026-04-04 01:44:25] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 01:44:26] [Lottie] 재생 시작
+[2026-04-04 01:44:26] [Progress] 0% — DB 연결 중...
+[2026-04-04 01:44:26] [Progress] 22% — DB 연결 완료
+[2026-04-04 01:44:26] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 01:44:26] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 01:44:26] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 01:44:26] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 01:44:26] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 01:44:26] [Progress] 100% — ✓ 완료!
+[2026-04-04 01:51:41] ========== 로그인 창 시작 ==========
+[2026-04-04 01:51:41] [Init] MigrateAccountColumns 시작
+[2026-04-04 01:51:42] [Init] MigrateAccountColumns 완료
+[2026-04-04 01:51:42] [Init] MigrateInitialPasswords 시작
+[2026-04-04 01:51:42] [Init] MigrateInitialPasswords 완료
+[2026-04-04 01:52:20] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 01:52:21] [Lottie] 재생 시작
+[2026-04-04 01:52:21] [Progress] 0% — DB 연결 중...
+[2026-04-04 01:52:21] [Progress] 22% — DB 연결 완료
+[2026-04-04 01:52:21] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 01:52:21] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 01:52:21] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 01:52:21] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 01:52:21] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 01:52:22] [Progress] 100% — ✓ 완료!
+[2026-04-04 01:57:52] ========== 로그인 창 시작 ==========
+[2026-04-04 01:57:52] [Init] MigrateAccountColumns 시작
+[2026-04-04 01:57:53] [Init] MigrateAccountColumns 완료
+[2026-04-04 01:57:53] [Init] MigrateInitialPasswords 시작
+[2026-04-04 01:57:53] [Init] MigrateInitialPasswords 완료
+[2026-04-04 01:57:57] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 01:57:57] [Lottie] 재생 시작
+[2026-04-04 01:57:57] [Progress] 0% — DB 연결 중...
+[2026-04-04 01:57:57] [Progress] 22% — DB 연결 완료
+[2026-04-04 01:57:57] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 01:57:57] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 01:57:58] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 01:57:58] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 01:57:58] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 01:57:58] [Progress] 100% — ✓ 완료!
+[2026-04-04 10:58:33] ========== 로그인 창 시작 ==========
+[2026-04-04 10:58:33] [Init] MigrateAccountColumns 시작
+[2026-04-04 10:58:33] [Init] MigrateAccountColumns 완료
+[2026-04-04 10:58:33] [Init] MigrateInitialPasswords 시작
+[2026-04-04 10:58:33] [Init] MigrateInitialPasswords 완료
+[2026-04-04 10:58:38] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 10:58:39] [Lottie] 재생 시작
+[2026-04-04 10:58:39] [Progress] 0% — DB 연결 중...
+[2026-04-04 10:58:39] [Progress] 22% — DB 연결 완료
+[2026-04-04 10:58:39] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 10:58:39] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 10:58:39] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 10:58:39] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 10:58:39] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 10:58:40] [Progress] 100% — ✓ 완료!
+[2026-04-04 11:14:17] ========== 로그인 창 시작 ==========
+[2026-04-04 11:14:17] [Init] MigrateAccountColumns 시작
+[2026-04-04 11:14:17] [Init] MigrateAccountColumns 완료
+[2026-04-04 11:14:17] [Init] MigrateInitialPasswords 시작
+[2026-04-04 11:14:17] [Init] MigrateInitialPasswords 완료
+[2026-04-04 11:14:20] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 11:14:21] [Lottie] 재생 시작
+[2026-04-04 11:14:21] [Progress] 0% — DB 연결 중...
+[2026-04-04 11:14:21] [Progress] 22% — DB 연결 완료
+[2026-04-04 11:14:21] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 11:14:21] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 11:14:21] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 11:14:21] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 11:14:21] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 11:14:21] [Progress] 100% — ✓ 완료!
+[2026-04-04 11:19:27] ========== 로그인 창 시작 ==========
+[2026-04-04 11:19:27] [Init] MigrateAccountColumns 시작
+[2026-04-04 11:19:27] [Init] MigrateAccountColumns 완료
+[2026-04-04 11:19:27] [Init] MigrateInitialPasswords 시작
+[2026-04-04 11:19:27] [Init] MigrateInitialPasswords 완료
+[2026-04-04 11:19:30] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 11:19:30] [Lottie] 재생 시작
+[2026-04-04 11:19:30] [Progress] 0% — DB 연결 중...
+[2026-04-04 11:19:30] [Progress] 22% — DB 연결 완료
+[2026-04-04 11:19:31] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 11:19:31] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 11:19:31] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 11:19:31] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 11:19:31] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 11:19:31] [Progress] 100% — ✓ 완료!
+[2026-04-04 11:32:32] ========== 로그인 창 시작 ==========
+[2026-04-04 11:32:32] [Init] MigrateAccountColumns 시작
+[2026-04-04 11:32:32] [Init] MigrateAccountColumns 완료
+[2026-04-04 11:32:32] [Init] MigrateInitialPasswords 시작
+[2026-04-04 11:32:32] [Init] MigrateInitialPasswords 완료
+[2026-04-04 11:32:36] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 11:32:37] [Lottie] 재생 시작
+[2026-04-04 11:32:37] [Progress] 0% — DB 연결 중...
+[2026-04-04 11:32:37] [Progress] 22% — DB 연결 완료
+[2026-04-04 11:32:37] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 11:32:37] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 11:32:37] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 11:32:37] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 11:32:37] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 11:32:38] [Progress] 100% — ✓ 완료!
+[2026-04-04 11:33:46] ========== 로그인 창 시작 ==========
+[2026-04-04 11:33:46] [Init] MigrateAccountColumns 시작
+[2026-04-04 11:33:46] [Init] MigrateAccountColumns 완료
+[2026-04-04 11:33:46] [Init] MigrateInitialPasswords 시작
+[2026-04-04 11:33:46] [Init] MigrateInitialPasswords 완료
+[2026-04-04 11:33:50] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 11:33:51] [Lottie] 재생 시작
+[2026-04-04 11:33:51] [Progress] 0% — DB 연결 중...
+[2026-04-04 11:33:51] [Progress] 22% — DB 연결 완료
+[2026-04-04 11:33:51] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 11:33:51] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 11:33:51] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 11:33:51] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 11:33:51] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 11:33:52] [Progress] 100% — ✓ 완료!
+[2026-04-04 11:38:39] ========== 로그인 창 시작 ==========
+[2026-04-04 11:38:39] [Init] MigrateAccountColumns 시작
+[2026-04-04 11:38:39] [Init] MigrateAccountColumns 완료
+[2026-04-04 11:38:39] [Init] MigrateInitialPasswords 시작
+[2026-04-04 11:38:39] [Init] MigrateInitialPasswords 완료
+[2026-04-04 11:38:41] ---------- 로그인 시도 ----------
+[2026-04-04 11:38:41] [DoLogin] DB 모드: MariaDB
+[2026-04-04 11:38:41] [DoLogin] 사번 입력값: ''
+[2026-04-04 11:38:41] [DoLogin] 비밀번호 길이: 0자 / 비어있음: True
+[2026-04-04 11:38:41] [DoLogin] 비밀번호 입력 해시: e3b0c442...
+[2026-04-04 11:38:41] [DoLogin] 중단: 사번 없음
+[2026-04-04 11:38:41] ---------- 로그인 시도 ----------
+[2026-04-04 11:38:41] [DoLogin] DB 모드: MariaDB
+[2026-04-04 11:38:41] [DoLogin] 사번 입력값: ''
+[2026-04-04 11:38:41] [DoLogin] 비밀번호 길이: 0자 / 비어있음: True
+[2026-04-04 11:38:41] [DoLogin] 비밀번호 입력 해시: e3b0c442...
+[2026-04-04 11:38:41] [DoLogin] 중단: 사번 없음
+[2026-04-04 11:38:43] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 11:38:43] [Lottie] 재생 시작
+[2026-04-04 11:38:43] [Progress] 0% — DB 연결 중...
+[2026-04-04 11:38:43] [Progress] 22% — DB 연결 완료
+[2026-04-04 11:38:43] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 11:38:43] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 11:38:44] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 11:38:44] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 11:38:44] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 11:38:44] [Progress] 100% — ✓ 완료!
+[2026-04-04 11:42:12] ========== 로그인 창 시작 ==========
+[2026-04-04 11:42:12] [Init] MigrateAccountColumns 시작
+[2026-04-04 11:42:12] [Init] MigrateAccountColumns 완료
+[2026-04-04 11:42:12] [Init] MigrateInitialPasswords 시작
+[2026-04-04 11:42:13] [Init] MigrateInitialPasswords 완료
+[2026-04-04 11:42:15] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 11:42:15] [Lottie] 재생 시작
+[2026-04-04 11:42:15] [Progress] 0% — DB 연결 중...
+[2026-04-04 11:42:15] [Progress] 22% — DB 연결 완료
+[2026-04-04 11:42:15] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 11:42:15] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 11:42:15] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 11:42:15] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 11:42:16] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 11:42:16] [Progress] 100% — ✓ 완료!
+[2026-04-04 11:43:26] ========== 로그인 창 시작 ==========
+[2026-04-04 11:43:26] [Init] MigrateAccountColumns 시작
+[2026-04-04 11:43:26] [Init] MigrateAccountColumns 완료
+[2026-04-04 11:43:26] [Init] MigrateInitialPasswords 시작
+[2026-04-04 11:43:26] [Init] MigrateInitialPasswords 완료
+[2026-04-04 11:43:30] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 11:43:30] [Lottie] 재생 시작
+[2026-04-04 11:43:30] [Progress] 0% — DB 연결 중...
+[2026-04-04 11:43:30] [Progress] 22% — DB 연결 완료
+[2026-04-04 11:43:30] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 11:43:32] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 11:43:32] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 11:43:32] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 11:43:32] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 11:43:32] [Progress] 100% — ✓ 완료!
+[2026-04-04 11:44:34] ========== 로그인 창 시작 ==========
+[2026-04-04 11:44:34] [Init] MigrateAccountColumns 시작
+[2026-04-04 11:44:34] [Init] MigrateAccountColumns 완료
+[2026-04-04 11:44:34] [Init] MigrateInitialPasswords 시작
+[2026-04-04 11:44:34] [Init] MigrateInitialPasswords 완료
+[2026-04-04 11:44:57] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 11:44:58] [Lottie] 재생 시작
+[2026-04-04 11:44:58] [Progress] 0% — DB 연결 중...
+[2026-04-04 11:44:58] [Progress] 22% — DB 연결 완료
+[2026-04-04 11:44:58] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 11:45:13] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 11:45:13] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 11:45:13] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 11:45:13] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 11:45:14] [Progress] 100% — ✓ 완료!
+[2026-04-04 11:49:31] ========== 로그인 창 시작 ==========
+[2026-04-04 11:49:31] [Init] MigrateAccountColumns 시작
+[2026-04-04 11:49:31] [Init] MigrateAccountColumns 완료
+[2026-04-04 11:49:31] [Init] MigrateInitialPasswords 시작
+[2026-04-04 11:49:31] [Init] MigrateInitialPasswords 완료
+[2026-04-04 11:49:33] ---------- 로그인 시도 ----------
+[2026-04-04 11:49:33] [DoLogin] DB 모드: MariaDB
+[2026-04-04 11:49:33] [DoLogin] 사번 입력값: ''
+[2026-04-04 11:49:33] [DoLogin] 비밀번호 길이: 0자 / 비어있음: True
+[2026-04-04 11:49:33] [DoLogin] 비밀번호 입력 해시: e3b0c442...
+[2026-04-04 11:49:33] [DoLogin] 중단: 사번 없음
+[2026-04-04 11:49:35] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 11:49:35] [Lottie] 재생 시작
+[2026-04-04 11:49:35] [Progress] 0% — DB 연결 중...
+[2026-04-04 11:49:35] [Progress] 22% — DB 연결 완료
+[2026-04-04 11:49:36] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 11:49:36] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 11:49:36] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 11:49:36] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 11:49:36] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 11:49:36] [Progress] 100% — ✓ 완료!
+[2026-04-04 11:51:36] ========== 로그인 창 시작 ==========
+[2026-04-04 11:51:36] [Init] MigrateAccountColumns 시작
+[2026-04-04 11:51:36] [Init] MigrateAccountColumns 완료
+[2026-04-04 11:51:36] [Init] MigrateInitialPasswords 시작
+[2026-04-04 11:51:36] [Init] MigrateInitialPasswords 완료
+[2026-04-04 11:51:40] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 11:51:41] [Lottie] 재생 시작
+[2026-04-04 11:51:41] [Progress] 0% — DB 연결 중...
+[2026-04-04 11:51:41] [Progress] 22% — DB 연결 완료
+[2026-04-04 11:51:41] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 11:51:41] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 11:51:41] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 11:51:41] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 11:51:41] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 11:51:41] [Progress] 100% — ✓ 완료!
+[2026-04-04 11:52:58] ========== 로그인 창 시작 ==========
+[2026-04-04 11:52:58] [Init] MigrateAccountColumns 시작
+[2026-04-04 11:52:59] [Init] MigrateAccountColumns 완료
+[2026-04-04 11:52:59] [Init] MigrateInitialPasswords 시작
+[2026-04-04 11:52:59] [Init] MigrateInitialPasswords 완료
+[2026-04-04 11:53:24] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 11:53:25] [Lottie] 재생 시작
+[2026-04-04 11:53:25] [Progress] 0% — DB 연결 중...
+[2026-04-04 11:53:25] [Progress] 22% — DB 연결 완료
+[2026-04-04 11:53:25] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 11:53:43] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 11:53:43] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 11:53:43] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 11:53:43] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 11:53:43] [Progress] 100% — ✓ 완료!
+[2026-04-04 11:59:36] ========== 로그인 창 시작 ==========
+[2026-04-04 11:59:36] [Init] MigrateAccountColumns 시작
+[2026-04-04 11:59:36] [Init] MigrateAccountColumns 완료
+[2026-04-04 11:59:36] [Init] MigrateInitialPasswords 시작
+[2026-04-04 11:59:37] [Init] MigrateInitialPasswords 완료
+[2026-04-04 11:59:56] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 11:59:56] [Lottie] 재생 시작
+[2026-04-04 11:59:56] [Progress] 0% — DB 연결 중...
+[2026-04-04 11:59:56] [Progress] 22% — DB 연결 완료
+[2026-04-04 11:59:57] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 12:00:13] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 12:00:14] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 12:00:14] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 12:00:14] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 12:00:14] [Progress] 100% — ✓ 완료!
+[2026-04-04 12:02:13] ========== 로그인 창 시작 ==========
+[2026-04-04 12:02:13] [Init] MigrateAccountColumns 시작
+[2026-04-04 12:02:13] [Init] MigrateAccountColumns 완료
+[2026-04-04 12:02:13] [Init] MigrateInitialPasswords 시작
+[2026-04-04 12:02:13] [Init] MigrateInitialPasswords 완료
+[2026-04-04 12:02:17] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 12:02:18] [Lottie] 재생 시작
+[2026-04-04 12:02:18] [Progress] 0% — DB 연결 중...
+[2026-04-04 12:02:18] [Progress] 22% — DB 연결 완료
+[2026-04-04 12:02:18] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 12:02:20] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 12:02:20] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 12:02:20] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 12:02:20] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 12:02:21] [Progress] 100% — ✓ 완료!
+[2026-04-04 12:04:19] ========== 로그인 창 시작 ==========
+[2026-04-04 12:04:19] [Init] MigrateAccountColumns 시작
+[2026-04-04 12:04:19] [Init] MigrateAccountColumns 완료
+[2026-04-04 12:04:19] [Init] MigrateInitialPasswords 시작
+[2026-04-04 12:04:19] [Init] MigrateInitialPasswords 완료
+[2026-04-04 12:04:23] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 12:04:23] [Lottie] 재생 시작
+[2026-04-04 12:04:23] [Progress] 0% — DB 연결 중...
+[2026-04-04 12:04:23] [Progress] 22% — DB 연결 완료
+[2026-04-04 12:04:23] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 12:04:24] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 12:04:24] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 12:04:24] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 12:04:24] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 12:04:24] [Progress] 100% — ✓ 완료!
+[2026-04-04 12:05:53] ========== 로그인 창 시작 ==========
+[2026-04-04 12:05:53] [Init] MigrateAccountColumns 시작
+[2026-04-04 12:05:53] [Init] MigrateAccountColumns 완료
+[2026-04-04 12:05:53] [Init] MigrateInitialPasswords 시작
+[2026-04-04 12:05:53] [Init] MigrateInitialPasswords 완료
+[2026-04-04 12:05:58] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 12:05:58] [Lottie] 재생 시작
+[2026-04-04 12:05:58] [Progress] 0% — DB 연결 중...
+[2026-04-04 12:05:58] [Progress] 22% — DB 연결 완료
+[2026-04-04 12:05:58] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 12:05:58] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 12:05:59] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 12:05:59] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 12:05:59] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 12:05:59] [Progress] 100% — ✓ 완료!
+[2026-04-04 12:09:30] ========== 로그인 창 시작 ==========
+[2026-04-04 12:09:30] [Init] MigrateAccountColumns 시작
+[2026-04-04 12:09:31] [Init] MigrateAccountColumns 완료
+[2026-04-04 12:09:31] [Init] MigrateInitialPasswords 시작
+[2026-04-04 12:09:31] [Init] MigrateInitialPasswords 완료
+[2026-04-04 12:09:35] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 12:09:35] [Lottie] 재생 시작
+[2026-04-04 12:09:35] [Progress] 0% — DB 연결 중...
+[2026-04-04 12:09:35] [Progress] 22% — DB 연결 완료
+[2026-04-04 12:09:35] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 12:09:36] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 12:09:36] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 12:09:36] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 12:09:36] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 12:09:36] [Progress] 100% — ✓ 완료!
+[2026-04-04 12:11:20] ========== 로그인 창 시작 ==========
+[2026-04-04 12:11:20] [Init] MigrateAccountColumns 시작
+[2026-04-04 12:11:20] [Init] MigrateAccountColumns 완료
+[2026-04-04 12:11:20] [Init] MigrateInitialPasswords 시작
+[2026-04-04 12:11:20] [Init] MigrateInitialPasswords 완료
+[2026-04-04 12:12:15] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 12:12:15] [Lottie] 재생 시작
+[2026-04-04 12:12:15] [Progress] 0% — DB 연결 중...
+[2026-04-04 12:12:15] [Progress] 22% — DB 연결 완료
+[2026-04-04 12:12:15] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 12:13:17] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 12:13:17] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 12:13:17] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 12:13:17] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 12:13:17] [Progress] 100% — ✓ 완료!
+[2026-04-04 12:16:22] ========== 로그인 창 시작 ==========
+[2026-04-04 12:16:22] [Init] MigrateAccountColumns 시작
+[2026-04-04 12:16:22] [Init] MigrateAccountColumns 완료
+[2026-04-04 12:16:22] [Init] MigrateInitialPasswords 시작
+[2026-04-04 12:16:22] [Init] MigrateInitialPasswords 완료
+[2026-04-04 12:16:26] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 12:16:26] [Lottie] 재생 시작
+[2026-04-04 12:16:26] [Progress] 0% — DB 연결 중...
+[2026-04-04 12:16:26] [Progress] 22% — DB 연결 완료
+[2026-04-04 12:16:26] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 12:16:26] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 12:16:27] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 12:16:27] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 12:16:27] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 12:16:27] [Progress] 100% — ✓ 완료!
+[2026-04-04 12:17:47] ========== 로그인 창 시작 ==========
+[2026-04-04 12:17:47] [Init] MigrateAccountColumns 시작
+[2026-04-04 12:17:47] [Init] MigrateAccountColumns 완료
+[2026-04-04 12:17:47] [Init] MigrateInitialPasswords 시작
+[2026-04-04 12:17:47] [Init] MigrateInitialPasswords 완료
+[2026-04-04 12:26:21] ========== 로그인 창 시작 ==========
+[2026-04-04 12:26:21] [Init] MigrateAccountColumns 시작
+[2026-04-04 12:26:21] [Init] MigrateAccountColumns 완료
+[2026-04-04 12:26:21] [Init] MigrateInitialPasswords 시작
+[2026-04-04 12:26:21] [Init] MigrateInitialPasswords 완료
+[2026-04-04 12:31:17] ========== 로그인 창 시작 ==========
+[2026-04-04 12:31:17] [Init] MigrateAccountColumns 시작
+[2026-04-04 12:31:17] [Init] MigrateAccountColumns 완료
+[2026-04-04 12:31:17] [Init] MigrateInitialPasswords 시작
+[2026-04-04 12:31:18] [Init] MigrateInitialPasswords 완료
+[2026-04-04 12:31:57] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 12:31:58] [Lottie] 재생 시작
+[2026-04-04 12:31:58] [Progress] 0% — DB 연결 중...
+[2026-04-04 12:31:58] [Progress] 22% — DB 연결 완료
+[2026-04-04 12:31:58] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 12:32:37] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 12:32:37] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 12:32:37] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 12:32:37] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 12:32:38] [Progress] 100% — ✓ 완료!
+[2026-04-04 12:38:34] ========== 로그인 창 시작 ==========
+[2026-04-04 12:38:34] [Init] MigrateAccountColumns 시작
+[2026-04-04 12:38:34] [Init] MigrateAccountColumns 완료
+[2026-04-04 12:38:34] [Init] MigrateInitialPasswords 시작
+[2026-04-04 12:38:34] [Init] MigrateInitialPasswords 완료
+[2026-04-04 12:38:38] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 12:38:38] [Lottie] 재생 시작
+[2026-04-04 12:38:38] [Progress] 0% — DB 연결 중...
+[2026-04-04 12:38:38] [Progress] 22% — DB 연결 완료
+[2026-04-04 12:38:38] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 12:38:38] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 12:38:39] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 12:38:39] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 12:38:39] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 12:38:39] [Progress] 100% — ✓ 완료!
+[2026-04-04 12:58:51] ========== 로그인 창 시작 ==========
+[2026-04-04 12:58:51] [Init] MigrateAccountColumns 시작
+[2026-04-04 12:58:52] [Init] MigrateAccountColumns 완료
+[2026-04-04 12:58:52] [Init] MigrateInitialPasswords 시작
+[2026-04-04 12:58:52] [Init] MigrateInitialPasswords 완료
+[2026-04-04 12:59:28] ========== 로그인 창 시작 ==========
+[2026-04-04 12:59:28] [Init] MigrateAccountColumns 시작
+[2026-04-04 12:59:28] [Init] MigrateAccountColumns 완료
+[2026-04-04 12:59:28] [Init] MigrateInitialPasswords 시작
+[2026-04-04 12:59:28] [Init] MigrateInitialPasswords 완료
+[2026-04-04 13:00:06] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 13:00:06] [Lottie] 재생 시작
+[2026-04-04 13:00:06] [Progress] 0% — DB 연결 중...
+[2026-04-04 13:00:06] [Progress] 22% — DB 연결 완료
+[2026-04-04 13:00:06] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 13:00:29] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 13:00:29] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 13:00:29] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 13:00:29] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 13:00:29] [Progress] 100% — ✓ 완료!
+[2026-04-04 13:01:18] ========== 로그인 창 시작 ==========
+[2026-04-04 13:01:18] [Init] MigrateAccountColumns 시작
+[2026-04-04 13:01:18] [Init] MigrateAccountColumns 완료
+[2026-04-04 13:01:18] [Init] MigrateInitialPasswords 시작
+[2026-04-04 13:01:18] [Init] MigrateInitialPasswords 완료
+[2026-04-04 13:01:22] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 13:01:22] [Lottie] 재생 시작
+[2026-04-04 13:01:22] [Progress] 0% — DB 연결 중...
+[2026-04-04 13:01:22] [Progress] 22% — DB 연결 완료
+[2026-04-04 13:01:23] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 13:01:23] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 13:01:23] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 13:01:23] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 13:01:23] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 13:01:23] [Progress] 100% — ✓ 완료!
+[2026-04-04 13:07:10] ========== 로그인 창 시작 ==========
+[2026-04-04 13:07:10] [Init] MigrateAccountColumns 시작
+[2026-04-04 13:07:10] [Init] MigrateAccountColumns 완료
+[2026-04-04 13:07:10] [Init] MigrateInitialPasswords 시작
+[2026-04-04 13:07:10] [Init] MigrateInitialPasswords 완료
+[2026-04-04 13:07:22] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 13:07:22] [Lottie] 재생 시작
+[2026-04-04 13:07:22] [Progress] 0% — DB 연결 중...
+[2026-04-04 13:07:22] [Progress] 22% — DB 연결 완료
+[2026-04-04 13:07:23] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 13:07:23] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 13:07:23] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 13:07:23] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 13:07:23] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 13:07:24] [Progress] 100% — ✓ 완료!
+[2026-04-04 13:08:03] ========== 로그인 창 시작 ==========
+[2026-04-04 13:08:03] [Init] MigrateAccountColumns 시작
+[2026-04-04 13:08:03] [Init] MigrateAccountColumns 완료
+[2026-04-04 13:08:03] [Init] MigrateInitialPasswords 시작
+[2026-04-04 13:08:04] [Init] MigrateInitialPasswords 완료
+[2026-04-04 13:08:07] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 13:08:08] [Lottie] 재생 시작
+[2026-04-04 13:08:08] [Progress] 0% — DB 연결 중...
+[2026-04-04 13:08:08] [Progress] 22% — DB 연결 완료
+[2026-04-04 13:08:08] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 13:08:08] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 13:08:08] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 13:08:08] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 13:08:08] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 13:08:09] [Progress] 100% — ✓ 완료!
+[2026-04-04 13:13:01] ========== 로그인 창 시작 ==========
+[2026-04-04 13:13:01] [Init] MigrateAccountColumns 시작
+[2026-04-04 13:13:01] [Init] MigrateAccountColumns 완료
+[2026-04-04 13:13:01] [Init] MigrateInitialPasswords 시작
+[2026-04-04 13:13:01] [Init] MigrateInitialPasswords 완료
+[2026-04-04 13:13:04] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 13:13:04] [Lottie] 재생 시작
+[2026-04-04 13:13:04] [Progress] 0% — DB 연결 중...
+[2026-04-04 13:13:04] [Progress] 22% — DB 연결 완료
+[2026-04-04 13:13:04] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 13:13:04] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 13:13:04] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 13:13:04] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 13:13:05] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 13:13:05] [Progress] 100% — ✓ 완료!
+[2026-04-04 13:15:34] ========== 로그인 창 시작 ==========
+[2026-04-04 13:15:34] [Init] MigrateAccountColumns 시작
+[2026-04-04 13:15:34] [Init] MigrateAccountColumns 완료
+[2026-04-04 13:15:34] [Init] MigrateInitialPasswords 시작
+[2026-04-04 13:15:35] [Init] MigrateInitialPasswords 완료
+[2026-04-04 13:15:43] ---------- 로그인 시도 ----------
+[2026-04-04 13:15:43] [DoLogin] DB 모드: MariaDB
+[2026-04-04 13:15:43] [DoLogin] 사번 입력값: '201000308'
+[2026-04-04 13:15:43] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-04 13:15:43] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-04 13:15:43] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-04 13:15:45] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-04 13:15:45] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-04 13:15:45] [DebugCheck] DB 경로: /Users/azrael/Documents/ETA/Data/eta.db
+[2026-04-04 13:15:45] [DebugCheck] DB 존재: True
+[2026-04-04 13:15:45] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-04 13:15:45] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-04 13:15:45] [DoLogin] ValidateLogin 호출
+[2026-04-04 13:15:45] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-04 13:15:45] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-04 13:15:45] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-04 13:15:45] [Lottie] 재생 시작
+[2026-04-04 13:15:45] [Progress] 0% — DB 연결 중...
+[2026-04-04 13:15:45] [Progress] 22% — DB 연결 완료
+[2026-04-04 13:15:45] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 13:15:45] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 13:15:46] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 13:15:46] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 13:15:46] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 13:15:46] [Progress] 100% — ✓ 완료!
+[2026-04-04 21:34:24] ========== 로그인 창 시작 ==========
+[2026-04-04 21:34:24] [Init] MigrateAccountColumns 시작
+[2026-04-04 21:34:24] [Init] MigrateAccountColumns 완료
+[2026-04-04 21:34:24] [Init] MigrateInitialPasswords 시작
+[2026-04-04 21:34:24] [Init] MigrateInitialPasswords 완료
+[2026-04-04 21:34:27] ---------- 로그인 시도 ----------
+[2026-04-04 21:34:27] [DoLogin] DB 모드: MariaDB
+[2026-04-04 21:34:27] [DoLogin] 사번 입력값: ''
+[2026-04-04 21:34:27] [DoLogin] 비밀번호 길이: 0자 / 비어있음: True
+[2026-04-04 21:34:27] [DoLogin] 비밀번호 입력 해시: e3b0c442...
+[2026-04-04 21:34:27] [DoLogin] 중단: 사번 없음
+[2026-04-04 21:34:29] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 21:34:30] [Lottie] 재생 시작
+[2026-04-04 21:34:30] [Progress] 0% — DB 연결 중...
+[2026-04-04 21:34:30] [Progress] 22% — DB 연결 완료
+[2026-04-04 21:34:30] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 21:34:30] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 21:34:30] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 21:34:30] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 21:34:30] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 21:34:30] [Progress] 100% — ✓ 완료!
+[2026-04-04 21:36:51] ========== 로그인 창 시작 ==========
+[2026-04-04 21:36:51] [Init] MigrateAccountColumns 시작
+[2026-04-04 21:36:51] [Init] MigrateAccountColumns 완료
+[2026-04-04 21:36:51] [Init] MigrateInitialPasswords 시작
+[2026-04-04 21:36:51] [Init] MigrateInitialPasswords 완료
+[2026-04-04 21:36:55] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 21:36:55] [Lottie] 재생 시작
+[2026-04-04 21:36:55] [Progress] 0% — DB 연결 중...
+[2026-04-04 21:36:55] [Progress] 22% — DB 연결 완료
+[2026-04-04 21:36:55] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 21:36:55] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 21:36:55] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 21:36:55] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 21:36:56] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 21:36:56] [Progress] 100% — ✓ 완료!
+[2026-04-04 21:39:28] ========== 로그인 창 시작 ==========
+[2026-04-04 21:39:28] [Init] MigrateAccountColumns 시작
+[2026-04-04 21:39:28] [Init] MigrateAccountColumns 완료
+[2026-04-04 21:39:28] [Init] MigrateInitialPasswords 시작
+[2026-04-04 21:39:29] [Init] MigrateInitialPasswords 완료
+[2026-04-04 21:39:32] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 21:39:33] [Lottie] 재생 시작
+[2026-04-04 21:39:33] [Progress] 0% — DB 연결 중...
+[2026-04-04 21:39:33] [Progress] 22% — DB 연결 완료
+[2026-04-04 21:39:33] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 21:39:33] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 21:39:33] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 21:39:33] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 21:39:33] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 21:39:34] [Progress] 100% — ✓ 완료!
+[2026-04-04 21:59:36] ========== 로그인 창 시작 ==========
+[2026-04-04 21:59:36] [Init] MigrateAccountColumns 시작
+[2026-04-04 21:59:37] [Init] MigrateAccountColumns 완료
+[2026-04-04 21:59:37] [Init] MigrateInitialPasswords 시작
+[2026-04-04 21:59:37] [Init] MigrateInitialPasswords 완료
+[2026-04-04 21:59:37] [Init] SyncAllPhotosToDb 시작
+[2026-04-04 21:59:38] [Init] SyncAllPhotosToDb 완료
+[2026-04-04 21:59:41] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 21:59:41] [Lottie] 재생 시작
+[2026-04-04 21:59:41] [Progress] 0% — DB 연결 중...
+[2026-04-04 21:59:41] [Progress] 22% — DB 연결 완료
+[2026-04-04 21:59:42] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 21:59:42] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 21:59:42] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 21:59:42] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 21:59:42] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 21:59:42] [Progress] 100% — ✓ 완료!
+[2026-04-04 22:04:25] ========== 로그인 창 시작 ==========
+[2026-04-04 22:04:25] [Init] MigrateAccountColumns 시작
+[2026-04-04 22:04:25] [Init] MigrateAccountColumns 완료
+[2026-04-04 22:04:25] [Init] MigrateInitialPasswords 시작
+[2026-04-04 22:04:25] [Init] MigrateInitialPasswords 완료
+[2026-04-04 22:04:25] [Init] SyncAllPhotosToDb 시작
+[2026-04-04 22:04:25] [Init] SyncAllPhotosToDb 완료
+[2026-04-04 22:04:28] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 22:04:28] [Lottie] 재생 시작
+[2026-04-04 22:04:28] [Progress] 0% — DB 연결 중...
+[2026-04-04 22:04:28] [Progress] 22% — DB 연결 완료
+[2026-04-04 22:04:28] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 22:04:28] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 22:04:29] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 22:04:29] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 22:04:29] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 22:04:29] [Progress] 100% — ✓ 완료!
+[2026-04-04 22:04:39] ========== 로그인 창 시작 ==========
+[2026-04-04 22:04:39] [Init] MigrateAccountColumns 시작
+[2026-04-04 22:04:39] [Init] MigrateAccountColumns 완료
+[2026-04-04 22:04:39] [Init] MigrateInitialPasswords 시작
+[2026-04-04 22:04:39] [Init] MigrateInitialPasswords 완료
+[2026-04-04 22:04:39] [Init] SyncAllPhotosToDb 시작
+[2026-04-04 22:04:39] [Init] SyncAllPhotosToDb 완료
+[2026-04-04 22:04:42] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 22:04:43] [Lottie] 재생 시작
+[2026-04-04 22:04:43] [Progress] 0% — DB 연결 중...
+[2026-04-04 22:04:43] [Progress] 22% — DB 연결 완료
+[2026-04-04 22:04:43] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 22:04:43] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 22:04:43] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 22:04:43] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 22:04:43] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 22:04:43] [Progress] 100% — ✓ 완료!
+[2026-04-04 22:04:49] ========== 로그인 창 시작 ==========
+[2026-04-04 22:04:49] [Init] MigrateAccountColumns 시작
+[2026-04-04 22:04:49] [Init] MigrateAccountColumns 완료
+[2026-04-04 22:04:49] [Init] MigrateInitialPasswords 시작
+[2026-04-04 22:04:49] [Init] MigrateInitialPasswords 완료
+[2026-04-04 22:04:49] [Init] SyncAllPhotosToDb 시작
+[2026-04-04 22:04:49] [Init] SyncAllPhotosToDb 완료
+[2026-04-04 22:04:55] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 22:04:55] [Lottie] 재생 시작
+[2026-04-04 22:04:55] [Progress] 0% — DB 연결 중...
+[2026-04-04 22:04:56] [Progress] 22% — DB 연결 완료
+[2026-04-04 22:04:56] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 22:04:56] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 22:04:56] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 22:04:56] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 22:04:56] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 22:04:56] [Progress] 100% — ✓ 완료!
+[2026-04-04 22:06:16] ========== 로그인 창 시작 ==========
+[2026-04-04 22:06:16] [Init] MigrateAccountColumns 시작
+[2026-04-04 22:06:16] [Init] MigrateAccountColumns 완료
+[2026-04-04 22:06:16] [Init] MigrateInitialPasswords 시작
+[2026-04-04 22:06:16] [Init] MigrateInitialPasswords 완료
+[2026-04-04 22:06:16] [Init] SyncAllPhotosToDb 시작
+[2026-04-04 22:06:16] [Init] SyncAllPhotosToDb 완료
+[2026-04-04 22:06:20] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 22:06:20] [Lottie] 재생 시작
+[2026-04-04 22:06:20] [Progress] 0% — DB 연결 중...
+[2026-04-04 22:06:20] [Progress] 22% — DB 연결 완료
+[2026-04-04 22:06:20] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 22:06:20] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 22:06:21] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 22:06:21] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 22:06:21] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 22:06:21] [Progress] 100% — ✓ 완료!
+[2026-04-04 22:07:42] ========== 로그인 창 시작 ==========
+[2026-04-04 22:07:42] [Init] MigrateAccountColumns 시작
+[2026-04-04 22:07:42] [Init] MigrateAccountColumns 완료
+[2026-04-04 22:07:42] [Init] MigrateInitialPasswords 시작
+[2026-04-04 22:07:43] [Init] MigrateInitialPasswords 완료
+[2026-04-04 22:07:43] [Init] SyncAllPhotosToDb 시작
+[2026-04-04 22:07:43] [Init] SyncAllPhotosToDb 완료
+[2026-04-04 22:08:29] ========== 로그인 창 시작 ==========
+[2026-04-04 22:08:29] [Init] MigrateAccountColumns 시작
+[2026-04-04 22:08:29] [Init] MigrateAccountColumns 완료
+[2026-04-04 22:08:29] [Init] MigrateInitialPasswords 시작
+[2026-04-04 22:08:29] [Init] MigrateInitialPasswords 완료
+[2026-04-04 22:08:29] [Init] SyncAllPhotosToDb 시작
+[2026-04-04 22:08:29] [Init] SyncAllPhotosToDb 완료
+[2026-04-04 22:08:35] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 22:08:35] [Lottie] 재생 시작
+[2026-04-04 22:08:35] [Progress] 0% — DB 연결 중...
+[2026-04-04 22:08:35] [Progress] 22% — DB 연결 완료
+[2026-04-04 22:08:36] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 22:08:36] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 22:08:36] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 22:08:36] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 22:08:36] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 22:08:36] [Progress] 100% — ✓ 완료!
+[2026-04-04 22:12:47] ========== 로그인 창 시작 ==========
+[2026-04-04 22:12:47] [Init] MigrateAccountColumns 시작
+[2026-04-04 22:12:47] [Init] MigrateAccountColumns 완료
+[2026-04-04 22:12:47] [Init] MigrateInitialPasswords 시작
+[2026-04-04 22:12:47] [Init] MigrateInitialPasswords 완료
+[2026-04-04 22:12:47] [Init] SyncAllPhotosToDb 시작
+[2026-04-04 22:12:47] [Init] SyncAllPhotosToDb 완료
+[2026-04-04 22:12:52] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 22:12:52] [Lottie] 재생 시작
+[2026-04-04 22:12:52] [Progress] 0% — DB 연결 중...
+[2026-04-04 22:12:52] [Progress] 22% — DB 연결 완료
+[2026-04-04 22:12:52] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 22:12:52] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 22:12:53] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 22:12:53] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 22:12:53] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 22:12:53] [Progress] 100% — ✓ 완료!
+[2026-04-04 22:15:11] ========== 로그인 창 시작 ==========
+[2026-04-04 22:15:11] [Init] MigrateAccountColumns 시작
+[2026-04-04 22:15:11] [Init] MigrateAccountColumns 완료
+[2026-04-04 22:15:11] [Init] MigrateInitialPasswords 시작
+[2026-04-04 22:15:11] [Init] MigrateInitialPasswords 완료
+[2026-04-04 22:15:11] [Init] SyncAllPhotosToDb 시작
+[2026-04-04 22:15:11] [Init] SyncAllPhotosToDb 완료
+[2026-04-04 22:15:14] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 22:15:14] [Lottie] 재생 시작
+[2026-04-04 22:15:14] [Progress] 0% — DB 연결 중...
+[2026-04-04 22:15:14] [Progress] 22% — DB 연결 완료
+[2026-04-04 22:15:14] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 22:15:14] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 22:15:15] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 22:15:15] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 22:15:15] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 22:15:15] [Progress] 100% — ✓ 완료!
+[2026-04-04 22:16:16] ========== 로그인 창 시작 ==========
+[2026-04-04 22:16:16] [Init] MigrateAccountColumns 시작
+[2026-04-04 22:16:16] [Init] MigrateAccountColumns 완료
+[2026-04-04 22:16:16] [Init] MigrateInitialPasswords 시작
+[2026-04-04 22:16:16] [Init] MigrateInitialPasswords 완료
+[2026-04-04 22:16:16] [Init] SyncAllPhotosToDb 시작
+[2026-04-04 22:16:16] [Init] SyncAllPhotosToDb 완료
+[2026-04-04 22:16:19] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 22:16:19] [Lottie] 재생 시작
+[2026-04-04 22:16:19] [Progress] 0% — DB 연결 중...
+[2026-04-04 22:16:19] [Progress] 22% — DB 연결 완료
+[2026-04-04 22:16:20] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 22:16:20] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 22:16:20] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 22:16:20] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 22:16:20] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 22:16:20] [Progress] 100% — ✓ 완료!
+[2026-04-04 22:18:38] ========== 로그인 창 시작 ==========
+[2026-04-04 22:18:38] [Init] MigrateAccountColumns 시작
+[2026-04-04 22:18:38] [Init] MigrateAccountColumns 완료
+[2026-04-04 22:18:38] [Init] MigrateInitialPasswords 시작
+[2026-04-04 22:18:39] [Init] MigrateInitialPasswords 완료
+[2026-04-04 22:18:39] [Init] SyncAllPhotosToDb 시작
+[2026-04-04 22:18:39] [Init] SyncAllPhotosToDb 완료
+[2026-04-04 22:19:04] ========== 로그인 창 시작 ==========
+[2026-04-04 22:19:04] [Init] MigrateAccountColumns 시작
+[2026-04-04 22:19:04] [Init] MigrateAccountColumns 완료
+[2026-04-04 22:19:04] [Init] MigrateInitialPasswords 시작
+[2026-04-04 22:19:05] [Init] MigrateInitialPasswords 완료
+[2026-04-04 22:19:05] [Init] SyncAllPhotosToDb 시작
+[2026-04-04 22:19:05] [Init] SyncAllPhotosToDb 완료
+[2026-04-04 22:19:08] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 22:19:08] [Lottie] 재생 시작
+[2026-04-04 22:19:08] [Progress] 0% — DB 연결 중...
+[2026-04-04 22:19:08] [Progress] 22% — DB 연결 완료
+[2026-04-04 22:19:08] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 22:19:08] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 22:19:08] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 22:19:08] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 22:19:09] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 22:19:09] [Progress] 100% — ✓ 완료!
+[2026-04-04 22:21:16] ========== 로그인 창 시작 ==========
+[2026-04-04 22:21:16] [Init] MigrateAccountColumns 시작
+[2026-04-04 22:21:16] [Init] MigrateAccountColumns 완료
+[2026-04-04 22:21:16] [Init] MigrateInitialPasswords 시작
+[2026-04-04 22:21:16] [Init] MigrateInitialPasswords 완료
+[2026-04-04 22:21:16] [Init] SyncAllPhotosToDb 시작
+[2026-04-04 22:21:16] [Init] SyncAllPhotosToDb 완료
+[2026-04-04 22:21:21] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 22:21:21] [Lottie] 재생 시작
+[2026-04-04 22:21:21] [Progress] 0% — DB 연결 중...
+[2026-04-04 22:21:21] [Progress] 22% — DB 연결 완료
+[2026-04-04 22:21:22] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 22:21:22] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 22:21:22] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 22:21:22] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 22:21:22] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 22:21:22] [Progress] 100% — ✓ 완료!
+[2026-04-04 22:22:49] ========== 로그인 창 시작 ==========
+[2026-04-04 22:22:49] [Init] MigrateAccountColumns 시작
+[2026-04-04 22:22:49] [Init] MigrateAccountColumns 완료
+[2026-04-04 22:22:49] [Init] MigrateInitialPasswords 시작
+[2026-04-04 22:22:50] [Init] MigrateInitialPasswords 완료
+[2026-04-04 22:22:50] [Init] SyncAllPhotosToDb 시작
+[2026-04-04 22:22:50] [Init] SyncAllPhotosToDb 완료
+[2026-04-04 22:22:52] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 22:22:52] [Lottie] 재생 시작
+[2026-04-04 22:22:52] [Progress] 0% — DB 연결 중...
+[2026-04-04 22:22:52] [Progress] 22% — DB 연결 완료
+[2026-04-04 22:22:53] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 22:22:53] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 22:22:53] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 22:22:53] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 22:22:53] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 22:22:53] [Progress] 100% — ✓ 완료!
+[2026-04-04 22:25:10] ========== 로그인 창 시작 ==========
+[2026-04-04 22:25:10] [Init] MigrateAccountColumns 시작
+[2026-04-04 22:25:11] [Init] MigrateAccountColumns 완료
+[2026-04-04 22:25:11] [Init] MigrateInitialPasswords 시작
+[2026-04-04 22:25:11] [Init] MigrateInitialPasswords 완료
+[2026-04-04 22:25:11] [Init] SyncAllPhotosToDb 시작
+[2026-04-04 22:25:11] [Init] SyncAllPhotosToDb 완료
+[2026-04-04 22:25:14] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 22:25:14] [Lottie] 재생 시작
+[2026-04-04 22:25:14] [Progress] 0% — DB 연결 중...
+[2026-04-04 22:25:14] [Progress] 22% — DB 연결 완료
+[2026-04-04 22:25:14] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 22:25:14] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 22:25:15] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 22:25:15] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 22:25:15] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 22:25:15] [Progress] 100% — ✓ 완료!
+[2026-04-04 22:25:43] ========== 로그인 창 시작 ==========
+[2026-04-04 22:25:43] [Init] MigrateAccountColumns 시작
+[2026-04-04 22:25:43] [Init] MigrateAccountColumns 완료
+[2026-04-04 22:25:43] [Init] MigrateInitialPasswords 시작
+[2026-04-04 22:25:43] [Init] MigrateInitialPasswords 완료
+[2026-04-04 22:25:43] [Init] SyncAllPhotosToDb 시작
+[2026-04-04 22:25:43] [Init] SyncAllPhotosToDb 완료
+[2026-04-04 22:25:47] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 22:25:47] [Lottie] 재생 시작
+[2026-04-04 22:25:47] [Progress] 0% — DB 연결 중...
+[2026-04-04 22:25:47] [Progress] 22% — DB 연결 완료
+[2026-04-04 22:25:47] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 22:25:47] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 22:25:48] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 22:25:48] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 22:25:48] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 22:25:48] [Progress] 100% — ✓ 완료!
+[2026-04-04 22:28:45] ========== 로그인 창 시작 ==========
+[2026-04-04 22:28:45] [Init] MigrateAccountColumns 시작
+[2026-04-04 22:28:45] [Init] MigrateAccountColumns 완료
+[2026-04-04 22:28:45] [Init] MigrateInitialPasswords 시작
+[2026-04-04 22:28:45] [Init] MigrateInitialPasswords 완료
+[2026-04-04 22:28:45] [Init] SyncAllPhotosToDb 시작
+[2026-04-04 22:28:45] [Init] SyncAllPhotosToDb 완료
+[2026-04-04 22:28:48] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 22:28:48] [Lottie] 재생 시작
+[2026-04-04 22:28:48] [Progress] 0% — DB 연결 중...
+[2026-04-04 22:28:48] [Progress] 22% — DB 연결 완료
+[2026-04-04 22:28:48] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 22:28:49] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 22:28:49] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 22:28:49] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 22:28:49] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 22:28:49] [Progress] 100% — ✓ 완료!
+[2026-04-04 22:30:33] ========== 로그인 창 시작 ==========
+[2026-04-04 22:30:33] [Init] MigrateAccountColumns 시작
+[2026-04-04 22:30:33] [Init] MigrateAccountColumns 완료
+[2026-04-04 22:30:33] [Init] MigrateInitialPasswords 시작
+[2026-04-04 22:30:33] [Init] MigrateInitialPasswords 완료
+[2026-04-04 22:30:33] [Init] SyncAllPhotosToDb 시작
+[2026-04-04 22:30:33] [Init] SyncAllPhotosToDb 완료
+[2026-04-04 22:30:37] [EasterEgg] 관리자 자동 로그인
+[2026-04-04 22:30:37] [Lottie] 재생 시작
+[2026-04-04 22:30:37] [Progress] 0% — DB 연결 중...
+[2026-04-04 22:30:37] [Progress] 22% — DB 연결 완료
+[2026-04-04 22:30:37] [Progress] 22% — 테이블 초기화 중...
+[2026-04-04 22:30:37] [Progress] 55% — 테이블 준비 완료
+[2026-04-04 22:30:37] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-04 22:30:37] [Progress] 82% — 데이터 준비 완료
+[2026-04-04 22:30:37] [Progress] 96% — 시스템 준비 완료
+[2026-04-04 22:30:38] [Progress] 100% — ✓ 완료!
+[2026-04-05 06:14:46] ========== 로그인 창 시작 ==========
+[2026-04-05 06:14:46] [Init] MigrateAccountColumns 시작
+[2026-04-05 06:14:46] [Init] MigrateAccountColumns 완료
+[2026-04-05 06:14:46] [Init] MigrateInitialPasswords 시작
+[2026-04-05 06:14:46] [Init] MigrateInitialPasswords 완료
+[2026-04-05 06:14:46] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 06:14:46] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 06:14:49] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 06:14:50] [Lottie] 재생 시작
+[2026-04-05 06:14:50] [Progress] 0% — DB 연결 중...
+[2026-04-05 06:14:50] [Progress] 22% — DB 연결 완료
+[2026-04-05 06:14:50] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 06:14:50] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 06:14:50] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 06:14:50] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 06:14:50] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 06:14:50] [Progress] 100% — ✓ 완료!
+[2026-04-05 06:21:27] ========== 로그인 창 시작 ==========
+[2026-04-05 06:21:27] [Init] MigrateAccountColumns 시작
+[2026-04-05 06:21:28] [Init] MigrateAccountColumns 완료
+[2026-04-05 06:21:28] [Init] MigrateInitialPasswords 시작
+[2026-04-05 06:21:28] [Init] MigrateInitialPasswords 완료
+[2026-04-05 06:21:28] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 06:21:28] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 06:21:32] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 06:21:33] [Lottie] 재생 시작
+[2026-04-05 06:21:33] [Progress] 0% — DB 연결 중...
+[2026-04-05 06:21:33] [Progress] 22% — DB 연결 완료
+[2026-04-05 06:21:33] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 06:21:33] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 06:21:33] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 06:21:33] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 06:21:33] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 06:21:34] [Progress] 100% — ✓ 완료!
+[2026-04-05 06:31:01] ========== 로그인 창 시작 ==========
+[2026-04-05 06:31:01] [Init] MigrateAccountColumns 시작
+[2026-04-05 06:31:01] [Init] MigrateAccountColumns 완료
+[2026-04-05 06:31:01] [Init] MigrateInitialPasswords 시작
+[2026-04-05 06:31:01] [Init] MigrateInitialPasswords 완료
+[2026-04-05 06:31:01] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 06:31:01] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 06:31:05] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 06:31:05] [Lottie] 재생 시작
+[2026-04-05 06:31:05] [Progress] 0% — DB 연결 중...
+[2026-04-05 06:31:05] [Progress] 22% — DB 연결 완료
+[2026-04-05 06:31:05] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 06:31:05] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 06:31:05] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 06:31:05] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 06:31:06] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 06:31:06] [Progress] 100% — ✓ 완료!
+[2026-04-05 06:54:27] ========== 로그인 창 시작 ==========
+[2026-04-05 06:54:27] [Init] MigrateAccountColumns 시작
+[2026-04-05 06:54:27] [Init] MigrateAccountColumns 완료
+[2026-04-05 06:54:27] [Init] MigrateInitialPasswords 시작
+[2026-04-05 06:54:27] [Init] MigrateInitialPasswords 완료
+[2026-04-05 06:54:27] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 06:54:27] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 06:54:32] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 06:54:32] [Lottie] 재생 시작
+[2026-04-05 06:54:32] [Progress] 0% — DB 연결 중...
+[2026-04-05 06:54:32] [Progress] 22% — DB 연결 완료
+[2026-04-05 06:54:32] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 06:54:32] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 06:54:32] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 06:54:32] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 06:54:32] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 06:54:33] [Progress] 100% — ✓ 완료!
+[2026-04-05 07:04:23] ========== 로그인 창 시작 ==========
+[2026-04-05 07:04:23] [Init] MigrateAccountColumns 시작
+[2026-04-05 07:04:23] [Init] MigrateAccountColumns 완료
+[2026-04-05 07:04:23] [Init] MigrateInitialPasswords 시작
+[2026-04-05 07:04:24] [Init] MigrateInitialPasswords 완료
+[2026-04-05 07:04:24] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 07:04:24] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 07:04:27] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 07:04:27] [Lottie] 재생 시작
+[2026-04-05 07:04:27] [Progress] 0% — DB 연결 중...
+[2026-04-05 07:04:27] [Progress] 22% — DB 연결 완료
+[2026-04-05 07:04:27] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 07:04:27] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 07:04:28] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 07:04:28] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 07:04:28] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 07:04:28] [Progress] 100% — ✓ 완료!
+[2026-04-05 07:08:00] ========== 로그인 창 시작 ==========
+[2026-04-05 07:08:00] [Init] MigrateAccountColumns 시작
+[2026-04-05 07:08:00] [Init] MigrateAccountColumns 완료
+[2026-04-05 07:08:00] [Init] MigrateInitialPasswords 시작
+[2026-04-05 07:08:00] [Init] MigrateInitialPasswords 완료
+[2026-04-05 07:08:00] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 07:08:00] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 07:08:04] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 07:08:04] [Lottie] 재생 시작
+[2026-04-05 07:08:04] [Progress] 0% — DB 연결 중...
+[2026-04-05 07:08:04] [Progress] 22% — DB 연결 완료
+[2026-04-05 07:08:04] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 07:08:04] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 07:08:05] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 07:08:05] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 07:08:05] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 07:08:05] [Progress] 100% — ✓ 완료!
+[2026-04-05 07:20:11] ========== 로그인 창 시작 ==========
+[2026-04-05 07:20:11] [Init] MigrateAccountColumns 시작
+[2026-04-05 07:20:11] [Init] MigrateAccountColumns 완료
+[2026-04-05 07:20:11] [Init] MigrateInitialPasswords 시작
+[2026-04-05 07:20:11] [Init] MigrateInitialPasswords 완료
+[2026-04-05 07:20:11] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 07:20:11] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 07:20:17] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 07:20:17] [Lottie] 재생 시작
+[2026-04-05 07:20:17] [Progress] 0% — DB 연결 중...
+[2026-04-05 07:20:17] [Progress] 22% — DB 연결 완료
+[2026-04-05 07:20:17] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 07:20:17] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 07:20:18] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 07:20:18] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 07:20:18] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 07:20:18] [Progress] 100% — ✓ 완료!
+[2026-04-05 07:29:18] ========== 로그인 창 시작 ==========
+[2026-04-05 07:29:18] [Init] MigrateAccountColumns 시작
+[2026-04-05 07:29:18] [Init] MigrateAccountColumns 완료
+[2026-04-05 07:29:18] [Init] MigrateInitialPasswords 시작
+[2026-04-05 07:29:18] [Init] MigrateInitialPasswords 완료
+[2026-04-05 07:29:18] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 07:29:18] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 07:29:22] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 07:29:23] [Lottie] 재생 시작
+[2026-04-05 07:29:23] [Progress] 0% — DB 연결 중...
+[2026-04-05 07:29:23] [Progress] 22% — DB 연결 완료
+[2026-04-05 07:29:23] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 07:29:23] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 07:29:23] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 07:29:23] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 07:29:23] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 07:29:24] [Progress] 100% — ✓ 완료!
+[2026-04-05 07:33:24] ========== 로그인 창 시작 ==========
+[2026-04-05 07:33:24] [Init] MigrateAccountColumns 시작
+[2026-04-05 07:33:24] [Init] MigrateAccountColumns 완료
+[2026-04-05 07:33:24] [Init] MigrateInitialPasswords 시작
+[2026-04-05 07:33:24] [Init] MigrateInitialPasswords 완료
+[2026-04-05 07:33:24] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 07:33:24] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 07:33:26] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 07:33:27] [Lottie] 재생 시작
+[2026-04-05 07:33:27] [Progress] 0% — DB 연결 중...
+[2026-04-05 07:33:27] [Progress] 22% — DB 연결 완료
+[2026-04-05 07:33:27] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 07:33:27] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 07:33:27] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 07:33:27] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 07:33:27] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 07:33:27] [Progress] 100% — ✓ 완료!
+[2026-04-05 07:38:19] ========== 로그인 창 시작 ==========
+[2026-04-05 07:38:19] [Init] MigrateAccountColumns 시작
+[2026-04-05 07:38:19] [Init] MigrateAccountColumns 완료
+[2026-04-05 07:38:19] [Init] MigrateInitialPasswords 시작
+[2026-04-05 07:38:19] [Init] MigrateInitialPasswords 완료
+[2026-04-05 07:38:19] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 07:38:19] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 07:38:22] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 07:38:23] [Lottie] 재생 시작
+[2026-04-05 07:38:23] [Progress] 0% — DB 연결 중...
+[2026-04-05 07:38:23] [Progress] 22% — DB 연결 완료
+[2026-04-05 07:38:23] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 07:38:23] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 07:38:23] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 07:38:23] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 07:38:23] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 07:38:23] [Progress] 100% — ✓ 완료!
+[2026-04-05 07:49:19] ========== 로그인 창 시작 ==========
+[2026-04-05 07:49:19] [Init] MigrateAccountColumns 시작
+[2026-04-05 07:49:19] [Init] MigrateAccountColumns 완료
+[2026-04-05 07:49:19] [Init] MigrateInitialPasswords 시작
+[2026-04-05 07:49:19] [Init] MigrateInitialPasswords 완료
+[2026-04-05 07:49:19] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 07:49:19] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 07:49:22] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 07:49:22] [Lottie] 재생 시작
+[2026-04-05 07:49:22] [Progress] 0% — DB 연결 중...
+[2026-04-05 07:49:22] [Progress] 22% — DB 연결 완료
+[2026-04-05 07:49:22] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 07:49:23] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 07:49:23] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 07:49:23] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 07:49:23] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 07:49:23] [Progress] 100% — ✓ 완료!
+[2026-04-05 07:56:13] ========== 로그인 창 시작 ==========
+[2026-04-05 07:56:13] [Init] MigrateAccountColumns 시작
+[2026-04-05 07:56:13] [Init] MigrateAccountColumns 완료
+[2026-04-05 07:56:13] [Init] MigrateInitialPasswords 시작
+[2026-04-05 07:56:14] [Init] MigrateInitialPasswords 완료
+[2026-04-05 07:56:14] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 07:56:14] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 07:56:20] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 07:56:20] [Lottie] 재생 시작
+[2026-04-05 07:56:20] [Progress] 0% — DB 연결 중...
+[2026-04-05 07:56:20] [Progress] 22% — DB 연결 완료
+[2026-04-05 07:56:20] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 07:56:20] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 07:56:20] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 07:56:20] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 07:56:20] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 07:56:21] [Progress] 100% — ✓ 완료!
+[2026-04-05 08:04:58] ========== 로그인 창 시작 ==========
+[2026-04-05 08:04:58] [Init] MigrateAccountColumns 시작
+[2026-04-05 08:04:58] [Init] MigrateAccountColumns 완료
+[2026-04-05 08:04:58] [Init] MigrateInitialPasswords 시작
+[2026-04-05 08:04:59] [Init] MigrateInitialPasswords 완료
+[2026-04-05 08:04:59] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 08:04:59] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 08:05:01] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 08:05:01] [Lottie] 재생 시작
+[2026-04-05 08:05:01] [Progress] 0% — DB 연결 중...
+[2026-04-05 08:05:01] [Progress] 22% — DB 연결 완료
+[2026-04-05 08:05:02] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 08:05:02] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 08:05:02] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 08:05:02] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 08:05:02] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 08:05:02] [Progress] 100% — ✓ 완료!
+[2026-04-05 08:09:50] ========== 로그인 창 시작 ==========
+[2026-04-05 08:09:50] [Init] MigrateAccountColumns 시작
+[2026-04-05 08:09:50] [Init] MigrateAccountColumns 완료
+[2026-04-05 08:09:50] [Init] MigrateInitialPasswords 시작
+[2026-04-05 08:09:50] [Init] MigrateInitialPasswords 완료
+[2026-04-05 08:09:50] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 08:09:50] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 08:09:52] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 08:09:53] [Lottie] 재생 시작
+[2026-04-05 08:09:53] [Progress] 0% — DB 연결 중...
+[2026-04-05 08:09:53] [Progress] 22% — DB 연결 완료
+[2026-04-05 08:09:53] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 08:09:53] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 08:09:53] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 08:09:53] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 08:09:53] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 08:09:54] [Progress] 100% — ✓ 완료!
+[2026-04-05 08:14:24] ========== 로그인 창 시작 ==========
+[2026-04-05 08:14:24] [Init] MigrateAccountColumns 시작
+[2026-04-05 08:14:25] [Init] MigrateAccountColumns 완료
+[2026-04-05 08:14:25] [Init] MigrateInitialPasswords 시작
+[2026-04-05 08:14:25] [Init] MigrateInitialPasswords 완료
+[2026-04-05 08:14:25] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 08:14:25] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 08:14:28] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 08:14:28] [Lottie] 재생 시작
+[2026-04-05 08:14:28] [Progress] 0% — DB 연결 중...
+[2026-04-05 08:14:28] [Progress] 22% — DB 연결 완료
+[2026-04-05 08:14:28] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 08:14:28] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 08:14:29] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 08:14:29] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 08:14:29] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 08:14:29] [Progress] 100% — ✓ 완료!
+[2026-04-05 08:27:54] ========== 로그인 창 시작 ==========
+[2026-04-05 08:27:54] [Init] MigrateAccountColumns 시작
+[2026-04-05 08:27:54] [Init] MigrateAccountColumns 완료
+[2026-04-05 08:27:54] [Init] MigrateInitialPasswords 시작
+[2026-04-05 08:27:54] [Init] MigrateInitialPasswords 완료
+[2026-04-05 08:27:54] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 08:27:54] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 08:27:57] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 08:27:57] [Lottie] 재생 시작
+[2026-04-05 08:27:57] [Progress] 0% — DB 연결 중...
+[2026-04-05 08:27:57] [Progress] 22% — DB 연결 완료
+[2026-04-05 08:27:57] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 08:27:58] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 08:27:58] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 08:27:58] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 08:27:58] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 08:27:58] [Progress] 100% — ✓ 완료!
+[2026-04-05 08:29:49] ========== 로그인 창 시작 ==========
+[2026-04-05 08:29:49] [Init] MigrateAccountColumns 시작
+[2026-04-05 08:29:49] [Init] MigrateAccountColumns 완료
+[2026-04-05 08:29:49] [Init] MigrateInitialPasswords 시작
+[2026-04-05 08:29:49] [Init] MigrateInitialPasswords 완료
+[2026-04-05 08:29:49] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 08:29:49] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 08:29:53] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 08:29:53] [Lottie] 재생 시작
+[2026-04-05 08:29:53] [Progress] 0% — DB 연결 중...
+[2026-04-05 08:29:53] [Progress] 22% — DB 연결 완료
+[2026-04-05 08:29:54] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 08:29:54] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 08:29:54] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 08:29:54] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 08:29:54] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 08:29:54] [Progress] 100% — ✓ 완료!
+[2026-04-05 08:39:42] ========== 로그인 창 시작 ==========
+[2026-04-05 08:39:42] [Init] MigrateAccountColumns 시작
+[2026-04-05 08:39:42] [Init] MigrateAccountColumns 완료
+[2026-04-05 08:39:42] [Init] MigrateInitialPasswords 시작
+[2026-04-05 08:39:43] [Init] MigrateInitialPasswords 완료
+[2026-04-05 08:39:43] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 08:39:43] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 08:39:45] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 08:39:46] [Lottie] 재생 시작
+[2026-04-05 08:39:46] [Progress] 0% — DB 연결 중...
+[2026-04-05 08:39:46] [Progress] 22% — DB 연결 완료
+[2026-04-05 08:39:46] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 08:39:46] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 08:39:46] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 08:39:46] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 08:39:46] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 08:39:46] [Progress] 100% — ✓ 완료!
+[2026-04-05 08:42:22] ========== 로그인 창 시작 ==========
+[2026-04-05 08:42:22] [Init] MigrateAccountColumns 시작
+[2026-04-05 08:42:22] [Init] MigrateAccountColumns 완료
+[2026-04-05 08:42:22] [Init] MigrateInitialPasswords 시작
+[2026-04-05 08:42:22] [Init] MigrateInitialPasswords 완료
+[2026-04-05 08:42:22] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 08:42:22] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 08:42:25] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 08:42:25] [Lottie] 재생 시작
+[2026-04-05 08:42:25] [Progress] 0% — DB 연결 중...
+[2026-04-05 08:42:25] [Progress] 22% — DB 연결 완료
+[2026-04-05 08:42:26] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 08:42:26] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 08:42:26] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 08:42:26] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 08:42:26] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 08:42:26] [Progress] 100% — ✓ 완료!
+[2026-04-05 08:46:06] ========== 로그인 창 시작 ==========
+[2026-04-05 08:46:06] [Init] MigrateAccountColumns 시작
+[2026-04-05 08:46:06] [Init] MigrateAccountColumns 완료
+[2026-04-05 08:46:06] [Init] MigrateInitialPasswords 시작
+[2026-04-05 08:46:06] [Init] MigrateInitialPasswords 완료
+[2026-04-05 08:46:06] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 08:46:06] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 08:46:09] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 08:46:09] [Lottie] 재생 시작
+[2026-04-05 08:46:09] [Progress] 0% — DB 연결 중...
+[2026-04-05 08:46:09] [Progress] 22% — DB 연결 완료
+[2026-04-05 08:46:09] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 08:46:09] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 08:46:09] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 08:46:09] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 08:46:09] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 08:46:10] [Progress] 100% — ✓ 완료!
+[2026-04-05 08:56:41] ========== 로그인 창 시작 ==========
+[2026-04-05 08:56:41] [Init] MigrateAccountColumns 시작
+[2026-04-05 08:56:41] [Init] MigrateAccountColumns 완료
+[2026-04-05 08:56:41] [Init] MigrateInitialPasswords 시작
+[2026-04-05 08:56:41] [Init] MigrateInitialPasswords 완료
+[2026-04-05 08:56:41] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 08:56:41] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 08:56:44] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 08:56:45] [Lottie] 재생 시작
+[2026-04-05 08:56:45] [Progress] 0% — DB 연결 중...
+[2026-04-05 08:56:45] [Progress] 22% — DB 연결 완료
+[2026-04-05 08:56:45] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 08:56:45] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 08:56:45] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 08:56:45] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 08:56:45] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 08:56:46] [Progress] 100% — ✓ 완료!
+[2026-04-05 09:10:20] ========== 로그인 창 시작 ==========
+[2026-04-05 09:10:20] [Init] MigrateAccountColumns 시작
+[2026-04-05 09:10:20] [Init] MigrateAccountColumns 완료
+[2026-04-05 09:10:20] [Init] MigrateInitialPasswords 시작
+[2026-04-05 09:10:21] [Init] MigrateInitialPasswords 완료
+[2026-04-05 09:10:21] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 09:10:21] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 09:10:23] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 09:10:24] [Lottie] 재생 시작
+[2026-04-05 09:10:24] [Progress] 0% — DB 연결 중...
+[2026-04-05 09:10:24] [Progress] 22% — DB 연결 완료
+[2026-04-05 09:10:24] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 09:10:24] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 09:10:24] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 09:10:24] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 09:10:24] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 09:10:25] [Progress] 100% — ✓ 완료!
+[2026-04-05 09:17:24] ========== 로그인 창 시작 ==========
+[2026-04-05 09:17:24] [Init] MigrateAccountColumns 시작
+[2026-04-05 09:17:24] [Init] MigrateAccountColumns 완료
+[2026-04-05 09:17:24] [Init] MigrateInitialPasswords 시작
+[2026-04-05 09:17:24] [Init] MigrateInitialPasswords 완료
+[2026-04-05 09:17:24] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 09:17:24] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 09:17:27] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 09:17:27] [Lottie] 재생 시작
+[2026-04-05 09:17:27] [Progress] 0% — DB 연결 중...
+[2026-04-05 09:17:27] [Progress] 22% — DB 연결 완료
+[2026-04-05 09:17:28] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 09:17:28] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 09:17:28] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 09:17:28] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 09:17:28] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 09:17:28] [Progress] 100% — ✓ 완료!
+[2026-04-05 09:20:32] ========== 로그인 창 시작 ==========
+[2026-04-05 09:20:32] [Init] MigrateAccountColumns 시작
+[2026-04-05 09:20:32] [Init] MigrateAccountColumns 완료
+[2026-04-05 09:20:32] [Init] MigrateInitialPasswords 시작
+[2026-04-05 09:20:32] [Init] MigrateInitialPasswords 완료
+[2026-04-05 09:20:32] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 09:20:32] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 09:21:01] ========== 로그인 창 시작 ==========
+[2026-04-05 09:21:01] [Init] MigrateAccountColumns 시작
+[2026-04-05 09:21:01] [Init] MigrateAccountColumns 완료
+[2026-04-05 09:21:01] [Init] MigrateInitialPasswords 시작
+[2026-04-05 09:21:01] [Init] MigrateInitialPasswords 완료
+[2026-04-05 09:21:01] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 09:21:01] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 09:21:04] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 09:21:04] [Lottie] 재생 시작
+[2026-04-05 09:21:04] [Progress] 0% — DB 연결 중...
+[2026-04-05 09:21:04] [Progress] 22% — DB 연결 완료
+[2026-04-05 09:21:05] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 09:21:05] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 09:21:05] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 09:21:05] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 09:21:05] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 09:21:05] [Progress] 100% — ✓ 완료!
+[2026-04-05 09:23:00] ========== 로그인 창 시작 ==========
+[2026-04-05 09:23:00] [Init] MigrateAccountColumns 시작
+[2026-04-05 09:23:00] [Init] MigrateAccountColumns 완료
+[2026-04-05 09:23:00] [Init] MigrateInitialPasswords 시작
+[2026-04-05 09:23:00] [Init] MigrateInitialPasswords 완료
+[2026-04-05 09:23:00] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 09:23:00] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 09:23:07] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 09:23:07] [Lottie] 재생 시작
+[2026-04-05 09:23:07] [Progress] 0% — DB 연결 중...
+[2026-04-05 09:23:07] [Progress] 22% — DB 연결 완료
+[2026-04-05 09:23:07] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 09:23:07] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 09:23:07] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 09:23:07] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 09:23:07] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 09:23:08] [Progress] 100% — ✓ 완료!
+[2026-04-05 09:28:01] ========== 로그인 창 시작 ==========
+[2026-04-05 09:28:01] [Init] MigrateAccountColumns 시작
+[2026-04-05 09:28:01] [Init] MigrateAccountColumns 완료
+[2026-04-05 09:28:01] [Init] MigrateInitialPasswords 시작
+[2026-04-05 09:28:01] [Init] MigrateInitialPasswords 완료
+[2026-04-05 09:28:01] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 09:28:01] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 09:28:05] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 09:28:05] [Lottie] 재생 시작
+[2026-04-05 09:28:05] [Progress] 0% — DB 연결 중...
+[2026-04-05 09:28:05] [Progress] 22% — DB 연결 완료
+[2026-04-05 09:28:05] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 09:28:05] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 09:28:05] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 09:28:05] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 09:28:06] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 09:28:06] [Progress] 100% — ✓ 완료!
+[2026-04-05 09:33:12] ========== 로그인 창 시작 ==========
+[2026-04-05 09:33:12] [Init] MigrateAccountColumns 시작
+[2026-04-05 09:33:12] [Init] MigrateAccountColumns 완료
+[2026-04-05 09:33:12] [Init] MigrateInitialPasswords 시작
+[2026-04-05 09:33:12] [Init] MigrateInitialPasswords 완료
+[2026-04-05 09:33:12] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 09:33:12] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 09:33:15] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 09:33:15] [Lottie] 재생 시작
+[2026-04-05 09:33:15] [Progress] 0% — DB 연결 중...
+[2026-04-05 09:33:15] [Progress] 22% — DB 연결 완료
+[2026-04-05 09:33:15] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 09:33:15] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 09:33:16] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 09:33:16] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 09:33:16] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 09:33:16] [Progress] 100% — ✓ 완료!
+[2026-04-05 09:34:04] ========== 로그인 창 시작 ==========
+[2026-04-05 09:34:04] [Init] MigrateAccountColumns 시작
+[2026-04-05 09:34:04] [Init] MigrateAccountColumns 완료
+[2026-04-05 09:34:04] [Init] MigrateInitialPasswords 시작
+[2026-04-05 09:34:04] [Init] MigrateInitialPasswords 완료
+[2026-04-05 09:34:04] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 09:34:04] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 09:34:07] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 09:34:08] [Lottie] 재생 시작
+[2026-04-05 09:34:08] [Progress] 0% — DB 연결 중...
+[2026-04-05 09:34:08] [Progress] 22% — DB 연결 완료
+[2026-04-05 09:34:08] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 09:34:08] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 09:34:08] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 09:34:08] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 09:34:08] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 09:34:08] [Progress] 100% — ✓ 완료!
+[2026-04-05 09:34:48] ========== 로그인 창 시작 ==========
+[2026-04-05 09:34:48] [Init] MigrateAccountColumns 시작
+[2026-04-05 09:34:48] [Init] MigrateAccountColumns 완료
+[2026-04-05 09:34:48] [Init] MigrateInitialPasswords 시작
+[2026-04-05 09:34:48] [Init] MigrateInitialPasswords 완료
+[2026-04-05 09:34:48] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 09:34:48] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 09:34:51] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 09:34:51] [Lottie] 재생 시작
+[2026-04-05 09:34:51] [Progress] 0% — DB 연결 중...
+[2026-04-05 09:34:51] [Progress] 22% — DB 연결 완료
+[2026-04-05 09:34:51] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 09:34:51] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 09:34:52] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 09:34:52] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 09:34:52] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 09:34:52] [Progress] 100% — ✓ 완료!
+[2026-04-05 09:35:19] ========== 로그인 창 시작 ==========
+[2026-04-05 09:35:19] [Init] MigrateAccountColumns 시작
+[2026-04-05 09:35:19] [Init] MigrateAccountColumns 완료
+[2026-04-05 09:35:19] [Init] MigrateInitialPasswords 시작
+[2026-04-05 09:35:19] [Init] MigrateInitialPasswords 완료
+[2026-04-05 09:35:19] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 09:35:19] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 09:35:22] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 09:35:22] [Lottie] 재생 시작
+[2026-04-05 09:35:22] [Progress] 0% — DB 연결 중...
+[2026-04-05 09:35:22] [Progress] 22% — DB 연결 완료
+[2026-04-05 09:35:22] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 09:35:22] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 09:35:23] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 09:35:23] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 09:35:23] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 09:35:23] [Progress] 100% — ✓ 완료!
+[2026-04-05 09:45:43] ========== 로그인 창 시작 ==========
+[2026-04-05 09:45:43] [Init] MigrateAccountColumns 시작
+[2026-04-05 09:45:43] [Init] MigrateAccountColumns 완료
+[2026-04-05 09:45:43] [Init] MigrateInitialPasswords 시작
+[2026-04-05 09:45:43] [Init] MigrateInitialPasswords 완료
+[2026-04-05 09:45:43] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 09:45:43] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 09:45:50] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 09:45:50] [Lottie] 재생 시작
+[2026-04-05 09:45:50] [Progress] 0% — DB 연결 중...
+[2026-04-05 09:45:50] [Progress] 22% — DB 연결 완료
+[2026-04-05 09:45:50] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 09:45:50] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 09:45:51] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 09:45:51] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 09:45:51] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 09:45:51] [Progress] 100% — ✓ 완료!
+[2026-04-05 09:49:29] ========== 로그인 창 시작 ==========
+[2026-04-05 09:49:29] [Init] MigrateAccountColumns 시작
+[2026-04-05 09:49:29] [Init] MigrateAccountColumns 완료
+[2026-04-05 09:49:29] [Init] MigrateInitialPasswords 시작
+[2026-04-05 09:49:29] [Init] MigrateInitialPasswords 완료
+[2026-04-05 09:49:29] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 09:49:29] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 09:49:33] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 09:49:33] [Lottie] 재생 시작
+[2026-04-05 09:49:33] [Progress] 0% — DB 연결 중...
+[2026-04-05 09:49:33] [Progress] 22% — DB 연결 완료
+[2026-04-05 09:49:33] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 09:49:33] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 09:49:33] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 09:49:33] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 09:49:34] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 09:49:34] [Progress] 100% — ✓ 완료!
+[2026-04-05 10:20:19] ========== 로그인 창 시작 ==========
+[2026-04-05 10:20:19] [Init] MigrateAccountColumns 시작
+[2026-04-05 10:20:19] [Init] MigrateAccountColumns 완료
+[2026-04-05 10:20:19] [Init] MigrateInitialPasswords 시작
+[2026-04-05 10:20:19] [Init] MigrateInitialPasswords 완료
+[2026-04-05 10:20:19] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 10:20:19] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 10:20:24] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 10:20:24] [Lottie] 재생 시작
+[2026-04-05 10:20:24] [Progress] 0% — DB 연결 중...
+[2026-04-05 10:20:24] [Progress] 22% — DB 연결 완료
+[2026-04-05 10:20:24] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 10:20:24] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 10:20:25] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 10:20:25] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 10:20:25] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 10:20:25] [Progress] 100% — ✓ 완료!
+[2026-04-05 10:51:08] ========== 로그인 창 시작 ==========
+[2026-04-05 10:51:08] [Init] MigrateAccountColumns 시작
+[2026-04-05 10:51:08] [Init] MigrateAccountColumns 완료
+[2026-04-05 10:51:08] [Init] MigrateInitialPasswords 시작
+[2026-04-05 10:51:08] [Init] MigrateInitialPasswords 완료
+[2026-04-05 10:51:08] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 10:51:08] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 10:51:16] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 10:51:16] [Lottie] 재생 시작
+[2026-04-05 10:51:16] [Progress] 0% — DB 연결 중...
+[2026-04-05 10:51:16] [Progress] 22% — DB 연결 완료
+[2026-04-05 10:51:16] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 10:51:16] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 10:51:16] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 10:51:16] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 10:51:16] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 10:51:17] [Progress] 100% — ✓ 완료!
+[2026-04-05 10:57:34] ========== 로그인 창 시작 ==========
+[2026-04-05 10:57:34] [Init] MigrateAccountColumns 시작
+[2026-04-05 10:57:34] [Init] MigrateAccountColumns 완료
+[2026-04-05 10:57:34] [Init] MigrateInitialPasswords 시작
+[2026-04-05 10:57:34] [Init] MigrateInitialPasswords 완료
+[2026-04-05 10:57:34] [Init] SyncAllPhotosToDb 시작
+[2026-04-05 10:57:34] [Init] SyncAllPhotosToDb 완료
+[2026-04-05 10:57:49] [EasterEgg] 관리자 자동 로그인
+[2026-04-05 10:57:49] [Lottie] 재생 시작
+[2026-04-05 10:57:49] [Progress] 0% — DB 연결 중...
+[2026-04-05 10:57:49] [Progress] 22% — DB 연결 완료
+[2026-04-05 10:57:49] [Progress] 22% — 테이블 초기화 중...
+[2026-04-05 10:57:49] [Progress] 55% — 테이블 준비 완료
+[2026-04-05 10:57:49] [Progress] 55% — 견적 데이터 준비 중...
+[2026-04-05 10:57:49] [Progress] 82% — 데이터 준비 완료
+[2026-04-05 10:57:50] [Progress] 96% — 시스템 준비 완료
+[2026-04-05 10:57:50] [Progress] 100% — ✓ 완료!

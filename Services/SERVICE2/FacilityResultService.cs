@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ETA.Models;
 using ETA.Services.Common;
 
@@ -176,5 +177,31 @@ public static class FacilityResultService
                 cmd.ExecuteNonQuery();
             }
         }
+    }
+
+    // ── 전체 시설의 시료명 목록 (분류용) ─────────────────────────────────
+    public static List<(string 시설명, string 시료명, int 마스터Id)> GetAllMasterSamples()
+    {
+        var list = new List<(string, string, int)>();
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT id, 시설명, 시료명 FROM `처리시설_마스터` ORDER BY id";
+        using var r = cmd.ExecuteReader();
+        while (r.Read())
+            list.Add((r.GetString(1), r.GetString(2), Convert.ToInt32(r.GetValue(0))));
+        return list;
+    }
+
+    // ── 시료명으로 시설 검색 (부분일치) ──────────────────────────────────
+    public static (string 시설명, int 마스터Id)? FindBySampleName(
+        List<(string 시설명, string 시료명, int 마스터Id)> masters, string sampleName)
+    {
+        var exact = masters.FirstOrDefault(m => m.시료명 == sampleName);
+        if (exact != default) return (exact.시설명, exact.마스터Id);
+        var partial = masters.FirstOrDefault(m =>
+            sampleName.Contains(m.시료명) || m.시료명.Contains(sampleName));
+        if (partial != default) return (partial.시설명, partial.마스터Id);
+        return null;
     }
 }

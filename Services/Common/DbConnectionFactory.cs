@@ -35,6 +35,9 @@ public static class DbConnectionFactory
     public static string DateFmt(string col, string fmt)
         => IsMariaDb ? $"DATE_FORMAT({col}, '{fmt}')" : $"strftime('{fmt}', {col})";
 
+    /// <summary>현재 시각 SQL 표현 — MariaDB: NOW(), SQLite: datetime('now','localtime')</summary>
+    public static string NowExpr => IsMariaDb ? "NOW()" : "datetime('now','localtime')";
+
     /// <summary>
     /// UPSERT 뒷부분 생성.
     /// SQLite : ON CONFLICT(conflictCols) DO UPDATE SET col = excluded.col, ...

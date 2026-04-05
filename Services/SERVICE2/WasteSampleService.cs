@@ -186,6 +186,28 @@ public static class WasteSampleService
     }
 
     // ── 내부 헬퍼 ─────────────────────────────────────────────────────────────
+    public static void UpdateValues(int id, string bod, string toc, string ss,
+                                     string tn, string tp, string nHexan, string phenols)
+    {
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+            UPDATE `폐수의뢰및결과`
+            SET BOD=@bod, `TOC`=@toc, SS=@ss,
+                `T-N`=@tn, `T-P`=@tp, `N-Hexan`=@nh, Phenols=@ph
+            WHERE Id=@id";
+        cmd.Parameters.AddWithValue("@bod", bod);
+        cmd.Parameters.AddWithValue("@toc", toc);
+        cmd.Parameters.AddWithValue("@ss",  ss);
+        cmd.Parameters.AddWithValue("@tn",  tn);
+        cmd.Parameters.AddWithValue("@tp",  tp);
+        cmd.Parameters.AddWithValue("@nh",  nHexan);
+        cmd.Parameters.AddWithValue("@ph",  phenols);
+        cmd.Parameters.AddWithValue("@id",  id);
+        cmd.ExecuteNonQuery();
+    }
+
     private static int NextSeq(string 채수일, string 구분)
     {
         using var conn = DbConnectionFactory.CreateConnection();
@@ -249,4 +271,151 @@ public static class WasteSampleService
         비고     = r.IsDBNull(14) ? "" : r.GetString(14),
         확인자   = r.IsDBNull(15) ? "" : r.GetString(15),
     };
+
+    // ── *_DATA 원시 측정값 UPSERT ─────────────────────────────────────────────
+
+    /// <summary>BOD_DATA에 원시 측정값 UPSERT (채수일+SN 기준)</summary>
+    public static void UpsertBodData(
+        string 채수일, string sn, string 업체명, string 구분,
+        string 시료량, string d1, string d2, string 희석배수, string 결과,
+        string 식종시료량 = "", string 식종D1 = "", string 식종D2 = "",
+        string 식종BOD = "", string 식종함유량 = "")
+    {
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var chk = conn.CreateCommand();
+            chk.CommandText = "SELECT COUNT(*) FROM `BOD_DATA` WHERE 채수일=@d AND SN=@sn";
+            chk.Parameters.AddWithValue("@d",  채수일);
+            chk.Parameters.AddWithValue("@sn", sn);
+            bool exists = Convert.ToInt32(chk.ExecuteScalar()) > 0;
+
+            using var cmd = conn.CreateCommand();
+            if (exists)
+            {
+                cmd.CommandText = $@"UPDATE `BOD_DATA`
+                    SET 시료량=@vol, D1=@d1, D2=@d2, 희석배수=@dil, 결과=@r,
+                        식종시료량=@sv, 식종D1=@sd1, 식종D2=@sd2, 식종BOD=@sbod, 식종함유량=@spct,
+                        등록일시={DbConnectionFactory.NowExpr}
+                    WHERE 채수일=@d AND SN=@sn";
+            }
+            else
+            {
+                cmd.CommandText = $@"INSERT INTO `BOD_DATA`
+                    (채수일, SN, 업체명, 구분, 시료량, D1, D2, 희석배수, 결과,
+                     식종시료량, 식종D1, 식종D2, 식종BOD, 식종함유량, 등록일시)
+                    VALUES (@d, @sn, @nm, @gu, @vol, @d1, @d2, @dil, @r,
+                            @sv, @sd1, @sd2, @sbod, @spct, {DbConnectionFactory.NowExpr})";
+                cmd.Parameters.AddWithValue("@nm", 업체명);
+                cmd.Parameters.AddWithValue("@gu", 구분);
+            }
+            cmd.Parameters.AddWithValue("@d",    채수일);
+            cmd.Parameters.AddWithValue("@sn",   sn);
+            cmd.Parameters.AddWithValue("@vol",  시료량);
+            cmd.Parameters.AddWithValue("@d1",   d1);
+            cmd.Parameters.AddWithValue("@d2",   d2);
+            cmd.Parameters.AddWithValue("@dil",  희석배수);
+            cmd.Parameters.AddWithValue("@r",    결과);
+            cmd.Parameters.AddWithValue("@sv",   식종시료량);
+            cmd.Parameters.AddWithValue("@sd1",  식종D1);
+            cmd.Parameters.AddWithValue("@sd2",  식종D2);
+            cmd.Parameters.AddWithValue("@sbod", 식종BOD);
+            cmd.Parameters.AddWithValue("@spct", 식종함유량);
+            cmd.ExecuteNonQuery();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[UpsertBodData] 오류: {ex.Message}");
+        }
+    }
+
+    /// <summary>SS_DATA / NHexan_DATA 등 단순 결과값 테이블 UPSERT</summary>
+    public static void UpsertSimpleData(string tableName, string resultCol,
+        string 채수일, string sn, string 업체명, string 구분,
+        string 시료량, string 결과)
+    {
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var chk = conn.CreateCommand();
+            chk.CommandText = $"SELECT COUNT(*) FROM `{tableName}` WHERE 채수일=@d AND SN=@sn";
+            chk.Parameters.AddWithValue("@d",  채수일);
+            chk.Parameters.AddWithValue("@sn", sn);
+            bool exists = Convert.ToInt32(chk.ExecuteScalar()) > 0;
+
+            using var cmd = conn.CreateCommand();
+            if (exists)
+            {
+                cmd.CommandText = $@"UPDATE `{tableName}`
+                    SET 시료량=@vol, `{resultCol}`=@r,
+                        등록일시={DbConnectionFactory.NowExpr}
+                    WHERE 채수일=@d AND SN=@sn";
+            }
+            else
+            {
+                cmd.CommandText = $@"INSERT INTO `{tableName}`
+                    (채수일, SN, 업체명, 구분, 시료량, `{resultCol}`, 등록일시)
+                    VALUES (@d, @sn, @nm, @gu, @vol, @r, {DbConnectionFactory.NowExpr})";
+                cmd.Parameters.AddWithValue("@nm", 업체명);
+                cmd.Parameters.AddWithValue("@gu", 구분);
+            }
+            cmd.Parameters.AddWithValue("@d",   채수일);
+            cmd.Parameters.AddWithValue("@sn",  sn);
+            cmd.Parameters.AddWithValue("@vol", 시료량);
+            cmd.Parameters.AddWithValue("@r",   결과);
+            cmd.ExecuteNonQuery();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[UpsertSimpleData:{tableName}] 오류: {ex.Message}");
+        }
+    }
+
+    /// <summary>TN_DATA / TP_DATA / Phenols_DATA 등 UV VIS 기반 테이블 UPSERT</summary>
+    public static void UpsertUvvisData(string tableName,
+        string 채수일, string sn, string 업체명, string 구분,
+        string 시료량, string 흡광도, string 희석배수, string 검량선a, string 농도)
+    {
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var chk = conn.CreateCommand();
+            chk.CommandText = $"SELECT COUNT(*) FROM `{tableName}` WHERE 채수일=@d AND SN=@sn";
+            chk.Parameters.AddWithValue("@d",  채수일);
+            chk.Parameters.AddWithValue("@sn", sn);
+            bool exists = Convert.ToInt32(chk.ExecuteScalar()) > 0;
+
+            using var cmd = conn.CreateCommand();
+            if (exists)
+            {
+                cmd.CommandText = $@"UPDATE `{tableName}`
+                    SET 시료량=@vol, 흡광도=@abs, 희석배수=@dil, 검량선_a=@slope, 농도=@r,
+                        등록일시={DbConnectionFactory.NowExpr}
+                    WHERE 채수일=@d AND SN=@sn";
+            }
+            else
+            {
+                cmd.CommandText = $@"INSERT INTO `{tableName}`
+                    (채수일, SN, 업체명, 구분, 시료량, 흡광도, 희석배수, 검량선_a, 농도, 등록일시)
+                    VALUES (@d, @sn, @nm, @gu, @vol, @abs, @dil, @slope, @r, {DbConnectionFactory.NowExpr})";
+                cmd.Parameters.AddWithValue("@nm", 업체명);
+                cmd.Parameters.AddWithValue("@gu", 구분);
+            }
+            cmd.Parameters.AddWithValue("@d",     채수일);
+            cmd.Parameters.AddWithValue("@sn",    sn);
+            cmd.Parameters.AddWithValue("@vol",   시료량);
+            cmd.Parameters.AddWithValue("@abs",   흡광도);
+            cmd.Parameters.AddWithValue("@dil",   희석배수);
+            cmd.Parameters.AddWithValue("@slope", 검량선a);
+            cmd.Parameters.AddWithValue("@r",     농도);
+            cmd.ExecuteNonQuery();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[UpsertUvvisData:{tableName}] 오류: {ex.Message}");
+        }
+    }
 }

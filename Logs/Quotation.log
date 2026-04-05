@@ -4898,3 +4898,272 @@
 [22:53:13] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
 [23:34:40] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
 [23:50:16] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[21:20:55] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[21:21:31] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[21:50:35] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[21:51:56] === ShowIssue rowid=933  국도화학㈜익산지점  3/4 국도화학(주) 익산지점 3EA 견적서 ===
+[21:51:56] row 컬럼수=216
+[21:51:56] 항목 컬럼 후보(66개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 거래명세서번호, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[21:51:56] BuildItemLines → 55행
+[21:51:56] ApplyCheckStates: CheckPanel항목=67개
+[21:51:56] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=54
+[21:51:57] === ShowIssue rowid=932  보임열병합발전㈜  (주)보임열병합발전 2026년 견적서 ===
+[21:51:57] row 컬럼수=216
+[21:51:57] 항목 컬럼 후보(66개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 거래명세서번호, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[21:51:57] BuildItemLines → 15행
+[21:51:57] ApplyCheckStates: CheckPanel항목=67개
+[21:51:57] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=14
+[21:52:00] === ShowIssue rowid=1  디엘케미칼㈜ 여수  DL케미칼 1분기 정기시료 ===
+[21:52:00] row 컬럼수=216
+[21:52:00] 항목 컬럼 후보(66개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 거래명세서번호, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[21:52:00] BuildItemLines → 55행
+[21:52:00] ApplyCheckStates: CheckPanel항목=67개
+[21:52:00] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=54
+[21:52:00] === ShowIssue rowid=7  롯데케미칼㈜ 첨단소재 여수공장  TOC 의뢰시료(25.12.22, 26.01.13, 26.01.27 총 138EA) 견적서 ===
+[21:52:00] row 컬럼수=216
+[21:52:00] 항목 컬럼 후보(66개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 거래명세서번호, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[21:52:00] BuildItemLines → 1행
+[21:52:00] ApplyCheckStates: CheckPanel항목=67개
+[21:52:00] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=1
+[21:52:01] === ShowIssue rowid=6  ㈜LG화학 여수-화치  1/23 염화비닐 ===
+[21:52:01] row 컬럼수=216
+[21:52:01] 항목 컬럼 후보(66개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 거래명세서번호, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[21:52:01] BuildItemLines → 1행
+[21:52:01] ApplyCheckStates: CheckPanel항목=67개
+[21:52:01] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=1
+[21:52:01] === ShowIssue rowid=10  ㈜LG화학 여수-적량  적량단지 정기시료 5종 (01/02, 01/19, 02/06, 02/20 총 4EA) ===
+[21:52:01] row 컬럼수=216
+[21:52:01] 항목 컬럼 후보(66개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 거래명세서번호, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[21:52:01] BuildItemLines → 5행
+[21:52:01] ApplyCheckStates: CheckPanel항목=67개
+[21:52:01] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=4
+[21:52:02] === ShowIssue rowid=8  ㈜LG화학 여수-화치  LG화학-화치단지 2월 의뢰시료 합계(~2/23 까지) ===
+[21:52:02] row 컬럼수=216
+[21:52:02] 항목 컬럼 후보(66개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 거래명세서번호, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[21:52:02] BuildItemLines → 56행
+[21:52:02] ApplyCheckStates: CheckPanel항목=67개
+[21:52:02] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=56
+[21:52:03] === ShowIssue rowid=13  지에스칼텍스㈜여수공장  GS칼텍스 1분기 정기시료 ===
+[21:52:03] row 컬럼수=216
+[21:52:03] 항목 컬럼 후보(66개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 거래명세서번호, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[21:52:03] BuildItemLines → 56행
+[21:52:03] ApplyCheckStates: CheckPanel항목=67개
+[21:52:03] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=56
+[21:52:03] === ShowIssue rowid=16  에코랩스 주식회사  에코랩스(주) 12회 접수시료(3지점, 6개 항목) 견적서 ===
+[21:52:03] row 컬럼수=216
+[21:52:03] 항목 컬럼 후보(66개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 거래명세서번호, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[21:52:03] BuildItemLines → 6행
+[21:52:03] ApplyCheckStates: CheckPanel항목=67개
+[21:52:03] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=6
+[21:52:04] === ShowIssue rowid=15  ㈜LG화학 여수-화치  2/9 bcs 수질관리p ===
+[21:52:04] row 컬럼수=216
+[21:52:04] 항목 컬럼 후보(66개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 거래명세서번호, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[21:52:04] BuildItemLines → 4행
+[21:52:04] ApplyCheckStates: CheckPanel항목=67개
+[21:52:04] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=4
+[21:52:04] === ShowIssue rowid=12  롯데케미칼㈜ 첨단소재 여수공장  2026년 1분기(7EA_26.02.20) 견적서 ===
+[21:52:04] row 컬럼수=216
+[21:52:04] 항목 컬럼 후보(66개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 거래명세서번호, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[21:52:04] BuildItemLines → 57행
+[21:52:04] ApplyCheckStates: CheckPanel항목=67개
+[21:52:04] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=57
+[21:52:04] === ShowIssue rowid=8  ㈜LG화학 여수-화치  LG화학-화치단지 2월 의뢰시료 합계(~2/23 까지) ===
+[21:52:05] row 컬럼수=216
+[21:52:05] 항목 컬럼 후보(66개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 거래명세서번호, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[21:52:05] BuildItemLines → 56행
+[21:52:05] ApplyCheckStates: CheckPanel항목=67개
+[21:52:05] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=56
+[21:52:05] === ShowIssue rowid=10  ㈜LG화학 여수-적량  적량단지 정기시료 5종 (01/02, 01/19, 02/06, 02/20 총 4EA) ===
+[21:52:05] row 컬럼수=216
+[21:52:05] 항목 컬럼 후보(66개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 거래명세서번호, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[21:52:05] BuildItemLines → 5행
+[21:52:05] ApplyCheckStates: CheckPanel항목=67개
+[21:52:05] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=4
+[21:52:05] === ShowIssue rowid=6  ㈜LG화학 여수-화치  1/23 염화비닐 ===
+[21:52:05] row 컬럼수=216
+[21:52:05] 항목 컬럼 후보(66개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 거래명세서번호, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[21:52:05] BuildItemLines → 1행
+[21:52:05] ApplyCheckStates: CheckPanel항목=67개
+[21:52:05] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=1
+[21:52:06] === ShowIssue rowid=3  한세모빌리티㈜  26년 2월 정기시료(1EA) 견적서(26.02.25) ===
+[21:52:06] row 컬럼수=216
+[21:52:06] 항목 컬럼 후보(66개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 거래명세서번호, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[21:52:06] BuildItemLines → 29행
+[21:52:06] ApplyCheckStates: CheckPanel항목=67개
+[21:52:06] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=29
+[21:52:06] === ShowIssue rowid=5  ㈜LG화학 여수-용성  LG화학(주) 용성단지 TOC 재분석 4EA 견적서 ===
+[21:52:06] row 컬럼수=216
+[21:52:06] 항목 컬럼 후보(66개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 거래명세서번호, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[21:52:06] BuildItemLines → 2행
+[21:52:06] ApplyCheckStates: CheckPanel항목=67개
+[21:52:06] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=1
+[21:52:06] === ShowIssue rowid=1  디엘케미칼㈜ 여수  DL케미칼 1분기 정기시료 ===
+[21:52:06] row 컬럼수=216
+[21:52:06] 항목 컬럼 후보(66개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 거래명세서번호, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[21:52:06] BuildItemLines → 55행
+[21:52:06] ApplyCheckStates: CheckPanel항목=67개
+[21:52:06] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=54
+[21:53:54] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[21:59:03] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[22:10:00] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[22:14:07] === ShowIssue rowid=933  국도화학㈜익산지점  3/4 국도화학(주) 익산지점 3EA 견적서 ===
+[22:14:07] row 컬럼수=216
+[22:14:07] 항목 컬럼 후보(66개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 거래명세서번호, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[22:14:07] BuildItemLines → 55행
+[22:14:07] ApplyCheckStates: CheckPanel항목=67개
+[22:14:07] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=54
+[22:14:08] === ShowIssue rowid=933  국도화학㈜익산지점  3/4 국도화학(주) 익산지점 3EA 견적서 ===
+[22:14:08] row 컬럼수=216
+[22:14:08] 항목 컬럼 후보(66개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 거래명세서번호, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[22:14:08] BuildItemLines → 55행
+[22:14:08] ApplyCheckStates: CheckPanel항목=67개
+[22:14:08] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=54
+[22:15:15] === ShowIssue rowid=7  롯데케미칼㈜ 첨단소재 여수공장  TOC 의뢰시료(25.12.22, 26.01.13, 26.01.27 총 138EA) 견적서 ===
+[22:15:15] row 컬럼수=216
+[22:15:15] 항목 컬럼 후보(66개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 거래명세서번호, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[22:15:15] BuildItemLines → 1행
+[22:15:15] ApplyCheckStates: CheckPanel항목=67개
+[22:15:15] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=1
+[22:15:16] === ShowIssue rowid=6  ㈜LG화학 여수-화치  1/23 염화비닐 ===
+[22:15:16] row 컬럼수=216
+[22:15:16] 항목 컬럼 후보(66개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 거래명세서번호, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[22:15:16] BuildItemLines → 1행
+[22:15:16] ApplyCheckStates: CheckPanel항목=67개
+[22:15:16] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=1
+[22:21:15] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[22:23:33] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[22:29:04] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[22:42:45] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[23:17:03] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[23:20:01] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[23:20:19] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[23:33:35] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[23:42:52] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[23:48:56] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[23:52:06] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[23:55:05] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[23:57:20] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[00:02:36] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[00:06:36] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[00:15:17] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[00:18:45] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[00:23:16] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[00:24:00] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[00:24:53] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[00:25:59] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[00:26:49] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[00:28:45] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[00:29:45] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[00:39:27] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[00:41:28] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[00:43:46] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[00:52:27] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[00:54:48] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[00:57:16] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[01:00:01] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[01:02:33] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[01:03:37] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[01:05:14] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[01:06:44] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[01:08:07] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[01:10:03] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[01:12:45] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[01:15:02] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[01:18:01] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[01:24:09] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[01:44:26] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[01:52:21] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[01:57:58] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[10:58:39] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[11:14:21] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[11:19:31] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[11:32:37] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[11:33:51] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[11:38:44] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[11:42:15] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[11:43:32] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[11:45:13] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[11:49:36] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[11:51:41] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[11:53:43] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[12:00:14] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[12:02:20] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[12:04:24] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[12:05:59] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[12:09:36] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[12:13:17] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[12:16:27] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[12:32:37] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[12:38:39] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[13:00:29] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[13:01:23] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[13:07:23] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[13:08:08] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[13:13:04] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[13:15:46] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[13:16:49] === ShowIssue rowid=933  국도화학㈜익산지점  3/4 국도화학(주) 익산지점 3EA 견적서 ===
+[13:16:49] row 컬럼수=216
+[13:16:49] 항목 컬럼 후보(66개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 거래명세서번호, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[13:16:49] BuildItemLines → 55행
+[13:16:49] ApplyCheckStates: CheckPanel항목=67개
+[13:16:49] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=54
+[13:16:49] === ShowIssue rowid=932  보임열병합발전㈜  (주)보임열병합발전 2026년 견적서 ===
+[13:16:49] row 컬럼수=216
+[13:16:49] 항목 컬럼 후보(66개): 1,1-다이클로로에틸렌, 1,2-다이클로로에탄, 1,4-다이옥산, 6가크롬, 거래명세서번호, 과불화옥탄산(PFOA), 과불화옥탄술폰산(PFOS), 과불화헥산술폰산(PFHxS), 구리, 나프탈렌, 납, 노말헥산추출물질(동·식물 유지류), 니켈, 다이에틸헥실아디페이트, 다이에틸헥실프탈레이트, 다이클로로메탄, 망간, 바륨, 벤젠, 부유물질
+[13:16:49] BuildItemLines → 15행
+[13:16:49] ApplyCheckStates: CheckPanel항목=67개
+[13:16:49] ApplyCheckStates 완료: 컬럼매칭=65  체크됨=14
+[21:34:30] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[21:36:55] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[21:39:33] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[21:59:42] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[22:04:29] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[22:04:43] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[22:04:56] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[22:06:21] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[22:08:36] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[22:12:53] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[22:15:15] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[22:16:20] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[22:19:08] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[22:21:22] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[22:22:53] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[22:25:15] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[22:25:48] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[22:28:49] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[22:30:37] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[06:14:50] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[06:21:33] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[06:31:05] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[06:54:32] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[07:04:28] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[07:08:05] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[07:20:18] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[07:29:23] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[07:33:27] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[07:38:23] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[07:49:23] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[07:56:20] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[08:05:02] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[08:09:53] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[08:14:29] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[08:27:58] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[08:29:54] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[08:39:46] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[08:42:26] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[08:46:09] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[08:56:45] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[09:10:24] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[09:17:28] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[09:21:05] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[09:23:07] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[09:28:05] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[09:33:16] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[09:34:08] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[09:34:52] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[09:35:23] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[09:45:51] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[09:49:33] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[10:20:25] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[10:51:16] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)
+[10:57:49] [QService] EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)

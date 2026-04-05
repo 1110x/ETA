@@ -1,0 +1,524 @@
+[23:55:14.067] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=234x531
+[23:55:14.067] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=317x531
+[23:55:14.067] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=545x81
+[23:55:14.067] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=123x531
+[23:55:14.067] [Shimmer] Play 호출: target=StackPanel, Bounds=550x25
+[23:55:14.148] [Shimmer] PlayInternal: Bounds=234x531, IsVisible=True
+[23:55:14.148] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → ContentPresenter → VisualLayerManager → Panel → 
+[23:55:14.149] [Shimmer] Host found: UserControl.Content Panel (Grid)
+[23:55:14.149] [Shimmer] 오버레이 추가 완료: host=Grid 234x531, band=82
+[23:55:14.150] [Shimmer] PlayInternal: Bounds=317x531, IsVisible=True
+[23:55:14.150] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[23:55:14.150] [Shimmer] Host found: 부모 Grid (depth=1, children=3)
+[23:55:14.150] [Shimmer] Sibling overlay 위치: (13, 13)
+[23:55:14.150] [Shimmer] 오버레이 추가 완료: host=Grid 317x531, band=111
+[23:55:14.150] [Shimmer] PlayInternal: Bounds=545x81, IsVisible=True
+[23:55:14.150] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → ContentPresenter → VisualLayerManager → 
+[23:55:14.150] [Shimmer] Host found: 부모 Grid (depth=1, children=3)
+[23:55:14.150] [Shimmer] Sibling overlay 위치: (13, 471)
+[23:55:14.150] [Shimmer] 오버레이 추가 완료: host=Grid 545x81, band=191
+[23:55:14.150] [Shimmer] PlayInternal: Bounds=123x531, IsVisible=True
+[23:55:14.150] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[23:55:14.150] [Shimmer] Host found: 부모 Grid (depth=1, children=4)
+[23:55:14.150] [Shimmer] Sibling overlay 위치: (366, 13)
+[23:55:14.150] [Shimmer] 오버레이 추가 완료: host=Grid 123x531, band=43
+[23:55:14.151] [Shimmer] PlayInternal: Bounds=550x25, IsVisible=True
+[23:55:14.151] [Shimmer] Visual chain: StackPanel → Grid → Grid → Grid → ContentPresenter → VisualLayerManager → Panel → MainPage → 
+[23:55:14.151] [Shimmer] Host found: target 자체가 Panel (StackPanel)
+[23:55:14.151] [Shimmer] 오버레이 추가 완료: host=StackPanel 550x25, band=192
+[23:55:14.505] [Shimmer] 애니메이션 완료, 오버레이 제거
+[23:55:14.570] [Shimmer] 애니메이션 완료, 오버레이 제거
+[23:55:14.571] [Shimmer] 애니메이션 완료, 오버레이 제거
+[23:55:14.572] [Shimmer] 애니메이션 완료, 오버레이 제거
+[23:55:14.572] [Shimmer] 애니메이션 완료, 오버레이 제거
+[23:57:26.910] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=234x531
+[23:57:26.911] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=317x531
+[23:57:26.911] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=545x81
+[23:57:26.911] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=123x531
+[23:57:26.911] [Shimmer] Play 호출: target=StackPanel, Bounds=550x25
+[23:57:26.992] [Shimmer] PlayInternal: Bounds=234x531, IsVisible=True
+[23:57:26.992] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → ContentPresenter → VisualLayerManager → Panel → 
+[23:57:26.994] [Shimmer] Host found: UserControl.Content Panel (Grid)
+[23:57:26.994] [Shimmer] 오버레이 추가: host=Grid 234x531, band=94, alpha=(100,180)
+[23:57:26.994] [Shimmer] PlayInternal: Bounds=317x531, IsVisible=True
+[23:57:26.994] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[23:57:26.994] [Shimmer] Host found: 부모 Grid (depth=1, children=3)
+[23:57:26.994] [Shimmer] Sibling 클리핑 overlay: (13, 13) 317x531
+[23:57:26.995] [Shimmer] 오버레이 추가: host=Grid 317x531, band=127, alpha=(100,180)
+[23:57:26.995] [Shimmer] PlayInternal: Bounds=545x81, IsVisible=True
+[23:57:26.995] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → ContentPresenter → VisualLayerManager → 
+[23:57:26.995] [Shimmer] Host found: 부모 Grid (depth=1, children=3)
+[23:57:26.995] [Shimmer] Sibling 클리핑 overlay: (13, 471) 545x81
+[23:57:26.995] [Shimmer] 오버레이 추가: host=Grid 545x81, band=218, alpha=(100,180)
+[23:57:26.995] [Shimmer] PlayInternal: Bounds=126x531, IsVisible=True
+[23:57:26.995] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[23:57:26.995] [Shimmer] Host found: 부모 Grid (depth=1, children=4)
+[23:57:26.996] [Shimmer] Sibling 클리핑 overlay: (376, 13) 126x531
+[23:57:26.996] [Shimmer] 오버레이 추가: host=Grid 126x531, band=50, alpha=(100,180)
+[23:57:26.996] [Shimmer] PlayInternal: Bounds=550x25, IsVisible=True
+[23:57:26.996] [Shimmer] Visual chain: StackPanel → Grid → Grid → Grid → ContentPresenter → VisualLayerManager → Panel → MainPage → 
+[23:57:26.996] [Shimmer] Host found: target 자체가 Panel (StackPanel)
+[23:57:26.996] [Shimmer] 오버레이 추가: host=StackPanel 550x25, band=220, alpha=(100,180)
+[23:57:27.348] [Shimmer] 애니메이션 완료, 오버레이 제거
+[23:57:27.414] [Shimmer] 애니메이션 완료, 오버레이 제거
+[23:57:27.415] [Shimmer] 애니메이션 완료, 오버레이 제거
+[23:57:27.415] [Shimmer] 애니메이션 완료, 오버레이 제거
+[23:57:27.417] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:02:41.826] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=234x531
+[00:02:41.826] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=317x531
+[00:02:41.826] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=545x81
+[00:02:41.826] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=123x531
+[00:02:41.827] [Shimmer] Play 호출: target=StackPanel, Bounds=550x25
+[00:02:41.908] [Shimmer] PlayInternal: Bounds=234x531, IsVisible=True
+[00:02:41.908] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → ContentPresenter → VisualLayerManager → Panel → 
+[00:02:41.909] [Shimmer] Host found: UserControl.Content Panel (Grid)
+[00:02:41.910] [Shimmer] 오버레이 추가: host=Grid 234x531, band=94, alpha=(100,180)
+[00:02:41.910] [Shimmer] PlayInternal: Bounds=317x531, IsVisible=True
+[00:02:41.910] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:02:41.910] [Shimmer] Host found: 부모 Grid (depth=1, children=3)
+[00:02:41.910] [Shimmer] Sibling 클리핑 overlay: (13, 13) 317x531
+[00:02:41.910] [Shimmer] 오버레이 추가: host=Grid 317x531, band=127, alpha=(100,180)
+[00:02:41.910] [Shimmer] PlayInternal: Bounds=545x81, IsVisible=True
+[00:02:41.910] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → ContentPresenter → VisualLayerManager → 
+[00:02:41.910] [Shimmer] Host found: 부모 Grid (depth=1, children=3)
+[00:02:41.910] [Shimmer] Sibling 클리핑 overlay: (13, 471) 545x81
+[00:02:41.910] [Shimmer] 오버레이 추가: host=Grid 545x81, band=218, alpha=(100,180)
+[00:02:41.911] [Shimmer] PlayInternal: Bounds=126x531, IsVisible=True
+[00:02:41.911] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:02:41.911] [Shimmer] Host found: 부모 Grid (depth=1, children=4)
+[00:02:41.911] [Shimmer] Sibling 클리핑 overlay: (376, 13) 126x531
+[00:02:41.911] [Shimmer] 오버레이 추가: host=Grid 126x531, band=50, alpha=(100,180)
+[00:02:41.911] [Shimmer] PlayInternal: Bounds=550x25, IsVisible=True
+[00:02:41.911] [Shimmer] Visual chain: StackPanel → Grid → Grid → Grid → ContentPresenter → VisualLayerManager → Panel → MainPage → 
+[00:02:41.911] [Shimmer] Host found: target 자체가 Panel (StackPanel)
+[00:02:41.911] [Shimmer] 오버레이 추가: host=StackPanel 550x25, band=220, alpha=(100,180)
+[00:02:42.265] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:02:42.332] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:02:42.332] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:02:42.333] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:02:42.334] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:03:39.420] [Shimmer] Play 호출: target=TreeViewItem, Bounds=222x33
+[00:03:39.438] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=797x779
+[00:03:39.501] [Shimmer] PlayInternal: Bounds=222x33, IsVisible=True
+[00:03:39.501] [Shimmer] Visual chain: TreeViewItem → StackPanel → ItemsPresenter → ScrollContentPresenter → Grid → ScrollViewer → Border → TreeView → 
+[00:03:39.502] [Shimmer] Host found: 부모 Grid (depth=3, children=4)
+[00:03:39.502] [Shimmer] Sibling 클리핑 overlay: (0, 106) 222x33
+[00:03:39.502] [Shimmer] 오버레이 추가: host=Grid 222x33, band=89, alpha=(100,180)
+[00:03:39.518] [Shimmer] PlayInternal: Bounds=797x779, IsVisible=True
+[00:03:39.518] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:03:39.518] [Shimmer] Host found: 부모 Grid (depth=1, children=3)
+[00:03:39.518] [Shimmer] Sibling 클리핑 overlay: (13, 13) 797x779
+[00:03:39.518] [Shimmer] 오버레이 추가: host=Grid 797x779, band=319, alpha=(100,180)
+[00:03:39.858] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:03:39.941] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:06:31.421] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=395x779
+[00:06:31.421] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=687x775
+[00:06:31.421] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=1002x0
+[00:06:31.421] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=279x775
+[00:06:31.421] [Shimmer] Play 호출: target=StackPanel, Bounds=513x25
+[00:06:31.502] [Shimmer] PlayInternal: Bounds=395x779, IsVisible=True
+[00:06:31.502] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → ContentPresenter → VisualLayerManager → Panel → 
+[00:06:31.502] [Shimmer] Host found: UserControl.Content Panel (Grid)
+[00:06:31.502] [Shimmer] 오버레이 추가: host=Grid 395x779, band=158, alpha=(100,180)
+[00:06:31.503] [Shimmer] PlayInternal: Bounds=687x775, IsVisible=True
+[00:06:31.503] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:06:31.503] [Shimmer] Host found: UserControl.Content Panel (Grid)
+[00:06:31.504] [Shimmer] 오버레이 추가: host=Grid 687x775, band=275, alpha=(100,180)
+[00:06:31.504] [Shimmer] PlayInternal: Bounds=1002x0, IsVisible=True
+[00:06:31.505] [Shimmer] Skip: Bounds가 0 이하
+[00:06:31.505] [Shimmer] PlayInternal: Bounds=279x775, IsVisible=True
+[00:06:31.505] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:06:31.505] [Shimmer] Host found: UserControl.Content Panel (Grid)
+[00:06:31.505] [Shimmer] 오버레이 추가: host=Grid 279x775, band=112, alpha=(100,180)
+[00:06:31.505] [Shimmer] PlayInternal: Bounds=513x25, IsVisible=True
+[00:06:31.505] [Shimmer] Visual chain: StackPanel → Grid → Grid → Grid → ContentPresenter → VisualLayerManager → Panel → MainPage → 
+[00:06:31.505] [Shimmer] Host found: target 자체가 Panel (StackPanel)
+[00:06:31.506] [Shimmer] 오버레이 추가: host=StackPanel 513x25, band=205, alpha=(100,180)
+[00:06:31.853] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:06:31.919] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:06:31.920] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:06:31.920] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:06:36.291] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=395x779
+[00:06:36.291] [Shimmer] Play 호출: target=StackPanel, Bounds=221x25
+[00:06:36.372] [Shimmer] PlayInternal: Bounds=395x779, IsVisible=True
+[00:06:36.372] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → ContentPresenter → VisualLayerManager → Panel → 
+[00:06:36.372] [Shimmer] Host found: UserControl.Content Panel (Grid)
+[00:06:36.372] [Shimmer] 오버레이 추가: host=Grid 395x779, band=158, alpha=(100,180)
+[00:06:36.373] [Shimmer] PlayInternal: Bounds=221x25, IsVisible=True
+[00:06:36.373] [Shimmer] Visual chain: StackPanel → Grid → Grid → Grid → ContentPresenter → VisualLayerManager → Panel → MainPage → 
+[00:06:36.374] [Shimmer] Host found: target 자체가 Panel (StackPanel)
+[00:06:36.374] [Shimmer] 오버레이 추가: host=StackPanel 221x25, band=88, alpha=(100,180)
+[00:06:36.769] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:06:36.836] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:43.339] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=415x779
+[00:08:43.339] [Shimmer] Play 호출: target=StackPanel, Bounds=530x25
+[00:08:43.420] [Shimmer] PlayInternal: Bounds=415x779, IsVisible=True
+[00:08:43.421] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → ContentPresenter → VisualLayerManager → Panel → 
+[00:08:43.421] [Shimmer] Host found: UserControl.Content Panel (Grid)
+[00:08:43.421] [Shimmer] 오버레이 추가: host=Grid 415x779, band=166, alpha=(100,180)
+[00:08:43.421] [Shimmer] PlayInternal: Bounds=530x25, IsVisible=True
+[00:08:43.421] [Shimmer] Visual chain: StackPanel → Grid → Grid → Grid → ContentPresenter → VisualLayerManager → Panel → MainPage → 
+[00:08:43.421] [Shimmer] Host found: target 자체가 Panel (StackPanel)
+[00:08:43.421] [Shimmer] 오버레이 추가: host=StackPanel 530x25, band=212, alpha=(100,180)
+[00:08:43.804] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:43.872] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:45.102] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=307x377
+[00:08:45.103] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=640x377
+[00:08:45.103] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=982x376
+[00:08:45.183] [Shimmer] PlayInternal: Bounds=307x377, IsVisible=True
+[00:08:45.183] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:08:45.183] [Shimmer] Host found: ContentControl.Content Panel (StackPanel)
+[00:08:45.184] [Shimmer] 오버레이 추가: host=StackPanel 299x369, band=120, alpha=(100,180)
+[00:08:45.184] [Shimmer] PlayInternal: Bounds=640x377, IsVisible=True
+[00:08:45.184] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:08:45.184] [Shimmer] Host found: ContentControl.Content Panel (Grid)
+[00:08:45.184] [Shimmer] 오버레이 추가: host=Grid 640x377, band=256, alpha=(100,180)
+[00:08:45.184] [Shimmer] PlayInternal: Bounds=982x376, IsVisible=True
+[00:08:45.184] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → ContentPresenter → VisualLayerManager → 
+[00:08:45.184] [Shimmer] Host found: 부모 Grid (depth=1, children=3)
+[00:08:45.184] [Shimmer] Sibling 클리핑 overlay: (13, 424) 982x376
+[00:08:45.184] [Shimmer] 오버레이 추가: host=Grid 982x376, band=393, alpha=(100,180)
+[00:08:45.689] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:45.690] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:45.690] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:47.153] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=307x377
+[00:08:47.154] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=640x377
+[00:08:47.154] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=982x376
+[00:08:47.247] [Shimmer] PlayInternal: Bounds=307x377, IsVisible=True
+[00:08:47.247] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:08:47.247] [Shimmer] Host found: ContentControl.Content Panel (StackPanel)
+[00:08:47.247] [Shimmer] 오버레이 추가: host=StackPanel 299x369, band=120, alpha=(100,180)
+[00:08:47.248] [Shimmer] PlayInternal: Bounds=640x377, IsVisible=True
+[00:08:47.248] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:08:47.248] [Shimmer] Host found: ContentControl.Content Panel (Grid)
+[00:08:47.248] [Shimmer] 오버레이 추가: host=Grid 640x377, band=256, alpha=(100,180)
+[00:08:47.248] [Shimmer] PlayInternal: Bounds=982x376, IsVisible=True
+[00:08:47.248] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → ContentPresenter → VisualLayerManager → 
+[00:08:47.248] [Shimmer] Host found: 부모 Grid (depth=1, children=3)
+[00:08:47.248] [Shimmer] Sibling 클리핑 overlay: (13, 424) 982x376
+[00:08:47.248] [Shimmer] 오버레이 추가: host=Grid 982x376, band=393, alpha=(100,180)
+[00:08:47.665] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:47.665] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:47.665] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:47.793] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=307x377
+[00:08:47.794] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=640x377
+[00:08:47.794] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=982x376
+[00:08:47.873] [Shimmer] PlayInternal: Bounds=307x377, IsVisible=True
+[00:08:47.874] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:08:47.874] [Shimmer] Host found: ContentControl.Content Panel (StackPanel)
+[00:08:47.874] [Shimmer] 오버레이 추가: host=StackPanel 299x369, band=120, alpha=(100,180)
+[00:08:47.874] [Shimmer] PlayInternal: Bounds=640x377, IsVisible=True
+[00:08:47.874] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:08:47.874] [Shimmer] Host found: ContentControl.Content Panel (Grid)
+[00:08:47.874] [Shimmer] 오버레이 추가: host=Grid 640x377, band=256, alpha=(100,180)
+[00:08:47.874] [Shimmer] PlayInternal: Bounds=982x376, IsVisible=True
+[00:08:47.874] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → ContentPresenter → VisualLayerManager → 
+[00:08:47.875] [Shimmer] Host found: ContentControl.Content Panel (StackPanel)
+[00:08:47.875] [Shimmer] 오버레이 추가: host=StackPanel 982x376, band=393, alpha=(100,180)
+[00:08:48.296] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:48.298] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:48.298] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:48.633] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=307x377
+[00:08:48.633] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=640x377
+[00:08:48.633] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=982x376
+[00:08:48.715] [Shimmer] PlayInternal: Bounds=307x377, IsVisible=True
+[00:08:48.715] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:08:48.715] [Shimmer] Host found: ContentControl.Content Panel (StackPanel)
+[00:08:48.715] [Shimmer] 오버레이 추가: host=StackPanel 299x369, band=120, alpha=(100,180)
+[00:08:48.716] [Shimmer] PlayInternal: Bounds=640x377, IsVisible=True
+[00:08:48.716] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:08:48.716] [Shimmer] Host found: ContentControl.Content Panel (Grid)
+[00:08:48.716] [Shimmer] 오버레이 추가: host=Grid 640x377, band=256, alpha=(100,180)
+[00:08:48.716] [Shimmer] PlayInternal: Bounds=982x376, IsVisible=True
+[00:08:48.716] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → ContentPresenter → VisualLayerManager → 
+[00:08:48.716] [Shimmer] Host found: 부모 Grid (depth=1, children=3)
+[00:08:48.716] [Shimmer] Sibling 클리핑 overlay: (13, 424) 982x376
+[00:08:48.716] [Shimmer] 오버레이 추가: host=Grid 982x376, band=393, alpha=(100,180)
+[00:08:49.131] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:49.132] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:49.147] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:49.925] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=307x377
+[00:08:49.925] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=640x377
+[00:08:49.925] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=982x376
+[00:08:50.006] [Shimmer] PlayInternal: Bounds=307x377, IsVisible=True
+[00:08:50.007] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:08:50.007] [Shimmer] Host found: ContentControl.Content Panel (StackPanel)
+[00:08:50.007] [Shimmer] 오버레이 추가: host=StackPanel 299x369, band=120, alpha=(100,180)
+[00:08:50.007] [Shimmer] PlayInternal: Bounds=640x377, IsVisible=True
+[00:08:50.007] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:08:50.007] [Shimmer] Host found: ContentControl.Content Panel (Grid)
+[00:08:50.007] [Shimmer] 오버레이 추가: host=Grid 640x377, band=256, alpha=(100,180)
+[00:08:50.007] [Shimmer] PlayInternal: Bounds=982x376, IsVisible=True
+[00:08:50.007] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → ContentPresenter → VisualLayerManager → 
+[00:08:50.007] [Shimmer] Host found: 부모 Grid (depth=1, children=3)
+[00:08:50.007] [Shimmer] Sibling 클리핑 overlay: (13, 424) 982x376
+[00:08:50.007] [Shimmer] 오버레이 추가: host=Grid 982x376, band=393, alpha=(100,180)
+[00:08:50.743] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=307x377
+[00:08:50.743] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=640x377
+[00:08:50.743] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=982x376
+[00:08:50.744] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:50.744] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:50.744] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:50.860] [Shimmer] PlayInternal: Bounds=307x377, IsVisible=True
+[00:08:50.860] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:08:50.860] [Shimmer] Host found: ContentControl.Content Panel (StackPanel)
+[00:08:50.860] [Shimmer] 오버레이 추가: host=StackPanel 299x369, band=120, alpha=(100,180)
+[00:08:50.860] [Shimmer] PlayInternal: Bounds=640x377, IsVisible=True
+[00:08:50.860] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:08:50.860] [Shimmer] Host found: ContentControl.Content Panel (Grid)
+[00:08:50.861] [Shimmer] 오버레이 추가: host=Grid 640x377, band=256, alpha=(100,180)
+[00:08:50.861] [Shimmer] PlayInternal: Bounds=982x376, IsVisible=True
+[00:08:50.861] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → ContentPresenter → VisualLayerManager → 
+[00:08:50.861] [Shimmer] Host found: 부모 Grid (depth=1, children=3)
+[00:08:50.861] [Shimmer] Sibling 클리핑 overlay: (13, 424) 982x376
+[00:08:50.861] [Shimmer] 오버레이 추가: host=Grid 982x376, band=393, alpha=(100,180)
+[00:08:51.283] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:51.284] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:51.285] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:51.883] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=307x377
+[00:08:51.883] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=640x377
+[00:08:51.883] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=982x376
+[00:08:51.965] [Shimmer] PlayInternal: Bounds=307x377, IsVisible=True
+[00:08:51.965] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:08:51.965] [Shimmer] Host found: ContentControl.Content Panel (StackPanel)
+[00:08:51.966] [Shimmer] 오버레이 추가: host=StackPanel 299x369, band=120, alpha=(100,180)
+[00:08:51.966] [Shimmer] PlayInternal: Bounds=640x377, IsVisible=True
+[00:08:51.966] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:08:51.966] [Shimmer] Host found: ContentControl.Content Panel (Grid)
+[00:08:51.966] [Shimmer] 오버레이 추가: host=Grid 640x377, band=256, alpha=(100,180)
+[00:08:51.966] [Shimmer] PlayInternal: Bounds=982x376, IsVisible=True
+[00:08:51.966] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → ContentPresenter → VisualLayerManager → 
+[00:08:51.966] [Shimmer] Host found: 부모 Grid (depth=1, children=3)
+[00:08:51.966] [Shimmer] Sibling 클리핑 overlay: (13, 424) 982x376
+[00:08:51.966] [Shimmer] 오버레이 추가: host=Grid 982x376, band=393, alpha=(100,180)
+[00:08:52.452] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:52.453] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:52.453] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:53.109] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=307x377
+[00:08:53.109] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=640x377
+[00:08:53.110] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=982x376
+[00:08:53.190] [Shimmer] PlayInternal: Bounds=307x377, IsVisible=True
+[00:08:53.190] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:08:53.191] [Shimmer] Host found: ContentControl.Content Panel (StackPanel)
+[00:08:53.191] [Shimmer] 오버레이 추가: host=StackPanel 299x369, band=120, alpha=(100,180)
+[00:08:53.191] [Shimmer] PlayInternal: Bounds=640x377, IsVisible=True
+[00:08:53.191] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:08:53.191] [Shimmer] Host found: ContentControl.Content Panel (Grid)
+[00:08:53.191] [Shimmer] 오버레이 추가: host=Grid 640x377, band=256, alpha=(100,180)
+[00:08:53.191] [Shimmer] PlayInternal: Bounds=982x376, IsVisible=True
+[00:08:53.191] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → ContentPresenter → VisualLayerManager → 
+[00:08:53.191] [Shimmer] Host found: 부모 Grid (depth=1, children=3)
+[00:08:53.191] [Shimmer] Sibling 클리핑 overlay: (13, 424) 982x376
+[00:08:53.191] [Shimmer] 오버레이 추가: host=Grid 982x376, band=393, alpha=(100,180)
+[00:08:53.623] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:53.624] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:53.624] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:54.168] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=307x377
+[00:08:54.168] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=640x377
+[00:08:54.169] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=982x376
+[00:08:54.249] [Shimmer] PlayInternal: Bounds=307x377, IsVisible=True
+[00:08:54.249] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:08:54.249] [Shimmer] Host found: ContentControl.Content Panel (StackPanel)
+[00:08:54.249] [Shimmer] 오버레이 추가: host=StackPanel 299x369, band=120, alpha=(100,180)
+[00:08:54.250] [Shimmer] PlayInternal: Bounds=640x377, IsVisible=True
+[00:08:54.250] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:08:54.250] [Shimmer] Host found: ContentControl.Content Panel (Grid)
+[00:08:54.250] [Shimmer] 오버레이 추가: host=Grid 640x377, band=256, alpha=(100,180)
+[00:08:54.250] [Shimmer] PlayInternal: Bounds=982x376, IsVisible=True
+[00:08:54.250] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → ContentPresenter → VisualLayerManager → 
+[00:08:54.250] [Shimmer] Host found: 부모 Grid (depth=1, children=3)
+[00:08:54.250] [Shimmer] Sibling 클리핑 overlay: (13, 424) 982x376
+[00:08:54.250] [Shimmer] 오버레이 추가: host=Grid 982x376, band=393, alpha=(100,180)
+[00:08:54.671] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:54.672] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:54.672] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:55.323] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=307x377
+[00:08:55.323] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=640x377
+[00:08:55.324] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=982x376
+[00:08:55.404] [Shimmer] PlayInternal: Bounds=307x377, IsVisible=True
+[00:08:55.404] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:08:55.404] [Shimmer] Host found: ContentControl.Content Panel (StackPanel)
+[00:08:55.404] [Shimmer] 오버레이 추가: host=StackPanel 299x369, band=120, alpha=(100,180)
+[00:08:55.404] [Shimmer] PlayInternal: Bounds=640x377, IsVisible=True
+[00:08:55.404] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:08:55.404] [Shimmer] Host found: ContentControl.Content Panel (Grid)
+[00:08:55.404] [Shimmer] 오버레이 추가: host=Grid 640x377, band=256, alpha=(100,180)
+[00:08:55.405] [Shimmer] PlayInternal: Bounds=982x376, IsVisible=True
+[00:08:55.405] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → ContentPresenter → VisualLayerManager → 
+[00:08:55.405] [Shimmer] Host found: 부모 Grid (depth=1, children=3)
+[00:08:55.405] [Shimmer] Sibling 클리핑 overlay: (13, 424) 982x376
+[00:08:55.405] [Shimmer] 오버레이 추가: host=Grid 982x376, band=393, alpha=(100,180)
+[00:08:55.834] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:55.835] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:55.835] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:56.582] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=307x377
+[00:08:56.582] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=640x377
+[00:08:56.582] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=982x376
+[00:08:56.663] [Shimmer] PlayInternal: Bounds=307x377, IsVisible=True
+[00:08:56.663] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:08:56.664] [Shimmer] Host found: ContentControl.Content Panel (StackPanel)
+[00:08:56.664] [Shimmer] 오버레이 추가: host=StackPanel 299x369, band=120, alpha=(100,180)
+[00:08:56.664] [Shimmer] PlayInternal: Bounds=640x377, IsVisible=True
+[00:08:56.664] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:08:56.664] [Shimmer] Host found: ContentControl.Content Panel (Grid)
+[00:08:56.666] [Shimmer] 오버레이 추가: host=Grid 640x377, band=256, alpha=(100,180)
+[00:08:56.666] [Shimmer] PlayInternal: Bounds=982x376, IsVisible=True
+[00:08:56.666] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → ContentPresenter → VisualLayerManager → 
+[00:08:56.667] [Shimmer] Host found: 부모 Grid (depth=1, children=3)
+[00:08:56.667] [Shimmer] Sibling 클리핑 overlay: (13, 424) 982x376
+[00:08:56.667] [Shimmer] 오버레이 추가: host=Grid 982x376, band=393, alpha=(100,180)
+[00:08:57.115] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:57.117] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:57.117] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:57.843] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=307x377
+[00:08:57.844] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=640x377
+[00:08:57.844] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=982x376
+[00:08:57.924] [Shimmer] PlayInternal: Bounds=307x377, IsVisible=True
+[00:08:57.925] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:08:57.925] [Shimmer] Host found: ContentControl.Content Panel (StackPanel)
+[00:08:57.925] [Shimmer] 오버레이 추가: host=StackPanel 299x369, band=120, alpha=(100,180)
+[00:08:57.925] [Shimmer] PlayInternal: Bounds=640x377, IsVisible=True
+[00:08:57.925] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:08:57.925] [Shimmer] Host found: ContentControl.Content Panel (Grid)
+[00:08:57.925] [Shimmer] 오버레이 추가: host=Grid 640x377, band=256, alpha=(100,180)
+[00:08:57.926] [Shimmer] PlayInternal: Bounds=982x376, IsVisible=True
+[00:08:57.926] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → ContentPresenter → VisualLayerManager → 
+[00:08:57.926] [Shimmer] Host found: 부모 Grid (depth=1, children=3)
+[00:08:57.926] [Shimmer] Sibling 클리핑 overlay: (13, 424) 982x376
+[00:08:57.926] [Shimmer] 오버레이 추가: host=Grid 982x376, band=393, alpha=(100,180)
+[00:08:58.442] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:58.443] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:08:58.444] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:10:19.104] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=307x377
+[00:10:19.106] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=640x377
+[00:10:19.106] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=982x376
+[00:10:19.186] [Shimmer] PlayInternal: Bounds=307x377, IsVisible=True
+[00:10:19.187] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:10:19.187] [Shimmer] Host found: ContentControl.Content Panel (StackPanel)
+[00:10:19.187] [Shimmer] 오버레이 추가: host=StackPanel 299x369, band=120, alpha=(100,180)
+[00:10:19.187] [Shimmer] PlayInternal: Bounds=640x377, IsVisible=True
+[00:10:19.187] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:10:19.187] [Shimmer] Host found: ContentControl.Content Panel (Grid)
+[00:10:19.187] [Shimmer] 오버레이 추가: host=Grid 640x377, band=256, alpha=(100,180)
+[00:10:19.187] [Shimmer] PlayInternal: Bounds=982x376, IsVisible=True
+[00:10:19.187] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → ContentPresenter → VisualLayerManager → 
+[00:10:19.187] [Shimmer] Host found: 부모 Grid (depth=1, children=3)
+[00:10:19.187] [Shimmer] Sibling 클리핑 overlay: (13, 424) 982x376
+[00:10:19.188] [Shimmer] 오버레이 추가: host=Grid 982x376, band=393, alpha=(100,180)
+[00:10:19.606] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:10:19.607] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:10:19.607] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:10:20.298] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=307x377
+[00:10:20.298] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=640x377
+[00:10:20.298] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=982x376
+[00:10:20.378] [Shimmer] PlayInternal: Bounds=307x377, IsVisible=True
+[00:10:20.379] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:10:20.379] [Shimmer] Host found: ContentControl.Content Panel (StackPanel)
+[00:10:20.379] [Shimmer] 오버레이 추가: host=StackPanel 299x369, band=120, alpha=(100,180)
+[00:10:20.379] [Shimmer] PlayInternal: Bounds=640x377, IsVisible=True
+[00:10:20.379] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:10:20.379] [Shimmer] Host found: ContentControl.Content Panel (Grid)
+[00:10:20.379] [Shimmer] 오버레이 추가: host=Grid 640x377, band=256, alpha=(100,180)
+[00:10:20.379] [Shimmer] PlayInternal: Bounds=982x376, IsVisible=True
+[00:10:20.379] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → ContentPresenter → VisualLayerManager → 
+[00:10:20.379] [Shimmer] Host found: 부모 Grid (depth=1, children=3)
+[00:10:20.379] [Shimmer] Sibling 클리핑 overlay: (13, 424) 982x376
+[00:10:20.380] [Shimmer] 오버레이 추가: host=Grid 982x376, band=393, alpha=(100,180)
+[00:10:20.800] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:10:20.801] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:10:20.801] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:10:21.297] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=307x377
+[00:10:21.298] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=640x377
+[00:10:21.298] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=982x376
+[00:10:21.379] [Shimmer] PlayInternal: Bounds=307x377, IsVisible=True
+[00:10:21.379] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:10:21.379] [Shimmer] Host found: ContentControl.Content Panel (StackPanel)
+[00:10:21.380] [Shimmer] 오버레이 추가: host=StackPanel 299x369, band=120, alpha=(100,180)
+[00:10:21.380] [Shimmer] PlayInternal: Bounds=640x377, IsVisible=True
+[00:10:21.380] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:10:21.380] [Shimmer] Host found: ContentControl.Content Panel (Grid)
+[00:10:21.380] [Shimmer] 오버레이 추가: host=Grid 640x377, band=256, alpha=(100,180)
+[00:10:21.380] [Shimmer] PlayInternal: Bounds=982x376, IsVisible=True
+[00:10:21.380] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → ContentPresenter → VisualLayerManager → 
+[00:10:21.380] [Shimmer] Host found: 부모 Grid (depth=1, children=3)
+[00:10:21.380] [Shimmer] Sibling 클리핑 overlay: (13, 424) 982x376
+[00:10:21.380] [Shimmer] 오버레이 추가: host=Grid 982x376, band=393, alpha=(100,180)
+[00:10:21.807] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:10:21.809] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:10:21.810] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:10:22.472] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=307x377
+[00:10:22.472] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=640x377
+[00:10:22.473] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=982x376
+[00:10:22.561] [Shimmer] PlayInternal: Bounds=307x377, IsVisible=True
+[00:10:22.561] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:10:22.561] [Shimmer] Host found: ContentControl.Content Panel (StackPanel)
+[00:10:22.561] [Shimmer] 오버레이 추가: host=StackPanel 299x369, band=120, alpha=(100,180)
+[00:10:22.561] [Shimmer] PlayInternal: Bounds=640x377, IsVisible=True
+[00:10:22.561] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:10:22.561] [Shimmer] Host found: ContentControl.Content Panel (Grid)
+[00:10:22.562] [Shimmer] 오버레이 추가: host=Grid 640x377, band=256, alpha=(100,180)
+[00:10:22.562] [Shimmer] PlayInternal: Bounds=982x376, IsVisible=True
+[00:10:22.562] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → ContentPresenter → VisualLayerManager → 
+[00:10:22.562] [Shimmer] Host found: 부모 Grid (depth=1, children=3)
+[00:10:22.562] [Shimmer] Sibling 클리핑 overlay: (13, 424) 982x376
+[00:10:22.562] [Shimmer] 오버레이 추가: host=Grid 982x376, band=393, alpha=(100,180)
+[00:10:22.983] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:10:22.984] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:10:22.984] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:10:23.617] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=307x377
+[00:10:23.617] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=640x377
+[00:10:23.617] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=982x376
+[00:10:23.698] [Shimmer] PlayInternal: Bounds=307x377, IsVisible=True
+[00:10:23.698] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:10:23.698] [Shimmer] Host found: ContentControl.Content Panel (StackPanel)
+[00:10:23.699] [Shimmer] 오버레이 추가: host=StackPanel 299x369, band=120, alpha=(100,180)
+[00:10:23.699] [Shimmer] PlayInternal: Bounds=640x377, IsVisible=True
+[00:10:23.699] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:10:23.699] [Shimmer] Host found: ContentControl.Content Panel (Grid)
+[00:10:23.699] [Shimmer] 오버레이 추가: host=Grid 640x377, band=256, alpha=(100,180)
+[00:10:23.699] [Shimmer] PlayInternal: Bounds=982x376, IsVisible=True
+[00:10:23.699] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → ContentPresenter → VisualLayerManager → 
+[00:10:23.699] [Shimmer] Host found: 부모 Grid (depth=1, children=3)
+[00:10:23.699] [Shimmer] Sibling 클리핑 overlay: (13, 424) 982x376
+[00:10:23.699] [Shimmer] 오버레이 추가: host=Grid 982x376, band=393, alpha=(100,180)
+[00:10:24.158] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:10:24.159] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:10:24.175] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:10:24.592] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=307x377
+[00:10:24.593] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=640x377
+[00:10:24.593] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=982x376
+[00:10:24.673] [Shimmer] PlayInternal: Bounds=307x377, IsVisible=True
+[00:10:24.673] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:10:24.673] [Shimmer] Host found: ContentControl.Content Panel (StackPanel)
+[00:10:24.673] [Shimmer] 오버레이 추가: host=StackPanel 299x369, band=120, alpha=(100,180)
+[00:10:24.673] [Shimmer] PlayInternal: Bounds=640x377, IsVisible=True
+[00:10:24.674] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:10:24.674] [Shimmer] Host found: ContentControl.Content Panel (Grid)
+[00:10:24.674] [Shimmer] 오버레이 추가: host=Grid 640x377, band=256, alpha=(100,180)
+[00:10:24.674] [Shimmer] PlayInternal: Bounds=982x376, IsVisible=True
+[00:10:24.674] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → ContentPresenter → VisualLayerManager → 
+[00:10:24.674] [Shimmer] Host found: 부모 Grid (depth=1, children=3)
+[00:10:24.674] [Shimmer] Sibling 클리핑 overlay: (13, 424) 982x376
+[00:10:24.674] [Shimmer] 오버레이 추가: host=Grid 982x376, band=393, alpha=(100,180)
+[00:10:25.179] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:10:25.179] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:10:25.180] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:10:25.655] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=307x377
+[00:10:25.655] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=640x377
+[00:10:25.655] [Shimmer] Play 호출: target=TransitioningContentControl, Bounds=982x376
+[00:10:25.736] [Shimmer] PlayInternal: Bounds=307x377, IsVisible=True
+[00:10:25.736] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:10:25.737] [Shimmer] Host found: ContentControl.Content Panel (StackPanel)
+[00:10:25.737] [Shimmer] 오버레이 추가: host=StackPanel 299x369, band=120, alpha=(100,180)
+[00:10:25.737] [Shimmer] PlayInternal: Bounds=640x377, IsVisible=True
+[00:10:25.737] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → Grid → ContentPresenter → 
+[00:10:25.737] [Shimmer] Host found: ContentControl.Content Panel (Grid)
+[00:10:25.737] [Shimmer] 오버레이 추가: host=Grid 640x377, band=256, alpha=(100,180)
+[00:10:25.737] [Shimmer] PlayInternal: Bounds=982x376, IsVisible=True
+[00:10:25.737] [Shimmer] Visual chain: TransitioningContentControl → Border → Grid → Grid → Grid → Grid → ContentPresenter → VisualLayerManager → 
+[00:10:25.737] [Shimmer] Host found: 부모 Grid (depth=1, children=3)
+[00:10:25.737] [Shimmer] Sibling 클리핑 overlay: (13, 424) 982x376
+[00:10:25.737] [Shimmer] 오버레이 추가: host=Grid 982x376, band=393, alpha=(100,180)
+[00:10:26.159] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:10:26.160] [Shimmer] 애니메이션 완료, 오버레이 제거
+[00:10:26.160] [Shimmer] 애니메이션 완료, 오버레이 제거
