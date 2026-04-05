@@ -8,7 +8,7 @@ namespace ETA.Services.SERVICE2;
 /// <summary>
 /// 배출업소 시험성적서 서비스
 /// — 폐수의뢰및결과 테이블에서 날짜별 결과 조회
-/// — 이전 N회 평균 대비 추세(▲/▼) 계산
+/// — 이전 N회 평균 대비 추세 계산 (단계별: ▲ ▲▲ ↑)
 /// </summary>
 public static class WasteTestReportService
 {
@@ -38,6 +38,52 @@ public static class WasteTestReportService
             if (!string.IsNullOrEmpty(d)) list.Add(d);
         }
         return list;
+    }
+
+    // ── 날짜별 구분별 건수 ───────────────────────────────────────────────
+    public static Dictionary<string, Dictionary<string, int>> GetDateGroupCounts()
+    {
+        var result = new Dictionary<string, Dictionary<string, int>>();
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT 채수일, 구분, COUNT(*) FROM `폐수의뢰및결과` GROUP BY 채수일, 구분";
+        using var r = cmd.ExecuteReader();
+        while (r.Read())
+        {
+            var raw = r.GetValue(0);
+            string d = raw is DateTime dt ? dt.ToString("yyyy-MM-dd") : raw?.ToString() ?? "";
+            string g = r.GetString(1);
+            int cnt = r.GetInt32(2);
+            if (string.IsNullOrEmpty(d)) continue;
+            if (!result.ContainsKey(d)) result[d] = new Dictionary<string, int>();
+            result[d][g] = cnt;
+        }
+        return result;
+    }
+
+    // ── 업체명 → 약칭 매핑 ──────────────────────────────────────────────
+    public static Dictionary<string, string> GetCompanyAbbreviations()
+    {
+        var map = new Dictionary<string, string>();
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+
+        foreach (var table in new[] { "폐수배출업소", "여수_폐수배출업소" })
+        {
+            if (!DbConnectionFactory.TableExists(conn, table)) continue;
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = $"SELECT 업체명, COALESCE(약칭, '') FROM `{table}`";
+            using var r = cmd.ExecuteReader();
+            while (r.Read())
+            {
+                var name = r.IsDBNull(0) ? "" : r.GetString(0).Trim();
+                var abbr = r.IsDBNull(1) ? "" : r.GetString(1).Trim();
+                if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(abbr))
+                    map[name] = abbr;
+            }
+        }
+        return map;
     }
 
     // ── 특정 날짜의 전체 결과 조회 ────────────────────────────────────────
@@ -87,12 +133,11 @@ public static class WasteTestReportService
         return list;
     }
 
-    // ── 추세 계산: 업체별 이전 N회 평균 대비 ▲/▼ ─────────────────────────
-    public static Dictionary<string, Dictionary<string, string>> GetTrends(
-        string 채수일, List<string> groups,
-        int historyCount = 3, double upPct = 0.3, double downPct = 0.5)
+    // ── 추세 계산: 업체별 이전 N회 평균 대비 변화율 반환 ──────────────────
+    public static Dictionary<string, Dictionary<string, TrendInfo>> GetTrends(
+        string 채수일, List<string> groups, int historyCount = 10)
     {
-        var result = new Dictionary<string, Dictionary<string, string>>();
+        var result = new Dictionary<string, Dictionary<string, TrendInfo>>();
         var currentRows = GetByDate(채수일, groups);
         if (currentRows.Count == 0) return result;
 
@@ -117,14 +162,13 @@ public static class WasteTestReportService
 
         foreach (var cur in currentRows)
         {
-            var trends = new Dictionary<string, string>();
+            var trends = new Dictionary<string, TrendInfo>();
             if (!historyByCompany.TryGetValue(cur.업체명, out var history))
             {
                 result[cur.업체명] = trends;
                 continue;
             }
 
-            // 최근 historyCount 건만 사용
             var recent = history.Take(historyCount).ToList();
             if (recent.Count == 0) { result[cur.업체명] = trends; continue; }
 
@@ -133,17 +177,20 @@ public static class WasteTestReportService
                 var curVal = GetValue(cur, item);
                 if (curVal == null) continue;
 
-                var prevVals = recent.Select(r => GetValue(r, item)).Where(v => v.HasValue).Select(v => v!.Value).ToList();
+                var prevVals = recent.Select(r => GetValue(r, item))
+                    .Where(v => v.HasValue).Select(v => v!.Value).ToList();
                 if (prevVals.Count == 0) continue;
 
                 double avg = prevVals.Average();
                 if (avg <= 0) continue;
 
-                string fmt = GetFormat(item);
-                if (curVal.Value >= avg + avg * upPct)
-                    trends[item] = $"▲{curVal.Value.ToString(fmt)}({avg.ToString(fmt)})";
-                else if (curVal.Value <= avg * downPct)
-                    trends[item] = $"▼{curVal.Value.ToString(fmt)}({avg.ToString(fmt)})";
+                double pctChange = (curVal.Value - avg) / avg * 100.0;
+                trends[item] = new TrendInfo
+                {
+                    Value = curVal.Value,
+                    Average = avg,
+                    PctChange = pctChange,
+                };
             }
             result[cur.업체명] = trends;
         }
@@ -172,6 +219,14 @@ public static class WasteTestReportService
         "TN" or "TP" or "Phenols"          => "F3",  // 소수 3자리
         _                                  => "F1",
     };
+}
+
+// ── 추세 정보 ────────────────────────────────────────────────────────────
+public class TrendInfo
+{
+    public double Value     { get; set; }
+    public double Average   { get; set; }
+    public double PctChange { get; set; } // 양수=상승, 음수=하락
 }
 
 // ── 결과 행 모델 ────────────────────────────────────────────────────────

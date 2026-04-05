@@ -6,40 +6,57 @@ using Avalonia.Media;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ETA.Services.Common;
 using ETA.Services.SERVICE2;
 
 namespace ETA.Views.Pages.PAGE2;
 
 /// <summary>
 /// 배출업소 시험성적서 페이지
-/// — Show1: 날짜 트리뷰 (월 > 일)
-/// — Show2: 선택 날짜의 결과 그리드 (업체명 | SN | BOD | TOC | SS | TN | TP | N-Hexan | Phenols)
-/// — 추세 비교: 이전 3회 평균 대비 ▲/▼ 표시
+/// — Show1: 날짜 트리뷰 (노드에 구분별 건수 표시)
+/// — Show2: 고정 레이아웃 (헤더 + 추세설정 + 데이터), 노드 변경 시 데이터만 갱신
+/// — 추세: ▲(30%+) ▲▲(70%+) ↑(100%+) 단계별 표시
+/// — 행 호버 하이라이트
 /// </summary>
 public class WasteTestReportPage : UserControl
 {
     private static readonly FontFamily Font = new("avares://ETA/Assets/Fonts#Pretendard");
+    private static readonly IBrush HoverBg = new SolidColorBrush(Color.Parse("#333355"));
 
     // ── 외부 이벤트 ──────────────────────────────────────────────────────
     public event Action<Control?>? ResultGridChanged;
 
-    // ── 상태 ─────────────────────────────────────────────────────────────
+    // ── Show1 상태 ───────────────────────────────────────────────────────
     private TreeView _dateTree = null!;
     private string? _selectedDate;
     private bool _showTrend = true;
     private TextBlock _statusText = null!;
-    private CheckBox _chk여수 = null!, _chk율촌 = null!, _chk세풍 = null!;
-    private CheckBox _trendCheck = null!;
-    private NumericUpDown _nudUp = null!, _nudDown = null!, _nudCount = null!;
+    private Button _btn여수 = null!, _btn율촌 = null!, _btn세풍 = null!;
+    private Button _btnTrend = null!;
+
+    // ── Show2 고정 레이아웃 ──────────────────────────────────────────────
+    private Grid? _show2Root;
+    private TextBlock _headerText = null!;
+    private ScrollViewer _dataScroll = null!;
+    private TextBox _txtT1 = null!, _txtT2 = null!, _txtT3 = null!, _txtCount = null!;
+
+    // ── 캐시 ────────────────────────────────────────────────────────────
+    private Dictionary<string, Dictionary<string, int>>? _dateGroupCounts;
+    private Dictionary<string, string>? _companyAbbr;  // 업체명→약칭
+
+    private static readonly IBrush ToggleOnBg  = new SolidColorBrush(Color.Parse("#2e4a6e"));
+    private static readonly IBrush ToggleOffBg = new SolidColorBrush(Color.Parse("#2a2a3a"));
+
+    private static bool IsToggleOn(Button btn) => btn.Tag is true;
 
     private List<string> SelectedGroups
     {
         get
         {
             var g = new List<string>();
-            if (_chk여수.IsChecked == true) g.Add("여수");
-            if (_chk율촌.IsChecked == true) g.Add("율촌");
-            if (_chk세풍.IsChecked == true) g.Add("세풍");
+            if (IsToggleOn(_btn여수)) g.Add("여수");
+            if (IsToggleOn(_btn율촌)) g.Add("율촌");
+            if (IsToggleOn(_btn세풍)) g.Add("세풍");
             return g;
         }
     }
@@ -49,15 +66,49 @@ public class WasteTestReportPage : UserControl
     // ── 생성자 ───────────────────────────────────────────────────────────
     public WasteTestReportPage()
     {
+        InitTrendControls();
         Content = BuildDatePanel();
     }
+
+    private void InitTrendControls()
+    {
+        _txtT1    = MakeTrendTextBox("30");
+        _txtT2    = MakeTrendTextBox("70");
+        _txtT3    = MakeTrendTextBox("100");
+        _txtCount = MakeTrendTextBox("10");
+    }
+
+    private TextBox MakeTrendTextBox(string defaultValue)
+    {
+        var tb = new TextBox
+        {
+            Text = defaultValue,
+            Width = 50, Height = 26,
+            FontSize = AppTheme.FontMD, FontFamily = Font,
+            TextAlignment = TextAlignment.Center,
+            VerticalContentAlignment = VerticalAlignment.Center,
+            Padding = new Thickness(2, 0),
+        };
+        tb.KeyDown += (_, e) =>
+        {
+            if (e.Key == Key.Enter && _selectedDate != null) ShowResults(_selectedDate);
+        };
+        tb.LostFocus += (_, _) =>
+        {
+            if (_selectedDate != null) ShowResults(_selectedDate);
+        };
+        return tb;
+    }
+
+    private static double GetTextValue(TextBox tb, double fallback)
+        => double.TryParse(tb.Text?.Trim(), out var v) ? v : fallback;
 
     // =====================================================================
     // Show1: 날짜 트리뷰
     // =====================================================================
     private Control BuildDatePanel()
     {
-        var root = new Grid { RowDefinitions = RowDefinitions.Parse("Auto,Auto,Auto,*,Auto") };
+        var root = new Grid { RowDefinitions = RowDefinitions.Parse("Auto,Auto,*,Auto") };
 
         // ── 헤더 ─────────────────────────────────────────────────────────
         var header = new TextBlock
@@ -70,65 +121,34 @@ public class WasteTestReportPage : UserControl
         Grid.SetRow(header, 0);
         root.Children.Add(header);
 
-        // ── 구분 버튼 + 추세 체크 ────────────────────────────────────────
+        // ── 구분 토글 + 추세 토글 ─────────────────────────────────────────
         var toolbar = new StackPanel
         {
             Orientation = Orientation.Horizontal,
-            Spacing = 4, Margin = new Thickness(8, 2),
+            Spacing = 4, Margin = new Thickness(8, 4),
         };
 
-        _chk여수 = MakeGroupCheck("여수", true);
-        _chk율촌 = MakeGroupCheck("율촌", false);
-        _chk세풍 = MakeGroupCheck("세풍", false);
-        toolbar.Children.Add(_chk여수);
-        toolbar.Children.Add(_chk율촌);
-        toolbar.Children.Add(_chk세풍);
+        _btn여수 = MakeGroupToggle("여수", true);
+        _btn율촌 = MakeGroupToggle("율촌", false);
+        _btn세풍 = MakeGroupToggle("세풍", false);
+        toolbar.Children.Add(_btn여수);
+        toolbar.Children.Add(_btn율촌);
+        toolbar.Children.Add(_btn세풍);
 
-        toolbar.Children.Add(new Border { Width = 12 }); // spacer
+        toolbar.Children.Add(new Border { Width = 8 });
 
-        _trendCheck = new CheckBox
+        _btnTrend = MakeToggleButton("추세 비교", true);
+        _btnTrend.Click += (_, _) =>
         {
-            Content = "추세 비교",
-            IsChecked = true,
-            FontSize = AppTheme.FontSM, FontFamily = Font,
-            Foreground = AppTheme.FgSecondary,
-            VerticalAlignment = VerticalAlignment.Center,
-        };
-        _trendCheck.IsCheckedChanged += (_, _) =>
-        {
-            _showTrend = _trendCheck.IsChecked == true;
+            _btnTrend.Tag = !IsToggleOn(_btnTrend);
+            ApplyToggleStyle(_btnTrend);
+            _showTrend = IsToggleOn(_btnTrend);
             if (_selectedDate != null) ShowResults(_selectedDate);
         };
-        toolbar.Children.Add(_trendCheck);
+        toolbar.Children.Add(_btnTrend);
 
         Grid.SetRow(toolbar, 1);
         root.Children.Add(toolbar);
-
-        // ── 추세 설정 행 ─────────────────────────────────────────────────
-        var trendRow = new WrapPanel
-        {
-            Orientation = Orientation.Horizontal,
-            Margin = new Thickness(8, 2),
-        };
-        trendRow.Children.Add(MakeLabel("상승"));
-        _nudUp = MakeNud(50, 0, 500, 10);
-        trendRow.Children.Add(_nudUp);
-        trendRow.Children.Add(MakeLabel("%"));
-
-        trendRow.Children.Add(new Border { Width = 8 });
-        trendRow.Children.Add(MakeLabel("하락"));
-        _nudDown = MakeNud(50, 0, 100, 10);
-        trendRow.Children.Add(_nudDown);
-        trendRow.Children.Add(MakeLabel("%"));
-
-        trendRow.Children.Add(new Border { Width = 8 });
-        trendRow.Children.Add(MakeLabel("표본"));
-        _nudCount = MakeNud(10, 1, 50, 1);
-        trendRow.Children.Add(_nudCount);
-        trendRow.Children.Add(MakeLabel("회"));
-
-        Grid.SetRow(trendRow, 2);
-        root.Children.Add(trendRow);
 
         // ── 트리뷰 ──────────────────────────────────────────────────────
         _dateTree = new TreeView
@@ -139,7 +159,7 @@ public class WasteTestReportPage : UserControl
         _dateTree.SelectionChanged += DateTree_SelectionChanged;
 
         var scroll = new ScrollViewer { Content = _dateTree };
-        Grid.SetRow(scroll, 3);
+        Grid.SetRow(scroll, 2);
         root.Children.Add(scroll);
 
         // ── 하단 상태 ────────────────────────────────────────────────────
@@ -148,7 +168,7 @@ public class WasteTestReportPage : UserControl
             Text = "", FontSize = AppTheme.FontXS, FontFamily = Font,
             Foreground = AppTheme.FgMuted, Margin = new Thickness(8, 4),
         };
-        Grid.SetRow(_statusText, 4);
+        Grid.SetRow(_statusText, 3);
         root.Children.Add(_statusText);
 
         return root;
@@ -156,43 +176,106 @@ public class WasteTestReportPage : UserControl
 
     private static TextBlock MakeLabel(string text) => new()
     {
-        Text = text, FontSize = AppTheme.FontSM, FontFamily = Font,
+        Text = text, FontSize = AppTheme.FontMD, FontFamily = Font,
         Foreground = AppTheme.FgMuted,
         VerticalAlignment = VerticalAlignment.Center,
         Margin = new Thickness(2, 0),
     };
 
-    private NumericUpDown MakeNud(double value, double min, double max, double inc)
+    private Button MakeToggleButton(string label, bool isOn)
     {
-        var nud = new NumericUpDown
-        {
-            Value = (decimal)value, Minimum = (decimal)min, Maximum = (decimal)max,
-            Increment = (decimal)inc,
-            Width = 70, Height = 24,
-            FontSize = AppTheme.FontSM, FontFamily = Font,
-            FormatString = "F0",
-            VerticalAlignment = VerticalAlignment.Center,
-        };
-        nud.ValueChanged += (_, _) =>
-        {
-            if (_selectedDate != null) ShowResults(_selectedDate);
-        };
-        return nud;
-    }
-
-    private CheckBox MakeGroupCheck(string label, bool isChecked)
-    {
-        var chk = new CheckBox
+        var btn = new Button
         {
             Content = label,
-            IsChecked = isChecked,
+            MinWidth = 40, Height = 26,
             FontSize = AppTheme.FontSM, FontFamily = Font,
-            Foreground = AppTheme.FgPrimary,
-            VerticalAlignment = VerticalAlignment.Center,
-            Margin = new Thickness(0, 0, 4, 0),
+            BorderThickness = new Thickness(0),
+            CornerRadius = new CornerRadius(4),
+            HorizontalContentAlignment = HorizontalAlignment.Center,
+            Padding = new Thickness(8, 0),
+            Tag = isOn,
         };
-        chk.IsCheckedChanged += (_, _) => LoadData();
-        return chk;
+        ApplyToggleStyle(btn);
+        return btn;
+    }
+
+    private Button MakeGroupToggle(string label, bool isOn)
+    {
+        var btn = MakeToggleButton(label, isOn);
+        btn.Click += (_, _) =>
+        {
+            btn.Tag = !IsToggleOn(btn);
+            ApplyToggleStyle(btn);
+            LoadData();
+        };
+        return btn;
+    }
+
+    private static void ApplyToggleStyle(Button btn)
+    {
+        bool on = IsToggleOn(btn);
+        btn.Background = on ? ToggleOnBg : ToggleOffBg;
+        btn.Foreground = on ? AppTheme.FgPrimary : AppTheme.FgMuted;
+    }
+
+    // =====================================================================
+    // Show2: 고정 레이아웃 (한번만 생성, 이후 데이터만 교체)
+    // =====================================================================
+    private void EnsureShow2()
+    {
+        if (_show2Root == null)
+        {
+            _show2Root = new Grid { RowDefinitions = RowDefinitions.Parse("Auto,Auto,*") };
+
+            // ── Row 0: 헤더 바 ───────────────────────────────────────────
+            _headerText = new TextBlock
+            {
+                Text = "",
+                FontSize = AppTheme.FontMD, FontWeight = FontWeight.Bold,
+                FontFamily = Font, Foreground = AppTheme.FgPrimary,
+            };
+            var headerBar = new Border
+            {
+                Background = AppTheme.BgSecondary,
+                Padding = new Thickness(8, 6),
+                Child = _headerText,
+            };
+            Grid.SetRow(headerBar, 0);
+            _show2Root.Children.Add(headerBar);
+
+            // ── Row 1: 추세 설정 행 ──────────────────────────────────────
+            var trendRow = new WrapPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Margin = new Thickness(8, 4),
+            };
+            trendRow.Children.Add(MakeLabel("단계"));
+            trendRow.Children.Add(_txtT1);
+            trendRow.Children.Add(MakeLabel("/"));
+            trendRow.Children.Add(_txtT2);
+            trendRow.Children.Add(MakeLabel("/"));
+            trendRow.Children.Add(_txtT3);
+            trendRow.Children.Add(MakeLabel("%"));
+            trendRow.Children.Add(new Border { Width = 8 });
+            trendRow.Children.Add(MakeLabel("표본"));
+            trendRow.Children.Add(_txtCount);
+            trendRow.Children.Add(MakeLabel("회"));
+
+            Grid.SetRow(trendRow, 1);
+            _show2Root.Children.Add(trendRow);
+
+            // ── Row 2: 데이터 스크롤 영역 ────────────────────────────────
+            _dataScroll = new ScrollViewer
+            {
+                HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+            };
+            Grid.SetRow(_dataScroll, 2);
+            _show2Root.Children.Add(_dataScroll);
+        }
+
+        // 부모에서 떨어졌으면 다시 연결
+        if (_show2Root.Parent == null)
+            ResultGridChanged?.Invoke(_show2Root);
     }
 
     // ── 데이터 로드 ─────────────────────────────────────────────────────
@@ -200,10 +283,21 @@ public class WasteTestReportPage : UserControl
     {
         _dateTree.Items.Clear();
         _selectedDate = null;
-        ResultGridChanged?.Invoke(null);
+
+        if (_show2Root == null)
+            ResultGridChanged?.Invoke(null);
+        else
+        {
+            _headerText.Text = "";
+            _dataScroll.Content = null;
+        }
 
         try
         {
+            // 캐시 로드
+            _dateGroupCounts = WasteTestReportService.GetDateGroupCounts();
+            _companyAbbr ??= WasteTestReportService.GetCompanyAbbreviations();
+
             var groups = SelectedGroups;
             var dates = WasteTestReportService.GetDates(groups);
             _statusText.Text = $"{GroupLabel} {dates.Count}건";
@@ -231,7 +325,7 @@ public class WasteTestReportPage : UserControl
                 {
                     var dayNode = new TreeViewItem
                     {
-                        Header = FormatDay(day),
+                        Header = FormatDayWithCounts(day),
                         FontFamily = Font, FontSize = AppTheme.FontSM,
                         Foreground = AppTheme.FgPrimary,
                         Tag = day,
@@ -239,7 +333,6 @@ public class WasteTestReportPage : UserControl
                     monthNode.Items.Add(dayNode);
                 }
 
-                // 최근 월은 펼침
                 if (_dateTree.Items.Count == 0)
                     monthNode.IsExpanded = true;
 
@@ -255,31 +348,32 @@ public class WasteTestReportPage : UserControl
     private void DateTree_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         if (_dateTree.SelectedItem is not TreeViewItem item) return;
-        if (item.Tag is not string date || date.Length < 10) return; // 월 노드 무시
+        if (item.Tag is not string date || date.Length < 10) return;
         _selectedDate = date;
         ShowResults(date);
     }
 
     // =====================================================================
-    // Show2: 결과 그리드
+    // Show2: 데이터 갱신 (레이아웃 유지, 데이터만 교체)
     // =====================================================================
     private void ShowResults(string date)
     {
         try
         {
+            EnsureShow2();
+
             var groups = SelectedGroups;
             var rows = WasteTestReportService.GetByDate(date, groups);
-            Dictionary<string, Dictionary<string, string>>? trends = null;
+            Dictionary<string, Dictionary<string, TrendInfo>>? trends = null;
             if (_showTrend && rows.Count > 0)
             {
-                double upPct   = (double)(_nudUp.Value ?? 50m) / 100.0;
-                double downPct = 1.0 - (double)(_nudDown.Value ?? 50m) / 100.0;
-                int count      = (int)(_nudCount.Value ?? 10m);
-                trends = WasteTestReportService.GetTrends(date, groups, count, upPct, downPct);
+                int count = (int)GetTextValue(_txtCount, 10);
+                trends = WasteTestReportService.GetTrends(date, groups, count);
             }
 
-            var grid = BuildResultGrid(date, rows, trends);
-            ResultGridChanged?.Invoke(grid);
+            _headerText.Text = $"{GroupLabel} 배출업소 시험성적서  [{date}]  ({rows.Count}건)";
+            _dataScroll.Content = BuildDataGrid(rows, trends);
+            _dataScroll.Offset = default; // 스크롤 맨 위로
             _statusText.Text = $"{GroupLabel} {date} — {rows.Count}건";
         }
         catch (Exception ex)
@@ -288,57 +382,44 @@ public class WasteTestReportPage : UserControl
         }
     }
 
-    private Control BuildResultGrid(string date, List<WasteTestRow> rows,
-        Dictionary<string, Dictionary<string, string>>? trends)
+    private Control BuildDataGrid(List<WasteTestRow> rows,
+        Dictionary<string, Dictionary<string, TrendInfo>>? trends)
     {
-        var root = new Grid { RowDefinitions = RowDefinitions.Parse("Auto,*") };
+        double t1 = GetTextValue(_txtT1, 30);
+        double t2 = GetTextValue(_txtT2, 70);
+        double t3 = GetTextValue(_txtT3, 100);
 
-        // ── 헤더 바 ─────────────────────────────────────────────────────
-        var headerBar = new Border
-        {
-            Background = AppTheme.BgSecondary,
-            Padding = new Thickness(8, 6),
-            Child = new TextBlock
-            {
-                Text = $"{GroupLabel} 배출업소 시험성적서  [{date}]  ({rows.Count}건)",
-                FontSize = AppTheme.FontMD, FontWeight = FontWeight.Bold,
-                FontFamily = Font, Foreground = AppTheme.FgPrimary,
-            },
-        };
-        Grid.SetRow(headerBar, 0);
-        root.Children.Add(headerBar);
-
-        // ── 데이터 그리드 ────────────────────────────────────────────────
         bool multiGroup = SelectedGroups.Count != 1;
         var colList = new List<(string Header, string Key, double Width)>
         {
-            ("No",       "No",      35),
+            ("No", "No", 30),
         };
         if (multiGroup) colList.Add(("구분", "구분", 45));
         colList.AddRange(new (string, string, double)[]
         {
-            ("업체명",   "업체명",  200),
-            ("S/N",      "SN",       60),
-            ("BOD",      "BOD",      70),
-            ("TOC",      "TOC",      70),
-            ("SS",       "SS",       70),
-            ("T-N",      "TN",       70),
-            ("T-P",      "TP",       70),
-            ("N-Hexan",  "NHexan",   70),
-            ("Phenols",  "Phenols",  70),
-            ("비고",     "비고",    100),
+            ("업체명",   "업체명",  150),
+            ("S/N",      "SN",       80),
+            ("BOD",      "BOD",     130),
+            ("TOC",      "TOC",     130),
+            ("SS",       "SS",      130),
+            ("T-N",      "TN",      130),
+            ("T-P",      "TP",      130),
+            ("N-Hexan",  "NHexan",  130),
+            ("Phenols",  "Phenols", 130),
+            ("비고",     "비고",     80),
         });
         var cols = colList.ToArray();
 
-        var dataGrid = new Grid
-        {
-            RowDefinitions = RowDefinitions.Parse(
-                "Auto," + string.Join(",", Enumerable.Repeat("Auto", rows.Count))),
-            ColumnDefinitions = new ColumnDefinitions(
-                string.Join(",", cols.Select(c => $"{c.Width}"))),
-        };
+        var colDef = string.Join(",", cols.Select(c => $"{c.Width}"));
+
+        // ── 전체를 StackPanel(행 단위)로 구성 → 호버 하이라이트 가능
+        var stack = new StackPanel { Orientation = Orientation.Vertical };
 
         // ── 헤더 행 ─────────────────────────────────────────────────────
+        var headerRow = new Grid
+        {
+            ColumnDefinitions = new ColumnDefinitions(colDef),
+        };
         for (int ci = 0; ci < cols.Length; ci++)
         {
             var hdr = new Border
@@ -346,103 +427,282 @@ public class WasteTestReportPage : UserControl
                 Background = new SolidColorBrush(Color.Parse("#2a3a5a")),
                 BorderBrush = AppTheme.BorderSubtle,
                 BorderThickness = new Thickness(0, 0, 1, 1),
-                Padding = new Thickness(4, 4),
+                Padding = new Thickness(4, 5),
                 Child = new TextBlock
                 {
                     Text = cols[ci].Header,
-                    FontSize = AppTheme.FontSM, FontWeight = FontWeight.SemiBold,
+                    FontSize = AppTheme.FontMD, FontWeight = FontWeight.SemiBold,
                     FontFamily = Font, Foreground = AppTheme.FgPrimary,
                     HorizontalAlignment = HorizontalAlignment.Center,
                 },
             };
-            Grid.SetRow(hdr, 0);
             Grid.SetColumn(hdr, ci);
-            dataGrid.Children.Add(hdr);
+            headerRow.Children.Add(hdr);
         }
+        stack.Children.Add(headerRow);
 
         // ── 데이터 행 ────────────────────────────────────────────────────
         for (int ri = 0; ri < rows.Count; ri++)
         {
             var row = rows[ri];
-            Dictionary<string, string>? rowTrend = null;
+            Dictionary<string, TrendInfo>? rowTrend = null;
             trends?.TryGetValue(row.업체명, out rowTrend);
 
             var bgColor = ri % 2 == 0 ? "#1e1e2a" : "#22222e";
+            var bgBrush = new SolidColorBrush(Color.Parse(bgColor));
+
+            var rowGrid = new Grid
+            {
+                ColumnDefinitions = new ColumnDefinitions(colDef),
+                Background = bgBrush,
+            };
 
             for (int ci = 0; ci < cols.Length; ci++)
             {
                 var (_, key, _) = cols[ci];
-                string text = key switch
-                {
-                    "No"    => (ri + 1).ToString(),
-                    "구분"   => row.구분,
-                    "업체명" => row.업체명,
-                    "SN"     => row.SN,
-                    "BOD"    => FormatValue(row.BOD, "BOD"),
-                    "TOC"    => FormatValue(row.TOC, "TOC"),
-                    "SS"     => FormatValue(row.SS, "SS"),
-                    "TN"     => FormatValue(row.TN, "TN"),
-                    "TP"     => FormatValue(row.TP, "TP"),
-                    "NHexan" => FormatValue(row.NHexan, "NHexan"),
-                    "Phenols"=> FormatValue(row.Phenols, "Phenols"),
-                    "비고"   => row.비고,
-                    _ => "",
-                };
 
-                // 추세 적용
-                IBrush fg = AppTheme.FgPrimary;
-                if (rowTrend != null && key is "BOD" or "TOC" or "SS" or "TN" or "TP" or "NHexan" or "Phenols")
+                Control cellContent;
+
+                if (key == "업체명")
                 {
-                    if (rowTrend.TryGetValue(key, out var trendText))
+                    cellContent = BuildCompanyCell(row.업체명);
+                }
+                else if (key is "BOD" or "TOC" or "SS" or "TN" or "TP" or "NHexan" or "Phenols")
+                {
+                    string rawVal = key switch
                     {
-                        text = trendText;
-                        fg = trendText.StartsWith("▲")
-                            ? new SolidColorBrush(Color.Parse("#ff6666"))
-                            : new SolidColorBrush(Color.Parse("#6699ff"));
-                    }
+                        "BOD"     => row.BOD,
+                        "TOC"     => row.TOC,
+                        "SS"      => row.SS,
+                        "TN"      => row.TN,
+                        "TP"      => row.TP,
+                        "NHexan"  => row.NHexan,
+                        "Phenols" => row.Phenols,
+                        _ => "",
+                    };
+
+                    if (rowTrend != null && rowTrend.TryGetValue(key, out var ti))
+                        cellContent = BuildTrendCell(ti, key, t1, t2, t3);
+                    else
+                        cellContent = new TextBlock
+                        {
+                            Text = FormatValue(rawVal, key),
+                            FontSize = AppTheme.FontMD, FontFamily = Font,
+                            Foreground = AppTheme.FgPrimary,
+                            HorizontalAlignment = HorizontalAlignment.Center,
+                        };
+                }
+                else
+                {
+                    string text = key switch
+                    {
+                        "No"   => (ri + 1).ToString(),
+                        "구분"  => row.구분,
+                        "SN"    => row.SN,
+                        "비고"  => row.비고,
+                        _ => "",
+                    };
+                    cellContent = new TextBlock
+                    {
+                        Text = text,
+                        FontSize = AppTheme.FontMD, FontFamily = Font,
+                        Foreground = AppTheme.FgPrimary,
+                        HorizontalAlignment = key == "비고"
+                            ? HorizontalAlignment.Left : HorizontalAlignment.Center,
+                        TextTrimming = TextTrimming.CharacterEllipsis,
+                    };
                 }
 
                 var cell = new Border
                 {
-                    Background = new SolidColorBrush(Color.Parse(bgColor)),
                     BorderBrush = AppTheme.BorderSubtle,
                     BorderThickness = new Thickness(0, 0, 1, 1),
-                    Padding = new Thickness(4, 3),
-                    Child = new TextBlock
-                    {
-                        Text = text,
-                        FontSize = AppTheme.FontSM,
-                        FontFamily = Font,
-                        Foreground = fg,
-                        HorizontalAlignment = key is "업체명" or "비고"
-                            ? HorizontalAlignment.Left
-                            : HorizontalAlignment.Center,
-                        TextTrimming = TextTrimming.CharacterEllipsis,
-                    },
+                    Padding = new Thickness(4, 4),
+                    Child = cellContent,
                 };
-                Grid.SetRow(cell, ri + 1);
                 Grid.SetColumn(cell, ci);
-                dataGrid.Children.Add(cell);
+                rowGrid.Children.Add(cell);
             }
+
+            // ── 호버 하이라이트 ──────────────────────────────────────────
+            var savedBg = bgBrush;
+            rowGrid.PointerEntered += (_, _) => rowGrid.Background = HoverBg;
+            rowGrid.PointerExited  += (_, _) => rowGrid.Background = savedBg;
+
+            stack.Children.Add(rowGrid);
         }
 
-        var scroll = new ScrollViewer
-        {
-            Content = dataGrid,
-            HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
-        };
-        Grid.SetRow(scroll, 1);
-        root.Children.Add(scroll);
+        return stack;
+    }
 
-        return root;
+    // ── 업체명 셀 (약칭 배지 + 업체명) ─────────────────────────────────
+    private Control BuildCompanyCell(string 업체명)
+    {
+        string? abbr = null;
+        _companyAbbr?.TryGetValue(업체명, out abbr);
+
+        var nameBlock = new TextBlock
+        {
+            Text = 업체명,
+            FontSize = AppTheme.FontMD, FontFamily = Font,
+            Foreground = AppTheme.FgPrimary,
+            VerticalAlignment = VerticalAlignment.Center,
+            TextTrimming = TextTrimming.CharacterEllipsis,
+        };
+
+        if (string.IsNullOrEmpty(abbr))
+            return nameBlock;
+
+        var (bg, fg) = BadgeColorHelper.GetBadgeColor(abbr);
+        var badge = new Border
+        {
+            Background = new SolidColorBrush(Color.Parse(bg)),
+            CornerRadius = new CornerRadius(3),
+            Padding = new Thickness(4, 1),
+            Margin = new Thickness(0, 0, 5, 0),
+            VerticalAlignment = VerticalAlignment.Center,
+            Child = new TextBlock
+            {
+                Text = abbr,
+                FontSize = AppTheme.FontXS, FontFamily = Font,
+                Foreground = new SolidColorBrush(Color.Parse(fg)),
+            },
+        };
+
+        return new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            Children = { badge, nameBlock },
+        };
+    }
+
+    // ── 추세 셀 (3단계: ▲ / 포개진▲▲ / ⬆) ─────────────────────────────
+    private static Control BuildTrendCell(TrendInfo ti, string key,
+        double t1, double t2, double t3)
+    {
+        string fmt = WasteTestReportService.GetFormat(key);
+        double absPct = Math.Abs(ti.PctChange);
+        bool isUp = ti.PctChange > 0;
+
+        // 변화 미미 → 값만 표시
+        if (absPct < t1)
+            return new TextBlock
+            {
+                Text = ti.Value.ToString(fmt),
+                FontSize = AppTheme.FontMD, FontFamily = Font,
+                Foreground = AppTheme.FgPrimary,
+                HorizontalAlignment = HorizontalAlignment.Center,
+            };
+
+        int tier = absPct >= t3 ? 3 : absPct >= t2 ? 2 : 1;
+        IBrush color = GetTrendBrush(ti.PctChange, t1, t2, t3);
+        string valueText = $"{ti.Value.ToString(fmt)}({ti.Average.ToString(fmt)})";
+
+        // 심볼 컨트롤
+        Control symbol;
+        if (tier == 2)
+        {
+            // 포개진 삼각형 (주식 스타일)
+            symbol = BuildOverlapTriangles(isUp, color);
+        }
+        else if (tier == 3)
+        {
+            // 굵은 큰 화살표
+            symbol = new TextBlock
+            {
+                Text = isUp ? "⬆" : "⬇",
+                FontSize = AppTheme.FontMD + 4,
+                Foreground = color,
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(0, -2, 2, -2),
+            };
+        }
+        else
+        {
+            // 빈 삼각형 (가벼운 느낌)
+            symbol = new TextBlock
+            {
+                Text = isUp ? "△" : "▽",
+                FontSize = AppTheme.FontMD - 1, FontFamily = Font,
+                Foreground = color,
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(0, 0, 1, 0),
+            };
+        }
+
+        return new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+            Children =
+            {
+                symbol,
+                new TextBlock
+                {
+                    Text = valueText,
+                    FontSize = AppTheme.FontMD, FontFamily = Font,
+                    Foreground = color,
+                    VerticalAlignment = VerticalAlignment.Center,
+                },
+            },
+        };
+    }
+
+    /// <summary>포개진 삼각형 (두 개가 수직으로 겹침, 주식 스타일)</summary>
+    private static Control BuildOverlapTriangles(bool isUp, IBrush color)
+    {
+        string ch = isUp ? "▲" : "▼";
+        double sz = AppTheme.FontMD * 0.65;
+
+        var top = new TextBlock
+        {
+            Text = ch, FontSize = sz, FontFamily = Font,
+            Foreground = color,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            Margin = isUp ? new Thickness(0, 0, 0, -5) : new Thickness(0),
+        };
+        var bottom = new TextBlock
+        {
+            Text = ch, FontSize = sz, FontFamily = Font,
+            Foreground = color,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            Margin = isUp ? new Thickness(0) : new Thickness(0, -5, 0, 0),
+        };
+
+        return new StackPanel
+        {
+            Orientation = Orientation.Vertical,
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin = new Thickness(0, 0, 1, 0),
+            Children = { top, bottom },
+        };
+    }
+
+    /// <summary>3단계 색상: 상승(노랑→주황→빨강), 하락(하늘→녹색→파랑)</summary>
+    private static IBrush GetTrendBrush(double pctChange, double t1, double t2, double t3)
+    {
+        double absPct = Math.Abs(pctChange);
+        if (pctChange > 0 && absPct >= t1)
+        {
+            if (absPct >= t3) return new SolidColorBrush(Color.Parse("#ff4444"));  // 빨강
+            if (absPct >= t2) return new SolidColorBrush(Color.Parse("#ff8844"));  // 주황
+            return new SolidColorBrush(Color.Parse("#ddcc44"));  // 노랑
+        }
+        if (pctChange < 0 && absPct >= t1)
+        {
+            if (absPct >= t3) return new SolidColorBrush(Color.Parse("#4466ff"));  // 파랑
+            if (absPct >= t2) return new SolidColorBrush(Color.Parse("#44bb88"));  // 녹색
+            return new SolidColorBrush(Color.Parse("#66ccee"));  // 하늘
+        }
+        return AppTheme.FgPrimary;
     }
 
     // ── 유틸 ─────────────────────────────────────────────────────────────
-    /// <summary>항목별 자릿수 포맷 적용 (BOD/TOC/SS/N-Hexan: F1, TN/TP/Phenols: F3)</summary>
     private static string FormatValue(string raw, string item)
     {
         if (string.IsNullOrWhiteSpace(raw)) return "";
-        if (!double.TryParse(raw, out var v)) return raw; // 숫자 아니면 원본 반환
+        if (!double.TryParse(raw, out var v)) return raw;
         return v.ToString(WasteTestReportService.GetFormat(item));
     }
 
@@ -467,5 +727,23 @@ public class WasteTestReportPage : UserControl
             return $"{dt:MM/dd} ({dow})";
         }
         return d;
+    }
+
+    /// <summary>날짜 노드에 구분별 건수 표시: "01/19 (월) 여수10 율촌3"</summary>
+    private string FormatDayWithCounts(string d)
+    {
+        string baseText = FormatDay(d);
+
+        if (_dateGroupCounts == null || !_dateGroupCounts.TryGetValue(d, out var counts))
+            return baseText;
+
+        var parts = new List<string>();
+        foreach (var g in new[] { "여수", "율촌", "세풍" })
+        {
+            if (counts.TryGetValue(g, out int cnt) && cnt > 0)
+                parts.Add($"{g}{cnt}");
+        }
+
+        return parts.Count > 0 ? $"{baseText}  {string.Join(" ", parts)}" : baseText;
     }
 }

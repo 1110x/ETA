@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.IO;
+using System.Linq;
 using ETA.Models;
 using ETA.Services.Common;
 
@@ -103,6 +104,67 @@ public static class WasteDataService
         while (r.Read()) if (!r.IsDBNull(0)) list.Add(r.GetString(0));
         return list;
     }
+
+    // ── 업체별 TOC 결과 (TC-IC + NPOC, *_DATA 테이블에서 직접 조회) ─────
+    public static List<WasteAnalysisResult> GetTocResults(string 업체명)
+    {
+        // 날짜 → (TCIC, NPOC) 매핑
+        var map = new Dictionary<string, (double? tcic, double? npoc)>();
+
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+
+        // TOC(TC-IC) from TOC_TCIC_DATA
+        using (var cmd = conn.CreateCommand())
+        {
+            cmd.CommandText = "SELECT 분석일, `검량선_a` FROM `TOC_TCIC_DATA` WHERE 업체명=@n ORDER BY 분석일";
+            cmd.Parameters.AddWithValue("@n", 업체명);
+            using var r = cmd.ExecuteReader();
+            while (r.Read())
+            {
+                var raw = r.IsDBNull(0) ? "" : r.GetValue(0);
+                string d = raw is DateTime dt ? dt.ToString("yyyy-MM-dd") : raw?.ToString() ?? "";
+                if (string.IsNullOrEmpty(d)) continue;
+                double? v = r.IsDBNull(1) ? null : ParseStr(r.GetValue(1)?.ToString());
+                if (!map.ContainsKey(d)) map[d] = (null, null);
+                var cur = map[d];
+                map[d] = (v ?? cur.tcic, cur.npoc);
+            }
+        }
+
+        // TOC(NPOC) from TOC_NPOC_DATA
+        using (var cmd = conn.CreateCommand())
+        {
+            cmd.CommandText = "SELECT 분석일, `검량선_a` FROM `TOC_NPOC_DATA` WHERE 업체명=@n ORDER BY 분석일";
+            cmd.Parameters.AddWithValue("@n", 업체명);
+            using var r = cmd.ExecuteReader();
+            while (r.Read())
+            {
+                var raw = r.IsDBNull(0) ? "" : r.GetValue(0);
+                string d = raw is DateTime dt ? dt.ToString("yyyy-MM-dd") : raw?.ToString() ?? "";
+                if (string.IsNullOrEmpty(d)) continue;
+                double? v = r.IsDBNull(1) ? null : ParseStr(r.GetValue(1)?.ToString());
+                if (!map.ContainsKey(d)) map[d] = (null, null);
+                var cur = map[d];
+                map[d] = (cur.tcic, v ?? cur.npoc);
+            }
+        }
+
+        var list = new List<WasteAnalysisResult>();
+        foreach (var (date, (tcic, npoc)) in map.OrderBy(kv => kv.Key))
+        {
+            list.Add(new WasteAnalysisResult
+            {
+                채수일    = date,
+                TOC_TCIC = tcic,
+                TOC_NPOC = npoc,
+            });
+        }
+        return list;
+    }
+
+    private static double? ParseStr(string? s)
+        => string.IsNullOrWhiteSpace(s) ? null : double.TryParse(s, out var v) ? v : null;
 
     private static void Fetch(DbConnection conn, string sql, string 업체명, Action<string, double?> set)
     {

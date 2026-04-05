@@ -1878,8 +1878,9 @@ public partial class MainPage : Window
                 Show2.Content = BuildWasteBarLinePanel(company.업체명, results);
                 LogContentChange("Show2", Show2.Content as Control);
 
-                // Show4 = 분석결과 목록 테이블
-                Show4.Content = BuildDataListPanel(company.업체명, results, company.약칭);
+                // Show4 = TOC 전용 테이블
+                var tocResults = WasteDataService.GetTocResults(company.업체명);
+                Show4.Content = BuildTocListPanel(company.업체명, tocResults, company.약칭);
                 LogContentChange("Show4", Show4.Content as Control);
             };
 
@@ -2314,6 +2315,129 @@ public partial class MainPage : Window
         Cell(0, 날짜); Cell(1, bod);    Cell(2, tocTcic); Cell(3, tocNpoc);
         Cell(4, ss);   Cell(5, tn);     Cell(6, tp);      Cell(7, phenols);
         Cell(8, nhexan);
+
+        return new Border
+        {
+            Background = Brush.Parse(bg),
+            Child      = grid,
+            Margin     = new Thickness(0, 0, 0, 1),
+        };
+    }
+
+    // ── TOC 전용 패널 (Show4) ────────────────────────────────────────────
+    private Control BuildTocListPanel(string 업체명, List<ETA.Models.WasteAnalysisResult> results, string 약칭 = "")
+    {
+        var root = new StackPanel { Spacing = 0 };
+
+        // ── 타이틀 ──────────────────────────────────────────────────────
+        var titleRow = new StackPanel
+        {
+            Orientation = Avalonia.Layout.Orientation.Horizontal,
+            Spacing = 6,
+            Margin = new Thickness(8, 6),
+        };
+        if (!string.IsNullOrEmpty(약칭))
+        {
+            var (bg, fg, bd) = WasteCompanyPage.GetChosungBadgeColorPublic(약칭);
+            titleRow.Children.Add(new Border
+            {
+                Background      = Brush.Parse(bg),
+                BorderBrush     = Brush.Parse(bd),
+                BorderThickness = new Thickness(1),
+                CornerRadius    = new CornerRadius(8),
+                Padding         = new Thickness(6, 2),
+                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                Child = new TextBlock
+                {
+                    Text       = 약칭,
+                    FontSize   = AppTheme.FontSM, FontFamily = _wasteFont,
+                    Foreground = Brush.Parse(fg),
+                }
+            });
+        }
+        titleRow.Children.Add(new TextBlock
+        {
+            Text       = $"{업체명}  TOC 내역  ({results.Count}건)",
+            FontSize   = AppTheme.FontBase, FontWeight = FontWeight.SemiBold,
+            FontFamily = _wasteFont, Foreground = AppTheme.FgMuted,
+            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+        });
+        root.Children.Add(new Border
+        {
+            Background   = AppTheme.BgPrimary,
+            CornerRadius = new CornerRadius(6, 6, 0, 0),
+            Child        = titleRow,
+        });
+
+        if (results.Count == 0)
+        {
+            root.Children.Add(new TextBlock
+            {
+                Text = "TOC 데이터 없음",
+                FontSize = AppTheme.FontBase, FontFamily = _wasteFont,
+                Foreground = AppTheme.FgDimmed,
+                Margin = new Thickness(12, 8),
+            });
+            return root;
+        }
+
+        // ── 평균 계산 ────────────────────────────────────────────────────
+        double? AvgT(Func<ETA.Models.WasteAnalysisResult, double?> f)
+        {
+            var vals = results.Where(r => f(r).HasValue).Select(r => f(r)!.Value).ToList();
+            return vals.Count > 0 ? vals.Average() : null;
+        }
+
+        // ── 헤더 행 ──────────────────────────────────────────────────────
+        root.Children.Add(MakeTocRow("분석일",
+            $"TOC(TC-IC)\n({Fmt(AvgT(r => r.TOC_TCIC))})",
+            $"TOC(NPOC)\n({Fmt(AvgT(r => r.TOC_NPOC))})",
+            isHeader: true));
+
+        // ── 데이터 행 (최근→과거) ────────────────────────────────────────
+        bool alt = false;
+        foreach (var r in results.AsEnumerable().Reverse())
+        {
+            root.Children.Add(MakeTocRow(r.채수일,
+                Fmt(r.TOC_TCIC), Fmt(r.TOC_NPOC),
+                isHeader: false, alt: alt));
+            alt = !alt;
+        }
+
+        return new ScrollViewer
+        {
+            Content = root,
+            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+        };
+    }
+
+    private static Border MakeTocRow(string 날짜, string tcic, string npoc,
+        bool isHeader, bool alt = false)
+    {
+        var grid = new Grid { ColumnDefinitions = new ColumnDefinitions("120,*,*") };
+        var bg = isHeader ? "#22223a" : alt ? "#1a1e28" : "#161620";
+        var fg = isHeader ? "#8899bb" : "#cccccc";
+        var fw = isHeader ? FontWeight.SemiBold : FontWeight.Normal;
+
+        void Cell(int col, string text)
+        {
+            var tb = new TextBlock
+            {
+                Text = text, FontSize = AppTheme.FontSM, FontFamily = _wasteFont,
+                FontWeight = fw,
+                Foreground = text == "—" ? AppTheme.BorderMuted : Brush.Parse(fg),
+                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                HorizontalAlignment = col == 0
+                    ? Avalonia.Layout.HorizontalAlignment.Left
+                    : Avalonia.Layout.HorizontalAlignment.Right,
+                Margin = new Thickness(col == 0 ? 8 : 4, 4, col == 0 ? 4 : 8, 4),
+                TextWrapping = isHeader ? TextWrapping.Wrap : TextWrapping.NoWrap,
+            };
+            Grid.SetColumn(tb, col);
+            grid.Children.Add(tb);
+        }
+
+        Cell(0, 날짜); Cell(1, tcic); Cell(2, npoc);
 
         return new Border
         {
