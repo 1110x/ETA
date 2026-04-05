@@ -540,31 +540,269 @@ public static class FacilityDbMigration
     }
 
     // ── BOD_DATA에서 ROW 생성 + *_DATA 결과값 마이그레이션 ─────────────────
+    /// <summary>
+    /// 폐수의뢰및결과 데이터 재구축 (v2)
+    /// — *_DATA 테이블의 '분석일' = 분석한 날 (DB 컬럼명 변경 완료)
+    /// — 진짜 채수일(시료발생일)은 SN에서 추출 (MM-DD), 연도는 분석일 기준
+    /// — SN이 시료 고유 식별자이므로 SN 기반 매칭
+    /// </summary>
     private static void MigrateDataToWasteRequestResult(DbConnection conn)
     {
         const string T = "폐수의뢰및결과";
 
-        // ── Step 0: 이미 완료인지 확인
         try
         {
             using var chk = conn.CreateCommand();
-            chk.CommandText = $"SELECT COUNT(*) FROM `{T}` WHERE BOD <> ''";
-            int filled = Convert.ToInt32(chk.ExecuteScalar());
-            if (filled > 1000)
+            chk.CommandText = $"SELECT COUNT(*) FROM `{T}`";
+            int total = Convert.ToInt32(chk.ExecuteScalar());
+
+            if (total == 0)
             {
-                Log($"DATA 마이그레이션 스킵 (BOD {filled}건 존재)");
+                // 비어있으면 전면 구축
+                RebuildFromDataTables(conn, T);
                 return;
             }
+
+            // 빈 행 비율 확인
+            using var chk2 = conn.CreateCommand();
+            chk2.CommandText = $@"SELECT COUNT(*) FROM `{T}`
+                WHERE (BOD IS NULL OR BOD = '') AND (`TOC` IS NULL OR `TOC` = '')
+                  AND (SS IS NULL OR SS = '') AND (`T-N` IS NULL OR `T-N` = '')
+                  AND (`T-P` IS NULL OR `T-P` = '') AND (`N-Hexan` IS NULL OR `N-Hexan` = '')
+                  AND (Phenols IS NULL OR Phenols = '')";
+            int empty = Convert.ToInt32(chk2.ExecuteScalar());
+
+            if ((double)empty / total > 0.3)
+            {
+                // 빈 행 30% 이상 → 전면 재구축
+                Log($"빈 행 {empty}/{total} ({100.0*empty/total:F1}%) → 전면 재구축");
+                RebuildFromDataTables(conn, T);
+                return;
+            }
+
+            // ── 보충 모드: 누락 행 추가 + 빈 행 수리
+            // 1) BOD_DATA에 있지만 폐수의뢰및결과에 없는 SN 추가
+            int added = AddMissingSamples(conn, T);
+            if (added > 0) Log($"누락 시료 추가: {added}건");
+
+            // 2) 빈 행이 있으면 SN 기반 수리
+            if (empty > 0)
+            {
+                Log($"빈 행 {empty}건 → SN 기반 수리");
+                RepairEmptyRows(conn);
+            }
+            else
+            {
+                Log($"마이그레이션 양호 (빈 행 0/{total})");
+            }
         }
-        catch { }
+        catch (Exception ex) { Log($"마이그레이션 오류: {ex.Message}"); }
+    }
 
-        // ── Step 1: BOD_DATA에서 고유 (채수일, SN, 업체명) 추출 → 폐수의뢰및결과에 ROW 추가
-        int inserted = InsertRowsFromBodData(conn, T);
-        Log($"BOD_DATA → {T} ROW 추가: {inserted}건");
+    /// <summary>BOD_DATA에 있지만 폐수의뢰및결과에 없는 시료 추가 (SN+업체명 복합키)</summary>
+    private static int AddMissingSamples(DbConnection conn, string T)
+    {
+        // 기존 (SN|업체명) 조합 로드
+        var existing = new HashSet<string>();
+        using (var cmd = conn.CreateCommand())
+        {
+            cmd.CommandText = $"SELECT SN, 업체명 FROM `{T}` WHERE SN IS NOT NULL AND SN <> ''";
+            using var r = cmd.ExecuteReader();
+            while (r.Read())
+            {
+                string sn = r.IsDBNull(0) ? "" : r.GetString(0);
+                string company = r.IsDBNull(1) ? "" : r.GetString(1);
+                existing.Add($"{sn}|{company}");
+            }
+        }
 
-        Log("DATA 마이그레이션 시작 (전체, SN+같은연도 기준)...");
+        // BOD_DATA에서 없는 SN+업체명 추출
+        var toAdd = new List<(string 채수일, string sn, string 업체명, string 구분)>();
+        using (var cmd = conn.CreateCommand())
+        {
+            cmd.CommandText = "SELECT DISTINCT 분석일, SN, 업체명 FROM `BOD_DATA` WHERE SN IS NOT NULL AND SN <> '' ORDER BY 분석일, SN";
+            using var r = cmd.ExecuteReader();
+            while (r.Read())
+            {
+                string sn = r.GetString(1);
+                string company = r.IsDBNull(2) ? "" : r.GetString(2);
+                string key = $"{sn}|{company}";
+                if (existing.Contains(key)) continue;
+                string analysisDateStr = r.GetValue(0)?.ToString() ?? "";
+                if (!DateTime.TryParse(analysisDateStr, out var ad)) continue;
+                string samplingDate = ExtractSamplingDate(sn, ad);
+                if (string.IsNullOrEmpty(samplingDate)) continue;
+                string 구분 = sn.StartsWith("[세풍]") ? "세풍" : sn.StartsWith("[율촌]") ? "율촌" : "여수";
+                toAdd.Add((samplingDate, sn, company, 구분));
+                existing.Add(key);
+            }
+        }
 
-        // ── Step 3: 각 DATA 테이블에서 결과값 마이그레이션
+        if (toAdd.Count == 0) return 0;
+
+        // 순서 부여 및 INSERT
+        var seqCounters = new Dictionary<string, int>();
+        // 기존 최대 순서 로드
+        using (var cmd = conn.CreateCommand())
+        {
+            cmd.CommandText = $"SELECT 채수일, 구분, MAX(순서) FROM `{T}` GROUP BY 채수일, 구분";
+            using var r = cmd.ExecuteReader();
+            while (r.Read())
+            {
+                string d = r.IsDBNull(0) ? "" : r.GetString(0);
+                string g = r.IsDBNull(1) ? "" : r.GetString(1);
+                seqCounters[$"{d}|{g}"] = r.GetInt32(2);
+            }
+        }
+
+        using var txn = conn.BeginTransaction();
+        using var ins = conn.CreateCommand();
+        ins.Transaction = txn;
+        ins.CommandText = $@"INSERT INTO `{T}` (채수일, 구분, 순서, SN, 업체명, 관리번호, BOD, `TOC`, SS, `T-N`, `T-P`, `N-Hexan`, Phenols, 비고, 확인자)
+            VALUES (@d, @g, @s, @sn, @name, '', '', '', '', '', '', '', '', '', '')";
+        var pD = ins.CreateParameter(); pD.ParameterName = "@d"; ins.Parameters.Add(pD);
+        var pG = ins.CreateParameter(); pG.ParameterName = "@g"; ins.Parameters.Add(pG);
+        var pS = ins.CreateParameter(); pS.ParameterName = "@s"; ins.Parameters.Add(pS);
+        var pSn = ins.CreateParameter(); pSn.ParameterName = "@sn"; ins.Parameters.Add(pSn);
+        var pN = ins.CreateParameter(); pN.ParameterName = "@name"; ins.Parameters.Add(pN);
+        ins.Prepare();
+
+        int inserted = 0;
+        foreach (var (date, sn, company, group) in toAdd)
+        {
+            string key = $"{date}|{group}";
+            if (!seqCounters.ContainsKey(key)) seqCounters[key] = 0;
+            seqCounters[key]++;
+            pD.Value = date; pG.Value = group; pS.Value = seqCounters[key]; pSn.Value = sn; pN.Value = company;
+            ins.ExecuteNonQuery();
+            inserted++;
+        }
+        txn.Commit();
+
+        // 추가된 행에 대해 결과값 매칭
+        if (inserted > 0)
+        {
+            var mappings = new (string table, string srcCol, string destCol)[]
+            {
+                ("BOD_DATA", "결과", "BOD"), ("SS_DATA", "결과", "SS"),
+                ("TN_DATA", "농도", "T-N"), ("TP_DATA", "농도", "T-P"),
+                ("NHexan_DATA", "결과", "N-Hexan"), ("Phenols_DATA", "농도", "Phenols"),
+            };
+            foreach (var (table, srcCol, destCol) in mappings)
+                MigrateBySnMatch(conn, T, table, srcCol, destCol);
+            MigrateBySnMatch(conn, T, "TOC_TCIC_DATA", "검량선_a", "TOC");
+            MigrateBySnMatchEmpty(conn, T, "TOC_NPOC_DATA", "검량선_a", "TOC");
+        }
+
+        return inserted;
+    }
+
+    /// <summary>
+    /// SN에서 채수일(시료발생일) 추출: SN "02-24-07" + 분석일 연도 → "2026-02-24"
+    /// — *_DATA.분석일에서 연도만 참고, MM-DD는 SN에서 추출
+    /// — 12월 채수 → 1월 분석 케이스: 분석연도 - 1 = 채수연도
+    /// </summary>
+    private static string ExtractSamplingDate(string sn, DateTime analysisDate)
+    {
+        string clean = StripSnPrefix(sn);
+        var parts = clean.Split('-');
+        if (parts.Length < 2) return "";
+        if (!int.TryParse(parts[0], out int mm) || !int.TryParse(parts[1], out int dd)) return "";
+        if (mm < 1 || mm > 12 || dd < 1 || dd > 31) return "";
+
+        int year = analysisDate.Year;
+        // 12월 채수 → 1월 분석: SN=12-XX인데 분석일이 1~2월이면 전년도
+        if (mm >= 11 && analysisDate.Month <= 2) year--;
+        // 1월 채수 → 12월 분석: SN=01-XX인데 분석일이 12월이면 다음연도 (드문 케이스)
+        if (mm <= 2 && analysisDate.Month >= 11) year++;
+
+        try { return new DateTime(year, mm, dd).ToString("yyyy-MM-dd"); }
+        catch { return ""; }
+    }
+
+    /// <summary>
+    /// 폐수의뢰및결과 전면 재구축
+    /// 1) 기존 데이터 삭제
+    /// 2) BOD_DATA에서 고유 시료 행 생성 (채수일은 SN에서 추출)
+    /// 3) 각 DATA 테이블에서 SN 기반으로 결과값 매칭
+    /// </summary>
+    private static void RebuildFromDataTables(DbConnection conn, string T)
+    {
+        Log("=== 폐수의뢰및결과 전면 재구축 시작 ===");
+
+        // ── Step 1: 기존 데이터 삭제
+        Exec(conn, $"DELETE FROM `{T}`");
+        Log("기존 데이터 전체 삭제");
+
+        // ── Step 2: BOD_DATA에서 고유 시료 목록 추출 + INSERT
+        //   BOD_DATA.분석일 = 분석한 날짜, SN = 시료번호 (MM-DD-NN), 업체명 = 업체명
+        //   진짜 채수일 = SN의 MM-DD + 분석일 연도
+        var samples = new List<(string 채수일, string sn, string 업체명, string 구분, int seq)>();
+        var seen = new HashSet<string>();  // 채수일|SN|업체명 중복 방지
+        using (var cmd = conn.CreateCommand())
+        {
+            cmd.CommandText = "SELECT DISTINCT 분석일, SN, 업체명 FROM `BOD_DATA` WHERE SN IS NOT NULL AND SN <> '' ORDER BY 분석일, SN";
+            using var r = cmd.ExecuteReader();
+            while (r.Read())
+            {
+                string analysisDateStr = r.IsDBNull(0) ? "" : r.GetValue(0)?.ToString() ?? "";
+                string sn = r.GetString(1);
+                string company = r.IsDBNull(2) ? "" : r.GetString(2);
+                if (string.IsNullOrEmpty(sn)) continue;
+
+                if (!DateTime.TryParse(analysisDateStr, out var analysisDate)) continue;
+
+                string samplingDate = ExtractSamplingDate(sn, analysisDate);
+                if (string.IsNullOrEmpty(samplingDate)) continue;
+
+                // 채수일+SN+업체명 중복 방지 (다른 분석일이 같은 채수일로 매핑될 때)
+                string dedupKey = $"{samplingDate}|{sn}|{company}";
+                if (!seen.Add(dedupKey)) continue;
+
+                string 구분 = "여수";
+                if (sn.StartsWith("[세풍]")) 구분 = "세풍";
+                else if (sn.StartsWith("[율촌]")) 구분 = "율촌";
+
+                samples.Add((samplingDate, sn, company, 구분, 0));
+            }
+        }
+        Log($"BOD_DATA 고유 시료: {samples.Count}건 (중복 제거 후)");
+
+        // 채수일+구분별 순서 부여
+        var seqCounters = new Dictionary<string, int>();
+        var orderedSamples = new List<(string 채수일, string sn, string 업체명, string 구분, int seq)>();
+        foreach (var s in samples)
+        {
+            string key = $"{s.채수일}|{s.구분}";
+            if (!seqCounters.ContainsKey(key)) seqCounters[key] = 0;
+            seqCounters[key]++;
+            orderedSamples.Add((s.채수일, s.sn, s.업체명, s.구분, seqCounters[key]));
+        }
+
+        // 배치 INSERT
+        using (var txn = conn.BeginTransaction())
+        {
+            using var ins = conn.CreateCommand();
+            ins.Transaction = txn;
+            ins.CommandText = $@"
+                INSERT INTO `{T}` (채수일, 구분, 순서, SN, 업체명, 관리번호, BOD, `TOC`, SS, `T-N`, `T-P`, `N-Hexan`, Phenols, 비고, 확인자)
+                VALUES (@d, @g, @s, @sn, @name, '', '', '', '', '', '', '', '', '', '')";
+            var pD = ins.CreateParameter(); pD.ParameterName = "@d"; ins.Parameters.Add(pD);
+            var pG = ins.CreateParameter(); pG.ParameterName = "@g"; ins.Parameters.Add(pG);
+            var pS = ins.CreateParameter(); pS.ParameterName = "@s"; ins.Parameters.Add(pS);
+            var pSn = ins.CreateParameter(); pSn.ParameterName = "@sn"; ins.Parameters.Add(pSn);
+            var pName = ins.CreateParameter(); pName.ParameterName = "@name"; ins.Parameters.Add(pName);
+            ins.Prepare();
+            foreach (var (date, sn, company, group, seq) in orderedSamples)
+            {
+                pD.Value = date; pG.Value = group; pS.Value = seq; pSn.Value = sn; pName.Value = company;
+                ins.ExecuteNonQuery();
+            }
+            txn.Commit();
+        }
+        Log($"시료 행 INSERT 완료: {orderedSamples.Count}건");
+
+        // ── Step 3: 각 DATA 테이블에서 SN 기반으로 결과값 매칭
         var mappings = new (string table, string srcCol, string destCol)[]
         {
             ("BOD_DATA",      "결과",    "BOD"),
@@ -577,13 +815,267 @@ public static class FacilityDbMigration
 
         int totalUpdated = 0;
         foreach (var (table, srcCol, destCol) in mappings)
-            totalUpdated += MigrateBySnJoin(conn, T, table, srcCol, destCol, null);
+            totalUpdated += MigrateBySnMatch(conn, T, table, srcCol, destCol);
 
-        // TOC: 1법(TC-IC) 우선, 조건 불만족 시 2법(NPOC) 보충
-        totalUpdated += MigrateBySnJoin(conn, T, "TOC_TCIC_DATA", "검량선_a", "TOC", null);
-        totalUpdated += MigrateBySnJoin(conn, T, "TOC_NPOC_DATA", "검량선_a", "TOC", "TOC");
+        // TOC: 1법(TC-IC) 우선, 2법(NPOC) 보충
+        totalUpdated += MigrateBySnMatch(conn, T, "TOC_TCIC_DATA", "검량선_a", "TOC");
+        totalUpdated += MigrateBySnMatchEmpty(conn, T, "TOC_NPOC_DATA", "검량선_a", "TOC");
 
-        Log($"DATA -> {T} 마이그레이션 완료: 총 {totalUpdated}건 갱신");
+        Log($"=== 재구축 완료: {orderedSamples.Count}행, {totalUpdated}건 결과값 갱신 ===");
+    }
+
+    /// <summary>
+    /// 비고+업체명+30일 범위 매칭 (v5 — BOHEMCIGAR 매크로 완전 재현)
+    /// — 폐수의뢰및결과.SN(접두사제거) = 의뢰SN (채수일 인코딩: MM-DD-NN)
+    /// — *_DATA.비고(접두사제거) = 의뢰SN → 1순위 매칭키
+    /// — *_DATA.SN(접두사제거) = 분석배치SN → 2순위 매칭키 (BOD처럼 당일 분석한 경우)
+    /// — 채수일(SN에서 추출)로부터 +30일 이내 DATA.분석일만 검색
+    /// </summary>
+    private static int MigrateBySnMatch(DbConnection conn, string T, string srcTable, string srcCol, string destCol)
+    {
+        try
+        {
+            // 1) 폐수의뢰및결과 행 로드
+            var targets = new List<(int id, string sn, string company, string samplingDate)>();
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = $"SELECT Id, SN, 업체명, 채수일 FROM `{T}`";
+                using var r = cmd.ExecuteReader();
+                while (r.Read())
+                {
+                    string sn = r.IsDBNull(1) ? "" : r.GetString(1);
+                    string company = r.IsDBNull(2) ? "" : r.GetString(2);
+                    string samplingDate = r.IsDBNull(3) ? "" : r.GetString(3);
+                    if (!string.IsNullOrEmpty(sn))
+                        targets.Add((r.GetInt32(0), sn, company, samplingDate));
+                }
+            }
+
+            // 2) DATA 테이블 전체 로드: (비고접두사제거|업체명, 분석일) → 결과값
+            //    + (SN|업체명, 분석일) → 결과값 (fallback)
+            var dataRows = new List<(string cleanRemark, string cleanSn, string company, string val, DateTime analysisDate)>();
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = $"SELECT SN, 업체명, `{srcCol}`, 분석일, 비고 FROM `{srcTable}` WHERE `{srcCol}` IS NOT NULL AND `{srcCol}` <> '' AND SN IS NOT NULL AND SN <> ''";
+                using var r = cmd.ExecuteReader();
+                while (r.Read())
+                {
+                    string sn = r.GetString(0);
+                    string company = r.IsDBNull(1) ? "" : r.GetString(1);
+                    string val = r.GetValue(2)?.ToString() ?? "";
+                    string rawDate = r.IsDBNull(3) ? "" : r.GetValue(3)?.ToString() ?? "";
+                    string remark = r.IsDBNull(4) ? "" : r.GetString(4);
+                    if (string.IsNullOrEmpty(val)) continue;
+                    DateTime.TryParse(rawDate, out var analysisDate);
+                    string cleanRemark = !string.IsNullOrEmpty(remark) ? StripSnPrefix(remark) : "";
+                    string cleanSn = StripSnPrefix(sn);
+                    dataRows.Add((cleanRemark, cleanSn, company, val, analysisDate));
+                }
+            }
+
+            // 인덱스 구축: (cleanRemark|company) → rows, (cleanSn|company) → rows
+            var byRemark = new Dictionary<string, List<int>>();
+            var bySn = new Dictionary<string, List<int>>();
+            for (int i = 0; i < dataRows.Count; i++)
+            {
+                var d = dataRows[i];
+                if (!string.IsNullOrEmpty(d.cleanRemark))
+                {
+                    string rk = $"{d.cleanRemark}|{d.company}";
+                    if (!byRemark.ContainsKey(rk)) byRemark[rk] = new();
+                    byRemark[rk].Add(i);
+                }
+                string sk = $"{d.cleanSn}|{d.company}";
+                if (!bySn.ContainsKey(sk)) bySn[sk] = new();
+                bySn[sk].Add(i);
+            }
+
+            // 3) 매칭: 비고 우선 → SN fallback, 30일 범위 제한
+            var updates = new List<(int id, string val)>();
+            foreach (var (id, sn, company, samplingDate) in targets)
+            {
+                string cleanSn = StripSnPrefix(sn);
+                if (!DateTime.TryParse(samplingDate, out var sampDate)) continue;
+                DateTime limitDate = sampDate.AddDays(30);
+
+                // 1순위: 비고(접두사제거)|업체명 + 30일 이내
+                string? val = FindInRange(dataRows, byRemark, $"{cleanSn}|{company}", sampDate, limitDate);
+                // 2순위: SN(접두사제거)|업체명 + 30일 이내
+                if (val == null)
+                    val = FindInRange(dataRows, bySn, $"{cleanSn}|{company}", sampDate, limitDate);
+                if (val != null)
+                    updates.Add((id, val));
+            }
+
+            // 4) 배치 UPDATE
+            int rows = 0;
+            if (updates.Count > 0)
+            {
+                using var txn = conn.BeginTransaction();
+                using var upd = conn.CreateCommand();
+                upd.Transaction = txn;
+                upd.CommandText = $"UPDATE `{T}` SET `{destCol}` = @v WHERE Id = @id";
+                var pV = upd.CreateParameter(); pV.ParameterName = "@v"; upd.Parameters.Add(pV);
+                var pId = upd.CreateParameter(); pId.ParameterName = "@id"; upd.Parameters.Add(pId);
+                upd.Prepare();
+                foreach (var (id, val) in updates)
+                {
+                    pV.Value = val; pId.Value = id;
+                    rows += upd.ExecuteNonQuery();
+                }
+                txn.Commit();
+            }
+            Log($"{srcTable}.{srcCol} → {destCol}: {rows}건");
+            return rows;
+        }
+        catch (Exception ex) { Log($"{srcTable} 오류: {ex.Message}"); return 0; }
+    }
+
+    /// <summary>인덱스에서 키 찾고, 분석일이 범위 내인 첫 번째 결과 반환</summary>
+    private static string? FindInRange(
+        List<(string cleanRemark, string cleanSn, string company, string val, DateTime analysisDate)> dataRows,
+        Dictionary<string, List<int>> index, string key,
+        DateTime fromDate, DateTime toDate)
+    {
+        if (!index.TryGetValue(key, out var indices)) return null;
+        // 범위 내에서 가장 가까운 분석일 결과
+        string? bestVal = null;
+        double bestDiff = double.MaxValue;
+        foreach (int i in indices)
+        {
+            var d = dataRows[i];
+            if (d.analysisDate >= fromDate && d.analysisDate <= toDate)
+            {
+                double diff = (d.analysisDate - fromDate).TotalDays;
+                if (diff < bestDiff) { bestDiff = diff; bestVal = d.val; }
+            }
+        }
+        return bestVal;
+    }
+
+    /// <summary>TOC 보충용: 기존 값이 비어있는 행만 업데이트 (비고+업체명+30일 범위)</summary>
+    private static int MigrateBySnMatchEmpty(DbConnection conn, string T, string srcTable, string srcCol, string destCol)
+    {
+        try
+        {
+            var targets = new List<(int id, string sn, string company, string samplingDate)>();
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = $"SELECT Id, SN, 업체명, 채수일 FROM `{T}` WHERE (`{destCol}` IS NULL OR `{destCol}` = '')";
+                using var r = cmd.ExecuteReader();
+                while (r.Read())
+                {
+                    string sn = r.IsDBNull(1) ? "" : r.GetString(1);
+                    string company = r.IsDBNull(2) ? "" : r.GetString(2);
+                    string samplingDate = r.IsDBNull(3) ? "" : r.GetString(3);
+                    if (!string.IsNullOrEmpty(sn))
+                        targets.Add((r.GetInt32(0), sn, company, samplingDate));
+                }
+            }
+
+            var dataRows = new List<(string cleanRemark, string cleanSn, string company, string val, DateTime analysisDate)>();
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = $"SELECT SN, 업체명, `{srcCol}`, 분석일, 비고 FROM `{srcTable}` WHERE `{srcCol}` IS NOT NULL AND `{srcCol}` <> '' AND SN IS NOT NULL AND SN <> ''";
+                using var r = cmd.ExecuteReader();
+                while (r.Read())
+                {
+                    string sn = r.GetString(0);
+                    string company = r.IsDBNull(1) ? "" : r.GetString(1);
+                    string val = r.GetValue(2)?.ToString() ?? "";
+                    string rawDate = r.IsDBNull(3) ? "" : r.GetValue(3)?.ToString() ?? "";
+                    string remark = r.IsDBNull(4) ? "" : r.GetString(4);
+                    if (string.IsNullOrEmpty(val)) continue;
+                    DateTime.TryParse(rawDate, out var analysisDate);
+                    dataRows.Add((!string.IsNullOrEmpty(remark) ? StripSnPrefix(remark) : "", StripSnPrefix(sn), company, val, analysisDate));
+                }
+            }
+
+            var byRemark = new Dictionary<string, List<int>>();
+            var bySn = new Dictionary<string, List<int>>();
+            for (int i = 0; i < dataRows.Count; i++)
+            {
+                var d = dataRows[i];
+                if (!string.IsNullOrEmpty(d.cleanRemark))
+                {
+                    string rk = $"{d.cleanRemark}|{d.company}";
+                    if (!byRemark.ContainsKey(rk)) byRemark[rk] = new();
+                    byRemark[rk].Add(i);
+                }
+                string sk = $"{d.cleanSn}|{d.company}";
+                if (!bySn.ContainsKey(sk)) bySn[sk] = new();
+                bySn[sk].Add(i);
+            }
+
+            var updates = new List<(int id, string val)>();
+            foreach (var (id, sn, company, samplingDate) in targets)
+            {
+                string cleanSn = StripSnPrefix(sn);
+                if (!DateTime.TryParse(samplingDate, out var sampDate)) continue;
+                DateTime limitDate = sampDate.AddDays(30);
+                string? val = FindInRange(dataRows, byRemark, $"{cleanSn}|{company}", sampDate, limitDate)
+                           ?? FindInRange(dataRows, bySn, $"{cleanSn}|{company}", sampDate, limitDate);
+                if (val != null)
+                    updates.Add((id, val));
+            }
+
+            int rows = 0;
+            if (updates.Count > 0)
+            {
+                using var txn = conn.BeginTransaction();
+                using var upd = conn.CreateCommand();
+                upd.Transaction = txn;
+                upd.CommandText = $"UPDATE `{T}` SET `{destCol}` = @v WHERE Id = @id";
+                var pV = upd.CreateParameter(); pV.ParameterName = "@v"; upd.Parameters.Add(pV);
+                var pId = upd.CreateParameter(); pId.ParameterName = "@id"; upd.Parameters.Add(pId);
+                upd.Prepare();
+                foreach (var (id, val) in updates)
+                { pV.Value = val; pId.Value = id; rows += upd.ExecuteNonQuery(); }
+                txn.Commit();
+            }
+            Log($"{srcTable}.{srcCol} → {destCol} (보충): {rows}건");
+            return rows;
+        }
+        catch (Exception ex) { Log($"{srcTable} 보충 오류: {ex.Message}"); return 0; }
+    }
+
+    /// <summary>복합키(SN|업체명)+연도 기반 매칭</summary>
+    private static string? MatchByKeyYear(Dictionary<string, List<(string val, int year)>> byKey, string key, int targetYear)
+    {
+        if (!byKey.TryGetValue(key, out var candidates)) return null;
+        if (candidates.Count == 1) return candidates[0].val;
+
+        // 같은 연도 우선, ±1년 허용
+        string? bestVal = null;
+        int bestDiff = int.MaxValue;
+        foreach (var (val, year) in candidates)
+        {
+            int diff = year == 0 ? 0 : Math.Abs(year - targetYear);
+            if (diff < bestDiff) { bestDiff = diff; bestVal = val; }
+        }
+        return bestVal;
+    }
+
+    /// <summary>SN만으로 매칭 (fallback): 업체명 무관하게 같은 SN 중 연도 가장 가까운 것</summary>
+    private static string? MatchBySnOnlyYear(Dictionary<string, List<(string val, int year)>> byKey, string sn, int targetYear)
+    {
+        // byKey의 키가 "SN|업체명" 형태이므로 SN이 일치하는 항목을 모두 수집
+        string? bestVal = null;
+        int bestDiff = int.MaxValue;
+        foreach (var (key, candidates) in byKey)
+        {
+            // key = "SN|업체명" → SN 부분만 비교
+            int sep = key.IndexOf('|');
+            string keySn = sep >= 0 ? key[..sep] : key;
+            if (keySn != sn) continue;
+
+            foreach (var (val, year) in candidates)
+            {
+                int diff = year == 0 ? 0 : Math.Abs(year - targetYear);
+                if (diff < bestDiff) { bestDiff = diff; bestVal = val; }
+            }
+        }
+        return bestDiff <= 1 ? bestVal : null;  // ±1년 이내만 허용
     }
 
     /// <summary>
@@ -593,11 +1085,11 @@ public static class FacilityDbMigration
     {
         try
         {
-            // 1) BOD_DATA에서 고유 (채수일, SN, 업체명) 추출
+            // 1) BOD_DATA에서 고유 (분석일, SN, 업체명) 추출
             var bodRows = new List<(string 채수일, string sn, string 업체명)>();
             using (var cmd = conn.CreateCommand())
             {
-                cmd.CommandText = "SELECT DISTINCT 채수일, SN, 업체명 FROM `BOD_DATA` WHERE SN IS NOT NULL AND SN <> '' ORDER BY 채수일, SN";
+                cmd.CommandText = "SELECT DISTINCT 분석일, SN, 업체명 FROM `BOD_DATA` WHERE SN IS NOT NULL AND SN <> '' ORDER BY 분석일, SN";
                 using var r = cmd.ExecuteReader();
                 while (r.Read())
                 {
@@ -663,9 +1155,9 @@ public static class FacilityDbMigration
                 seqCounters[seqKey]++;
                 int seq = seqCounters[seqKey];
 
-                string newSn = ETA.Models.WasteSample.BuildSN(채수일, 구분, seq);
-                toInsert.Add((채수일, 구분, seq, newSn, 업체명));
-                existing.Add($"{newSn}|{채수일}");
+                // 원본 SN 보존 — BuildSN 대신 BOD_DATA 원래 SN 사용 (DATA 테이블 매칭용)
+                toInsert.Add((채수일, 구분, seq, sn, 업체명));
+                existing.Add($"{sn}|{채수일}");
             }
 
             Log($"INSERT 대상: {toInsert.Count}건, 트랜잭션 시작...");
@@ -723,11 +1215,11 @@ public static class FacilityDbMigration
                 }
             }
 
-            // 2) DATA 테이블에서 SN → (결과값, 업체명, 채수일) 딕셔너리
+            // 2) DATA 테이블에서 SN → (결과값, 업체명, 분석일) 딕셔너리
             var sources = new Dictionary<string, List<(string value, string company, DateTime date)>>();
             using (var cmd = conn.CreateCommand())
             {
-                cmd.CommandText = $"SELECT SN, `{srcCol}`, 업체명, 채수일 FROM `{srcTable}` WHERE `{srcCol}` IS NOT NULL";
+                cmd.CommandText = $"SELECT SN, `{srcCol}`, 업체명, 분석일 FROM `{srcTable}` WHERE `{srcCol}` IS NOT NULL";
                 using var r = cmd.ExecuteReader();
                 while (r.Read())
                 {
@@ -801,6 +1293,214 @@ public static class FacilityDbMigration
         }
         catch (Exception ex) { Log($"마이그레이션 {srcTable} 오류: {ex.Message}"); return 0; }
     }
+
+    /// <summary>
+    /// 빈 결과 행 수리: SN 기반 매칭으로 DATA 테이블에서 보충
+    /// — DATA.분석일 = 분석한 날, 폐수의뢰및결과.채수일 = 채수일(시료발생일)이므로
+    ///   날짜가 아닌 SN(시료번호)으로 매칭해야 함
+    /// </summary>
+    public static int RepairEmptyRows(DbConnection conn)
+    {
+        const string T = "폐수의뢰및결과";
+        int totalRepaired = 0;
+
+        // 1) 빈 행(모든 분석항목이 비어있는 행) 로드
+        var emptyRows = new List<(int id, string 업체명, string 채수일, string sn)>();
+        using (var cmd = conn.CreateCommand())
+        {
+            cmd.CommandText = $@"
+                SELECT Id, 업체명, 채수일, SN FROM `{T}`
+                WHERE (BOD IS NULL OR BOD = '')
+                  AND (`TOC` IS NULL OR `TOC` = '')
+                  AND (SS IS NULL OR SS = '')
+                  AND (`T-N` IS NULL OR `T-N` = '')
+                  AND (`T-P` IS NULL OR `T-P` = '')
+                  AND (`N-Hexan` IS NULL OR `N-Hexan` = '')
+                  AND (Phenols IS NULL OR Phenols = '')";
+            using var r = cmd.ExecuteReader();
+            while (r.Read())
+            {
+                emptyRows.Add((
+                    r.GetInt32(0),
+                    r.IsDBNull(1) ? "" : r.GetString(1),
+                    r.IsDBNull(2) ? "" : r.GetString(2),
+                    r.IsDBNull(3) ? "" : r.GetString(3)));
+            }
+        }
+        Log($"빈 행 수리 대상: {emptyRows.Count}건");
+        if (emptyRows.Count == 0) return 0;
+
+        // 2) 각 DATA 테이블에서 SN 기반으로 결과값 매칭
+        var mappings = new (string table, string srcCol, string destCol)[]
+        {
+            ("BOD_DATA",      "결과",    "BOD"),
+            ("SS_DATA",       "결과",    "SS"),
+            ("TN_DATA",       "농도",    "T-N"),
+            ("TP_DATA",       "농도",    "T-P"),
+            ("NHexan_DATA",   "결과",    "N-Hexan"),
+            ("Phenols_DATA",  "농도",    "Phenols"),
+        };
+
+        foreach (var (table, srcCol, destCol) in mappings)
+        {
+            try
+            {
+                // DATA 테이블 로드 + 비고/SN 인덱스 구축
+                var dataRows = new List<(string cleanRemark, string cleanSn, string company, string val, DateTime analysisDate)>();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = $"SELECT SN, 업체명, `{srcCol}`, 분석일, 비고 FROM `{table}` WHERE `{srcCol}` IS NOT NULL AND `{srcCol}` <> '' AND SN IS NOT NULL AND SN <> ''";
+                    using var r = cmd.ExecuteReader();
+                    while (r.Read())
+                    {
+                        string sn = r.GetString(0);
+                        string company = r.IsDBNull(1) ? "" : r.GetString(1);
+                        string val = r.GetValue(2)?.ToString() ?? "";
+                        string rawDate = r.IsDBNull(3) ? "" : r.GetValue(3)?.ToString() ?? "";
+                        string remark = r.IsDBNull(4) ? "" : r.GetString(4);
+                        if (string.IsNullOrEmpty(val)) continue;
+                        DateTime.TryParse(rawDate, out var ad);
+                        dataRows.Add((!string.IsNullOrEmpty(remark) ? StripSnPrefix(remark) : "", StripSnPrefix(sn), company, val, ad));
+                    }
+                }
+                var byRemark = new Dictionary<string, List<int>>();
+                var bySn2 = new Dictionary<string, List<int>>();
+                for (int i = 0; i < dataRows.Count; i++)
+                {
+                    var d = dataRows[i];
+                    if (!string.IsNullOrEmpty(d.cleanRemark))
+                    { string rk = $"{d.cleanRemark}|{d.company}"; if (!byRemark.ContainsKey(rk)) byRemark[rk] = new(); byRemark[rk].Add(i); }
+                    string sk = $"{d.cleanSn}|{d.company}";
+                    if (!bySn2.ContainsKey(sk)) bySn2[sk] = new(); bySn2[sk].Add(i);
+                }
+
+                // 빈 행에 대해 비고+30일 매칭
+                var updates = new List<(int id, string val)>();
+                foreach (var (id, 업체명, 채수일, sn) in emptyRows)
+                {
+                    if (string.IsNullOrEmpty(sn)) continue;
+                    if (!DateTime.TryParse(채수일, out var sampDate)) continue;
+                    string cleanSn = StripSnPrefix(sn);
+                    DateTime limitDate = sampDate.AddDays(30);
+                    string? matched = FindInRange(dataRows, byRemark, $"{cleanSn}|{업체명}", sampDate, limitDate)
+                                   ?? FindInRange(dataRows, bySn2, $"{cleanSn}|{업체명}", sampDate, limitDate);
+                    if (matched != null)
+                        updates.Add((id, matched));
+                }
+
+                // UPDATE 적용
+                if (updates.Count > 0)
+                {
+                    using var txn = conn.BeginTransaction();
+                    using var upd = conn.CreateCommand();
+                    upd.Transaction = txn;
+                    upd.CommandText = $"UPDATE `{T}` SET `{destCol}` = @v WHERE Id = @id";
+                    var pV = upd.CreateParameter(); pV.ParameterName = "@v"; upd.Parameters.Add(pV);
+                    var pId = upd.CreateParameter(); pId.ParameterName = "@id"; upd.Parameters.Add(pId);
+                    upd.Prepare();
+                    foreach (var (id, val) in updates)
+                    {
+                        pV.Value = val; pId.Value = id;
+                        upd.ExecuteNonQuery();
+                    }
+                    txn.Commit();
+                    totalRepaired += updates.Count;
+                    Log($"빈 행 수리 {table}.{srcCol} → {destCol}: {updates.Count}건");
+                }
+            }
+            catch (Exception ex) { Log($"빈 행 수리 {table} 오류: {ex.Message}"); }
+        }
+
+        // TOC 별도 처리: 1법 우선, 2법 보충
+        totalRepaired += RepairEmptyToc(conn, emptyRows);
+
+        Log($"빈 행 수리 완료: 총 {totalRepaired}건");
+        return totalRepaired;
+    }
+
+    private static int RepairEmptyToc(DbConnection conn, List<(int id, string 업체명, string 채수일, string sn)> emptyRows)
+    {
+        const string T = "폐수의뢰및결과";
+        int repaired = 0;
+
+        var tocEmptyIds = new HashSet<int>();
+        using (var cmd = conn.CreateCommand())
+        {
+            cmd.CommandText = $"SELECT Id FROM `{T}` WHERE (`TOC` IS NULL OR `TOC` = '')";
+            using var r = cmd.ExecuteReader();
+            while (r.Read()) tocEmptyIds.Add(r.GetInt32(0));
+        }
+        var tocTargets = emptyRows.Where(e => tocEmptyIds.Contains(e.id)).ToList();
+        if (tocTargets.Count == 0) return 0;
+
+        // 1법(TC-IC) 우선, 2법(NPOC) 보충
+        foreach (var (table, srcCol) in new[] { ("TOC_TCIC_DATA", "검량선_a"), ("TOC_NPOC_DATA", "검량선_a") })
+        {
+            try
+            {
+                var dataRows = new List<(string cleanRemark, string cleanSn, string company, string val, DateTime analysisDate)>();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = $"SELECT SN, 업체명, `{srcCol}`, 분석일, 비고 FROM `{table}` WHERE `{srcCol}` IS NOT NULL AND `{srcCol}` <> '' AND SN IS NOT NULL AND SN <> ''";
+                    using var r = cmd.ExecuteReader();
+                    while (r.Read())
+                    {
+                        string sn = r.GetString(0);
+                        string company = r.IsDBNull(1) ? "" : r.GetString(1);
+                        string val = r.GetValue(2)?.ToString() ?? "";
+                        string rawDate = r.IsDBNull(3) ? "" : r.GetValue(3)?.ToString() ?? "";
+                        string remark = r.IsDBNull(4) ? "" : r.GetString(4);
+                        if (string.IsNullOrEmpty(val)) continue;
+                        DateTime.TryParse(rawDate, out var ad);
+                        dataRows.Add((!string.IsNullOrEmpty(remark) ? StripSnPrefix(remark) : "", StripSnPrefix(sn), company, val, ad));
+                    }
+                }
+                var byRemark = new Dictionary<string, List<int>>();
+                var bySn2 = new Dictionary<string, List<int>>();
+                for (int i = 0; i < dataRows.Count; i++)
+                {
+                    var d = dataRows[i];
+                    if (!string.IsNullOrEmpty(d.cleanRemark))
+                    { string rk = $"{d.cleanRemark}|{d.company}"; if (!byRemark.ContainsKey(rk)) byRemark[rk] = new(); byRemark[rk].Add(i); }
+                    string sk = $"{d.cleanSn}|{d.company}";
+                    if (!bySn2.ContainsKey(sk)) bySn2[sk] = new(); bySn2[sk].Add(i);
+                }
+
+                var updates = new List<(int id, string val)>();
+                foreach (var (id, 업체명, 채수일, sn) in tocTargets)
+                {
+                    if (!tocEmptyIds.Contains(id)) continue;
+                    if (string.IsNullOrEmpty(sn)) continue;
+                    if (!DateTime.TryParse(채수일, out var sampDate)) continue;
+                    string cleanSn = StripSnPrefix(sn);
+                    DateTime limitDate = sampDate.AddDays(30);
+                    string? matched = FindInRange(dataRows, byRemark, $"{cleanSn}|{업체명}", sampDate, limitDate)
+                                   ?? FindInRange(dataRows, bySn2, $"{cleanSn}|{업체명}", sampDate, limitDate);
+                    if (matched != null)
+                    { updates.Add((id, matched)); tocEmptyIds.Remove(id); }
+                }
+
+                if (updates.Count > 0)
+                {
+                    using var txn = conn.BeginTransaction();
+                    using var upd = conn.CreateCommand();
+                    upd.Transaction = txn;
+                    upd.CommandText = $"UPDATE `{T}` SET `TOC` = @v WHERE Id = @id";
+                    var pV = upd.CreateParameter(); pV.ParameterName = "@v"; upd.Parameters.Add(pV);
+                    var pId = upd.CreateParameter(); pId.ParameterName = "@id"; upd.Parameters.Add(pId);
+                    upd.Prepare();
+                    foreach (var (id, val) in updates)
+                    { pV.Value = val; pId.Value = id; upd.ExecuteNonQuery(); }
+                    txn.Commit();
+                    repaired += updates.Count;
+                    Log($"빈 행 TOC 수리 ({table}): {updates.Count}건");
+                }
+            }
+            catch (Exception ex) { Log($"빈 행 TOC 수리 {table} 오류: {ex.Message}"); }
+        }
+        return repaired;
+    }
+
 
     /// <summary>SN 접두사 [세풍] [율촌] 제거</summary>
     private static string StripSnPrefix(string sn)

@@ -1316,10 +1316,89 @@
 [06:32:02] [AgentTree] 선택: 이예림
 [06:32:03] [AgentTree] 선택: 유경지
 [06:32:03] [AgentTree] 선택: 김지은
-[18:15:00] [AgentTree] LoadData() 시작
-[18:15:00] [AgentTree] 로드 완료 → 14명
-[18:15:08] [AgentTree] 선택: 정승욱
-[18:16:58] [AgentTree] 선택: 박은지
-[18:17:00] [AgentTree] 선택: 방찬미
-[18:48:47] [AgentTree] LoadData() 시작
-[18:48:47] [AgentTree] 로드 완료 → 14명
+[14:27:38] [AgentTree] LoadData() 시작
+[14:27:38] [AgentTree] 로드 완료 → 14명
+[14:27:52] [AgentTree] 선택: 정승욱
+[14:32:12] [AgentTree] LoadData() 시작
+[14:32:12] [AgentTree] 로드 완료 → 14명
+[14:32:14] [AgentTree] 선택: 이예림
+[14:32:48] [AgentTree] 드랍 배정: 이예림 ← 온도
+[14:42:35] [AgentTree] LoadData() 시작
+[14:42:35] [AgentTree] 로드 완료 → 14명
+[14:42:36] [AgentTree] 선택: 박은지
+[14:47:41] [AgentTree] LoadData() 시작
+[14:47:41] [AgentTree] 로드 완료 → 14명
+[14:50:37] [AgentTree] LoadData() 시작
+[14:50:37] [AgentTree] 로드 완료 → 14명
+[14:52:35] [AgentTree] LoadData() 시작
+[14:52:35] [AgentTree] 로드 완료 → 14명
+[14:53:35] [AgentTree] LoadData() 시작
+[14:53:35] [AgentTree] 로드 완료 → 14명
+[14:54:38] [AgentTree] LoadData() 시작
+[14:54:38] [AgentTree] 로드 완료 → 14명
+[14:56:10] [AgentTree] LoadData() 시작
+[14:56:11] [AgentTree] 로드 완료 → 14명
+[14:57:49] [AgentTree] LoadData() 시작
+[14:57:49] [AgentTree] 로드 완료 → 14명
+[14:59:07] [AgentTree] LoadData() 시작
+[14:59:07] [AgentTree] 로드 완료 → 14명
+[16:06:22] [AgentTree] LoadData() 시작
+[16:06:22] [AgentTree] 로드 완료 → 14명
+[16:06:23] [AgentTree] 선택: 이예림
+[16:10:00] [AgentTree] LoadData() 시작
+[16:10:01] [AgentTree] 로드 완료 → 14명
+[16:17:37] [AgentTree] LoadData() 시작
+[16:17:37] [AgentTree] 로드 완료 → 14명
+[16:19:41] [AgentTree] LoadData() 시작
+[16:19:41] [AgentTree] 로드 완료 → 14명
+[16:21:52] [AgentTree] 선택: 정승욱
+[16:24:05] [AgentTree] LoadData() 시작
+[16:24:05] [AgentTree] 로드 완료 → 14명
+[16:25:49] [AgentTree] LoadData() 시작
+[16:25:49] [AgentTree] 로드 완료 → 14명
+[16:25:52] [AgentTree] 선택: 정승욱
+[16:25:55] [AgentTree] 선택: 정승욱
+[16:27:59] [AgentTree] LoadData() 시작
+[16:27:59] [AgentTree] 로드 완료 → 14명
+[16:28:01] [AgentTree] 선택: 정승욱
+[16:30:30] [AgentTree] 선택: 정승욱
+[16:31:26] [AgentTree] LoadData() 시작
+[16:31:26] [AgentTree] 로드 완료 → 14명
+[16:34:34] [AgentTree] LoadData() 시작
+[16:34:34] [AgentTree] 로드 완료 → 14명
+[16:36:07] [AgentTree] LoadData() 시작
+[16:36:07] [AgentTree] 로드 완료 → 14명
+[16:41:57] [AgentTree] LoadData() 시작
+[16:41:57] [AgentTree] 로드 완료 → 14명
+[16:44:51] [AgentTree] LoadData() 시작
+[16:44:51] [AgentTree] 로드 완료 → 14명
+[16:46:04] [AgentTree] 선택: 정승욱
+[16:48:17] [AgentTree] LoadData() 시작
+[16:48:17] [AgentTree] 로드 완료 → 14명
+[16:50:30] [AgentTree] LoadData() 시작
+[16:50:30] [AgentTree] 로드 완료 → 14명
+[16:52:26] [AgentTree] LoadData() 시작
+[16:52:26] [AgentTree] 로드 완료 → 14명
+[16:55:47] [AgentTree] LoadData() 시작
+[16:55:47] [AgentTree] 로드 완료 → 14명
+[16:57:33] [AgentTree] LoadData() 시작
+[16:57:33] [AgentTree] 로드 완료 → 14명
+[16:59:26] [AgentTree] LoadData() 시작
+[16:59:26] [AgentTree] 로드 완료 → 14명
+[17:01:24] [AgentTree] LoadData() 시작
+[17:01:24] [AgentTree] 로드 완료 → 14명
+[17:01:48] [AgentTree] 선택: 박은지
+[17:10:53] [AgentTree] LoadData() 시작
+[17:10:53] [AgentTree] 로드 완료 → 14명
+[17:13:50] [AgentTree] LoadData() 시작
+[17:13:50] [AgentTree] 로드 완료 → 14명
+[17:16:20] [AgentTree] LoadData() 시작
+[17:16:20] [AgentTree] 로드 완료 → 14명
+[17:24:12] [AgentTree] LoadData() 시작
+[17:24:12] [AgentTree] 로드 완료 → 14명
+[17:29:03] [AgentTree] LoadData() 시작
+[17:29:03] [AgentTree] 로드 완료 → 14명
+[17:41:41] [AgentTree] LoadData() 시작
+[17:41:41] [AgentTree] 로드 완료 → 14명
+[17:46:29] [AgentTree] LoadData() 시작
+[17:46:29] [AgentTree] 로드 완료 → 14명
