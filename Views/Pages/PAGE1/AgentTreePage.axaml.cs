@@ -106,6 +106,8 @@ public partial class AgentTreePage : UserControl
     private const double GC_BAR_H     = 18.0;   // 바 높이
     private const double GC_DATE_H    = 20.0;   // 하단 날짜 영역
     private string _chartTab = "분석항목";          // 현재 업무분장표 탭
+    private DispatcherTimer? _chartShimmerTimer;
+    private readonly List<(LinearGradientBrush bgBrush, LinearGradientBrush borderBrush, Color baseColor)> _chartShimmerBars = new();
 
     public AgentTreePage()
     {
@@ -3818,7 +3820,7 @@ public partial class AgentTreePage : UserControl
         _chartRangeEnd   = _chartRangeStart.AddMonths(2).AddDays(-1);
         bool isH1 = today.Month <= 6;
 
-        var root = new Grid { RowDefinitions = new RowDefinitions("Auto,Auto,*") };
+        var root = new Grid { RowDefinitions = new RowDefinitions("Auto,Auto,Auto,*") };
         var kbFont = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
 
         // ── Row 0: 헤더 ─────────────────────────────────────────────────────
@@ -3878,13 +3880,18 @@ public partial class AgentTreePage : UserControl
         Grid.SetRow(tabBar, 1);
         root.Children.Add(tabBar);
 
-        // ── Row 2: 본문 ─────────────────────────────────────────────────────
+        // ── Row 2: 고정 헤더 (날짜/월 구분) ─────────────────────────────────
+        var fixedHeader = new StackPanel { Spacing = 0, Margin = new Thickness(4, 0, 4, 0) };
+        Grid.SetRow(fixedHeader, 2);
+        root.Children.Add(fixedHeader);
+
+        // ── Row 3: 스크롤 본문 ──────────────────────────────────────────────
         var body = new StackPanel { Spacing = 0 };
         var scroll = new ScrollViewer {
             HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
             VerticalScrollBarVisibility   = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
             Content = body, Margin = new Thickness(4, 0, 4, 4) };
-        Grid.SetRow(scroll, 2);
+        Grid.SetRow(scroll, 3);
         root.Children.Add(scroll);
 
         // 탭별 렌더링
@@ -3892,9 +3899,9 @@ public partial class AgentTreePage : UserControl
         {
             switch (_chartTab)
             {
-                case "분석항목": RefreshChartTable(body); break;
-                case "계약업체": RefreshChartContractTab(body); break;
-                case "일반업무": RefreshChartGeneralTab(body); break;
+                case "분석항목": RefreshChartTable(fixedHeader, body); break;
+                case "계약업체": fixedHeader.Children.Clear(); RefreshChartContractTab(body); break;
+                case "일반업무": fixedHeader.Children.Clear(); RefreshChartGeneralTab(body); break;
             }
         }
         RefreshBody();
@@ -3965,34 +3972,34 @@ public partial class AgentTreePage : UserControl
     }
 
     // ── 초성별 색상 매핑 ─────────────────────────────────────────────────
-    private static readonly (string Bg, string Fg)[] _chosungColors =
+    // 초성별 shimmer 기본 색상 (밝은 톤 — 텍스트 + shimmer sweep 용)
+    private static readonly Color[] _chosungBaseColors =
     [
-        ("#1e3a5f", "#a8c8e8"), // ㄱ — 네이비
-        ("#3d2b5a", "#c4a8e0"), // ㄴ — 포도
-        ("#1a4040", "#8ec8c0"), // ㄷ — 틸
-        ("#4a3328", "#d4b8a0"), // ㄹ — 카키
-        ("#2d2d50", "#a0a0d0"), // ㅁ — 슬레이트
-        ("#3a3a20", "#b8b888"), // ㅂ — 올리브
-        ("#4a2030", "#d89898"), // ㅅ — 로즈
-        ("#1a3838", "#90b8b0"), // ㅇ — 세이지
-        ("#2e3e1e", "#98b878"), // ㅈ — 모스
-        ("#3e2040", "#c090b8"), // ㅊ — 모브
-        ("#203248", "#88a8c0"), // ㅋ — 스틸
-        ("#382838", "#a888a0"), // ㅌ — 플럼
-        ("#3e3028", "#c0a890"), // ㅍ — 톤
-        ("#283e28", "#90b890"), // ㅎ — 민트
+        Color.Parse("#70a8d8"), // ㄱ — 스카이
+        Color.Parse("#a088c8"), // ㄴ — 라벤더
+        Color.Parse("#70b8b0"), // ㄷ — 틸
+        Color.Parse("#c8a878"), // ㄹ — 샌드
+        Color.Parse("#8888c0"), // ㅁ — 슬레이트
+        Color.Parse("#a0a870"), // ㅂ — 올리브
+        Color.Parse("#c88888"), // ㅅ — 코랄
+        Color.Parse("#78b0a0"), // ㅇ — 세이지
+        Color.Parse("#88b070"), // ㅈ — 모스
+        Color.Parse("#b080a8"), // ㅊ — 모브
+        Color.Parse("#7898b8"), // ㅋ — 스틸
+        Color.Parse("#a07898"), // ㅌ — 플럼
+        Color.Parse("#b8a080"), // ㅍ — 톤
+        Color.Parse("#80b088"), // ㅎ — 민트
     ];
     private static readonly char[] _chosungTable =
         ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
 
-    private static (string Bg, string Fg) GetChosungColor(string name)
+    private static Color GetChosungColor(string name)
     {
-        if (string.IsNullOrEmpty(name)) return ("#333", "#888");
+        if (string.IsNullOrEmpty(name)) return Color.Parse("#666");
         char first = name[0];
         if (first >= 0xAC00 && first <= 0xD7A3)
         {
             int idx = (first - 0xAC00) / (21 * 28);
-            // 쌍자음 → 기본 자음으로 매핑
             int colorIdx = _chosungTable[idx] switch
             {
                 'ㄱ' or 'ㄲ' => 0, 'ㄴ' => 1, 'ㄷ' or 'ㄸ' => 2, 'ㄹ' => 3,
@@ -4000,14 +4007,20 @@ public partial class AgentTreePage : UserControl
                 'ㅈ' or 'ㅉ' => 8, 'ㅊ' => 9, 'ㅋ' => 10, 'ㅌ' => 11,
                 'ㅍ' => 12, 'ㅎ' => 13, _ => 7,
             };
-            return _chosungColors[colorIdx];
+            return _chosungBaseColors[colorIdx];
         }
-        return ("#333", "#aaa");
+        return Color.Parse("#888");
     }
 
     /// <summary>업무분장표 테이블 렌더링 — 분석항목 탭 (2개월)</summary>
-    private void RefreshChartTable(StackPanel body)
+    private void RefreshChartTable(StackPanel fixedHeader, StackPanel body)
     {
+        // 기존 shimmer 타이머 정리
+        _chartShimmerTimer?.Stop();
+        _chartShimmerTimer = null;
+        _chartShimmerBars.Clear();
+
+        fixedHeader.Children.Clear();
         body.Children.Clear();
         var kbFont = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
 
@@ -4053,7 +4066,7 @@ public partial class AgentTreePage : UserControl
             dayOffset += mDays;
         }
         monthHeaderRow.Children.Add(monthHeaderCanvas);
-        body.Children.Add(monthHeaderRow);
+        fixedHeader.Children.Add(monthHeaderRow);
 
         // ── 날짜 헤더 ────────────────────────────────────────────────────
         var dateRow = new Grid { ColumnDefinitions = new ColumnDefinitions($"{GC_LABEL_W},*"), Height = GC_DATE_H };
@@ -4088,7 +4101,7 @@ public partial class AgentTreePage : UserControl
             }
         }
         dateRow.Children.Add(dateCanvas);
-        body.Children.Add(dateRow);
+        fixedHeader.Children.Add(dateRow);
 
         // ── 항목별 행 ───────────────────────────────────────────────────────
         foreach (var (fullName, shortName) in analytes)
@@ -4159,30 +4172,67 @@ public partial class AgentTreePage : UserControl
                 Stroke = AppTheme.BorderSubtle, StrokeThickness = 1,
             });
 
-            // 스팬 바 (담당자별 초성 색상 + 이름)
+            // 스팬 바 — shimmer sweep (배경 비움, 테두리 + shimmer 텍스트)
             var itemSpans = spans
                 .Where(s => string.Equals(s.FullName, fullName, StringComparison.OrdinalIgnoreCase))
                 .OrderBy(s => s.Start).ToList();
 
             foreach (var sp in itemSpans)
             {
-                var (bg, fg) = GetChosungColor(sp.Manager);
+                var baseColor = GetChosungColor(sp.Manager);
                 double sx = Math.Max(0, (sp.Start - _chartRangeStart).TotalDays) * GC_DAY_W;
                 double ex = (Math.Min(totalDays - 1, (sp.End - _chartRangeStart).TotalDays) + 1) * GC_DAY_W;
                 double w = ex - sx;
                 if (w < 1) continue;
 
-                var captBody = body; var captFull = fullName; var captSp = sp;
+                // 배경: 아주 미세한 shimmer sweep gradient
+                var dim = Color.FromArgb(15, baseColor.R, baseColor.G, baseColor.B);
+                var glow = Color.FromArgb(50, baseColor.R, baseColor.G, baseColor.B);
+                var bgBrush = new LinearGradientBrush
+                {
+                    StartPoint = new RelativePoint(0, 0.5, RelativeUnit.Relative),
+                    EndPoint   = new RelativePoint(1, 0.5, RelativeUnit.Relative),
+                    GradientStops =
+                    {
+                        new GradientStop(dim, 0.0),
+                        new GradientStop(dim, 0.0),
+                        new GradientStop(glow, 0.0),
+                        new GradientStop(dim, 0.0),
+                        new GradientStop(dim, 1.0),
+                    },
+                };
+
+                // 테두리: shimmer sweep gradient
+                var borderDim = Color.FromArgb(40, baseColor.R, baseColor.G, baseColor.B);
+                var borderGlow = Color.FromArgb(140, baseColor.R, baseColor.G, baseColor.B);
+                var borderBrush = new LinearGradientBrush
+                {
+                    StartPoint = new RelativePoint(0, 0.5, RelativeUnit.Relative),
+                    EndPoint   = new RelativePoint(1, 0.5, RelativeUnit.Relative),
+                    GradientStops =
+                    {
+                        new GradientStop(borderDim, 0.0),
+                        new GradientStop(borderDim, 0.0),
+                        new GradientStop(borderGlow, 0.0),
+                        new GradientStop(borderDim, 0.0),
+                        new GradientStop(borderDim, 1.0),
+                    },
+                };
+
+                _chartShimmerBars.Add((bgBrush, borderBrush, baseColor));
+
+                var captHeader = fixedHeader; var captBody = body; var captFull = fullName; var captSp = sp;
                 var bar = new Border
                 {
                     Width = w, Height = GC_BAR_H,
-                    Background = new SolidColorBrush(Color.Parse(bg)),
-                    CornerRadius = new CornerRadius(3), Padding = new Thickness(4, 0), ClipToBounds = true,
+                    Background = bgBrush,
+                    BorderBrush = borderBrush, BorderThickness = new Thickness(1),
+                    CornerRadius = new CornerRadius(4), Padding = new Thickness(4, 0), ClipToBounds = true,
                     Cursor = CanEdit ? new Cursor(StandardCursorType.Hand) : Cursor.Default,
                     Child = new TextBlock
                     {
                         Text = sp.Manager, FontSize = AppTheme.FontXS, FontFamily = kbFont,
-                        Foreground = new SolidColorBrush(Color.Parse(fg)),
+                        Foreground = new SolidColorBrush(baseColor),
                         TextTrimming = TextTrimming.CharacterEllipsis,
                         VerticalAlignment = VerticalAlignment.Center,
                         TextAlignment = TextAlignment.Center,
@@ -4190,7 +4240,6 @@ public partial class AgentTreePage : UserControl
                     [Canvas.LeftProperty] = sx, [Canvas.TopProperty] = barY,
                 };
 
-                // 클릭 → 담당자 변경 Flyout
                 if (CanEdit)
                 {
                     bar.PointerPressed += (_, _) =>
@@ -4205,7 +4254,7 @@ public partial class AgentTreePage : UserControl
                             if (lb.SelectedItem is not string nm) return;
                             AnalysisRequestService.UpdateAssignmentByName(captFull, nm, captSp.Start, captSp.End);
                             fly.Hide();
-                            RefreshChartTable(captBody);
+                            RefreshChartTable(captHeader, captBody);
                             RefreshShow3AfterChartUpdate();
                         };
                         fly.ShowAt(bar);
@@ -4222,12 +4271,40 @@ public partial class AgentTreePage : UserControl
                 track.Children.Add(new Avalonia.Controls.Shapes.Line
                 {
                     StartPoint = new Point(bx, barY - 1), EndPoint = new Point(bx, barY + GC_BAR_H + 1),
-                    Stroke = new SolidColorBrush(Color.Parse("#505860")), StrokeThickness = 1,
+                    Stroke = new SolidColorBrush(Color.FromArgb(50, 160, 170, 190)), StrokeThickness = 1,
                 });
             }
 
             rowGrid.Children.Add(track);
             body.Children.Add(rowGrid);
+        }
+
+        // ── shimmer 타이머 시작 (모든 바 공용) ─────────────────────────
+        if (_chartShimmerBars.Count > 0)
+        {
+            double offset = -0.3;
+            _chartShimmerTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(30) };
+            _chartShimmerTimer.Tick += (_, _) =>
+            {
+                offset += 0.008;
+                if (offset > 1.3) offset = -0.3;
+
+                double a = Math.Clamp(offset - 0.12, 0, 1);
+                double b = Math.Clamp(offset, 0, 1);
+                double c = Math.Clamp(offset + 0.12, 0, 1);
+
+                foreach (var (bgBrush, borderBrush, _) in _chartShimmerBars)
+                {
+                    bgBrush.GradientStops[1] = new GradientStop(bgBrush.GradientStops[0].Color, a);
+                    bgBrush.GradientStops[2] = new GradientStop(bgBrush.GradientStops[2].Color, b);
+                    bgBrush.GradientStops[3] = new GradientStop(bgBrush.GradientStops[4].Color, c);
+
+                    borderBrush.GradientStops[1] = new GradientStop(borderBrush.GradientStops[0].Color, a);
+                    borderBrush.GradientStops[2] = new GradientStop(borderBrush.GradientStops[2].Color, b);
+                    borderBrush.GradientStops[3] = new GradientStop(borderBrush.GradientStops[4].Color, c);
+                }
+            };
+            _chartShimmerTimer.Start();
         }
     }
 
@@ -4259,16 +4336,18 @@ public partial class AgentTreePage : UserControl
             };
 
             // 이름 배지
-            var (bg, fg) = GetChosungColor(agent.성명);
+            var nameColor = GetChosungColor(agent.성명);
             var label = new Border
             {
                 Height = GC_BAR_H, CornerRadius = new CornerRadius(3),
-                Background = new SolidColorBrush(Color.Parse(bg)),
+                Background = new SolidColorBrush(Color.FromArgb(25, nameColor.R, nameColor.G, nameColor.B)),
+                BorderBrush = new SolidColorBrush(Color.FromArgb(50, nameColor.R, nameColor.G, nameColor.B)),
+                BorderThickness = new Thickness(1),
                 Padding = new Thickness(3, 0), VerticalAlignment = VerticalAlignment.Center,
                 Child = new TextBlock
                 {
                     Text = agent.성명, FontSize = AppTheme.FontXS, FontFamily = kbFont,
-                    Foreground = new SolidColorBrush(Color.Parse(fg)),
+                    Foreground = new SolidColorBrush(nameColor),
                     VerticalAlignment = VerticalAlignment.Center,
                 },
             };
