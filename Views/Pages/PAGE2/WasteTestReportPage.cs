@@ -397,8 +397,8 @@ public class WasteTestReportPage : UserControl
         if (multiGroup) colList.Add(("구분", "구분", 45));
         colList.AddRange(new (string, string, double)[]
         {
-            ("업체명",   "업체명",  150),
-            ("S/N",      "SN",       80),
+            ("업체명",   "업체명",  250),
+            ("S/N",      "SN",       150),
             ("BOD",      "BOD",     130),
             ("TOC",      "TOC",     130),
             ("SS",       "SS",      130),
@@ -406,7 +406,6 @@ public class WasteTestReportPage : UserControl
             ("T-P",      "TP",      130),
             ("N-Hexan",  "NHexan",  130),
             ("Phenols",  "Phenols", 130),
-            ("비고",     "비고",     80),
         });
         var cols = colList.ToArray();
 
