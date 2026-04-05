@@ -232,6 +232,19 @@ public partial class AgentTreePage : UserControl
             Header = headerPanel,
         };
         TextShimmer.AttachHover(tvi);
+
+        // 직원을 업무분장표로 드래그 가능하게
+        tvi.PointerPressed += async (s, e) =>
+        {
+            if (e.ClickCount > 1) return; // 더블클릭 무시
+            var props = e.GetCurrentPoint((Control)s!).Properties;
+            if (!props.IsLeftButtonPressed) return;
+
+            var data = new DataObject();
+            data.Set("agent_name", agent.성명);
+            await DragDrop.DoDragDrop(e, data, DragDropEffects.Copy);
+        };
+
         return tvi;
     }
 
@@ -4152,6 +4165,47 @@ public partial class AgentTreePage : UserControl
             var track = new Canvas { Width = trackW, Height = GC_ROW_H, ClipToBounds = true };
             Grid.SetColumn(track, 1);
             double barY = (GC_ROW_H - GC_BAR_H) / 2;
+
+            // 드래그&드롭: 직원을 트랙에 놓으면 해당 바 구간의 담당자를 변경
+            if (CanEdit)
+            {
+                DragDrop.SetAllowDrop(track, true);
+                var captFullDrop = fullName;
+                var captHeaderDrop = fixedHeader; var captBodyDrop = body;
+                track.AddHandler(DragDrop.DragOverEvent, (object? _, DragEventArgs de) =>
+                {
+                    de.DragEffects = de.Data.Contains("agent_name") ? DragDropEffects.Copy : DragDropEffects.None;
+                });
+                track.AddHandler(DragDrop.DropEvent, (object? _, DragEventArgs de) =>
+                {
+                    if (!de.Data.Contains("agent_name")) return;
+                    string? dropName = de.Data.Get("agent_name") as string;
+                    if (string.IsNullOrEmpty(dropName)) return;
+
+                    // 드롭 위치 → 날짜 계산
+                    var pos = de.GetPosition(track);
+                    int dayIdx = (int)(pos.X / GC_DAY_W);
+                    DateTime dropDate = _chartRangeStart.AddDays(dayIdx);
+
+                    // 해당 날짜를 포함하는 스팬 찾기
+                    var hitSpan = spans.FirstOrDefault(sp =>
+                        string.Equals(sp.FullName, captFullDrop, StringComparison.OrdinalIgnoreCase)
+                        && dropDate >= sp.Start && dropDate <= sp.End);
+
+                    if (hitSpan != null)
+                    {
+                        // 기존 스팬 전체를 새 담당자로 변경
+                        AnalysisRequestService.UpdateAssignmentByName(captFullDrop, dropName, hitSpan.Start, hitSpan.End);
+                    }
+                    else
+                    {
+                        // 빈 영역 → 해당 날짜에 담당자 배정
+                        AnalysisRequestService.UpdateAssignmentByName(captFullDrop, dropName, dropDate, dropDate);
+                    }
+                    RefreshChartTable(captHeaderDrop, captBodyDrop);
+                    RefreshShow3AfterChartUpdate();
+                });
+            }
 
             // 오늘 하이라이트
             if (DateTime.Today >= _chartRangeStart && DateTime.Today <= rangeEnd)
