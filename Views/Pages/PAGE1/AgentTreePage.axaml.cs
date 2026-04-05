@@ -3867,7 +3867,6 @@ public partial class AgentTreePage : UserControl
         var btnH1    = MakeBtn("상반기", isH1 ? "#2a4a3a" : "#2a2a2a", isH1 ? "#88ddaa" : "#666", isH1 ? "#3a6a4a" : "#444", 52);
         var btnH2    = MakeBtn("하반기", !isH1 ? "#2a4a3a" : "#2a2a2a", !isH1 ? "#88ddaa" : "#666", !isH1 ? "#3a6a4a" : "#444", 52);
         var btnApply = MakeBtn("반영", "#4a2a1a", "#ffaa66", "#6a4a2a", 48);
-        var btnCleanup = MakeBtn("정리", "#4a1a1a", "#ff6666", "#6a2a2a", 48);
 
         var txbMonth = new TextBlock {
             Text = $"{_chartRangeStart:M/dd} – {_chartRangeEnd:M/dd}", FontSize = AppTheme.FontMD,
@@ -3881,7 +3880,6 @@ public partial class AgentTreePage : UserControl
         header.Children.Add(btnH1);
         header.Children.Add(btnH2);
         header.Children.Add(btnApply);
-        if (CanEdit) header.Children.Add(btnCleanup);
         Grid.SetRow(header, 0);
         root.Children.Add(header);
 
@@ -4018,35 +4016,6 @@ public partial class AgentTreePage : UserControl
         _chartProgressLabel = progressLabel;
         header.Children.Add(progressBar);
         header.Children.Add(progressLabel);
-
-        btnCleanup.Click += async (_, _) =>
-        {
-            btnCleanup.IsEnabled = false;
-            btnCleanup.Content = "처리중...";
-            progressBar.IsVisible = true;
-            progressLabel.IsVisible = true;
-            progressBar.Value = 0;
-
-            await Task.Run(() =>
-            {
-                AnalysisRequestService.CleanupCorruptedRows();
-                AnalysisRequestService.RebuildAssignmentsFrom(new DateTime(2026, 4, 3), (pct, name) =>
-                {
-                    Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-                    {
-                        progressBar.Value = pct;
-                        progressLabel.Text = $"{(int)(pct * 100)}% {name}";
-                    });
-                });
-            });
-
-            progressBar.IsVisible = false;
-            progressLabel.IsVisible = false;
-            btnCleanup.Content = "정리";
-            btnCleanup.IsEnabled = true;
-            RefreshBody();
-            RefreshShow3AfterChartUpdate();
-        };
 
         // 탭 클릭
         void UpdateTabStyle()
