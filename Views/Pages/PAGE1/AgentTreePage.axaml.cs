@@ -4272,122 +4272,39 @@ public partial class AgentTreePage : UserControl
                 track.Children.Add(bar);
             }
 
-            // 경계 드래그 핸들 — 인접 바 사이 경계일을 드래그로 변경
+            // ── 각 바의 양쪽 끝 드래그 핸들 (◁ 좌측=시작일, ▷ 우측=종료일) ──
             if (CanEdit)
             {
-                for (int idx = 0; idx < itemSpans.Count - 1; idx++)
+                for (int idx = 0; idx < itemSpans.Count; idx++)
                 {
-                    var leftSpan = itemSpans[idx];
-                    var rightSpan = itemSpans[idx + 1];
-                    DateTime bnd = rightSpan.Start;
-                    double bx = (bnd - _chartRangeStart).TotalDays * GC_DAY_W;
+                    var sp2 = itemSpans[idx];
+                    double spSx = Math.Max(0, (sp2.Start - _chartRangeStart).TotalDays) * GC_DAY_W;
+                    double spEx = (Math.Min(totalDays - 1, (sp2.End - _chartRangeStart).TotalDays) + 1) * GC_DAY_W;
 
-                    var handle = new Avalonia.Controls.Shapes.Rectangle
-                    {
-                        Width = 8, Height = GC_BAR_H + 4,
-                        Fill = new SolidColorBrush(Color.FromArgb(0, 255, 255, 255)),
-                        Cursor = new Cursor(StandardCursorType.SizeWestEast),
-                        [Canvas.LeftProperty] = bx - 4, [Canvas.TopProperty] = barY - 2,
-                    };
+                    // 이전/다음 바 참조 (경계 제한용)
+                    var prevSpan = idx > 0 ? itemSpans[idx - 1] : (AnalysisRequestService.AssignmentSpan?)null;
+                    var nextSpan = idx < itemSpans.Count - 1 ? itemSpans[idx + 1] : (AnalysisRequestService.AssignmentSpan?)null;
 
-                    // 호버 시 핸들 하이라이트
-                    handle.PointerEntered += (s, _) =>
-                        ((Avalonia.Controls.Shapes.Rectangle)s!).Fill = new SolidColorBrush(Color.FromArgb(80, 200, 200, 220));
-                    handle.PointerExited += (s, _) =>
-                        ((Avalonia.Controls.Shapes.Rectangle)s!).Fill = new SolidColorBrush(Color.FromArgb(0, 255, 255, 255));
+                    // --- 좌측 핸들 (시작일 변경) ---
+                    AddEdgeHandle(track, spSx, barY, sp2, fullName, isLeft: true,
+                        prevSpan, nextSpan, kbFont, fixedHeader, body);
 
-                    // 드래그 로직
-                    var captLeft = leftSpan; var captRight = rightSpan;
-                    var captFn = fullName; var captTrack = track;
-                    bool dragging = false; double dragStartX = 0;
-                    DateTime origBnd = bnd;
-
-                    handle.PointerPressed += (s, e) =>
-                    {
-                        dragging = true;
-                        dragStartX = e.GetPosition(captTrack).X;
-                        origBnd = captRight.Start;
-                        e.Handled = true;
-                        ((Control)s!).Opacity = 1.0;
-                    };
-
-                    handle.PointerMoved += (s, e) =>
-                    {
-                        if (!dragging) return;
-                        double curX = e.GetPosition(captTrack).X;
-                        int dayDelta = (int)Math.Round((curX - dragStartX) / GC_DAY_W);
-                        if (dayDelta == 0) return;
-
-                        DateTime newBnd = origBnd.AddDays(dayDelta);
-                        // 경계를 좌측 스팬 시작일+1 ~ 우측 스팬 종료일 범위로 제한
-                        if (newBnd <= captLeft.Start) newBnd = captLeft.Start.AddDays(1);
-                        if (newBnd > captRight.End) newBnd = captRight.End;
-
-                        double newBx = (newBnd - _chartRangeStart).TotalDays * GC_DAY_W;
-                        Canvas.SetLeft((Control)s!, newBx - 4);
-
-                        // 좌측 경계선 표시
-                        var indicator = captTrack.Children.OfType<Avalonia.Controls.Shapes.Line>()
-                            .FirstOrDefault(l => l.Tag is string tag && tag == $"drag_{captFn}_{idx}");
-                        if (indicator != null)
-                        {
-                            indicator.StartPoint = new Point(newBx, barY - 2);
-                            indicator.EndPoint = new Point(newBx, barY + GC_BAR_H + 2);
-                        }
-                        else
-                        {
-                            var line = new Avalonia.Controls.Shapes.Line
-                            {
-                                StartPoint = new Point(newBx, barY - 2), EndPoint = new Point(newBx, barY + GC_BAR_H + 2),
-                                Stroke = new SolidColorBrush(Color.Parse("#ff8844")), StrokeThickness = 2,
-                                Tag = $"drag_{captFn}_{idx}",
-                            };
-                            captTrack.Children.Add(line);
-                        }
-                    };
-
-                    handle.PointerReleased += (s, e) =>
-                    {
-                        if (!dragging) return;
-                        dragging = false;
-                        ((Control)s!).Opacity = 1.0;
-
-                        double curX = e.GetPosition(captTrack).X;
-                        int dayDelta = (int)Math.Round((curX - dragStartX) / GC_DAY_W);
-                        if (dayDelta == 0) return;
-
-                        DateTime newBnd = origBnd.AddDays(dayDelta);
-                        if (newBnd <= captLeft.Start) newBnd = captLeft.Start.AddDays(1);
-                        if (newBnd > captRight.End) newBnd = captRight.End;
-
-                        // 좌측 바 종료일 = newBnd - 1, 우측 바 시작일 = newBnd
-                        _chartPendingChanges.Add((captFn, captLeft.Manager, captLeft.Start, captLeft.End, captLeft.Start, newBnd.AddDays(-1)));
-                        _chartPendingChanges.Add((captFn, captRight.Manager, captRight.Start, captRight.End, newBnd, captRight.End));
-                    };
-
-                    track.Children.Add(handle);
-
-                    // 경계 세로선
-                    track.Children.Add(new Avalonia.Controls.Shapes.Line
-                    {
-                        StartPoint = new Point(bx, barY - 1), EndPoint = new Point(bx, barY + GC_BAR_H + 1),
-                        Stroke = new SolidColorBrush(Color.FromArgb(50, 160, 170, 190)), StrokeThickness = 1,
-                    });
+                    // --- 우측 핸들 (종료일 변경) ---
+                    AddEdgeHandle(track, spEx, barY, sp2, fullName, isLeft: false,
+                        prevSpan, nextSpan, kbFont, fixedHeader, body);
                 }
             }
-            else
+
+            // 경계 세로선
+            for (int i = 0; i < itemSpans.Count - 1; i++)
             {
-                // 편집 불가 시 경계선만
-                for (int i = 0; i < itemSpans.Count - 1; i++)
+                DateTime bnd = itemSpans[i + 1].Start;
+                double bx = (bnd - _chartRangeStart).TotalDays * GC_DAY_W;
+                track.Children.Add(new Avalonia.Controls.Shapes.Line
                 {
-                    DateTime bnd = itemSpans[i + 1].Start;
-                    double bx = (bnd - _chartRangeStart).TotalDays * GC_DAY_W;
-                    track.Children.Add(new Avalonia.Controls.Shapes.Line
-                    {
-                        StartPoint = new Point(bx, barY - 1), EndPoint = new Point(bx, barY + GC_BAR_H + 1),
-                        Stroke = new SolidColorBrush(Color.FromArgb(50, 160, 170, 190)), StrokeThickness = 1,
-                    });
-                }
+                    StartPoint = new Point(bx, barY - 1), EndPoint = new Point(bx, barY + GC_BAR_H + 1),
+                    Stroke = new SolidColorBrush(Color.FromArgb(50, 160, 170, 190)), StrokeThickness = 1,
+                });
             }
 
             rowGrid.Children.Add(track);
@@ -4421,6 +4338,135 @@ public partial class AgentTreePage : UserControl
             };
             _chartShimmerTimer.Start();
         }
+    }
+
+    /// <summary>바 양쪽 끝 드래그 핸들 생성 (좌측=시작일, 우측=종료일)</summary>
+    private void AddEdgeHandle(Canvas track, double edgeX, double barY,
+        AnalysisRequestService.AssignmentSpan span, string fullName, bool isLeft,
+        AnalysisRequestService.AssignmentSpan? prevSpan, AnalysisRequestService.AssignmentSpan? nextSpan,
+        FontFamily kbFont, StackPanel fixedHeader, StackPanel body)
+    {
+        const double HANDLE_W = 10;
+        var handle = new Avalonia.Controls.Shapes.Rectangle
+        {
+            Width = HANDLE_W, Height = GC_BAR_H + 6,
+            Fill = new SolidColorBrush(Color.FromArgb(0, 255, 255, 255)),
+            Cursor = new Cursor(StandardCursorType.SizeWestEast),
+            [Canvas.LeftProperty] = edgeX - HANDLE_W / 2, [Canvas.TopProperty] = barY - 3,
+        };
+
+        var baseColor = GetChosungColor(span.Manager);
+        var hoverColor = Color.FromArgb(100, baseColor.R, baseColor.G, baseColor.B);
+
+        handle.PointerEntered += (s, _) =>
+            ((Avalonia.Controls.Shapes.Rectangle)s!).Fill = new SolidColorBrush(hoverColor);
+        handle.PointerExited += (s, _) =>
+            ((Avalonia.Controls.Shapes.Rectangle)s!).Fill = new SolidColorBrush(Color.FromArgb(0, 255, 255, 255));
+
+        var captSpan = span; var captFn = fullName;
+        bool dragging = false; double dragStartX = 0;
+        DateTime origDate = isLeft ? span.Start : span.End;
+
+        handle.PointerPressed += (s, e) =>
+        {
+            dragging = true;
+            dragStartX = e.GetPosition(track).X;
+            origDate = isLeft ? captSpan.Start : captSpan.End;
+            e.Handled = true;
+        };
+
+        handle.PointerMoved += (s, e) =>
+        {
+            if (!dragging) return;
+            double curX = e.GetPosition(track).X;
+            int dayDelta = (int)Math.Round((curX - dragStartX) / GC_DAY_W);
+            if (dayDelta == 0) return;
+
+            DateTime newDate = origDate.AddDays(dayDelta);
+
+            if (isLeft)
+            {
+                // 시작일: 이전 바 시작일+1 이후, 자기 종료일 이전
+                DateTime minDate = prevSpan != null ? prevSpan.Start.AddDays(1) : _chartRangeStart;
+                if (newDate < minDate) newDate = minDate;
+                if (newDate > captSpan.End) newDate = captSpan.End;
+            }
+            else
+            {
+                // 종료일: 자기 시작일 이후, 다음 바 종료일 이전
+                DateTime maxDate = nextSpan != null ? nextSpan.End : _chartRangeStart.AddMonths(2).AddDays(-1);
+                if (newDate < captSpan.Start) newDate = captSpan.Start;
+                if (newDate > maxDate) newDate = maxDate;
+            }
+
+            double newPx = isLeft
+                ? (newDate - _chartRangeStart).TotalDays * GC_DAY_W
+                : ((newDate - _chartRangeStart).TotalDays + 1) * GC_DAY_W;
+            Canvas.SetLeft((Control)s!, newPx - HANDLE_W / 2);
+
+            // 인디케이터 라인
+            string tag = $"edge_{captFn}_{(isLeft ? "L" : "R")}_{captSpan.Start:yyyyMMdd}";
+            var indicator = track.Children.OfType<Avalonia.Controls.Shapes.Line>()
+                .FirstOrDefault(l => l.Tag is string t && t == tag);
+            if (indicator != null)
+            {
+                indicator.StartPoint = new Point(newPx, barY - 3);
+                indicator.EndPoint = new Point(newPx, barY + GC_BAR_H + 3);
+            }
+            else
+            {
+                track.Children.Add(new Avalonia.Controls.Shapes.Line
+                {
+                    StartPoint = new Point(newPx, barY - 3),
+                    EndPoint = new Point(newPx, barY + GC_BAR_H + 3),
+                    Stroke = new SolidColorBrush(Color.Parse("#ff8844")), StrokeThickness = 2, Tag = tag,
+                });
+            }
+        };
+
+        handle.PointerReleased += (s, e) =>
+        {
+            if (!dragging) return;
+            dragging = false;
+
+            double curX = e.GetPosition(track).X;
+            int dayDelta = (int)Math.Round((curX - dragStartX) / GC_DAY_W);
+            if (dayDelta == 0) return;
+
+            DateTime newDate = origDate.AddDays(dayDelta);
+            DateTime newStart, newEnd;
+
+            if (isLeft)
+            {
+                DateTime minDate = prevSpan != null ? prevSpan.Start.AddDays(1) : _chartRangeStart;
+                if (newDate < minDate) newDate = minDate;
+                if (newDate > captSpan.End) newDate = captSpan.End;
+                newStart = newDate;
+                newEnd = captSpan.End;
+
+                // 이전 바 종료일도 조정
+                if (prevSpan != null)
+                    _chartPendingChanges.Add((captFn, prevSpan.Manager, prevSpan.Start, prevSpan.End,
+                        prevSpan.Start, newDate.AddDays(-1)));
+            }
+            else
+            {
+                DateTime maxDate = nextSpan != null ? nextSpan.End : _chartRangeStart.AddMonths(2).AddDays(-1);
+                if (newDate < captSpan.Start) newDate = captSpan.Start;
+                if (newDate > maxDate) newDate = maxDate;
+                newStart = captSpan.Start;
+                newEnd = newDate;
+
+                // 다음 바 시작일도 조정
+                if (nextSpan != null)
+                    _chartPendingChanges.Add((captFn, nextSpan.Manager, nextSpan.Start, nextSpan.End,
+                        newDate.AddDays(1), nextSpan.End));
+            }
+
+            _chartPendingChanges.Add((captFn, captSpan.Manager, captSpan.Start, captSpan.End, newStart, newEnd));
+        };
+
+        track.Children.Add(handle);
     }
 
     /// <summary>업무분장표 — 계약업체 탭</summary>
