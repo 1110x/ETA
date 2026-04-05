@@ -1547,37 +1547,112 @@ public static class AnalysisRequestService
 
             Log($"AutoExtend: range={rangeStart:yyyy-MM-dd}~{rangeEnd:yyyy-MM-dd}, spans={spans.Count}개, analytes={analytes.Count}개");
 
-            int extended = 0;
+            // 연장 대상 수집: (항목명, 담당자, 시작일, 종료일)
+            var extendList = new List<(string fullName, string manager, DateTime gapStart)>();
             for (int i = 0; i < analytes.Count; i++)
             {
                 var (fullName, _) = analytes[i];
-
                 var itemSpans = spans
                     .Where(s => string.Equals(s.FullName, fullName, StringComparison.OrdinalIgnoreCase))
                     .OrderBy(s => s.Start)
                     .ToList();
-
                 if (itemSpans.Count == 0) continue;
-
-                var lastSpan  = itemSpans[^1];
-                var gapStart  = lastSpan.End.AddDays(1);
-
+                var lastSpan = itemSpans[^1];
+                var gapStart = lastSpan.End.AddDays(1);
                 if (gapStart <= extendTo)
-                {
-                    progress?.Invoke(0.1 + 0.9 * (i + 1) / analytes.Count, fullName);
-                    UpdateAssignmentByName(fullName, lastSpan.Manager, gapStart, extendTo);
-                    extended++;
-                }
-                else
-                {
-                    progress?.Invoke(0.1 + 0.9 * (i + 1) / analytes.Count, "");
-                }
+                    extendList.Add((fullName, lastSpan.Manager, gapStart));
             }
 
-            if (extended > 0)
-                Log($"AutoExtend: {extended}개 항목 {extendTo:yyyy-MM-dd}까지 자동 연장");
-            else
-                Log($"AutoExtend: 연장 대상 없음");
+            if (extendList.Count == 0)
+            {
+                Log("AutoExtend: 연장 대상 없음");
+                progress?.Invoke(1, "완료!");
+                return;
+            }
+
+            progress?.Invoke(0.1, $"연장 대상 {extendList.Count}개 항목...");
+
+            // 벌크 처리: 단일 커넥션 + 트랜잭션
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+
+            // 1) 이미 존재하는 날짜 행 한번에 조회
+            var existingDates = new HashSet<string>();
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = "SELECT `항목명` FROM `분장표준처리` WHERE `항목명` REGEXP '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'";
+                using var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                    existingDates.Add(reader.GetString(0));
+            }
+
+            // 2) 필요한 날짜 범위 계산 (전체 항목 중 가장 이른 gapStart ~ extendTo)
+            var earliestGap = extendList.Min(e => e.gapStart);
+            var allColumns = DbConnectionFactory.GetColumnNames(conn, "분장표준처리");
+            var analyteColumns = allColumns.Where(c => c != "항목명" && !c.StartsWith("_")).ToList();
+
+            // 3) 없는 날짜 행 한번에 INSERT (트랜잭션)
+            var missingDates = new List<string>();
+            for (var d = earliestGap; d <= extendTo; d = d.AddDays(1))
+            {
+                var dk = d.ToString("yyyy-MM-dd");
+                if (!existingDates.Contains(dk))
+                    missingDates.Add(dk);
+            }
+
+            if (missingDates.Count > 0)
+            {
+                progress?.Invoke(0.2, $"날짜 행 {missingDates.Count}개 생성 중...");
+                using var tx = conn.BeginTransaction();
+                foreach (var dk in missingDates)
+                {
+                    using var ins = conn.CreateCommand();
+                    ins.Transaction = tx;
+                    ins.CommandText = $"INSERT INTO `분장표준처리` (`항목명`) VALUES (@d)";
+                    ins.Parameters.AddWithValue("@d", dk);
+                    ins.ExecuteNonQuery();
+                }
+                tx.Commit();
+                existingDates.UnionWith(missingDates);
+            }
+
+            // 4) 항목별 UPDATE를 배치로 실행 (트랜잭션)
+            progress?.Invoke(0.4, "분장 데이터 갱신 중...");
+            using var tx2 = conn.BeginTransaction();
+            int totalUpdates = 0;
+            for (int i = 0; i < extendList.Count; i++)
+            {
+                var (fullName, manager, gapStart) = extendList[i];
+
+                // 날짜 범위를 WHERE IN으로 한번에 UPDATE
+                var dates = new List<string>();
+                for (var d = gapStart; d <= extendTo; d = d.AddDays(1))
+                    dates.Add(d.ToString("yyyy-MM-dd"));
+
+                // MariaDB는 큰 IN 절도 잘 처리 — 180개 정도는 문제없음
+                const int batchSize = 200;
+                for (int b = 0; b < dates.Count; b += batchSize)
+                {
+                    var batch = dates.Skip(b).Take(batchSize).ToList();
+                    var placeholders = string.Join(",", batch.Select((_, idx) => $"@d{idx}"));
+                    using var upd = conn.CreateCommand();
+                    upd.Transaction = tx2;
+                    upd.CommandText = $"UPDATE `분장표준처리` SET `{fullName}` = @mgr WHERE `항목명` IN ({placeholders})";
+                    upd.Parameters.AddWithValue("@mgr", manager);
+                    for (int idx = 0; idx < batch.Count; idx++)
+                        upd.Parameters.AddWithValue($"@d{idx}", batch[idx]);
+                    upd.ExecuteNonQuery();
+                }
+
+                totalUpdates++;
+                if (i % 5 == 0 || i == extendList.Count - 1)
+                    progress?.Invoke(0.4 + 0.55 * (i + 1) / extendList.Count, fullName);
+            }
+            tx2.Commit();
+
+            progress?.Invoke(0.98, "완료 중...");
+            Log($"AutoExtend: {totalUpdates}개 항목 {extendTo:yyyy-MM-dd}까지 자동 연장 (벌크)");
+            progress?.Invoke(1, "완료!");
         }
         catch (Exception ex) { Log($"AutoExtendAssignmentsToToday 오류: {ex.Message}"); }
     }
