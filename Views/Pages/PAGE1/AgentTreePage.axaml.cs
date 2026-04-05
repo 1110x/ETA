@@ -4249,8 +4249,10 @@ public partial class AgentTreePage : UserControl
                 // 더블클릭 → 담당자 변경 Flyout
                 if (CanEdit)
                 {
-                    bar.DoubleTapped += (_, _) =>
+                    bar.PointerPressed += (s, e) =>
                     {
+                        if (e.ClickCount < 2) return;
+                        e.Handled = true;
                         var names = AgentService.GetAllNames();
                         var lb = new ListBox { MaxHeight = 200, MinWidth = 120, ItemsSource = names,
                             FontSize = AppTheme.FontBase, FontFamily = kbFont,
@@ -4264,7 +4266,7 @@ public partial class AgentTreePage : UserControl
                             RefreshChartTable(captHeader, captBody);
                             RefreshShow3AfterChartUpdate();
                         };
-                        fly.ShowAt(bar);
+                        fly.ShowAt((Control)s!);
                     };
                 }
                 track.Children.Add(bar);
