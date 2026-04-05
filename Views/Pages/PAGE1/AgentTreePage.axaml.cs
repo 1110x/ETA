@@ -3812,8 +3812,10 @@ public partial class AgentTreePage : UserControl
     public Control BuildAssignmentChart()
     {
         var today = DateTime.Today;
-        _chartRangeStart = new DateTime(today.Year, today.Month, 1);
-        _chartRangeEnd   = _chartRangeStart.AddMonths(1).AddDays(-1);
+        // 2개월 표시: 현재 월을 포함하는 짝수 블록 (1-2, 3-4, 5-6, ...)
+        int startMonth = today.Month % 2 == 1 ? today.Month : today.Month - 1;
+        _chartRangeStart = new DateTime(today.Year, startMonth, 1);
+        _chartRangeEnd   = _chartRangeStart.AddMonths(2).AddDays(-1);
         bool isH1 = today.Month <= 6;
 
         var root = new Grid { RowDefinitions = new RowDefinitions("Auto,Auto,*") };
@@ -3845,8 +3847,9 @@ public partial class AgentTreePage : UserControl
         var btnH2    = MakeBtn("하반기", !isH1 ? "#2a4a3a" : "#2a2a2a", !isH1 ? "#88ddaa" : "#666", !isH1 ? "#3a6a4a" : "#444", 52);
         var btnApply = MakeBtn("반영", "#4a2a1a", "#ffaa66", "#6a4a2a", 48);
 
+        var month2End = _chartRangeStart.AddMonths(1);
         var txbMonth = new TextBlock {
-            Text = _chartRangeStart.ToString("yyyy년 MM월"), FontSize = AppTheme.FontMD,
+            Text = $"{_chartRangeStart:yyyy년 M월} – {month2End:M월}", FontSize = AppTheme.FontMD,
             FontFamily = kbFont, Foreground = AppTheme.FgSecondary,
             VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(8, 0, 0, 0) };
 
@@ -3910,20 +3913,24 @@ public partial class AgentTreePage : UserControl
 
         void Navigate()
         {
-            txbMonth.Text = _chartRangeStart.ToString("yyyy년 MM월");
-            _chartRangeEnd = _chartRangeStart.AddMonths(1).AddDays(-1);
+            var m2e = _chartRangeStart.AddMonths(1);
+            txbMonth.Text = $"{_chartRangeStart:yyyy년 M월} – {m2e:M월}";
+            _chartRangeEnd = _chartRangeStart.AddMonths(2).AddDays(-1);
             UpdateHalfBtnStyle();
             RefreshBody();
             btnApply.IsEnabled = true; btnApply.Content = "반영";
         }
 
-        // ◀ ▶: 자유 이동 (연도/반기 경계 자동 처리)
+        // ◀ ▶: 2개월씩 이동
         btnPrev.Click += (_, _) =>
-        { _chartRangeStart = _chartRangeStart.AddMonths(-1); Navigate(); };
+        { _chartRangeStart = _chartRangeStart.AddMonths(-2); Navigate(); };
         btnNext.Click += (_, _) =>
-        { _chartRangeStart = _chartRangeStart.AddMonths(1); Navigate(); };
+        { _chartRangeStart = _chartRangeStart.AddMonths(2); Navigate(); };
         btnToday.Click += (_, _) =>
-        { _chartRangeStart = new DateTime(today.Year, today.Month, 1); Navigate(); };
+        {
+            int sm = today.Month % 2 == 1 ? today.Month : today.Month - 1;
+            _chartRangeStart = new DateTime(today.Year, sm, 1); Navigate();
+        };
         btnH1.Click += (_, _) =>
         { _chartRangeStart = new DateTime(_chartRangeStart.Year, 1, 1); Navigate(); };
         btnH2.Click += (_, _) =>
@@ -3960,20 +3967,20 @@ public partial class AgentTreePage : UserControl
     // ── 초성별 색상 매핑 ─────────────────────────────────────────────────
     private static readonly (string Bg, string Fg)[] _chosungColors =
     [
-        ("#2a3a5a", "#88bbee"), // ㄱ
-        ("#3a2a4a", "#bb88dd"), // ㄴ
-        ("#2a4a3a", "#88ddaa"), // ㄷ
-        ("#4a3a2a", "#ddaa88"), // ㄹ
-        ("#3a3a5a", "#9999dd"), // ㅁ
-        ("#4a4a2a", "#bbbb88"), // ㅂ
-        ("#4a2a3a", "#dd88aa"), // ㅅ
-        ("#2a4a4a", "#88cccc"), // ㅇ
-        ("#3a4a2a", "#aacc88"), // ㅈ
-        ("#4a2a4a", "#cc88cc"), // ㅊ
-        ("#2a3a4a", "#88aacc"), // ㅋ
-        ("#3a2a3a", "#aa88aa"), // ㅌ
-        ("#4a3a3a", "#ccaa99"), // ㅍ
-        ("#3a4a3a", "#99cc99"), // ㅎ
+        ("#1e3a5f", "#a8c8e8"), // ㄱ — 네이비
+        ("#3d2b5a", "#c4a8e0"), // ㄴ — 포도
+        ("#1a4040", "#8ec8c0"), // ㄷ — 틸
+        ("#4a3328", "#d4b8a0"), // ㄹ — 카키
+        ("#2d2d50", "#a0a0d0"), // ㅁ — 슬레이트
+        ("#3a3a20", "#b8b888"), // ㅂ — 올리브
+        ("#4a2030", "#d89898"), // ㅅ — 로즈
+        ("#1a3838", "#90b8b0"), // ㅇ — 세이지
+        ("#2e3e1e", "#98b878"), // ㅈ — 모스
+        ("#3e2040", "#c090b8"), // ㅊ — 모브
+        ("#203248", "#88a8c0"), // ㅋ — 스틸
+        ("#382838", "#a888a0"), // ㅌ — 플럼
+        ("#3e3028", "#c0a890"), // ㅍ — 톤
+        ("#283e28", "#90b890"), // ㅎ — 민트
     ];
     private static readonly char[] _chosungTable =
         ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
@@ -3998,42 +4005,87 @@ public partial class AgentTreePage : UserControl
         return ("#333", "#aaa");
     }
 
-    /// <summary>업무분장표 테이블 렌더링 — 분석항목 탭</summary>
+    /// <summary>업무분장표 테이블 렌더링 — 분석항목 탭 (2개월)</summary>
     private void RefreshChartTable(StackPanel body)
     {
         body.Children.Clear();
         var kbFont = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
 
-        int monthDays = DateTime.DaysInMonth(_chartRangeStart.Year, _chartRangeStart.Month);
-        DateTime monthEnd = new DateTime(_chartRangeStart.Year, _chartRangeStart.Month, monthDays);
+        // 2개월 범위
+        DateTime rangeEnd = _chartRangeStart.AddMonths(2).AddDays(-1);
+        int totalDays = (int)(rangeEnd - _chartRangeStart).TotalDays + 1;
 
-        var spans = AnalysisRequestService.GetAssignmentChartData(_chartRangeStart, monthEnd);
+        var spans = AnalysisRequestService.GetAssignmentChartData(_chartRangeStart, rangeEnd);
         var analytes = AnalysisRequestService.GetOrderedAnalytes()
             .Where(a => !a.fullName.StartsWith("_") && a.fullName != "기타업무" && a.fullName != "담당계약업체" && a.fullName != "항목명")
             .ToList();
         if (analytes.Count == 0) return;
 
-        double trackW = monthDays * GC_DAY_W;
+        double trackW = totalDays * GC_DAY_W;
+
+        // ── 월 구분 헤더 ────────────────────────────────────────────────
+        var monthHeaderRow = new Grid { ColumnDefinitions = new ColumnDefinitions($"{GC_LABEL_W},*"), Height = 18 };
+        var monthHeaderCanvas = new Canvas { Width = trackW, Height = 18, ClipToBounds = true };
+        Grid.SetColumn(monthHeaderCanvas, 1);
+        int dayOffset = 0;
+        for (int m = 0; m < 2; m++)
+        {
+            var mdt = _chartRangeStart.AddMonths(m);
+            int mDays = DateTime.DaysInMonth(mdt.Year, mdt.Month);
+            double mw = mDays * GC_DAY_W;
+            monthHeaderCanvas.Children.Add(new TextBlock
+            {
+                Text = $"{mdt:M월}", FontSize = AppTheme.FontXS, FontWeight = FontWeight.Bold,
+                Width = mw, FontFamily = kbFont, TextAlignment = TextAlignment.Center,
+                Foreground = new SolidColorBrush(Color.Parse(m == 0 ? "#90b0d0" : "#b0a090")),
+                [Canvas.LeftProperty] = dayOffset * GC_DAY_W, [Canvas.TopProperty] = 1.0,
+            });
+            // 월 경계선
+            if (m > 0)
+            {
+                monthHeaderCanvas.Children.Add(new Avalonia.Controls.Shapes.Line
+                {
+                    StartPoint = new Point(dayOffset * GC_DAY_W, 0),
+                    EndPoint = new Point(dayOffset * GC_DAY_W, 18),
+                    Stroke = new SolidColorBrush(Color.Parse("#333840")), StrokeThickness = 1,
+                });
+            }
+            dayOffset += mDays;
+        }
+        monthHeaderRow.Children.Add(monthHeaderCanvas);
+        body.Children.Add(monthHeaderRow);
 
         // ── 날짜 헤더 ────────────────────────────────────────────────────
         var dateRow = new Grid { ColumnDefinitions = new ColumnDefinitions($"{GC_LABEL_W},*"), Height = GC_DATE_H };
         var dateCanvas = new Canvas { Width = trackW, Height = GC_DATE_H, ClipToBounds = true };
         Grid.SetColumn(dateCanvas, 1);
-        for (int d = 0; d < monthDays; d++)
+        int month1Days = DateTime.DaysInMonth(_chartRangeStart.Year, _chartRangeStart.Month);
+        for (int d = 0; d < totalDays; d++)
         {
             var dt = _chartRangeStart.AddDays(d);
             bool isSun = dt.DayOfWeek == DayOfWeek.Sunday;
             bool isSat = dt.DayOfWeek == DayOfWeek.Saturday;
             bool isToday = dt.Date == DateTime.Today;
-            string color = isToday ? "#66ee66" : isSun ? "#cc6666" : isSat ? "#6688cc" : "#999";
+            bool isMonth1 = d < month1Days;
+            string color = isToday ? "#70d070" : isSun ? "#c07070" : isSat ? "#7090c0" : (isMonth1 ? "#808890" : "#888078");
             dateCanvas.Children.Add(new TextBlock
             {
-                Text = (d + 1).ToString(), FontSize = AppTheme.FontXS, Width = GC_DAY_W,
+                Text = dt.Day.ToString(), FontSize = AppTheme.FontXS, Width = GC_DAY_W,
                 FontFamily = kbFont, TextAlignment = TextAlignment.Center,
                 Foreground = new SolidColorBrush(Color.Parse(color)),
                 FontWeight = isToday ? FontWeight.Bold : FontWeight.Normal,
                 [Canvas.LeftProperty] = d * GC_DAY_W, [Canvas.TopProperty] = 2.0,
             });
+            // 월 경계선
+            if (d == month1Days)
+            {
+                dateCanvas.Children.Add(new Avalonia.Controls.Shapes.Line
+                {
+                    StartPoint = new Point(d * GC_DAY_W, 0),
+                    EndPoint = new Point(d * GC_DAY_W, GC_DATE_H),
+                    Stroke = new SolidColorBrush(Color.Parse("#333840")), StrokeThickness = 1,
+                });
+            }
         }
         dateRow.Children.Add(dateCanvas);
         body.Children.Add(dateRow);
@@ -4083,13 +4135,21 @@ public partial class AgentTreePage : UserControl
             double barY = (GC_ROW_H - GC_BAR_H) / 2;
 
             // 오늘 하이라이트
-            if (DateTime.Today >= _chartRangeStart && DateTime.Today <= monthEnd)
+            if (DateTime.Today >= _chartRangeStart && DateTime.Today <= rangeEnd)
             {
                 int ti = (int)(DateTime.Today - _chartRangeStart).TotalDays;
                 track.Children.Add(new Avalonia.Controls.Shapes.Rectangle
-                { Width = GC_DAY_W, Height = GC_ROW_H, Fill = new SolidColorBrush(Color.Parse("#0d1f0d")),
+                { Width = GC_DAY_W, Height = GC_ROW_H, Fill = new SolidColorBrush(Color.Parse("#0d1a0d")),
                   [Canvas.LeftProperty] = ti * GC_DAY_W });
             }
+
+            // 월 경계선
+            track.Children.Add(new Avalonia.Controls.Shapes.Line
+            {
+                StartPoint = new Point(month1Days * GC_DAY_W, 0),
+                EndPoint = new Point(month1Days * GC_DAY_W, GC_ROW_H),
+                Stroke = new SolidColorBrush(Color.Parse("#282c30")), StrokeThickness = 1,
+            });
 
             // 수평 트랙 라인
             track.Children.Add(new Avalonia.Controls.Shapes.Line
@@ -4108,7 +4168,7 @@ public partial class AgentTreePage : UserControl
             {
                 var (bg, fg) = GetChosungColor(sp.Manager);
                 double sx = Math.Max(0, (sp.Start - _chartRangeStart).TotalDays) * GC_DAY_W;
-                double ex = (Math.Min(monthDays - 1, (sp.End - _chartRangeStart).TotalDays) + 1) * GC_DAY_W;
+                double ex = (Math.Min(totalDays - 1, (sp.End - _chartRangeStart).TotalDays) + 1) * GC_DAY_W;
                 double w = ex - sx;
                 if (w < 1) continue;
 
@@ -4154,7 +4214,7 @@ public partial class AgentTreePage : UserControl
                 track.Children.Add(bar);
             }
 
-            // 경계 세로선 (시각적으로만)
+            // 경계 세로선
             for (int i = 0; i < itemSpans.Count - 1; i++)
             {
                 DateTime bnd = itemSpans[i + 1].Start;
@@ -4162,7 +4222,7 @@ public partial class AgentTreePage : UserControl
                 track.Children.Add(new Avalonia.Controls.Shapes.Line
                 {
                     StartPoint = new Point(bx, barY - 1), EndPoint = new Point(bx, barY + GC_BAR_H + 1),
-                    Stroke = AppTheme.FgWarn, StrokeThickness = 1.5,
+                    Stroke = new SolidColorBrush(Color.Parse("#505860")), StrokeThickness = 1,
                 });
             }
 
