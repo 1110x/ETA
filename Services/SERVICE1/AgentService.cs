@@ -175,6 +175,25 @@ public static class AgentService
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
+        // 기존 컬럼 목록을 한 번에 조회 → 없는 컬럼만 ALTER TABLE (매번 ALTER 시도 시 MariaDB 에러 처리가 느림)
+        var existing = new System.Collections.Generic.HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        using (var chk = conn.CreateCommand())
+        {
+            if (DbConnectionFactory.IsMariaDb)
+            {
+                chk.CommandText = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'Agent'";
+                using var r = chk.ExecuteReader();
+                while (r.Read()) existing.Add(r.GetString(0));
+            }
+            else
+            {
+                // SQLite: PRAGMA table_info → (cid, name, type, notnull, dflt_value, pk)
+                chk.CommandText = "PRAGMA table_info(Agent)";
+                using var r = chk.ExecuteReader();
+                while (r.Read()) existing.Add(r.GetString(1));
+            }
+        }
+
         var columns = new[]
         {
             ("비밀번호",        "TEXT DEFAULT ''"),
@@ -187,6 +206,8 @@ public static class AgentService
 
         foreach (var (col, def) in columns)
         {
+            if (existing.Contains(col)) continue;   // 이미 존재 → 스킵
+
             try
             {
                 using var cmd = conn.CreateCommand();
@@ -194,7 +215,7 @@ public static class AgentService
                 cmd.ExecuteNonQuery();
                 Debug.WriteLine($"[AgentService] 컬럼 추가: {col}");
             }
-            catch { /* 이미 존재하면 무시 */ }
+            catch (Exception ex) { Debug.WriteLine($"[AgentService] 컬럼 추가 실패 {col}: {ex.Message}"); }
         }
     }
 

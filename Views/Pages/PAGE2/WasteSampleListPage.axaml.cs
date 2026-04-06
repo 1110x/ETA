@@ -52,6 +52,12 @@ public partial class WasteSampleListPage : UserControl
     private Button?    _btnCo율촌;
     private Button?    _btnCo세풍;
     private TextBox?   _companySearchBox;
+    private List<WasteCompany> _companyCacheAll = [];
+    private List<WasteCompany> _pendingCompanies = [];  // 저장 전 선택 버퍼
+
+    // ── pending 드래그 상태 ───────────────────────────────────────────────────
+    private WasteCompany? _dragPendingItem;
+    private Grid?         _dragPendingRow;
 
     public Control CompanyTreePanel => _companyTreePanel ??= BuildCompanyTreePanel();
 
@@ -230,6 +236,8 @@ public partial class WasteSampleListPage : UserControl
         var date = tag;
 
         _selectedDate = date;
+        _pendingCompanies.Clear();
+        FilterCompanyTree();
         RefreshDetail();
     }
 
@@ -266,6 +274,8 @@ public partial class WasteSampleListPage : UserControl
         string date = InlineCalendar.SelectedDate.Value.ToString("yyyy-MM-dd");
         CalendarPickerBorder.IsVisible = false;
         _selectedDate = date;
+        _pendingCompanies.Clear();
+        FilterCompanyTree();
         EnsureDateInTree(date);
         RefreshDetail();
     }
@@ -289,6 +299,9 @@ public partial class WasteSampleListPage : UserControl
     private Panel BuildSamplePanel(string date)
     {
         var rows = WasteSampleService.GetByDate(date);
+        var pendingForDate = _pendingCompanies
+            .Where(c => !rows.Any(r => r.업체명 == c.업체명))
+            .ToList();
 
         var root = new StackPanel { Spacing = 8, Margin = new Thickness(4) };
 
@@ -306,6 +319,7 @@ public partial class WasteSampleListPage : UserControl
         foreach (var groupKey in new[] { "여수", "율촌", "세풍" })
         {
             var groupRows = rows.Where(r => r.구분 == groupKey).ToList();
+            int pendingCount = pendingForDate.Count(c => CompanyGroup(c) == groupKey || (CompanyGroup(c) == "기타" && groupKey == "여수"));
 
             // 그룹 헤더
             var (gColor, gIcon) = groupKey switch
@@ -330,8 +344,12 @@ public partial class WasteSampleListPage : UserControl
                     }.BindMD(),
                     new TextBlock
                     {
-                        Text = $"({groupRows.Count}건)", FontFamily = Font,
-                        Foreground = AppTheme.FgDimmed, VerticalAlignment = VerticalAlignment.Center,
+                        Text = pendingCount > 0
+                            ? $"({groupRows.Count}건 + {pendingCount}건 대기)"
+                            : $"({groupRows.Count}건)",
+                        FontFamily = Font,
+                        Foreground = pendingCount > 0 ? AppTheme.FgWarn : AppTheme.FgDimmed,
+                        VerticalAlignment = VerticalAlignment.Center,
                     }.BindSM()
                 }
             };
@@ -341,6 +359,44 @@ public partial class WasteSampleListPage : UserControl
             var listPanel = new StackPanel { Spacing = 2 };
             foreach (var row in groupRows)
                 listPanel.Children.Add(BuildSampleRow(row, date, groupKey));
+
+            // pending 행 — 별도 드래그앤드롭 영역
+            var pendingGroup = pendingForDate
+                .Where(c => CompanyGroup(c) == groupKey || (CompanyGroup(c) == "기타" && groupKey == "여수"))
+                .ToList();
+            if (pendingGroup.Count > 0)
+            {
+                int baseSeq = groupRows.Count > 0
+                    ? groupRows.Max(r => r.순서) + 1
+                    : WasteSampleService.NextSeq(date, groupKey);
+
+                var pendingListPanel = new StackPanel { Spacing = 2 };
+                for (int pi = 0; pi < pendingGroup.Count; pi++)
+                {
+                    string previewSN = WasteSample.BuildSN(date, groupKey, baseSeq + pi);
+                    pendingListPanel.Children.Add(BuildPendingRow(pendingGroup[pi], previewSN));
+                }
+
+                var pendingIndicator = new Border
+                {
+                    Height = 2, Background = Brush.Parse("#44bb44"),
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    VerticalAlignment = VerticalAlignment.Top,
+                    IsHitTestVisible = false, IsVisible = false,
+                    BoxShadow = new BoxShadows(new BoxShadow { Blur = 6, Color = Color.Parse("#44bb44") }),
+                };
+                var pendingWrapper = new Grid();
+                pendingWrapper.Children.Add(pendingListPanel);
+                pendingWrapper.Children.Add(pendingIndicator);
+
+                var capturedGroup = groupKey;
+                DragDrop.SetAllowDrop(pendingWrapper, true);
+                pendingWrapper.AddHandler(DragDrop.DragOverEvent,  (_, e) => OnPendingDragOver(pendingListPanel, pendingIndicator, e, capturedGroup));
+                pendingWrapper.AddHandler(DragDrop.DropEvent,       (_, e) => OnPendingDrop(pendingListPanel, e, capturedGroup));
+                pendingWrapper.AddHandler(DragDrop.DragLeaveEvent, (_, _) => { pendingIndicator.IsVisible = false; });
+
+                listPanel.Children.Add(pendingWrapper);
+            }
 
             var listWrapper = new Grid();
             listWrapper.Children.Add(listPanel);
@@ -382,6 +438,102 @@ public partial class WasteSampleListPage : UserControl
     }
 
     // =========================================================================
+    // pending 행 (미저장 — 연한 색, 드래그핸들 + SN + 업체명 + 삭제)
+    private Grid BuildPendingRow(WasteCompany c, string previewSN)
+    {
+        var row = new Grid
+        {
+            ColumnDefinitions = new ColumnDefinitions("24,90,*,26"),
+            Background = Brush.Parse("#1a2a1a"),
+            Margin = new Thickness(0, 1),
+            Tag = c,
+        };
+
+        // ≡ 드래그 핸들
+        var handle = new TextBlock
+        {
+            Text = "≡", FontSize = 16, FontFamily = Font,
+            Foreground = Brush.Parse("#3a6a3a"),
+            VerticalAlignment = VerticalAlignment.Center,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            Cursor = new Cursor(StandardCursorType.Hand),
+            [Grid.ColumnProperty] = 0,
+        };
+        handle.PointerPressed += async (_, e) =>
+        {
+            if (!e.GetCurrentPoint(handle).Properties.IsLeftButtonPressed) return;
+            _dragPendingItem = c;
+            _dragPendingRow  = row;
+            row.Opacity = 0.4;
+            var data = new DataObject();
+            data.Set("pendingReorder", c.업체명);
+            await DragDrop.DoDragDrop(e, data, DragDropEffects.Move);
+            row.Opacity = 1;
+            _dragPendingRow = null;
+        };
+        row.Children.Add(handle);
+
+        // SN 배지
+        var snBlock = new Border
+        {
+            Background = Brush.Parse("#2a3a1a"),
+            BorderBrush = AppTheme.BorderWarn,
+            BorderThickness = new Thickness(1),
+            CornerRadius = new CornerRadius(4),
+            Padding = new Thickness(5, 1),
+            Margin = new Thickness(0, 0, 6, 0),
+            VerticalAlignment = VerticalAlignment.Center,
+            Child = new TextBlock
+            {
+                Text = previewSN, FontSize = AppTheme.FontXS, FontFamily = Font,
+                Foreground = AppTheme.FgWarn,
+            },
+        };
+        Grid.SetColumn(snBlock, 1);
+        row.Children.Add(snBlock);
+
+        var nameBlock = new TextBlock
+        {
+            Text = c.업체명, FontSize = AppTheme.FontMD, FontFamily = Font,
+            Foreground = AppTheme.FgWarn,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        Grid.SetColumn(nameBlock, 2);
+        row.Children.Add(nameBlock);
+
+        var btnDel = new Button
+        {
+            Content = "✕", Width = 24, Height = 24,
+            Background = Brushes.Transparent, BorderThickness = new Thickness(0),
+            Foreground = AppTheme.FgDimmed,
+            Padding = new Thickness(0),
+            VerticalContentAlignment = VerticalAlignment.Center,
+            HorizontalContentAlignment = HorizontalAlignment.Center,
+        };
+        btnDel.Click += (_, _) =>
+        {
+            _pendingCompanies.RemoveAll(p => p.업체명 == c.업체명);
+            RefreshDetail(silent: true);
+            if (_companyTreeStatus != null)
+            {
+                if (_pendingCompanies.Count == 0)
+                {
+                    _companyTreeStatus.Foreground = AppTheme.FgDimmed;
+                    _companyTreeStatus.Text = $"{_companyActiveGroup} — 클릭하면 목록에 추가";
+                }
+                else
+                {
+                    _companyTreeStatus.Foreground = AppTheme.FgWarn;
+                    _companyTreeStatus.Text = $"추가 대기 {_pendingCompanies.Count}건 — [저장] 버튼으로 확정";
+                }
+            }
+        };
+        Grid.SetColumn(btnDel, 3);
+        row.Children.Add(btnDel);
+
+        return row;
+    }
+
     // 개별 행 (드래그핸들 + S/N + 업체명 + 삭제)
     // =========================================================================
     private Grid BuildSampleRow(WasteSample s, string date, string groupKey)
@@ -505,6 +657,54 @@ public partial class WasteSampleListPage : UserControl
         if (targetIdx == srcDataIdx) return;
 
         WasteSampleService.ReorderTo(_dragSampleId, date, groupKey, targetIdx);
+        RefreshDetail(silent: true);
+    }
+
+    // ── pending 드래그앤드롭 ──────────────────────────────────────────────────
+    private void OnPendingDragOver(StackPanel listPanel, Border indicator, DragEventArgs e, string groupKey)
+    {
+        if (!e.Data.Contains("pendingReorder")) return;
+        e.DragEffects = DragDropEffects.Move;
+        var pos = e.GetPosition(listPanel);
+        double y = GetInsertY(listPanel, GetInsertIndex(listPanel, pos.Y));
+        indicator.Margin = new Thickness(0, y - 1, 0, 0);
+        indicator.IsVisible = true;
+    }
+
+    private void OnPendingDrop(StackPanel listPanel, DragEventArgs e, string groupKey)
+    {
+        if (!e.Data.Contains("pendingReorder") || _dragPendingItem == null) return;
+
+        if (listPanel.Parent is Grid wrapper)
+            foreach (var ch in wrapper.Children)
+                if (ch is Border b) b.IsVisible = false;
+
+        var pos = e.GetPosition(listPanel);
+        int insertIdx = GetInsertIndex(listPanel, pos.Y);
+
+        // pending 내 해당 그룹의 항목만 추출해서 재정렬
+        string effGroup = groupKey == "기타" ? "여수" : groupKey;
+        var groupItems = _pendingCompanies
+            .Where(c => { var g = CompanyGroup(c); return (g == effGroup) || (g == "기타" && effGroup == "여수"); })
+            .ToList();
+
+        int srcIdx = groupItems.IndexOf(_dragPendingItem);
+        if (srcIdx < 0) return;
+
+        int targetIdx = Math.Clamp(insertIdx, 0, groupItems.Count);
+        if (targetIdx > srcIdx) targetIdx--;
+        if (targetIdx == srcIdx) return;
+
+        // _pendingCompanies 전체 리스트에서 해당 항목 재배치
+        int globalSrc = _pendingCompanies.IndexOf(_dragPendingItem);
+        var target = groupItems[targetIdx];
+        int globalTarget = _pendingCompanies.IndexOf(target);
+
+        _pendingCompanies.RemoveAt(globalSrc);
+        int insertGlobal = _pendingCompanies.IndexOf(target);
+        if (globalSrc < globalTarget) insertGlobal++;
+        _pendingCompanies.Insert(Math.Clamp(insertGlobal, 0, _pendingCompanies.Count), _dragPendingItem);
+
         RefreshDetail(silent: true);
     }
 
@@ -685,11 +885,10 @@ public partial class WasteSampleListPage : UserControl
     {
         string ym = date[..7];
 
-        // 월 노드 찾기
+        // 월 노드 찾기 — Tag가 "MONTH:yyyy-MM" 형식
         TreeViewItem? monthNode = DateTreeView.Items
             .OfType<TreeViewItem>()
-            .FirstOrDefault(m => m.Items.OfType<TreeViewItem>().Any(d => (string?)d.Tag == date ||
-                                  (d.Tag == null && m.Items.OfType<TreeViewItem>().Any(x => (x.Tag as string)?[..7] == ym))));
+            .FirstOrDefault(m => (string?)m.Tag == $"MONTH:{ym}");
 
         // 없으면 월 노드 새로 생성
         if (monthNode == null)
@@ -699,6 +898,12 @@ public partial class WasteSampleListPage : UserControl
             monthNode.IsExpanded = true;
             DateTreeView.Items.Insert(0, monthNode);
             _datesByMonth.TryAdd(ym, new List<string>());
+        }
+        else
+        {
+            // 기존 월 노드 — 아직 펼쳐지지 않았으면 기존 날짜 먼저 로드
+            EnsureMonthDatesLoaded(monthNode, ym);
+            monthNode.IsExpanded = true;
         }
 
         // 날짜 노드가 이미 있으면 스킵
@@ -775,7 +980,7 @@ public partial class WasteSampleListPage : UserControl
             CornerRadius = new CornerRadius(0),
             Padding = new Thickness(8, 4),
         };
-        _companySearchBox.TextChanged += (_, _) => LoadCompanyTree();
+        _companySearchBox.TextChanged += (_, _) => FilterCompanyTree();
         Grid.SetRow(_companySearchBox, 1);
         root.Children.Add(_companySearchBox);
 
@@ -791,6 +996,16 @@ public partial class WasteSampleListPage : UserControl
 
         // Row 3: 트리뷰
         _companyTreeView = new TreeView { Margin = new Thickness(5) };
+        // 방향키는 탐색만 — 스페이스/엔터 또는 마우스 클릭으로만 추가
+        _companyTreeView.KeyDown += (_, e) =>
+        {
+            if (e.Key is Avalonia.Input.Key.Space or Avalonia.Input.Key.Enter)
+            {
+                if (_companyTreeView.SelectedItem is TreeViewItem tvi && tvi.Tag is WasteCompany c)
+                    AddPendingCompany(c);
+                e.Handled = true;
+            }
+        };
         _companyTreeView.SelectionChanged += CompanyTree_SelectionChanged;
         Grid.SetRow(_companyTreeView, 3);
         root.Children.Add(_companyTreeView);
@@ -820,7 +1035,7 @@ public partial class WasteSampleListPage : UserControl
         {
             _companyActiveGroup = tag;
             UpdateCompanyGroupTabStyles();
-            LoadCompanyTree();
+            LoadCompanyTree(forceReload: true);
         };
         return btn;
     }
@@ -846,40 +1061,52 @@ public partial class WasteSampleListPage : UserControl
         }
     }
 
-    public void LoadCompanyTree()
+    // DB에서 전체 목록을 새로 가져와 캐시 갱신 후 트리 재렌더
+    public void LoadCompanyTree(bool forceReload = false)
     {
         if (_companyTreeView == null) return;
-        _companyTreeView.Items.Clear();
 
-        var search = _companySearchBox?.Text?.Trim() ?? "";
-
-        try
+        if (forceReload || _companyCacheAll.Count == 0)
         {
-            var companies = WasteCompanyService.GetAllItems()
-                .Where(c => CompanyGroup(c) == _companyActiveGroup)
-                .Where(c => string.IsNullOrEmpty(search) ||
-                            c.업체명.Contains(search, StringComparison.OrdinalIgnoreCase) || c.약칭.Contains(search, StringComparison.OrdinalIgnoreCase))
-                .OrderBy(c => c.관리번호)
-                .ToList();
-
-            foreach (var c in companies)
-                _companyTreeView.Items.Add(MakeCompanyLeafNode(c));
-
-            if (_companyTreeStatus != null)
+            try { _companyCacheAll = WasteCompanyService.GetAllItems(); }
+            catch (Exception ex)
             {
-                _companyTreeStatus.Foreground = AppTheme.FgDimmed;
-                string statusText = $"{_companyActiveGroup} {companies.Count}개";
-                if (!string.IsNullOrEmpty(search)) statusText += $"  (검색: \"{search}\")";
-                _companyTreeStatus.Text = statusText + " — 클릭하면 목록에 추가";
+                if (_companyTreeStatus != null)
+                {
+                    _companyTreeStatus.Foreground = AppTheme.FgDanger;
+                    _companyTreeStatus.Text = $"오류: {ex.Message}";
+                }
+                return;
             }
         }
-        catch (Exception ex)
+
+        FilterCompanyTree();
+    }
+
+    // 캐시만 사용해 트리를 재렌더 (DB 쿼리 없음)
+    private void FilterCompanyTree()
+    {
+        if (_companyTreeView == null) return;
+
+        var search = _companySearchBox?.Text?.Trim() ?? "";
+        var companies = _companyCacheAll
+            .Where(c => CompanyGroup(c) == _companyActiveGroup)
+            .Where(c => string.IsNullOrEmpty(search) ||
+                        c.업체명.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                        c.약칭.Contains(search, StringComparison.OrdinalIgnoreCase))
+            .OrderBy(c => c.관리번호)
+            .ToList();
+
+        _companyTreeView.Items.Clear();
+        foreach (var c in companies)
+            _companyTreeView.Items.Add(MakeCompanyLeafNode(c));
+
+        if (_companyTreeStatus != null)
         {
-            if (_companyTreeStatus != null)
-            {
-                _companyTreeStatus.Foreground = AppTheme.FgDanger;
-                _companyTreeStatus.Text = $"오류: {ex.Message}";
-            }
+            _companyTreeStatus.Foreground = AppTheme.FgDimmed;
+            string statusText = $"{_companyActiveGroup} {companies.Count}개";
+            if (!string.IsNullOrEmpty(search)) statusText += $"  (검색: \"{search}\")";
+            _companyTreeStatus.Text = statusText + " — 클릭하면 목록에 추가";
         }
     }
 
@@ -1004,6 +1231,12 @@ public partial class WasteSampleListPage : UserControl
     {
         if (e.AddedItems.Count == 0) return;
         if (e.AddedItems[0] is not TreeViewItem tvi || tvi.Tag is not WasteCompany company) return;
+        AddPendingCompany(company);
+    }
+
+    private void AddPendingCompany(WasteCompany company)
+    {
+        _companyTreeView!.SelectedItem = null;
 
         // 날짜 미선택
         if (string.IsNullOrEmpty(_selectedDate))
@@ -1013,11 +1246,10 @@ public partial class WasteSampleListPage : UserControl
                 _companyTreeStatus.Foreground = AppTheme.FgWarn;
                 _companyTreeStatus.Text = "왼쪽에서 날짜를 먼저 선택하세요";
             }
-            _companyTreeView!.SelectedItem = null;
             return;
         }
 
-        // 중복 체크
+        // 이미 DB에 있는지 확인
         var existing = WasteSampleService.GetByDate(_selectedDate);
         if (existing.Any(s => s.업체명 == company.업체명))
         {
@@ -1026,24 +1258,61 @@ public partial class WasteSampleListPage : UserControl
                 _companyTreeStatus.Foreground = AppTheme.FgWarn;
                 _companyTreeStatus.Text = $"이미 추가됨: {company.업체명}";
             }
-            _companyTreeView!.SelectedItem = null;
             return;
         }
 
-        // 삽입
-        string groupKey = CompanyGroup(company);
-        if (groupKey == "기타") groupKey = "여수";
-        WasteSampleService.Insert(_selectedDate, groupKey, company.업체명, company.관리번호);
-        EnsureDateInTree(_selectedDate);
+        // 이미 대기 중이면 무시
+        if (_pendingCompanies.Any(c => c.업체명 == company.업체명)) return;
+
+        _pendingCompanies.Add(company);
+        RefreshDetail(silent: true);   // Show2 즉시 반영
 
         if (_companyTreeStatus != null)
         {
-            _companyTreeStatus.Foreground = AppTheme.FgSuccess;
-            _companyTreeStatus.Text = $"추가됨: {company.업체명}";
+            _companyTreeStatus.Foreground = AppTheme.FgWarn;
+            _companyTreeStatus.Text = $"추가 대기 {_pendingCompanies.Count}건 — [저장] 버튼으로 확정";
         }
+    }
 
-        _companyTreeView!.SelectedItem = null;
-        RefreshDetail(silent: true);
+    // ── 서브버튼 BT1: 대기 목록 일괄 저장 ───────────────────────────────────
+    public void SavePending(IProgress<(int done, int total)>? progress = null)
+    {
+        if (string.IsNullOrEmpty(_selectedDate))
+        {
+            if (_companyTreeStatus != null)
+            {
+                _companyTreeStatus.Foreground = AppTheme.FgWarn;
+                _companyTreeStatus.Text = "날짜를 먼저 선택하세요";
+            }
+            return;
+        }
+        if (_pendingCompanies.Count == 0) return;
+
+        var toSave = _pendingCompanies.ToList();
+        int total = toSave.Count;
+        int saved = 0;
+
+        foreach (var c in toSave)
+        {
+            string groupKey = CompanyGroup(c);
+            if (groupKey == "기타") groupKey = "여수";
+            WasteSampleService.Insert(_selectedDate, groupKey, c.업체명, c.관리번호);
+            saved++;
+            progress?.Report((saved, total));
+        }
+        // UI 조작은 반드시 UI 스레드에서
+        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+        {
+            _pendingCompanies.Clear();
+            EnsureDateInTree(_selectedDate);
+            FilterCompanyTree();
+            RefreshDetail(silent: true);
+            if (_companyTreeStatus != null)
+            {
+                _companyTreeStatus.Foreground = AppTheme.FgSuccess;
+                _companyTreeStatus.Text = $"{saved}건 저장 완료";
+            }
+        });
     }
 
     private void Log(string msg)

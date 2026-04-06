@@ -312,24 +312,13 @@ public partial class Login : Window
         if (txtDbStatus != null) txtDbStatus.Text = on ? "CHUNGHA DB (온라인)" : "SQLite (오프라인)";
     }
 
-    // ── 이스터에그: 타이틀 5회 클릭 → 관리자 자동 로그인 ──────────────────
+    // ── 이스터에그 비활성화 ────────────────────────────────────────────────
     private int _titleClickCount;
     private DateTime _titleLastClick = DateTime.MinValue;
 
-    private async void Title_Click(object? sender, PointerPressedEventArgs e)
+    private void Title_Click(object? sender, PointerPressedEventArgs e)
     {
-        var now = DateTime.Now;
-        if ((now - _titleLastClick).TotalSeconds > 3) _titleClickCount = 0;
-        _titleLastClick = now;
-        _titleClickCount++;
-
-        if (_titleClickCount >= 5)
-        {
-            _titleClickCount = 0;
-            Log("[EasterEgg] 관리자 자동 로그인");
-            await AnimateLoginFormOut();
-            PlayLottieAndNavigate("201000308");
-        }
+        // 관리자 자동 로그인 이스터에그 제거됨
     }
 
     // ── 로그인 폼 페이드아웃 + 슬라이드업 애니메이션 ──────────────────────

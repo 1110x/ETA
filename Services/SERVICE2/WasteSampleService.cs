@@ -226,7 +226,7 @@ public static class WasteSampleService
         cmd.ExecuteNonQuery();
     }
 
-    private static int NextSeq(string 채수일, string 구분)
+    public static int NextSeq(string 채수일, string 구분)
     {
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();

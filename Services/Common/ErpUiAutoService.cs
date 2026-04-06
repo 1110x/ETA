@@ -170,7 +170,8 @@ public static class ErpUiAutoService
         try
         {
             if (!File.Exists(path)) { Log($"[LoadAllExcelData] 파일 없음: {path}"); return result; }
-            using var wb = new XLWorkbook(path);
+            using var fs = new System.IO.FileStream(path, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite);
+            using var wb = new XLWorkbook(fs);
             var ws = wb.Worksheet("자료입력");
 
             for (int r = 2; r <= 300; r++)
@@ -211,7 +212,8 @@ public static class ErpUiAutoService
                 Log($"[LoadExcelRow] 파일 없음: {ExcelPath}");
                 return ("파일 없음", []);
             }
-            using var wb = new XLWorkbook(ExcelPath);
+            using var fs = new System.IO.FileStream(ExcelPath, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite);
+            using var wb = new XLWorkbook(fs);
             var ws = wb.Worksheet("자료입력");
             int r = rowNumber + 1; // 1행은 헤더
 
@@ -609,6 +611,11 @@ public static class ErpUiAutoService
     // ERP 그리드에서 S/N 목록 읽기
     // =========================================================================
     /// <summary>ERP 그리드의 보이는 EDIT/STATIC 컨트롤에서 S/N 패턴 텍스트를 수집</summary>
+    /// <summary>
+    /// ERP 그리드에서 S/N 목록을 읽는다.
+    /// DevExpress XtraGrid는 owner-draw라 GetWindowText로 셀 읽기 불가 →
+    /// 그리드에 포커스 후 Ctrl+A → Ctrl+C → 클립보드 텍스트 파싱.
+    /// </summary>
     public static List<string> GetGridSnList()
     {
         var snList = new List<string>();
@@ -616,21 +623,69 @@ public static class ErpUiAutoService
         if (procs.Length == 0) { Log("[GetGridSnList] 프로세스 없음"); return snList; }
 
         var hwndMain = procs[0].MainWindowHandle;
-        if (hwndMain == IntPtr.Zero) return snList;
+        if (hwndMain == IntPtr.Zero) { Log("[GetGridSnList] 메인 HWND 없음"); return snList; }
 
+        // 가장 넓은 WindowsForms10.Window.8 = XtraGrid
         var all = EnumAllChildren(hwndMain);
-
-        // S/N 패턴: MM-DD-숫자 (예: 01-06-1, [율촌]03-15-2)
+        var rects = new Dictionary<IntPtr, RECT>();
         foreach (var c in all)
+            if (GetWindowRect(c.Hwnd, out RECT r)) rects[c.Hwnd] = r;
+
+        ControlInfo? grid = null;
+        long bestArea = 0;
+        foreach (var c in all.Where(c => c.Visible &&
+            c.ClassName.StartsWith("WindowsForms10.Window.8", StringComparison.OrdinalIgnoreCase)))
         {
-            if (string.IsNullOrWhiteSpace(c.Text)) continue;
-            var text = c.Text.Trim();
-            // S/N 패턴 매칭: 숫자2-숫자2-숫자 (접두사 포함 가능)
-            if (System.Text.RegularExpressions.Regex.IsMatch(text, @"\d{2}-\d{2}-\d+"))
-            {
-                if (!snList.Contains(text))
-                    snList.Add(text);
-            }
+            if (!rects.TryGetValue(c.Hwnd, out RECT gr)) continue;
+            long area = (long)(gr.Right - gr.Left) * (gr.Bottom - gr.Top);
+            if (area > bestArea) { bestArea = area; grid = c; }
+        }
+
+        if (grid == null) { Log("[GetGridSnList] 그리드 컨트롤 미발견"); return snList; }
+        Log($"[GetGridSnList] 그리드 HWND=0x{grid.Hwnd:X8}  area={bestArea}");
+
+        // 그리드 포커스 → Ctrl+A (전체선택) → Ctrl+C (클립보드 복사)
+        SetForegroundWindow(hwndMain);
+        Thread.Sleep(60);
+        EnsureGridFocus(hwndMain, grid.Hwnd);
+        Thread.Sleep(80);
+
+        // Ctrl+A
+        keybd_event(VK_CONTROL, 0, 0, UIntPtr.Zero);
+        keybd_event(0x41, 0, 0, UIntPtr.Zero);
+        keybd_event(0x41, 0, KEYEVENTF_KEYUP, UIntPtr.Zero);
+        keybd_event(VK_CONTROL, 0, KEYEVENTF_KEYUP, UIntPtr.Zero);
+        Thread.Sleep(120);
+
+        // Ctrl+C
+        keybd_event(VK_CONTROL, 0, 0, UIntPtr.Zero);
+        keybd_event(0x43, 0, 0, UIntPtr.Zero);
+        keybd_event(0x43, 0, KEYEVENTF_KEYUP, UIntPtr.Zero);
+        keybd_event(VK_CONTROL, 0, KEYEVENTF_KEYUP, UIntPtr.Zero);
+        Thread.Sleep(300);
+
+        // 클립보드 읽기 (STA 스레드 필요)
+        string clipText = "";
+        var th = new Thread(() =>
+        {
+            try { clipText = System.Windows.Forms.Clipboard.GetText(); }
+            catch (Exception ex) { Log($"[GetGridSnList] 클립보드 오류: {ex.Message}"); }
+        });
+        th.SetApartmentState(ApartmentState.STA);
+        th.Start();
+        th.Join(3000);
+
+        Log($"[GetGridSnList] 클립보드 {clipText.Length}자 수신");
+        if (clipText.Length > 0)
+            Log($"[GetGridSnList] 첫 줄: '{clipText.Split('\n')[0].Trim()}'");
+
+        // 각 줄에서 S/N 패턴(MM-DD-숫자, 접두사 포함 가능) 추출
+        var snRegex = new System.Text.RegularExpressions.Regex(@"\d{2}-\d{2}-\d+");
+        foreach (var line in clipText.Split('\n'))
+        {
+            var m = snRegex.Match(line);
+            if (m.Success && !snList.Contains(m.Value))
+                snList.Add(m.Value);
         }
 
         Log($"[GetGridSnList] {snList.Count}개 S/N 발견");

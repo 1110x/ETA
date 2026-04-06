@@ -31,7 +31,7 @@
                 Background="{DynamicResource PanelBg}"
                 CornerRadius="6,6,0,0"
                 Padding="8,4">
-            <Grid ColumnDefinitions="*,Auto">
+            <Grid ColumnDefinitions="*">
                 <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
                     <TextBlock Text="폐수배출업소"
                                FontSize="{DynamicResource FontSizeBase}" FontWeight="SemiBold"
@@ -76,18 +76,6 @@
                             BorderThickness="1"
                             BorderBrush="{DynamicResource InputBorder}"/>
                 </StackPanel>
-                <Button x:Name="BtnOrder"
-                        Grid.Column="1"
-                        Content="📋 의뢰등록"
-                        Click="OrderBtn_Click"
-                        FontSize="{DynamicResource FontSizeSM}"
-                        FontFamily="avares://ETA/Assets/Fonts#Pretendard"
-                        Padding="8,3"
-                        CornerRadius="10"
-                        Background="{DynamicResource SubBtnBg}"
-                        Foreground="{DynamicResource FgMuted}"
-                        BorderThickness="1"
-                        BorderBrush="{DynamicResource InputBorder}"/>
             </Grid>
         </Border>
         <!-- Row 1: 검색창 -->

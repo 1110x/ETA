@@ -321,7 +321,8 @@ public partial class WasteAnalysisInputPage : UserControl
         string? docDate = null;
         try
         {
-            using var wb = new XLWorkbook(path);
+            using var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            using var wb = new XLWorkbook(fs);
             var ws = wb.Worksheets.First();
 
             // Row1 B열에서 문서 날짜 추출
@@ -479,7 +480,7 @@ public partial class WasteAnalysisInputPage : UserControl
     // =========================================================================
     // 데이터 로드 (날짜 트리뷰)
     // =========================================================================
-    public void LoadData()
+    public async void LoadData()
     {
         DateTreeView.Items.Clear();
         _selectedDate = null;
@@ -488,17 +489,28 @@ public partial class WasteAnalysisInputPage : UserControl
 
         try
         {
-            var dates = WasteSampleService.GetDates();
-            var byMonth = dates.GroupBy(d => d[..7]).OrderByDescending(g => g.Key);
+            // DB 조회 전부 백그라운드에서 실행
+            var byMonth = await System.Threading.Tasks.Task.Run(() =>
+            {
+                var dates = WasteSampleService.GetDates();
+                return dates
+                    .GroupBy(d => d[..7])
+                    .OrderByDescending(g => g.Key)
+                    .Select(g => (
+                        Month: g.Key,
+                        Dates: g.OrderByDescending(x => x)
+                                .Select(d => (Date: d, Samples: WasteSampleService.GetByDate(d)))
+                                .ToList()
+                    ))
+                    .ToList();
+            });
 
+            // UI 노드 생성은 메인 스레드에서
             foreach (var month in byMonth)
             {
-                var monthNode = MakeMonthNode(month.Key, month.Count());
-                foreach (var d in month.OrderByDescending(x => x))
-                {
-                    var samples = WasteSampleService.GetByDate(d);
+                var monthNode = MakeMonthNode(month.Month, month.Dates.Count);
+                foreach (var (d, samples) in month.Dates)
                     monthNode.Items.Add(MakeDateNode(d, samples));
-                }
                 monthNode.IsExpanded = true;
                 DateTreeView.Items.Add(monthNode);
             }
@@ -750,9 +762,12 @@ public partial class WasteAnalysisInputPage : UserControl
         // 헤더
         var catLabel = Categories.FirstOrDefault(c => c.Key == _activeCategory).Label ?? _activeCategory;
         string fileName = _categoryFilePaths.TryGetValue(_activeCategory, out var fp) ? Path.GetFileName(fp) : "";
-        string dateLabel = loadedDates.Count > 0
-            ? string.Join(", ", loadedDates.OrderBy(x => x))
-            : "날짜 미감지";
+        // B1 분석일 우선, 없으면 채수일 목록
+        string dateLabel = !string.IsNullOrEmpty(docDateStr)
+            ? $"분석일: {docDateStr}"
+            : loadedDates.Count > 0
+                ? string.Join(", ", loadedDates.OrderBy(x => x))
+                : "날짜 미감지";
 
         int matchNew   = excelRows.Count(r => r.Status == MatchStatus.입력가능);
         int matchExist = excelRows.Count(r => r.Status == MatchStatus.덮어쓰기);
@@ -2068,11 +2083,15 @@ public partial class WasteAnalysisInputPage : UserControl
         _categoryDocInfo.TryGetValue(_activeCategory, out var docInfo);
         bool isUV = docInfo?.IsUVVIS == true;
 
+        // 분석일: B1 값 우선, 없으면 채수일
+        _categoryDocDates.TryGetValue(_activeCategory, out var 분석일Raw);
+        string 분석일 = !string.IsNullOrEmpty(분석일Raw) ? 분석일Raw : s.채수일;
+
         switch (_activeCategory)
         {
             case "BOD":
                 WasteSampleService.UpsertBodData(
-                    s.채수일, s.SN, s.업체명, s.구분,
+                    분석일, s.SN, s.업체명, s.구분,
                     시료량: row.시료량, d1: row.D1, d2: row.D2,
                     희석배수: row.P, 결과: row.Result,
                     식종시료량: docInfo?.식종수_시료량 ?? "",
@@ -2084,14 +2103,14 @@ public partial class WasteAnalysisInputPage : UserControl
 
             case "SS":
                 WasteSampleService.UpsertSsData(
-                    s.채수일, s.SN, s.업체명, s.구분,
+                    분석일, s.SN, s.업체명, s.구분,
                     row.시료량, row.D1, row.D2, row.Fxy, row.P, row.Result);
                 break;
 
             case "NHEX":
                 WasteSampleService.UpsertSimpleData(
                     "NHexan_DATA", "결과",
-                    s.채수일, s.SN, s.업체명, s.구분,
+                    분석일, s.SN, s.업체명, s.구분,
                     row.시료량, row.Result);
                 break;
 
@@ -2111,7 +2130,7 @@ public partial class WasteAnalysisInputPage : UserControl
                     if (string.IsNullOrEmpty(tblName)) continue;
                     WasteSampleService.UpsertUvvisData(
                         tblName,
-                        s.채수일, s.SN, s.업체명, s.구분,
+                        분석일, s.SN, s.업체명, s.구분,
                         시료량:  row.시료량,
                         흡광도:  row.D1,
                         희석배수: row.D2,

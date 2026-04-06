@@ -28,7 +28,6 @@ public partial class WasteCompanyPage : UserControl
     // ── 외부(MainPage) 연결 ──────────────────────────────────────────────────
     public event Action<Control?>?   DetailPanelChanged;
     public event Action<WasteCompany>? CompanySelected;   // 일반 선택 모드에서 업체 클릭 시
-    public event Action?             OrderSaved;          // 의뢰 저장 완료 알림
 
     // ── 상태 ────────────────────────────────────────────────────────────────
     private WasteCompany? _selectedCompany;
@@ -37,13 +36,6 @@ public partial class WasteCompanyPage : UserControl
     private bool          _isAddMode   = false;
     private string        _activeGroup = "여수";
 
-    // ── 의뢰등록 모드 ────────────────────────────────────────────────────────
-    private bool              _orderMode     = false;
-    private string            _orderDate     = DateTime.Today.ToString("yyyy-MM-dd");
-    private HashSet<string>   _orderExisting = new();   // 해당 날짜 이미 등록된 업체
-    private List<WasteCompany> _orderSelected = new();  // 이번에 추가할 업체
-    private StackPanel?       _orderListPanel;          // show2 내 선택목록 영역
-    private TextBox?          _확인자Box;
 
     public WasteCompanyPage()
     {
@@ -55,7 +47,7 @@ public partial class WasteCompanyPage : UserControl
     // =========================================================================
     private List<WasteCompany> _allItems = new();
 
-    public void LoadData()
+    public async Task LoadDataAsync()
     {
         WasteCompanyTreeView.Items.Clear();
         _selectedCompany = null;
@@ -64,11 +56,14 @@ public partial class WasteCompanyPage : UserControl
 
         try
         {
-            _allItems = WasteCompanyService.GetAllItems()
-                            .Where(c => GetGroupLabel(c) == _activeGroup)
-                            .OrderBy(c => c.관리번호)
-                            .ToList();
+            var activeGroup = _activeGroup;
+            var items = await Task.Run(() =>
+                WasteCompanyService.GetAllItems()
+                    .Where(c => GetGroupLabel(c) == activeGroup)
+                    .OrderBy(c => c.관리번호)
+                    .ToList());
 
+            _allItems = items;
             ApplyFilter(SearchBox?.Text ?? "");
             Log($"로드 완료 → {_activeGroup} {_allItems.Count}건");
         }
@@ -89,177 +84,6 @@ public partial class WasteCompanyPage : UserControl
     private void SearchBox_TextChanged(object? sender, Avalonia.Controls.TextChangedEventArgs e)
         => ApplyFilter(SearchBox.Text ?? "");
 
-    // =========================================================================
-    // 의뢰등록 버튼 토글
-    // =========================================================================
-    public void OrderBtn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        _orderMode = !_orderMode;
-
-        if (_orderMode)
-        {
-            // 모드 진입 (amber 강조 — 테마 무관)
-            BtnOrder.Background  = new SolidColorBrush(Color.Parse("#92400e"));
-            BtnOrder.Foreground  = new SolidColorBrush(Color.Parse("#fbbf24"));
-            BtnOrder.BorderBrush = AppTheme.BorderWarn;
-            _orderDate     = DateTime.Today.ToString("yyyy-MM-dd");
-            _orderSelected.Clear();
-            _orderExisting = WasteSampleService.GetCompanyNamesForDate(_orderDate);
-            LoadData();
-            DetailPanelChanged?.Invoke(BuildOrderPanel());
-        }
-        else
-        {
-            // 모드 해제
-            BtnOrder.Background  = AppRes("SubBtnBg");
-            BtnOrder.Foreground  = AppRes("FgMuted");
-            BtnOrder.BorderBrush = AppRes("InputBorder");
-            _orderSelected.Clear();
-            _orderExisting.Clear();
-            LoadData();
-            DetailPanelChanged?.Invoke(null);
-        }
-    }
-
-    // =========================================================================
-    // 의뢰등록 show2 패널
-    // =========================================================================
-    private StackPanel BuildOrderPanel()
-    {
-        var root = MakeRootPanel("📋  채수의뢰 등록");
-
-        // 날짜 선택
-        root.Children.Add(new TextBlock
-        {
-            Text = "채수일", FontSize = AppTheme.FontBase, FontFamily = Font,
-            Foreground = AppRes("FgMuted"),
-        });
-
-        DateTime.TryParse(_orderDate, out var initDate);
-        var dp = new CalendarDatePicker
-        {
-            SelectedDate = initDate == DateTime.MinValue ? DateTime.Today : initDate,
-            FontFamily = Font, FontSize = AppTheme.FontMD,
-            Margin = new Thickness(0, 0, 0, 8),
-        };
-        dp.SelectedDateChanged += (_, _) =>
-        {
-            if (dp.SelectedDate == null) return;
-            _orderDate     = dp.SelectedDate.Value.ToString("yyyy-MM-dd");
-            _orderSelected.Clear();
-            _orderExisting = WasteSampleService.GetCompanyNamesForDate(_orderDate);
-            LoadData();
-            RefreshOrderList();
-        };
-        root.Children.Add(dp);
-
-        // 확인자
-        root.Children.Add(new TextBlock
-        {
-            Text = "확인자", FontSize = AppTheme.FontBase, FontFamily = Font,
-            Foreground = AppRes("FgMuted"),
-        });
-        _확인자Box = new TextBox
-        {
-            FontFamily = Font, FontSize = AppTheme.FontMD,
-            Background = AppRes("InputBg"),
-            Foreground = AppRes("InputFg"),
-            BorderBrush = AppRes("InputBorder"),
-            CornerRadius = new CornerRadius(4),
-            Padding = new Thickness(8, 4),
-            Margin = new Thickness(0, 0, 0, 8),
-        };
-        root.Children.Add(_확인자Box);
-
-        // 선택 업체 목록
-        root.Children.Add(new TextBlock
-        {
-            Text = "선택된 업체", FontSize = AppTheme.FontBase, FontFamily = Font,
-            Foreground = AppRes("FgMuted"),
-        });
-        _orderListPanel = new StackPanel { Spacing = 3, Margin = new Thickness(0, 4, 0, 8) };
-        root.Children.Add(_orderListPanel);
-
-        // 저장 / 취소
-        var btnSave = new Button
-        {
-            Content = "저장", Width = 80, Height = 28,
-            Background = new SolidColorBrush(Color.Parse("#15803d")),
-            Foreground = Brushes.White,
-            BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
-            FontFamily = Font, FontSize = AppTheme.FontMD,
-        };
-        var btnCancel = new Button
-        {
-            Content = "취소", Width = 80, Height = 28,
-            Background = AppRes("SubBtnBg"),
-            Foreground = AppRes("FgMuted"),
-            BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
-            FontFamily = Font, FontSize = AppTheme.FontMD,
-        };
-        btnSave.Click += (_, _) =>
-        {
-            string 확인자 = _확인자Box?.Text?.Trim() ?? "";
-            foreach (var c in _orderSelected)
-                WasteSampleService.Insert(_orderDate, GetGroupLabel(c),
-                    c.업체명, c.관리번호, 확인자);
-            _orderExisting = WasteSampleService.GetCompanyNamesForDate(_orderDate);
-            _orderSelected.Clear();
-            LoadData();
-            RefreshOrderList();
-            OrderSaved?.Invoke();
-        };
-        btnCancel.Click += (_, _) =>
-        {
-            _orderMode = false;
-            BtnOrder.Background  = AppRes("SubBtnBg");
-            BtnOrder.Foreground  = AppRes("FgMuted");
-            BtnOrder.BorderBrush = AppRes("InputBorder");
-            _orderSelected.Clear();
-            _orderExisting.Clear();
-            LoadData();
-            DetailPanelChanged?.Invoke(null);
-        };
-
-        root.Children.Add(new StackPanel
-        {
-            Orientation = Orientation.Horizontal,
-            HorizontalAlignment = HorizontalAlignment.Right,
-            Spacing = 8,
-            Children = { btnSave, btnCancel },
-        });
-
-        return root;
-    }
-
-    private void RefreshOrderList()
-    {
-        if (_orderListPanel == null) return;
-        _orderListPanel.Children.Clear();
-        foreach (var c in _orderSelected)
-        {
-            var row = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
-            row.Children.Add(new TextBlock
-            {
-                Text = "✅", FontSize = AppTheme.FontBase,
-                VerticalAlignment = VerticalAlignment.Center,
-            });
-            row.Children.Add(new TextBlock
-            {
-                Text = c.업체명, FontSize = AppTheme.FontBase, FontFamily = Font,
-                Foreground = AppTheme.FgSuccess,
-                VerticalAlignment = VerticalAlignment.Center,
-            });
-            _orderListPanel.Children.Add(row);
-        }
-        if (_orderSelected.Count == 0)
-            _orderListPanel.Children.Add(new TextBlock
-            {
-                Text = "왼쪽 트리에서 업체를 선택하세요",
-                FontSize = AppTheme.FontSM, FontFamily = Font,
-                Foreground = AppRes("FgMuted"),
-            });
-    }
 
     // =========================================================================
     // 그룹 탭 토글
@@ -269,7 +93,7 @@ public partial class WasteCompanyPage : UserControl
         if (sender is not Button btn) return;
         _activeGroup = btn.Tag as string ?? "여수";
         UpdateTabStyle();
-        LoadData();
+        _ = LoadDataAsync();
     }
 
     private static readonly Dictionary<string, (string bg, string fg, string border)> TabColors = new()
@@ -370,13 +194,6 @@ public partial class WasteCompanyPage : UserControl
     // =========================================================================
     private TreeViewItem CreateCompanyNode(WasteCompany company)
     {
-        bool alreadyOrdered = _orderMode && _orderExisting.Contains(company.업체명);
-        bool selectedNow    = _orderMode && _orderSelected.Any(c => c.업체명 == company.업체명);
-
-        string indicator = selectedNow    ? "✅"
-                         : alreadyOrdered ? "🔴"
-                         : "";
-
         var sp = new StackPanel
         {
             Orientation       = Orientation.Horizontal,
@@ -384,10 +201,10 @@ public partial class WasteCompanyPage : UserControl
             VerticalAlignment = VerticalAlignment.Center,
         };
 
-        if (_orderMode)
+        if (false) // unused
             sp.Children.Add(new TextBlock
             {
-                Text = indicator.Length > 0 ? indicator : "⬜",
+                Text = "",
                 VerticalAlignment = VerticalAlignment.Center,
                 Width = 18,
             }.BindBase());
@@ -413,9 +230,7 @@ public partial class WasteCompanyPage : UserControl
         sp.Children.Add(new TextBlock
         {
             Text = company.업체명, FontFamily = Font,
-            Foreground = selectedNow    ? AppTheme.FgSuccess
-                       : alreadyOrdered ? AppTheme.FgDanger
-                       : AppRes("AppFg"),
+            Foreground = AppRes("AppFg"),
             VerticalAlignment = VerticalAlignment.Center,
         }.BindMD());
         sp.Children.Add(new TextBlock
@@ -443,19 +258,6 @@ public partial class WasteCompanyPage : UserControl
 
         if (company == null) return;
 
-        // ── 의뢰등록 모드 ──────────────────────────────────────────────────
-        if (_orderMode)
-        {
-            // 이미 선택됐으면 해제, 아니면 추가
-            var existing = _orderSelected.FirstOrDefault(c => c.업체명 == company.업체명);
-            if (existing != null)
-                _orderSelected.Remove(existing);
-            else
-                _orderSelected.Add(company);
-            LoadData();   // 트리 재렌더 (✅ 표시 갱신)
-            RefreshOrderList();
-            return;
-        }
 
         // ── 일반 편집 모드 ─────────────────────────────────────────────────
         _selectedCompany = company;
@@ -464,6 +266,22 @@ public partial class WasteCompanyPage : UserControl
         DetailPanelChanged?.Invoke(_detailPanel);   // → Show4 (MainPage에서 라우팅)
         CompanySelected?.Invoke(company);            // → Show2/Show3 데이터 로드
         Log($"선택: {company.업체명}");
+    }
+
+    // =========================================================================
+    // 업소 등록 (MainPage BT3)
+    // =========================================================================
+    public void ShowAddPanel()
+    {
+        _isAddMode       = true;
+        _selectedCompany = new WasteCompany
+        {
+            프로젝트  = _activeGroup,
+            프로젝트명 = _activeGroup,
+        };
+        _detailPanel = BuildEditPanel(_selectedCompany, isNew: true);
+        DetailPanelChanged?.Invoke(_detailPanel);
+        Log($"신규 등록 모드 진입 ({_activeGroup})");
     }
 
     // =========================================================================
@@ -478,30 +296,73 @@ public partial class WasteCompanyPage : UserControl
 
         SyncPanelToCompany(_detailPanel, _selectedCompany);
 
-        bool ok = WasteCompanyService.Update(_selectedCompany);
-        Log(ok ? $"✅ 수정 저장: {_selectedCompany.업체명}"
-               : $"❌ 수정 실패: {_selectedCompany.업체명}");
-
-        if (ok)
-            LoadData();
+        if (_isAddMode)
+        {
+            _selectedCompany.Original업체명 = _selectedCompany.업체명;
+            bool ok = WasteCompanyService.Insert(_selectedCompany);
+            Log(ok ? $"✅ 신규 등록: {_selectedCompany.업체명}"
+                   : $"❌ 등록 실패: {_selectedCompany.업체명}");
+            if (ok)
+            {
+                _isAddMode = false;
+                _ = LoadDataAsync();
+                DetailPanelChanged?.Invoke(null);
+            }
+        }
+        else
+        {
+            bool ok = WasteCompanyService.Update(_selectedCompany);
+            Log(ok ? $"✅ 수정 저장: {_selectedCompany.업체명}"
+                   : $"❌ 수정 실패: {_selectedCompany.업체명}");
+            if (ok)
+                _ = LoadDataAsync();
+        }
     }
 
     // =========================================================================
-    // 패널 — 수정 모드
+    // 패널 — 수정 / 신규 모드
     // =========================================================================
-    private StackPanel BuildEditPanel(WasteCompany c)
+    private StackPanel BuildEditPanel(WasteCompany c, bool isNew = false)
     {
-        var root = MakeRootPanel($"🏭  {c.업체명} — 업소 정보");
-        var grid = MakeTwoColumnGrid(6);
+        var title = isNew ? "🆕  신규 업소 등록" : $"🏭  {c.업체명} — 업소 정보";
+        var root = MakeRootPanel(title);
 
-        AddGridRow(grid, 0, "관리번호",  c.관리번호,   isReadOnly: true, isLocked: true);
+        // ── 기본 정보 ──────────────────────────────────────────────────────
+        var grid = MakeTwoColumnGrid(6);
+        AddGridRow(grid, 0, "관리번호",  c.관리번호,   isReadOnly: !isNew, isLocked: !isNew);
         AddGridRow(grid, 1, "업체명",    c.업체명);
         AddAbbrevRow(grid, 2, c.약칭);
         AddGridRow(grid, 3, "프로젝트",  c.프로젝트);
         AddGridRow(grid, 4, "프로젝트명", c.프로젝트명);
         AddGridRow(grid, 5, "사업자번호", c.사업자번호);
-
         root.Children.Add(grid);
+
+        // ── 허용기준 섹션 구분선 ────────────────────────────────────────────
+        root.Children.Add(new TextBlock
+        {
+            Text = "허용기준",
+            FontSize = AppTheme.FontMD, FontFamily = Font, FontWeight = FontWeight.SemiBold,
+            Foreground = AppRes("FgMuted"),
+            Margin = new Thickness(0, 10, 0, 2),
+        });
+        root.Children.Add(new Border
+        {
+            Height = 1, Background = AppTheme.BorderDefault,
+            Margin = new Thickness(0, 0, 0, 6),
+        });
+
+        var grid2 = MakeTwoColumnGrid(9);
+        AddGridRow(grid2, 0, "BOD",          c.BOD);
+        AddGridRow(grid2, 1, "TOC",          c.TOC);
+        AddGridRow(grid2, 2, "SS",           c.SS);
+        AddGridRow(grid2, 3, "T-N",          c.TN);
+        AddGridRow(grid2, 4, "T-P",          c.TP);
+        AddGridRow(grid2, 5, "Phenols",      c.Phenols);
+        AddGridRow(grid2, 6, "N-Hexan",      c.NHexan);
+        AddGridRow(grid2, 7, "승인유량",     c.승인유량);
+        AddGridRow(grid2, 8, "기타특이사항", c.기타특이사항);
+        root.Children.Add(grid2);
+
         return root;
     }
 
@@ -526,11 +387,21 @@ public partial class WasteCompanyPage : UserControl
 
             switch (label)
             {
+                case "관리번호":   c.관리번호   = tb.Text ?? ""; break;
                 case "업체명":     c.업체명     = tb.Text ?? ""; break;
                 case "약칭":       c.약칭       = tb.Text ?? ""; break;
                 case "프로젝트":   c.프로젝트   = tb.Text ?? ""; break;
                 case "프로젝트명": c.프로젝트명 = tb.Text ?? ""; break;
                 case "사업자번호": c.사업자번호 = tb.Text ?? ""; break;
+                case "BOD":          c.BOD          = tb.Text ?? ""; break;
+                case "TOC":          c.TOC          = tb.Text ?? ""; break;
+                case "SS":           c.SS           = tb.Text ?? ""; break;
+                case "T-N":          c.TN           = tb.Text ?? ""; break;
+                case "T-P":          c.TP           = tb.Text ?? ""; break;
+                case "Phenols":      c.Phenols      = tb.Text ?? ""; break;
+                case "N-Hexan":      c.NHexan       = tb.Text ?? ""; break;
+                case "승인유량":     c.승인유량     = tb.Text ?? ""; break;
+                case "기타특이사항": c.기타특이사항 = tb.Text ?? ""; break;
             }
         }
     }

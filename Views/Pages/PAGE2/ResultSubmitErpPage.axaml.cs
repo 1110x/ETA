@@ -68,9 +68,21 @@ public partial class ResultSubmitErpPage : UserControl
 
     private Control BuildExcelTableControl()
     {
-        _excelRows = _loadedExcelPath != null
-            ? ErpUiAutoService.LoadAllExcelData(_loadedExcelPath)
-            : ErpUiAutoService.LoadAllExcelData();
+        if (_loadedExcelPath == null)
+        {
+            _excelRows = [];
+            _rowBorders = [];
+            _checkIcons = [];
+            return new TextBlock
+            {
+                Text = "📂  '분석결과 가져오기' 버튼으로 Excel 파일을 선택하세요.",
+                FontFamily = Font, FontSize = AppTheme.FontBase,
+                Foreground = Brush.Parse("#88aabb"),
+                Margin = new Thickness(16, 20),
+            };
+        }
+
+        _excelRows = ErpUiAutoService.LoadAllExcelData(_loadedExcelPath);
         _rowBorders = [];
         _checkIcons = [];
 
@@ -616,6 +628,7 @@ public partial class ResultSubmitErpPage : UserControl
             AddLog("✅", $"파일 로드: {System.IO.Path.GetFileName(path)}");
             RefreshShow2();
             SetStatus($"📂 {_excelRows.Count}건 로드", "#66ddaa");
+            if (_btnRun != null) _btnRun.IsEnabled = _excelRows.Count > 0;
         }
         catch (Exception ex)
         {
@@ -642,13 +655,20 @@ public partial class ResultSubmitErpPage : UserControl
 
         try
         {
-            // ERP에서 현재 그리드의 S/N 목록 가져오기
+            // ERP에서 현재 그리드의 S/N 목록 가져오기 (실패 시 Excel 자체 검증으로 진행)
             var erpSnList = await Task.Run(() => ErpUiAutoService.GetGridSnList());
 
             if (erpSnList.Count == 0)
             {
-                AddLog("⚠️", "ERP 그리드에서 S/N을 읽을 수 없습니다. (neoweb.exe 실행 확인)");
-                SetStatus("⚠️ 확인 필요", "#ee9944");
+                AddLog("⚠️", "ERP 그리드 S/N 읽기 불가 — Excel 자체 검증으로 진행합니다.");
+                // Excel S/N끼리만 중복 체크
+                var excelSnAll = _excelRows.Select(r => r.SN).ToList();
+                var duplicates = excelSnAll.GroupBy(s => s).Where(g => g.Count() > 1).Select(g => g.Key).ToList();
+                if (duplicates.Count > 0)
+                    AddLog("⚠️", $"중복 S/N 발견: {string.Join(", ", duplicates)}");
+                else
+                    AddLog("✅", $"Excel S/N {excelSnAll.Count}건, 중복 없음");
+                SetStatus("✅ Excel 검증 완료", "#66ee88");
                 btn.IsEnabled = true;
                 return;
             }

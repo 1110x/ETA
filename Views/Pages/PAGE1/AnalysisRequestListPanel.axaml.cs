@@ -60,6 +60,9 @@ public class AnalysisRequestListPanel : UserControl
     // 측정인 전송 버튼
     private Button _btnMeasurer = new();
 
+    // Show4 → Show2: 부모 노드 클릭 시 상세 패널 요청
+    public event Action<AnalysisRequestRecord>? RecordSelected;
+
     public AnalysisRequestListPanel()
     {
         Content = BuildUI();
@@ -483,21 +486,55 @@ public class AnalysisRequestListPanel : UserControl
         ctx.Items.Add(menuDelete);
         node.ContextMenu = ctx;
 
-        // 부모 노드에 드래그 재정렬 기능 추가
+        // 부모 노드에 드래그 재정렬 + 클릭 시 Show2 전달
         if (isParent)
+        {
             AttachDragReorder(node);
+            node.Tapped += (_, _) =>
+            {
+                if (node.Tag is ParentTag pt)
+                    RecordSelected?.Invoke(pt.Rec);
+            };
+        }
     }
 
     /// <summary>TreeViewItem에 드래그 시작 핸들러 추가 (순서 변경용)</summary>
     private void AttachDragReorder(TreeViewItem node)
     {
-        node.PointerPressed += async (s, e) =>
+        Point? pressPos    = null;
+        bool   dragStarted = false;
+
+        node.PointerPressed += (s, e) =>
         {
             if (!e.GetCurrentPoint(node).Properties.IsLeftButtonPressed) return;
-            // 살짝 드래그해야 시작 (클릭과 구분)
-            var data = new DataObject();
-            data.Set("reorder-node", node);
-            await DragDrop.DoDragDrop(e, data, DragDropEffects.Move);
+            pressPos    = e.GetCurrentPoint(node).Position;
+            dragStarted = false;
+        };
+
+        node.PointerMoved += async (s, e) =>
+        {
+            if (pressPos == null || dragStarted) return;
+            if (!e.GetCurrentPoint(node).Properties.IsLeftButtonPressed)
+            {
+                pressPos = null;
+                return;
+            }
+            var diff = e.GetCurrentPoint(node).Position - pressPos.Value;
+            if (Math.Abs(diff.X) > 5 || Math.Abs(diff.Y) > 5)
+            {
+                dragStarted = true;
+                pressPos    = null;
+                var data = new DataObject();
+                data.Set("reorder-node", node);
+                await DragDrop.DoDragDrop(e, data, DragDropEffects.Move);
+                dragStarted = false;
+            }
+        };
+
+        node.PointerReleased += (s, e) =>
+        {
+            pressPos    = null;
+            dragStarted = false;
         };
     }
 
