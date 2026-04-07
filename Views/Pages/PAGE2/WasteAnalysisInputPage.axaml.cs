@@ -1606,16 +1606,18 @@ public partial class WasteAnalysisInputPage : UserControl
 
             // 시료명 (원본시료명 있으면 아래에 작게 표시)
             var nameCell = new StackPanel { VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(4, 0) };
+            // 원본시료명 있으면: 위=원본(크게), 아래=↳ 매칭된 이름(작게 노란색)
+            string topName = !string.IsNullOrEmpty(row.원본시료명) ? row.원본시료명 : row.시료명;
             nameCell.Children.Add(FsBase(new TextBlock
             {
-                Text = row.시료명, FontFamily = Font,
+                Text = topName, FontFamily = Font,
                 Foreground = AppRes("AppFg"),
                 TextTrimming = TextTrimming.CharacterEllipsis,
             }));
             if (!string.IsNullOrEmpty(row.원본시료명))
                 nameCell.Children.Add(new TextBlock
                 {
-                    Text = $"↳ {row.원본시료명}", FontFamily = Font,
+                    Text = $"↳ {row.시료명}", FontFamily = Font,
                     FontSize = AppTheme.FontXS,
                     Foreground = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#ffe066")),
                     TextTrimming = TextTrimming.CharacterEllipsis,
@@ -1909,17 +1911,17 @@ public partial class WasteAnalysisInputPage : UserControl
             knob.Margin      = new Thickness(18, 2, 0, 2);
         }
 
-        // 시료명 셀 업데이트 (새 이름 + 원본 이름 노란색)
+        // 시료명 셀 업데이트: 위=원본(크게), 아래=↳ 매칭된 이름(작게 노란색)
         if (rowIndex < _rowNameCells.Count)
         {
             var nameCell = _rowNameCells[rowIndex];
             if (nameCell.Children.Count > 0 && nameCell.Children[0] is TextBlock mainTb)
-                mainTb.Text = exRow.시료명;
+                mainTb.Text = exRow.원본시료명 ?? exRow.시료명;
             while (nameCell.Children.Count > 1) nameCell.Children.RemoveAt(1);
             if (!string.IsNullOrEmpty(exRow.원본시료명))
                 nameCell.Children.Add(new TextBlock
                 {
-                    Text = $"↳ {exRow.원본시료명}", FontFamily = Font,
+                    Text = $"↳ {exRow.시료명}", FontFamily = Font,
                     FontSize = AppTheme.FontXS,
                     Foreground = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#ffe066")),
                     TextTrimming = TextTrimming.CharacterEllipsis,
