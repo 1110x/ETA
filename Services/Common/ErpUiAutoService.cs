@@ -664,20 +664,24 @@ public static class ErpUiAutoService
         keybd_event(VK_CONTROL, 0, KEYEVENTF_KEYUP, UIntPtr.Zero);
         Thread.Sleep(300);
 
-        // 클립보드 읽기 (STA 스레드 필요)
+        // 클립보드 읽기 (powershell Get-Clipboard 사용)
         string clipText = "";
-        var th = new Thread(() =>
+        try
         {
-            try {
-                #pragma warning disable CA1416
-                clipText = System.Windows.Forms.Clipboard.GetText();
-                #pragma warning restore CA1416
+            var psi = new ProcessStartInfo("powershell", "-NoProfile -Command \"Get-Clipboard\"")
+            {
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+            using var proc = Process.Start(psi);
+            if (proc != null)
+            {
+                clipText = proc.StandardOutput.ReadToEnd();
+                proc.WaitForExit(3000);
             }
-            catch (Exception ex) { Log($"[GetGridSnList] 클립보드 오류: {ex.Message}"); }
-        });
-        th.SetApartmentState(ApartmentState.STA);
-        th.Start();
-        th.Join(3000);
+        }
+        catch (Exception ex) { Log($"[GetGridSnList] 클립보드 오류: {ex.Message}"); }
 
         Log($"[GetGridSnList] 클립보드 {clipText.Length}자 수신");
         if (clipText.Length > 0)

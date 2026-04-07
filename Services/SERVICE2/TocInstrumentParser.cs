@@ -91,10 +91,10 @@ public static class TocInstrumentParser
                 rows = ParseSkalar(path, out cal);
                 break;
             case TocFileFormat.ShimadzuSimple:
-                rows = ParseShimadzuSimple(path);
+                rows = ParseShimadzuSimple(path, out cal);
                 break;
             case TocFileFormat.ShimadzuDetail:
-                rows = ParseShimadzuDetail(path);
+                rows = ParseShimadzuDetail(path, out cal);
                 break;
             case TocFileFormat.JenaCalibration:
                 (rows, cal) = ParseJena(path);
@@ -181,8 +181,9 @@ public static class TocInstrumentParser
 
     // ── 시마즈 요약 (값) ──────────────────────────────────────────────────
 
-    static List<TocInstrumentRow> ParseShimadzuSimple(string path)
+    static List<TocInstrumentRow> ParseShimadzuSimple(string path, out TocCalibrationData? cal)
     {
+        cal = null;
         var result = new List<TocInstrumentRow>();
         try
         {
@@ -196,10 +197,15 @@ public static class TocInstrumentParser
             int idxAnal   = IndexOf(header, "Anal.");
             int idxName   = IndexOf(header, "Sample Name");
             int idxResult = IndexOf(header, "Result(NPOC)", "Result(TOC)", "Result(TC)");
+            int idxArea   = IndexOf(header, "Area");
+            int idxConc   = IndexOf(header, "Conc.");
+            int idxExcl   = IndexOf(header, "Excluded");
+            int idxSplNo  = IndexOf(header, "Spl. No.", "Spl.No.");
 
             if (idxName < 0 || idxResult < 0) return result;
 
             string method = IndexOf(header, "Result(NPOC)") >= 0 ? "NPOC" : "TCIC";
+            var stdPoints = new Dictionary<int, (double conc, double area)>();
 
             for (int i = dataIdx + 2; i < lines.Count; i++)
             {
@@ -208,11 +214,32 @@ public static class TocInstrumentParser
                 if (cols.Length <= idxResult) continue;
 
                 var typeStr = idxType >= 0 ? cols[idxType].Trim() : "";
+                var excluded = idxExcl >= 0 && idxExcl < cols.Length ? cols[idxExcl].Trim() : "0";
+
+                // Standard 행 → 검량선 데이터 수집
+                if (typeStr.Equals("Standard", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (excluded == "1") continue;
+                    var stdAreaStr = idxArea >= 0 && idxArea < cols.Length ? cols[idxArea].Trim() : "";
+                    var stdConcStr = idxConc >= 0 && idxConc < cols.Length ? cols[idxConc].Trim() : "";
+                    int splNo = 0;
+                    if (idxSplNo >= 0 && idxSplNo < cols.Length)
+                        int.TryParse(cols[idxSplNo].Trim(), out splNo);
+
+                    if (double.TryParse(stdConcStr, System.Globalization.NumberStyles.Any,
+                            System.Globalization.CultureInfo.InvariantCulture, out var sc) &&
+                        double.TryParse(stdAreaStr, System.Globalization.NumberStyles.Any,
+                            System.Globalization.CultureInfo.InvariantCulture, out var sa))
+                    {
+                        stdPoints[splNo] = (sc, sa);
+                    }
+                    continue;
+                }
+
                 if (!typeStr.Equals("Unknown", StringComparison.OrdinalIgnoreCase)) continue;
 
                 var sampleName = idxName < cols.Length ? cols[idxName].Trim() : "";
                 var concStr    = cols[idxResult].Trim();
-                if (string.IsNullOrEmpty(concStr) || concStr == "0") { }
 
                 bool isCtrl = IsControlName(sampleName);
                 var sn = NormalizeSN(sampleName);
@@ -227,6 +254,24 @@ public static class TocInstrumentParser
                     IsControl = isCtrl,
                 });
             }
+
+            // Standard 포인트로 검량선 계산
+            if (stdPoints.Count >= 2)
+            {
+                var sortedPts = stdPoints.OrderBy(p => p.Key).ToList();
+                var concs = sortedPts.Select(p => p.Value.conc).ToList();
+                var areas = sortedPts.Select(p => p.Value.area).ToList();
+                var (a, b, r2) = LinearRegression(concs, areas);
+                cal = new TocCalibrationData
+                {
+                    Slope_TC     = a.ToString("F4"),
+                    Intercept_TC = b.ToString("F4"),
+                    R2_TC        = r2.ToString("F5"),
+                    Method       = method,
+                    StdConcs     = concs.Select(c => c.ToString("F2")).ToArray(),
+                    StdAreas     = areas.Select(v => v.ToString("F4")).ToArray(),
+                };
+            }
         }
         catch (Exception ex) { Debug.WriteLine($"[TocParser/ShimadzuSimple] {ex.Message}"); }
         return result;
@@ -234,8 +279,9 @@ public static class TocInstrumentParser
 
     // ── 시마즈 상세 (주입 단위) ───────────────────────────────────────────
 
-    static List<TocInstrumentRow> ParseShimadzuDetail(string path)
+    static List<TocInstrumentRow> ParseShimadzuDetail(string path, out TocCalibrationData? cal)
     {
+        cal = null;
         var result = new List<TocInstrumentRow>();
         try
         {
@@ -284,6 +330,8 @@ public static class TocInstrumentParser
 
             // 그룹: 시료명별로 마지막 비제외 주입의 Conc를 사용
             var groups = new Dictionary<string, (string area, string conc)>(StringComparer.OrdinalIgnoreCase);
+            // Standard 검량선 포인트: Spl.No.별 마지막 비제외 주입
+            var stdPoints = new Dictionary<int, (double conc, double area)>();
 
             for (int i = dataIdx + 2; i < lines.Count; i++)
             {
@@ -292,12 +340,32 @@ public static class TocInstrumentParser
                 if (idxName >= cols.Length) continue;
 
                 var typeStr = idxType >= 0 && idxType < cols.Length ? cols[idxType].Trim() : "";
-                if (!typeStr.Equals("Unknown", StringComparison.OrdinalIgnoreCase)) continue;
+                var excluded = idxExcl >= 0 && idxExcl < cols.Length ? cols[idxExcl].Trim() : "0";
 
-                var sampleName = cols[idxName].Trim();
-                var excluded   = idxExcl >= 0 && idxExcl < cols.Length ? cols[idxExcl].Trim() : "0";
+                // Standard 행 → 검량선 데이터 수집
+                if (typeStr.Equals("Standard", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (excluded == "1") continue;
+                    var stdAreaStr = idxArea >= 0 && idxArea < cols.Length ? cols[idxArea].Trim() : "";
+                    var stdConcStr = idxConc >= 0 && idxConc < cols.Length ? cols[idxConc].Trim() : "";
+                    int splNo = 0;
+                    if (idxSplNo >= 0 && idxSplNo < cols.Length)
+                        int.TryParse(cols[idxSplNo].Trim(), out splNo);
+
+                    if (double.TryParse(stdConcStr, System.Globalization.NumberStyles.Any,
+                            System.Globalization.CultureInfo.InvariantCulture, out var sc) &&
+                        double.TryParse(stdAreaStr, System.Globalization.NumberStyles.Any,
+                            System.Globalization.CultureInfo.InvariantCulture, out var sa))
+                    {
+                        stdPoints[splNo] = (sc, sa); // 같은 Spl.No.면 마지막 주입 사용
+                    }
+                    continue;
+                }
+
+                if (!typeStr.Equals("Unknown", StringComparison.OrdinalIgnoreCase)) continue;
                 if (excluded == "1") continue;
 
+                var sampleName = cols[idxName].Trim();
                 var area = idxArea >= 0 && idxArea < cols.Length ? cols[idxArea].Trim() : "";
                 var conc = idxConc >= 0 && idxConc < cols.Length ? cols[idxConc].Trim() : "";
 
@@ -316,6 +384,24 @@ public static class TocInstrumentParser
                     Method    = fileMethod,
                     IsControl = IsControlName(name),
                 });
+            }
+
+            // Standard 포인트로 검량선 계산
+            if (stdPoints.Count >= 2)
+            {
+                var sortedPts = stdPoints.OrderBy(p => p.Key).ToList();
+                var concs = sortedPts.Select(p => p.Value.conc).ToList();
+                var areas = sortedPts.Select(p => p.Value.area).ToList();
+                var (a, b, r2) = LinearRegression(concs, areas);
+                cal = new TocCalibrationData
+                {
+                    Slope_TC     = a.ToString("F4"),
+                    Intercept_TC = b.ToString("F4"),
+                    R2_TC        = r2.ToString("F5"),
+                    Method       = fileMethod,
+                    StdConcs     = concs.Select(c => c.ToString("F2")).ToArray(),
+                    StdAreas     = areas.Select(v => v.ToString("F4")).ToArray(),
+                };
             }
         }
         catch (Exception ex) { Debug.WriteLine($"[TocParser/ShimadzuDetail] {ex.Message}"); }

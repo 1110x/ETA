@@ -173,49 +173,79 @@ public partial class Login : Window
 
         try
         {
-            // ── Step 1: DB 연결 확인 (서버 지연 시 Lottie 계속 반복) ──────────
+            // ── Step 1: DB 연결 확인 ─────────────────────────────────────────
             SetProgress("DB 연결 중...", 0);
             await Task.Run(() =>
             {
                 using var conn = DbConnectionFactory.CreateConnection();
                 conn.Open();
             });
-            SetProgress("DB 연결 완료", 22);
-            await Task.Delay(150);
+            SetProgress("DB 연결 완료", 14);
+            await Task.Delay(120);
 
-            // ── Step 2: 처리시설 / 폐수 테이블 마이그레이션 ───────────────────
-            SetProgress("테이블 초기화 중...", 22);
+            // ── Step 2: 계정 DB 초기화 ───────────────────────────────────────
+            SetProgress("계정 DB 초기화 중...", 14);
+            await Task.Run(() =>
+            {
+                try { AgentService.MigrateAccountColumns(); }
+                catch (Exception ex) { Log($"[Init] MigrateAccountColumns 실패: {ex.Message}"); }
+            });
+            SetProgress("계정 DB 초기화 완료", 28);
+            await Task.Delay(120);
+
+            // ── Step 3: 비밀번호 초기화 확인 ─────────────────────────────────
+            SetProgress("비밀번호 초기화 확인 중...", 28);
+            await Task.Run(() =>
+            {
+                try { AgentService.MigrateInitialPasswords(); }
+                catch (Exception ex) { Log($"[Init] MigrateInitialPasswords 실패: {ex.Message}"); }
+            });
+            SetProgress("비밀번호 확인 완료", 42);
+            await Task.Delay(120);
+
+            // ── Step 4: 사진 데이터 동기화 ───────────────────────────────────
+            SetProgress("사진 데이터 동기화 중...", 42);
+            await Task.Run(() =>
+            {
+                try { AgentService.SyncAllPhotosToDb(); }
+                catch (Exception ex) { Log($"[Init] SyncAllPhotosToDb 실패: {ex.Message}"); }
+            });
+            SetProgress("사진 동기화 완료", 56);
+            await Task.Delay(120);
+
+            // ── Step 5: 처리시설 / 폐수 테이블 마이그레이션 ──────────────────
+            SetProgress("테이블 초기화 중...", 56);
             try
             {
                 await Task.Run(() => FacilityDbMigration.EnsureTables());
-                SetProgress("테이블 준비 완료", 55);
+                SetProgress("테이블 준비 완료", 72);
             }
             catch (Exception ex)
             {
-                Log($"[Init] Step2 FacilityDbMigration 실패: {ex}");
-                SetProgress($"⚠ 테이블 초기화 실패: {ex.Message}", 55);
+                Log($"[Init] FacilityDbMigration 실패: {ex}");
+                SetProgress($"⚠ 테이블 초기화 실패: {ex.Message}", 72);
             }
-            await Task.Delay(150);
+            await Task.Delay(120);
 
-            // ── Step 3: 견적 테이블 초기화 ────────────────────────────────────
-            SetProgress("견적 데이터 준비 중...", 55);
+            // ── Step 6: 견적 테이블 초기화 ───────────────────────────────────
+            SetProgress("견적 데이터 준비 중...", 72);
             try
             {
                 await Task.Run(() => QuotationService.EnsureQuotationIssueTable());
-                SetProgress("데이터 준비 완료", 82);
+                SetProgress("데이터 준비 완료", 88);
             }
             catch (Exception ex)
             {
-                Log($"[Init] Step3 QuotationService 실패: {ex}");
-                SetProgress($"⚠ 견적 초기화 실패: {ex.Message}", 82);
+                Log($"[Init] QuotationService 실패: {ex}");
+                SetProgress($"⚠ 견적 초기화 실패: {ex.Message}", 88);
             }
-            await Task.Delay(150);
+            await Task.Delay(120);
 
-            // ── Step 4: 완료 ──────────────────────────────────────────────────
+            // ── Step 7: 완료 ─────────────────────────────────────────────────
             SetProgress("시스템 준비 완료", 96);
-            await Task.Delay(300);
-            SetProgress("✓ 완료!", 100);
             await Task.Delay(250);
+            SetProgress("✓ 완료!", 100);
+            await Task.Delay(200);
         }
         catch (Exception ex)
         {
@@ -276,12 +306,7 @@ public partial class Login : Window
 
     private async void OnLoaded(object? sender, RoutedEventArgs e)
     {
-        var _sw = System.Diagnostics.Stopwatch.StartNew();
-        void LogT(string msg) => Log($"[Init] {msg} ({_sw.ElapsedMilliseconds}ms)");
-
-        // ── 단계별 진행상황 표시하며 초기화 ──
-
-        // ── Step 0: DB 선택 ComboBox (기본 eta_db, ETAS* 목록은 백그라운드 로드) ──
+        // DB 선택 ComboBox 초기화 (가볍게 즉시 표시)
         _dbSelectionChanging = true;
         if (cmbDb != null)
         {
@@ -311,32 +336,7 @@ public partial class Login : Window
             catch { /* NAS 연결 실패 시 무시 — eta_db로 계속 진행 */ }
         });
 
-        SetStartupProgress("계정 DB 연결 중...", 15);
-        await Task.Run(() =>
-        {
-            try { LogT("MigrateAccountColumns 시작"); AgentService.MigrateAccountColumns(); LogT("MigrateAccountColumns 완료"); }
-            catch (Exception ex) { LogT($"MigrateAccountColumns 실패: {ex.Message}"); }
-        });
-
-        SetStartupProgress("비밀번호 초기화 확인 중...", 45);
-        await Task.Run(() =>
-        {
-            try { LogT("MigrateInitialPasswords 시작"); AgentService.MigrateInitialPasswords(); LogT("MigrateInitialPasswords 완료"); }
-            catch (Exception ex) { LogT($"MigrateInitialPasswords 실패: {ex.Message}"); }
-        });
-
-        SetStartupProgress("사진 데이터 동기화 중...", 75);
-        await Task.Run(() =>
-        {
-            try { LogT("SyncAllPhotosToDb 시작"); AgentService.SyncAllPhotosToDb(); LogT("SyncAllPhotosToDb 완료"); }
-            catch (Exception ex) { LogT($"SyncAllPhotosToDb 실패: {ex.Message}"); }
-        });
-
-        LogT("전체 완료");
-        SetStartupProgress("✓ 준비 완료", 100);
-        await Task.Delay(400);
-
-        // 초기화 완료 → 로그인 폼 표시
+        // 로그인 폼 바로 표시 (시스템 초기화는 로그인 성공 후 진행)
         startupOverlay.IsVisible = false;
         loginForm.IsVisible = true;
         txtEmail?.Focus();

@@ -21,6 +21,7 @@ using ETA.Views.Pages.PAGE1;
 using ETA.Views.Pages.PAGE2;
 using ETA.Views.Pages.PAGE3;
 using ETA.Views.Pages.Common;
+using ClosedXML.Excel;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -100,52 +101,9 @@ public partial class MainPage : Window
     private AnalysisRequestDetailPanel?  _analysisRequestDetailPanel;
     private AnalysisRequestListPanel?    _analysisRequestListPanel;
     // ── 분석계획 (처리시설별 시료 × 분석항목 체크박스) ─────────────────────────
-    private static readonly string[] _analysisPlanItems =
-        { "BOD", "TOC", "SS", "T-N", "T-P", "총대장균군", "COD", "염소이온", "함수율", "중금속", "N-Hexan", "Phenols" };
-
-    private static readonly Dictionary<string, string[]> _facilitySamples = new()
-    {
-        ["중흥처리시설"] = new[]
-        {
-            "농축기 탈리액(주1회 목요일)", "탈수기 탈리액(주1회 목요일)", "유입수(주1회 목요일)",
-            "유입수", "유입수", "유량 조정조",
-            "생물반응조 A", "생물반응조 B", "생물반응조 C", "생물반응조 D", "반송",
-            "슬러지저류조(주1회 목요일)", "고침잉여(주1회 목요일)", "약침잉여(주1회 목요일)",
-            "기존 2차 침전지", "증설 2차 침전지",
-            "약품응집침전지-기존", "약품응집침전지-증설",
-            "MDF 여과기", "A/C 여과기", "방류수", "탈수케이크"
-        },
-        ["4단계"] = new[]
-        {
-            "농축기 탈리액(주1회 목요일)", "탈수기 탈리액(주1회 목요일)",
-            "유입수(주2회 화,목)", "유입수", "유입수",
-            "유량 조정조", "생물반응조",
-            "고속침전지(주2회 화,목)", "복합처리설비(주2회 화,목)",
-            "방류수", "탈수케이크"
-        },
-        ["월내처리시설"] = new[]
-        {
-            "농축기 탈리액(주1회 목요일)", "탈수기 탈리액(주1회 목요일)",
-            "유입수", "유입수", "유입수",
-            "유량 조정조", "생물반응조", "2차 침전지",
-            "가압부상조 유출수", "방류수",
-            "기존반송", "증설반송", "신설저류조", "가압부저류조", "탈수케이크"
-        },
-        ["율촌처리시설"] = new[]
-        {
-            "유입수", "유입수", "유입수", "분배조",
-            "기존 고속응집침전지-유출", "증설 고속응집침전지-유출",
-            "방류수", "탈수케이크"
-        },
-        ["세풍처리시설"] = new[]
-        {
-            "유입수", "유입수", "유입수", "분배조", "방류수"
-        },
-        ["해룡개인산단"] = new[]
-        {
-            "유입수", "유입수", "유입수", "방류수"
-        },
-    };
+    // 엑셀(Data/Templates/요일별 분석항목 정리.xlsx)에서 동적 로딩
+    private string[] _analysisPlanItems = Array.Empty<string>();
+    private Dictionary<string, string[]> _facilitySamples = new();
 
     // facility → bool[sampleCount][itemCount]
     private readonly Dictionary<string, List<bool[]>> _facilityPlanState = new();
@@ -2958,20 +2916,23 @@ public partial class MainPage : Window
         RestoreModeLayout("ResultSubmitZero4");
     }
 
-    // 처리시설 목록 (분석계획 Show1)
-    private static readonly string[] _facilityNames =
-        { "중흥처리시설", "4단계", "월내처리시설", "율촌처리시설", "세풍처리시설", "해룡개인산단" };
+    // 처리시설 목록 (분석계획 Show1) — 엑셀에서 동적 로딩
+    private string[] _facilityNames = Array.Empty<string>();
     private string _selectedFacilityPlan = "중흥처리시설";
 
     private void AnalysisPlan_Click(object sender, RoutedEventArgs e)
     {
         _currentMode = "AnalysisPlan";
+        _analysisPlanSelectedDay = -1;
+
+        // 엑셀에서 시설/시료/항목 로딩
+        LoadAnalysisPlanFromExcel();
 
         Show1.Content = BuildFacilityListPanel();
         LogContentChange("Show1", Show1.Content as Control);
 
         // 첫 번째 시설 기본 선택
-        if (string.IsNullOrEmpty(_selectedFacilityPlan))
+        if (string.IsNullOrEmpty(_selectedFacilityPlan) && _facilityNames.Length > 0)
             _selectedFacilityPlan = _facilityNames[0];
 
         var checkPanel = BuildAnalysisPlanPanel();
@@ -2984,8 +2945,7 @@ public partial class MainPage : Window
         LogContentChange("Show4", null);
 
         _bt1SaveAction = null;
-        _analysisPlanSelectedDay = -1;
-        SetSubMenu("새로고침", "월", "화", "수", "목", "금", "전체");
+        SetSubMenu("새로고침", "월", "화", "수", "목", "금", "토", "일");
         SetLeftPanelWidth(200);
         SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 8, lowerStar: 2);
         RestoreModeLayout("AnalysisPlan");
@@ -3115,17 +3075,14 @@ public partial class MainPage : Window
         {
             var sampleName = samples[si];
             var checks     = si < stateRows.Count ? stateRows[si] : new bool[_analysisPlanItems.Length];
-
-            // 요일 필터 투명도
-            bool isActive = IsSampleActiveOnDay(sampleName, _analysisPlanSelectedDay);
-            double opacity = isActive ? 1.0 : 0.35;
+            bool hasAnyCheck = checks.Any(c => c);
 
             var rowGrid = new Grid
             {
                 ColumnDefinitions = new ColumnDefinitions(colDef),
                 MinHeight  = 28,
-                Background = isActive ? AppTheme.BgSecondary : AppTheme.BgPrimary,
-                Opacity    = opacity,
+                Background = hasAnyCheck ? AppTheme.BgSecondary : AppTheme.BgPrimary,
+                Opacity    = hasAnyCheck ? 1.0 : 0.5,
             };
 
             var nameTb = new TextBlock
@@ -3147,7 +3104,6 @@ public partial class MainPage : Window
                     IsChecked = checks[itemIdx],
                     HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment   = VerticalAlignment.Center,
-                    IsEnabled = isActive,
                 };
                 cb.IsCheckedChanged += (_, _) => checks[itemIdx] = cb.IsChecked == true;
                 Grid.SetColumn(cb, itemIdx + 1);
@@ -3176,19 +3132,177 @@ public partial class MainPage : Window
         return root;
     }
 
-    /// <summary>일정 메모에서 해당 요일 활성 여부 판단 (-1=전체)</summary>
-    private static bool IsSampleActiveOnDay(string name, int dayIdx)
+    // ── 엑셀에서 분석계획 데이터 로딩 ─────────────────────────────────────
+    private static readonly string[] _daySheetNames = { "월", "화", "수", "목", "금", "토", "일" };
+
+    /// <summary>엑셀 요일 시트에서 시설/시료/항목/체크 상태 로딩</summary>
+    private void LoadAnalysisPlanFromExcel(int dayIdx = -1)
     {
-        if (dayIdx < 0) return true;
-        bool hasSchedule = name.Contains("주1회") || name.Contains("주2회") || name.Contains("주3회");
-        if (!hasSchedule) return true; // 매일 분석
-        string[] dayNames = { "월", "화", "수", "목", "금", "토", "일" };
-        return name.Contains(dayNames[dayIdx]);
+        var xlsxPath = GetAnalysisPlanExcelPath();
+        if (xlsxPath == null) return;
+
+        try
+        {
+            using var fs = new FileStream(xlsxPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            using var wb = new XLWorkbook(fs);
+
+            // 구조(시설/시료/항목 목록)는 첫 번째 시트에서 읽기
+            var firstSheet = wb.TryGetWorksheet(_daySheetNames[0], out var ws0) ? ws0 : wb.Worksheets.First();
+            LoadSheetStructure(firstSheet);
+
+            // 체크 상태 로딩
+            if (dayIdx >= 0 && dayIdx < _daySheetNames.Length)
+            {
+                // 특정 요일 → 해당 시트에서 체크 상태
+                if (wb.TryGetWorksheet(_daySheetNames[dayIdx], out var dayWs))
+                    LoadSheetCheckState(dayWs);
+            }
+            else
+            {
+                // 전체(-1) → 모든 요일 시트 OR 합산
+                _facilityPlanState.Clear();
+                foreach (var dayName in _daySheetNames)
+                {
+                    if (!wb.TryGetWorksheet(dayName, out var dayWs)) continue;
+                    MergeSheetCheckState(dayWs);
+                }
+            }
+
+            if (_facilityNames.Length > 0 && string.IsNullOrEmpty(_selectedFacilityPlan))
+                _selectedFacilityPlan = _facilityNames[0];
+
+            Debug.WriteLine($"[AnalysisPlan] 엑셀 로딩 완료: 시설 {_facilityNames.Length}개, 항목 {_analysisPlanItems.Length}개, 요일={dayIdx}");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[AnalysisPlan] 엑셀 로딩 오류: {ex.Message}");
+        }
+    }
+
+    /// <summary>시트에서 시설/시료/항목 구조 읽기 (1행 헤더, 2행~ 데이터)</summary>
+    private void LoadSheetStructure(IXLWorksheet ws)
+    {
+        // 1행 헤더에서 분석항목 (3열부터)
+        var items = new List<string>();
+        int lastCol = ws.LastColumnUsed()?.ColumnNumber() ?? 2;
+        for (int c = 3; c <= lastCol; c++)
+        {
+            var val = ws.Cell(1, c).GetString().Trim();
+            if (!string.IsNullOrEmpty(val)) items.Add(val);
+            else break;
+        }
+        _analysisPlanItems = items.ToArray();
+
+        // 2행부터 시설/시료
+        var facilityOrder = new List<string>();
+        var facilityMap = new Dictionary<string, List<string>>();
+        string currentFacility = "";
+
+        int lastRow = ws.LastRowUsed()?.RowNumber() ?? 1;
+        for (int r = 2; r <= lastRow; r++)
+        {
+            var facName = ws.Cell(r, 1).GetString().Trim();
+            var sampleName = ws.Cell(r, 2).GetString().Trim();
+
+            if (!string.IsNullOrEmpty(facName))
+                currentFacility = facName;
+            if (string.IsNullOrEmpty(sampleName) || string.IsNullOrEmpty(currentFacility))
+                continue;
+
+            if (!facilityMap.ContainsKey(currentFacility))
+            {
+                facilityOrder.Add(currentFacility);
+                facilityMap[currentFacility] = new List<string>();
+            }
+            facilityMap[currentFacility].Add(sampleName);
+        }
+
+        _facilityNames = facilityOrder.ToArray();
+        _facilitySamples = facilityMap.ToDictionary(kv => kv.Key, kv => kv.Value.ToArray());
+    }
+
+    /// <summary>시트에서 체크 상태(O) 읽어서 _facilityPlanState 덮어쓰기</summary>
+    private void LoadSheetCheckState(IXLWorksheet ws)
+    {
+        _facilityPlanState.Clear();
+        string currentFacility = "";
+        int lastRow = ws.LastRowUsed()?.RowNumber() ?? 1;
+
+        for (int r = 2; r <= lastRow; r++)
+        {
+            var facName = ws.Cell(r, 1).GetString().Trim();
+            var sampleName = ws.Cell(r, 2).GetString().Trim();
+
+            if (!string.IsNullOrEmpty(facName)) currentFacility = facName;
+            if (string.IsNullOrEmpty(sampleName) || string.IsNullOrEmpty(currentFacility)) continue;
+
+            if (!_facilityPlanState.ContainsKey(currentFacility))
+                _facilityPlanState[currentFacility] = new List<bool[]>();
+
+            var checks = new bool[_analysisPlanItems.Length];
+            for (int i = 0; i < _analysisPlanItems.Length; i++)
+            {
+                var val = ws.Cell(r, 3 + i).GetString().Trim();
+                checks[i] = val.Equals("O", StringComparison.OrdinalIgnoreCase);
+            }
+            _facilityPlanState[currentFacility].Add(checks);
+        }
+    }
+
+    /// <summary>시트 체크 상태를 기존 상태에 OR 합산 (전체 보기용)</summary>
+    private void MergeSheetCheckState(IXLWorksheet ws)
+    {
+        string currentFacility = "";
+        var sampleIdx = new Dictionary<string, int>(); // 시설별 행 인덱스
+        int lastRow = ws.LastRowUsed()?.RowNumber() ?? 1;
+
+        for (int r = 2; r <= lastRow; r++)
+        {
+            var facName = ws.Cell(r, 1).GetString().Trim();
+            var sampleName = ws.Cell(r, 2).GetString().Trim();
+
+            if (!string.IsNullOrEmpty(facName))
+            {
+                currentFacility = facName;
+                sampleIdx[currentFacility] = 0;
+            }
+            if (string.IsNullOrEmpty(sampleName) || string.IsNullOrEmpty(currentFacility)) continue;
+
+            if (!_facilityPlanState.ContainsKey(currentFacility))
+                _facilityPlanState[currentFacility] = new List<bool[]>();
+
+            int idx = sampleIdx.GetValueOrDefault(currentFacility, 0);
+
+            // 행이 아직 없으면 추가
+            while (_facilityPlanState[currentFacility].Count <= idx)
+                _facilityPlanState[currentFacility].Add(new bool[_analysisPlanItems.Length]);
+
+            var existing = _facilityPlanState[currentFacility][idx];
+            for (int i = 0; i < _analysisPlanItems.Length; i++)
+            {
+                var val = ws.Cell(r, 3 + i).GetString().Trim();
+                if (val.Equals("O", StringComparison.OrdinalIgnoreCase))
+                    existing[i] = true; // OR 합산
+            }
+
+            sampleIdx[currentFacility] = idx + 1;
+        }
+    }
+
+    private static string? GetAnalysisPlanExcelPath()
+    {
+        var path = Path.GetFullPath(
+            Path.Combine(AppContext.BaseDirectory, "..", "..", "..",
+                         "Data", "Templates", "요일별 분석항목 정리.xlsx"));
+        if (File.Exists(path)) return path;
+        Debug.WriteLine($"[AnalysisPlan] 엑셀 파일 없음: {path}");
+        return null;
     }
 
     private void SetAnalysisPlanDay(int dayIdx)
     {
         _analysisPlanSelectedDay = _analysisPlanSelectedDay == dayIdx ? -1 : dayIdx;
+        LoadAnalysisPlanFromExcel(_analysisPlanSelectedDay);
         Show2.Content = BuildAnalysisPlanPanel();
         LogContentChange("Show2", Show2.Content as Control);
     }
@@ -4217,6 +4331,8 @@ public partial class MainPage : Window
             case "WasteAnalysisInput": _wasteAnalysisInputPage?.LoadData(); break;
             case "AnalysisPlan":
                 _analysisPlanSelectedDay = -1;
+                LoadAnalysisPlanFromExcel();
+                Show1.Content = BuildFacilityListPanel();
                 Show2.Content = BuildAnalysisPlanPanel();
                 break;
             default: _bt1SaveAction?.Invoke();                          break;
@@ -4903,7 +5019,7 @@ public partial class MainPage : Window
             case "ResultSubmitMeasure":
                 new MeasurerLoginWindow().Show(this);
                 break;
-            case "AnalysisPlan": SetAnalysisPlanDay(-1); break; // 전체
+            case "AnalysisPlan": SetAnalysisPlanDay(5); break; // 토
             default:
                 Debug.WriteLine($"[{_currentMode}] BT7");
                 break;
@@ -4917,6 +5033,7 @@ public partial class MainPage : Window
             case "ResultSubmitMeasure":
                 new DataToMeasurerWindow().Show(this);
                 break;
+            case "AnalysisPlan": SetAnalysisPlanDay(6); break; // 일
             default:
                 Debug.WriteLine($"[{_currentMode}] BT8");
                 break;

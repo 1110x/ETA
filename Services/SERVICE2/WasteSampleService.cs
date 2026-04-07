@@ -368,7 +368,7 @@ public static class WasteSampleService
         string 채수일, string sn, string 업체명, string 구분,
         string 시료량, string d1, string d2, string 희석배수, string 결과,
         string 식종시료량 = "", string 식종D1 = "", string 식종D2 = "",
-        string 식종BOD = "", string 식종함유량 = "")
+        string 식종BOD = "", string 식종함유량 = "", string 비고 = "")
     {
         try
         {
@@ -386,16 +386,16 @@ public static class WasteSampleService
                 cmd.CommandText = $@"UPDATE `BOD_DATA`
                     SET 시료량=@vol, D1=@d1, D2=@d2, 희석배수=@dil, 결과=@r,
                         식종시료량=@sv, 식종D1=@sd1, 식종D2=@sd2, 식종BOD=@sbod, 식종함유량=@spct,
-                        등록일시={DbConnectionFactory.NowExpr}
+                        비고=@remark, 등록일시={DbConnectionFactory.NowExpr}
                     WHERE LEFT(분석일,10)=@d AND SN=@sn";
             }
             else
             {
                 cmd.CommandText = $@"INSERT INTO `BOD_DATA`
                     (분석일, SN, 업체명, 구분, 시료량, D1, D2, 희석배수, 결과,
-                     식종시료량, 식종D1, 식종D2, 식종BOD, 식종함유량, 등록일시)
+                     식종시료량, 식종D1, 식종D2, 식종BOD, 식종함유량, 비고, 등록일시)
                     VALUES (@d, @sn, @nm, @gu, @vol, @d1, @d2, @dil, @r,
-                            @sv, @sd1, @sd2, @sbod, @spct, {DbConnectionFactory.NowExpr})";
+                            @sv, @sd1, @sd2, @sbod, @spct, @remark, {DbConnectionFactory.NowExpr})";
                 cmd.Parameters.AddWithValue("@nm", 업체명);
                 cmd.Parameters.AddWithValue("@gu", 구분);
             }
@@ -411,6 +411,7 @@ public static class WasteSampleService
             cmd.Parameters.AddWithValue("@sd2",  식종D2);
             cmd.Parameters.AddWithValue("@sbod", 식종BOD);
             cmd.Parameters.AddWithValue("@spct", 식종함유량);
+            cmd.Parameters.AddWithValue("@remark", 비고);
             cmd.ExecuteNonQuery();
         }
         catch (Exception ex)
@@ -465,7 +466,8 @@ public static class WasteSampleService
     /// <summary>SS_DATA 전용 UPSERT (전무게/후무게/무게차/희석배수 포함)</summary>
     public static void UpsertSsData(
         string 채수일, string sn, string 업체명, string 구분,
-        string 시료량, string 전무게, string 후무게, string 무게차, string 희석배수, string 결과)
+        string 시료량, string 전무게, string 후무게, string 무게차, string 희석배수, string 결과,
+        string 비고 = "")
     {
         try
         {
@@ -494,14 +496,14 @@ public static class WasteSampleService
             {
                 cmd.CommandText = $@"UPDATE `SS_DATA`
                     SET 시료량=@vol, `전무게`=@pre, `후무게`=@post, `무게차`=@diff, `희석배수`=@dil, `결과`=@r,
-                        등록일시={DbConnectionFactory.NowExpr}
+                        비고=@remark, 등록일시={DbConnectionFactory.NowExpr}
                     WHERE LEFT(분석일,10)=@d AND SN=@sn";
             }
             else
             {
                 cmd.CommandText = $@"INSERT INTO `SS_DATA`
-                    (분석일, SN, 업체명, 구분, 시료량, `전무게`, `후무게`, `무게차`, `희석배수`, `결과`, 등록일시)
-                    VALUES (@d, @sn, @nm, @gu, @vol, @pre, @post, @diff, @dil, @r, {DbConnectionFactory.NowExpr})";
+                    (분석일, SN, 업체명, 구분, 시료량, `전무게`, `후무게`, `무게차`, `희석배수`, `결과`, 비고, 등록일시)
+                    VALUES (@d, @sn, @nm, @gu, @vol, @pre, @post, @diff, @dil, @r, @remark, {DbConnectionFactory.NowExpr})";
                 cmd.Parameters.AddWithValue("@nm", 업체명);
                 cmd.Parameters.AddWithValue("@gu", 구분);
             }
@@ -513,6 +515,7 @@ public static class WasteSampleService
             cmd.Parameters.AddWithValue("@diff", 무게차);
             cmd.Parameters.AddWithValue("@dil", 희석배수);
             cmd.Parameters.AddWithValue("@r", 결과);
+            cmd.Parameters.AddWithValue("@remark", 비고);
             cmd.ExecuteNonQuery();
         }
         catch (Exception ex)
@@ -524,7 +527,8 @@ public static class WasteSampleService
     /// <summary>NHexan_DATA 전용 UPSERT (전무게/후무게/무게차/희석배수 포함)</summary>
     public static void UpsertNHexanData(
         string 채수일, string sn, string 업체명, string 구분,
-        string 시료량, string 전무게, string 후무게, string 무게차, string 희석배수, string 결과)
+        string 시료량, string 전무게, string 후무게, string 무게차, string 희석배수, string 결과,
+        string 비고 = "")
     {
         try
         {
@@ -550,14 +554,14 @@ public static class WasteSampleService
             {
                 cmd.CommandText = $@"UPDATE `NHexan_DATA`
                     SET 시료량=@vol, 전무게=@pre, 후무게=@post, 무게차=@diff, 희석배수=@dil, 결과=@r,
-                        등록일시={DbConnectionFactory.NowExpr}
+                        비고=@remark, 등록일시={DbConnectionFactory.NowExpr}
                     WHERE LEFT(분석일,10)=@d AND SN=@sn";
             }
             else
             {
                 cmd.CommandText = $@"INSERT INTO `NHexan_DATA`
-                    (분석일, SN, 업체명, 구분, 시료량, 전무게, 후무게, 무게차, 희석배수, 결과, 등록일시)
-                    VALUES (@d, @sn, @nm, @gu, @vol, @pre, @post, @diff, @dil, @r, {DbConnectionFactory.NowExpr})";
+                    (분석일, SN, 업체명, 구분, 시료량, 전무게, 후무게, 무게차, 희석배수, 결과, 비고, 등록일시)
+                    VALUES (@d, @sn, @nm, @gu, @vol, @pre, @post, @diff, @dil, @r, @remark, {DbConnectionFactory.NowExpr})";
                 cmd.Parameters.AddWithValue("@nm", 업체명);
                 cmd.Parameters.AddWithValue("@gu", 구분);
             }
@@ -569,6 +573,7 @@ public static class WasteSampleService
             cmd.Parameters.AddWithValue("@diff", 무게차);
             cmd.Parameters.AddWithValue("@dil", 희석배수);
             cmd.Parameters.AddWithValue("@r", 결과);
+            cmd.Parameters.AddWithValue("@remark", 비고);
             cmd.ExecuteNonQuery();
         }
         catch (Exception ex)
@@ -580,7 +585,8 @@ public static class WasteSampleService
     /// <summary>TN_DATA / TP_DATA / Phenols_DATA 등 UV VIS 기반 테이블 UPSERT</summary>
     public static void UpsertUvvisData(string tableName,
         string 채수일, string sn, string 업체명, string 구분,
-        string 시료량, string 흡광도, string 희석배수, string 검량선a, string 농도)
+        string 시료량, string 흡광도, string 희석배수, string 검량선a, string 농도,
+        string 비고 = "")
     {
         try
         {
@@ -597,14 +603,14 @@ public static class WasteSampleService
             {
                 cmd.CommandText = $@"UPDATE `{tableName}`
                     SET 시료량=@vol, 흡광도=@abs, 희석배수=@dil, 검량선_a=@slope, 농도=@r,
-                        등록일시={DbConnectionFactory.NowExpr}
+                        비고=@remark, 등록일시={DbConnectionFactory.NowExpr}
                     WHERE LEFT(분석일,10)=@d AND SN=@sn";
             }
             else
             {
                 cmd.CommandText = $@"INSERT INTO `{tableName}`
-                    (분석일, SN, 업체명, 구분, 시료량, 흡광도, 희석배수, 검량선_a, 농도, 등록일시)
-                    VALUES (@d, @sn, @nm, @gu, @vol, @abs, @dil, @slope, @r, {DbConnectionFactory.NowExpr})";
+                    (분석일, SN, 업체명, 구분, 시료량, 흡광도, 희석배수, 검량선_a, 농도, 비고, 등록일시)
+                    VALUES (@d, @sn, @nm, @gu, @vol, @abs, @dil, @slope, @r, @remark, {DbConnectionFactory.NowExpr})";
                 cmd.Parameters.AddWithValue("@nm", 업체명);
                 cmd.Parameters.AddWithValue("@gu", 구분);
             }
@@ -615,6 +621,7 @@ public static class WasteSampleService
             cmd.Parameters.AddWithValue("@dil",   희석배수);
             cmd.Parameters.AddWithValue("@slope", 검량선a);
             cmd.Parameters.AddWithValue("@r",     농도);
+            cmd.Parameters.AddWithValue("@remark", 비고);
             cmd.ExecuteNonQuery();
         }
         catch (Exception ex)
@@ -626,7 +633,8 @@ public static class WasteSampleService
     /// <summary>TOC UPSERT — method: "NPOC"|"TCIC", 엑셀/기기파일 공용</summary>
     public static void UpsertTocData(
         string method, string 분석일, string sn, string 업체명, string 구분,
-        string 흡광도, string 희석배수, string 검량선a, string 측정농도, string 결과)
+        string 흡광도, string 희석배수, string 검량선a, string 측정농도, string 결과,
+        string 비고 = "")
     {
         string tableName = method.Equals("TCIC", StringComparison.OrdinalIgnoreCase)
             ? "TOC_TCIC_DATA" : "TOC_NPOC_DATA";
@@ -645,14 +653,14 @@ public static class WasteSampleService
             {
                 cmd.CommandText = $@"UPDATE `{tableName}`
                     SET 흡광도=@abs, 희석배수=@dil, 검량선_a=@slope, 농도=@r,
-                        등록일시={DbConnectionFactory.NowExpr}
+                        비고=@remark, 등록일시={DbConnectionFactory.NowExpr}
                     WHERE LEFT(분석일,10)=@d AND SN=@sn";
             }
             else
             {
                 cmd.CommandText = $@"INSERT INTO `{tableName}`
-                    (분석일, SN, 업체명, 구분, 흡광도, 희석배수, 검량선_a, 농도, 등록일시)
-                    VALUES (@d, @sn, @nm, @gu, @abs, @dil, @slope, @r, {DbConnectionFactory.NowExpr})";
+                    (분석일, SN, 업체명, 구분, 흡광도, 희석배수, 검량선_a, 농도, 비고, 등록일시)
+                    VALUES (@d, @sn, @nm, @gu, @abs, @dil, @slope, @r, @remark, {DbConnectionFactory.NowExpr})";
                 cmd.Parameters.AddWithValue("@nm", 업체명);
                 cmd.Parameters.AddWithValue("@gu", 구분);
             }
@@ -662,6 +670,7 @@ public static class WasteSampleService
             cmd.Parameters.AddWithValue("@dil",   string.IsNullOrEmpty(희석배수) ? "1" : 희석배수);
             cmd.Parameters.AddWithValue("@slope", 검량선a);
             cmd.Parameters.AddWithValue("@r",     string.IsNullOrEmpty(결과) ? 측정농도 : 결과);
+            cmd.Parameters.AddWithValue("@remark", 비고);
             cmd.ExecuteNonQuery();
         }
         catch (Exception ex)

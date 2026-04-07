@@ -2,7 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
+using ClosedXML.Excel;
 using ETA.Services.Common;
 
 namespace ETA.Services.SERVICE2;
@@ -161,6 +164,16 @@ public static class FacilityDbMigration
                 Log($"{tbl} 테이블 생성");
             }
         }
+
+        // *_DATA 비고 컬럼 추가 (원본시료명 보존용)
+        foreach (var tbl in new[] { "BOD_DATA", "SS_DATA", "NHexan_DATA", "TN_DATA", "TP_DATA", "Phenols_DATA", "TOC_TCIC_DATA", "TOC_NPOC_DATA" })
+        {
+            if (DbConnectionFactory.TableExists(conn, tbl) && !DbConnectionFactory.ColumnExists(conn, tbl, "비고"))
+            {
+                try { Exec(conn, $"ALTER TABLE `{tbl}` ADD COLUMN `비고` TEXT DEFAULT ''"); Log($"{tbl} 비고 컬럼 추가"); }
+                catch { }
+            }
+        }
     }
 
     // ── 처리시설_마스터 ────────────────────────────────────────────────────
@@ -195,102 +208,63 @@ public static class FacilityDbMigration
         if (Convert.ToInt32(countCmd.ExecuteScalar()) == 0)
             SeedFacilityMaster(conn);
 
-        // 시설명 오타 수정 (기존 DB 데이터 일괄 교정)
-        Exec(conn, "UPDATE `처리시설_마스터` SET 시설명 = '세풍' WHERE 시설명 = '세룡'");
-        Exec(conn, "UPDATE `처리시설_측정결과` SET 시설명 = '세풍' WHERE 시설명 = '세룡'");
-        Exec(conn, "UPDATE `처리시설_마스터` SET 시설명 = '해룡개인산단' WHERE 시설명 = '폐흥개인산단'");
-        Exec(conn, "UPDATE `처리시설_측정결과` SET 시설명 = '해룡개인산단' WHERE 시설명 = '폐흥개인산단'");
-        Exec(conn, "UPDATE `처리시설_마스터` SET 시설명 = REPLACE(시설명, '원내', '월내') WHERE 시설명 LIKE '%원내%'");
-        Exec(conn, "UPDATE `처리시설_측정결과` SET 시설명 = REPLACE(시설명, '원내', '월내') WHERE 시설명 LIKE '%원내%'");
+        // 엑셀 기반 강제 재시드 (v2) — 기존 데이터 TRUNCATE 후 엑셀에서 다시 로드
+        if (!IsMigrationDone(conn, "facility_master_reseed_v2"))
+        {
+            try
+            {
+                Exec(conn, "DELETE FROM `처리시설_마스터`");
+                SeedFacilityMaster(conn);
+                MarkMigrationDone(conn, "facility_master_reseed_v2");
+                Log("처리시설_마스터 엑셀 기반 재시드 완료 (v2)");
+            }
+            catch (Exception ex) { Log($"처리시설_마스터 재시드 실패: {ex.Message}"); }
+        }
     }
 
     private static void SeedFacilityMaster(DbConnection conn)
     {
-        // (시설명, 시료명, BOD, TOC, SS, T-N, T-P, 총대장균군, COD, 염소이온, 영양염류, 함수율, 중금속, 비고)
-        var rows = new List<(string 시설명, string 시료명, string BOD, string TOC, string SS,
-            string TN, string TP, string 총대장균군, string COD, string 염소이온,
-            string 영양염류, string 함수율, string 중금속, string 비고)>
+        var xlsxPath = FacilityResultService.GetExcelPath();
+        if (xlsxPath == null)
         {
-            // ── 중흘처리장 ──────────────────────────────────────────────────
-            ("중흘처리장", "농축기 탈리액",      "O","O","O","O","O","","","","","","", "주1회 목요일"),
-            ("중흘처리장", "탈수기 탈리액",      "O","O","O","O","O","","","","","","", "주1회 목요일"),
-            ("중흘처리장", "유입수",             "O","O","O","O","O","O","O","O","","","", "주1회 목요일"),
-            ("중흘처리장", "유입수",             "O","","","","","","","","","","",  ""),
-            ("중흘처리장", "유입수",             "O","","","","","","","","","","",  ""),
-            ("중흘처리장", "유량 조정조",        "O","O","O","O","O","","","","O","","", ""),
-            ("중흘처리장", "생물반응조 A",       "","","O(MLSS)","","","","","","","","", ""),
-            ("중흘처리장", "생물반응조 B",       "","","O(MLSS)","","","","","","","","", ""),
-            ("중흘처리장", "생물반응조 C",       "","","O(MLSS)","","","","","","","","", ""),
-            ("중흘처리장", "생물반응조 D",       "","","O(MLSS)","","","","","","","","", ""),
-            ("중흘처리장", "반송",               "","","O(MLSS)","","","","","","","","", ""),
-            ("중흘처리장", "슬러지저류조",       "","","O(MLSS)","","","","","","","","", "주1회 목요일"),
-            ("중흘처리장", "고침침어",           "","","O(MLSS)","","","","","","","","", "주1회 목요일"),
-            ("중흘처리장", "약침침어",           "","","O(MLSS)","","","","","","","","", "주1회 목요일"),
-            ("중흘처리장", "기존 2차 침전지",   "O","O","O","O","O","","","","","","", ""),
-            ("중흘처리장", "증설 2차 침전지",   "O","O","O","O","O","","","","","","", ""),
-            ("중흘처리장", "약품응집침전지-기존","O","O","O","O","O","","","","O","","", ""),
-            ("중흘처리장", "약품응집침전지-증설","O","O","O","O","O","","","","O","","", ""),
-            ("중흘처리장", "MDF 여과기",         "O","O","O","O","O","","","","O","","", ""),
-            ("중흘처리장", "A/C 여과기",         "O","O","O","O","O","","","","","","", ""),
-            ("중흘처리장", "방류수",             "O","O","O","O","O","O","O","O","","","O", ""),
-            ("중흘처리장", "탈수케이크",         "","","","","","","","","","O","O", ""),
+            Log("처리시설_마스터 시드 실패 — 엑셀 파일 없음");
+            return;
+        }
 
-            // ── 월내처리장 ──────────────────────────────────────────────────
-            ("월내처리장", "농축기 탈리액",      "O","O","O","O","O","","","","","","", "주1회 목요일"),
-            ("월내처리장", "탈수기 탈리액",      "O","O","O","O","O","","","","","","", "주1회 목요일"),
-            ("월내처리장", "유입수",             "O","O","O","O","O","O","O","O","O","","O", "주1회 목요일"),
-            ("월내처리장", "유입수",             "O","","","","","","","","","","", ""),
-            ("월내처리장", "유입수",             "O","","","","","","","","","","", ""),
-            ("월내처리장", "유량 조정조",        "O","O","O","O","O","","","","O","","", ""),
-            ("월내처리장", "생물반응조",         "","","O(MLSS)","","","","","","","","", ""),
-            ("월내처리장", "2차 침전지",         "O","O","O","O","O","","","","","","", ""),
-            ("월내처리장", "가압부상조 유출수",  "O","O","O","O","O","","","","","","", ""),
-            ("월내처리장", "방류수",             "O","O","O","O","O","O","O","O","O","","O", ""),
-            ("월내처리장", "기존반송",           "","","O(MLSS)","","","","","","","","", ""),
-            ("월내처리장", "증설반송",           "","","O(MLSS)","","","","","","","","", ""),
-            ("월내처리장", "신설저류조",         "","","O(MLSS)","","","","","","","","", ""),
-            ("월내처리장", "가압부저류조",       "","","O(MLSS)","","","","","","","","", ""),
-            ("월내처리장", "탈수케이크",         "","","","","","","","","","O","O", ""),
+        // 요일 시트(월~일)에서 시설/시료 읽기 (1열=시설명, 2열=시료명, 3열~=항목)
+        using var fs = new FileStream(xlsxPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+        using var wb = new XLWorkbook(fs);
+        var ws = wb.TryGetWorksheet("월", out var ws0) ? ws0 : wb.Worksheets.First();
 
-            // ── 4단계 ────────────────────────────────────────────────────────
-            ("4단계", "농축기 탈리액",           "O","O","O","O","O","","","","","","", "주1회 목요일"),
-            ("4단계", "탈수기 탈리액",           "O","O","O","O","O","","","","","","", "주1회 목요일"),
-            ("4단계", "유입수",                  "O","O","O","O","O","O","","","","","", "주2회 화,목"),
-            ("4단계", "유입수",                  "O","","","","","","","","","","", ""),
-            ("4단계", "유입수",                  "O","","","","","","","","","","", ""),
-            ("4단계", "유량 조정조",             "O","O","O","O","O","","","","","","", ""),
-            ("4단계", "생물반응조",              "","","O(MLSS)","","","","","","","","", ""),
-            ("4단계", "고속응집침전지",          "O","O","O","O","O","","","","","","", "주2회 화,목"),
-            ("4단계", "복합처리설비",            "O","O","O","O","O","","","","","","", "주2회 화,목"),
-            ("4단계", "방류수",                  "O","O","O","O","O","O","","","","","", ""),
-            ("4단계", "탈수케이크",              "","","","","","","","","","O","O", ""),
-
-            // ── 율촌처리장 ──────────────────────────────────────────────────
-            ("율촌처리장", "유입수",             "O","O","O","O","O","O","","","","","O", ""),
-            ("율촌처리장", "유입수",             "O","","","","","","","","","","", ""),
-            ("율촌처리장", "유입수",             "O","","","","","","","","O","","", ""),
-            ("율촌처리장", "분배조",             "O","O","O","O","O","","","","","","", ""),
-            ("율촌처리장", "기존 고속응집침전지-유출","O","O","O","O","O","","","","","","", ""),
-            ("율촌처리장", "증설 고속응집침전지-유출","O","O","O","O","O","","","","","","", ""),
-            ("율촌처리장", "방류수",             "O","O","O","O","O","O","","","O","","O", ""),
-            ("율촌처리장", "탈수케이크",         "","","","","","","","","","","O", ""),
-
-            // ── 세풍 ────────────────────────────────────────────────────────
-            ("세풍", "유입수",                   "O","O","O","O","O","O","","","","","", ""),
-            ("세풍", "유입수",                   "O","","","","","","","","","","", ""),
-            ("세풍", "유입수",                   "O","","","","","","","","","","", ""),
-            ("세풍", "분배조",                   "O","O","O","O","O","","","","","","", ""),
-            ("세풍", "방류수",                   "O","O","O","O","O","O","","","","","", ""),
-
-            // ── 폐흘개인산단 ─────────────────────────────────────────────────
-            ("폐흘개인산단", "유입수",           "O","O","O","O","O","O","","","","","", "주1회"),
-            ("폐흘개인산단", "유입수",           "O","","","","","","","","","","", "주1회"),
-            ("폐흘개인산단", "유입수",           "O","","","","","","","","","","", "주1회"),
-            ("폐흘개인산단", "방류수",           "O","O","O","O","O","","","","","","", "주1회"),
-        };
-
-        foreach (var r in rows)
+        // 헤더에서 항목 이름 읽기 (3열부터)
+        var itemNames = new List<string>();
+        int lastCol = ws.LastColumnUsed()?.ColumnNumber() ?? 2;
+        for (int c = 3; c <= lastCol; c++)
         {
+            var val = ws.Cell(1, c).GetString().Trim();
+            if (!string.IsNullOrEmpty(val)) itemNames.Add(val);
+            else break;
+        }
+
+        int count = 0;
+        string currentFacility = "";
+        int lastRow = ws.LastRowUsed()?.RowNumber() ?? 1;
+
+        for (int row = 2; row <= lastRow; row++)
+        {
+            var facName = ws.Cell(row, 1).GetString().Trim();
+            var sampleName = ws.Cell(row, 2).GetString().Trim();
+
+            if (!string.IsNullOrEmpty(facName))
+                currentFacility = facName;
+            if (string.IsNullOrEmpty(sampleName) || string.IsNullOrEmpty(currentFacility))
+                continue;
+
+            // 항목별 O 마크 읽기
+            string V(int idx) => idx < itemNames.Count
+                ? ws.Cell(row, 3 + idx).GetString().Trim()
+                : "";
+
             using var cmd = conn.CreateCommand();
             cmd.CommandText = @"
                 INSERT INTO `처리시설_마스터`
@@ -298,25 +272,32 @@ public static class FacilityDbMigration
                      총대장균군, COD, 염소이온, 영양염류, 함수율, 중금속, 비고)
                 VALUES
                     (@시설명, @시료명, @BOD, @TOC, @SS, @TN, @TP,
-                     @총대장균군, @COD, @염소이온, @영양염류, @함수율, @중금속, @비고)";
-            cmd.Parameters.AddWithValue("@시설명",    r.시설명);
-            cmd.Parameters.AddWithValue("@시료명",    r.시료명);
-            cmd.Parameters.AddWithValue("@BOD",       r.BOD);
-            cmd.Parameters.AddWithValue("@TOC",       r.TOC);
-            cmd.Parameters.AddWithValue("@SS",        r.SS);
-            cmd.Parameters.AddWithValue("@TN",        r.TN);
-            cmd.Parameters.AddWithValue("@TP",        r.TP);
-            cmd.Parameters.AddWithValue("@총대장균군", r.총대장균군);
-            cmd.Parameters.AddWithValue("@COD",       r.COD);
-            cmd.Parameters.AddWithValue("@염소이온",  r.염소이온);
-            cmd.Parameters.AddWithValue("@영양염류",  r.영양염류);
-            cmd.Parameters.AddWithValue("@함수율",    r.함수율);
-            cmd.Parameters.AddWithValue("@중금속",    r.중금속);
-            cmd.Parameters.AddWithValue("@비고",      r.비고);
+                     @총대장균군, @COD, @염소이온, @영양염류, @함수율, @중금속, '')";
+            cmd.Parameters.AddWithValue("@시설명", currentFacility);
+            cmd.Parameters.AddWithValue("@시료명", sampleName);
+            // 항목 매핑 (엑셀 헤더 순서에 따라 동적)
+            string ItemVal(string itemName)
+            {
+                int idx = itemNames.FindIndex(n => n.Equals(itemName, StringComparison.OrdinalIgnoreCase)
+                    || n.Replace("-", "").Equals(itemName.Replace("-", ""), StringComparison.OrdinalIgnoreCase));
+                return idx >= 0 ? V(idx) : "";
+            }
+            cmd.Parameters.AddWithValue("@BOD",       ItemVal("BOD"));
+            cmd.Parameters.AddWithValue("@TOC",       ItemVal("TOC"));
+            cmd.Parameters.AddWithValue("@SS",        ItemVal("SS"));
+            cmd.Parameters.AddWithValue("@TN",        ItemVal("T-N"));
+            cmd.Parameters.AddWithValue("@TP",        ItemVal("T-P"));
+            cmd.Parameters.AddWithValue("@총대장균군", ItemVal("총대장균군"));
+            cmd.Parameters.AddWithValue("@COD",       ItemVal("COD"));
+            cmd.Parameters.AddWithValue("@염소이온",  ItemVal("염소이온"));
+            cmd.Parameters.AddWithValue("@영양염류",  ItemVal("영양염류"));
+            cmd.Parameters.AddWithValue("@함수율",    ItemVal("함수율"));
+            cmd.Parameters.AddWithValue("@중금속",    ItemVal("중금속"));
             cmd.ExecuteNonQuery();
+            count++;
         }
 
-        Log($"처리시설_마스터 시드 완료: {rows.Count}행");
+        Log($"처리시설_마스터 시드 완료 (xlsx): {count}행");
     }
 
     // ── 폐수배출업소_분석결과 → 분석결과 ─────────────────────────────────

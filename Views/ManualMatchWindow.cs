@@ -115,19 +115,19 @@ public class ManualMatchWindow : Window
             }
         };
 
-        // ── 탭: 의뢰시료 / 처리장 / 폐수배출업소 ────────────────────────
+        // ── 탭: 의뢰시료 / 폐수배출업소 / 처리장 ────────────────────────
         var tabCtrl = new TabControl { FontFamily = Font, Margin = new Thickness(0, 0, 0, 8) };
 
-        var tabAnalysis  = new TabItem { Header = "의뢰시료", Content = BuildAnalysisTab() };
-        var tabFacility  = new TabItem { Header = "처리장",   Content = BuildFacilityTab() };
+        var tabAnalysis  = new TabItem { Header = "의뢰시료",   Content = BuildAnalysisTab() };
+        var tabWaste     = _wasteSamples.Count > 0 ? new TabItem { Header = "폐수배출업소", Content = BuildWasteTab() } : null;
+        var tabFacility  = new TabItem { Header = "처리장",     Content = BuildFacilityTab() };
         tabCtrl.Items.Add(tabAnalysis);
+        if (tabWaste != null) tabCtrl.Items.Add(tabWaste);
         tabCtrl.Items.Add(tabFacility);
 
         // 시료명에 처리시설 키워드가 있으면 처리장 탭 우선 선택
         bool isFacilityTarget = _facilityMasters.Count > 0 && IsFacilityKeyword(시료명);
         tabCtrl.SelectedItem = isFacilityTarget ? tabFacility : tabAnalysis;
-        if (_wasteSamples.Count > 0)
-            tabCtrl.Items.Add(new TabItem { Header = "폐수배출업소", Content = BuildWasteTab() });
 
         // ── 닫기 버튼 ─────────────────────────────────────────────────────
         var cancelBtn = new Button
@@ -271,7 +271,7 @@ public class ManualMatchWindow : Window
     {
         if (string.IsNullOrEmpty(name)) return false;
         // 명시적 키워드 우선 체크
-        string[] keywords = { "중흥", "월내", "율촌", "4단계", "세풍", "해룡" };
+        string[] keywords = { "중흥", "월내", "율촌", "4단계", "세풍", "해룡", "폐홀" };
         foreach (var kw in keywords)
             if (name.Contains(kw, StringComparison.OrdinalIgnoreCase)) return true;
         // 마스터 접두어 체크
@@ -298,76 +298,108 @@ public class ManualMatchWindow : Window
     {
         if (string.IsNullOrEmpty(_targetName)) return 0;
 
-        var t         = _targetName.Replace(" ", "");   // 공백 제거 타깃
-        var sampleNsp = m.시료명.Replace(" ", "");       // 공백 제거 시료명
-        var prefix    = FacilityPrefix(m.시설명);        // "중흥처리장" → "중흥"
+        var t         = _targetName.Replace(" ", "");
+        if (t.Length == 0) return 0;
+        var sampleNsp = m.시료명.Replace(" ", "");
+        var prefix    = FacilityPrefix(m.시설명);
         var prefixNsp = prefix.Replace(" ", "");
+        var combined  = prefixNsp + sampleNsp; // "중흥" + "유입수" = "중흥유입수"
 
-        // ── 1단계: 시설 접두어 위치 탐색 (앞/뒤 모두 허용) ───────────────────
-        // 예) "중흥유량조정조" → 앞에서 "중흥" 제거 → remainder="유량조정조"
-        // 예) "유량조정조중흥" → 뒤에서 "중흥" 제거 → remainder="유량조정조"
-        string remainder = "";
-        bool facilityMatched = false;
+        // ── 1) 완전 일치 ─────────────────────────────────────────────────────
+        if (combined.Equals(t, StringComparison.OrdinalIgnoreCase)) return 100;
+        if (sampleNsp.Equals(t, StringComparison.OrdinalIgnoreCase)) return 98;
 
+        // ── 2) 포함 관계 ─────────────────────────────────────────────────────
+        if (!string.IsNullOrEmpty(combined) &&
+            (t.Contains(combined, StringComparison.OrdinalIgnoreCase) ||
+             combined.Contains(t, StringComparison.OrdinalIgnoreCase))) return 95;
+        if (!string.IsNullOrEmpty(sampleNsp) &&
+            (t.Contains(sampleNsp, StringComparison.OrdinalIgnoreCase) ||
+             sampleNsp.Contains(t, StringComparison.OrdinalIgnoreCase))) return 90;
+
+        // ── 3) 시설접두어 + 나머지 분리 ──────────────────────────────────────
+        bool facilityHit = false;
         if (!string.IsNullOrEmpty(prefixNsp))
         {
+            string remainder = "";
             if (t.StartsWith(prefixNsp, StringComparison.OrdinalIgnoreCase))
-            {
-                remainder = t[prefixNsp.Length..];
-                facilityMatched = true;
-            }
+            { remainder = t[prefixNsp.Length..]; facilityHit = true; }
             else if (t.EndsWith(prefixNsp, StringComparison.OrdinalIgnoreCase))
+            { remainder = t[..^prefixNsp.Length]; facilityHit = true; }
+            else if (t.Contains(prefixNsp, StringComparison.OrdinalIgnoreCase))
+            { facilityHit = true; }
+
+            if (facilityHit && !string.IsNullOrEmpty(remainder) && !string.IsNullOrEmpty(sampleNsp))
             {
-                remainder = t[..^prefixNsp.Length];
-                facilityMatched = true;
+                if (sampleNsp.Contains(remainder, StringComparison.OrdinalIgnoreCase) ||
+                    remainder.Contains(sampleNsp, StringComparison.OrdinalIgnoreCase))
+                    return 88;
             }
         }
 
-        if (facilityMatched)
+        // ── 4) 글자 단위 매칭: 타깃을 1글자씩 쪼개서 combined와 비교 ─────────
+        int matchCount = 0;
+        var pool = combined.ToLower().ToList();
+        foreach (var ch in t.ToLower())
         {
-            // 나머지가 시료명과 완전 일치
-            if (sampleNsp.Equals(remainder, StringComparison.OrdinalIgnoreCase))
-                return 100;
-            // 나머지가 시료명으로 시작 (앞부분 일치)
-            if (!string.IsNullOrEmpty(remainder) &&
-                sampleNsp.StartsWith(remainder, StringComparison.OrdinalIgnoreCase))
-                return 95;
-            // 나머지가 시료명에 포함
-            if (!string.IsNullOrEmpty(remainder) &&
-                sampleNsp.Contains(remainder, StringComparison.OrdinalIgnoreCase))
-                return 90;
-            // 시료명이 나머지에 포함
-            if (!string.IsNullOrEmpty(sampleNsp) &&
-                remainder.Contains(sampleNsp, StringComparison.OrdinalIgnoreCase))
-                return 88;
-            // 시설은 맞지만 시료명 불일치 → 같은 시설 그룹이니 기본 점수
-            return 80;
+            int idx = pool.IndexOf(ch);
+            if (idx >= 0) { matchCount++; pool.RemoveAt(idx); }
         }
+        double ratio = (double)matchCount / t.Length;
 
-        // ── 2단계: 시설명 자체 매칭 (접두어 추출 실패 케이스) ────────────────
-        var facilityNsp = m.시설명.Replace(" ", "");
-        if (t.StartsWith(facilityNsp, StringComparison.OrdinalIgnoreCase)) return 75;
-        if (t.EndsWith(facilityNsp, StringComparison.OrdinalIgnoreCase))   return 75;
-        if (t.Contains(facilityNsp, StringComparison.OrdinalIgnoreCase))   return 70;
+        // 시설 접두어 타깃 포함 보너스
+        int bonus = facilityHit ? 8 : 0;
 
-        // ── 3단계: 시료명만 타깃에 포함 ──────────────────────────────────────
-        if (sampleNsp.Equals(t, StringComparison.OrdinalIgnoreCase))       return 65;
-        if (!string.IsNullOrEmpty(sampleNsp) &&
-            t.Contains(sampleNsp, StringComparison.OrdinalIgnoreCase))     return 50;
-        if (!string.IsNullOrEmpty(sampleNsp) &&
-            sampleNsp.Contains(t, StringComparison.OrdinalIgnoreCase))     return 40;
-
-        return 0;
+        // 비율 → 점수 (최대 85)
+        int charScore = (int)(ratio * 85) + bonus;
+        return Math.Clamp(charScore, 0, 87);
     }
 
     private int ScoreWaste(WasteSample s)
     {
         if (string.IsNullOrEmpty(_targetName)) return 0;
-        var t = _targetName;
-        if (s.업체명.Equals(t, StringComparison.OrdinalIgnoreCase)) return 100;
-        if (s.업체명.Contains(t, StringComparison.OrdinalIgnoreCase) ||
-            t.Contains(s.업체명, StringComparison.OrdinalIgnoreCase)) return 60;
+        var t = _targetName.Replace(" ", "");
+        var name = s.업체명.Replace(" ", "");
+        if (t.Length == 0 || name.Length == 0) return 0;
+
+        // 1) 완전 일치
+        if (name.Equals(t, StringComparison.OrdinalIgnoreCase)) return 100;
+
+        // 2) 접두사(숫자.숫자_ 등) 제거 후 매칭
+        string stripped = StripNumericPrefix(t);
+        if (!string.IsNullOrEmpty(stripped))
+        {
+            if (name.Equals(stripped, StringComparison.OrdinalIgnoreCase)) return 98;
+            if (name.Contains(stripped, StringComparison.OrdinalIgnoreCase) ||
+                stripped.Contains(name, StringComparison.OrdinalIgnoreCase)) return 85;
+        }
+
+        // 3) 포함 관계
+        if (name.Contains(t, StringComparison.OrdinalIgnoreCase) ||
+            t.Contains(name, StringComparison.OrdinalIgnoreCase)) return 70;
+
+        // 4) 글자 단위 유사도
+        int matchCount = 0;
+        foreach (char c in name)
+            if (t.Contains(c, StringComparison.OrdinalIgnoreCase)) matchCount++;
+        double ratio = name.Length > 0 ? (double)matchCount / name.Length : 0;
+        if (ratio >= 0.6) return (int)(ratio * 60);
         return 0;
+    }
+
+    /// <summary>숫자.숫자_ 등 SN 접두사 패턴 제거 (예: "3.11_4" → "4", "03-11-04_금호" → "금호")</summary>
+    private static string StripNumericPrefix(string s)
+    {
+        // "숫자.숫자_나머지" 또는 "숫자-숫자-숫자_나머지" 패턴
+        int idx = s.IndexOf('_');
+        if (idx >= 0 && idx < s.Length - 1)
+        {
+            string after = s[(idx + 1)..];
+            // 숫자만 남은 경우는 의미없으므로 원본 반환
+            if (!after.All(c => char.IsDigit(c) || c == '.' || c == '-'))
+                return after;
+        }
+        return "";
     }
 
     private void RefreshAnalysisList(string filter)
@@ -489,17 +521,8 @@ public class ManualMatchWindow : Window
         int GroupScore(IGrouping<string, (string 시설명, string 시료명, int 마스터Id)> g)
             => g.Max(m => ScoreFacility(m));
 
-        // 고정 컬럼 순서: 중흥→월내→율촌→4단계→해룡→세풍
-        static int FacilityOrder(string name)
-        {
-            if (name.Contains("중흥"))  return 0;
-            if (name.Contains("월내"))  return 1;
-            if (name.Contains("율촌"))  return 2;
-            if (name.Contains("4단계")) return 3;
-            if (name.Contains("해룡"))  return 4;
-            if (name.Contains("세풍"))  return 5;
-            return 99;
-        }
+        // 시설 순서: 엑셀 기반 동적 순서
+        static int FacilityOrder(string name) => FacilityResultService.FacilityOrder(name);
 
         var byFacility = filtered.GroupBy(m => m.시설명)
             .OrderBy(g => FacilityOrder(g.Key))
@@ -525,8 +548,9 @@ public class ManualMatchWindow : Window
         for (int ci = 0; ci < byFacility.Count; ci++)
         {
             var grp       = byFacility[ci];
-            // 80 이상 = 시설 접두어가 타깃에 포함된 경우만 강조 (false positive 방지)
-            bool hlGroup  = GroupScore(grp) >= 80;
+            int grpScore  = GroupScore(grp);
+            // 50 이상이면 그룹 강조 (글자 단위 매칭 반영)
+            bool hlGroup  = grpScore >= 50;
             var hdrBg = hlGroup
                 ? new SolidColorBrush(Color.Parse("#1e3a10"))
                 : Res("GridHeaderBg", "#252535");
@@ -552,17 +576,17 @@ public class ManualMatchWindow : Window
             Grid.SetColumn(hdr, ci); Grid.SetRow(hdr, 0);
             colGrid.Children.Add(hdr);
 
-            // 시료명 목록 (정렬: 점수 높은 것 먼저)
-            var items = hlGroup
-                ? grp.OrderByDescending(ScoreFacility).ToList()
-                : grp.ToList();
+            // 시료명 목록 (점수순 정렬)
+            var items = grp.OrderByDescending(ScoreFacility).ToList();
+            // 1순위 점수 (그룹 내 최고점, 50 이상일 때만 별표)
+            int topScore = items.Count > 0 ? ScoreFacility(items[0]) : 0;
 
             var colPanel = new StackPanel { Spacing = 0 };
             int rowIdx = 0;
             foreach (var m in items)
             {
                 int sc    = ScoreFacility(m);
-                bool rowHl = hlGroup && sc >= 95;
+                bool rowHl = hlGroup && sc >= 50 && sc == topScore;
                 var bg    = rowHl
                     ? new SolidColorBrush(Color.Parse("#2a2200"))
                     : (rowIdx % 2 == 0 ? Res("GridRowBg", "#1e1e28") : Res("GridRowAltBg", "#23233a"));
@@ -715,31 +739,84 @@ public class ManualMatchWindow : Window
             return;
         }
 
-        for (int i = 0; i < filtered.Count; i++)
-        {
-            var s   = filtered[i];
-            var row = new Grid
-            {
-                ColumnDefinitions = new ColumnDefinitions("80,*,60"),
-                MinHeight = 32,
-                Background = i % 2 == 0 ? Res("GridRowBg", "#1e1e28") : Res("GridRowAltBg", "#23233a"),
-            };
-            row.Children.Add(MakeTb(s.SN,    0, AppTheme.FgInfo));
-            row.Children.Add(MakeTb(s.업체명, 1, AppTheme.FgPrimary, leftPad: 6));
-            row.Children.Add(MakeTb(s.구분,   2, AppTheme.FgMuted));
+        // 추천 항목 상단 고정 (접두사 제외 매칭)
+        var recommended = filtered.Where(s => ScoreWaste(s) > 0)
+                                  .OrderByDescending(ScoreWaste).ToList();
+        var rest = filtered.Where(s => ScoreWaste(s) == 0).ToList();
 
-            var bdr = new Border
+        if (recommended.Count > 0 && string.IsNullOrWhiteSpace(filter))
+        {
+            _wasteList.Children.Add(new Border
             {
-                Child           = row,
-                Cursor          = new Cursor(StandardCursorType.Hand),
-                BorderBrush     = Res("ThemeBorderSubtle", "#333344"),
-                BorderThickness = new Thickness(0, 0, 0, 1),
-            };
-            var captured = s;
-            bdr.PointerPressed += (_, _) => ConfirmWaste(captured);
-            TextShimmer.AttachHover(bdr);
-            _wasteList.Children.Add(bdr);
+                Background = Res("BtnPrimaryBg", "#1a2a3a"), Padding = new Thickness(8, 3),
+                Child = new TextBlock { Text = "⭐ 추천", FontFamily = Font,
+                    FontSize = AppTheme.FontSM, FontWeight = FontWeight.SemiBold,
+                    Foreground = AppTheme.FgInfo }
+            });
+            int ri = 0;
+            foreach (var s in recommended)
+                AddWasteRow(_wasteList, s, ri++, highlight: true);
+
+            if (rest.Count > 0)
+            {
+                _wasteList.Children.Add(new Border
+                {
+                    Background = Res("GridHeaderBg", "#252535"), Padding = new Thickness(8, 3),
+                    Margin = new Thickness(0, 4, 0, 0),
+                    Child = new TextBlock { Text = "전체 목록", FontFamily = Font,
+                        FontSize = AppTheme.FontSM, Foreground = AppTheme.FgMuted }
+                });
+            }
+            filtered = rest;
         }
+
+        for (int i = 0; i < filtered.Count; i++)
+            AddWasteRow(_wasteList, filtered[i], i, highlight: false);
+    }
+
+    private void AddWasteRow(StackPanel panel, WasteSample s, int idx, bool highlight)
+    {
+        int score = ScoreWaste(s);
+        bool starred = highlight && score >= 70;
+        var bg = starred
+            ? new SolidColorBrush(Color.Parse("#2a2200"))
+            : (idx % 2 == 0 ? Res("GridRowBg", "#1e1e28") : Res("GridRowAltBg", "#23233a"));
+
+        var row = new Grid
+        {
+            ColumnDefinitions = new ColumnDefinitions("120,Auto,*,60"),
+            MinHeight = 32, Background = bg,
+        };
+        row.Children.Add(MakeTb(s.SN, 0, AppTheme.FgInfo));
+
+        if (starred)
+        {
+            var star = new TextBlock
+            {
+                Text = "⭐", FontSize = AppTheme.FontBase,
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(2, 0),
+            };
+            Grid.SetColumn(star, 1); row.Children.Add(star);
+        }
+
+        var nameTb = MakeTb(s.업체명, 2,
+            starred ? new SolidColorBrush(Color.Parse("#ffe066")) : AppTheme.FgPrimary,
+            leftPad: starred ? 2 : 6);
+        if (starred) nameTb.FontWeight = FontWeight.SemiBold;
+        row.Children.Add(nameTb);
+        row.Children.Add(MakeTb(s.구분, 3, AppTheme.FgMuted));
+
+        var bdr = new Border
+        {
+            Child = row, Cursor = new Cursor(StandardCursorType.Hand),
+            BorderBrush = Res("ThemeBorderSubtle", "#333344"),
+            BorderThickness = new Thickness(0, 0, 0, 1),
+        };
+        var captured = s;
+        bdr.PointerPressed += (_, _) => ConfirmWaste(captured);
+        TextShimmer.AttachHover(bdr);
+        panel.Children.Add(bdr);
     }
 
     // =========================================================================

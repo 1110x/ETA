@@ -1,5 +1,8 @@
+using ClosedXML.Excel;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using ETA.Models;
 using ETA.Services.Common;
@@ -11,7 +14,79 @@ public static class FacilityResultService
     // ── 메모리 캐시 ──────────────────────────────────────────────────────────
     private static List<string>? _facilityNamesCache;
     private static List<(string 시설명, string 시료명, int 마스터Id)>? _masterSamplesCache;
-    public static void InvalidateCache() { _facilityNamesCache = null; _masterSamplesCache = null; }
+    private static List<string>? _excelFacilityOrder; // 엑셀 시설 순서 캐시
+
+    public static void InvalidateCache()
+    {
+        _facilityNamesCache = null;
+        _masterSamplesCache = null;
+        _excelFacilityOrder = null;
+    }
+
+    /// <summary>엑셀에서 시설 순서 로딩 (캐시됨)</summary>
+    internal static List<string> GetExcelFacilityOrder()
+    {
+        if (_excelFacilityOrder != null) return _excelFacilityOrder;
+        _excelFacilityOrder = new List<string>();
+        try
+        {
+            var xlsxPath = GetExcelPath();
+            if (xlsxPath == null) return _excelFacilityOrder;
+
+            using var fs = new FileStream(xlsxPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            using var wb = new XLWorkbook(fs);
+            // 첫 번째 요일 시트에서 시설 순서 읽기
+            var ws = wb.TryGetWorksheet("월", out var ws0) ? ws0 : wb.Worksheets.First();
+            string current = "";
+            int lastRow = ws.LastRowUsed()?.RowNumber() ?? 1;
+            for (int r = 2; r <= lastRow; r++)
+            {
+                var fac = ws.Cell(r, 1).GetString().Trim();
+                if (!string.IsNullOrEmpty(fac) && fac != current)
+                {
+                    current = fac;
+                    _excelFacilityOrder.Add(fac);
+                }
+            }
+            Debug.WriteLine($"[FacilityService] 엑셀 시설 순서: {string.Join(", ", _excelFacilityOrder)}");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[FacilityService] 엑셀 시설 순서 로딩 오류: {ex.Message}");
+        }
+        return _excelFacilityOrder;
+    }
+
+    /// <summary>엑셀 기반 시설 정렬 순서 (엑셀에 없으면 99)</summary>
+    internal static int FacilityOrder(string name)
+    {
+        var order = GetExcelFacilityOrder();
+        for (int i = 0; i < order.Count; i++)
+        {
+            // 엑셀 이름과 완전 일치 또는 핵심 키워드 포함
+            if (name.Equals(order[i], StringComparison.OrdinalIgnoreCase) ||
+                name.Contains(FacilityKeyword(order[i]), StringComparison.OrdinalIgnoreCase))
+                return i;
+        }
+        return 99;
+    }
+
+    /// <summary>시설명에서 핵심 키워드 추출 (처리시설/처리장 등 접미어 제거)</summary>
+    private static string FacilityKeyword(string name)
+    {
+        foreach (var sfx in new[] { "처리시설", "처리장", "처리", "사업장", "산단", "공단" })
+            if (name.EndsWith(sfx) && name.Length > sfx.Length)
+                return name[..^sfx.Length];
+        return name;
+    }
+
+    internal static string? GetExcelPath()
+    {
+        var path = Path.GetFullPath(
+            Path.Combine(AppContext.BaseDirectory, "..", "..", "..",
+                         "Data", "Templates", "요일별 분석항목 정리.xlsx"));
+        return File.Exists(path) ? path : null;
+    }
 
     // ── 시설명 목록 (처리시설_마스터에서 DISTINCT) ─────────────────────────
     public static List<string> GetFacilityNames()
@@ -24,6 +99,8 @@ public static class FacilityResultService
         var list = new List<string>();
         using var reader = cmd.ExecuteReader();
         while (reader.Read()) list.Add(reader.GetString(0));
+        // 고정 순서: 중흥→월내→율촌→4단계→세풍→해룡(폐홀)
+        list.Sort((a, b) => FacilityOrder(a).CompareTo(FacilityOrder(b)));
         _facilityNamesCache = list;
         return list;
     }

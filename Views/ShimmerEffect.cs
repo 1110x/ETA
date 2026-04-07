@@ -48,7 +48,7 @@ public static class TextShimmer
                 {
                     new GradientStop(cur, 0.0),
                     new GradientStop(cur, 0.0),
-                    new GradientStop(Colors.White, 0.0),
+                    new GradientStop(Color.Parse("#a8d0f0"), 0.0),
                     new GradientStop(cur, 0.0),
                     new GradientStop(cur, 1.0),
                 }
@@ -71,7 +71,7 @@ public static class TextShimmer
             {
                 var cur = brushes[i].GradientStops[0].Color;
                 brushes[i].GradientStops[1] = new GradientStop(cur, a);
-                brushes[i].GradientStops[2] = new GradientStop(Colors.White, b);
+                brushes[i].GradientStops[2] = new GradientStop(Color.Parse("#a8d0f0"), b);
                 brushes[i].GradientStops[3] = new GradientStop(cur, c);
             }
         };
@@ -84,10 +84,12 @@ public static class TextShimmer
         if (!_active.TryGetValue(control, out var state)) return;
         state.timer.Stop();
 
-        // 원본 brush로 복원 (ClearValue 대신)
+        // 원본 색상으로 복원 — 새 SolidColorBrush 생성 (그라데이션 참조 완전 제거)
         for (int i = 0; i < state.targets.Length; i++)
         {
-            if (state.origBrushes[i] != null)
+            if (state.origBrushes[i] is ISolidColorBrush scb)
+                state.targets[i].Foreground = new SolidColorBrush(scb.Color);
+            else if (state.origBrushes[i] != null)
                 state.targets[i].Foreground = state.origBrushes[i];
             else
                 state.targets[i].ClearValue(TextBlock.ForegroundProperty);
@@ -135,7 +137,7 @@ public static class TextShimmer
                 {
                     new GradientStop(cur, 0.0),
                     new GradientStop(cur, 0.0),
-                    new GradientStop(Colors.White, 0.0),
+                    new GradientStop(Color.Parse("#a8d0f0"), 0.0),
                     new GradientStop(cur, 0.0),
                     new GradientStop(cur, 1.0),
                 }
@@ -158,7 +160,7 @@ public static class TextShimmer
             {
                 var cur = brushes[i].GradientStops[0].Color;
                 brushes[i].GradientStops[1] = new GradientStop(cur, a);
-                brushes[i].GradientStops[2] = new GradientStop(Colors.White, b);
+                brushes[i].GradientStops[2] = new GradientStop(Color.Parse("#a8d0f0"), b);
                 brushes[i].GradientStops[3] = new GradientStop(cur, c);
             }
         };
@@ -177,10 +179,12 @@ public static class TextShimmer
 
         if (_active.TryGetValue(panel, out var state))
         {
-            // 원본 brush로 복원
+            // 원본 색상으로 복원 — 새 SolidColorBrush 생성 (그라데이션 참조 완전 제거)
             for (int i = 0; i < state.targets.Length; i++)
             {
-                if (state.origBrushes[i] != null)
+                if (state.origBrushes[i] is ISolidColorBrush scb)
+                    state.targets[i].Foreground = new SolidColorBrush(scb.Color);
+                else if (state.origBrushes[i] != null)
                     state.targets[i].Foreground = state.origBrushes[i];
                 else
                     state.targets[i].ClearValue(TextBlock.ForegroundProperty);
