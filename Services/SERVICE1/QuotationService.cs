@@ -36,7 +36,6 @@ public static class QuotationService
     public static List<Contract> GetContractCompanies(bool activeOnly)
     {
         var list   = new List<Contract>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
@@ -85,14 +84,12 @@ public static class QuotationService
     /// <summary>견적발행내역 테이블이 없으면 기본 컬럼으로 생성한다.</summary>
     public static void EnsureQuotationIssueTable()
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = DbConnectionFactory.IsMariaDb
-            ? @"CREATE TABLE IF NOT EXISTS `견적발행내역` (
+        cmd.CommandText = @"CREATE TABLE IF NOT EXISTS `견적발행내역` (
                 `견적발행일자`   VARCHAR(20)  NULL,
                 `업체명`         VARCHAR(200) NULL,
                 `약칭`           VARCHAR(100) NULL,
@@ -104,20 +101,7 @@ public static class QuotationService
                 `담당자 e-Mail`  VARCHAR(200) NULL,
                 `합계 금액`      DECIMAL(18,2) NULL DEFAULT 0,
                 `거래명세서번호` VARCHAR(50)  NULL
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;"
-            : @"CREATE TABLE IF NOT EXISTS `견적발행내역` (
-                `견적발행일자`   TEXT,
-                `업체명`         TEXT,
-                `약칭`           TEXT,
-                `시료명`         TEXT,
-                `견적번호`       TEXT,
-                `적용구분`       TEXT,
-                `담당자`         TEXT,
-                `담당자연락처`   TEXT,
-                `담당자 e-Mail`  TEXT,
-                `합계 금액`      REAL DEFAULT 0,
-                `거래명세서번호` TEXT
-            )";
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
         try { cmd.ExecuteNonQuery(); Log("EnsureQuotationIssueTable: 테이블 생성(또는 이미 존재)"); }
         catch (Exception ex) { Log($"EnsureQuotationIssueTable 오류: {ex.Message}"); }
     }
@@ -126,23 +110,19 @@ public static class QuotationService
     /// <summary>견적발행내역에 거래명세서번호 컬럼이 없으면 추가</summary>
     public static void EnsureTradeStatementColumn()
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         if (!TableExists(conn, "견적발행내역")) return;
         var cols = DbConnectionFactory.GetColumnNames(conn, "견적발행내역");
         if (cols.Contains("거래명세서번호")) return;
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = DbConnectionFactory.IsMariaDb
-            ? "ALTER TABLE `견적발행내역` ADD COLUMN `거래명세서번호` VARCHAR(50) NULL DEFAULT NULL"
-            : "ALTER TABLE `견적발행내역` ADD COLUMN `거래명세서번호` TEXT";
+        cmd.CommandText = "ALTER TABLE `견적발행내역` ADD COLUMN `거래명세서번호` VARCHAR(50) NULL DEFAULT NULL";
         try { cmd.ExecuteNonQuery(); } catch (Exception ex) { Debug.WriteLine($"[Quotation] 컬럼추가 오류: {ex.Message}"); }
     }
 
     public static List<QuotationIssue> GetAllIssues()
     {
         var list   = new List<QuotationIssue>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
@@ -190,7 +170,6 @@ public static class QuotationService
     // ── 업체명으로 최근 견적 담당자 조회 ───────────────────────────────
     public static string GetLatestManagerForCompany(string companyName)
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return "";
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
@@ -219,7 +198,6 @@ public static class QuotationService
     public static List<string> GetDistinctManagersForCompany(string companyName)
     {
         var list = new List<string>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
@@ -245,7 +223,6 @@ public static class QuotationService
     // ── 업체+담당자명으로 연락처/이메일 조회 (최신 발행건 기준) ────────────
     public static (string Phone, string Email) GetManagerContactInfo(string companyName, string managerName)
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return ("", "");
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
@@ -280,7 +257,6 @@ public static class QuotationService
     {
         // OrdinalIgnoreCase + Trim 기반으로 조회되도록
         var dict   = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return dict;
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
@@ -312,7 +288,6 @@ public static class QuotationService
     public static List<string> GetContractTypes()
     {
         var list = new List<string>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
 
         try
         {
@@ -362,7 +337,6 @@ public static class QuotationService
     public static bool Insert(QuotationIssue issue,
         Dictionary<string, (int Qty, decimal Price)>? itemData = null)
     {
-        Log($"Insert 시작: DbPathHelper.DbPath={DbPathHelper.DbPath}  존재={File.Exists(DbPathHelper.DbPath)}");
         Log($"  issue: 발행일={issue.발행일} 업체명={issue.업체명} 번호={issue.견적번호} 구분={issue.견적구분}");
         Log($"  itemData 입력: {itemData?.Count ?? 0}개");
 
@@ -615,7 +589,6 @@ public static class QuotationService
     /// <summary>거래명세서발행내역 기본 테이블 생성 보장 (견적발행내역과 유사한 구조)</summary>
     public static void EnsureTradeStatementTable()
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
@@ -623,12 +596,9 @@ public static class QuotationService
         using (var cmd = conn.CreateCommand())
         {
             string quotNoCols = string.Concat(Enumerable.Range(1, MaxQuotationNoCols).Select(i =>
-                DbConnectionFactory.IsMariaDb
-                    ? $"\n                    `견적번호{i}`      VARCHAR(100) NULL,"
-                    : $"\n                    `견적번호{i}`      TEXT,"));
+                $"\n                    `견적번호{i}`      VARCHAR(100) NULL,"));
 
-            cmd.CommandText = DbConnectionFactory.IsMariaDb
-                ? $@"CREATE TABLE IF NOT EXISTS `거래명세서발행내역` (
+            cmd.CommandText = $@"CREATE TABLE IF NOT EXISTS `거래명세서발행내역` (
                     `발행일`         VARCHAR(20)   NULL,
                     `업체명`         VARCHAR(200)  NULL,
                     `약칭`           VARCHAR(100)  NULL,
@@ -636,16 +606,7 @@ public static class QuotationService
                     `공급가액`       DECIMAL(20,2) NULL DEFAULT 0,
                     `부가세`         DECIMAL(20,2) NULL DEFAULT 0,
                     `합계금액`       DECIMAL(20,2) NULL DEFAULT 0
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
-                : $@"CREATE TABLE IF NOT EXISTS `거래명세서발행내역` (
-                    `발행일`         TEXT,
-                    `업체명`         TEXT,
-                    `약칭`           TEXT,
-                    `거래명세서번호` TEXT,{quotNoCols}
-                    `공급가액`       REAL DEFAULT 0,
-                    `부가세`         REAL DEFAULT 0,
-                    `합계금액`       REAL DEFAULT 0
-                )";
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
             try { cmd.ExecuteNonQuery(); Log("EnsureTradeStatementTable: 생성(또는 이미 존재)"); }
             catch (Exception ex) { Log($"EnsureTradeStatementTable 오류: {ex.Message}"); }
         }
@@ -655,18 +616,16 @@ public static class QuotationService
                             StringComparer.OrdinalIgnoreCase);
         var needed = new List<(string col, string type)>
         {
-            ("약칭", DbConnectionFactory.IsMariaDb ? "VARCHAR(100)" : "TEXT"),
+            ("약칭", "VARCHAR(100)"),
         };
         for (int i = 1; i <= MaxQuotationNoCols; i++)
-            needed.Add(($"견적번호{i}", DbConnectionFactory.IsMariaDb ? "VARCHAR(100)" : "TEXT"));
+            needed.Add(($"견적번호{i}", "VARCHAR(100)"));
 
         foreach (var (col, type) in needed)
         {
             if (existCols.Contains(col)) continue;
             using var alt = conn.CreateCommand();
-            alt.CommandText = DbConnectionFactory.IsMariaDb
-                ? $"ALTER TABLE `거래명세서발행내역` ADD COLUMN `{col}` {type} NULL"
-                : $"ALTER TABLE `거래명세서발행내역` ADD COLUMN `{col}` {type}";
+            alt.CommandText = $"ALTER TABLE `거래명세서발행내역` ADD COLUMN `{col}` {type} NULL";
             try { alt.ExecuteNonQuery(); Log($"  거래명세서 마이그레이션: '{col}' 추가"); }
             catch { }
         }
@@ -685,9 +644,7 @@ public static class QuotationService
                 var col = name + suffix;
                 if (existCols.Contains(col)) continue;
                 using var cmd = conn.CreateCommand();
-                cmd.CommandText = DbConnectionFactory.IsMariaDb
-                    ? $"ALTER TABLE `거래명세서발행내역` ADD COLUMN `{col}` DECIMAL(20,2) NULL DEFAULT 0"
-                    : $"ALTER TABLE `거래명세서발행내역` ADD COLUMN `{col}` REAL DEFAULT 0";
+                cmd.CommandText = $"ALTER TABLE `거래명세서발행내역` ADD COLUMN `{col}` DECIMAL(20,2) NULL DEFAULT 0";
                 try { cmd.ExecuteNonQuery(); existCols.Add(col); }
                 catch { }
             }
@@ -700,7 +657,6 @@ public static class QuotationService
         string statementNo, IEnumerable<string> quotationNos, decimal supplyAmt, decimal vat,
         decimal total, Dictionary<string, (decimal qty, decimal unitPrice, decimal subtotal)>? itemData = null)
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return -1;
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
@@ -763,8 +719,7 @@ public static class QuotationService
         {
             cmd.ExecuteNonQuery();
             using var idCmd = conn.CreateCommand();
-            idCmd.CommandText = DbConnectionFactory.IsMariaDb
-                ? "SELECT LAST_INSERT_ID()" : "SELECT last_insert_rowid()";
+            idCmd.CommandText = "SELECT LAST_INSERT_ID()";
             return Convert.ToInt32(idCmd.ExecuteScalar());
         }
         catch (Exception ex) { Debug.WriteLine($"[거래명세서] Insert 오류: {ex.Message}"); return -1; }
@@ -773,7 +728,6 @@ public static class QuotationService
     /// <summary>선택된 견적 목록의 거래명세서번호를 DB에 설정</summary>
     public static void SetTradeStatementNo(IEnumerable<int> rowids, string statementNo)
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         foreach (var id in rowids)
@@ -790,7 +744,6 @@ public static class QuotationService
     public static bool DeleteTradeStatement(string statementNo)
     {
         if (string.IsNullOrEmpty(statementNo)) return false;
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return false;
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 

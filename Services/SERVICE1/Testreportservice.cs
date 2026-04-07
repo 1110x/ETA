@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Data;
 using System.Data.Common;
@@ -26,7 +25,6 @@ public static class TestReportService
     public static List<string> GetAnalyteColumns()
     {
         var cols   = new List<string>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return cols;
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         foreach (var col in DbConnectionFactory.GetColumnNames(conn, TableName))
@@ -40,7 +38,6 @@ public static class TestReportService
     public static List<string> GetCompanyList()
     {
         var list   = new List<string>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) { Debug.WriteLine($"[TestReport] DB없음"); return list; }
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         if (!DbConnectionFactory.TableExists(conn, TableName)) { Debug.WriteLine($"[TestReport] 테이블없음"); return list; }
@@ -55,7 +52,6 @@ public static class TestReportService
     public static List<SampleRequest> GetSamplesByCompany(string 약칭)
     {
         var list   = new List<SampleRequest>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
         var analyteCols = GetAnalyteColumns();
         var colSelect   = analyteCols.Count > 0 ? "," + string.Join(",", analyteCols.Select(c => $"`{c}`")) : "";
         using var conn  = DbConnectionFactory.CreateConnection();
@@ -158,7 +154,6 @@ public static class TestReportService
     /// <summary>특정 rowId의 단일 분석항목 결과값 조회. 없으면 null</summary>
     public static string? GetAnalyteValue(int rowId, string columnName)
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return null;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
@@ -175,7 +170,6 @@ public static class TestReportService
     /// <summary>견적번호+시료명 또는 약칭+시료명으로 rowid 조회. 없으면 null</summary>
     public static int? FindRowId(string 견적번호, string 약칭, string 시료명)
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return null;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
@@ -202,7 +196,6 @@ public static class TestReportService
     public static Dictionary<string, AnalysisItem> GetAnalyteMeta()
     {
         var dict   = new Dictionary<string, AnalysisItem>(StringComparer.OrdinalIgnoreCase);
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return dict;
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         if (!DbConnectionFactory.TableExists(conn, "분석정보")) return dict;
@@ -223,7 +216,6 @@ public static class TestReportService
     public static string GetStandardValue(string 항목명, string 방류허용기준컬럼)
     {
         if (string.IsNullOrEmpty(항목명) || string.IsNullOrEmpty(방류허용기준컬럼)) return "";
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return "";
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();

@@ -119,14 +119,19 @@ public partial class AgentTreePage : UserControl
     public AgentTreePage()
     {
         InitializeComponent();
+        DeptFilterBox.ItemsSource   = _deptItems;
+        DeptFilterBox.SelectedIndex = 0;
     }
 
     // =========================================================================
-    // 검색 필터
+    // 검색 / 부서 필터
     // =========================================================================
-    // TextChanged + 400ms 디바운스 (한글 IME 조합 깨짐 방지)
+    private static readonly string[] _deptItems =
+        { "전체", "수질분석센터", "처리시설", "일반업무", "기타" };
+
     private DispatcherTimer? _searchDebounce;
     private string _lastAgentSearch = "";
+    private string _deptFilter = "전체";
 
     private void AgentSearchBox_TextChanged(object? sender, Avalonia.Controls.TextChangedEventArgs e)
     {
@@ -145,18 +150,33 @@ public partial class AgentTreePage : UserControl
         base.OnLoaded(e);
     }
 
+    private void DeptFilter_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        _deptFilter = DeptFilterBox.SelectedItem?.ToString() ?? "전체";
+        ApplyFilters();
+    }
+
     private void DoAgentSearch()
     {
         var q = AgentSearchBox.Text?.Trim().ToLower() ?? "";
         if (q == _lastAgentSearch) return;
         _lastAgentSearch = q;
+        ApplyFilters();
+    }
+
+    private void ApplyFilters()
+    {
+        var q    = AgentSearchBox.Text?.Trim().ToLower() ?? "";
+        var dept = _deptFilter;
         foreach (var tvi in AgentTreeView.Items.OfType<TreeViewItem>())
         {
-            if (tvi.Tag is Agent agent)
-                tvi.IsVisible = string.IsNullOrEmpty(q)
-                    || (agent.성명?.ToLower().Contains(q) ?? false)
-                    || (agent.사번?.ToLower().Contains(q) ?? false)
-                    || (agent.직급?.ToLower().Contains(q) ?? false);
+            if (tvi.Tag is not Agent agent) continue;
+            bool nameMatch = string.IsNullOrEmpty(q)
+                || (agent.성명?.ToLower().Contains(q) ?? false)
+                || (agent.사번?.ToLower().Contains(q) ?? false)
+                || (agent.직급?.ToLower().Contains(q) ?? false);
+            bool deptMatch = dept == "전체" || agent.부서 == dept;
+            tvi.IsVisible = nameMatch && deptMatch;
         }
     }
 
@@ -177,10 +197,17 @@ public partial class AgentTreePage : UserControl
 
         try
         {
-            var items = AgentService.GetAllItems().OrderBy(a => a.입사일).ToList();
+            var allItems = AgentService.GetAllItems().OrderBy(a => a.입사일).ToList();
+
+            // 편집 권한자(관리자)는 전체 조회, 일반 사용자는 본인 부서만
+            var dept = ETA.Services.Common.CurrentUserManager.Instance.CurrentDepartment;
+            var items = (CanEdit || string.IsNullOrWhiteSpace(dept))
+                ? allItems
+                : allItems.Where(a => a.부서 == dept).ToList();
+
             foreach (var item in items)
                 AgentTreeView.Items.Add(CreateTreeItem(item));
-            Log($"로드 완료 → {items.Count}명");
+            Log($"로드 완료 → {items.Count}명 (부서필터: {(CanEdit ? "전체" : dept)})");
         }
         catch (Exception ex) { Log("★ 크래시 ★ " + ex.Message); }
     }
@@ -507,15 +534,19 @@ public partial class AgentTreePage : UserControl
             root.Children.Add(devLoginBtn);
         }
 
-        // 직무/자격사항/Email 한 줄 + 입사일/측정인고유번호 한 줄
+        // 직무/자격사항/Email 한 줄 + 부서/입사일/측정인고유번호 한 줄
         root.Children.Add(BuildFieldGrid3(
             BuildFieldRow("직무",     agent.직무,     isReadOnly: ro),
             BuildFieldRow("자격사항", agent.자격사항, isReadOnly: ro),
             BuildFieldRow("Email",    agent.Email,    isReadOnly: ro)
         ));
         root.Children.Add(BuildFieldGrid(
-            BuildFieldRow("입사일",         agent.입사일표시,     isReadOnly: true),
+            BuildComboRow("부서", new[] { "수질분석센터", "처리시설", "일반업무", "기타" }, agent.부서, isReadOnly: ro),
             BuildFieldRow("측정인고유번호", agent.측정인고유번호, isReadOnly: ro)
+        ));
+        root.Children.Add(BuildFieldGrid(
+            BuildFieldRow("입사일",         agent.입사일표시,     isReadOnly: true),
+            new StackPanel()
         ));
 
         // ── 직원 삭제 버튼 (권한 있는 경우만) ──
@@ -662,8 +693,12 @@ public partial class AgentTreePage : UserControl
             BuildFieldRow("Email",    "")
         ));
         root.Children.Add(BuildFieldGrid(
-            BuildFieldRow("입사일",         "", hint: "예) 2024-01-01"),
+            BuildComboRow("부서", new[] { "수질분석센터", "처리시설", "일반업무", "기타" }, ""),
             BuildFieldRow("측정인고유번호", "")
+        ));
+        root.Children.Add(BuildFieldGrid(
+            BuildFieldRow("입사일",         "", hint: "예) 2024-01-01"),
+            new StackPanel()
         ));
 
         return root;
@@ -1450,6 +1485,13 @@ public partial class AgentTreePage : UserControl
                         break;
                 }
             }
+            else if (child is StackPanel sp2 && sp2.Children.Count >= 2
+                && sp2.Children[0] is TextBlock lbl2 && sp2.Children[1] is ComboBox cb)
+            {
+                var label2 = lbl2.Text?.Trim() ?? "";
+                if (label2 == "부서")
+                    agent.부서 = cb.SelectedItem?.ToString() ?? "";
+            }
             else
             {
                 SyncFieldsRecursive(child, agent, includeReadOnly);
@@ -1478,6 +1520,36 @@ public partial class AgentTreePage : UserControl
             Margin     = new Thickness(0, 0, 0, 4)
         });
         return root;
+    }
+
+    private static StackPanel BuildComboRow(string label, string[] items, string selected,
+                                             bool isReadOnly = false)
+    {
+        var panel = new StackPanel { Spacing = 2 };
+        panel.Children.Add(new TextBlock
+        {
+            Text       = label,
+            FontSize   = AppTheme.FontSM,
+            FontFamily = "avares://ETA/Assets/Fonts#Pretendard",
+            Foreground = AppRes("FgMuted"),
+        });
+        var cb = new ComboBox
+        {
+            ItemsSource             = items,
+            SelectedItem            = items.Contains(selected) ? selected : (items.Length > 0 ? items[0] : null),
+            FontSize                = AppTheme.FontMD,
+            FontFamily              = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+            IsEnabled               = !isReadOnly,
+            Background              = isReadOnly ? AppTheme.BgSecondary : AppTheme.BgInput,
+            Foreground              = isReadOnly ? AppTheme.FgMuted     : AppRes("AppFg"),
+            BorderThickness         = new Thickness(1),
+            BorderBrush             = isReadOnly ? AppTheme.BorderSubtle : AppTheme.BorderDefault,
+            CornerRadius            = new CornerRadius(4),
+            Padding                 = new Thickness(8, 4),
+            HorizontalAlignment     = HorizontalAlignment.Stretch,
+        };
+        panel.Children.Add(cb);
+        return panel;
     }
 
     private static StackPanel BuildFieldRow(string label, string value,
@@ -1637,7 +1709,7 @@ public partial class AgentTreePage : UserControl
     // =========================================================================
     private static string GetQaqcDir(string yearMonth)
     {
-        var dataDir = Path.GetDirectoryName(DbPathHelper.DbPath)!;
+        var dataDir = Path.GetDirectoryName(DbPathHelper.PhotoDirectory)!;
         return Path.Combine(dataDir, "QAQC", yearMonth);
     }
 
@@ -1653,7 +1725,7 @@ public partial class AgentTreePage : UserControl
 
     private static bool HasQaqcFile(string shortName)
     {
-        var qaqcRoot = Path.Combine(Path.GetDirectoryName(DbPathHelper.DbPath)!, "QAQC");
+        var qaqcRoot = Path.Combine(Path.GetDirectoryName(DbPathHelper.PhotoDirectory)!, "QAQC");
         if (!Directory.Exists(qaqcRoot)) return false;
         // 전체 하위 폴더에서 패턴 검색 (월 무관)
         return Directory.GetFiles(qaqcRoot, $"????-??-??_{shortName}_*", SearchOption.AllDirectories).Length > 0;

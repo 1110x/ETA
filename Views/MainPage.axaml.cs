@@ -21,7 +21,6 @@ using ETA.Views.Pages.PAGE1;
 using ETA.Views.Pages.PAGE2;
 using ETA.Views.Pages.PAGE3;
 using ETA.Views.Pages.Common;
-using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -56,6 +55,7 @@ public partial class MainPage : Window
     private TestReportPage?              _resultSubmitMeasureTestReport;
     private WasteAnalysisInputPage?      _wasteAnalysisInputPage;
     private ResultSubmitErpPage?         _resultSubmitErpPage;
+    private AccessPage?                  _accessPage;
     private ResultSubmitZero4Page?       _resultSubmitZero4Page;
     private PurchasePage?      _purchasePage;
     private RepairPage?       _repairPage;
@@ -195,6 +195,7 @@ public partial class MainPage : Window
         {
             e.Handled = true;
             BT1_Click(null, new RoutedEventArgs());
+            return;
         }
     }
 
@@ -483,28 +484,19 @@ public partial class MainPage : Window
         if (MenuItemAgentInfo != null)
             MenuItemAgentInfo.IsEnabled = allowedIds.Contains(CurrentEmployeeId);
 
-        // ── 비용부담금 전용 계정: 해당 메뉴 외 전부 숨김 ─────────────────
-        var wasteOnlyIds = new System.Collections.Generic.HashSet<string>
-        {
-            "TEST001",    // 테스트 계정
-        };
-        if (wasteOnlyIds.Contains(CurrentEmployeeId))
-        {
-            if (MenuItemWaterCenter   != null) MenuItemWaterCenter.IsVisible   = false;
-            if (MenuItemFacility      != null) MenuItemFacility.IsVisible      = false;
-            if (MenuItemAnalysisInput != null) MenuItemAnalysisInput.IsVisible = false;
-            if (MenuItemResultSubmit  != null) MenuItemResultSubmit.IsVisible  = false;
-            if (MenuItemSchedule      != null) MenuItemSchedule.IsVisible      = false;
-            if (MenuItemRisk          != null) MenuItemRisk.IsVisible          = false;
-            if (PermissionMenu        != null) PermissionMenu.IsVisible        = false;
-            if (ProfilePanel          != null) ProfilePanel.IsVisible          = false;
-        }
+        // ── 접근관리: 201000308 (정승욱) 전용 ───────────────────────────────
+        if (MenuItemAccess != null)
+            MenuItemAccess.IsVisible = CurrentEmployeeId == "201000308";
+
         System.Diagnostics.Debug.WriteLine("[MainPage] Opened 이벤트");
         RunExpandAnimation();
         _ = LoadProfileInfoAsync();
 
-        // 서버 연결 시 업무분장 자동 연장 (6개월 후까지, 프로그레스바 표시)
-        if (DbConnectionFactory.IsMariaDb)
+        // ── AccessService: AgentAccess 테이블 생성 + 메뉴 접근 필터 적용 ──
+        AccessService.EnsureTable();
+        ApplyMenuAccessFilter();
+
+        // 업무분장 자동 연장 (6개월 후까지, 프로그레스바 표시)
         {
             var overlay = new StackPanel
             {
@@ -575,6 +567,73 @@ public partial class MainPage : Window
 
     }
 
+    // ── AccessService 기반 메뉴 접근 필터 적용 ─────────────────────────────
+    private void ApplyMenuAccessFilter()
+    {
+        if (string.IsNullOrEmpty(CurrentEmployeeId)) return;
+
+        // 201000308은 모든 메뉴 허용 (관리자)
+        if (CurrentEmployeeId == "201000308") return;
+
+        var allowed = AccessService.GetAllowedMenus(CurrentEmployeeId);
+
+        // 메뉴키 → MenuItem 매핑
+        var menuMap = new Dictionary<string, MenuItem?>
+        {
+            ["Agent"]                    = this.FindControl<MenuItem>("MenuItemAgentInfo"),
+            ["Contract"]                 = this.FindControl<MenuItem>("MenuItemContract"),
+            ["Quotation"]                = this.FindControl<MenuItem>("MenuItemQuotation"),
+            ["QuotationIssue"]           = this.FindControl<MenuItem>("MenuItemQuotationIssue"),
+            ["TestReport"]               = this.FindControl<MenuItem>("MenuItemTestReport"),
+            ["DbMigration"]              = this.FindControl<MenuItem>("MenuItemDbMigration"),
+            ["WasteCompany"]             = this.FindControl<MenuItem>("MenuItemWasteCompany"),
+            ["WasteSampleList"]          = this.FindControl<MenuItem>("MenuItemWasteSampleList"),
+            ["WasteTestReport"]          = this.FindControl<MenuItem>("MenuItemWasteTestReport"),
+            ["ProcessingFacility"]       = this.FindControl<MenuItem>("MenuItemProcessingFacility"),
+            ["WasteAnalysisInputWater"]  = this.FindControl<MenuItem>("MenuItemWasteAnalysisInputWater"),
+            ["WasteAnalysisInputWaste"]  = this.FindControl<MenuItem>("MenuItemWasteAnalysisInputWaste"),
+            ["ResultSubmitMeasure"]      = this.FindControl<MenuItem>("MenuItemResultSubmitMeasure"),
+            ["ResultSubmitErp"]          = this.FindControl<MenuItem>("MenuItemResultSubmitErp"),
+            ["Repair"]                   = this.FindControl<MenuItem>("MenuItemRepair"),
+            ["Purchase"]                 = this.FindControl<MenuItem>("MenuItemPurchase"),
+            ["Schedule"]                 = this.FindControl<MenuItem>("MenuItemSchedule2"),
+            ["Reagent"]                  = this.FindControl<MenuItem>("MenuItemReagent"),
+            ["WaterQualityNameReconcile"]= this.FindControl<MenuItem>("MenuItemWaterQualityNameReconcile"),
+            ["WasteNameReconcile"]       = this.FindControl<MenuItem>("MenuItemWasteNameReconcile"),
+            ["Access"]                   = this.FindControl<MenuItem>("MenuItemAccess"),
+        };
+
+        foreach (var (key, mi) in menuMap)
+        {
+            if (mi == null) continue;
+            bool isAllowed = allowed.Contains(key);
+            mi.IsVisible = isAllowed;
+            mi.IsEnabled = isAllowed;
+        }
+
+        // 부모 메뉴: 자식이 모두 숨겨지면 부모도 숨김
+        var parentChildKeys = new Dictionary<string, string[]>
+        {
+            ["MenuItemWaterCenter"]   = new[] { "Agent", "Contract", "Quotation", "QuotationIssue", "TestReport", "DbMigration" },
+            ["MenuItemWaste"]         = new[] { "WasteCompany", "WasteSampleList", "WasteTestReport" },
+            ["MenuItemFacility"]      = new[] { "ProcessingFacility" },
+            ["MenuItemAnalysisInput"] = new[] { "WasteAnalysisInputWater", "WasteAnalysisInputWaste" },
+            ["MenuItemResultSubmit"]  = new[] { "ResultSubmitMeasure", "ResultSubmitErp" },
+            ["MenuItemSchedule"]      = new[] { "Repair", "Purchase", "Schedule" },
+            ["MenuItemRisk"]          = new[] { "Reagent" },
+            ["PermissionMenu"]        = new[] { "WaterQualityNameReconcile", "WasteNameReconcile", "Access" },
+        };
+
+        foreach (var (parentName, childKeys) in parentChildKeys)
+        {
+            var parent = this.FindControl<MenuItem>(parentName);
+            if (parent == null) continue;
+            bool anyAllowed = childKeys.Any(k => allowed.Contains(k));
+            parent.IsVisible = anyAllowed;
+            parent.IsEnabled = anyAllowed;
+        }
+    }
+
     private async Task LoadProfileInfoAsync()
     {
         try
@@ -621,6 +680,18 @@ public partial class MainPage : Window
 
     private void ProfileName_Click(object? sender, PointerPressedEventArgs e)
         => MyTask_Click(sender, new RoutedEventArgs());
+
+    private void ProfileName_MenuClick(object? sender, RoutedEventArgs e)
+        => MyTask_Click(sender, new RoutedEventArgs());
+
+    private void Logout_Click(object? sender, RoutedEventArgs e)
+    {
+        ETA.Services.Common.CurrentUserManager.Instance.ResetToWindowsUser();
+        MainPage.CurrentEmployeeId = "";
+        var login = new Login();
+        login.Show();
+        Close();
+    }
 
     private void MainPage_Closing(object? sender, WindowClosingEventArgs e)
     {
@@ -2772,7 +2843,7 @@ public partial class MainPage : Window
 
         SetSubMenu("저장", "새로고침", "", "", "", "", "");
         SetLeftPanelWidth(260);
-        SetContentLayout(content2Star: 0, content4Star: 0, upperStar: 3, lowerStar: 7);
+        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 0, lowerStar: 1);
 
         RestoreModeLayout("ProcessingFacility");
     }
@@ -2809,7 +2880,8 @@ public partial class MainPage : Window
         Show1.Content = _wasteAnalysisInputPage;
         LogContentChange("Show1", _wasteAnalysisInputPage);
         Show2.Content = null; Show3.Content = null; Show4.Content = null;
-        SetSubMenu("새로고침", "검증", "입력", "출력", "", "", "");
+        string attachLabel = inputMode == "비용부담금/처리시설" ? "파일첨부" : "";
+        SetSubMenu("새로고침", "검증", "입력", "출력", attachLabel, "", "");
         SetLeftPanelWidth(260);
 
         // 레이아웃: Show2 전체폭 상단, Show3+Show4 하단 병렬
@@ -4020,14 +4092,31 @@ public partial class MainPage : Window
     private void Permission_Click(object? sender, RoutedEventArgs e)
     {
         _currentMode = "Permission";
-        // TODO: 권한관리 페이지 구현
         Show1.Content = null;
         Show2.Content = null;
         Show4.Content = null;
         _bt1SaveAction = null;
-
-        SetSubMenu("저장", "새로고침", "삭제", "설정", "통계", "종료", "도움말");
+        SetSubMenu("", "", "", "", "", "", "");
         SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 1, lowerStar: 0);
+    }
+
+    private void Access_Click(object? sender, RoutedEventArgs e)
+    {
+        if (CurrentEmployeeId != "201000308") return;
+        _currentMode = "Access";
+
+        _accessPage ??= new AccessPage();
+
+        Show1.Content = _accessPage.Show1;
+        Show2.Content = _accessPage.Show2;
+        Show3.Content = null;
+        Show4.Content = null;
+        _bt1SaveAction = null;
+
+        SetSubMenu("새로고침", "", "", "", "", "", "");
+        SetLeftPanelWidth(260);
+        SetContentLayout(content2Star: 2, content4Star: 0, upperStar: 1, lowerStar: 0);
+        RestoreModeLayout("Access");
     }
 
 
@@ -4058,6 +4147,7 @@ public partial class MainPage : Window
         ["Purchase"]                 = ("업무지원", "구매요청"),
         ["Repair"]                   = ("업무지원", "보수요청"),
         ["RiskManage"]               = ("업무지원", "위험관리"),
+        ["Access"]                   = ("권한관리", "접근관리"),
         ["MyTask"]                   = ("나의업무", "할 일"),
         ["DbMigration"]              = ("설정", "DB 마이그레이션"),
     };
@@ -4119,6 +4209,11 @@ public partial class MainPage : Window
                 }
                 break;
             case "MyTask":          _myTaskPage?.LoadData();             break;
+            case "Access":
+                _accessPage = new AccessPage();
+                Show1.Content = _accessPage.Show1;
+                Show2.Content = _accessPage.Show2;
+                break;
             case "WasteAnalysisInput": _wasteAnalysisInputPage?.LoadData(); break;
             case "AnalysisPlan":
                 _analysisPlanSelectedDay = -1;
@@ -4170,7 +4265,7 @@ public partial class MainPage : Window
             case "Purchase":   _purchasePage?.ApproveSelected();         break;
             case "Quotation":  _quotationPage?.LoadData(); _quotationHistoryPanel?.LoadData(); break;
             case "TestReport": _ = _testReportPage?.DeleteSampleAsync(); break;
-            case "WasteAnalysisInput": _wasteAnalysisInputPage?.ImportData(); break;
+            case "WasteAnalysisInput": _ = _wasteAnalysisInputPage?.ImportData(); break;
             case "Repair":          _repairPage?.RejectSelected();           break;
             case "AnalysisPlan":    SetAnalysisPlanDay(1); break; // 화
             default: Debug.WriteLine($"[{_currentMode}] BT3");          break;
@@ -4202,6 +4297,7 @@ public partial class MainPage : Window
             case "TestReport":    _testReportPage?.OpenPrintWindow();   break;
             case "Repair":        _repairPage?.DeleteSelected();      break;
             case "Contract":      _ = ImportContractFromExcelAsync(); break;
+            case "WasteAnalysisInput": _wasteAnalysisInputPage?.AttachExcel(); break;
             case "AnalysisPlan":  SetAnalysisPlanDay(3); break; // 목
             default: Debug.WriteLine($"[{_currentMode}] BT5");      break;
         }

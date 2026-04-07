@@ -10,6 +10,12 @@ namespace ETA.Services.SERVICE1;
 
 public static class MeasurerService
 {
+    // ── 메모리 캐시 ──────────────────────────────────────────────────────────
+    private static List<string>? _companiesCache;
+    private static List<(string 계약번호, string 약칭, string 계약기간, string 업체명, string 채취지점명)>? _allDataCache;
+    private static List<(string 분야, string 항목구분, string 항목명, string 코드값, string Select2Id)>? _analysisItemsCache;
+    public static void InvalidateCache() { _companiesCache = null; _allDataCache = null; }
+    public static void InvalidateAnalysisItemsCache() => _analysisItemsCache = null;
 
     // ── 테이블 생성 + 컬럼 마이그레이션 ─────────────────────────────────────
     public static void EnsureMeasurerTable()
@@ -175,6 +181,7 @@ public static class MeasurerService
     // ── 분석항목 전체 조회 ───────────────────────────────────────────────────
     public static List<(string 분야, string 항목구분, string 항목명, string 코드값, string Select2Id)> GetAllAnalysisItems()
     {
+        if (_analysisItemsCache != null) return _analysisItemsCache;
         EnsureAnalysisItemTable();
         var list = new List<(string, string, string, string, string)>();
         using var conn = DbConnectionFactory.CreateConnection();
@@ -188,6 +195,7 @@ public static class MeasurerService
                       r.GetString(2),
                       r.GetString(3),
                       r.IsDBNull(4) ? "" : r.GetString(4)));
+        _analysisItemsCache = list;
         return list;
     }
 
@@ -200,6 +208,7 @@ public static class MeasurerService
         using var cmd = conn.CreateCommand();
         cmd.CommandText = "DELETE FROM 측정인_채취지점";
         cmd.ExecuteNonQuery();
+        InvalidateCache();
     }
 
     // ── 채취지점 데이터 저장 ─────────────────────────────────────────────────
@@ -235,6 +244,7 @@ public static class MeasurerService
                 cmd.ExecuteNonQuery();
             }
             txn.Commit();
+            InvalidateCache();
         }
         catch (Exception ex)
         {
@@ -307,6 +317,7 @@ public static class MeasurerService
     // ── 저장된 업체명 목록 조회 ──────────────────────────────────────────────
     public static List<string> GetCompanies()
     {
+        if (_companiesCache != null) return _companiesCache;
         var list = new List<string>();
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
@@ -314,6 +325,7 @@ public static class MeasurerService
         cmd.CommandText = "SELECT DISTINCT 업체명 FROM 측정인_채취지점 ORDER BY 업체명 ASC";
         using var r = cmd.ExecuteReader();
         while (r.Read()) list.Add(r.GetString(0));
+        _companiesCache = list;
         return list;
     }
 
@@ -386,6 +398,7 @@ public static class MeasurerService
     // ── 전체 데이터 조회 ──────────────────────────────────────────────────────
     public static List<(string 계약번호, string 약칭, string 계약기간, string 업체명, string 채취지점명)> GetAllData()
     {
+        if (_allDataCache != null) return _allDataCache;
         var list = new List<(string, string, string, string, string)>();
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
@@ -397,6 +410,7 @@ public static class MeasurerService
         using var r = cmd.ExecuteReader();
         while (r.Read())
             list.Add((r.GetString(0), r.GetString(1), r.GetString(2), r.GetString(3), r.GetString(4)));
+        _allDataCache = list;
         return list;
     }
 

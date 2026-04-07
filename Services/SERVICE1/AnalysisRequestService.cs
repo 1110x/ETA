@@ -14,7 +14,6 @@ namespace ETA.Services.SERVICE1;
 
 /// <summary>
 /// "분석의뢰및결과" 테이블 접근 서비스
-/// TestReportService와 동일한 DbPathHelper.DbPath 사용
 /// </summary>
 public static class AnalysisRequestService
 {
@@ -38,7 +37,6 @@ public static class AnalysisRequestService
     public static List<AnalysisRequestRecord> GetAllRecords()
     {
         var list = new List<AnalysisRequestRecord>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) { Log("DB 파일 없음"); return list; }
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
@@ -107,7 +105,6 @@ public static class AnalysisRequestService
     public static Dictionary<string, string> GetRecordRow(int rowId)
     {
         var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return dict;
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
@@ -135,7 +132,6 @@ public static class AnalysisRequestService
         IEnumerable<string> allAnalytes,
         IEnumerable<string> checkedAnalytes)
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return false;
         var all        = allAnalytes.Select(a => a.Trim()).Where(a => a.Length > 0).ToList();
         var checkedSet = new HashSet<string>(checkedAnalytes.Select(a => a.Trim()),
                              StringComparer.OrdinalIgnoreCase);
@@ -281,7 +277,6 @@ public static class AnalysisRequestService
     // =====================================================================
     public static bool DeleteRecord(int id)
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return false;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
@@ -304,7 +299,6 @@ public static class AnalysisRequestService
     public static List<string> GetDischargeStandardNames()
     {
         var list = new List<string>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
@@ -345,7 +339,6 @@ public static class AnalysisRequestService
     /// <summary>분석의뢰및결과의 방류허용기준 적용유무 업데이트</summary>
     public static bool UpdateDischargeStandard(int rowId, string standardName)
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return false;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
@@ -367,7 +360,6 @@ public static class AnalysisRequestService
     public static List<string> GetDistinctSampleNames(string 약칭)
     {
         var list = new List<string>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
@@ -394,7 +386,6 @@ public static class AnalysisRequestService
     /// </summary>
     public static int RenameSampleName(string 약칭, string oldName, string newName)
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return 0;
         if (string.IsNullOrWhiteSpace(newName)) return 0;
         try
         {
@@ -421,7 +412,6 @@ public static class AnalysisRequestService
     public static List<string> GetDistinctAbbreviations()
     {
         var list = new List<string>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
@@ -446,7 +436,6 @@ public static class AnalysisRequestService
     public static List<(string fullName, string shortName)> GetOrderedAnalytes()
     {
         var result = new List<(string, string)>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return result;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
@@ -498,7 +487,6 @@ public static class AnalysisRequestService
     public static Dictionary<string, string> GetShortNames()
     {
         var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return result;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
@@ -541,7 +529,6 @@ public static class AnalysisRequestService
     public static Dictionary<string, (int days, string shortName)> GetStandardDaysInfo()
     {
         var result = new Dictionary<string, (int, string)>(StringComparer.OrdinalIgnoreCase);
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) { Log("GetStandardDaysInfo: DB 없음"); return result; }
 
         try
         {
@@ -663,7 +650,6 @@ public static class AnalysisRequestService
     public static Dictionary<string, string> GetManagersByDate(string sampleDate)
     {
         var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return result;
 
         try
         {
@@ -717,7 +703,6 @@ public static class AnalysisRequestService
     public static List<(string FullName, string ShortName)> GetAssignmentsForAgent(string employeeId, DateTime queryDate)
     {
         var assignments = new List<(string, string)>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return assignments;
 
         try
         {
@@ -783,7 +768,6 @@ public static class AnalysisRequestService
         string employeeId, DateTime startDate, DateTime endDate)
     {
         var result = new List<(string, string)>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return result;
 
         try
         {
@@ -838,7 +822,6 @@ public static class AnalysisRequestService
     public static List<(string FullName, string ShortName)> GetAssignmentDaysForAgentAll(string employeeId)
     {
         var result = new List<(string, string)>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return result;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
@@ -887,7 +870,6 @@ public static class AnalysisRequestService
     public static List<string> GetAssigneesForAnalyteInRange(string analyteFullName, DateTime start, DateTime end)
     {
         var assignees = new List<string>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return assignees;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
@@ -969,7 +951,6 @@ public static class AnalysisRequestService
     public static List<string> GetAssigneesForAnalyteOnDate(string analyteFullName, DateTime date)
     {
         var assignees = new List<string>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return assignees;
 
         try
         {
@@ -1029,7 +1010,6 @@ public static class AnalysisRequestService
     // =====================================================================
     public static void ClearAnalyteFromAgent(string employeeId, string analyteFullName, DateTime from)
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
@@ -1064,7 +1044,6 @@ public static class AnalysisRequestService
     // =====================================================================
     public static void ClearAssignmentsForAgent(string employeeId, DateTime startDate, DateTime endDate)
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
 
         try
         {
@@ -1112,7 +1091,6 @@ public static class AnalysisRequestService
     // =====================================================================
     public static void AddAssignment(string employeeId, string analyte, DateTime startDate, DateTime endDate)
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
 
         try
         {
@@ -1222,7 +1200,6 @@ public static class AnalysisRequestService
         string employeeId, DateTime start, DateTime end)
     {
         var result = new Dictionary<string, AssignmentCalendarEntry>(StringComparer.OrdinalIgnoreCase);
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return [];
 
         try
         {
@@ -1287,7 +1264,6 @@ public static class AnalysisRequestService
     public static List<AssignmentSpan> GetAssignmentChartData(DateTime rangeStart, DateTime rangeEnd)
     {
         var spans = new List<AssignmentSpan>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return spans;
 
         try
         {
@@ -1362,7 +1338,6 @@ public static class AnalysisRequestService
     {
         // 항목명/_id 컬럼에 쓰면 날짜가 이름으로 덮어씌워지는 치명적 버그 방지
         if (analyteFullName == "항목명" || analyteFullName.StartsWith("_")) return;
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
@@ -1419,7 +1394,6 @@ public static class AnalysisRequestService
     public static void ClearAssignmentByName(string analyteFullName, DateTime start, DateTime end)
     {
         if (analyteFullName == "항목명" || analyteFullName.StartsWith("_")) return;
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
@@ -1441,7 +1415,6 @@ public static class AnalysisRequestService
     public static int CleanupCorruptedRows()
     {
         int deleted = 0;
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return deleted;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
@@ -1461,7 +1434,6 @@ public static class AnalysisRequestService
     /// <param name="progress">진행률 콜백 (0.0~1.0, 항목명)</param>
     public static void RebuildAssignmentsFrom(DateTime fromDate, Action<double, string>? progress = null)
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
@@ -1527,7 +1499,6 @@ public static class AnalysisRequestService
     /// </summary>
     public static void AutoExtendAssignmentsToToday(Action<double, string>? progress = null)
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
 
         progress?.Invoke(0, "데이터 정리 중...");
         CleanupCorruptedRows();
@@ -1612,7 +1583,6 @@ public static class AnalysisRequestService
     public static int GetMonthlyAnalyteCount(string analyteName)
     {
         if (string.IsNullOrEmpty(analyteName)) return 0;
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return 0;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
@@ -1641,7 +1611,6 @@ public static class AnalysisRequestService
     // =====================================================================
     public static void UpdateSamplers(int rowId, IEnumerable<string> names)
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
         var nameStr = string.Join(", ", names);
 
         try
@@ -1670,7 +1639,6 @@ public static class AnalysisRequestService
     public static List<AnalysisRequestRecord> GetByDate(string date)
     {
         var list = new List<AnalysisRequestRecord>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
@@ -1706,11 +1674,50 @@ public static class AnalysisRequestService
     }
 
     // =====================================================================
-    //  단일 컬럼 결과값 업데이트 (분석결과입력용)
+    //  최근 N개월 의뢰 목록 조회 (수동 매칭 팝업용)
+    // =====================================================================
+    public static List<AnalysisRequestRecord> GetRecentRecords(int months = 1)
+    {
+        var list = new List<AnalysisRequestRecord>();
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            if (!DbConnectionFactory.TableExists(conn, "분석의뢰및결과")) return list;
+            using var cmd = conn.CreateCommand();
+            var cutoff = DateTime.Today.AddMonths(-months).ToString("yyyy-MM-dd");
+            cmd.CommandText = $@"
+                SELECT {DbConnectionFactory.RowId},
+                       COALESCE(`약칭`, ''),
+                       COALESCE(`시료명`, ''),
+                       COALESCE(`견적번호`, ''),
+                       COALESCE(`채취일자`, '')
+                FROM `분석의뢰및결과`
+                WHERE `채취일자` >= @cutoff
+                ORDER BY `채취일자` DESC";
+            cmd.Parameters.AddWithValue("@cutoff", cutoff);
+            using var rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                list.Add(new AnalysisRequestRecord
+                {
+                    Id       = Convert.ToInt32(rdr.GetValue(0)),
+                    약칭     = rdr.GetString(1),
+                    시료명   = rdr.GetString(2),
+                    접수번호 = rdr.GetString(3),
+                    채취일자 = rdr.GetString(4),
+                });
+            }
+        }
+        catch (Exception ex) { Log($"GetRecentRecords 오류: {ex.Message}"); }
+        return list;
+    }
+
+    // =====================================================================
+    //  단일 컬럼 결과값 업데이트 (분析결과입력용)
     // =====================================================================
     public static void UpdateResultValue(int rowId, string columnName, string value)
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();

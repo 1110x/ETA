@@ -1,7 +1,6 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Security.Principal;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.ReactiveUI;
@@ -12,26 +11,6 @@ class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        // ── 관리자 권한 자동 상승 (Windows 전용) ─────────────────────────
-        if (OperatingSystem.IsWindows() && !IsAdmin())
-        {
-            try
-            {
-                var exe = Process.GetCurrentProcess().MainModule?.FileName;
-                if (exe != null)
-                {
-                    Process.Start(new ProcessStartInfo(exe)
-                    {
-                        UseShellExecute = true,
-                        Verb = "runas",
-                        Arguments = string.Join(" ", args),
-                    });
-                }
-            }
-            catch { /* 사용자가 UAC 거부 시 일반 권한으로 계속 실행 */ }
-            return;
-        }
-
         // ── 로그 파일 설정 ── (~/Documents/ETA/Data/측정인.log)
         var logDir  = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
@@ -44,6 +23,9 @@ class Program
         var fileListener = new TextWriterTraceListener(logWriter, "측정인FileLog");
         Trace.Listeners.Add(fileListener);
         Trace.AutoFlush = true;
+
+        // CP949/EUC-KR 등 한국어 인코딩 활성화 (.NET 5+)
+        System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
         Debug.WriteLine($"========== ETA 시작 {DateTime.Now:yyyy-MM-dd HH:mm:ss} ==========");
 
@@ -76,18 +58,10 @@ class Program
         Debug.Flush();
     }
 
-    private static bool IsAdmin()
-    {
-        if (!OperatingSystem.IsWindows()) return false;
-        using var id = WindowsIdentity.GetCurrent();
-        return new WindowsPrincipal(id).IsInRole(WindowsBuiltInRole.Administrator);
-    }
-
     // Avalonia configuration, don't remove; also used by visual designer.
     public static AppBuilder BuildAvaloniaApp()
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithInterFont()
-            .LogToTrace()  // ← 이거 추가하면 Avalonia 내부 로그도 콘솔에 나옴
             .UseReactiveUI();
 }

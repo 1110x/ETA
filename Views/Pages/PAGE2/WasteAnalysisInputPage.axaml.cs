@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
@@ -10,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using ETA.Models;
 using ETA.Services;
 using ETA.Services.SERVICE1;
@@ -122,7 +124,7 @@ public partial class WasteAnalysisInputPage : UserControl
     private static readonly Dictionary<string, string[]> ModeCategoryKeys = new()
     {
         ["수질분석센터"] = new[] { "BOD", "TOC", "SS", "TN", "TP", "PHENOLS", "NHEX", "GCMS", "ICP", "IC", "LCMS", "CN", "AAS", "COLOR", "ECO" },
-        ["비용부담금/처리시설"] = new[] { "BOD", "TOC", "SS", "TN", "TP", "PHENOLS", "NHEX", "ECOLI" },
+        ["비용부담금/처리시설"] = Array.Empty<string>(),
     };
 
     private static readonly string[] AllEditableItems =
@@ -133,9 +135,15 @@ public partial class WasteAnalysisInputPage : UserControl
     private readonly Dictionary<string, string> _categoryFilePaths = new();
     private readonly Dictionary<string, string?> _categoryDocDates = new(); // 엑셀 문서 날짜
 
+    // ── 입력 진행 오버레이 ────────────────────────────────────────────────────
+    private Border?       _importOverlay;
+    private ProgressBar?  _importPb;
+    private TextBlock?    _importPbText;
+
     private class ExcelRow
     {
         public string 시료명 { get; set; } = "";
+        public string 원본시료명 { get; set; } = ""; // 수동매칭 전 원래 이름
         public string SN { get; set; } = "";
         public string Result { get; set; } = "";
         public string 시료량 { get; set; } = "";
@@ -173,13 +181,34 @@ public partial class WasteAnalysisInputPage : UserControl
         public string SCF_D1 { get; set; } = "";
         public string SCF_D2 { get; set; } = "";
         public string SCF_Result { get; set; } = "";
+        // N-Hexan 바탕시료 (행7)
+        public string 바탕시료_시료량 { get; set; } = "";
+        public string 바탕시료_건조전 { get; set; } = "";
+        public string 바탕시료_건조후 { get; set; } = "";
+        public string 바탕시료_무게차 { get; set; } = "";
+        public string 바탕시료_희석배수 { get; set; } = "";
+        public string 바탕시료_결과 { get; set; } = "";
         // 검량곡선 (UV VIS 등)
         public bool IsUVVIS { get; set; }
         public bool IsSS { get; set; }
+        public bool IsNHEX { get; set; }
         public string[] Standard_Points { get; set; } = Array.Empty<string>(); // 표준용액 농도
         public string Standard_Slope { get; set; } = "";   // 기울기 a
         public string Standard_Intercept { get; set; } = ""; // 절편 b
         public string[] Abs_Values { get; set; } = Array.Empty<string>(); // 흡광도 측정값
+        // TOC 전용
+        public bool IsTocNPOC { get; set; }
+        public bool IsTocTCIC { get; set; }
+        public string TocSlope_TC { get; set; } = "";
+        public string TocSlope_IC { get; set; } = "";
+        public string TocIntercept_TC { get; set; } = "";
+        public string TocIntercept_IC { get; set; } = "";
+        public string TocR2_TC { get; set; } = "";
+        public string TocR2_IC { get; set; } = "";
+        public string[] TocStdConcs    { get; set; } = []; // TC ST-1~5 공칭농도
+        public string[] TocStdAreas    { get; set; } = []; // TC ST-1~5 면적(AU)
+        public string[] TocStdConcs_IC { get; set; } = []; // IC ST-1~5 공칭농도 (TCIC 전용)
+        public string[] TocStdAreas_IC { get; set; } = []; // IC ST-1~5 면적(AU) (TCIC 전용)
         public string Abs_R2 { get; set; } = "";   // R²
     }
     private readonly Dictionary<string, ExcelDocInfo> _categoryDocInfo = new();
@@ -192,6 +221,16 @@ public partial class WasteAnalysisInputPage : UserControl
     private string? _selectedDate;
     private WasteSample? _selectedSample;
     private List<WasteSample> _currentSamples = new();
+
+    // 수동 매칭 팝업용 캐시 (LoadVerifiedGrid에서 설정)
+    private List<AnalysisRequestRecord>                        _matchingAnalysisRecords = new();
+    private List<(string 시설명, string 시료명, int 마스터Id)>? _matchingFacilityMasters;
+    private ManualMatchWindow?                                 _matchWindow; // 싱글턴
+
+    // 트리 lazy-load 상태
+    private List<string> _allMonths = new();
+    private readonly HashSet<string> _loadedMonths = new();  // 날짜까지 로드된 "yyyy-MM"
+    private readonly HashSet<int>    _loadedYears  = new();  // 월 노드까지 펼쳐진 연도
 
     private TopLevel? _topLevel;
 
@@ -206,6 +245,9 @@ public partial class WasteAnalysisInputPage : UserControl
     private int _selectedRowIndex = -1;
     private List<ExcelRow>? _currentExcelRows;
     private List<TextBlock> _rowIcons = new();
+    private List<(Border Track, Border Knob)> _rowToggles = new();
+    private List<StackPanel> _rowNameCells = new();
+    private StackPanel? _summaryBadgePanel;
     private ExcelRow? _currentEditExcelRow;
 
     public WasteAnalysisInputPage()
@@ -253,23 +295,26 @@ public partial class WasteAnalysisInputPage : UserControl
             TextShimmer.AttachIfNew(btn);
         }
 
-        // 파일첨부 버튼
-        var attachBtn = FsSM(new Button
+        // 파일첨부 버튼 — 수질분석센터 모드에만 표시 (비용부담금/처리시설은 서브메뉴 버튼 사용)
+        if (_inputMode != "비용부담금/처리시설")
         {
-            Content = "📂 파일첨부",
-            FontFamily = Font,
-            Padding = new Thickness(8, 4),
-            Margin = new Thickness(6, 2, 2, 2),
-            CornerRadius = new CornerRadius(4),
-            Cursor = new Cursor(StandardCursorType.Hand),
-            MinWidth = 80, MinHeight = 0,
-            Background = AppRes("BtnInfoBg"),
-            Foreground = AppRes("BtnInfoFg"),
-            HorizontalContentAlignment = HorizontalAlignment.Center,
-        });
-        attachBtn.Click += (_, _) => AttachExcel();
-        AnalysisItemButtons.Children.Add(attachBtn);
-        TextShimmer.AttachIfNew(attachBtn);
+            var attachBtn = FsSM(new Button
+            {
+                Content = "📂 파일첨부",
+                FontFamily = Font,
+                Padding = new Thickness(8, 4),
+                Margin = new Thickness(6, 2, 2, 2),
+                CornerRadius = new CornerRadius(4),
+                Cursor = new Cursor(StandardCursorType.Hand),
+                MinWidth = 80, MinHeight = 0,
+                Background = AppRes("BtnInfoBg"),
+                Foreground = AppRes("BtnInfoFg"),
+                HorizontalContentAlignment = HorizontalAlignment.Center,
+            });
+            attachBtn.Click += (_, _) => AttachExcel();
+            AnalysisItemButtons.Children.Add(attachBtn);
+            TextShimmer.AttachIfNew(attachBtn);
+        }
 
         UpdateCategoryButtonStyles();
     }
@@ -302,19 +347,58 @@ public partial class WasteAnalysisInputPage : UserControl
         var topLevel = _topLevel ?? TopLevel.GetTopLevel(this);
         if (topLevel == null) return;
 
+        // CSV/TXT(TOC 기기 파일)는 카테고리 무관하게 항상 허용
+        var fileTypes = new[]
+        {
+            new FilePickerFileType("분석결과 파일") { Patterns = new[] { "*.xlsx", "*.xls", "*.csv", "*.txt" } },
+        };
+
         var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
-            Title = $"📂 {match.Label} 분석결과 엑셀 첨부",
+            Title = $"📂 {(string.IsNullOrEmpty(match.Label) ? "TOC 기기" : match.Label)} 분석결과 첨부",
             AllowMultiple = false,
-            FileTypeFilter = new[]
-            {
-                new FilePickerFileType("Excel") { Patterns = new[] { "*.xlsx", "*.xls" } },
-            }
+            FileTypeFilter = fileTypes,
         });
 
         if (files.Count == 0) return;
         var path = files[0].TryGetLocalPath();
         if (string.IsNullOrEmpty(path)) return;
+
+        // CSV/TXT → TOC 기기 파일로 처리 (카테고리 무관)
+        var ext = System.IO.Path.GetExtension(path).ToLowerInvariant();
+        if (ext == ".csv" || ext == ".txt")
+        {
+            ParseTocInstrumentFile(path);
+            return;
+        }
+
+        // 파일명으로 카테고리 자동 감지
+        var fileName = System.IO.Path.GetFileNameWithoutExtension(path).ToUpperInvariant();
+        var detectedKey = fileName switch
+        {
+            var n when n.Contains("NHEXAN") || n.Contains("N-HEXAN") || n.Contains("NHEX") => "NHEX",
+            var n when n.Contains("PHENOL")                                                  => "PHENOLS",
+            var n when n.Contains("ECOLI") || n.Contains("대장균")                          => "ECOLI",
+            var n when n.Contains("BOD")                                                     => "BOD",
+            var n when n.Contains("TOC")                                                     => "TOC",
+            var n when n.Contains("SS")                                                      => "SS",
+            var n when n.Contains("T-N") || n.Contains("TN")                                => "TN",
+            var n when n.Contains("T-P") || n.Contains("TP")                                => "TP",
+            var n when n.Contains("GCMS")                                                   => "GCMS",
+            var n when n.Contains("ICP")                                                    => "ICP",
+            var n when n.Contains("LCMS")                                                   => "LCMS",
+            _                                                                                => null,
+        };
+
+        if (detectedKey != null && detectedKey != key)
+        {
+            key = detectedKey;
+            _activeCategory = key;
+            var detectedMatch = Categories.FirstOrDefault(c => c.Key == key);
+            _activeItems = detectedMatch.Items ?? Array.Empty<string>();
+            _categorySelected = true;
+            UpdateCategoryButtonStyles();
+        }
 
         // 엑셀 파싱
         var rows = new List<ExcelRow>();
@@ -325,10 +409,19 @@ public partial class WasteAnalysisInputPage : UserControl
             using var wb = new XLWorkbook(fs);
             var ws = wb.Worksheets.First();
 
-            // Row1 B열에서 문서 날짜 추출
-            var dateCellVal = ws.Cell(1, 2).GetString().Trim();
-            if (DateTime.TryParse(dateCellVal, out var parsedDocDate))
-                docDate = parsedDocDate.ToString("yyyy-MM-dd");
+            // Row1 B열에서 문서 날짜 추출 (텍스트 또는 Excel 날짜 서식 모두 처리)
+            {
+                var b1Cell = ws.Cell(1, 2);
+                DateTime parsedDocDate;
+                if (b1Cell.TryGetValue<DateTime>(out parsedDocDate))
+                    docDate = parsedDocDate.ToString("yyyy-MM-dd");
+                else
+                {
+                    var dateCellVal = b1Cell.GetString().Trim();
+                    if (DateTime.TryParse(dateCellVal, out parsedDocDate))
+                        docDate = parsedDocDate.ToString("yyyy-MM-dd");
+                }
+            }
 
             // 문서 헤더 정보 (행1~7)
             var docInfo = new ExcelDocInfo
@@ -342,18 +435,21 @@ public partial class WasteAnalysisInputPage : UserControl
             // 엑셀 내용 기반 형식 감지
             var row5A = ws.Cell(5, 1).GetString().Trim();
             var row7A = ws.Cell(7, 1).GetString().Trim();
-            bool isUVVIS = row5A.Equals("STANDARD", StringComparison.OrdinalIgnoreCase);
-            bool isSS = row7A.Contains("시료명");
+            // TOC NPOC도 A5="STANDARD"지만 key로 구분
+            bool isTocNPOC = key == "TOC" && row5A.Equals("STANDARD", StringComparison.OrdinalIgnoreCase);
+            bool isUVVIS   = !isTocNPOC && row5A.Equals("STANDARD", StringComparison.OrdinalIgnoreCase);
+            bool isTocTCIC = key == "TOC" && !isTocNPOC; // TC-IC: A5에 "Standard (TC)" 등 다른 값
+            bool isSS   = row7A.Contains("시료명");
+            bool isNHEX = key == "NHEX";
 
             // 감지된 형식과 선택한 카테고리 불일치 검증
             var uvvisKeys = new HashSet<string> { "TN", "TP", "PHENOLS" };
             string detectedFormat = isSS ? "SS" : isUVVIS ? "UVVIS" : "BOD";
-            // BOD 형식: BOD, TOC, NHEX 등 (SS, UVVIS 제외 나머지)
             bool formatMatch = detectedFormat switch
             {
-                "SS" => key == "SS",
-                "UVVIS" => uvvisKeys.Contains(key),
-                _ => key != "SS" && !uvvisKeys.Contains(key), // BOD 형식 계열
+                "SS"   => key == "SS",
+                "UVVIS"=> uvvisKeys.Contains(key),
+                _      => key != "SS" && !uvvisKeys.Contains(key), // BOD/NHEX/TOC 계열
             };
             if (!formatMatch)
             {
@@ -367,6 +463,25 @@ public partial class WasteAnalysisInputPage : UserControl
                 _categoryDocInfo[key] = docInfo;
                 // SS: A=시료명, B=시료량, C=전무게, D=후무게, E=전후무게차, F=희석배수, G=결과, H=SN
                 ParsePage(ws, rows, colName: 1, colResult: 7, colSN: 8, startRow: 8, itemAbbr: _activeItems.FirstOrDefault() ?? key);
+            }
+            else if (isNHEX)
+            {
+                // N-Hexan: A=구분, B=시료량, C=건조전무게, D=건조후무게, E=무게차, F=희석배수, G=농도, H=SN
+                // 행6=컬럼헤더, 행7=바탕시료, 데이터는 행8~
+                docInfo.IsNHEX = true;
+                // 바탕시료 (행7, 왼쪽 블록 기준)
+                docInfo.바탕시료_시료량  = ws.Cell(7, 2).GetString().Trim();
+                docInfo.바탕시료_건조전  = ws.Cell(7, 3).GetString().Trim();
+                docInfo.바탕시료_건조후  = ws.Cell(7, 4).GetString().Trim();
+                docInfo.바탕시료_무게차  = ws.Cell(7, 5).GetString().Trim();
+                docInfo.바탕시료_희석배수 = ws.Cell(7, 6).GetString().Trim();
+                var r7g = ws.Cell(7, 7).GetString().Trim();
+                if (double.TryParse(r7g, out var r7v)) r7g = r7v.ToString("F1");
+                docInfo.바탕시료_결과    = r7g;
+                _categoryDocInfo[key] = docInfo;
+                var nhexItem = _activeItems.FirstOrDefault() ?? key;
+                ParsePage(ws, rows, colName: 1, colResult: 7, colSN: 8, startRow: 8, itemAbbr: nhexItem);
+                ParsePage(ws, rows, colName: 9, colResult: 15, colSN: 16, startRow: 8, itemAbbr: nhexItem);
             }
             else if (isUVVIS)
             {
@@ -424,6 +539,26 @@ public partial class WasteAnalysisInputPage : UserControl
                 if (double.TryParse(r7r, out var r7v)) r7r = r7v.ToString("F4");
                 docInfo.SCF_Result = r7r;
                 _categoryDocInfo[key] = docInfo;
+
+                // TOC 검정곡선 파싱
+                if (isTocNPOC)
+                {
+                    // NPOC: 행5 G=기울기(a), H=절편(b)
+                    docInfo.IsTocNPOC  = true;
+                    docInfo.TocSlope_TC     = ws.Cell(5, 7).GetString().Trim();
+                    docInfo.TocIntercept_TC = ws.Cell(5, 8).GetString().Trim();
+                    _tocInstrumentMethod = "NPOC";
+                }
+                else if (isTocTCIC)
+                {
+                    // TC-IC: 행5=Standard(TC) G=기울기, H=절편 / 행7=Standard(IC) G=기울기, H=절편
+                    docInfo.IsTocTCIC       = true;
+                    docInfo.TocSlope_TC     = ws.Cell(5, 7).GetString().Trim();
+                    docInfo.TocIntercept_TC = ws.Cell(5, 8).GetString().Trim();
+                    docInfo.TocSlope_IC     = ws.Cell(7, 7).GetString().Trim();
+                    docInfo.TocIntercept_IC = ws.Cell(7, 8).GetString().Trim();
+                    _tocInstrumentMethod = "TCIC";
+                }
 
                 var bodItem = _activeItems.FirstOrDefault() ?? key;
                 ParsePage(ws, rows, colName: 1, colResult: 7, colSN: 8, startRow: 8, itemAbbr: bodItem);
@@ -484,86 +619,312 @@ public partial class WasteAnalysisInputPage : UserControl
     {
         DateTreeView.Items.Clear();
         _selectedDate = null;
+        _loadedMonths.Clear();
+        _loadedYears.Clear();
         ListPanelChanged?.Invoke(null);
         EditPanelChanged?.Invoke(null);
 
+        LoadProgressBorder.IsVisible = true;
+        LoadProgressBar.IsIndeterminate = true;
+        LoadProgressText.Text = "날짜 목록 불러오는 중...";
+
         try
         {
-            // DB 조회 전부 백그라운드에서 실행
-            var byMonth = await System.Threading.Tasks.Task.Run(() =>
-            {
-                var dates = WasteSampleService.GetDates();
-                return dates
-                    .GroupBy(d => d[..7])
-                    .OrderByDescending(g => g.Key)
-                    .Select(g => (
-                        Month: g.Key,
-                        Dates: g.OrderByDescending(x => x)
-                                .Select(d => (Date: d, Samples: WasteSampleService.GetByDate(d)))
-                                .ToList()
-                    ))
-                    .ToList();
-            });
+            _allMonths = await System.Threading.Tasks.Task.Run(() => WasteSampleService.GetMonths());
 
-            // UI 노드 생성은 메인 스레드에서
-            foreach (var month in byMonth)
+            var today = DateTime.Today;
+            string thisYM = today.ToString("yyyy-MM");
+            string lastYM = today.AddMonths(-1).ToString("yyyy-MM");
+            int currentYear = today.Year;
+
+            var byYear = _allMonths
+                .GroupBy(m => int.Parse(m[..4]))
+                .OrderByDescending(g => g.Key)
+                .ToList();
+
+            foreach (var yearGroup in byYear)
             {
-                var monthNode = MakeMonthNode(month.Month, month.Dates.Count);
-                foreach (var (d, samples) in month.Dates)
-                    monthNode.Items.Add(MakeDateNode(d, samples));
-                monthNode.IsExpanded = true;
-                DateTreeView.Items.Add(monthNode);
+                int year = yearGroup.Key;
+                if (year == currentYear)
+                {
+                    // 이번 연도 월은 직접 표시
+                    foreach (var ym in yearGroup.OrderByDescending(m => m))
+                    {
+                        bool isActive = ym == thisYM || ym == lastYM;
+                        var monthNode = MakeMonthNode(ym, enabled: isActive);
+                        DateTreeView.Items.Add(monthNode);
+
+                        if (isActive)
+                        {
+                            await LoadMonthDatesIntoNode(monthNode, ym);
+                            monthNode.IsExpanded = true;
+                        }
+                    }
+                }
+                else
+                {
+                    // 지난 연도는 연도 노드만
+                    DateTreeView.Items.Add(MakeYearNode(year));
+                }
             }
         }
         catch { }
+        finally
+        {
+            LoadProgressBorder.IsVisible = false;
+            LoadProgressBar.IsIndeterminate = false;
+        }
+    }
+
+    // 특정 월의 날짜들을 노드에 채워 넣기 (진행바 표시)
+    private async System.Threading.Tasks.Task LoadMonthDatesIntoNode(TreeViewItem monthNode, string ym)
+    {
+        if (_loadedMonths.Contains(ym)) return;
+
+        LoadProgressBorder.IsVisible = true;
+        LoadProgressBar.IsIndeterminate = true;
+        LoadProgressText.Text = $"{ym} 데이터 연결 중...";
+
+        try
+        {
+            bool isBilling = _inputMode == "비용부담금/처리시설";
+            var dates = await System.Threading.Tasks.Task.Run(() =>
+                WasteSampleService.GetDatesByMonth(ym));
+
+            // count badge 갱신 (월 헤더)
+            if (monthNode.Header is StackPanel sp && sp.Children.Count >= 2
+                && sp.Children[1] is Border badge
+                && badge.Child is TextBlock badgeTb)
+            {
+                badgeTb.Text = dates.Count.ToString();
+            }
+
+            foreach (var dateStr in dates)
+            {
+                var (samples, facilityStatus) = await System.Threading.Tasks.Task.Run(() =>
+                {
+                    var s = WasteSampleService.GetByDate(dateStr);
+                    var f = isBilling
+                        ? FacilityResultService.GetFillStatusForDate(dateStr)
+                        : default;
+                    return (s, f);
+                });
+                monthNode.Items.Add(MakeDateNode(dateStr, samples, facilityStatus));
+            }
+
+            _loadedMonths.Add(ym);
+        }
+        finally
+        {
+            LoadProgressBorder.IsVisible = false;
+            LoadProgressBar.IsIndeterminate = false;
+        }
     }
 
     // =========================================================================
-    // 트리뷰 노드
+    // 트리뷰 노드 빌더
     // =========================================================================
-    private static TreeViewItem MakeMonthNode(string ym, int count)
+    private static TreeViewItem MakeYearNode(int year)
+    {
+        var header = new StackPanel
+        {
+            Orientation = Orientation.Horizontal, Spacing = 6,
+            Children =
+            {
+                new TextBlock
+                {
+                    Text = $"📁  {year}년",
+                    FontWeight = FontWeight.SemiBold,
+                    FontFamily = Font, Foreground = AppTheme.FgMuted,
+                    VerticalAlignment = VerticalAlignment.Center,
+                }.BindMD(),
+            }
+        };
+        var node = new TreeViewItem
+        {
+            Tag    = $"YEAR:{year}",
+            Header = header,
+        };
+        // 펼치기 전 placeholder (자식이 없으면 화살표 안 보임)
+        node.Items.Add(new TreeViewItem { Header = "" });
+        return node;
+    }
+
+    private static TreeViewItem MakeMonthNode(string ym, int count = 0, bool enabled = true)
     {
         DateTime.TryParse(ym + "-01", out var d);
-        return new TreeViewItem
+        var textBrush  = enabled ? AppTheme.FgMuted : AppTheme.FgDimmed;
+        var badgeBrush = enabled ? AppTheme.BorderSubtle : AppTheme.BorderSubtle;
+
+        var monthNode = new TreeViewItem
         {
-            IsExpanded = true,
-            Header = new StackPanel
+            Tag        = $"YM:{ym}",
+            IsEnabled  = true,   // 클릭 허용 (비활성달도 클릭으로 로드)
+            Header     = new StackPanel
             {
                 Orientation = Orientation.Horizontal, Spacing = 6,
                 Children =
                 {
                     new TextBlock
                     {
-                        Text = $"📅  {d.Year}년 {d.Month}월",
+                        Text = enabled
+                            ? $"📅  {d.Year}년 {d.Month}월"
+                            : $"🔒  {d.Year}년 {d.Month}월",
                         FontWeight = FontWeight.SemiBold,
-                        FontFamily = Font, Foreground = AppTheme.FgMuted,
+                        FontFamily = Font, Foreground = textBrush,
                         VerticalAlignment = VerticalAlignment.Center,
+                        Opacity = enabled ? 1.0 : 0.45,
                     }.BindMD(),
                     new Border
                     {
-                        Background = AppTheme.BorderSubtle, CornerRadius = new CornerRadius(8),
-                        Padding = new Thickness(5,1),
+                        Background = badgeBrush, CornerRadius = new CornerRadius(8),
+                        Padding = new Thickness(5, 1),
                         Child = new TextBlock
                         {
-                            Text = count.ToString(),
+                            Text = count == 0 ? "..." : count.ToString(),
                             FontFamily = Font, Foreground = AppTheme.FgDimmed,
                         }.BindXS()
                     }
                 }
             }
         };
+        return monthNode;
     }
 
-    private static TreeViewItem MakeDateNode(string dateStr, List<WasteSample> samples)
+    private TreeViewItem MakeDateNode(string dateStr, List<WasteSample> samples,
+        (bool BOD, bool TOC, bool SS, bool TN, bool TP, bool 대장균) facilityStatus = default)
     {
         DateTime.TryParse(dateStr, out var d);
         string dow = d == DateTime.MinValue ? "" : $" ({DayOfWeekKr(d)})";
-        string label = d == DateTime.MinValue ? dateStr : $"🗓  {d.Month}/{d.Day}{dow}";
+        string label = d == DateTime.MinValue ? dateStr : $"🗓  {d.Month:D2}/{d.Day:D2}{dow}";
 
-        int total = samples.Count;
-        int filled = samples.Count(s =>
-            !string.IsNullOrWhiteSpace(s.BOD) || !string.IsNullOrWhiteSpace(s.TOC) ||
-            !string.IsNullOrWhiteSpace(s.SS));
+        bool isBilling = _inputMode == "비용부담금/처리시설";
+
+        Control statusControl;
+        if (isBilling)
+        {
+            // 뱃지 letter → 카테고리 키 매핑
+            static string LetterToKey(string letter) => letter switch
+            {
+                "B" => "BOD", "T" => "TOC", "S" => "SS",
+                "N" => "TN",  "P" => "TP",  "H" => "PHENOLS",
+                "X" => "NHEX", _ => ""
+            };
+
+            // 라벨 달린 원형 뱃지 (클릭 가능)
+            Border Dot(bool filled, string letter, bool clickable = true) {
+                var border = new Border
+                {
+                    Width = 14, Height = 14,
+                    Margin = new Thickness(1, 0),
+                    CornerRadius = new CornerRadius(7),
+                    Background = filled
+                        ? new SolidColorBrush(Color.Parse("#22c55e"))
+                        : new SolidColorBrush(Colors.Transparent),
+                    BorderBrush = filled
+                        ? new SolidColorBrush(Colors.Transparent)
+                        : new SolidColorBrush(Color.Parse("#888888")),
+                    BorderThickness = new Thickness(1),
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Child = new TextBlock
+                    {
+                        Text = letter,
+                        FontSize = 8,
+                        FontWeight = FontWeight.Bold,
+                        FontFamily = Font,
+                        Foreground = filled
+                            ? new SolidColorBrush(Colors.White)
+                            : new SolidColorBrush(Color.Parse("#888888")),
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center,
+                    }
+                };
+                if (clickable)
+                {
+                    border.Cursor = new Cursor(StandardCursorType.Hand);
+                    border.PointerPressed += (_, e) =>
+                    {
+                        e.Handled = true; // TreeView 선택 이벤트 방지
+                        var catKey = LetterToKey(letter);
+                        if (string.IsNullOrEmpty(catKey)) return;
+                        _activeCategory = catKey;
+                        var catMatch = Categories.FirstOrDefault(c => c.Key == catKey);
+                        _activeItems = catMatch.Items ?? Array.Empty<string>();
+                        _categorySelected = true;
+                        _selectedDate = dateStr;
+                        UpdateCategoryButtonStyles();
+                        LoadSampleGrid(dateStr);
+                        EditPanelChanged?.Invoke(null);
+                    };
+                    border.PointerEntered += (_, _) =>
+                    {
+                        border.Opacity = 0.7;
+                    };
+                    border.PointerExited += (_, _) =>
+                    {
+                        border.Opacity = 1.0;
+                    };
+                }
+                return border;
+            }
+
+            bool hasSamples = samples.Count > 0;
+            bool bodOk  = hasSamples && samples.Any(s => !string.IsNullOrWhiteSpace(s.BOD));
+            bool tocOk  = hasSamples && samples.Any(s => !string.IsNullOrWhiteSpace(s.TOC));
+            bool ssOk   = hasSamples && samples.Any(s => !string.IsNullOrWhiteSpace(s.SS));
+            bool tnOk   = hasSamples && samples.Any(s => !string.IsNullOrWhiteSpace(s.TN));
+            bool tpOk   = hasSamples && samples.Any(s => !string.IsNullOrWhiteSpace(s.TP));
+            bool pheOk  = hasSamples && samples.Any(s => !string.IsNullOrWhiteSpace(s.Phenols));
+            bool nhOk   = hasSamples && samples.Any(s => !string.IsNullOrWhiteSpace(s.NHexan));
+
+            var dotsRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 1, VerticalAlignment = VerticalAlignment.Center };
+
+            dotsRow.Children.Add(Dot(bodOk,  "B"));
+            dotsRow.Children.Add(Dot(tocOk,  "T"));
+            dotsRow.Children.Add(Dot(ssOk,   "S"));
+            dotsRow.Children.Add(Dot(tnOk,   "N"));
+            dotsRow.Children.Add(Dot(tpOk,   "P"));
+            dotsRow.Children.Add(Dot(pheOk,  "H"));
+            dotsRow.Children.Add(Dot(nhOk,   "X"));
+
+            // 처리시설 구분선 + B T S N P e 뱃지
+            dotsRow.Children.Add(new Border
+            {
+                Width = 2, Height = 12, Margin = new Thickness(5, 0),
+                Background = new SolidColorBrush(Color.Parse("#aaaaaa")),
+                CornerRadius = new CornerRadius(1),
+                VerticalAlignment = VerticalAlignment.Center,
+            });
+            dotsRow.Children.Add(Dot(facilityStatus.BOD, "B", false));
+            dotsRow.Children.Add(Dot(facilityStatus.TOC, "T", false));
+            dotsRow.Children.Add(Dot(facilityStatus.SS,  "S", false));
+            dotsRow.Children.Add(Dot(facilityStatus.TN,  "N", false));
+            dotsRow.Children.Add(Dot(facilityStatus.TP,  "P", false));
+            dotsRow.Children.Add(Dot(facilityStatus.대장균, "e", false));
+
+            statusControl = dotsRow;
+        }
+        else
+        {
+            int total  = samples.Count;
+            int filled = samples.Count(s =>
+                !string.IsNullOrWhiteSpace(s.BOD) || !string.IsNullOrWhiteSpace(s.TOC) ||
+                !string.IsNullOrWhiteSpace(s.SS));
+            statusControl = new Border
+            {
+                Background = filled == total && total > 0
+                    ? AppTheme.BgActiveGreen : AppTheme.BorderSubtle,
+                CornerRadius = new CornerRadius(8),
+                Padding = new Thickness(5, 1),
+                Child = new TextBlock
+                {
+                    Text = $"{filled}/{total}",
+                    FontFamily = Font,
+                    Foreground = filled == total && total > 0
+                        ? AppTheme.FgSuccess : AppTheme.FgDimmed,
+                }.BindXS()
+            };
+        }
 
         var tvi = new TreeViewItem
         {
@@ -579,20 +940,7 @@ public partial class WasteAnalysisInputPage : UserControl
                         FontFamily = Font, Foreground = AppTheme.FgPrimary,
                         VerticalAlignment = VerticalAlignment.Center,
                     }.BindSM(),
-                    new Border
-                    {
-                        Background = filled == total && total > 0
-                            ? AppTheme.BgActiveGreen : AppTheme.BorderSubtle,
-                        CornerRadius = new CornerRadius(8),
-                        Padding = new Thickness(5,1),
-                        Child = new TextBlock
-                        {
-                            Text = $"{filled}/{total}",
-                            FontFamily = Font,
-                            Foreground = filled == total && total > 0
-                                ? AppTheme.FgSuccess : AppTheme.FgDimmed,
-                        }.BindXS()
-                    }
+                    statusControl,
                 }
             }
         };
@@ -613,23 +961,53 @@ public partial class WasteAnalysisInputPage : UserControl
     };
 
     // =========================================================================
-    // 트리뷰 선택 → Show2
+    // 트리뷰 선택 → 연도 펼치기 / 월 lazy 로드 / 날짜 선택
     // =========================================================================
-    private void DateTreeView_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+    private async void DateTreeView_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         if (DateTreeView.SelectedItem is not TreeViewItem tvi) return;
-        if (tvi.Tag is not string dateStr) return;
+        if (tvi.Tag is not string tag) return;
 
+        // ── 연도 노드 클릭 → 해당 연도의 월 목록 펼치기 ──────────────────
+        if (tag.StartsWith("YEAR:"))
+        {
+            int year = int.Parse(tag[5..]);
+            if (!_loadedYears.Contains(year))
+            {
+                tvi.Items.Clear(); // placeholder 제거
+                foreach (var ym in _allMonths.Where(m => m.StartsWith(year + "-")).OrderByDescending(m => m))
+                    tvi.Items.Add(MakeMonthNode(ym, enabled: false));
+                _loadedYears.Add(year);
+            }
+            tvi.IsExpanded = true;
+            return;
+        }
+
+        // ── 월 노드 클릭 → 해당 월 날짜 lazy 로드 ────────────────────────
+        if (tag.StartsWith("YM:"))
+        {
+            string ym = tag[3..];
+            if (!_loadedMonths.Contains(ym))
+                await LoadMonthDatesIntoNode(tvi, ym);
+            tvi.IsExpanded = true;
+            return;
+        }
+
+        // ── 날짜 노드 클릭 → Show2 업데이트 ──────────────────────────────
+        string dateStr = tag;
         _selectedDate = dateStr;
         _selectedSample = null;
 
-        // 카테고리 미선택 시 데이터 로드 안함
-        if (!_categorySelected) return;
+        // 비용부담금 모드는 카테고리 선택 없이 날짜 클릭시 바로 그리드 표시
+        bool billingMode = _inputMode == "비용부담금/처리시설";
+        if (!_categorySelected && !billingMode) return;
 
         _currentSamples = WasteSampleService.GetByDate(dateStr);
 
-        // 첨부 파일이 있으면 검증 그리드, 없으면 일반 그리드
-        if (_categoryExcelData.ContainsKey(_activeCategory))
+        // 비용부담금/처리시설 모드는 날짜 클릭 시 항상 시료 그리드 표시 (엑셀 첨부 여부 무시)
+        if (billingMode)
+            LoadSampleGrid(dateStr);
+        else if (_categoryExcelData.ContainsKey(_activeCategory))
             LoadVerifiedGrid();
         else
             LoadSampleGrid(dateStr);
@@ -693,10 +1071,12 @@ public partial class WasteAnalysisInputPage : UserControl
         {
             try { analysisRecords.AddRange(AnalysisRequestService.GetByDate(dt)); } catch { }
         }
+        _matchingAnalysisRecords = analysisRecords;
 
         // 처리시설 마스터 시료명 로드
         List<(string 시설명, string 시료명, int 마스터Id)>? facilityMasters = null;
         try { facilityMasters = FacilityResultService.GetAllMasterSamples(); } catch { }
+        _matchingFacilityMasters = facilityMasters;
 
         // 3개 테이블 동시 매칭
         foreach (var row in excelRows)
@@ -754,6 +1134,7 @@ public partial class WasteAnalysisInputPage : UserControl
             // 미매칭
             row.Source = SourceType.미분류;
             row.Status = _currentSamples.Count > 0 || analysisRecords.Count > 0
+                         || (_matchingFacilityMasters?.Count ?? 0) > 0
                 ? MatchStatus.미매칭 : MatchStatus.대기;
         }
 
@@ -761,7 +1142,7 @@ public partial class WasteAnalysisInputPage : UserControl
 
         // 헤더
         var catLabel = Categories.FirstOrDefault(c => c.Key == _activeCategory).Label ?? _activeCategory;
-        string fileName = _categoryFilePaths.TryGetValue(_activeCategory, out var fp) ? Path.GetFileName(fp) : "";
+        string fileName = _categoryFilePaths.TryGetValue(_activeCategory, out var fp) ? System.IO.Path.GetFileName(fp) : "";
         // B1 분석일 우선, 없으면 채수일 목록
         string dateLabel = !string.IsNullOrEmpty(docDateStr)
             ? $"분석일: {docDateStr}"
@@ -776,20 +1157,8 @@ public partial class WasteAnalysisInputPage : UserControl
 
         // 요약 배지 구성
         var badgePanel = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 12 };
-        if (pending > 0)
-            badgePanel.Children.Add(FsXS(new TextBlock { Text = $"⚪ {pending} 대기", FontFamily = Font,
-                Foreground = AppRes("FgMuted") }));
-        if (matchNew > 0)
-            badgePanel.Children.Add(FsXS(new TextBlock { Text = $"🟢 {matchNew} 입력가능", FontFamily = Font,
-                Foreground = AppRes("ThemeFgSuccess") }));
-        if (matchExist > 0)
-            badgePanel.Children.Add(FsXS(new TextBlock { Text = $"🟡 {matchExist} 자료있음", FontFamily = Font,
-                Foreground = AppRes("ThemeFgWarn") }));
-        if (noMatch > 0)
-            badgePanel.Children.Add(FsXS(new TextBlock { Text = $"🔴 {noMatch} 중복확인", FontFamily = Font,
-                Foreground = AppRes("ThemeFgDanger") }));
-        badgePanel.Children.Add(FsXS(new TextBlock { Text = $"합계 {excelRows.Count}건", FontFamily = Font,
-            Foreground = AppRes("FgMuted") }));
+        _summaryBadgePanel = badgePanel;
+        RebuildBadge(excelRows);
 
         // 문서 정보 패널
         var headerContent = new StackPanel { Spacing = 4 };
@@ -803,6 +1172,10 @@ public partial class WasteAnalysisInputPage : UserControl
         // 문서 헤더 — 식종수/SCF 또는 검량곡선 테이블
         bool isUVVISMode = false;
         bool isSSMode = false;
+        bool isNHEXMode = false;
+        bool isTocMode = false;
+
+        // TOC 검량선 수식은 나중에 docInfo 확인 후 추가 (아래 isTocMode 설정 이후)
 
         // 컬럼 너비 배열 (헤더+식종수+데이터 모든 행 동기화)
         string colDefs = "32,50,90,190,60,60,60,60,50,75,80"; // BOD 기본
@@ -830,7 +1203,25 @@ public partial class WasteAnalysisInputPage : UserControl
         if (_categoryDocInfo.TryGetValue(_activeCategory, out var docInfo))
         {
             isUVVISMode = docInfo.IsUVVIS;
-            isSSMode = docInfo.IsSS;
+            isSSMode    = docInfo.IsSS;
+            isNHEXMode  = docInfo.IsNHEX;
+            isTocMode   = docInfo.IsTocNPOC || docInfo.IsTocTCIC;
+
+            // TOC y = ax + b 수식을 분析일 바로 아래 표시
+            if (isTocMode && !string.IsNullOrEmpty(docInfo.TocSlope_TC))
+            {
+                string r2str = !string.IsNullOrEmpty(docInfo.TocR2_TC) ? $"    R²={docInfo.TocR2_TC}" : "";
+                string formula = docInfo.IsTocTCIC
+                    ? $"TC:  y = {docInfo.TocSlope_TC}x + {docInfo.TocIntercept_TC}{r2str}    |    IC:  y = {docInfo.TocSlope_IC}x + {docInfo.TocIntercept_IC}"
+                    : $"y = {docInfo.TocSlope_TC}x + {docInfo.TocIntercept_TC}{r2str}";
+                headerContent.Children.Add(FsXS(new TextBlock
+                {
+                    Text = formula, FontFamily = Font,
+                    Foreground = AppRes("ThemeFgWarn"),
+                    FontWeight = FontWeight.SemiBold,
+                    Margin = new Thickness(0, 1, 0, 0),
+                }));
+            }
             if (isSSMode)
             {
                 colDefs = "32,50,90,190,60,60,60,60,50,75,80";
@@ -892,6 +1283,97 @@ public partial class WasteAnalysisInputPage : UserControl
                                     docInfo.Abs_Values.ElementAtOrDefault(2) ?? "",
                                     docInfo.Abs_Values.ElementAtOrDefault(3) ?? "",
                                     $"R²={docInfo.Abs_R2}", "" }, "ThemeFgInfo"));
+                }
+            }
+            else if (isNHEXMode)
+            {
+                bool hasBlanks = !string.IsNullOrWhiteSpace(docInfo.바탕시료_결과)
+                              || !string.IsNullOrWhiteSpace(docInfo.바탕시료_건조전);
+                if (hasBlanks)
+                {
+                    docTbl = new StackPanel { Spacing = 0 };
+                    var hdr = MakeRowGrid();
+                    hdr.MinHeight = 26; hdr.Background = AppRes("GridHeaderBg");
+                    var hdrLabel = FsBase(new TextBlock { Text = "구분", FontFamily = Font,
+                        FontWeight = FontWeight.SemiBold, Foreground = AppRes("FgMuted"),
+                        VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(6, 0) });
+                    Grid.SetColumn(hdrLabel, 0); Grid.SetColumnSpan(hdrLabel, 4);
+                    hdr.Children.Add(hdrLabel);
+                    string[] nhexCols = { "시료량", "건조전무게", "건조후무게", "무게차", "희석배수", "농도", "" };
+                    for (int c = 0; c < nhexCols.Length; c++)
+                    {
+                        var tb = FsBase(new TextBlock { Text = nhexCols[c], FontFamily = Font,
+                            FontWeight = FontWeight.SemiBold, Foreground = AppRes("FgMuted"),
+                            VerticalAlignment = VerticalAlignment.Center,
+                            HorizontalAlignment = HorizontalAlignment.Center,
+                            Margin = new Thickness(4, 0) });
+                        Grid.SetColumn(tb, 4 + c); hdr.Children.Add(tb);
+                    }
+                    docTbl.Children.Add(new Border { Child = hdr,
+                        BorderBrush = AppRes("ThemeBorderSubtle"), BorderThickness = new Thickness(0,0,0,1) });
+                    docTbl.Children.Add(BuildDocRowUnified(colDefs, "바탕시료",
+                        new[] { docInfo.바탕시료_시료량, docInfo.바탕시료_건조전, docInfo.바탕시료_건조후,
+                                docInfo.바탕시료_무게차, docInfo.바탕시료_희석배수, docInfo.바탕시료_결과, "" }, "ThemeFgInfo"));
+                }
+            }
+            else if (isTocMode)
+            {
+                bool hasCal = !string.IsNullOrWhiteSpace(docInfo.TocSlope_TC);
+                if (hasCal)
+                {
+                    // 표준점 개수에 맞춰 ST-1~N 전용 colDefs (여백 없이 딱 맞게)
+                    int stCount = Math.Max(docInfo.TocStdConcs.Length, 2);
+                    stCount = Math.Min(stCount, 5);
+                    string tocDocColDefs = "32,50,90,190," + string.Join(",", Enumerable.Repeat("60", stCount));
+
+                    docTbl = new StackPanel { Spacing = 0 };
+                    var hdr = new Grid { ColumnDefinitions = new ColumnDefinitions(tocDocColDefs),
+                        MinHeight = 26, Background = AppRes("GridHeaderBg") };
+                    var hdrLabel = FsBase(new TextBlock { Text = "구분", FontFamily = Font,
+                        FontWeight = FontWeight.SemiBold, Foreground = AppRes("FgMuted"),
+                        VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(6, 0) });
+                    Grid.SetColumn(hdrLabel, 0); Grid.SetColumnSpan(hdrLabel, 4);
+                    hdr.Children.Add(hdrLabel);
+                    for (int c = 0; c < stCount; c++)
+                    {
+                        var tb = FsBase(new TextBlock { Text = $"ST-{c + 1}", FontFamily = Font,
+                            FontWeight = FontWeight.SemiBold, Foreground = AppRes("FgMuted"),
+                            VerticalAlignment = VerticalAlignment.Center,
+                            HorizontalAlignment = HorizontalAlignment.Center,
+                            Margin = new Thickness(4, 0) });
+                        Grid.SetColumn(tb, 4 + c); hdr.Children.Add(tb);
+                    }
+                    docTbl.Children.Add(new Border { Child = hdr,
+                        BorderBrush = AppRes("ThemeBorderSubtle"), BorderThickness = new Thickness(0,0,0,1) });
+
+                    int nSt = Math.Min(docInfo.TocStdConcs.Length, stCount);
+                    string[] stdRow = new string[stCount];
+                    string[] auRow  = new string[stCount];
+                    for (int si = 0; si < nSt; si++)
+                    {
+                        stdRow[si] = docInfo.TocStdConcs[si];
+                        auRow[si]  = si < docInfo.TocStdAreas.Length ? docInfo.TocStdAreas[si] : "";
+                    }
+                    string tcLabel = docInfo.IsTocTCIC ? "TC STANDARD" : "STANDARD";
+                    docTbl.Children.Add(BuildDocRowUnified(tocDocColDefs, tcLabel, stdRow, "ThemeFgWarn"));
+                    if (docInfo.TocStdAreas.Length > 0)
+                        docTbl.Children.Add(BuildDocRowUnified(tocDocColDefs, "TC AU", auRow, "ThemeFgInfo"));
+
+                    // TCIC 전용: IC 검량선 행
+                    if (docInfo.IsTocTCIC && docInfo.TocStdConcs_IC.Length > 0)
+                    {
+                        int nIc = Math.Min(docInfo.TocStdConcs_IC.Length, stCount);
+                        string[] icStdRow = new string[stCount];
+                        string[] icAuRow  = new string[stCount];
+                        for (int si = 0; si < nIc; si++)
+                        {
+                            icStdRow[si] = docInfo.TocStdConcs_IC[si];
+                            icAuRow[si]  = si < docInfo.TocStdAreas_IC.Length ? docInfo.TocStdAreas_IC[si] : "";
+                        }
+                        docTbl.Children.Add(BuildDocRowUnified(tocDocColDefs, "IC STANDARD", icStdRow, "ThemeFgWarn"));
+                        if (docInfo.TocStdAreas_IC.Length > 0)
+                            docTbl.Children.Add(BuildDocRowUnified(tocDocColDefs, "IC AU", icAuRow, "ThemeFgInfo"));
+                    }
                 }
             }
             else
@@ -974,8 +1456,12 @@ public partial class WasteAnalysisInputPage : UserControl
 
         string[] hLabels = isSSMode
             ? new[] { "", "입력", "SN", "시료명", "시료량", "전무게", "후무게", "무게차", "희석배수", "결과값", "시료구분" }
+            : isNHEXMode
+            ? new[] { "", "입력", "SN", "시료명", "시료량", "건조전무게", "건조후무게", "무게차", "희석배수", "결과값", "시료구분" }
             : isUVVISMode
             ? new[] { "", "입력", "SN", "시료명", "시료량", "흡광도", "희석배수", "계산농도", "결과값", "시료구분" }
+            : isTocMode
+            ? new[] { "", "입력", "SN", "시료명", "시료량", "면적", "", "농도", "희석배수", "결과값", "시료구분" }
             : new[] { "", "입력", "SN", "시료명", "시료량", "D1", "D2", "f(x/y)", "P", "결과값", "시료구분" };
         int detailStart = 4, detailEnd = isUVVISMode ? 7 : 8;
         for (int c = 0; c < hLabels.Length; c++)
@@ -1030,7 +1516,9 @@ public partial class WasteAnalysisInputPage : UserControl
         });
 
         // 데이터 행
-        _rowIcons = new List<TextBlock>();
+        _rowIcons   = new List<TextBlock>();
+        _rowToggles = new List<(Border, Border)>();
+        _rowNameCells = new List<StackPanel>();
         for (int i = 0; i < excelRows.Count; i++)
         {
             var row = excelRows[i];
@@ -1078,7 +1566,7 @@ public partial class WasteAnalysisInputPage : UserControl
 
             toggleTrack.PointerPressed += (_, _) =>
             {
-                if (capturedRow.Status == MatchStatus.미매칭) return;
+                if (capturedRow.Status == MatchStatus.미매칭 || capturedRow.Status == MatchStatus.대기) return;
                 capturedRow.Enabled = !capturedRow.Enabled;
                 toggleTrack.Background = capturedRow.Enabled ? AppRes("BtnPrimaryBg") : AppRes("ThemeBorderMuted");
                 toggleKnob.Margin = new Thickness(capturedRow.Enabled ? 18 : 2, 2, 0, 2);
@@ -1094,6 +1582,7 @@ public partial class WasteAnalysisInputPage : UserControl
             _rowIcons.Add(iconTb);
 
             // 토글 스위치 (col 1)
+            _rowToggles.Add((toggleTrack, toggleKnob));
             var toggleWrap = new Border
             {
                 Child = toggleTrack,
@@ -1115,17 +1604,25 @@ public partial class WasteAnalysisInputPage : UserControl
             Grid.SetColumn(snTb, 2);
             rowGrid.Children.Add(snTb);
 
-            // 시료명
-            var nameTb = FsBase(new TextBlock
+            // 시료명 (원본시료명 있으면 아래에 작게 표시)
+            var nameCell = new StackPanel { VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(4, 0) };
+            nameCell.Children.Add(FsBase(new TextBlock
             {
                 Text = row.시료명, FontFamily = Font,
                 Foreground = AppRes("AppFg"),
-                VerticalAlignment = VerticalAlignment.Center,
                 TextTrimming = TextTrimming.CharacterEllipsis,
-                Margin = new Thickness(4, 0),
-            });
-            Grid.SetColumn(nameTb, 3);
-            rowGrid.Children.Add(nameTb);
+            }));
+            if (!string.IsNullOrEmpty(row.원본시료명))
+                nameCell.Children.Add(new TextBlock
+                {
+                    Text = $"↳ {row.원본시료명}", FontFamily = Font,
+                    FontSize = AppTheme.FontXS,
+                    Foreground = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#ffe066")),
+                    TextTrimming = TextTrimming.CharacterEllipsis,
+                });
+            _rowNameCells.Add(nameCell);
+            Grid.SetColumn(nameCell, 3);
+            rowGrid.Children.Add(nameCell);
 
             // 기초정보: UV VIS는 시료량/흡광도/희석배수/계산농도 (4열), BOD는 시료량/D1/D2/f(x/y)/P (5열)
             string[] infoVals = isUVVISMode
@@ -1213,16 +1710,50 @@ public partial class WasteAnalysisInputPage : UserControl
         root.Focusable = true;
         root.KeyDown += OnGridKeyDown;
 
+        // ── 입력 진행 오버레이 (ZIndex로 전체 덮음) ──────────────────────────
+        _importPb = new ProgressBar
+        {
+            IsIndeterminate = false,
+            Minimum = 0, Maximum = 100, Value = 0,
+            Height = 4,
+            CornerRadius = new CornerRadius(2),
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+        };
+        _importPbText = new TextBlock
+        {
+            Text = "입력 중...",
+            FontSize = 12, FontFamily = Font,
+            Foreground = AppRes("AppFg"),
+            HorizontalAlignment = HorizontalAlignment.Center,
+            Margin = new Thickness(0, 0, 0, 6),
+        };
+        _importOverlay = new Border
+        {
+            IsVisible  = false,
+            ZIndex     = 99,
+            Background = AppRes("PanelBg") is var bg
+                ? new Avalonia.Media.SolidColorBrush(((Avalonia.Media.SolidColorBrush)bg).Color, 0.88)
+                : Avalonia.Media.Brushes.Transparent,
+            Child = new StackPanel
+            {
+                VerticalAlignment   = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Spacing = 8,
+                Width   = 260,
+                Children = { _importPbText, _importPb }
+            },
+        };
+        Grid.SetRow(_importOverlay, 0);
+        Grid.SetRowSpan(_importOverlay, 4);
+        root.Children.Add(_importOverlay);
+
         ListPanelChanged?.Invoke(root);
 
         // 포커스 설정 (키보드 이벤트 수신용)
         Avalonia.Threading.Dispatcher.UIThread.Post(() => root.Focus(), Avalonia.Threading.DispatcherPriority.Render);
 
-        // 이전 선택 행 복원 (저장 후 리프레시 시), 없으면 첫 행
-        int restoreIdx = _selectedRowIndex >= 0 && _selectedRowIndex < excelRows.Count
-            ? _selectedRowIndex : 0;
-        _selectedRowIndex = -1; // 강제 재선택
-        SelectGridRow(restoreIdx);
+        // 선택 상태 초기화 (클릭으로만 매칭창 오픈)
+        _selectedRowIndex = -1;
     }
 
     private void SelectGridRow(int index)
@@ -1254,7 +1785,11 @@ public partial class WasteAnalysisInputPage : UserControl
 
         // Show3 표시
         var row = _currentExcelRows[index];
-        if (row.Matched != null)
+        if (row.Status == MatchStatus.미매칭 || row.Status == MatchStatus.대기)
+        {
+            OpenManualMatchDialog(row, index);
+        }
+        else if (row.Matched != null)
         {
             _selectedSample = row.Matched;
             ShowEditForm(row.Matched, row);
@@ -1262,6 +1797,147 @@ public partial class WasteAnalysisInputPage : UserControl
         else
         {
             ShowExcelRowDetail(row);
+        }
+    }
+
+    private void OpenManualMatchDialog(ExcelRow exRow, int rowIndex)
+    {
+        // 의뢰시료: 최근 1개월 (없으면 _matchingAnalysisRecords 사용)
+        List<AnalysisRequestRecord> analysisPool;
+        try
+        {
+            analysisPool = AnalysisRequestService.GetRecentRecords(1);
+            if (analysisPool.Count == 0)
+                analysisPool = _matchingAnalysisRecords;
+        }
+        catch { analysisPool = _matchingAnalysisRecords; }
+
+        // 시설 마스터가 없으면 직접 로드 (처리시설 파일 탭에서도 동작)
+        List<(string 시설명, string 시료명, int 마스터Id)> facilityPool =
+            (_matchingFacilityMasters?.Count ?? 0) > 0
+                ? _matchingFacilityMasters!
+                : FacilityResultService.GetAllMasterSamples();
+
+        // 기존 창 닫기 (싱글턴)
+        _matchWindow?.Close();
+
+        _matchWindow = new ManualMatchWindow(
+            exRow.시료명, exRow.Result,
+            analysisPool, facilityPool, _currentSamples);
+
+        _matchWindow.MatchConfirmed += w => ApplyManualMatch(exRow, rowIndex, w);
+        _matchWindow.Closed += (_, _) => _matchWindow = null;
+
+        // 메인 창 종료 시 자동 닫기
+        var mainWin = TopLevel.GetTopLevel(this) as Window;
+        if (mainWin != null)
+        {
+            void OnMainClosed(object? s, EventArgs e)
+            {
+                mainWin.Closed -= OnMainClosed;
+                try { _matchWindow?.Close(); } catch { }
+            }
+            mainWin.Closed += OnMainClosed;
+        }
+
+        _matchWindow.Show();
+    }
+
+    private void RebuildBadge(List<ExcelRow> rows)
+    {
+        if (_summaryBadgePanel == null) return;
+        int matchNew   = rows.Count(r => r.Status == MatchStatus.입력가능);
+        int matchExist = rows.Count(r => r.Status == MatchStatus.덮어쓰기);
+        int noMatch    = rows.Count(r => r.Status == MatchStatus.미매칭);
+        int pending    = rows.Count(r => r.Status == MatchStatus.대기);
+        _summaryBadgePanel.Children.Clear();
+        if (pending > 0)
+            _summaryBadgePanel.Children.Add(FsXS(new TextBlock { Text = $"⚪ {pending} 대기",     FontFamily = Font, Foreground = AppRes("FgMuted") }));
+        if (matchNew > 0)
+            _summaryBadgePanel.Children.Add(FsXS(new TextBlock { Text = $"🟢 {matchNew} 입력가능", FontFamily = Font, Foreground = AppRes("ThemeFgSuccess") }));
+        if (matchExist > 0)
+            _summaryBadgePanel.Children.Add(FsXS(new TextBlock { Text = $"🟡 {matchExist} 자료있음", FontFamily = Font, Foreground = AppRes("ThemeFgWarn") }));
+        if (noMatch > 0)
+            _summaryBadgePanel.Children.Add(FsXS(new TextBlock { Text = $"🔴 {noMatch} 의뢰정보 없음", FontFamily = Font, Foreground = AppRes("ThemeFgDanger") }));
+        _summaryBadgePanel.Children.Add(FsXS(new TextBlock { Text = $"합계 {rows.Count}건", FontFamily = Font, Foreground = AppRes("FgMuted") }));
+    }
+
+    private void ApplyManualMatch(ExcelRow exRow, int rowIndex, ManualMatchWindow w)
+    {
+        if (w.SelectedWaste != null)
+        {
+            exRow.Matched  = w.SelectedWaste;
+            exRow.Source   = SourceType.폐수배출업소;
+            bool has = _activeItems.Any(item => !string.IsNullOrWhiteSpace(GetSampleValue(w.SelectedWaste, item)));
+            exRow.Status   = has ? MatchStatus.덮어쓰기 : MatchStatus.입력가능;
+            exRow.Enabled  = true;
+        }
+        else if (w.SelectedAnalysis != null)
+        {
+            exRow.MatchedAnalysis = w.SelectedAnalysis;
+            exRow.Source          = SourceType.수질분석센터;
+            exRow.Status          = MatchStatus.입력가능;
+            exRow.Enabled         = true;
+        }
+        else if (w.SelectedFacility != null)
+        {
+            exRow.원본시료명         = exRow.시료명;                        // 원본 보존
+            exRow.시료명             = w.SelectedFacility.Value.시료명;    // 지점명으로 교체
+            exRow.MatchedFacilityName = w.SelectedFacility.Value.시설명;
+            exRow.Source              = SourceType.처리시설;
+            exRow.Status              = MatchStatus.입력가능;
+            exRow.Enabled             = true;
+        }
+
+        // 그리드 아이콘 업데이트
+        if (rowIndex < _rowIcons.Count)
+        {
+            _rowIcons[rowIndex].Text = exRow.Status switch
+            {
+                MatchStatus.입력가능 => "🟢",
+                MatchStatus.덮어쓰기 => "🟡",
+                _ => "⚪",
+            };
+        }
+
+        // 토글 스위치 ON으로 전환
+        if (rowIndex < _rowToggles.Count)
+        {
+            var (track, knob) = _rowToggles[rowIndex];
+            track.Background = AppRes("BtnPrimaryBg");
+            track.Opacity    = 1.0;
+            knob.Margin      = new Thickness(18, 2, 0, 2);
+        }
+
+        // 시료명 셀 업데이트 (새 이름 + 원본 이름 노란색)
+        if (rowIndex < _rowNameCells.Count)
+        {
+            var nameCell = _rowNameCells[rowIndex];
+            if (nameCell.Children.Count > 0 && nameCell.Children[0] is TextBlock mainTb)
+                mainTb.Text = exRow.시료명;
+            while (nameCell.Children.Count > 1) nameCell.Children.RemoveAt(1);
+            if (!string.IsNullOrEmpty(exRow.원본시료명))
+                nameCell.Children.Add(new TextBlock
+                {
+                    Text = $"↳ {exRow.원본시료명}", FontFamily = Font,
+                    FontSize = AppTheme.FontXS,
+                    Foreground = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#ffe066")),
+                    TextTrimming = TextTrimming.CharacterEllipsis,
+                });
+        }
+
+        // 배지 카운트 갱신
+        if (_currentExcelRows != null) RebuildBadge(_currentExcelRows);
+
+        // 바로 편집 폼으로 이동
+        if (exRow.Matched != null)
+        {
+            _selectedSample = exRow.Matched;
+            ShowEditForm(exRow.Matched, exRow);
+        }
+        else
+        {
+            ShowExcelRowDetail(exRow);
         }
     }
 
@@ -2089,6 +2765,16 @@ public partial class WasteAnalysisInputPage : UserControl
 
         switch (_activeCategory)
         {
+            case "TOC":
+            {
+                _categoryDocInfo.TryGetValue("TOC", out var tocInfo);
+                // Excel: D1=TC, D2=IC, Fxy=NPOC or TC-IC / 기기파일: D1=면적
+                WasteSampleService.UpsertTocData(
+                    _tocInstrumentMethod, 분석일, s.SN, s.업체명, s.구분,
+                    row.D1, row.P, tocInfo?.TocSlope_TC ?? "", row.Fxy, row.Result);
+                break;
+            }
+
             case "BOD":
                 WasteSampleService.UpsertBodData(
                     분석일, s.SN, s.업체명, s.구분,
@@ -2108,10 +2794,9 @@ public partial class WasteAnalysisInputPage : UserControl
                 break;
 
             case "NHEX":
-                WasteSampleService.UpsertSimpleData(
-                    "NHexan_DATA", "결과",
+                WasteSampleService.UpsertNHexanData(
                     분석일, s.SN, s.업체명, s.구분,
-                    row.시료량, row.Result);
+                    row.시료량, row.D1, row.D2, row.Fxy, row.P, row.Result);
                 break;
 
             case "TN" when isUV:
@@ -2293,6 +2978,100 @@ public partial class WasteAnalysisInputPage : UserControl
     }
 
     // =========================================================================
+    // TOC 기기 파일 파싱 (스칼라 CSV / 시마즈 TXT)
+    // =========================================================================
+
+    // 기기 임포트 데이터 저장 (SN → (rawName, conc, area, method))
+    // TOC 기기 파일 임포트 시 사용한 방법 (NPOC/TCIC)
+    private string _tocInstrumentMethod = "NPOC";
+
+    private void ParseTocInstrumentFile(string path)
+    {
+        var (fmt, instrRows, cal) = TocInstrumentParser.Parse(path);
+        if (fmt == TocInstrumentParser.TocFileFormat.Unknown)
+        {
+            ShowMessage("지원되지 않는 TOC 기기 파일 형식입니다.", true);
+            return;
+        }
+
+        // 예나 검량선 전용 파일: 시료 없음, 검량선 값만 저장
+        if (fmt == TocInstrumentParser.TocFileFormat.JenaCalibration)
+        {
+            if (cal?.HasData == true)
+            {
+                var docInfo = _categoryDocInfo.ContainsKey("TOC")
+                    ? _categoryDocInfo["TOC"]
+                    : (_categoryDocInfo["TOC"] = new ExcelDocInfo());
+                docInfo.TocSlope_TC     = cal.Slope_TC;
+                docInfo.TocIntercept_TC = cal.Intercept_TC;
+                docInfo.TocSlope_IC     = cal.Slope_IC;
+                docInfo.TocIntercept_IC = cal.Intercept_IC;
+                if (cal.Method == "TCIC") { docInfo.IsTocTCIC = true; _tocInstrumentMethod = "TCIC"; }
+                else                      { docInfo.IsTocNPOC = true; _tocInstrumentMethod = "NPOC"; }
+                ShowMessage($"예나 검량선 로드 완료 (기울기 TC: {cal.Slope_TC})", false);
+            }
+            else ShowMessage("예나 검량선 파일에서 데이터를 찾을 수 없습니다.", true);
+            return;
+        }
+
+        // 스칼라/시마즈: 정도관리만 제외 (SN 없어도 포함)
+        var excelRows = new List<ExcelRow>();
+        string method = "NPOC";
+        foreach (var r in instrRows)
+        {
+            if (r.IsControl) continue;
+            method = r.Method;
+            excelRows.Add(new ExcelRow
+            {
+                시료명 = r.RawName,
+                SN     = r.SN,
+                Fxy    = r.Conc,   // f(x/y) = 기기 계산 농도
+                Result = r.Conc,   // 결과값 (희석배수 미적용 시 동일)
+                D1     = r.Area,
+            });
+        }
+
+        if (excelRows.Count == 0)
+        {
+            ShowMessage("시료 데이터가 없습니다.", true);
+            return;
+        }
+
+        // 스칼라 검량선 데이터 저장
+        if (cal?.HasData == true)
+        {
+            var docInfo = _categoryDocInfo.ContainsKey("TOC")
+                ? _categoryDocInfo["TOC"]
+                : (_categoryDocInfo["TOC"] = new ExcelDocInfo());
+            docInfo.TocSlope_TC     = cal.Slope_TC;
+            docInfo.TocIntercept_TC = cal.Intercept_TC;
+            docInfo.TocR2_TC        = cal.R2_TC;
+            docInfo.TocSlope_IC     = cal.Slope_IC;
+            docInfo.TocIntercept_IC = cal.Intercept_IC;
+            docInfo.TocR2_IC        = cal.R2_IC;
+            docInfo.TocStdConcs     = cal.StdConcs;
+            docInfo.TocStdAreas     = cal.StdAreas;
+            docInfo.TocStdConcs_IC  = cal.StdConcs_IC;
+            docInfo.TocStdAreas_IC  = cal.StdAreas_IC;
+            bool isTcic = cal.Method.Equals("TCIC", StringComparison.OrdinalIgnoreCase);
+            docInfo.IsTocNPOC = !isTcic;
+            docInfo.IsTocTCIC = isTcic;
+        }
+
+        _tocInstrumentMethod = method;
+        _activeCategory      = "TOC";
+        _categorySelected    = true;
+        _categoryExcelData["TOC"] = excelRows;
+
+        // 분석일: 오늘 날짜 기본
+        if (!_categoryDocDates.ContainsKey("TOC") || string.IsNullOrEmpty(_categoryDocDates["TOC"]))
+            _categoryDocDates["TOC"] = DateTime.Today.ToString("yyyy-MM-dd");
+
+        UpdateCategoryButtonStyles();
+        LoadVerifiedGrid();
+    }
+
+    // =========================================================================
     // 엑셀 파싱
     // =========================================================================
     private static void ParsePage(IXLWorksheet ws, List<ExcelRow> rows,
@@ -2434,6 +3213,7 @@ public partial class WasteAnalysisInputPage : UserControl
                     {
                         row.Source = SourceType.미분류;
                         row.Status = allSamples.Count > 0 || analysisRecords.Count > 0
+                                     || (_matchingFacilityMasters?.Count ?? 0) > 0
                             ? MatchStatus.미매칭 : MatchStatus.대기;
                     }
                 }
@@ -2451,6 +3231,7 @@ public partial class WasteAnalysisInputPage : UserControl
                 {
                     row.Source = SourceType.미분류;
                     row.Status = allSamples.Count > 0 || analysisRecords.Count > 0
+                                 || (_matchingFacilityMasters?.Count ?? 0) > 0
                         ? MatchStatus.미매칭 : MatchStatus.대기;
                 }
             }
@@ -2476,16 +3257,31 @@ public partial class WasteAnalysisInputPage : UserControl
     }
 
     /// <summary>서브메뉴 "입력" — 검증된 데이터 일괄 DB 반영</summary>
-    public void ImportData()
+    public async Task ImportData()
     {
         if (!_categoryExcelData.TryGetValue(_activeCategory, out var rows))
         { ShowMessage("먼저 파일을 첨부하세요.", true); return; }
 
+        // 진행 오버레이 표시
+        if (_importOverlay != null) _importOverlay.IsVisible = true;
+        int totalRows = rows.Count;
+        if (_importPb != null) { _importPb.Value = 0; _importPb.Maximum = Math.Max(1, totalRows); }
+
         int imported = 0, skipped = 0, disabled = 0;
+        var modifiedDates = new HashSet<string>();
+
+        // 스냅샷 캡처 (Task.Run 안에서 안전하게 접근)
+        var category   = _activeCategory;
+        var docDates   = new Dictionary<string, string?>(_categoryDocDates);
+        var docInfoMap = new Dictionary<string, ExcelDocInfo>(_categoryDocInfo);
+
+        int processed = 0;
+        await Task.Run(() =>
+        {
         foreach (var row in rows)
         {
-            if (string.IsNullOrWhiteSpace(row.Result)) continue;
-            if (!row.Enabled) { disabled++; continue; }
+            if (string.IsNullOrWhiteSpace(row.Result)) { processed++; continue; }
+            if (!row.Enabled) { disabled++; processed++; continue; }
 
             try
             {
@@ -2493,16 +3289,20 @@ public partial class WasteAnalysisInputPage : UserControl
                 {
                     case SourceType.폐수배출업소 when row.Matched != null:
                         ImportWasteSample(row);
+                        modifiedDates.Add(row.Matched.채수일);
                         imported++;
                         break;
 
                     case SourceType.수질분석센터 when row.MatchedAnalysis != null:
                         ImportAnalysisRequest(row);
+                        if (row.Matched != null) modifiedDates.Add(row.Matched.채수일);
                         imported++;
                         break;
 
                     case SourceType.처리시설 when row.MatchedFacilityName != null:
                         ImportFacilityResult(row);
+                        docDates.TryGetValue(category, out var fd);
+                        if (!string.IsNullOrEmpty(fd)) modifiedDates.Add(fd);
                         imported++;
                         break;
 
@@ -2512,10 +3312,46 @@ public partial class WasteAnalysisInputPage : UserControl
                 }
             }
             catch { skipped++; }
+            finally
+            {
+                int p = ++processed;
+                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                {
+                    if (_importPb != null) _importPb.Value = p;
+                });
+            }
         }
+        }); // end Task.Run
+
+        // _selectedDate도 포함 (날짜를 클릭한 경우)
+        if (_selectedDate != null) modifiedDates.Add(_selectedDate);
+
+        // N-Hexan 바탕시료 별도 저장 (분석일 기준으로 SN="바탕시료")
+        if (_activeCategory == "NHEX"
+            && _categoryDocInfo.TryGetValue("NHEX", out var nhexDocInfo)
+            && nhexDocInfo.IsNHEX
+            && !string.IsNullOrWhiteSpace(nhexDocInfo.바탕시료_결과))
+        {
+            _categoryDocDates.TryGetValue("NHEX", out var nhexDate);
+            if (!string.IsNullOrEmpty(nhexDate))
+            {
+                try
+                {
+                    WasteSampleService.UpsertSimpleData(
+                        "NHexan_DATA", "결과",
+                        nhexDate, "바탕시료", "바탕시료", "",
+                        nhexDocInfo.바탕시료_시료량, nhexDocInfo.바탕시료_결과);
+                }
+                catch { }
+            }
+        }
+
+        // 오버레이 숨김 (LoadVerifiedGrid가 새 root를 만들기 전에)
+        if (_importOverlay != null) _importOverlay.IsVisible = false;
 
         LoadVerifiedGrid();
         BuildStatsPanel();
+        RefreshDateNodes(modifiedDates);
         string msg = $"✅ {imported}건 입력" +
             (disabled > 0 ? $" / {disabled}건 체크해제" : "") +
             (skipped > 0 ? $" / {skipped}건 제외" : "");
@@ -2619,6 +3455,52 @@ public partial class WasteAnalysisInputPage : UserControl
             else
                 LoadSampleGrid(_selectedDate);
             BuildStatsPanel();
+        }
+    }
+
+    // 현재 선택된 날짜 노드의 아이콘을 DB 재조회 후 갱신
+    private async void RefreshCurrentDateNode()
+    {
+        if (_selectedDate == null) return;
+        await RefreshDateNodesAsync(new HashSet<string> { _selectedDate });
+    }
+
+    // 지정된 날짜 노드들을 DB 재조회 후 일괄 갱신
+    private async void RefreshDateNodes(HashSet<string> dates)
+    {
+        if (dates.Count == 0) return;
+        await RefreshDateNodesAsync(dates);
+    }
+
+    private async System.Threading.Tasks.Task RefreshDateNodesAsync(HashSet<string> dates)
+    {
+        bool isBilling = _inputMode == "비용부담금/처리시설";
+
+        foreach (var dateStr in dates)
+        {
+            var (samples, facilityStatus) = await System.Threading.Tasks.Task.Run(() =>
+            {
+                var s = WasteSampleService.GetByDate(dateStr);
+                var f = isBilling ? FacilityResultService.GetFillStatusForDate(dateStr) : default;
+                return (s, f);
+            });
+
+            var newNode = MakeDateNode(dateStr, samples, facilityStatus);
+
+            bool UpdateInItems(Avalonia.Controls.ItemCollection items)
+            {
+                foreach (var item in items.OfType<TreeViewItem>())
+                {
+                    if (item.Tag is string t && t == dateStr)
+                    {
+                        item.Header = newNode.Header;
+                        return true;
+                    }
+                    if (UpdateInItems(item.Items)) return true;
+                }
+                return false;
+            }
+            UpdateInItems(DateTreeView.Items);
         }
     }
 

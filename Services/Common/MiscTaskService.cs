@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
-using System.IO;
 using ETA.Models;
 
 namespace ETA.Services.Common;
@@ -16,7 +15,7 @@ public static class MiscTaskService
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
             CREATE TABLE IF NOT EXISTS `기타업무` (
-                Id        INTEGER PRIMARY KEY AUTOINCREMENT,
+                Id        INTEGER PRIMARY KEY AUTO_INCREMENT,
                 업무명    TEXT    NOT NULL DEFAULT '',
                 내용      TEXT    DEFAULT '',
                 배정자    TEXT    DEFAULT '',
@@ -27,8 +26,6 @@ public static class MiscTaskService
                 등록일시  TEXT    DEFAULT '',
                 완료일시  TEXT    DEFAULT ''
             )";
-        if (DbConnectionFactory.IsMariaDb)
-            cmd.CommandText = cmd.CommandText.Replace("AUTOINCREMENT", "AUTO_INCREMENT");
         try { cmd.ExecuteNonQuery(); } catch { }
     }
 

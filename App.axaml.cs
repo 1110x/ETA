@@ -27,8 +27,6 @@ public partial class App : Application
             desktop.MainWindow = mainPage;
             mainPage.Show();
 
-            FacilityDbMigration.EnsureTables();
-
             // ↓ 이 4줄만 추가
             Avalonia.Threading.Dispatcher.UIThread.Post(async () =>
             {

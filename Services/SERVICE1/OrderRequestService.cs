@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
@@ -18,7 +17,6 @@ public static class OrderRequestService
     public static List<string> GetSampleNameColumns()
     {
         var list = new List<string>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
@@ -59,7 +57,6 @@ public static class OrderRequestService
     public static List<string> GetSampleNames(string columnName)
     {
         var list = new List<string>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
@@ -76,7 +73,6 @@ public static class OrderRequestService
     // ── 시료명칭 테이블에 업체 컬럼 생성 ─────────────────────────────────
     public static bool CreateCompanyColumn(string companyName)
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return false;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
@@ -97,7 +93,6 @@ public static class OrderRequestService
     // ── 시료명칭 추가 ────────────────────────────────────────────────────
     public static bool AddSampleName(string columnName, string sampleName)
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return false;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
@@ -138,7 +133,6 @@ public static class OrderRequestService
             "정도보증유무","분석완료일자","견적구분"
         };
         var list = new List<string>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
@@ -155,7 +149,6 @@ public static class OrderRequestService
     // ── 중복 확인 (견적번호 + 시료명) ────────────────────────────────────
     public static bool CheckDuplicate(string 견적번호, string 시료명)
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return false;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
@@ -172,7 +165,6 @@ public static class OrderRequestService
     // ── 기존 의뢰 삭제 (덮어쓰기용) ─────────────────────────────────────
     public static void DeleteByKey(string 견적번호, string 시료명)
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
@@ -192,7 +184,6 @@ public static class OrderRequestService
         QuotationIssue issue,
         HashSet<string> checkedItems)
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return false;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();

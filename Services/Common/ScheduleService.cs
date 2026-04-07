@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
-using System.IO;
 using ETA.Models;
 
 namespace ETA.Services.Common;
@@ -16,7 +15,7 @@ public static class ScheduleService
         cmd.CommandText = $@"
             CREATE TABLE IF NOT EXISTS `일정` (
                 Id       INTEGER PRIMARY KEY {DbConnectionFactory.AutoIncrement},
-                날짜     {(DbConnectionFactory.IsMariaDb ? "VARCHAR(10)" : "TEXT")} NOT NULL,
+                날짜     VARCHAR(10) NOT NULL,
                 직원명   TEXT DEFAULT '',
                 직원id   TEXT DEFAULT '',
                 분류     TEXT NOT NULL DEFAULT '출장',
@@ -47,7 +46,6 @@ public static class ScheduleService
     public static List<ScheduleEntry> GetByMonth(int year, int month)
     {
         var list = new List<ScheduleEntry>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
@@ -73,7 +71,6 @@ public static class ScheduleService
     {
         var list = new List<ScheduleEntry>();
         if (string.IsNullOrEmpty(date)) return list;
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
@@ -96,7 +93,6 @@ public static class ScheduleService
     // ── 삽입 ─────────────────────────────────────────────────────────────────
     public static void Insert(ScheduleEntry e)
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
@@ -130,7 +126,6 @@ public static class ScheduleService
     // ── 수정 ─────────────────────────────────────────────────────────────────
     public static void Update(ScheduleEntry e)
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
@@ -162,7 +157,6 @@ public static class ScheduleService
     // ── 삭제 ─────────────────────────────────────────────────────────────────
     public static void Delete(int id)
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();

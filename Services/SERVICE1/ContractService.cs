@@ -19,7 +19,6 @@ public static class ContractService
     public static List<Contract> GetAllContracts()
     {
         var list   = new List<Contract>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) { Debug.WriteLine("❌ DB 없음"); return list; }
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
@@ -155,7 +154,6 @@ public static class ContractService
     public static List<string> GetAnalysisItems()
     {
         var result = new List<string>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return result;
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
@@ -197,10 +195,7 @@ public static class ContractService
             if (existing.Contains(item)) continue;
 
             using var cmd = conn.CreateCommand();
-            if (DbConnectionFactory.IsMariaDb)
-                cmd.CommandText = $"ALTER TABLE `계약 DB` ADD COLUMN IF NOT EXISTS `{item}` DECIMAL(15,2) NULL DEFAULT NULL";
-            else
-                cmd.CommandText = $"ALTER TABLE `계약 DB` ADD COLUMN `{item}` REAL";
+            cmd.CommandText = $"ALTER TABLE `계약 DB` ADD COLUMN IF NOT EXISTS `{item}` DECIMAL(15,2) NULL DEFAULT NULL";
 
             try { cmd.ExecuteNonQuery(); Debug.WriteLine($"[Contract] 컬럼 추가: {item}"); }
             catch (Exception ex) { Debug.WriteLine($"[Contract] 컬럼 추가 실패({item}): {ex.Message}"); }

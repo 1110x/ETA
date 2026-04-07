@@ -15,9 +15,13 @@ public static class AgentService
     // ── DB / 사진 경로 ────────────────────────────────────────────────────────
     public static string GetPhotoDirectory() => DbPathHelper.PhotoDirectory;
 
+    // 스키마 마이그레이션 완료 여부 (앱 생애주기 1회만 실행)
+    private static bool _schemaMigrated = false;
+
     // ── PhotoPath 컬럼 자동 마이그레이션 ─────────────────────────────────────
     private static void EnsurePhotoPathColumn(DbConnection conn)
     {
+        if (_schemaMigrated) return;
         if (!DbConnectionFactory.ColumnExists(conn, "Agent", "PhotoPath"))
         {
             using var alter = conn.CreateCommand();
@@ -153,77 +157,72 @@ public static class AgentService
         catch (Exception ex) { Debug.WriteLine($"[Photo] 일괄 동기화 실패: {ex.Message}"); }
     }
 
-    // ── 담당항목/담당업체 컬럼 마이그레이션 ──────────────────────────────────
+    // ── 담당항목/담당업체/부서 컬럼 마이그레이션 ──────────────────────────────────
     private static void EnsureAssignColumns(DbConnection conn)
     {
-        foreach (var col in new[] { "담당항목", "담당업체" })
+        if (_schemaMigrated) return;
+        var existing = DbConnectionFactory.GetColumnNames(conn, "Agent");
+        foreach (var col in new[] { "담당항목", "담당업체", "부서" })
         {
-            if (!DbConnectionFactory.ColumnExists(conn, "Agent", col))
-            {
-                using var alt = conn.CreateCommand();
-                alt.CommandText = $"ALTER TABLE `Agent` ADD COLUMN `{col}` TEXT DEFAULT ''";
-                try { alt.ExecuteNonQuery(); Debug.WriteLine($"[DB] {col} 컬럼 추가"); } catch { }
-            }
+            if (existing.Contains(col)) continue;
+            using var alt = conn.CreateCommand();
+            alt.CommandText = $"ALTER TABLE `Agent` ADD COLUMN `{col}` TEXT DEFAULT ''";
+            try { alt.ExecuteNonQuery(); Debug.WriteLine($"[DB] {col} 컬럼 추가"); } catch { }
         }
+        _schemaMigrated = true; // 이후 호출은 즉시 리턴
     }
 
     // ── 계정 관련 컬럼 마이그레이션 (로그인 기능용) ──────────────────────────
     public static void MigrateAccountColumns()
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
-
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
-
-        // 기존 컬럼 목록을 한 번에 조회 → 없는 컬럼만 ALTER TABLE (매번 ALTER 시도 시 MariaDB 에러 처리가 느림)
-        var existing = new System.Collections.Generic.HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        using (var chk = conn.CreateCommand())
-        {
-            if (DbConnectionFactory.IsMariaDb)
-            {
-                chk.CommandText = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'Agent'";
-                using var r = chk.ExecuteReader();
-                while (r.Read()) existing.Add(r.GetString(0));
-            }
-            else
-            {
-                // SQLite: PRAGMA table_info → (cid, name, type, notnull, dflt_value, pk)
-                chk.CommandText = "PRAGMA table_info(Agent)";
-                using var r = chk.ExecuteReader();
-                while (r.Read()) existing.Add(r.GetString(1));
-            }
-        }
 
         var columns = new[]
         {
             ("비밀번호",        "TEXT DEFAULT ''"),
-            ("상태",            "TEXT DEFAULT 'approved'"),   // 기존 직원은 바로 approved
+            ("상태",            "TEXT DEFAULT 'pending'"),
             ("todo_task_id",    "TEXT DEFAULT ''"),
-            ("must_change_pw",  "INTEGER DEFAULT 0"),         // 1=최초 비밀번호 강제 변경 필요
-            ("측정인LoginId",   "TEXT DEFAULT ''"),           // 측정인.kr 로그인 아이디
-            ("측정인LoginPw",   "TEXT DEFAULT ''"),           // 측정인.kr 로그인 비밀번호
+            ("must_change_pw",  "INTEGER DEFAULT 0"),
+            ("측정인LoginId",   "TEXT DEFAULT ''"),
+            ("측정인LoginPw",   "TEXT DEFAULT ''"),
+            ("부서",            "TEXT DEFAULT ''"),
         };
 
+        // 한 번만 INFORMATION_SCHEMA 조회 → 없는 컬럼만 ALTER
+        var existing = DbConnectionFactory.GetColumnNames(conn, "Agent");
+        bool anyAdded = false;
         foreach (var (col, def) in columns)
         {
-            if (existing.Contains(col)) continue;   // 이미 존재 → 스킵
-
+            if (existing.Contains(col)) continue;
             try
             {
                 using var cmd = conn.CreateCommand();
-                cmd.CommandText = $@"ALTER TABLE `Agent` ADD COLUMN `{col}` {def}";
+                cmd.CommandText = $"ALTER TABLE `Agent` ADD COLUMN IF NOT EXISTS `{col}` {def}";
                 cmd.ExecuteNonQuery();
+                anyAdded = true;
                 Debug.WriteLine($"[AgentService] 컬럼 추가: {col}");
             }
             catch (Exception ex) { Debug.WriteLine($"[AgentService] 컬럼 추가 실패 {col}: {ex.Message}"); }
         }
+
+        if (!anyAdded) return; // 이미 완료된 경우 UPDATE도 불필요
+
+        // 기존 직원 중 상태가 비어있는(마이그레이션 전) 레코드를 approved로 일괄 업데이트
+        try
+        {
+            using var fix = conn.CreateCommand();
+            fix.CommandText = "UPDATE `Agent` SET `상태`='approved' WHERE (`상태` IS NULL OR `상태`='') AND `사번` != ''";
+            int updated = fix.ExecuteNonQuery();
+            if (updated > 0) Debug.WriteLine($"[AgentService] 기존 직원 상태 approved 설정: {updated}명");
+        }
+        catch (Exception ex) { Debug.WriteLine($"[AgentService] 상태 일괄 업데이트 실패: {ex.Message}"); }
     }
 
     // ── 전체 조회 ─────────────────────────────────────────────────────────────
     public static List<Agent> GetAllItems()
     {
         var items  = new List<Agent>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) { Debug.WriteLine("❌ DB 없음"); return items; }
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
@@ -233,7 +232,7 @@ public static class AgentService
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
             SELECT 성명, 직급, 직무, 입사일, 사번,
-                   자격사항, Email, 기타, 측정인고유번호, PhotoPath,
+                   자격사항, Email, 기타, 부서, 측정인고유번호, PhotoPath,
                    담당항목, 담당업체
             FROM `Agent`
             ORDER BY 사번 ASC";
@@ -251,6 +250,7 @@ public static class AgentService
                 자격사항       = S(reader, "자격사항"),
                 Email          = S(reader, "Email"),
                 기타           = S(reader, "기타"),
+                부서           = S(reader, "부서"),
                 측정인고유번호 = S(reader, "측정인고유번호"),
                 // 절대경로로 저장된 경우 파일명만 추출 (정규화)
                 PhotoPath      = NormalizePhotoPath(S(reader, "PhotoPath")),
@@ -280,7 +280,7 @@ public static class AgentService
             UPDATE `Agent` SET
                 성명=@성명, 직급=@직급, 직무=@직무, 입사일=@입사일,
                 사번=@사번, 자격사항=@자격사항, Email=@Email,
-                기타=@기타, 측정인고유번호=@측정인고유번호, PhotoPath=@PhotoPath,
+                기타=@기타, 부서=@부서, 측정인고유번호=@측정인고유번호, PhotoPath=@PhotoPath,
                 담당항목=@담당항목, 담당업체=@담당업체
             WHERE 성명=@Original성명";
 
@@ -303,9 +303,9 @@ public static class AgentService
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
             INSERT INTO `Agent`
-                (성명, 직급, 직무, 입사일, 사번, 자격사항, Email, 기타, 측정인고유번호, PhotoPath)
+                (성명, 직급, 직무, 입사일, 사번, 자격사항, Email, 기타, 부서, 측정인고유번호, PhotoPath)
             VALUES
-                (@성명, @직급, @직무, @입사일, @사번, @자격사항, @Email, @기타, @측정인고유번호, @PhotoPath)";
+                (@성명, @직급, @직무, @입사일, @사번, @자격사항, @Email, @기타, @부서, @측정인고유번호, @PhotoPath)";
 
         SetParams(cmd, agent);
         int rows = cmd.ExecuteNonQuery();
@@ -361,13 +361,19 @@ public static class AgentService
 
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            INSERT INTO `Agent` (성명, 사번, 비밀번호, 직무, 상태)
+            INSERT INTO `Agent` (성명, 사번, 비밀번호, 부서, 상태)
             VALUES (@name, @id, @pw, @dept, 'pending')";
         cmd.Parameters.AddWithValue("@name", name);
         cmd.Parameters.AddWithValue("@id",   employeeId);
         cmd.Parameters.AddWithValue("@pw",   HashPassword(password));
         cmd.Parameters.AddWithValue("@dept", department ?? "");
-        return cmd.ExecuteNonQuery() > 0;
+        bool ok = cmd.ExecuteNonQuery() > 0;
+
+        // 회원가입 성공 시 모든 메뉴 차단으로 초기화 (관리자가 직접 권한 부여해야 함)
+        if (ok)
+            ETA.Services.Common.AccessService.InitializeAccessBlocked(employeeId);
+
+        return ok;
     }
 
     // ── 로그인 검증 ───────────────────────────────────────────────────────────
@@ -378,7 +384,6 @@ public static class AgentService
     public static (bool success, string message, bool mustChangePw) ValidateLogin(
         string employeeId, string password)
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return (false, "등록된 계정이 없습니다.", false);
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
@@ -399,19 +404,16 @@ public static class AgentService
                         $"비밀번호설정={!string.IsNullOrEmpty(dbPw)} mustChange={mustChangePw}");
 
         // ★ 승인 상태 차단
-        // 빈 문자열/NULL → 기존 직원(마이그레이션 전)으로 간주, approved 처리
         switch (status)
         {
+            case "approved":
+                break;      // 아래로 계속
             case "pending":
                 return (false, "관리자 승인 대기 중입니다.\nMicrosoft To Do에서 승인 후 로그인 가능합니다.", false);
             case "rejected":
                 return (false, "승인이 거부된 계정입니다.", false);
-            case "approved":
-            case "":        // 기존 직원: 상태 컬럼 없거나 빈 값
-            case null:
-                break;      // 아래로 계속
-            default:
-                return (false, $"비활성 계정입니다. (상태: {status})", false);
+            default:        // 빈 값, null, 기타 → 미승인으로 차단
+                return (false, "승인되지 않은 계정입니다. 관리자에게 문의하세요.", false);
         }
 
         // 비밀번호 미설정 → MigrateInitialPasswords()가 아직 안 돌았을 때 방어
@@ -498,8 +500,6 @@ public static class AgentService
         {
             Log($"[ChangePassword] 시작 - 사번={employeeId}");
 
-            Log($"[ChangePassword] DB 경로={DbPathHelper.DbPath}");
-
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             Log("[ChangePassword] DB 연결 성공");
@@ -546,19 +546,17 @@ public static class AgentService
     /// </summary>
     public static void MigrateInitialPasswords()
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
-        // must_change_pw 컬럼 없으면 추가 (이중 안전망)
-        try
+        // must_change_pw 컬럼 없으면 추가 (MigrateAccountColumns에서 이미 처리되지만 방어)
+        if (!DbConnectionFactory.GetColumnNames(conn, "Agent").Contains("must_change_pw"))
         {
             using var alt = conn.CreateCommand();
-            alt.CommandText = @"ALTER TABLE `Agent` ADD COLUMN must_change_pw INTEGER DEFAULT 0";
-            alt.ExecuteNonQuery();
+            alt.CommandText = @"ALTER TABLE `Agent` ADD COLUMN IF NOT EXISTS must_change_pw INTEGER DEFAULT 0";
+            try { alt.ExecuteNonQuery(); } catch { }
         }
-        catch { }
 
         string initialHash = HashPassword("123456");
 
@@ -578,7 +576,6 @@ public static class AgentService
     // ── 최초 비밀번호 변경 필요 여부 조회 ────────────────────────────────────
     public static bool NeedsPasswordChange(string employeeId)
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return false;
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
@@ -621,7 +618,6 @@ public static class AgentService
             try { File.AppendAllText(logPath, line + "\n"); } catch { }
         }
 
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
 
         string hash123456 = HashPassword("123456");
 
@@ -691,7 +687,6 @@ public static class AgentService
     public static List<(string 성명, string 사번, string 상태, string todo_task_id)> GetAllApprovalAccounts()
     {
         var list   = new List<(string, string, string, string)>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
@@ -736,7 +731,6 @@ public static class AgentService
     public static List<string> GetAllNames()
     {
         var list   = new List<string>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
@@ -771,9 +765,6 @@ public static class AgentService
             Debug.WriteLine(line);
             try { File.AppendAllText(logPath, line + "\n"); } catch { }
         }
-
-        Log($"[DebugCheck] DB 경로: {DbPathHelper.DbPath}");
-        Log($"[DebugCheck] DB 존재: {File.Exists(DbPathHelper.DbPath)}");
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
@@ -813,6 +804,7 @@ public static class AgentService
         cmd.Parameters.AddWithValue("@자격사항",       a.자격사항       ?? "");
         cmd.Parameters.AddWithValue("@Email",          a.Email          ?? "");
         cmd.Parameters.AddWithValue("@기타",           a.기타           ?? "");
+        cmd.Parameters.AddWithValue("@부서",           a.부서           ?? "");
         cmd.Parameters.AddWithValue("@측정인고유번호", a.측정인고유번호 ?? "");
         cmd.Parameters.AddWithValue("@PhotoPath",      NormalizePhotoPath(a.PhotoPath));
         cmd.Parameters.AddWithValue("@담당항목",       a.담당항목       ?? "");
@@ -879,7 +871,6 @@ public static class AgentService
     /// <summary>사번으로 측정인 로그인 ID/PW 조회. 없으면 ("","") 반환.</summary>
     public static (string Id, string Pw) GetMeasurerCredentials(string 사번)
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return ("", "");
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
@@ -899,7 +890,6 @@ public static class AgentService
     /// <summary>사번에 해당하는 행에 측정인 로그인 ID/PW 저장.</summary>
     public static void SaveMeasurerCredentials(string 사번, string id, string pw)
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
@@ -929,7 +919,6 @@ public static class AgentService
     public static int UpdateMeasurerEmployeeIds(List<(string Name, string Id)> pairs)
     {
         int count = 0;
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return 0;
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();

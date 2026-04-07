@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Data;
 using System.Data.Common;
 using ETA.Models;
@@ -50,15 +49,15 @@ public static class WasteCompanyService
         }
     }
 
+    // ── 메모리 캐시 ──────────────────────────────────────────────────────────
+    private static List<WasteCompany>? _itemsCache;
+    public static void InvalidateCache() => _itemsCache = null;
+
     public static List<WasteCompany> GetAllItems()
     {
-        var items = new List<WasteCompany>();
+        if (_itemsCache != null) return _itemsCache;
 
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath))
-        {
-            Debug.WriteLine("❌ DB 파일 없음");
-            return items;
-        }
+        var items = new List<WasteCompany>();
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
@@ -150,6 +149,7 @@ public static class WasteCompanyService
         }
 
         Debug.WriteLine($"📊 로드 완료: {items.Count}개 업체");
+        _itemsCache = items;
         return items;
     }
 
@@ -170,7 +170,6 @@ public static class WasteCompanyService
     public static void UpdateCostName(string 관리번호, string costName)
     {
         if (string.IsNullOrEmpty(관리번호)) return;
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return;
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         EnsureAbbrevColumn(conn);
@@ -179,13 +178,13 @@ public static class WasteCompanyService
         cmd.Parameters.AddWithValue("@n",  costName);
         cmd.Parameters.AddWithValue("@id", 관리번호);
         cmd.ExecuteNonQuery();
+        InvalidateCache();
     }
 
     // ── 비용부담금_업체명 전체 조회 (Show4 파란색 표시용) ─────────────────────
     public static HashSet<string> GetAllCostNames()
     {
         var set = new HashSet<string>(StringComparer.Ordinal);
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return set;
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         EnsureAbbrevColumn(conn);
@@ -231,6 +230,7 @@ public static class WasteCompanyService
                     Phenols=@Phenols, `N-Hexan`=@NHexan,
                     승인유량=@승인유량, 기타특이사항=@기타특이사항
                 WHERE 업체명 = @Original업체명";
+            cmd.Parameters.AddWithValue("@업체명", wasteCompany.업체명 ?? "");
             BindExtraParams(cmd, wasteCompany);
             cmd.Parameters.AddWithValue("@Original업체명", wasteCompany.Original업체명);
             int rows = cmd.ExecuteNonQuery();
@@ -266,8 +266,10 @@ public static class WasteCompanyService
         Debug.WriteLine($"[UPDATE] {rows2}행 업데이트 (업체명: {wasteCompany.Original업체명})");
 
         if (rows2 > 0)
+        {
             wasteCompany.Original업체명 = wasteCompany.업체명 ?? "";
-
+            InvalidateCache();
+        }
         return rows2 > 0;
     }
 
@@ -289,6 +291,7 @@ public static class WasteCompanyService
                 INSERT INTO `여수_폐수배출업소`
                     (업체명, 약칭, BOD, TOC, SS, `T-N`, `T-P`, Phenols, `N-Hexan`, 승인유량, 기타특이사항)
                 VALUES (@업체명, @약칭, @BOD, @TOC, @SS, @TN, @TP, @Phenols, @NHexan, @승인유량, @기타특이사항)";
+            cmd.Parameters.AddWithValue("@업체명", c.업체명 ?? "");
             BindExtraParams(cmd, c);
             int r = cmd.ExecuteNonQuery();
             Debug.WriteLine($"[INSERT 여수] {r}행: {c.업체명}");

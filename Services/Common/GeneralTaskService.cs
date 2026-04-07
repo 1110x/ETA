@@ -14,7 +14,7 @@ public static class GeneralTaskService
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
             CREATE TABLE IF NOT EXISTS `일반업무` (
-                Id        INTEGER PRIMARY KEY AUTOINCREMENT,
+                Id        INTEGER PRIMARY KEY AUTO_INCREMENT,
                 업무명    TEXT    NOT NULL DEFAULT '',
                 내용      TEXT    DEFAULT '',
                 배정자    TEXT    DEFAULT '',
@@ -25,8 +25,6 @@ public static class GeneralTaskService
                 등록일시  TEXT    DEFAULT '',
                 완료일시  TEXT    DEFAULT ''
             )";
-        if (DbConnectionFactory.IsMariaDb)
-            cmd.CommandText = cmd.CommandText.Replace("AUTOINCREMENT", "AUTO_INCREMENT");
         try { cmd.ExecuteNonQuery(); } catch { }
     }
 

@@ -28,8 +28,7 @@ public static class AttachmentService
     {
         if (DbConnectionFactory.TableExists(conn, TableName)) return;
         using var cmd = conn.CreateCommand();
-        if (DbConnectionFactory.IsMariaDb)
-            cmd.CommandText = $@"
+        cmd.CommandText = $@"
                 CREATE TABLE IF NOT EXISTS `{TableName}` (
                     `_id`       INT          NOT NULL AUTO_INCREMENT,
                     `sample_id` INT          NOT NULL,
@@ -38,15 +37,6 @@ public static class AttachmentService
                     `등록일시`  DATETIME     DEFAULT CURRENT_TIMESTAMP,
                     PRIMARY KEY (`_id`)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
-        else
-            cmd.CommandText = $@"
-                CREATE TABLE IF NOT EXISTS `{TableName}` (
-                    `_id`       INTEGER PRIMARY KEY AUTOINCREMENT,
-                    `sample_id` INTEGER NOT NULL,
-                    `원본파일명` TEXT    NOT NULL,
-                    `저장경로`  TEXT    NOT NULL,
-                    `등록일시`  TEXT    DEFAULT (datetime('now','localtime'))
-                );";
         cmd.ExecuteNonQuery();
         Debug.WriteLine($"[Attachment] 테이블 생성: {TableName}");
     }

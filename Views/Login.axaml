@@ -73,6 +73,22 @@
             </Setter>
         </Style>
 
+        <!-- ══ DB 선택 ComboBox — 항상 테두리/배경 표시 ══ -->
+        <Style Selector="ComboBox#cmbDb /template/ Border#Background">
+            <Setter Property="Background" Value="#F8FAFF"/>
+            <Setter Property="BorderBrush" Value="#D1D5DB"/>
+            <Setter Property="BorderThickness" Value="1.5"/>
+            <Setter Property="CornerRadius" Value="8"/>
+        </Style>
+        <Style Selector="ComboBox#cmbDb:pointerover /template/ Border#Background">
+            <Setter Property="Background" Value="#F0F4FF"/>
+            <Setter Property="BorderBrush" Value="#3B6FE8"/>
+        </Style>
+        <Style Selector="ComboBox#cmbDb:focus /template/ Border#Background">
+            <Setter Property="BorderBrush" Value="#3B6FE8"/>
+            <Setter Property="BorderThickness" Value="2"/>
+        </Style>
+
         <!-- ══ 회원가입 링크 호버 효과 ══ -->
         <Style Selector="TextBlock#lnkSignUp">
             <Setter Property="Transitions">
@@ -140,8 +156,9 @@
             </Border>
         </Border>
 
-        <!-- 로그인 카드 -->
+        <!-- 로그인 카드 (초기화 완료 후 표시) -->
         <Border x:Name="loginForm"
+                IsVisible="False"
                 Background="White"
                 CornerRadius="16"
                 Padding="48,40"
@@ -173,6 +190,18 @@
                     </StackPanel>
                 </Grid>
 
+                <!-- DB 선택 -->
+                <StackPanel Spacing="5">
+                    <TextBlock Text="데이터베이스" FontSize="{DynamicResource FontSizeSM}" FontWeight="SemiBold"
+                               Foreground="#6B7280"/>
+                    <ComboBox x:Name="cmbDb"
+                              HorizontalAlignment="Stretch"
+                              Padding="10,9"
+                              FontSize="{DynamicResource FontSizeBase}"
+                              FontFamily="avares://ETA/Assets/Fonts#Pretendard"
+                              SelectionChanged="CmbDb_SelectionChanged"/>
+                </StackPanel>
+
                 <!-- 사번 입력 -->
                 <StackPanel Spacing="10">
                     <TextBlock Text="사번" FontSize="{DynamicResource FontSizeLG}" FontWeight="SemiBold"
@@ -203,6 +232,14 @@
                            HorizontalAlignment="Center"/>
 
                 <!-- 버튼들 -->
+                <!-- 로그인 처리 중 진행 표시 -->
+                <ProgressBar x:Name="pbLoginLoading"
+                             IsVisible="False"
+                             IsIndeterminate="True"
+                             Height="4"
+                             CornerRadius="2"
+                             Margin="0,4,0,0"/>
+
                 <StackPanel Spacing="10" Margin="0,8,0,0">
                     <Button Content="로그인" Click="Login_Click"
                             FontSize="{DynamicResource FontSizeLG}" FontWeight="SemiBold"
@@ -248,49 +285,67 @@
                     </Grid>
                 </StackPanel>
 
-                <!-- DB 모드 토글 -->
-                <Border Background="#F0F4FF" CornerRadius="8" Padding="12,8"
-                        BorderBrush="{DynamicResource LoginCardBorder}" BorderThickness="1">
-                    <Grid ColumnDefinitions="*,Auto">
-                        <StackPanel Grid.Column="0" Spacing="2" VerticalAlignment="Center">
-                            <TextBlock x:Name="txtDbMode" Text="로컬 DB"
-                                       FontSize="{DynamicResource FontSizeMD}" FontWeight="SemiBold"
-                                       Foreground="#374151"/>
-                            <TextBlock x:Name="txtDbStatus" Text="SQLite (오프라인)"
-                                       FontSize="{DynamicResource FontSizeSM}" Foreground="#6B7280"/>
-                        </StackPanel>
-                        <!-- Dark 테마에서도 보이도록 커스텀 토글 버튼으로 대체 -->
-                        <Border Grid.Column="1"
-                                x:Name="toggleDbMode"
-                                Width="48" Height="26"
-                                CornerRadius="13"
-                                Background="#D1D5DB"
-                                VerticalAlignment="Center"
-                                Margin="8,0,0,0"
-                                Cursor="Hand"
-                                PointerPressed="DbModeToggle_Click">
-                            <Border.Transitions>
-                                <Transitions>
-                                    <BrushTransition Property="Background" Duration="0:0:0.2" Easing="CubicEaseInOut"/>
-                                </Transitions>
-                            </Border.Transitions>
-                            <Border x:Name="toggleKnob"
-                                    Width="20" Height="20"
-                                    CornerRadius="10"
-                                    Background="White"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Center"
-                                    Margin="3,0,0,0">
-                                <Border.Transitions>
-                                    <Transitions>
-                                        <ThicknessTransition Property="Margin" Duration="0:0:0.2" Easing="CubicEaseInOut"/>
-                                    </Transitions>
-                                </Border.Transitions>
-                            </Border>
-                        </Border>
-                    </Grid>
-                </Border>
 
+            </StackPanel>
+        </Border>
+
+        <!-- 앱 시작 초기화 오버레이 -->
+        <Border x:Name="startupOverlay"
+                Background="White"
+                CornerRadius="16"
+                Padding="48,40"
+                Width="380"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center">
+            <Border.BoxShadow>0 8 32 0 #1A3B6FE8</Border.BoxShadow>
+            <StackPanel Spacing="20">
+                <!-- 로고 -->
+                <Grid ColumnDefinitions="Auto,*">
+                    <Image Grid.Column="0"
+                           Source="avares://ETA/Assets/icons/ETA.ico"
+                           Width="64" Height="64"
+                           Stretch="Uniform"
+                           VerticalAlignment="Center"
+                           Margin="0,0,12,0"/>
+                    <StackPanel Grid.Column="1" Spacing="4" VerticalAlignment="Center">
+                        <TextBlock Text="RENEWUS ETA SYSTEM" FontSize="17" FontWeight="Bold"
+                                   Foreground="#003cc9"/>
+                        <TextBlock Text="TEAM Professional WATER ANALYSIS CENTER"
+                                   FontSize="9" Foreground="#9CA3AF" TextWrapping="Wrap"/>
+                        <TextBlock Text="Presented by 1110x v1.0" FontSize="10"
+                                   FontFamily="avares://ETA/Assets/Fonts#Pretendard"
+                                   Foreground="#5a2da1"/>
+                    </StackPanel>
+                </Grid>
+                <!-- 진행 표시 -->
+                <StackPanel Spacing="8" Margin="0,8,0,0">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock x:Name="txtStartupStatus"
+                                   Grid.Column="0"
+                                   Text="시스템 초기화 중..."
+                                   FontSize="13"
+                                   FontFamily="avares://ETA/Assets/Fonts#Pretendard"
+                                   Foreground="#6B7280"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock x:Name="txtStartupPct"
+                                   Grid.Column="1"
+                                   Text="0%"
+                                   FontSize="11"
+                                   FontFamily="avares://ETA/Assets/Fonts#Pretendard"
+                                   Foreground="#9CA3AF"
+                                   VerticalAlignment="Center"/>
+                    </Grid>
+                    <ProgressBar x:Name="pbStartup"
+                                 Minimum="0" Maximum="100" Value="0"
+                                 Height="7"
+                                 CornerRadius="4">
+                        <ProgressBar.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Value" Duration="0:0:0.35" Easing="CubicEaseOut"/>
+                            </Transitions>
+                        </ProgressBar.Transitions>
+                    </ProgressBar>
+                </StackPanel>
             </StackPanel>
         </Border>
     </Grid>

@@ -8,9 +8,15 @@ namespace ETA.Services.SERVICE2;
 
 public static class FacilityResultService
 {
+    // ── 메모리 캐시 ──────────────────────────────────────────────────────────
+    private static List<string>? _facilityNamesCache;
+    private static List<(string 시설명, string 시료명, int 마스터Id)>? _masterSamplesCache;
+    public static void InvalidateCache() { _facilityNamesCache = null; _masterSamplesCache = null; }
+
     // ── 시설명 목록 (처리시설_마스터에서 DISTINCT) ─────────────────────────
     public static List<string> GetFacilityNames()
     {
+        if (_facilityNamesCache != null) return _facilityNamesCache;
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
@@ -18,6 +24,7 @@ public static class FacilityResultService
         var list = new List<string>();
         using var reader = cmd.ExecuteReader();
         while (reader.Read()) list.Add(reader.GetString(0));
+        _facilityNamesCache = list;
         return list;
     }
 
@@ -179,9 +186,48 @@ public static class FacilityResultService
         }
     }
 
+    // ── 해당 일자에 처리시설 측정결과가 하나라도 있는지 ─────────────────────
+    public static bool HasResultsForDate(string date)
+    {
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT COUNT(*) FROM `처리시설_측정결과` WHERE 채취일자=@d";
+        cmd.Parameters.AddWithValue("@d", date);
+        var val = cmd.ExecuteScalar();
+        return Convert.ToInt64(val ?? 0L) > 0;
+    }
+
+    // ── 해당 일자 처리시설 항목별 입력 현황 (모든 시설 합산) ─────────────────
+    public static (bool BOD, bool TOC, bool SS, bool TN, bool TP, bool 대장균)
+        GetFillStatusForDate(string date)
+    {
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+        using var cmd = conn.CreateCommand();
+        // 활성화된 항목 중 값이 존재하는 행이 하나라도 있으면 true
+        cmd.CommandText = @"
+            SELECT
+                SUM(CASE WHEN m.BOD   LIKE 'O%' AND COALESCE(r.BOD,  '') <> '' THEN 1 ELSE 0 END),
+                SUM(CASE WHEN m.TOC   LIKE 'O%' AND COALESCE(r.TOC,  '') <> '' THEN 1 ELSE 0 END),
+                SUM(CASE WHEN m.SS    LIKE 'O%' AND COALESCE(r.SS,   '') <> '' THEN 1 ELSE 0 END),
+                SUM(CASE WHEN m.`T-N` LIKE 'O%' AND COALESCE(r.`T-N`,'') <> '' THEN 1 ELSE 0 END),
+                SUM(CASE WHEN m.`T-P` LIKE 'O%' AND COALESCE(r.`T-P`,'') <> '' THEN 1 ELSE 0 END),
+                SUM(CASE WHEN m.총대장균군 LIKE 'O%' AND COALESCE(r.총대장균군,'') <> '' THEN 1 ELSE 0 END)
+            FROM `처리시설_마스터` m
+            LEFT JOIN `처리시설_측정결과` r ON r.마스터_id=m.id AND r.채취일자=@d";
+        cmd.Parameters.AddWithValue("@d", date);
+        using var reader = cmd.ExecuteReader();
+        if (!reader.Read()) return default;
+        static bool Pos(object v) => v is not DBNull && Convert.ToInt64(v) > 0;
+        return (Pos(reader[0]), Pos(reader[1]), Pos(reader[2]),
+                Pos(reader[3]), Pos(reader[4]), Pos(reader[5]));
+    }
+
     // ── 전체 시설의 시료명 목록 (분류용) ─────────────────────────────────
     public static List<(string 시설명, string 시료명, int 마스터Id)> GetAllMasterSamples()
     {
+        if (_masterSamplesCache != null) return _masterSamplesCache;
         var list = new List<(string, string, int)>();
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
@@ -190,7 +236,26 @@ public static class FacilityResultService
         using var r = cmd.ExecuteReader();
         while (r.Read())
             list.Add((r.GetString(1), r.GetString(2), Convert.ToInt32(r.GetValue(0))));
+        _masterSamplesCache = list;
         return list;
+    }
+
+    // ── 마스터 비고 딕셔너리 (masterId → 비고) ───────────────────────────
+    public static Dictionary<int, string> GetMasterNotes()
+    {
+        var dict = new Dictionary<int, string>();
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT id, COALESCE(비고,'') FROM `처리시설_마스터` ORDER BY id";
+            using var r = cmd.ExecuteReader();
+            while (r.Read())
+                dict[Convert.ToInt32(r.GetValue(0))] = r.GetString(1);
+        }
+        catch { }
+        return dict;
     }
 
     // ── 시료명으로 시설 검색 (부분일치) ──────────────────────────────────

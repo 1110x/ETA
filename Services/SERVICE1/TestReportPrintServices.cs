@@ -281,7 +281,6 @@ public static class TestReportPrintService
     private static (string companyName, string representative) GetContractInfo(string 약칭)
     {
         if (string.IsNullOrEmpty(약칭)) return ("", "");
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) { Debug.WriteLine("[Print] DB없음"); return ("", ""); }
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();

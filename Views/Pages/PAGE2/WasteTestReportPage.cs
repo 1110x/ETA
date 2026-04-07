@@ -129,8 +129,8 @@ public class WasteTestReportPage : UserControl
         };
 
         _btn여수 = MakeGroupToggle("여수", true);
-        _btn율촌 = MakeGroupToggle("율촌", false);
-        _btn세풍 = MakeGroupToggle("세풍", false);
+        _btn율촌 = MakeGroupToggle("율촌", true);
+        _btn세풍 = MakeGroupToggle("세풍", true);
         toolbar.Children.Add(_btn여수);
         toolbar.Children.Add(_btn율촌);
         toolbar.Children.Add(_btn세풍);

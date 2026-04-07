@@ -535,27 +535,39 @@
         <Border Grid.Row="0" Background="{DynamicResource MenuBarBg}" Padding="1">
             <Grid ColumnDefinitions="Auto,Auto,*">
 
-                <!-- 제일 왼쪽: 직원 프로필 (사진 + 이름) -->
+                <!-- 제일 왼쪽: 직원 프로필 + 하위메뉴 -->
                 <StackPanel Grid.Column="0" x:Name="ProfilePanel"
-                            Orientation="Horizontal" Spacing="6"
+                            Orientation="Horizontal" Spacing="0"
                             VerticalAlignment="Center"
-                            Margin="8,0,4,0"
-                            Cursor="Hand" PointerPressed="ProfileName_Click">
+                            Margin="4,0,0,0">
                     <Border x:Name="profilePhotoBorder"
                             Width="22" Height="22" CornerRadius="11"
                             ClipToBounds="True"
                             Background="{DynamicResource FgMuted}"
-                            VerticalAlignment="Center">
+                            VerticalAlignment="Center"
+                            Margin="4,0,0,0"
+                            Cursor="Hand" PointerPressed="ProfileName_Click">
                         <Image x:Name="profilePhoto"
                                Stretch="UniformToFill"
                                IsVisible="False"/>
                     </Border>
-                    <TextBlock x:Name="profileName"
-                               Text="..."
-                               FontSize="12"
-                               VerticalAlignment="Center"
-                               Foreground="{DynamicResource AppFg}"
-                               Cursor="Hand"/>
+                    <Menu Background="Transparent" VerticalAlignment="Center">
+                        <MenuItem Padding="6,0"
+                                  Background="Transparent"
+                                  BorderThickness="0">
+                            <MenuItem.Header>
+                                <TextBlock x:Name="profileName"
+                                           Text="..."
+                                           FontSize="12"
+                                           VerticalAlignment="Center"
+                                           Foreground="{DynamicResource AppFg}"/>
+                            </MenuItem.Header>
+                            <MenuItem Header="나의 업무" Click="ProfileName_MenuClick"/>
+                            <Separator/>
+                            <MenuItem Header="⏻  로그아웃" Click="Logout_Click"
+                                      Foreground="#EF4444"/>
+                        </MenuItem>
+                    </Menu>
                 </StackPanel>
 
                 <!-- 메뉴 -->
@@ -564,52 +576,53 @@
 
                     <MenuItem Header="수질분석센터" x:Name="MenuItemWaterCenter">
                         <MenuItem Header="직원정보" x:Name="MenuItemAgentInfo" Click="Agent_Click"/>
-                        <MenuItem Header="계약업체"    Click="Contract_Click"/>
-                        <MenuItem Header="견적/의뢰서" Click="Quotation_Click"/>
-                        <MenuItem Header="거래명세발행"    Click="QuotationIssuing_Click"/>
-                        <MenuItem Header="시험성적서"  Click="TestReport_Click"/>
-                        <MenuItem Header="DB Migration" Click="DbMigration_Click"/>
+                        <MenuItem Header="계약업체"    x:Name="MenuItemContract"       Click="Contract_Click"/>
+                        <MenuItem Header="견적/의뢰서" x:Name="MenuItemQuotation"     Click="Quotation_Click"/>
+                        <MenuItem Header="거래명세발행"    x:Name="MenuItemQuotationIssue" Click="QuotationIssuing_Click"/>
+                        <MenuItem Header="시험성적서"  x:Name="MenuItemTestReport"     Click="TestReport_Click"/>
+                        <MenuItem Header="DB Migration" x:Name="MenuItemDbMigration" Click="DbMigration_Click"/>
                     </MenuItem>
 
-                    <MenuItem Header="비용부담금">
-                        <MenuItem Header="폐수배출업소"   Click="WasteCompany_Click"/>
+                    <MenuItem Header="비용부담금" x:Name="MenuItemWaste">
+                        <MenuItem Header="폐수배출업소"   x:Name="MenuItemWasteCompany"    Click="WasteCompany_Click"/>
                         <MenuItem Header="자료 조회"      Click="WasteDataQuery_Click" IsEnabled="False" Opacity="0.4"/>
-                        <MenuItem Header="분석의뢰리스트" Click="WasteSampleList_Click"/>
-                        <MenuItem Header="시험성적서"  Click="WasteTestReport_Click"/>
+                        <MenuItem Header="분석의뢰리스트" x:Name="MenuItemWasteSampleList" Click="WasteSampleList_Click"/>
+                        <MenuItem Header="시험성적서"  x:Name="MenuItemWasteTestReport" Click="WasteTestReport_Click"/>
                         <MenuItem Header="자료검토"    IsEnabled="False" Opacity="0.4"/>
                         <MenuItem Header="테스트"      IsEnabled="False" Opacity="0.4"/>
                     </MenuItem>
 
                     <MenuItem Header="처리시설" x:Name="MenuItemFacility">
-                        <MenuItem Header="분석계획" Click="AnalysisPlan_Click"/>
+                        <MenuItem Header="분석계획" x:Name="MenuItemProcessingFacility" Click="AnalysisPlan_Click"/>
                     </MenuItem>
 
                     <MenuItem Header="분석결과입력" x:Name="MenuItemAnalysisInput">
-                        <MenuItem Header="수질분석센터" Tag="수질분석센터" Click="WasteAnalysisInput_Click"/>
-                        <MenuItem Header="비용부담금/처리시설" Tag="비용부담금/처리시설" Click="WasteAnalysisInput_Click"/>
+                        <MenuItem Header="수질분석센터" Tag="수질분석센터" x:Name="MenuItemWasteAnalysisInputWater" Click="WasteAnalysisInput_Click"/>
+                        <MenuItem Header="비용부담금/처리시설" Tag="비용부담금/처리시설" x:Name="MenuItemWasteAnalysisInputWaste" Click="WasteAnalysisInput_Click"/>
                     </MenuItem>
 
                     <MenuItem Header="결과 제출" x:Name="MenuItemResultSubmit">
-                        <MenuItem Header="측정인" Click="ResultSubmitMeasure_Click"/>
-                        <MenuItem Header="ERP"    Click="ResultSubmitErp_Click"/>
+                        <MenuItem Header="측정인" x:Name="MenuItemResultSubmitMeasure" Click="ResultSubmitMeasure_Click"/>
+                        <MenuItem Header="ERP"    x:Name="MenuItemResultSubmitErp"     Click="ResultSubmitErp_Click"/>
                         <MenuItem Header="Zero4"  Click="ResultSubmitZero4_Click"  IsEnabled="False" Opacity="0.4"/>
                     </MenuItem>
 
                     <MenuItem Header="일정업무관리" x:Name="MenuItemSchedule">
-                        <MenuItem Header="보수요청"    Click="Repair_Click"/>
-                        <MenuItem Header="물품구매"    Click="Purchase_Click"/>
+                        <MenuItem Header="보수요청"    x:Name="MenuItemRepair"   Click="Repair_Click"/>
+                        <MenuItem Header="물품구매"    x:Name="MenuItemPurchase" Click="Purchase_Click"/>
                         <MenuItem Header="계약업체 채수" IsEnabled="False" Opacity="0.4"/>
-                        <MenuItem Header="출장/일정 관리" Click="Schedule_Click"/>
+                        <MenuItem Header="출장/일정 관리" x:Name="MenuItemSchedule2" Click="Schedule_Click"/>
                     </MenuItem>
 
                     <MenuItem Header="리스크관리" x:Name="MenuItemRisk">
-                        <MenuItem Header="시약관리"  Click="Reagent_Click"/>
+                        <MenuItem Header="시약관리"  x:Name="MenuItemReagent" Click="Reagent_Click"/>
                         <MenuItem Header="초자관리"  Click="Glassware_Click" IsEnabled="False"/>
                     </MenuItem>
 
                     <MenuItem Header="권한관리" x:Name="PermissionMenu">
-                        <MenuItem Header="센터명칭"         Click="WaterQualityNameReconcile_Click"/>
-                        <MenuItem Header="폐수배출업소명칭"  Click="WasteNameReconcile_Click"/>
+                        <MenuItem Header="센터명칭"         x:Name="MenuItemWaterQualityNameReconcile" Click="WaterQualityNameReconcile_Click"/>
+                        <MenuItem Header="폐수배출업소명칭"  x:Name="MenuItemWasteNameReconcile"          Click="WasteNameReconcile_Click"/>
+                        <MenuItem Header="접근관리"         Click="Access_Click" x:Name="MenuItemAccess"/>
                     </MenuItem>
                 </Menu>
 

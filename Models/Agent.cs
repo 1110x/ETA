@@ -15,6 +15,7 @@ public class Agent
     public string   자격사항         { get; set; } = string.Empty;
     public string   Email            { get; set; } = string.Empty;
     public string   기타             { get; set; } = string.Empty;
+    public string   부서             { get; set; } = string.Empty;
     public string   측정인고유번호   { get; set; } = string.Empty;
 
     // 사진 파일 경로 (Data/Photos/ 기준 상대경로 또는 절대경로)

@@ -90,19 +90,9 @@ public static class AppInstaller
     // ── 설치 여부 확인 ────────────────────────────────────────────────────────
     public static bool IsInstalled(InstallItem item)
     {
+        // CheckPath만 확인 (PATH 순회 제거 — 네트워크 드라이브 hang 방지)
         if (!string.IsNullOrEmpty(item.CheckPath) && File.Exists(item.CheckPath))
             return true;
-
-        // PATH 에서도 탐색
-        if (!string.IsNullOrEmpty(item.CheckPath))
-        {
-            var fileName = Path.GetFileName(item.CheckPath);
-            var pathEnv  = Environment.GetEnvironmentVariable("PATH") ?? "";
-            foreach (var dir in pathEnv.Split(Path.PathSeparator))
-            {
-                if (File.Exists(Path.Combine(dir, fileName))) return true;
-            }
-        }
         return false;
     }
 

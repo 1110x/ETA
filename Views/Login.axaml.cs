@@ -7,8 +7,10 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Styling;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using ETA.Services;
 using ETA.Services.SERVICE1;
@@ -42,34 +44,26 @@ public partial class Login : Window
         Loaded += OnLoaded;
         Log("========== 로그인 창 시작 ==========");
 
-        try
-        {
-            Log("[Init] MigrateAccountColumns 시작");
-            AgentService.MigrateAccountColumns();
-            Log("[Init] MigrateAccountColumns 완료");
-        }
-        catch (Exception ex) { Log($"[Init] MigrateAccountColumns 실패: {ex}"); }
-
-        try
-        {
-            Log("[Init] MigrateInitialPasswords 시작");
-            AgentService.MigrateInitialPasswords();
-            Log("[Init] MigrateInitialPasswords 완료");
-        }
-        catch (Exception ex) { Log($"[Init] MigrateInitialPasswords 실패: {ex}"); }
-
-        try
-        {
-            Log("[Init] SyncAllPhotosToDb 시작");
-            AgentService.SyncAllPhotosToDb();
-            Log("[Init] SyncAllPhotosToDb 완료");
-        }
-        catch (Exception ex) { Log($"[Init] SyncAllPhotosToDb 실패: {ex}"); }
-
-
-
         txtEmail.KeyDown    += (_, e) => { if (e.Key == Key.Enter) txtPassword.Focus(); };
         txtPassword.KeyDown += (_, e) => { if (e.Key == Key.Enter) DoLogin(); };
+    }
+
+    // ── DB 선택 ComboBox ──────────────────────────────────────────────────────
+    private record DbPeriodItem(string DbName, string Label)
+    {
+        public override string ToString() => Label;
+    }
+
+    private bool _dbSelectionChanging = false;
+
+    private void CmbDb_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (_dbSelectionChanging) return;
+        if (cmbDb?.SelectedItem is DbPeriodItem item)
+        {
+            DbPathHelper.SetActiveDb(item.DbName);
+            Log($"[DB선택] → {item.DbName}");
+        }
     }
 
     private bool _isLoggingIn = false; // 중복 실행 방지
@@ -80,14 +74,14 @@ public partial class Login : Window
     {
         if (_isLoggingIn) { Log("[DoLogin] 중복 호출 차단"); return; }
         _isLoggingIn = true;
+        pbLoginLoading.IsVisible = true;
 
         try
         {
         Log("---------- 로그인 시도 ----------");
-        Log($"[DoLogin] DB 모드: {(DbConnectionFactory.UseMariaDb ? "MariaDB" : "SQLite")}");
 
-        // MariaDB 모드인데 연결 문자열이 없으면 차단
-        if (DbConnectionFactory.UseMariaDb && string.IsNullOrEmpty(DbPathHelper.MariaDbConnectionString))
+        // MariaDB 연결 문자열 없으면 차단
+        if (string.IsNullOrEmpty(DbPathHelper.MariaDbConnectionString))
         {
             ShowError("서버 DB 연결 정보가 없습니다. appsettings.json을 확인하세요.");
             return;
@@ -158,7 +152,7 @@ public partial class Login : Window
             Log($"[DoLogin] 예외 발생: {ex.GetType().Name}: {ex.Message}");
             ShowError($"오류: {ex.Message}");
         }
-        finally { _isLoggingIn = false; }
+        finally { _isLoggingIn = false; pbLoginLoading.IsVisible = false; }
     }
 
     private async void PlayLottieAndNavigate(string empId)
@@ -191,14 +185,30 @@ public partial class Login : Window
 
             // ── Step 2: 처리시설 / 폐수 테이블 마이그레이션 ───────────────────
             SetProgress("테이블 초기화 중...", 22);
-            await Task.Run(() => FacilityDbMigration.EnsureTables());
-            SetProgress("테이블 준비 완료", 55);
+            try
+            {
+                await Task.Run(() => FacilityDbMigration.EnsureTables());
+                SetProgress("테이블 준비 완료", 55);
+            }
+            catch (Exception ex)
+            {
+                Log($"[Init] Step2 FacilityDbMigration 실패: {ex}");
+                SetProgress($"⚠ 테이블 초기화 실패: {ex.Message}", 55);
+            }
             await Task.Delay(150);
 
             // ── Step 3: 견적 테이블 초기화 ────────────────────────────────────
             SetProgress("견적 데이터 준비 중...", 55);
-            await Task.Run(() => QuotationService.EnsureQuotationIssueTable());
-            SetProgress("데이터 준비 완료", 82);
+            try
+            {
+                await Task.Run(() => QuotationService.EnsureQuotationIssueTable());
+                SetProgress("데이터 준비 완료", 82);
+            }
+            catch (Exception ex)
+            {
+                Log($"[Init] Step3 QuotationService 실패: {ex}");
+                SetProgress($"⚠ 견적 초기화 실패: {ex.Message}", 82);
+            }
             await Task.Delay(150);
 
             // ── Step 4: 완료 ──────────────────────────────────────────────────
@@ -209,8 +219,8 @@ public partial class Login : Window
         }
         catch (Exception ex)
         {
-            Log($"[Init] 초기화 오류: {ex.Message}");
-            SetProgress("⚠ 일부 항목 로드 실패 — 계속 진행", 100);
+            Log($"[Init] DB연결 오류: {ex}");
+            SetProgress($"⚠ DB 연결 실패: {ex.Message}", 100);
             await Task.Delay(700);
         }
 
@@ -264,52 +274,80 @@ public partial class Login : Window
     private void SignUp_Click(object? sender, PointerPressedEventArgs e)
         => new SignUpWindow().ShowDialog(this);
 
-    private void OnLoaded(object? sender, RoutedEventArgs e)
+    private async void OnLoaded(object? sender, RoutedEventArgs e)
     {
-        UpdateDbModeVisual();
+        var _sw = System.Diagnostics.Stopwatch.StartNew();
+        void LogT(string msg) => Log($"[Init] {msg} ({_sw.ElapsedMilliseconds}ms)");
 
-        // MariaDB 연결 문자열이 없으면 서버 토글 비활성화
-        if (string.IsNullOrEmpty(DbPathHelper.MariaDbConnectionString))
+        // ── 단계별 진행상황 표시하며 초기화 ──
+
+        // ── Step 0: DB 선택 ComboBox (기본 eta_db, ETAS* 목록은 백그라운드 로드) ──
+        _dbSelectionChanging = true;
+        if (cmbDb != null)
         {
-            if (toggleDbMode != null) toggleDbMode.IsEnabled = false;
-            if (txtDbStatus  != null) txtDbStatus.Text = "appsettings.json 없음";
-            if (txtDbMode    != null) txtDbMode.Foreground = Avalonia.Media.Brush.Parse("#9CA3AF");
-            Log("[DB모드] MariaDbConnectionString 미설정 → 서버 토글 비활성화");
+            cmbDb.ItemsSource = new[] { new DbPeriodItem(DbPathHelper.ConfigDbName, $"{DbPathHelper.ConfigDbName}  ★ 기존") };
+            cmbDb.SelectedIndex = 0;
         }
+        _dbSelectionChanging = false;
+        // ETAS* DB 목록은 백그라운드에서 비동기 추가 (느려도 로그인 차단 안 함)
+        _ = Task.Run(() =>
+        {
+            try
+            {
+                var etasDbs = DbRotationService.EnsureAndGetDbs();
+                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                {
+                    if (cmbDb == null) return;
+                    _dbSelectionChanging = true;
+                    var items = new List<DbPeriodItem>
+                        { new(DbPathHelper.ConfigDbName, $"{DbPathHelper.ConfigDbName}  ★ 기존") };
+                    items.AddRange(etasDbs.Select(db =>
+                        new DbPeriodItem(db, DbRotationService.GetLabelFromDbName(db))));
+                    cmbDb.ItemsSource = items;
+                    if (cmbDb.SelectedIndex < 0) cmbDb.SelectedIndex = 0;
+                    _dbSelectionChanging = false;
+                });
+            }
+            catch { /* NAS 연결 실패 시 무시 — eta_db로 계속 진행 */ }
+        });
+
+        SetStartupProgress("계정 DB 연결 중...", 15);
+        await Task.Run(() =>
+        {
+            try { LogT("MigrateAccountColumns 시작"); AgentService.MigrateAccountColumns(); LogT("MigrateAccountColumns 완료"); }
+            catch (Exception ex) { LogT($"MigrateAccountColumns 실패: {ex.Message}"); }
+        });
+
+        SetStartupProgress("비밀번호 초기화 확인 중...", 45);
+        await Task.Run(() =>
+        {
+            try { LogT("MigrateInitialPasswords 시작"); AgentService.MigrateInitialPasswords(); LogT("MigrateInitialPasswords 완료"); }
+            catch (Exception ex) { LogT($"MigrateInitialPasswords 실패: {ex.Message}"); }
+        });
+
+        SetStartupProgress("사진 데이터 동기화 중...", 75);
+        await Task.Run(() =>
+        {
+            try { LogT("SyncAllPhotosToDb 시작"); AgentService.SyncAllPhotosToDb(); LogT("SyncAllPhotosToDb 완료"); }
+            catch (Exception ex) { LogT($"SyncAllPhotosToDb 실패: {ex.Message}"); }
+        });
+
+        LogT("전체 완료");
+        SetStartupProgress("✓ 준비 완료", 100);
+        await Task.Delay(400);
+
+        // 초기화 완료 → 로그인 폼 표시
+        startupOverlay.IsVisible = false;
+        loginForm.IsVisible = true;
+        txtEmail?.Focus();
     }
 
-    // ── DB 모드 토글 (커스텀 Border 토글) ─────────────────────────────────────
-    private void DbModeToggle_Click(object? sender, PointerPressedEventArgs e)
+    private void SetStartupProgress(string status, int value)
     {
-        bool useMariaDb = !DbConnectionFactory.UseMariaDb; // 현재 상태 반전
-
-        // MariaDB 선택인데 연결 문자열이 없으면 차단
-        if (useMariaDb && string.IsNullOrEmpty(DbPathHelper.MariaDbConnectionString))
-        {
-            ShowError("서버 DB 연결 설정(appsettings.json)이 없습니다.");
-            return;
-        }
-
-        DbConnectionFactory.UseMariaDb = useMariaDb;
-        UpdateDbModeVisual();
-        Log($"[DB모드] {(useMariaDb ? "서버 DB (MariaDB)" : "로컬 DB (SQLite)")} 선택");
-    }
-
-    private void UpdateDbModeVisual()
-    {
-        bool on = DbConnectionFactory.UseMariaDb;
-
-        // 트랙 색상
-        if (toggleDbMode != null)
-            toggleDbMode.Background = Avalonia.Media.Brush.Parse(on ? "#6366F1" : "#D1D5DB");
-
-        // 녹 위치 (ON: 오른쪽, OFF: 왼쪽)
-        if (toggleKnob != null)
-            toggleKnob.Margin = new Avalonia.Thickness(on ? 25 : 3, 0, 0, 0);
-
-        // 텍스트
-        if (txtDbMode   != null) txtDbMode.Text   = on ? "서버 DB"  : "로컬 DB";
-        if (txtDbStatus != null) txtDbStatus.Text = on ? "CHUNGHA DB (온라인)" : "SQLite (오프라인)";
+        if (txtStartupStatus != null) txtStartupStatus.Text = status;
+        if (pbStartup        != null) pbStartup.Value       = value;
+        if (txtStartupPct    != null) txtStartupPct.Text    = $"{value}%";
+        Log($"[Startup] {value}% — {status}");
     }
 
     // ── 이스터에그 비활성화 ────────────────────────────────────────────────

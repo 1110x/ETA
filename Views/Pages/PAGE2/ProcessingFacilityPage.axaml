@@ -62,14 +62,27 @@
                                     FontSize="{DynamicResource FontSizeBase}" Height="30"
                                     FontFamily="avares://ETA/Assets/Fonts#Pretendard"/>
 
-                <!-- 조회 버튼 -->
-                <Button x:Name="btnLoad"
-                        Content="조회"
-                        Height="30" FontSize="{DynamicResource FontSizeBase}"
-                        FontFamily="avares://ETA/Assets/Fonts#Pretendard"
-                        Background="{DynamicResource ThemeBgActiveGreen}" Foreground="{DynamicResource ThemeFgSuccess}"
-                        BorderThickness="0" CornerRadius="4"
-                        Click="BtnLoad_Click"/>
+                <!-- 조회 + 파일첨부 버튼 -->
+                <Grid ColumnDefinitions="*,8,*">
+                    <Button Grid.Column="0"
+                            x:Name="btnLoad"
+                            Content="조회"
+                            Height="30" FontSize="{DynamicResource FontSizeBase}"
+                            FontFamily="avares://ETA/Assets/Fonts#Pretendard"
+                            Background="{DynamicResource ThemeBgActiveGreen}" Foreground="{DynamicResource ThemeFgSuccess}"
+                            BorderThickness="0" CornerRadius="4"
+                            HorizontalAlignment="Stretch"
+                            Click="BtnLoad_Click"/>
+                    <Button Grid.Column="2"
+                            x:Name="btnAttach"
+                            Content="📂 파일"
+                            Height="30" FontSize="{DynamicResource FontSizeBase}"
+                            FontFamily="avares://ETA/Assets/Fonts#Pretendard"
+                            Background="{DynamicResource BtnInfoBg}" Foreground="{DynamicResource BtnInfoFg}"
+                            BorderThickness="0" CornerRadius="4"
+                            HorizontalAlignment="Stretch"
+                            Click="BtnAttach_Click"/>
+                </Grid>
 
                 <!-- 상태 텍스트 -->
                 <TextBlock x:Name="tbStatus"

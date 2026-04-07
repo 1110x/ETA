@@ -11,10 +11,13 @@ namespace ETA.Services.Common;
 public class CurrentUserManager
 {
     private static CurrentUserManager? _instance;
-    private string _currentUserId = Environment.UserName ?? "DefaultUser";
+    private string _currentUserId   = Environment.UserName ?? "DefaultUser";
+    private string _currentDept     = "";
     private static readonly object _lockObject = new object();
 
-    public string CurrentUserId => _currentUserId;
+    public string CurrentUserId   => _currentUserId;
+    /// <summary>로그인한 사용자의 부서명 (비어있으면 전체 접근)</summary>
+    public string CurrentDepartment => _currentDept;
 
     public static CurrentUserManager Instance
     {
@@ -36,8 +39,23 @@ public class CurrentUserManager
         if (!string.IsNullOrWhiteSpace(userId))
         {
             _currentUserId = userId;
-            System.Diagnostics.Debug.WriteLine($"[CurrentUserManager] 사용자 설정: {_currentUserId}");
+            _currentDept   = FetchDepartment(userId);
+            System.Diagnostics.Debug.WriteLine($"[CurrentUserManager] 사용자 설정: {_currentUserId} / 부서: {_currentDept}");
         }
+    }
+
+    private static string FetchDepartment(string userId)
+    {
+        try
+        {
+            using var conn = ETA.Services.Common.DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT `부서` FROM `Agent` WHERE `사번` = @id";
+            cmd.Parameters.AddWithValue("@id", userId);
+            return cmd.ExecuteScalar()?.ToString()?.Trim() ?? "";
+        }
+        catch { return ""; }
     }
 
     public void ResetToWindowsUser()

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Data;
 using System.Data.Common;
 using ETA.Models;
@@ -35,7 +34,6 @@ public static class PurchaseService
     public static List<PurchaseItem> GetAll()
     {
         var list   = new List<PurchaseItem>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
@@ -72,13 +70,11 @@ public static class PurchaseService
     public static List<PurchaseItem> GetByMonth(int year, int month)
     {
         var list   = new List<PurchaseItem>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return list;
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         EnsureTable(conn);
 
-        // SQLite: strftime('%Y-%m', 요청일) 로 년-월 필터
         var ym = $"{year:D4}-{month:D2}";
         var dateFmt = DbConnectionFactory.DateFmt("요청일", "%Y-%m");
 
@@ -110,7 +106,6 @@ public static class PurchaseService
     public static List<(int Year, int Month, int Count)> GetMonthSummary()
     {
         var result = new List<(int, int, int)>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return result;
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();

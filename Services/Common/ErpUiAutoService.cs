@@ -668,7 +668,11 @@ public static class ErpUiAutoService
         string clipText = "";
         var th = new Thread(() =>
         {
-            try { clipText = System.Windows.Forms.Clipboard.GetText(); }
+            try {
+                #pragma warning disable CA1416
+                clipText = System.Windows.Forms.Clipboard.GetText();
+                #pragma warning restore CA1416
+            }
             catch (Exception ex) { Log($"[GetGridSnList] 클립보드 오류: {ex.Message}"); }
         });
         th.SetApartmentState(ApartmentState.STA);

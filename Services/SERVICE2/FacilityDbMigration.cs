@@ -23,7 +23,144 @@ public static class FacilityDbMigration
         EnsureResultSubmitLog(conn);
         EnsureYeosuCompanyTable(conn);
         EnsureWasteRequestResultTable(conn);
-        MigrateDataToWasteRequestResult(conn);
+        EnsureAnalysisDataTables(conn);
+        EnsureMigrationTable(conn);
+        if (!IsMigrationDone(conn, "wasteresult_v2"))
+        {
+            MigrateDataToWasteRequestResult(conn);
+            MarkMigrationDone(conn, "wasteresult_v2");
+        }
+        else
+        {
+            Log("마이그레이션 이미 완료됨 (wasteresult_v2) — 건너뜀");
+        }
+    }
+
+    // ── 분석 원시 데이터 테이블 (*_DATA) ────────────────────────────────────
+    private static void EnsureAnalysisDataTables(DbConnection conn)
+    {
+        var ai = DbConnectionFactory.AutoIncrement;
+
+        // BOD_DATA
+        if (!DbConnectionFactory.TableExists(conn, "BOD_DATA"))
+        {
+            Exec(conn, $@"
+                CREATE TABLE `BOD_DATA` (
+                    id          INTEGER PRIMARY KEY {ai},
+                    분석일      TEXT NOT NULL,
+                    SN          TEXT NOT NULL,
+                    업체명      TEXT DEFAULT '',
+                    구분        TEXT DEFAULT '',
+                    시료량      TEXT DEFAULT '',
+                    D1          TEXT DEFAULT '',
+                    D2          TEXT DEFAULT '',
+                    희석배수    TEXT DEFAULT '',
+                    결과        TEXT DEFAULT '',
+                    식종시료량  TEXT DEFAULT '',
+                    식종D1      TEXT DEFAULT '',
+                    식종D2      TEXT DEFAULT '',
+                    식종BOD     TEXT DEFAULT '',
+                    식종함유량  TEXT DEFAULT '',
+                    등록일시    TEXT DEFAULT '',
+                    UNIQUE(분석일, SN)
+                )");
+            Log("BOD_DATA 테이블 생성");
+        }
+
+        // SS_DATA — 기존 테이블 컬럼명 불일치 수정 (한자 析U+6790·日U+65E5 → 한글 석U+C11D·일U+C77C)
+        if (DbConnectionFactory.ColumnExists(conn, "SS_DATA", "\uBD84\u6790\u65E5"))
+        {
+            try { Exec(conn, "ALTER TABLE `SS_DATA` CHANGE `\uBD84\u6790\u65E5` `\uBD84\uC11D\uC77C` TEXT NOT NULL"); Log("SS_DATA 컬럼명 한자→한글 마이그레이션 완료"); }
+            catch (Exception ex) { Log($"SS_DATA 컬럼명 마이그레이션 실패: {ex.Message}"); }
+        }
+
+        // SS_DATA
+        if (!DbConnectionFactory.TableExists(conn, "SS_DATA"))
+        {
+            Exec(conn, $@"
+                CREATE TABLE `SS_DATA` (
+                    id      INTEGER PRIMARY KEY {ai},
+                    분석일  TEXT NOT NULL,
+                    SN      TEXT NOT NULL,
+                    업체명  TEXT DEFAULT '',
+                    구분    TEXT DEFAULT '',
+                    시료량  TEXT DEFAULT '',
+                    전무게  TEXT DEFAULT '',
+                    후무게  TEXT DEFAULT '',
+                    무게차  TEXT DEFAULT '',
+                    희석배수 TEXT DEFAULT '',
+                    결과    TEXT DEFAULT '',
+                    등록일시 TEXT DEFAULT '',
+                    UNIQUE(분석일, SN)
+                )");
+            Log("SS_DATA 테이블 생성");
+        }
+
+        // NHexan_DATA (단순 결과값 형식)
+        if (!DbConnectionFactory.TableExists(conn, "NHexan_DATA"))
+        {
+            Exec(conn, $@"
+                CREATE TABLE `NHexan_DATA` (
+                    id      INTEGER PRIMARY KEY {ai},
+                    분석일  TEXT NOT NULL,
+                    SN      TEXT NOT NULL,
+                    업체명  TEXT DEFAULT '',
+                    구분    TEXT DEFAULT '',
+                    시료량  TEXT DEFAULT '',
+                    결과    TEXT DEFAULT '',
+                    등록일시 TEXT DEFAULT '',
+                    UNIQUE(분석일, SN)
+                )");
+            Log("NHexan_DATA 테이블 생성");
+        }
+
+        // TN_DATA, TP_DATA, Phenols_DATA — UvVis 형식 (흡광도/검량선_a/농도)
+        foreach (var tbl in new[] { "TN_DATA", "TP_DATA", "Phenols_DATA" })
+        {
+            if (!DbConnectionFactory.TableExists(conn, tbl))
+            {
+                Exec(conn, $@"
+                    CREATE TABLE `{tbl}` (
+                        id      INTEGER PRIMARY KEY {ai},
+                        분석일  TEXT NOT NULL,
+                        SN      TEXT NOT NULL,
+                        업체명  TEXT DEFAULT '',
+                        구분    TEXT DEFAULT '',
+                        시료량  TEXT DEFAULT '',
+                        흡광도  TEXT DEFAULT '',
+                        희석배수 TEXT DEFAULT '',
+                        검량선_a TEXT DEFAULT '',
+                        농도    TEXT DEFAULT '',
+                        등록일시 TEXT DEFAULT '',
+                        UNIQUE(분석일, SN)
+                    )");
+                Log($"{tbl} 테이블 생성");
+            }
+        }
+
+        // TOC_TCIC_DATA, TOC_NPOC_DATA — UvVis 형식
+        foreach (var tbl in new[] { "TOC_TCIC_DATA", "TOC_NPOC_DATA" })
+        {
+            if (!DbConnectionFactory.TableExists(conn, tbl))
+            {
+                Exec(conn, $@"
+                    CREATE TABLE `{tbl}` (
+                        id      INTEGER PRIMARY KEY {ai},
+                        분석일  TEXT NOT NULL,
+                        SN      TEXT NOT NULL,
+                        업체명  TEXT DEFAULT '',
+                        구분    TEXT DEFAULT '',
+                        시료량  TEXT DEFAULT '',
+                        흡광도  TEXT DEFAULT '',
+                        희석배수 TEXT DEFAULT '',
+                        검량선_a TEXT DEFAULT '',
+                        농도    TEXT DEFAULT '',
+                        등록일시 TEXT DEFAULT '',
+                        UNIQUE(분석일, SN)
+                    )");
+                Log($"{tbl} 테이블 생성");
+            }
+        }
     }
 
     // ── 처리시설_마스터 ────────────────────────────────────────────────────
@@ -57,6 +194,14 @@ public static class FacilityDbMigration
         countCmd.CommandText = "SELECT COUNT(*) FROM `처리시설_마스터`";
         if (Convert.ToInt32(countCmd.ExecuteScalar()) == 0)
             SeedFacilityMaster(conn);
+
+        // 시설명 오타 수정 (기존 DB 데이터 일괄 교정)
+        Exec(conn, "UPDATE `처리시설_마스터` SET 시설명 = '세풍' WHERE 시설명 = '세룡'");
+        Exec(conn, "UPDATE `처리시설_측정결과` SET 시설명 = '세풍' WHERE 시설명 = '세룡'");
+        Exec(conn, "UPDATE `처리시설_마스터` SET 시설명 = '해룡개인산단' WHERE 시설명 = '폐흥개인산단'");
+        Exec(conn, "UPDATE `처리시설_측정결과` SET 시설명 = '해룡개인산단' WHERE 시설명 = '폐흥개인산단'");
+        Exec(conn, "UPDATE `처리시설_마스터` SET 시설명 = REPLACE(시설명, '원내', '월내') WHERE 시설명 LIKE '%원내%'");
+        Exec(conn, "UPDATE `처리시설_측정결과` SET 시설명 = REPLACE(시설명, '원내', '월내') WHERE 시설명 LIKE '%원내%'");
     }
 
     private static void SeedFacilityMaster(DbConnection conn)
@@ -130,12 +275,12 @@ public static class FacilityDbMigration
             ("율촌처리장", "방류수",             "O","O","O","O","O","O","","","O","","O", ""),
             ("율촌처리장", "탈수케이크",         "","","","","","","","","","","O", ""),
 
-            // ── 세룡 ────────────────────────────────────────────────────────
-            ("세룡", "유입수",                   "O","O","O","O","O","O","","","","","", ""),
-            ("세룡", "유입수",                   "O","","","","","","","","","","", ""),
-            ("세룡", "유입수",                   "O","","","","","","","","","","", ""),
-            ("세룡", "분배조",                   "O","O","O","O","O","","","","","","", ""),
-            ("세룡", "방류수",                   "O","O","O","O","O","O","","","","","", ""),
+            // ── 세풍 ────────────────────────────────────────────────────────
+            ("세풍", "유입수",                   "O","O","O","O","O","O","","","","","", ""),
+            ("세풍", "유입수",                   "O","","","","","","","","","","", ""),
+            ("세풍", "유입수",                   "O","","","","","","","","","","", ""),
+            ("세풍", "분배조",                   "O","O","O","O","O","","","","","","", ""),
+            ("세풍", "방류수",                   "O","O","O","O","O","O","","","","","", ""),
 
             // ── 폐흘개인산단 ─────────────────────────────────────────────────
             ("폐흘개인산단", "유입수",           "O","O","O","O","O","O","","","","","", "주1회"),
@@ -243,7 +388,7 @@ public static class FacilityDbMigration
             Exec(conn, $@"
                 CREATE TABLE `폐수_의뢰` (
                     id          INTEGER PRIMARY KEY {DbConnectionFactory.AutoIncrement},
-                    의뢰번호    {(DbConnectionFactory.IsMariaDb ? "VARCHAR(191)" : "TEXT")} NOT NULL UNIQUE,
+                    의뢰번호    VARCHAR(191) NOT NULL UNIQUE,
                     구분        TEXT NOT NULL,
                     채취일자    TEXT NOT NULL,
                     업체명      TEXT NOT NULL,
@@ -276,7 +421,7 @@ public static class FacilityDbMigration
                 CREATE TABLE `처리시설_작업` (
                     id          INTEGER PRIMARY KEY {DbConnectionFactory.AutoIncrement},
                     마스터_id   INTEGER NOT NULL,
-                    채취일자    {(DbConnectionFactory.IsMariaDb ? "VARCHAR(20)" : "TEXT")} NOT NULL,
+                    채취일자    VARCHAR(20) NOT NULL,
                     시설명      TEXT NOT NULL,
                     시료명      TEXT NOT NULL,
                     항목목록    TEXT DEFAULT '',
@@ -299,9 +444,9 @@ public static class FacilityDbMigration
                 CREATE TABLE `폐수_결과` (
                     id          INTEGER PRIMARY KEY {DbConnectionFactory.AutoIncrement},
                     의뢰_id     INTEGER DEFAULT NULL,
-                    관리번호    {(DbConnectionFactory.IsMariaDb ? "VARCHAR(191)" : "TEXT")} NOT NULL,
+                    관리번호    VARCHAR(191) NOT NULL,
                     업체명      TEXT NOT NULL,
-                    채취일자    {(DbConnectionFactory.IsMariaDb ? "VARCHAR(50)" : "TEXT")} NOT NULL,
+                    채취일자    VARCHAR(50) NOT NULL,
                     입력자      TEXT DEFAULT '',
                     입력일시    TEXT DEFAULT '',
                     UNIQUE(관리번호, 채취일자)
@@ -1548,6 +1693,34 @@ public static class FacilityDbMigration
         using var cmd = conn.CreateCommand();
         cmd.CommandText = sql;
         cmd.ExecuteNonQuery();
+    }
+
+    // ── 마이그레이션 버전 마커 ────────────────────────────────────────
+    private static void EnsureMigrationTable(DbConnection conn)
+    {
+        Exec(conn, "CREATE TABLE IF NOT EXISTS `_eta_migration` (`key` VARCHAR(255) PRIMARY KEY, done_at TEXT)");
+    }
+
+    private static bool IsMigrationDone(DbConnection conn, string key)
+    {
+        try
+        {
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT COUNT(*) FROM `_eta_migration` WHERE key=@k";
+            cmd.Parameters.AddWithValue("@k", key);
+            return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
+        }
+        catch { return false; }
+    }
+
+    private static void MarkMigrationDone(DbConnection conn, string key)
+    {
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "INSERT OR REPLACE INTO `_eta_migration` (key, done_at) VALUES (@k, @t)";
+        cmd.Parameters.AddWithValue("@k", key);
+        cmd.Parameters.AddWithValue("@t", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+        cmd.ExecuteNonQuery();
+        Log($"마이그레이션 완료 표시: {key}");
     }
 
     private static readonly string LogPath = System.IO.Path.GetFullPath(

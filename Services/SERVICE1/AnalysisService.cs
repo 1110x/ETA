@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Data;
 using System.Data.Common;
 using ETA.Models;
@@ -14,13 +13,6 @@ public static class AnalysisService
     public static List<AnalysisItem> GetAllItems()
     {
         var items = new List<AnalysisItem>();
-
-        Console.WriteLine($"DB 경로 확인: {DbPathHelper.DbPath}");  // 여기서 로그
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath))
-        {
-            Console.WriteLine($"Database not found: {DbPathHelper.DbPath}");
-            return items;
-        }
 
         using var connection = DbConnectionFactory.CreateConnection();
         connection.Open();

@@ -1,14 +1,19 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Platform.Storage;
+using ClosedXML.Excel;
 using ETA.Models;
 using ETA.Services.SERVICE2;
 using ETA.Views;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 
 namespace ETA.Views.Pages.PAGE2;
 
@@ -186,6 +191,118 @@ public partial class ProcessingFacilityPage : UserControl
     private string GetCell(int masterId, string key)
     {
         return _cells.TryGetValue((masterId, key), out var tb) ? tb.Text ?? "" : "";
+    }
+
+    // =========================================================================
+    // 파일 첨부 → 임포트 창 띄우기
+    // =========================================================================
+    private async void BtnAttach_Click(object? sender, RoutedEventArgs e)
+    {
+        var topLevel = TopLevel.GetTopLevel(this);
+        if (topLevel == null) return;
+
+        var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = "📂 처리시설 측정결과 파일 선택",
+            AllowMultiple = false,
+            FileTypeFilter = new[]
+            {
+                new FilePickerFileType("엑셀 파일") { Patterns = new[] { "*.xlsx", "*.xls" } },
+            },
+        });
+
+        if (files.Count == 0) return;
+        var path = files[0].TryGetLocalPath();
+        if (string.IsNullOrEmpty(path)) return;
+
+        // 파일 파싱
+        var rows = ParseFacilityExcel(path);
+        if (rows.Count == 0)
+        {
+            tbStatus.Foreground = AppTheme.FgWarn;
+            tbStatus.Text = "데이터를 찾을 수 없습니다.";
+            return;
+        }
+
+        // 처리시설 마스터 로드
+        List<(string 시설명, string 시료명, int 마스터Id)> masters;
+        try { masters = FacilityResultService.GetAllMasterSamples(); }
+        catch { masters = new(); }
+
+        // 임포트 창 열기 (비모달)
+        var win = new FacilityImportWindow(path, rows, masters);
+        win.ImportConfirmed += importedRows =>
+        {
+            // 임포트된 데이터를 현재 그리드에 반영
+            tbStatus.Foreground = AppTheme.FgSuccess;
+            tbStatus.Text = $"파일 임포트 완료 ({importedRows.Count}건)";
+            // 자동 저장 또는 ResultGridChanged 갱신 가능
+        };
+        win.Show();
+    }
+
+    // ── 엑셀 파싱 (시료명 + 항목별 값) ──────────────────────────────────────
+    private static List<Dictionary<string, string>> ParseFacilityExcel(string path)
+    {
+        var result = new List<Dictionary<string, string>>();
+        try
+        {
+            using var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            using var wb = new XLWorkbook(fs);
+            var ws = wb.Worksheets.First();
+
+            // 1행: 헤더 행 찾기 (시료명 포함된 행)
+            int headerRow = -1;
+            int nameCol   = -1;
+            for (int r = 1; r <= Math.Min(10, ws.LastRowUsed()?.RowNumber() ?? 10); r++)
+            {
+                for (int c = 1; c <= Math.Min(20, ws.LastColumnUsed()?.ColumnNumber() ?? 20); c++)
+                {
+                    var val = ws.Cell(r, c).GetString().Trim();
+                    if (val.Contains("시료명") || val.Contains("채취지점") || val.Contains("구분"))
+                    {
+                        headerRow = r;
+                        nameCol   = c;
+                        break;
+                    }
+                }
+                if (headerRow > 0) break;
+            }
+
+            if (headerRow < 0) return result;
+
+            // 헤더 컬럼명 수집
+            var colMap = new Dictionary<int, string>(); // colIndex → 항목명
+            colMap[nameCol] = "시료명";
+            int lastCol = ws.LastColumnUsed()?.ColumnNumber() ?? 30;
+            for (int c = nameCol + 1; c <= lastCol; c++)
+            {
+                var h = ws.Cell(headerRow, c).GetString().Trim();
+                if (!string.IsNullOrEmpty(h))
+                    colMap[c] = h;
+            }
+
+            // 데이터 행 파싱
+            int lastRow = ws.LastRowUsed()?.RowNumber() ?? 100;
+            for (int r = headerRow + 1; r <= lastRow; r++)
+            {
+                var name = ws.Cell(r, nameCol).GetString().Trim();
+                if (string.IsNullOrEmpty(name)) continue;
+
+                var row = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                    { ["시료명"] = name };
+                foreach (var (col, key) in colMap)
+                {
+                    if (col == nameCol) continue;
+                    var v = ws.Cell(r, col).GetString().Trim();
+                    if (!string.IsNullOrEmpty(v))
+                        row[key] = v;
+                }
+                result.Add(row);
+            }
+        }
+        catch (Exception ex) { Debug.WriteLine($"[FacilityImport] 파싱 오류: {ex.Message}"); }
+        return result;
     }
 
     // =========================================================================

@@ -70,9 +70,7 @@ public static class WasteRequestService
         long reqId;
         using (var idCmd = conn.CreateCommand())
         {
-            idCmd.CommandText = DbConnectionFactory.IsMariaDb
-                ? "SELECT LAST_INSERT_ID()"
-                : "SELECT last_insert_rowid()";
+            idCmd.CommandText = "SELECT LAST_INSERT_ID()";
             reqId = Convert.ToInt64(idCmd.ExecuteScalar());
         }
 
@@ -205,11 +203,7 @@ public static class WasteRequestService
 
             // INSERT OR IGNORE (UNIQUE on 마스터_id, 채취일자)
             using var ins = conn.CreateCommand();
-            ins.CommandText = DbConnectionFactory.IsMariaDb
-                ? @"INSERT IGNORE INTO `처리시설_작업`
-                       (마스터_id, 채취일자, 시설명, 시료명, 항목목록, 상태)
-                    VALUES (@mid, @d, @f, @s, @h, '미담')"
-                : @"INSERT OR IGNORE INTO `처리시설_작업`
+            ins.CommandText = @"INSERT IGNORE INTO `처리시설_작업`
                        (마스터_id, 채취일자, 시설명, 시료명, 항목목록, 상태)
                     VALUES (@mid, @d, @f, @s, @h, '미담')";
             ins.Parameters.AddWithValue("@mid", m.id);

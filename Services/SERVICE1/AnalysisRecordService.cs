@@ -37,7 +37,6 @@ public static class AnalysisRecordService
         var groups = new Dictionary<string, List<Dictionary<string, string>>>(
             StringComparer.OrdinalIgnoreCase);
 
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return groups;
         try
         {
             var rows         = GetOrderRows(견적번호);
@@ -59,7 +58,6 @@ public static class AnalysisRecordService
     public static List<(string 시료명, string 항목)> GetIncompleteItems(IEnumerable<string> quotationNos)
     {
         var result = new List<(string, string)>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return result;
         try
         {
             var analysisCols = OrderRequestService.GetAnalysisColumns()
@@ -164,7 +162,6 @@ public static class AnalysisRecordService
     // ── 내부: 분석자/날짜로 담당자 조회 ─────────────────────────────────
     private static string? GetAssigneeForAnalyte(string analyteName, DateTime date)
     {
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return null;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
@@ -268,7 +265,6 @@ public static class AnalysisRecordService
     private static List<Dictionary<string, string>> GetOrderRows(string 견적번호)
     {
         var result = new List<Dictionary<string, string>>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return result;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
@@ -292,7 +288,6 @@ public static class AnalysisRecordService
     private static Dictionary<string, Dictionary<string, string>> Get방류기준표Internal()
     {
         var map = new Dictionary<string, Dictionary<string, string>>(StringComparer.OrdinalIgnoreCase);
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return map;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();

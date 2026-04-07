@@ -53,18 +53,9 @@ public static class CompanyRenameService
             if (DbConnectionFactory.ColumnExists(conn, "시료명칭", oldName))
             {
                 using var alterCmd = conn.CreateCommand();
-                if (DbConnectionFactory.IsMariaDb)
-                {
-                    // MariaDB: CHANGE COLUMN 구문 사용 (컬럼 타입 유지를 위해 TEXT 지정)
-                    alterCmd.CommandText =
-                        $"ALTER TABLE `시료명칭` CHANGE COLUMN `{EscapeBacktick(oldName)}` `{EscapeBacktick(newName)}` TEXT";
-                }
-                else
-                {
-                    // SQLite 3.25+: RENAME COLUMN 지원
-                    alterCmd.CommandText =
-                        $"ALTER TABLE `시료명칭` RENAME COLUMN `{EscapeBacktick(oldName)}` TO `{EscapeBacktick(newName)}`";
-                }
+                // MariaDB: CHANGE COLUMN 구문 사용 (컬럼 타입 유지를 위해 TEXT 지정)
+                alterCmd.CommandText =
+                    $"ALTER TABLE `시료명칭` CHANGE COLUMN `{EscapeBacktick(oldName)}` `{EscapeBacktick(newName)}` TEXT";
                 alterCmd.ExecuteNonQuery();
                 Debug.WriteLine($"[CompanyRename] 시료명칭 컬럼 변경: {oldName} → {newName}");
             }

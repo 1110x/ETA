@@ -30,7 +30,6 @@ public static class MyTaskService
     public static string GetEmployeeName(string employeeId)
     {
         if (string.IsNullOrEmpty(employeeId)) return "";
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return "";
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
@@ -57,7 +56,6 @@ public static class MyTaskService
     public static List<SampleTask> GetSamplesForAnalyte(string dateStr, string analyteFullName)
     {
         var result = new List<SampleTask>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return result;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
@@ -120,7 +118,6 @@ public static class MyTaskService
     public static List<DateTime> GetAnalysisRequestDates()
     {
         var result = new List<DateTime>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return result;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
@@ -146,7 +143,6 @@ public static class MyTaskService
     public static List<DateTime> GetWasteRequestDates()
     {
         var result = new List<DateTime>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return result;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
@@ -213,7 +209,6 @@ public static class MyTaskService
     public static List<RequestListItem> GetRequestListItems(string dateStr)
     {
         var result = new List<RequestListItem>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return result;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
@@ -252,7 +247,6 @@ public static class MyTaskService
     public static List<RequestListItem> GetRequestListItemsRange(string fromDate, string toDate)
     {
         var result = new List<RequestListItem>();
-        if (!DbConnectionFactory.IsMariaDb && !File.Exists(DbPathHelper.DbPath)) return result;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
