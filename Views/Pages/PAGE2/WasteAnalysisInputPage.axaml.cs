@@ -690,7 +690,7 @@ public partial class WasteAnalysisInputPage : UserControl
             // 모드별 월 소스
             //   수질분석센터 → 분석의뢰및결과
             //   처리시설     → 처리시설_작업
-            //   비용부담금   → 폐수_의뢰
+            //   비용부담금   → 폐수의뢰및결과
             bool isWaterCenterLD = IsWaterCenterMode;
             bool isFacilityLD    = IsFacilityMode;
             _allMonths = await System.Threading.Tasks.Task.Run(() =>
@@ -758,7 +758,7 @@ public partial class WasteAnalysisInputPage : UserControl
             // 모드별 날짜 소스
             //   수질분석센터 → 분석의뢰및결과.채취일자
             //   처리시설     → 처리시설_작업.채취일자
-            //   비용부담금   → 폐수_의뢰.채취일자
+            //   비용부담금   → 폐수의뢰및결과.채수일
             bool isWaterCenter = IsWaterCenterMode;
             bool isFacility    = IsFacilityMode;
             bool isBilling     = IsBillingMode;
@@ -990,8 +990,8 @@ public partial class WasteAnalysisInputPage : UserControl
             else if (IsBillingMode)
             {
                 // 비용부담금:
-                //   배지 표시 여부 = 해당 항목이 폐수_의뢰_항목에 있음 (의뢰됨)
-                //   배지 채움색   = 폐수_시료에 결과값이 입력됨
+                //   배지 표시 여부 = 해당 항목이 폐수의뢰및결과에 값이 있음
+                //   배지 채움색   = 폐수의뢰및결과에 결과값이 입력됨
                 bool BlReq(string key) =>
                     billingRequestedItems != null && billingRequestedItems.Contains(key);
                 bool hasSamples = samples.Count > 0;

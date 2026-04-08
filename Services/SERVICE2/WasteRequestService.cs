@@ -130,7 +130,7 @@ public static class WasteRequestService
 
     // =========================================================================
     // 날짜 트리뷰 소스 (비용부담금 모드)
-    //   - 폐수_의뢰.채취일자 기준
+    //   - 폐수의뢰및결과.채수일 기준
     // =========================================================================
     public static List<string> GetMonths()
     {
@@ -139,12 +139,12 @@ public static class WasteRequestService
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
-            if (!DbConnectionFactory.TableExists(conn, "폐수_의뢰")) return list;
+            if (!DbConnectionFactory.TableExists(conn, "폐수의뢰및결과")) return list;
             using var cmd = conn.CreateCommand();
             cmd.CommandText = @"
-                SELECT DISTINCT SUBSTR(채취일자, 1, 7) AS ym
-                FROM `폐수_의뢰`
-                WHERE 채취일자 IS NOT NULL AND 채취일자 <> ''
+                SELECT DISTINCT SUBSTR(채수일, 1, 7) AS ym
+                FROM `폐수의뢰및결과`
+                WHERE 채수일 IS NOT NULL AND 채수일 <> ''
                 ORDER BY ym DESC";
             using var r = cmd.ExecuteReader();
             while (r.Read())
@@ -165,13 +165,13 @@ public static class WasteRequestService
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
-            if (!DbConnectionFactory.TableExists(conn, "폐수_의뢰")) return list;
+            if (!DbConnectionFactory.TableExists(conn, "폐수의뢰및결과")) return list;
             using var cmd = conn.CreateCommand();
             cmd.CommandText = @"
-                SELECT DISTINCT 채취일자
-                FROM `폐수_의뢰`
-                WHERE SUBSTR(채취일자, 1, 7) = @ym
-                ORDER BY 채취일자 DESC";
+                SELECT DISTINCT 채수일
+                FROM `폐수의뢰및결과`
+                WHERE SUBSTR(채수일, 1, 7) = @ym
+                ORDER BY 채수일 DESC";
             cmd.Parameters.AddWithValue("@ym", yearMonth);
             using var r = cmd.ExecuteReader();
             while (r.Read())
@@ -187,8 +187,8 @@ public static class WasteRequestService
 
     // =========================================================================
     // 날짜별 의뢰 항목 키 집합 (배지 필터링용)
-    //   - 폐수_의뢰_항목.항목 → 정규화 키 (BOD/TOC/SS/TN/TP/PHENOLS/NHEX/COD)
-    //   - 비용부담금 모드 트리뷰 배지가 의뢰된 항목만 표시하도록 사용
+    //   - 폐수의뢰및결과 에서 해당 날짜에 값이 있는 항목 컬럼 반환
+    //   - 비용부담금 모드 트리뷰 배지가 결과가 있는 항목만 표시하도록 사용
     // =========================================================================
     public static HashSet<string> GetRequestedItemSetByDate(string date)
     {
@@ -197,19 +197,27 @@ public static class WasteRequestService
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
+            // 해당 날짜에 각 항목 컬럼에 값이 있으면 해당 키 추가
             using var cmd = conn.CreateCommand();
             cmd.CommandText = @"
-                SELECT DISTINCT i.항목
-                FROM `폐수_의뢰_항목` i
-                JOIN `폐수_의뢰` r ON r.id = i.의뢰_id
-                WHERE r.채취일자 = @d";
+                SELECT
+                    MAX(CASE WHEN BOD       IS NOT NULL AND BOD       <> '' THEN 1 ELSE 0 END),
+                    MAX(CASE WHEN `TOC`     IS NOT NULL AND `TOC`     <> '' THEN 1 ELSE 0 END),
+                    MAX(CASE WHEN SS        IS NOT NULL AND SS        <> '' THEN 1 ELSE 0 END),
+                    MAX(CASE WHEN `T-N`     IS NOT NULL AND `T-N`     <> '' THEN 1 ELSE 0 END),
+                    MAX(CASE WHEN `T-P`     IS NOT NULL AND `T-P`     <> '' THEN 1 ELSE 0 END),
+                    MAX(CASE WHEN Phenols   IS NOT NULL AND Phenols   <> '' THEN 1 ELSE 0 END),
+                    MAX(CASE WHEN `N-Hexan` IS NOT NULL AND `N-Hexan` <> '' THEN 1 ELSE 0 END)
+                FROM `폐수의뢰및결과`
+                WHERE 채수일 = @d";
             cmd.Parameters.AddWithValue("@d", date);
             using var rdr = cmd.ExecuteReader();
-            while (rdr.Read())
+            if (rdr.Read())
             {
-                var raw = rdr.IsDBNull(0) ? "" : rdr.GetString(0);
-                var key = NormalizeAnalyteKey(raw);
-                if (!string.IsNullOrEmpty(key)) set.Add(key);
+                var keys = new[] { "BOD", "TOC", "SS", "TN", "TP", "PHENOLS", "NHEX" };
+                for (int i = 0; i < keys.Length; i++)
+                    if (!rdr.IsDBNull(i) && rdr.GetInt32(i) == 1)
+                        set.Add(keys[i]);
             }
         }
         catch (Exception ex) { Debug.WriteLine($"[WasteRequestService.GetRequestedItemSetByDate] {ex.Message}"); }
