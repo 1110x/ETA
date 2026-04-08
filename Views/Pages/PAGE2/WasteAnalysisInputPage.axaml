@@ -34,12 +34,6 @@
                 CornerRadius="6,6,0,0"
                 Padding="8,4">
             <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
-                <TextBlock Text="📝 분석결과입력"
-                           FontSize="{DynamicResource FontSizeBase}" FontWeight="SemiBold"
-                           Foreground="{DynamicResource FgMuted}"
-                           FontFamily="avares://ETA/Assets/Fonts#Pretendard"
-                           VerticalAlignment="Center"
-                           Margin="0,0,8,0"/>
                 <Button x:Name="BtnModeWaterCenter"
                         Content="🔬 수질분석센터"
                         Click="ModeTab_Click"

@@ -339,6 +339,11 @@ public partial class Login : Window
         // 로그인 폼 바로 표시 (시스템 초기화는 로그인 성공 후 진행)
         startupOverlay.IsVisible = false;
         loginForm.IsVisible = true;
+
+        // 자동 ID/비밀번호 입력
+        if (txtEmail != null) txtEmail.Text = "201000308";
+        if (txtPassword != null) txtPassword.Text = "1212xx!!AA";
+
         txtEmail?.Focus();
     }
 

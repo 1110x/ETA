@@ -31,6 +31,8 @@ public class ExcelRow
     public bool Enabled { get; set; } = true;
     /// <summary>정도관리(BK/CCV/FBK/MBK/DW 등) 시료 여부 — 기록부에는 남기되 의뢰및결과엔 반영 안 함</summary>
     public bool IsControl { get; set; }
+    /// <summary>드래그-드롭으로 수동 매칭된 행 여부 — 자동 매칭에서 제외</summary>
+    public bool IsManualMatch { get; set; }
 }
 
 public enum MatchStatus { 입력가능, 덮어쓰기, 미매칭, 대기 }
