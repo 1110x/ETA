@@ -1,0 +1,1599 @@
+Batch Data Path	D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\QuantResults\VOC10.batch.bin
+Analysis Time	2026-03-06 오후 5:30:33	Analyst Name	DESKTOP-N82KMQD\수질분석센터 GC2	Report Generator Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update	2026-03-06 오후 5:30:32	Analyze Quant Version	10.2	Report Quant Version	10.2
+1,1-DCE
+Data File		Type	RT		Resp.		ISTD Resp		Final Conc.
+VOC10 ST-01.D		Cal	4.991		6007		1597		0.012
+VOC10 ST-02.D		Cal	4.991		11138		1493		0.020
+VOC10 ST-03.D		Cal	4.991		36707		1930		0.043
+VOC10 ST-04.D		Cal	4.996		72409		1644		0.093
+VOC10 ST-05.D		Cal	4.990		141725		1335		0.218
+VOC10 ST-06.D		Cal	4.991		286865		1480		0.394
+BK-.D		Blank					2907		ND
+FBK(KD 26-03-04).D		Blank					2266		ND
+FBK(RE 26-03-04).D		Blank					2305		ND
+JR(26-03-05).D		Sample					2473		ND
+RE-01.D		Sample	5.039		0		2529		ND
+RE-02.D		Sample					2080		ND
+RE-03.D		Sample	5.039		0		2626		ND
+RE-04.D		Sample					2294		ND
+RE-09.D		Sample					2391		ND
+RE-10.D		Sample					2256		ND
+RE-11.D		Sample					2420		ND
+RE-12.D		Sample					2469		ND
+KD-01.D		Sample					2295		ND
+KD-02.D		Sample					2643		ND
+KD-03.D		Sample					2786		ND
+RE-03 R.D		Sample					2897		ND
+MBK.D		Blank					2409		ND
+-CCV-.D		QC	4.996		189152		1829		0.212
+DCM
+Data File		Type	RT		Resp.		ISTD Resp		Final Conc.
+VOC10 ST-01.D		Cal	5.147		21578		1597		0.011
+VOC10 ST-02.D		Cal	5.148		24448		1493		0.025
+VOC10 ST-03.D		Cal	5.153		37627		1930		0.040
+VOC10 ST-04.D		Cal	5.153		53485		1644		0.104
+VOC10 ST-05.D		Cal	5.147		80122		1335		0.238
+VOC10 ST-06.D		Cal	5.148		137750		1480		0.400
+BK-.D		Blank	5.148		26806		2907		0.000
+FBK(KD 26-03-04).D		Blank	5.153		23110		2266		0.000
+FBK(RE 26-03-04).D		Blank	5.153		25077		2305		0.000
+JR(26-03-05).D		Sample	5.147		14938		2473		0.000
+RE-01.D		Sample	5.153		17110		2529		0.000
+RE-02.D		Sample	5.153		24404		2080		0.002
+RE-03.D		Sample	5.153		26113		2626		0.000
+RE-04.D		Sample	5.147		16778		2294		0.000
+RE-09.D		Sample	5.153		16314		2391		0.000
+RE-10.D		Sample	5.153		16212		2256		0.000
+RE-11.D		Sample	5.153		15787		2420		0.000
+RE-12.D		Sample	5.148		18707		2469		0.000
+KD-01.D		Sample	5.153		23938		2295		0.000
+KD-02.D		Sample	5.153		27216		2643		0.000
+KD-03.D		Sample	5.153		84279		2786		0.093
+RE-03 R.D		Sample	5.153		78184		2897		0.384
+MBK.D		Blank	5.148		21866		2409		0.000
+-CCV-.D		QC	5.153		108126		1829		0.234
+Chloroform
+Data File		Type	RT		Resp.		ISTD Resp		Final Conc.
+VOC10 ST-01.D		Cal	5.715		5794		1597		0.010
+VOC10 ST-02.D		Cal	5.715		9730		1493		0.019
+VOC10 ST-03.D		Cal	5.720		26930		1930		0.042
+VOC10 ST-04.D		Cal	5.720		51872		1644		0.098
+VOC10 ST-05.D		Cal	5.715		93851		1335		0.220
+VOC10 ST-06.D		Cal	5.720		184560		1480		0.392
+BK-.D		Blank					2907		ND
+FBK(KD 26-03-04).D		Blank					2266		ND
+FBK(RE 26-03-04).D		Blank					2305		ND
+JR(26-03-05).D		Sample					2473		ND
+RE-01.D		Sample	5.720		10840		2529		0.012
+RE-02.D		Sample	5.720		17693		2080		0.025
+RE-03.D		Sample	5.720		16034		2626		0.017
+RE-04.D		Sample	5.720		5402		2294		0.006
+RE-09.D		Sample	5.720		85425		2391		0.111
+RE-10.D		Sample	5.720		12027		2256		0.015
+RE-11.D		Sample	5.720		0		2420		ND
+RE-12.D		Sample	5.720		0		2469		ND
+KD-01.D		Sample					2295		ND
+KD-02.D		Sample					2643		ND
+KD-03.D		Sample	5.720		8769		2786		0.008
+RE-03 R.D		Sample	5.720		6780		2897		0.028
+MBK.D		Blank					2409		ND
+-CCV-.D		QC	5.720		114426		1829		0.196
+Carbon Chloride
+Data File		Type	RT		Resp.		ISTD Resp		Final Conc.
+VOC10 ST-01.D		Cal	5.922		4925		1597		0.015
+VOC10 ST-02.D		Cal	5.916		9042		1493		0.022
+VOC10 ST-03.D		Cal	5.922		29591		1930		0.044
+VOC10 ST-04.D		Cal	5.922		58812		1644		0.092
+VOC10 ST-05.D		Cal	5.922		114090		1335		0.210
+VOC10 ST-06.D		Cal	5.922		243250		1480		0.397
+BK-.D		Blank					2907		ND
+FBK(KD 26-03-04).D		Blank					2266		ND
+FBK(RE 26-03-04).D		Blank					2305		ND
+JR(26-03-05).D		Sample					2473		ND
+RE-01.D		Sample					2529		ND
+RE-02.D		Sample					2080		ND
+RE-03.D		Sample					2626		ND
+RE-04.D		Sample					2294		ND
+RE-09.D		Sample					2391		ND
+RE-10.D		Sample					2256		ND
+RE-11.D		Sample					2420		ND
+RE-12.D		Sample					2469		ND
+KD-01.D		Sample					2295		ND
+KD-02.D		Sample					2643		ND
+KD-03.D		Sample					2786		ND
+RE-03 R.D		Sample					2897		ND
+MBK.D		Blank					2409		ND
+-CCV-.D		QC	5.922		161117		1829		0.216
+1,2-DCE
+Data File		Type	RT		Resp.		ISTD Resp		Final Conc.
+VOC10 ST-01.D		Cal	5.986		2826		1597		0.008
+VOC10 ST-02.D		Cal	5.980		5568		1493		0.019
+VOC10 ST-03.D		Cal	5.986		14995		1930		0.042
+VOC10 ST-04.D		Cal	5.987		29200		1644		0.098
+VOC10 ST-05.D		Cal	5.980		53292		1335		0.222
+VOC10 ST-06.D		Cal	5.986		103409		1480		0.390
+BK-.D		Blank					2907		ND
+FBK(KD 26-03-04).D		Blank					2266		ND
+FBK(RE 26-03-04).D		Blank					2305		ND
+JR(26-03-05).D		Sample					2473		ND
+RE-01.D		Sample	5.986		0		2529		ND
+RE-02.D		Sample	5.987		0		2080		ND
+RE-03.D		Sample	5.993		0		2626		ND
+RE-04.D		Sample	5.986		0		2294		ND
+RE-09.D		Sample					2391		ND
+RE-10.D		Sample					2256		ND
+RE-11.D		Sample					2420		ND
+RE-12.D		Sample					2469		ND
+KD-01.D		Sample					2295		ND
+KD-02.D		Sample	5.961		0		2643		ND
+KD-03.D		Sample					2786		ND
+RE-03 R.D		Sample	5.993		0		2897		ND
+MBK.D		Blank					2409		ND
+-CCV-.D		QC	5.987		65768		1829		0.200
+Benzene
+Data File		Type	RT		Resp.		ISTD Resp		Final Conc.
+VOC10 ST-01.D		Cal	5.993		10048		1597		0.010
+VOC10 ST-02.D		Cal	5.993		18842		1493		0.019
+VOC10 ST-03.D		Cal	5.993		57167		1930		0.043
+VOC10 ST-04.D		Cal	5.993		112706		1644		0.097
+VOC10 ST-05.D		Cal	5.993		208529		1335		0.219
+VOC10 ST-06.D		Cal	5.993		414567		1480		0.392
+BK-.D		Blank					2907		ND
+FBK(KD 26-03-04).D		Blank					2266		ND
+FBK(RE 26-03-04).D		Blank					2305		ND
+JR(26-03-05).D		Sample					2473		ND
+RE-01.D		Sample	5.999		11841		2529		0.008
+RE-02.D		Sample					2080		ND
+RE-03.D		Sample	5.993		964069		2626		0.513
+RE-04.D		Sample					2294		ND
+RE-09.D		Sample					2391		ND
+RE-10.D		Sample					2256		ND
+RE-11.D		Sample					2420		ND
+RE-12.D		Sample					2469		ND
+KD-01.D		Sample					2295		ND
+KD-02.D		Sample	5.967		0		2643		ND
+KD-03.D		Sample					2786		ND
+RE-03 R.D		Sample	5.993		182235		2897		0.445
+MBK.D		Blank					2409		ND
+-CCV-.D		QC	5.993		247958		1829		0.190
+TCE
+Data File		Type	RT		Resp.		ISTD Resp		Final Conc.
+VOC10 ST-01.D		Cal	6.232		2921		1597		0.012
+VOC10 ST-02.D		Cal	6.232		5413		1493		0.020
+VOC10 ST-03.D		Cal	6.232		17007		1930		0.043
+VOC10 ST-04.D		Cal	6.233		33600		1644		0.095
+VOC10 ST-05.D		Cal	6.232		62789		1335		0.214
+VOC10 ST-06.D		Cal	6.232		129767		1480		0.395
+BK-.D		Blank					2907		ND
+FBK(KD 26-03-04).D		Blank					2266		ND
+FBK(RE 26-03-04).D		Blank					2305		ND
+JR(26-03-05).D		Sample					2473		ND
+RE-01.D		Sample					2529		ND
+RE-02.D		Sample					2080		ND
+RE-03.D		Sample					2626		ND
+RE-04.D		Sample					2294		ND
+RE-09.D		Sample					2391		ND
+RE-10.D		Sample					2256		ND
+RE-11.D		Sample					2420		ND
+RE-12.D		Sample					2469		ND
+KD-01.D		Sample					2295		ND
+KD-02.D		Sample					2643		ND
+KD-03.D		Sample					2786		ND
+RE-03 R.D		Sample					2897		ND
+MBK.D		Blank					2409		ND
+-CCV-.D		QC	6.232		77620		1829		0.193
+Toluene
+Data File		Type	RT		Resp.		ISTD Resp		Final Conc.
+VOC10 ST-01.D		Cal	6.851		10845		1597		0.011
+VOC10 ST-02.D		Cal	6.851		20079		1493		0.019
+VOC10 ST-03.D		Cal	6.851		61683		1930		0.043
+VOC10 ST-04.D		Cal	6.851		121212		1644		0.097
+VOC10 ST-05.D		Cal	6.851		221760		1335		0.217
+VOC10 ST-06.D		Cal	6.851		447831		1480		0.393
+BK-.D		Blank					2907		ND
+FBK(KD 26-03-04).D		Blank					2266		ND
+FBK(RE 26-03-04).D		Blank					2305		ND
+JR(26-03-05).D		Sample					2473		ND
+RE-01.D		Sample	6.854		21254		2529		0.013
+RE-02.D		Sample					2080		ND
+RE-03.D		Sample	6.851		741890		2626		0.367
+RE-04.D		Sample					2294		ND
+RE-09.D		Sample					2391		ND
+RE-10.D		Sample					2256		ND
+RE-11.D		Sample	6.854		8950		2420		0.007
+RE-12.D		Sample					2469		ND
+KD-01.D		Sample					2295		ND
+KD-02.D		Sample					2643		ND
+KD-03.D		Sample	6.855		0		2786		ND
+RE-03 R.D		Sample	6.854		149114		2897		0.342
+MBK.D		Blank					2409		ND
+-CCV-.D		QC	6.855		269137		1829		0.192
+PCE
+Data File		Type	RT		Resp.		ISTD Resp		Final Conc.
+VOC10 ST-01.D		Cal	7.150		2551		1597		0.015
+VOC10 ST-02.D		Cal	7.150		4695		1493		0.022
+VOC10 ST-03.D		Cal	7.150		14927		1930		0.044
+VOC10 ST-04.D		Cal	7.151		29732		1644		0.093
+VOC10 ST-05.D		Cal	7.150		56189		1335		0.208
+VOC10 ST-06.D		Cal	7.150		121358		1480		0.398
+BK-.D		Blank					2907		ND
+FBK(KD 26-03-04).D		Blank					2266		ND
+FBK(RE 26-03-04).D		Blank					2305		ND
+JR(26-03-05).D		Sample					2473		ND
+RE-01.D		Sample					2529		ND
+RE-02.D		Sample					2080		ND
+RE-03.D		Sample					2626		ND
+RE-04.D		Sample					2294		ND
+RE-09.D		Sample					2391		ND
+RE-10.D		Sample					2256		ND
+RE-11.D		Sample					2420		ND
+RE-12.D		Sample					2469		ND
+KD-01.D		Sample					2295		ND
+KD-02.D		Sample					2643		ND
+KD-03.D		Sample					2786		ND
+RE-03 R.D		Sample					2897		ND
+MBK.D		Blank					2409		ND
+-CCV-.D		QC	7.150		72723		1829		0.197
+Xylene
+Data File		Type	RT		Resp.		ISTD Resp		Final Conc.
+VOC10 ST-01.D		Cal	7.936		13126		1597		0.012
+VOC10 ST-02.D		Cal	7.937		24477		1493		0.020
+VOC10 ST-03.D		Cal	7.937		74994		1930		0.044
+VOC10 ST-04.D		Cal	7.937		148530		1644		0.097
+VOC10 ST-05.D		Cal	7.936		268777		1335		0.212
+VOC10 ST-06.D		Cal	7.937		558954		1480		0.395
+BK-.D		Blank	0.000		0		2907		ND
+FBK(KD 26-03-04).D		Blank	0.000		0		2266		ND
+FBK(RE 26-03-04).D		Blank	0.000		0		2305		ND
+JR(26-03-05).D		Sample	0.000		0		2473		ND
+RE-01.D		Sample	0.000		0		2529		ND
+RE-02.D		Sample	0.000		0		2080		ND
+RE-03.D		Sample	7.934		106353		2626		0.045
+RE-04.D		Sample	0.000		0		2294		ND
+RE-09.D		Sample	0.000		0		2391		ND
+RE-10.D		Sample	0.000		0		2256		ND
+RE-11.D		Sample	0.000		0		2420		ND
+RE-12.D		Sample	0.000		0		2469		ND
+KD-01.D		Sample	0.000		0		2295		ND
+KD-02.D		Sample	0.000		0		2643		ND
+KD-03.D		Sample	0.000		0		2786		ND
+RE-03 R.D		Sample	7.934		19866		2897		0.051
+MBK.D		Blank	0.000		0		2409		ND
+-CCV-.D		QC	7.937		332611		1829		0.192
+m,p-Xylene
+Data File		Type	RT		Resp.		ISTD Resp		Final Conc.
+VOC10 ST-01.D		Cal	7.789		9149		1597		0.012
+VOC10 ST-02.D		Cal	7.789		17174		1493		0.020
+VOC10 ST-03.D		Cal	7.789		52454		1930		0.044
+VOC10 ST-04.D		Cal	7.789		103696		1644		0.097
+VOC10 ST-05.D		Cal	7.789		188028		1335		0.212
+VOC10 ST-06.D		Cal	7.789		392329		1480		0.396
+BK-.D		Blank					2907		ND
+FBK(KD 26-03-04).D		Blank					2266		ND
+FBK(RE 26-03-04).D		Blank					2305		ND
+JR(26-03-05).D		Sample					2473		ND
+RE-01.D		Sample					2529		ND
+RE-02.D		Sample					2080		ND
+RE-03.D		Sample	7.784		65729		2626		0.040
+RE-04.D		Sample					2294		ND
+RE-09.D		Sample					2391		ND
+RE-10.D		Sample					2256		ND
+RE-11.D		Sample					2420		ND
+RE-12.D		Sample					2469		ND
+KD-01.D		Sample					2295		ND
+KD-02.D		Sample					2643		ND
+KD-03.D		Sample					2786		ND
+RE-03 R.D		Sample	7.784		12157		2897		0.048
+MBK.D		Blank					2409		ND
+-CCV-.D		QC	7.789		232862		1829		0.192
+o-Xylene
+Data File		Type	RT		Resp.		ISTD Resp		Final Conc.
+VOC10 ST-01.D		Cal	8.084		3977		1597		0.011
+VOC10 ST-02.D		Cal	8.084		7303		1493		0.020
+VOC10 ST-03.D		Cal	8.084		22540		1930		0.043
+VOC10 ST-04.D		Cal	8.084		44834		1644		0.098
+VOC10 ST-05.D		Cal	8.084		80749		1335		0.213
+VOC10 ST-06.D		Cal	8.084		166626		1480		0.395
+BK-.D		Blank					2907		ND
+FBK(KD 26-03-04).D		Blank					2266		ND
+FBK(RE 26-03-04).D		Blank					2305		ND
+JR(26-03-05).D		Sample					2473		ND
+RE-01.D		Sample					2529		ND
+RE-02.D		Sample					2080		ND
+RE-03.D		Sample	8.084		40624		2626		0.057
+RE-04.D		Sample					2294		ND
+RE-09.D		Sample					2391		ND
+RE-10.D		Sample					2256		ND
+RE-11.D		Sample					2420		ND
+RE-12.D		Sample					2469		ND
+KD-01.D		Sample					2295		ND
+KD-02.D		Sample					2643		ND
+KD-03.D		Sample					2786		ND
+RE-03 R.D		Sample	8.084		7709		2897		0.060
+MBK.D		Blank					2409		ND
+-CCV-.D		QC	8.084		99749		1829		0.193
+Calibration		
+1,1-DCE		
+
+Cal. Path	Type	Level	Enable		Conc.		Response
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-01.D	Calibration	1	x		0.010		6007
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-02.D	Calibration	2	x		0.020		11138
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-03.D	Calibration	3	x		0.050		36707
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-04.D	Calibration	4	x		0.100		72409
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-05.D	Calibration	5	x		0.200		141725
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\-CCV-.D	QC	5	x		0.200		189152
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-06.D	Calibration	6	x		0.400		286865
+Calibration		
+DCM		
+
+Cal. Path	Type	Level	Enable		Conc.		Response
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-01.D	Calibration	1	x		0.010		21578
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-02.D	Calibration	2	x		0.020		24448
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-03.D	Calibration	3	x		0.050		37627
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-04.D	Calibration	4	x		0.100		53485
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-05.D	Calibration	5			0.200		80122
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\-CCV-.D	QC	5			0.200		108126
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-06.D	Calibration	6	x		0.400		137750
+Calibration		
+Chloroform		
+
+Cal. Path	Type	Level	Enable		Conc.		Response
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-01.D	Calibration	1	x		0.010		5794
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-02.D	Calibration	2	x		0.020		9730
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-03.D	Calibration	3	x		0.050		26930
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-04.D	Calibration	4	x		0.100		51872
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-05.D	Calibration	5	x		0.200		93851
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\-CCV-.D	QC	5	x		0.200		114426
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-06.D	Calibration	6	x		0.400		184560
+Calibration		
+Carbon Chloride		
+
+Cal. Path	Type	Level	Enable		Conc.		Response
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-01.D	Calibration	1	x		0.010		4925
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-02.D	Calibration	2	x		0.020		9042
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-03.D	Calibration	3	x		0.050		29591
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-04.D	Calibration	4	x		0.100		58812
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-05.D	Calibration	5	x		0.200		114090
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\-CCV-.D	QC	5	x		0.200		161117
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-06.D	Calibration	6	x		0.400		243250
+Calibration		
+1,2-DCE		
+
+Cal. Path	Type	Level	Enable		Conc.		Response
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-01.D	Calibration	1	x		0.010		2826
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-02.D	Calibration	2	x		0.020		5568
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-03.D	Calibration	3	x		0.050		14995
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-04.D	Calibration	4	x		0.100		29200
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-05.D	Calibration	5	x		0.200		53292
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\-CCV-.D	QC	5	x		0.200		65768
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-06.D	Calibration	6	x		0.400		103409
+Calibration		
+Benzene		
+
+Cal. Path	Type	Level	Enable		Conc.		Response
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-01.D	Calibration	1	x		0.010		10048
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-02.D	Calibration	2	x		0.020		18842
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-03.D	Calibration	3	x		0.050		57167
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-04.D	Calibration	4	x		0.100		112706
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-05.D	Calibration	5	x		0.200		208529
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\-CCV-.D	QC	5	x		0.200		247958
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-06.D	Calibration	6	x		0.400		414567
+Calibration		
+TCE		
+
+Cal. Path	Type	Level	Enable		Conc.		Response
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-01.D	Calibration	1	x		0.010		2921
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-02.D	Calibration	2	x		0.020		5413
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-03.D	Calibration	3	x		0.050		17007
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-04.D	Calibration	4	x		0.100		33600
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-05.D	Calibration	5	x		0.200		62789
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\-CCV-.D	QC	5	x		0.200		77620
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-06.D	Calibration	6	x		0.400		129767
+Calibration		
+Toluene		
+
+Cal. Path	Type	Level	Enable		Conc.		Response
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-01.D	Calibration	1	x		0.010		10845
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-02.D	Calibration	2	x		0.020		20079
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-03.D	Calibration	3	x		0.050		61683
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-04.D	Calibration	4	x		0.100		121212
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-05.D	Calibration	5	x		0.200		221760
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\-CCV-.D	QC	5	x		0.200		269137
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-06.D	Calibration	6	x		0.400		447831
+Calibration		
+PCE		
+
+Cal. Path	Type	Level	Enable		Conc.		Response
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-01.D	Calibration	1	x		0.010		2551
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-02.D	Calibration	2	x		0.020		4695
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-03.D	Calibration	3	x		0.050		14927
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-04.D	Calibration	4	x		0.100		29732
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-05.D	Calibration	5	x		0.200		56189
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\-CCV-.D	QC	5	x		0.200		72723
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-06.D	Calibration	6	x		0.400		121358
+Calibration		
+Xylene		
+
+Cal. Path	Type	Level	Enable		Conc.		Response
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-01.D	Calibration	1	x		0.010		13126
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-02.D	Calibration	2	x		0.020		24477
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-03.D	Calibration	3	x		0.050		74994
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-04.D	Calibration	4	x		0.100		148530
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-05.D	Calibration	5	x		0.200		268777
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\-CCV-.D	QC	5	x		0.200		332611
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-06.D	Calibration	6	x		0.400		558954
+Calibration		
+m,p-Xylene		
+
+Cal. Path	Type	Level	Enable		Conc.		Response
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-01.D	Calibration	1	x		0.010		9149
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-02.D	Calibration	2	x		0.020		17174
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-03.D	Calibration	3	x		0.050		52454
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-04.D	Calibration	4	x		0.100		103696
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-05.D	Calibration	5	x		0.200		188028
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\-CCV-.D	QC	5	x		0.200		232862
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-06.D	Calibration	6	x		0.400		392329
+Calibration		
+o-Xylene		
+
+Cal. Path	Type	Level	Enable		Conc.		Response
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-01.D	Calibration	1	x		0.010		3977
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-02.D	Calibration	2	x		0.020		7303
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-03.D	Calibration	3	x		0.050		22540
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-04.D	Calibration	4	x		0.100		44834
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-05.D	Calibration	5	x		0.200		80749
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\-CCV-.D	QC	5	x		0.200		99749
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\VOC10 ST-06.D	Calibration	6	x		0.400		166626
+Batch Data Path	D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\QuantResults\VOC10.batch.bin
+Analysis Time	2026-03-06 오후 5:30:33	Analyst Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time	2026-04-07 오후 1:17:18	Report Generator Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update	2026-03-06 오후 5:30:32	Batch State	Processed
+Analyze Quant Version	10.2	Report Quant Version	10.2
+Acq. Date-Time	2026-03-06 오전 11:28:57	Data File	VOC10 ST-01.D
+Type	Cal	Name	VOC10 ST-01
+Dil.	1	Acq. Method File	2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name		RT	Resp.	ISTD Resp		Final Conc.	Units
+1,1-DCE		4.991	6007	1597		0.012	mg/L
+DCM		5.147	21578	1597		0.011	mg/L
+Chloroform		5.715	5794	1597		0.010	mg/L
+Carbon Chloride		5.922	4925	1597		0.015	mg/L
+1,2-DCE		5.986	2826	1597		0.008	mg/L
+Benzene		5.993	10048	1597		0.010	mg/L
+TCE		6.232	2921	1597		0.012	mg/L
+Toluene		6.851	10845	1597		0.011	mg/L
+PCE		7.150	2551	1597		0.015	mg/L
+Xylene		7.936	13126	1597		0.012	mg/L
+m,p-Xylene		7.789	9149	1597		0.012	mg/L
+o-Xylene		8.084	3977	1597		0.011	mg/L
+1,1-DCE
+		
+DCM
+		
+Chloroform
+		
+Carbon Chloride
+		
+1,2-DCE
+		
+Benzene
+		
+TCE
+		
+Toluene
+		
+PCE
+		
+Xylene
+		
+m,p-Xylene
+		
+o-Xylene
+		
+Batch Data Path	D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\QuantResults\VOC10.batch.bin
+Analysis Time	2026-03-06 오후 5:30:33	Analyst Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time	2026-04-07 오후 1:17:18	Report Generator Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update	2026-03-06 오후 5:30:32	Batch State	Processed
+Analyze Quant Version	10.2	Report Quant Version	10.2
+Acq. Date-Time	2026-03-06 오전 11:42:38	Data File	VOC10 ST-02.D
+Type	Cal	Name	VOC10 ST-02
+Dil.	1	Acq. Method File	2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name		RT	Resp.	ISTD Resp		Final Conc.	Units
+1,1-DCE		4.991	11138	1493		0.020	mg/L
+DCM		5.148	24448	1493		0.025	mg/L
+Chloroform		5.715	9730	1493		0.019	mg/L
+Carbon Chloride		5.916	9042	1493		0.022	mg/L
+1,2-DCE		5.980	5568	1493		0.019	mg/L
+Benzene		5.993	18842	1493		0.019	mg/L
+TCE		6.232	5413	1493		0.020	mg/L
+Toluene		6.851	20079	1493		0.019	mg/L
+PCE		7.150	4695	1493		0.022	mg/L
+Xylene		7.937	24477	1493		0.020	mg/L
+m,p-Xylene		7.789	17174	1493		0.020	mg/L
+o-Xylene		8.084	7303	1493		0.020	mg/L
+1,1-DCE
+		
+DCM
+		
+Chloroform
+		
+Carbon Chloride
+		
+1,2-DCE
+		
+Benzene
+		
+TCE
+		
+Toluene
+		
+PCE
+		
+Xylene
+		
+m,p-Xylene
+		
+o-Xylene
+		
+Batch Data Path	D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\QuantResults\VOC10.batch.bin
+Analysis Time	2026-03-06 오후 5:30:33	Analyst Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time	2026-04-07 오후 1:17:18	Report Generator Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update	2026-03-06 오후 5:30:32	Batch State	Processed
+Analyze Quant Version	10.2	Report Quant Version	10.2
+Acq. Date-Time	2026-03-06 오전 11:56:19	Data File	VOC10 ST-03.D
+Type	Cal	Name	VOC10 ST-03
+Dil.	1	Acq. Method File	2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name		RT	Resp.	ISTD Resp		Final Conc.	Units
+1,1-DCE		4.991	36707	1930		0.043	mg/L
+DCM		5.153	37627	1930		0.040	mg/L
+Chloroform		5.720	26930	1930		0.042	mg/L
+Carbon Chloride		5.922	29591	1930		0.044	mg/L
+1,2-DCE		5.986	14995	1930		0.042	mg/L
+Benzene		5.993	57167	1930		0.043	mg/L
+TCE		6.232	17007	1930		0.043	mg/L
+Toluene		6.851	61683	1930		0.043	mg/L
+PCE		7.150	14927	1930		0.044	mg/L
+Xylene		7.937	74994	1930		0.044	mg/L
+m,p-Xylene		7.789	52454	1930		0.044	mg/L
+o-Xylene		8.084	22540	1930		0.043	mg/L
+1,1-DCE
+		
+DCM
+		
+Chloroform
+		
+Carbon Chloride
+		
+1,2-DCE
+		
+Benzene
+		
+TCE
+		
+Toluene
+		
+PCE
+		
+Xylene
+		
+m,p-Xylene
+		
+o-Xylene
+		
+Batch Data Path	D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\QuantResults\VOC10.batch.bin
+Analysis Time	2026-03-06 오후 5:30:33	Analyst Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time	2026-04-07 오후 1:17:18	Report Generator Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update	2026-03-06 오후 5:30:32	Batch State	Processed
+Analyze Quant Version	10.2	Report Quant Version	10.2
+Acq. Date-Time	2026-03-06 오후 12:09:30	Data File	VOC10 ST-04.D
+Type	Cal	Name	VOC10 ST-04
+Dil.	1	Acq. Method File	2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name		RT	Resp.	ISTD Resp		Final Conc.	Units
+1,1-DCE		4.996	72409	1644		0.093	mg/L
+DCM		5.153	53485	1644		0.104	mg/L
+Chloroform		5.720	51872	1644		0.098	mg/L
+Carbon Chloride		5.922	58812	1644		0.092	mg/L
+1,2-DCE		5.987	29200	1644		0.098	mg/L
+Benzene		5.993	112706	1644		0.097	mg/L
+TCE		6.233	33600	1644		0.095	mg/L
+Toluene		6.851	121212	1644		0.097	mg/L
+PCE		7.151	29732	1644		0.093	mg/L
+Xylene		7.937	148530	1644		0.097	mg/L
+m,p-Xylene		7.789	103696	1644		0.097	mg/L
+o-Xylene		8.084	44834	1644		0.098	mg/L
+1,1-DCE
+		
+DCM
+		
+Chloroform
+		
+Carbon Chloride
+		
+1,2-DCE
+		
+Benzene
+		
+TCE
+		
+Toluene
+		
+PCE
+		
+Xylene
+		
+m,p-Xylene
+		
+o-Xylene
+		
+Batch Data Path	D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\QuantResults\VOC10.batch.bin
+Analysis Time	2026-03-06 오후 5:30:33	Analyst Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time	2026-04-07 오후 1:17:18	Report Generator Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update	2026-03-06 오후 5:30:32	Batch State	Processed
+Analyze Quant Version	10.2	Report Quant Version	10.2
+Acq. Date-Time	2026-03-06 오후 12:22:39	Data File	VOC10 ST-05.D
+Type	Cal	Name	VOC10 ST-05
+Dil.	1	Acq. Method File	2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name		RT	Resp.	ISTD Resp		Final Conc.	Units
+1,1-DCE		4.990	141725	1335		0.218	mg/L
+DCM		5.147	80122	1335		0.238	mg/L
+Chloroform		5.715	93851	1335		0.220	mg/L
+Carbon Chloride		5.922	114090	1335		0.210	mg/L
+1,2-DCE		5.980	53292	1335		0.222	mg/L
+Benzene		5.993	208529	1335		0.219	mg/L
+TCE		6.232	62789	1335		0.214	mg/L
+Toluene		6.851	221760	1335		0.217	mg/L
+PCE		7.150	56189	1335		0.208	mg/L
+Xylene		7.936	268777	1335		0.212	mg/L
+m,p-Xylene		7.789	188028	1335		0.212	mg/L
+o-Xylene		8.084	80749	1335		0.213	mg/L
+1,1-DCE
+		
+DCM
+		
+Chloroform
+		
+Carbon Chloride
+		
+1,2-DCE
+		
+Benzene
+		
+TCE
+		
+Toluene
+		
+PCE
+		
+Xylene
+		
+m,p-Xylene
+		
+o-Xylene
+		
+Batch Data Path	D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\QuantResults\VOC10.batch.bin
+Analysis Time	2026-03-06 오후 5:30:33	Analyst Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time	2026-04-07 오후 1:17:18	Report Generator Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update	2026-03-06 오후 5:30:32	Batch State	Processed
+Analyze Quant Version	10.2	Report Quant Version	10.2
+Acq. Date-Time	2026-03-06 오후 12:36:17	Data File	VOC10 ST-06.D
+Type	Cal	Name	VOC10 ST-06
+Dil.	1	Acq. Method File	2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name		RT	Resp.	ISTD Resp		Final Conc.	Units
+1,1-DCE		4.991	286865	1480		0.394	mg/L
+DCM		5.148	137750	1480		0.400	mg/L
+Chloroform		5.720	184560	1480		0.392	mg/L
+Carbon Chloride		5.922	243250	1480		0.397	mg/L
+1,2-DCE		5.986	103409	1480		0.390	mg/L
+Benzene		5.993	414567	1480		0.392	mg/L
+TCE		6.232	129767	1480		0.395	mg/L
+Toluene		6.851	447831	1480		0.393	mg/L
+PCE		7.150	121358	1480		0.398	mg/L
+Xylene		7.937	558954	1480		0.395	mg/L
+m,p-Xylene		7.789	392329	1480		0.396	mg/L
+o-Xylene		8.084	166626	1480		0.395	mg/L
+1,1-DCE
+		
+DCM
+		
+Chloroform
+		
+Carbon Chloride
+		
+1,2-DCE
+		
+Benzene
+		
+TCE
+		
+Toluene
+		
+PCE
+		
+Xylene
+		
+m,p-Xylene
+		
+o-Xylene
+		
+Batch Data Path	D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\QuantResults\VOC10.batch.bin
+Analysis Time	2026-03-06 오후 5:30:33	Analyst Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time	2026-04-07 오후 1:17:18	Report Generator Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update	2026-03-06 오후 5:30:32	Batch State	Processed
+Analyze Quant Version	10.2	Report Quant Version	10.2
+Acq. Date-Time	2026-03-06 오후 1:02:12	Data File	BK-.D
+Type	Blank	Name	BK-
+Dil.	1	Acq. Method File	2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name		RT	Resp.	ISTD Resp		Final Conc.	Units
+1,1-DCE				2907		ND	mg/L
+DCM		5.148	26806	2907		0.000	mg/L
+Chloroform				2907		ND	mg/L
+Carbon Chloride				2907		ND	mg/L
+1,2-DCE				2907		ND	mg/L
+Benzene				2907		ND	mg/L
+TCE				2907		ND	mg/L
+Toluene				2907		ND	mg/L
+PCE				2907		ND	mg/L
+Xylene		0.000	0	2907		ND	mg/L
+m,p-Xylene				2907		ND	mg/L
+o-Xylene				2907		ND	mg/L
+1,1-DCE
+		
+DCM
+		
+Chloroform
+		
+Carbon Chloride
+		
+1,2-DCE
+		
+Benzene
+		
+TCE
+		
+Toluene
+		
+PCE
+		
+Xylene
+		
+m,p-Xylene
+		
+o-Xylene
+		
+Batch Data Path	D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\QuantResults\VOC10.batch.bin
+Analysis Time	2026-03-06 오후 5:30:33	Analyst Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time	2026-04-07 오후 1:17:18	Report Generator Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update	2026-03-06 오후 5:30:32	Batch State	Processed
+Analyze Quant Version	10.2	Report Quant Version	10.2
+Acq. Date-Time	2026-03-06 오후 1:15:03	Data File	FBK(KD 26-03-04).D
+Type	Blank	Name	FBK(KD 26-03-04)
+Dil.	1	Acq. Method File	2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name		RT	Resp.	ISTD Resp		Final Conc.	Units
+1,1-DCE				2266		ND	mg/L
+DCM		5.153	23110	2266		0.000	mg/L
+Chloroform				2266		ND	mg/L
+Carbon Chloride				2266		ND	mg/L
+1,2-DCE				2266		ND	mg/L
+Benzene				2266		ND	mg/L
+TCE				2266		ND	mg/L
+Toluene				2266		ND	mg/L
+PCE				2266		ND	mg/L
+Xylene		0.000	0	2266		ND	mg/L
+m,p-Xylene				2266		ND	mg/L
+o-Xylene				2266		ND	mg/L
+1,1-DCE
+		
+DCM
+		
+Chloroform
+		
+Carbon Chloride
+		
+1,2-DCE
+		
+Benzene
+		
+TCE
+		
+Toluene
+		
+PCE
+		
+Xylene
+		
+m,p-Xylene
+		
+o-Xylene
+		
+Batch Data Path	D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\QuantResults\VOC10.batch.bin
+Analysis Time	2026-03-06 오후 5:30:33	Analyst Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time	2026-04-07 오후 1:17:18	Report Generator Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update	2026-03-06 오후 5:30:32	Batch State	Processed
+Analyze Quant Version	10.2	Report Quant Version	10.2
+Acq. Date-Time	2026-03-06 오후 1:27:59	Data File	FBK(RE 26-03-04).D
+Type	Blank	Name	FBK(RE 26-03-04)
+Dil.	1	Acq. Method File	2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name		RT	Resp.	ISTD Resp		Final Conc.	Units
+1,1-DCE				2305		ND	mg/L
+DCM		5.153	25077	2305		0.000	mg/L
+Chloroform				2305		ND	mg/L
+Carbon Chloride				2305		ND	mg/L
+1,2-DCE				2305		ND	mg/L
+Benzene				2305		ND	mg/L
+TCE				2305		ND	mg/L
+Toluene				2305		ND	mg/L
+PCE				2305		ND	mg/L
+Xylene		0.000	0	2305		ND	mg/L
+m,p-Xylene				2305		ND	mg/L
+o-Xylene				2305		ND	mg/L
+1,1-DCE
+		
+DCM
+		
+Chloroform
+		
+Carbon Chloride
+		
+1,2-DCE
+		
+Benzene
+		
+TCE
+		
+Toluene
+		
+PCE
+		
+Xylene
+		
+m,p-Xylene
+		
+o-Xylene
+		
+Batch Data Path	D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\QuantResults\VOC10.batch.bin
+Analysis Time	2026-03-06 오후 5:30:33	Analyst Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time	2026-04-07 오후 1:17:18	Report Generator Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update	2026-03-06 오후 5:30:32	Batch State	Processed
+Analyze Quant Version	10.2	Report Quant Version	10.2
+Acq. Date-Time	2026-03-06 오후 1:40:50	Data File	JR(26-03-05).D
+Type	Sample	Name	JR(26-03-05)
+Dil.	1	Acq. Method File	2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name		RT	Resp.	ISTD Resp		Final Conc.	Units
+1,1-DCE				2473		ND	mg/L
+DCM		5.147	14938	2473		0.000	mg/L
+Chloroform				2473		ND	mg/L
+Carbon Chloride				2473		ND	mg/L
+1,2-DCE				2473		ND	mg/L
+Benzene				2473		ND	mg/L
+TCE				2473		ND	mg/L
+Toluene				2473		ND	mg/L
+PCE				2473		ND	mg/L
+Xylene		0.000	0	2473		ND	mg/L
+m,p-Xylene				2473		ND	mg/L
+o-Xylene				2473		ND	mg/L
+1,1-DCE
+		
+DCM
+		
+Chloroform
+		
+Carbon Chloride
+		
+1,2-DCE
+		
+Benzene
+		
+TCE
+		
+Toluene
+		
+PCE
+		
+Xylene
+		
+m,p-Xylene
+		
+o-Xylene
+		
+Batch Data Path	D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\QuantResults\VOC10.batch.bin
+Analysis Time	2026-03-06 오후 5:30:33	Analyst Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time	2026-04-07 오후 1:17:18	Report Generator Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update	2026-03-06 오후 5:30:32	Batch State	Processed
+Analyze Quant Version	10.2	Report Quant Version	10.2
+Acq. Date-Time	2026-03-06 오후 1:53:42	Data File	RE-01.D
+Type	Sample	Name	RE-01
+Dil.	1	Acq. Method File	2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name		RT	Resp.	ISTD Resp		Final Conc.	Units
+1,1-DCE		5.039	0	2529		ND	mg/L
+DCM		5.153	17110	2529		0.000	mg/L
+Chloroform		5.720	10840	2529		0.012	mg/L
+Carbon Chloride				2529		ND	mg/L
+1,2-DCE		5.986	0	2529		ND	mg/L
+Benzene		5.999	11841	2529		0.008	mg/L
+TCE				2529		ND	mg/L
+Toluene		6.854	21254	2529		0.013	mg/L
+PCE				2529		ND	mg/L
+Xylene		0.000	0	2529		ND	mg/L
+m,p-Xylene				2529		ND	mg/L
+o-Xylene				2529		ND	mg/L
+1,1-DCE
+		
+DCM
+		
+Chloroform
+		
+Carbon Chloride
+		
+1,2-DCE
+		
+Benzene
+		
+TCE
+		
+Toluene
+		
+PCE
+		
+Xylene
+		
+m,p-Xylene
+		
+o-Xylene
+		
+Batch Data Path	D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\QuantResults\VOC10.batch.bin
+Analysis Time	2026-03-06 오후 5:30:33	Analyst Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time	2026-04-07 오후 1:17:18	Report Generator Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update	2026-03-06 오후 5:30:32	Batch State	Processed
+Analyze Quant Version	10.2	Report Quant Version	10.2
+Acq. Date-Time	2026-03-06 오후 2:06:37	Data File	RE-02.D
+Type	Sample	Name	RE-02
+Dil.	1	Acq. Method File	2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name		RT	Resp.	ISTD Resp		Final Conc.	Units
+1,1-DCE				2080		ND	mg/L
+DCM		5.153	24404	2080		0.002	mg/L
+Chloroform		5.720	17693	2080		0.025	mg/L
+Carbon Chloride				2080		ND	mg/L
+1,2-DCE		5.987	0	2080		ND	mg/L
+Benzene				2080		ND	mg/L
+TCE				2080		ND	mg/L
+Toluene				2080		ND	mg/L
+PCE				2080		ND	mg/L
+Xylene		0.000	0	2080		ND	mg/L
+m,p-Xylene				2080		ND	mg/L
+o-Xylene				2080		ND	mg/L
+1,1-DCE
+		
+DCM
+		
+Chloroform
+		
+Carbon Chloride
+		
+1,2-DCE
+		
+Benzene
+		
+TCE
+		
+Toluene
+		
+PCE
+		
+Xylene
+		
+m,p-Xylene
+		
+o-Xylene
+		
+Batch Data Path	D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\QuantResults\VOC10.batch.bin
+Analysis Time	2026-03-06 오후 5:30:33	Analyst Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time	2026-04-07 오후 1:17:18	Report Generator Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update	2026-03-06 오후 5:30:32	Batch State	Processed
+Analyze Quant Version	10.2	Report Quant Version	10.2
+Acq. Date-Time	2026-03-06 오후 2:19:32	Data File	RE-03.D
+Type	Sample	Name	RE-03
+Dil.	1	Acq. Method File	2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name		RT	Resp.	ISTD Resp		Final Conc.	Units
+1,1-DCE		5.039	0	2626		ND	mg/L
+DCM		5.153	26113	2626		0.000	mg/L
+Chloroform		5.720	16034	2626		0.017	mg/L
+Carbon Chloride				2626		ND	mg/L
+1,2-DCE		5.993	0	2626		ND	mg/L
+Benzene		5.993	964069	2626		0.513	mg/L
+TCE				2626		ND	mg/L
+Toluene		6.851	741890	2626		0.367	mg/L
+PCE				2626		ND	mg/L
+Xylene		7.934	106353	2626		0.045	mg/L
+m,p-Xylene		7.784	65729	2626		0.040	mg/L
+o-Xylene		8.084	40624	2626		0.057	mg/L
+1,1-DCE
+		
+DCM
+		
+Chloroform
+		
+Carbon Chloride
+		
+1,2-DCE
+		
+Benzene
+		
+TCE
+		
+Toluene
+		
+PCE
+		
+Xylene
+		
+m,p-Xylene
+		
+o-Xylene
+		
+Batch Data Path	D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\QuantResults\VOC10.batch.bin
+Analysis Time	2026-03-06 오후 5:30:33	Analyst Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time	2026-04-07 오후 1:17:18	Report Generator Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update	2026-03-06 오후 5:30:32	Batch State	Processed
+Analyze Quant Version	10.2	Report Quant Version	10.2
+Acq. Date-Time	2026-03-06 오후 2:32:24	Data File	RE-04.D
+Type	Sample	Name	RE-04
+Dil.	1	Acq. Method File	2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name		RT	Resp.	ISTD Resp		Final Conc.	Units
+1,1-DCE				2294		ND	mg/L
+DCM		5.147	16778	2294		0.000	mg/L
+Chloroform		5.720	5402	2294		0.006	mg/L
+Carbon Chloride				2294		ND	mg/L
+1,2-DCE		5.986	0	2294		ND	mg/L
+Benzene				2294		ND	mg/L
+TCE				2294		ND	mg/L
+Toluene				2294		ND	mg/L
+PCE				2294		ND	mg/L
+Xylene		0.000	0	2294		ND	mg/L
+m,p-Xylene				2294		ND	mg/L
+o-Xylene				2294		ND	mg/L
+1,1-DCE
+		
+DCM
+		
+Chloroform
+		
+Carbon Chloride
+		
+1,2-DCE
+		
+Benzene
+		
+TCE
+		
+Toluene
+		
+PCE
+		
+Xylene
+		
+m,p-Xylene
+		
+o-Xylene
+		
+Batch Data Path	D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\QuantResults\VOC10.batch.bin
+Analysis Time	2026-03-06 오후 5:30:33	Analyst Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time	2026-04-07 오후 1:17:18	Report Generator Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update	2026-03-06 오후 5:30:32	Batch State	Processed
+Analyze Quant Version	10.2	Report Quant Version	10.2
+Acq. Date-Time	2026-03-06 오후 2:45:20	Data File	RE-09.D
+Type	Sample	Name	RE-09
+Dil.	1	Acq. Method File	2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name		RT	Resp.	ISTD Resp		Final Conc.	Units
+1,1-DCE				2391		ND	mg/L
+DCM		5.153	16314	2391		0.000	mg/L
+Chloroform		5.720	85425	2391		0.111	mg/L
+Carbon Chloride				2391		ND	mg/L
+1,2-DCE				2391		ND	mg/L
+Benzene				2391		ND	mg/L
+TCE				2391		ND	mg/L
+Toluene				2391		ND	mg/L
+PCE				2391		ND	mg/L
+Xylene		0.000	0	2391		ND	mg/L
+m,p-Xylene				2391		ND	mg/L
+o-Xylene				2391		ND	mg/L
+1,1-DCE
+		
+DCM
+		
+Chloroform
+		
+Carbon Chloride
+		
+1,2-DCE
+		
+Benzene
+		
+TCE
+		
+Toluene
+		
+PCE
+		
+Xylene
+		
+m,p-Xylene
+		
+o-Xylene
+		
+Batch Data Path	D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\QuantResults\VOC10.batch.bin
+Analysis Time	2026-03-06 오후 5:30:33	Analyst Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time	2026-04-07 오후 1:17:18	Report Generator Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update	2026-03-06 오후 5:30:32	Batch State	Processed
+Analyze Quant Version	10.2	Report Quant Version	10.2
+Acq. Date-Time	2026-03-06 오후 2:58:16	Data File	RE-10.D
+Type	Sample	Name	RE-10
+Dil.	1	Acq. Method File	2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name		RT	Resp.	ISTD Resp		Final Conc.	Units
+1,1-DCE				2256		ND	mg/L
+DCM		5.153	16212	2256		0.000	mg/L
+Chloroform		5.720	12027	2256		0.015	mg/L
+Carbon Chloride				2256		ND	mg/L
+1,2-DCE				2256		ND	mg/L
+Benzene				2256		ND	mg/L
+TCE				2256		ND	mg/L
+Toluene				2256		ND	mg/L
+PCE				2256		ND	mg/L
+Xylene		0.000	0	2256		ND	mg/L
+m,p-Xylene				2256		ND	mg/L
+o-Xylene				2256		ND	mg/L
+1,1-DCE
+		
+DCM
+		
+Chloroform
+		
+Carbon Chloride
+		
+1,2-DCE
+		
+Benzene
+		
+TCE
+		
+Toluene
+		
+PCE
+		
+Xylene
+		
+m,p-Xylene
+		
+o-Xylene
+		
+Batch Data Path	D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\QuantResults\VOC10.batch.bin
+Analysis Time	2026-03-06 오후 5:30:33	Analyst Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time	2026-04-07 오후 1:17:18	Report Generator Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update	2026-03-06 오후 5:30:32	Batch State	Processed
+Analyze Quant Version	10.2	Report Quant Version	10.2
+Acq. Date-Time	2026-03-06 오후 3:11:10	Data File	RE-11.D
+Type	Sample	Name	RE-11
+Dil.	1	Acq. Method File	2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name		RT	Resp.	ISTD Resp		Final Conc.	Units
+1,1-DCE				2420		ND	mg/L
+DCM		5.153	15787	2420		0.000	mg/L
+Chloroform		5.720	0	2420		ND	mg/L
+Carbon Chloride				2420		ND	mg/L
+1,2-DCE				2420		ND	mg/L
+Benzene				2420		ND	mg/L
+TCE				2420		ND	mg/L
+Toluene		6.854	8950	2420		0.007	mg/L
+PCE				2420		ND	mg/L
+Xylene		0.000	0	2420		ND	mg/L
+m,p-Xylene				2420		ND	mg/L
+o-Xylene				2420		ND	mg/L
+1,1-DCE
+		
+DCM
+		
+Chloroform
+		
+Carbon Chloride
+		
+1,2-DCE
+		
+Benzene
+		
+TCE
+		
+Toluene
+		
+PCE
+		
+Xylene
+		
+m,p-Xylene
+		
+o-Xylene
+		
+Batch Data Path	D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\QuantResults\VOC10.batch.bin
+Analysis Time	2026-03-06 오후 5:30:33	Analyst Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time	2026-04-07 오후 1:17:18	Report Generator Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update	2026-03-06 오후 5:30:32	Batch State	Processed
+Analyze Quant Version	10.2	Report Quant Version	10.2
+Acq. Date-Time	2026-03-06 오후 3:30:20	Data File	RE-12.D
+Type	Sample	Name	RE-12
+Dil.	1	Acq. Method File	2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name		RT	Resp.	ISTD Resp		Final Conc.	Units
+1,1-DCE				2469		ND	mg/L
+DCM		5.148	18707	2469		0.000	mg/L
+Chloroform		5.720	0	2469		ND	mg/L
+Carbon Chloride				2469		ND	mg/L
+1,2-DCE				2469		ND	mg/L
+Benzene				2469		ND	mg/L
+TCE				2469		ND	mg/L
+Toluene				2469		ND	mg/L
+PCE				2469		ND	mg/L
+Xylene		0.000	0	2469		ND	mg/L
+m,p-Xylene				2469		ND	mg/L
+o-Xylene				2469		ND	mg/L
+1,1-DCE
+		
+DCM
+		
+Chloroform
+		
+Carbon Chloride
+		
+1,2-DCE
+		
+Benzene
+		
+TCE
+		
+Toluene
+		
+PCE
+		
+Xylene
+		
+m,p-Xylene
+		
+o-Xylene
+		
+Batch Data Path	D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\QuantResults\VOC10.batch.bin
+Analysis Time	2026-03-06 오후 5:30:33	Analyst Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time	2026-04-07 오후 1:17:18	Report Generator Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update	2026-03-06 오후 5:30:32	Batch State	Processed
+Analyze Quant Version	10.2	Report Quant Version	10.2
+Acq. Date-Time	2026-03-06 오후 3:43:00	Data File	KD-01.D
+Type	Sample	Name	KD-01
+Dil.	1	Acq. Method File	2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name		RT	Resp.	ISTD Resp		Final Conc.	Units
+1,1-DCE				2295		ND	mg/L
+DCM		5.153	23938	2295		0.000	mg/L
+Chloroform				2295		ND	mg/L
+Carbon Chloride				2295		ND	mg/L
+1,2-DCE				2295		ND	mg/L
+Benzene				2295		ND	mg/L
+TCE				2295		ND	mg/L
+Toluene				2295		ND	mg/L
+PCE				2295		ND	mg/L
+Xylene		0.000	0	2295		ND	mg/L
+m,p-Xylene				2295		ND	mg/L
+o-Xylene				2295		ND	mg/L
+1,1-DCE
+		
+DCM
+		
+Chloroform
+		
+Carbon Chloride
+		
+1,2-DCE
+		
+Benzene
+		
+TCE
+		
+Toluene
+		
+PCE
+		
+Xylene
+		
+m,p-Xylene
+		
+o-Xylene
+		
+Batch Data Path	D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\QuantResults\VOC10.batch.bin
+Analysis Time	2026-03-06 오후 5:30:33	Analyst Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time	2026-04-07 오후 1:17:18	Report Generator Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update	2026-03-06 오후 5:30:32	Batch State	Processed
+Analyze Quant Version	10.2	Report Quant Version	10.2
+Acq. Date-Time	2026-03-06 오후 3:55:42	Data File	KD-02.D
+Type	Sample	Name	KD-02
+Dil.	1	Acq. Method File	2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name		RT	Resp.	ISTD Resp		Final Conc.	Units
+1,1-DCE				2643		ND	mg/L
+DCM		5.153	27216	2643		0.000	mg/L
+Chloroform				2643		ND	mg/L
+Carbon Chloride				2643		ND	mg/L
+1,2-DCE		5.961	0	2643		ND	mg/L
+Benzene		5.967	0	2643		ND	mg/L
+TCE				2643		ND	mg/L
+Toluene				2643		ND	mg/L
+PCE				2643		ND	mg/L
+Xylene		0.000	0	2643		ND	mg/L
+m,p-Xylene				2643		ND	mg/L
+o-Xylene				2643		ND	mg/L
+1,1-DCE
+		
+DCM
+		
+Chloroform
+		
+Carbon Chloride
+		
+1,2-DCE
+		
+Benzene
+		
+TCE
+		
+Toluene
+		
+PCE
+		
+Xylene
+		
+m,p-Xylene
+		
+o-Xylene
+		
+Batch Data Path	D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\QuantResults\VOC10.batch.bin
+Analysis Time	2026-03-06 오후 5:30:33	Analyst Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time	2026-04-07 오후 1:17:18	Report Generator Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update	2026-03-06 오후 5:30:32	Batch State	Processed
+Analyze Quant Version	10.2	Report Quant Version	10.2
+Acq. Date-Time	2026-03-06 오후 4:08:23	Data File	KD-03.D
+Type	Sample	Name	KD-03
+Dil.	1	Acq. Method File	2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name		RT	Resp.	ISTD Resp		Final Conc.	Units
+1,1-DCE				2786		ND	mg/L
+DCM		5.153	84279	2786		0.093	mg/L
+Chloroform		5.720	8769	2786		0.008	mg/L
+Carbon Chloride				2786		ND	mg/L
+1,2-DCE				2786		ND	mg/L
+Benzene				2786		ND	mg/L
+TCE				2786		ND	mg/L
+Toluene		6.855	0	2786		ND	mg/L
+PCE				2786		ND	mg/L
+Xylene		0.000	0	2786		ND	mg/L
+m,p-Xylene				2786		ND	mg/L
+o-Xylene				2786		ND	mg/L
+1,1-DCE
+		
+DCM
+		
+Chloroform
+		
+Carbon Chloride
+		
+1,2-DCE
+		
+Benzene
+		
+TCE
+		
+Toluene
+		
+PCE
+		
+Xylene
+		
+m,p-Xylene
+		
+o-Xylene
+		
+Batch Data Path	D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\QuantResults\VOC10.batch.bin
+Analysis Time	2026-03-06 오후 5:30:33	Analyst Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time	2026-04-07 오후 1:17:18	Report Generator Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update	2026-03-06 오후 5:30:32	Batch State	Processed
+Analyze Quant Version	10.2	Report Quant Version	10.2
+Acq. Date-Time	2026-03-06 오후 4:21:06	Data File	RE-03 R.D
+Type	Sample	Name	RE-03 R
+Dil.	5	Acq. Method File	2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name		RT	Resp.	ISTD Resp		Final Conc.	Units
+1,1-DCE				2897		ND	mg/L
+DCM		5.153	78184	2897		0.384	mg/L
+Chloroform		5.720	6780	2897		0.028	mg/L
+Carbon Chloride				2897		ND	mg/L
+1,2-DCE		5.993	0	2897		ND	mg/L
+Benzene		5.993	182235	2897		0.445	mg/L
+TCE				2897		ND	mg/L
+Toluene		6.854	149114	2897		0.342	mg/L
+PCE				2897		ND	mg/L
+Xylene		7.934	19866	2897		0.051	mg/L
+m,p-Xylene		7.784	12157	2897		0.048	mg/L
+o-Xylene		8.084	7709	2897		0.060	mg/L
+1,1-DCE
+		
+DCM
+		
+Chloroform
+		
+Carbon Chloride
+		
+1,2-DCE
+		
+Benzene
+		
+TCE
+		
+Toluene
+		
+PCE
+		
+Xylene
+		
+m,p-Xylene
+		
+o-Xylene
+		
+Batch Data Path	D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\QuantResults\VOC10.batch.bin
+Analysis Time	2026-03-06 오후 5:30:33	Analyst Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time	2026-04-07 오후 1:17:18	Report Generator Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update	2026-03-06 오후 5:30:32	Batch State	Processed
+Analyze Quant Version	10.2	Report Quant Version	10.2
+Acq. Date-Time	2026-03-06 오후 4:33:46	Data File	MBK.D
+Type	Blank	Name	MBK
+Dil.	1	Acq. Method File	2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name		RT	Resp.	ISTD Resp		Final Conc.	Units
+1,1-DCE				2409		ND	mg/L
+DCM		5.148	21866	2409		0.000	mg/L
+Chloroform				2409		ND	mg/L
+Carbon Chloride				2409		ND	mg/L
+1,2-DCE				2409		ND	mg/L
+Benzene				2409		ND	mg/L
+TCE				2409		ND	mg/L
+Toluene				2409		ND	mg/L
+PCE				2409		ND	mg/L
+Xylene		0.000	0	2409		ND	mg/L
+m,p-Xylene				2409		ND	mg/L
+o-Xylene				2409		ND	mg/L
+1,1-DCE
+		
+DCM
+		
+Chloroform
+		
+Carbon Chloride
+		
+1,2-DCE
+		
+Benzene
+		
+TCE
+		
+Toluene
+		
+PCE
+		
+Xylene
+		
+m,p-Xylene
+		
+o-Xylene
+		
+Batch Data Path	D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.4 KD 3.4 JR 3.5)\QuantResults\VOC10.batch.bin
+Analysis Time	2026-03-06 오후 5:30:33	Analyst Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time	2026-04-07 오후 1:17:18	Report Generator Name	DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update	2026-03-06 오후 5:30:32	Batch State	Processed
+Analyze Quant Version	10.2	Report Quant Version	10.2
+Acq. Date-Time	2026-03-06 오후 4:59:12	Data File	-CCV-.D
+Type	QC	Name	-CCV-
+Dil.	1	Acq. Method File	2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name		RT	Resp.	ISTD Resp		Final Conc.	Units
+1,1-DCE		4.996	189152	1829		0.212	mg/L
+DCM		5.153	108126	1829		0.234	mg/L
+Chloroform		5.720	114426	1829		0.196	mg/L
+Carbon Chloride		5.922	161117	1829		0.216	mg/L
+1,2-DCE		5.987	65768	1829		0.200	mg/L
+Benzene		5.993	247958	1829		0.190	mg/L
+TCE		6.232	77620	1829		0.193	mg/L
+Toluene		6.855	269137	1829		0.192	mg/L
+PCE		7.150	72723	1829		0.197	mg/L
+Xylene		7.937	332611	1829		0.192	mg/L
+m,p-Xylene		7.789	232862	1829		0.192	mg/L
+o-Xylene		8.084	99749	1829		0.193	mg/L
+1,1-DCE
+		
+DCM
+		
+Chloroform
+		
+Carbon Chloride
+		
+1,2-DCE
+		
+Benzene
+		
+TCE
+		
+Toluene
+		
+PCE
+		
+Xylene
+		
+m,p-Xylene
+		
+o-Xylene
+		

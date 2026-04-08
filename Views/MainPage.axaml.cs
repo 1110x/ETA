@@ -2824,8 +2824,9 @@ public partial class MainPage : Window
             };
             _wasteAnalysisInputPage.StatsPanelChanged += panel =>
             {
-                Show4.Content = panel;
-                LogContentChange("Show4", panel);
+                // StatsPanelChanged → Show1 (미매칭 수동매칭 UI 인라인 표시)
+                Show1.Content = panel;
+                LogContentChange("Show1", panel);
             };
         }
 
@@ -2834,15 +2835,17 @@ public partial class MainPage : Window
         if (!string.IsNullOrEmpty(inputMode))
             _wasteAnalysisInputPage.SetInputMode(inputMode);
 
-        Show1.Content = _wasteAnalysisInputPage;
-        LogContentChange("Show1", _wasteAnalysisInputPage);
-        Show2.Content = null; Show3.Content = null; Show4.Content = null;
+        // WasteAnalysisInputPage: Show4(하단 우측)에 배치, Show1은 수동매칭 인라인용으로 비워둠
+        Show4.Content = _wasteAnalysisInputPage;
+        LogContentChange("Show4", _wasteAnalysisInputPage);
+        Show1.Content = null;
+        Show2.Content = null; Show3.Content = null;
         string attachLabel = inputMode == "비용부담금/처리시설" ? "파일첨부" : "";
         SetSubMenu("새로고침", "검증", "입력", "출력", attachLabel, "", "");
         SetLeftPanelWidth(260);
 
-        // 레이아웃: Show2 전체폭 상단, Show3+Show4 하단 병렬
-        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 6, lowerStar: 4);
+        // 레이아웃: Show2 전체폭 상단, Show3+Show4 하단 병렬 (Show4 = WasteAnalysisInputPage)
+        SetContentLayout(content2Star: 1, content4Star: 1, upperStar: 6, lowerStar: 4);
         RestoreModeLayout("WasteAnalysisInput", minLowerStar: 2);
         ApplyBottomSplitLayout();
 

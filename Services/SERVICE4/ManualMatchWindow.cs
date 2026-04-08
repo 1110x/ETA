@@ -31,6 +31,9 @@ public class ManualMatchWindow : Window
     // ── 선택 완료 이벤트 ──────────────────────────────────────────────────────
     public event Action<ManualMatchWindow>? MatchConfirmed;
 
+    /// <summary>인라인 모드: Close() 대신 호출할 콜백. null이면 Window.Close() 사용.</summary>
+    public Action? OnInlineClose { get; set; }
+
     public WasteSample?                                  SelectedWaste     { get; private set; }
     public AnalysisRequestRecord?                        SelectedAnalysis  { get; private set; }
     public (string 시설명, string 시료명, int 마스터Id)? SelectedFacility  { get; private set; }
@@ -116,17 +119,19 @@ public class ManualMatchWindow : Window
             }
         };
 
-        // ── 탭: 의뢰시료 / 폐수배출업소 / 처리장 ────────────────────────
+        // ── 탭: 수질분석센터 / 폐수배출업소 / 처리시설 ────────────────────
         var tabCtrl = new TabControl { FontFamily = Font, Margin = new Thickness(0, 0, 0, 8) };
 
-        var tabWaste     = new TabItem { Header = "폐수배출업소", Content = BuildWasteTab() };
-        var tabFacility  = new TabItem { Header = "처리시설",   Content = BuildFacilityTab() };
+        var tabAnalysis  = new TabItem { Header = "🔬 수질분석센터", Content = BuildAnalysisTab() };
+        var tabWaste     = new TabItem { Header = "🏭 폐수배출업소", Content = BuildWasteTab() };
+        var tabFacility  = new TabItem { Header = "⚙️ 처리시설",    Content = BuildFacilityTab() };
+        tabCtrl.Items.Add(tabAnalysis);
         tabCtrl.Items.Add(tabWaste);
         tabCtrl.Items.Add(tabFacility);
 
-        // 시료명에 처리시설 키워드가 있으면 처리장 탭 우선 선택
+        // 시료명에 처리시설 키워드가 있으면 처리장 탭 우선 선택, 아니면 수질분석센터
         bool isFacilityTarget = _facilityMasters.Count > 0 && IsFacilityKeyword(시료명);
-        tabCtrl.SelectedItem = isFacilityTarget ? tabFacility : tabWaste;
+        tabCtrl.SelectedItem = isFacilityTarget ? tabFacility : tabAnalysis;
 
         // ── 닫기 버튼 ─────────────────────────────────────────────────────
         var cancelBtn = new Button
@@ -142,7 +147,7 @@ public class ManualMatchWindow : Window
             Padding                    = new Thickness(16, 6),
             CornerRadius               = new CornerRadius(4),
         };
-        cancelBtn.Click += (_, _) => Close();
+        cancelBtn.Click += (_, _) => { if (OnInlineClose != null) OnInlineClose(); else Close(); };
 
         var root = new DockPanel { Margin = new Thickness(12) };
         DockPanel.SetDock(infoBox,   Dock.Top);
@@ -156,6 +161,17 @@ public class ManualMatchWindow : Window
         RefreshAnalysisList("");
         RefreshFacilityList("");
         RefreshWasteList("");
+    }
+
+    /// <summary>
+    /// 인라인 모드: Content를 Window에서 분리하여 반환한다.
+    /// 반환된 Control을 다른 패널에 배치하면 Window 없이 사용 가능.
+    /// </summary>
+    public Control? DetachContent()
+    {
+        var c = Content as Control;
+        Content = null;
+        return c;
     }
 
     // =========================================================================
@@ -825,21 +841,21 @@ public class ManualMatchWindow : Window
     {
         SelectedAnalysis = rec;
         MatchConfirmed?.Invoke(this);
-        Close();
+        if (OnInlineClose != null) OnInlineClose(); else Close();
     }
 
     private void ConfirmFacility((string 시설명, string 시료명, int 마스터Id) m)
     {
         SelectedFacility = m;
         MatchConfirmed?.Invoke(this);
-        Close();
+        if (OnInlineClose != null) OnInlineClose(); else Close();
     }
 
     private void ConfirmWaste(WasteSample s)
     {
         SelectedWaste = s;
         MatchConfirmed?.Invoke(this);
-        Close();
+        if (OnInlineClose != null) OnInlineClose(); else Close();
     }
 
     // =========================================================================

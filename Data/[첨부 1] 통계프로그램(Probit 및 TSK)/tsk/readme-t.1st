@@ -1,0 +1,307 @@
+                                 USER'S GUIDE
+
+
+               TRIMMED SPEARMAN-KARBER (TSK) PROGRAM VERSION 1.5
+
+
+                    ECOLOGICAL MONITORING RESEARCH DIVISION
+                  ENVIRONMENTAL MONITORING SYSTEMS LABORATORY
+                     U. S. ENVIRONMENTAL PROTECTION AGENCY
+                            CINCINNATI, OHIO  45268
+
+
+I.  INTRODUCTION
+
+    This program was originally developed by Dr. Martin Hamilton and
+associates at Montana State University, Bozeman, MT.  The program was
+developed for use on IBM and IBM compatible microcomputers, and is written in
+FORTRAN.
+
+    The program was designed for the analysis of mortality data from acute and
+chronic toxicity tests with fish and other aquatic life, performed with
+effluents, receiving waters, and reference toxicants, by regulatory agencies
+and permittees under the National Pollutant Discharge Elimination System,
+abbreviated NPDES.
+
+The toxicity test methods and examples of the statistical analysis of test
+data are described in detail in the current editions of the following three
+EMSL methods manuals:
+
+    1.  Methods for measuring the acute toxicity of effluents and receiving  
+        waters to freshwater and marine organisms.  Environmental Monitoring
+        Systems Laboratory, U. S. Environmental Protection Agency, Cincinnati,
+        Ohio 45268.
+
+    2.  Short-term methods for estimating the chronic toxicity of effluents
+        and receiving waters to freshwater organisms.  Environmental
+        Monitoring Systems Laboratory, U. S. Environmental Protection Agency,
+        Cincinnati, Ohio 45268.
+
+    3.  Short-term methods for estimating the chronic toxicity of effluents
+        and receiving waters to marine and estuarine organisms.  Environmental
+        Monitoring Systems Laboratory, U. S. Environmental Protection Agency,
+        Cincinnati, Ohio 45268.
+
+    Users who are unfamiliar or lack experience with the basic premises of the
+calculations should carefully read the discussion of the Trimmed Spearman-
+Karber analysis in the toxicity test manuals listed above and, if necessary,
+seek the assistance of a statistician before attempting to use this software
+or interpret the results.
+
+    It is the user's responsibility to ensure that the data meet the
+assumptions of the statistical test.  Although this user's guide is designed
+to help the users understand the limitations of the program and how the data
+must be entered, undoubtedly there will be instances where the results may not
+appear to be correct.  Therefore, the results should be carefully evaluated
+before use.
+
+    If you should have any difficulty or questions concerning this software,
+write or call the Ecological Monitoring Research Division, Environmental
+Monitoring Systems Laboratory, U.S. Environmental Protection Agency,
+Cincinnati, Ohio 45268 (Phone: 513-569-7401; Fax: 513-569-7609).
+
+
+II.  FILES ON THE DISTRIBUTION DISKETTE:
+
+    There are three files on the diskette under subdirectory TSK:
+
+    A.  TSK.EXE - The program used to calculate the LC50.
+
+    B.  README-T.1ST - This user's guide in ASCII text format.
+
+    C.  README-T.WP5 - This user's guide in WordPerfect 5.1 format.
+
+
+III.  INSTALLATION
+
+    A.  Make a backup copy of the TSK program files on the distribution
+        diskette, and store the original diskette in a safe location.
+
+    B.  The TSK program can be executed directly from a diskette, if
+        necessary, or from the hard disk.  To execute from the hard disk,
+        create an appropriate (sub) directory on the hard disk and use the DOS
+        "COPY" command to copy the files from the diskette to the new (sub)
+        directory.
+
+
+IV.  PROGRAM OVERVIEW
+
+    Data are input to the screen in an interactive mode.  The program performs
+    the following functions:
+
+    A.  Checks the observed response proportions to determine if they are
+        monotonically non-decreasing (i.e., the response proportion for each
+        higher concentration of test substance is greater than or equal to the
+        response at the previous, lower, concentration.
+
+    B.  Calculates the smoothed response proportions, if necessary.
+
+    C.  Adjusts the smoothed response proportions for control mortality.
+
+    D.  Automatically determines the minimum percent "trim" necessary for
+        calculating the LC/EC50.
+
+    E.  Calculates the LC/EC50 and confidence limits.
+
+    F.  Provides output to the screen and printer.
+
+
+
+
+V.  PROGRAM RESTRICTIONS
+
+    The following restrictions apply to the TSK program:
+
+    A.  No more than 8 concentrations, including the control, can be used.
+
+    B.  Interactive editing on the screen is not available.
+
+    C.  The data and analysis results are not savable to a file.  The output
+        must be printed to retain a permanent copy of the data and analysis
+        results.
+
+
+VI.  PROGRAM EXECUTION
+
+    You have been supplied with an executable, compiled copy of the
+program.  To execute the program from a diskette or hard disk, from the
+appropriate (sub) directory DOS prompt (i.e. A:\TSK or C:\TSK) type: TSK and
+press the "enter" key.
+
+    A.  Program Input and Analysis Options
+
+        1.  When the program is executed, you are asked to input the following
+            test information:  test date, test number, type of endpoint
+            desired (i.e. LC50 or EC50,) test species name, toxicant,
+            concentration units, number of concentrations (max=8, including
+            control,) concentration values, number of individuals in each
+            concentration, test duration units, test duration, and number of
+            responses (generally mortalities) at each concentration.
+
+        2.  All test concentrations can be input (in increasing order) on the
+            same line, if each is separated by a space.
+
+        3.  The total number of responses (generally mortalities) at each
+            concentration (starting with the control) can be input on the same
+            line, each separated by a space.
+
+        4.  The program prompts the user to either select the "automatic"
+            (minimum) Spearman-Karber percent trim or to input a specific
+            percent trim.  For routine permit-compliance testing under the
+            NPDES program, it is recommended that the "automatic" trim level
+            be used.  Note that this "automatic" trim is dependent on the
+            particular test results and will change from one set of results to
+            the next.
+
+        5.  Note that you may halt execution of the program at any time by
+            pressing the "CTRL" key and the "BREAK" key at the same time.
+
+    B.  Data Output
+
+        The program output for the analysis of a data set consists of a table
+        containing the following information:
+        
+        1.  Descriptive information on the test.
+        2.  The raw data input to the program: sample concentrations, number
+            of organisms exposed, and mortalities.
+
+        3.  The Spearman-Karber trim (%) calculated and used by the software.
+
+        4.  The LC/EC50, and upper and lower 95% confidence limits.
+
+        5.  Comments as to whether smoothing was necessary, whether the data
+            fit the model, and whether the data permitted estimation of the
+            confidence limits for the endpoint.
+
+    C.  The output table can be captured in hard copy by:
+
+        1.  Entering a "print screen"  (Shift-PrtSc) command, or
+
+        2.  By responding affirmatively to the prompt:
+
+            "Would you like to have a copy sent to the printer (Y/N)?"
+
+
+VII.  EXAMPLE OF DATA ANALYSIS (INPUT/OUTPUT) 
+
+    Data on the mortality of fathead minnows from a 48-h acute effluent
+    toxicity test are used to illustrate the program input and output.  The
+    data are summarized below in Table 1.  Examples of program input and
+    output are provided in Figures 1 and 2, respectively.
+
+
+
+
+      TABLE 1.  FATHEAD MINNOW MORTALITY DATA FROM A 48-HOUR ACUTE EFFLUENT
+                TOXICITY TEST FOR TRIMMED SPEARMAN-KARBER ANALYSIS
+                (20 ORGANISMS PER CONCENTRATION)
+   ________________________________________________________________________
+
+                               Number of Mortalities
+                  _______________________________________________________   
+                                       Effluent Concentration (%)              
+                                _________________________________________
+
+                  Control      6.25   12.5     25.0     50.0     100.0
+   ________________________________________________________________________
+
+                     0           0       1        0        0        16
+   ________________________________________________________________________ 
+
+
+
+     FIGURE 1.  EXAMPLE OF TRIMMED SPEARMAN-KARBER PROGRAM DATA INPUT USING
+                THE DATA IN TABLE 1.
+______________________________________________________________________________
+
+
+
+TRIMMED SPEARMAN-KARBER METHOD.  VERSION 1.5
+
+
+ ENTER DATE OF TEST:
+1/4/93
+ ENTER TEST NUMBER:
+1
+ WHAT IS TO BE ESTIMATED?
+ (ENTER "L" FOR LC50 AND "E" FOR EC50)
+L
+ ENTER TEST SPECIES NAME:
+Fathead Minnow
+ ENTER TOXICANT  NAME:
+Effluent
+ ENTER UNITS FOR EXPOSURE CONCENTRATION OF TOXICANT :
+% Effluent
+ ENTER THE NUMBER OF INDIVIDUALS IN THE CONTROL:
+20
+ ENTER THE NUMBER OF MORTALITIES IN THE CONTROL:
+0
+ ENTER THE NUMBER OF CONCENTRATIONS
+ (NOT INCLUDING THE CONTROL;  MAX = 10):
+5
+ ENTER THE  5 EXPOSURE CONCENTRATIONS (IN INCREASING ORDER):
+
+6.25 12.5 25.0 50.0 100.0
+
+ARE THE NUMBER OF INDIVIDUALS AT EACH EXPOSURE CONCENTRATION EQUAL(Y/N)?
+Y
+ ENTER THE NUMBER OF INDIVIDUALS AT EACH EXPOSURE CONCENTRATION:
+20
+ ENTER UNITS FOR DURATION OF EXPERIMENT
+ (ENTER "H" FOR HOURS, "D" FOR DAYS, ETC.):
+H
+ ENTER DURATION OF TEST:
+48
+ ENTER THE NUMBER OF MORTALITIES AT EACH EXPOSURE CONCENTRATION:
+
+0 1 0 0 16
+
+ WOULD YOU LIKE THE AUTOMATIC TRIM CALCULATION(Y/N)?
+Y
+
+______________________________________________________________________________
+
+     FIGURE 2.  EXAMPLE OF TRIMMED SPEARMAN-KARBER PROGRAM ANALYSIS OUTPUT
+                FROM THE DATA INPUT IN FIGURE 1.
+______________________________________________________________________________
+
+
+
+TRIMMED SPEARMAN-KARBER METHOD.  VERSION 1.5
+
+
+
+
+ DATE:   1/4/93             TEST NUMBER: 1            DURATION:   48 H
+ TOXICANT :  Effluent
+ SPECIES:  Fathead Minnow
+
+ RAW DATA:  Concentration       Number      Mortalities
+ --- ----   (% Efflue)          Exposed
+                .00                  20           0
+               6.25                  20           0
+              12.50                  20           1
+              25.00                  20           0
+              50.00                  20           0
+             100.00                  20          16
+
+  SPEARMAN-KARBER TRIM:             20.00%
+
+  SPEARMAN-KARBER ESTIMATES:     LC50:          76.69
+                 95% LOWER CONFIDENCE:          69.42
+                 95% UPPER CONFIDENCE:          84.71
+
+ NOTE:  MORTALITY PROPORTIONS WERE NOT MONOTONICALLY INCREASING.
+        ADJUSTMENTS WERE MADE PRIOR TO SPEARMAN-KARBER ESTIMATION.
+------------------------------------------------------------------------------
+
+ WOULD YOU LIKE TO HAVE A COPY SENT TO THE PRINTER(Y/N)?
+Y
+ WOULD YOU LIKE TO CONTINUE (Y/N)?
+N
+
+ RUN COMPLETED
+
+
+______________________________________________________________________________
+

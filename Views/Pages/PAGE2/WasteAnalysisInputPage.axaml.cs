@@ -2097,35 +2097,39 @@ public partial class WasteAnalysisInputPage : UserControl
         }
         catch { analysisPool = _matchingAnalysisRecords; }
 
-        // 시설 마스터가 없으면 직접 로드 (처리시설 파일 탭에서도 동작)
+        // 시설 마스터가 없으면 직접 로드
         List<(string 시설명, string 시료명, int 마스터Id)> facilityPool =
             (_matchingFacilityMasters?.Count ?? 0) > 0
                 ? _matchingFacilityMasters!
                 : FacilityResultService.GetAllMasterSamples();
 
-        // 기존 창 닫기 (싱글턴)
+        // 기존 창/패널 정리
         _matchWindow?.Close();
+        _matchWindow = null;
 
-        _matchWindow = new ManualMatchWindow(
+        var matchWin = new ManualMatchWindow(
             exRow.시료명, exRow.Result,
             analysisPool, facilityPool, _currentSamples);
 
-        _matchWindow.MatchConfirmed += w => ApplyManualMatch(exRow, rowIndex, w);
-        _matchWindow.Closed += (_, _) => _matchWindow = null;
-
-        // 메인 창 종료 시 자동 닫기
-        var mainWin = TopLevel.GetTopLevel(this) as Window;
-        if (mainWin != null)
+        // 인라인 모드 설정: Show1(StatsPanelChanged)에 표시
+        matchWin.OnInlineClose = () =>
         {
-            void OnMainClosed(object? s, EventArgs e)
-            {
-                mainWin.Closed -= OnMainClosed;
-                try { _matchWindow?.Close(); } catch { }
-            }
-            mainWin.Closed += OnMainClosed;
-        }
+            StatsPanelChanged?.Invoke(null);
+            _matchWindow = null;
+        };
+        matchWin.MatchConfirmed += w =>
+        {
+            ApplyManualMatch(exRow, rowIndex, w);
+            StatsPanelChanged?.Invoke(null);
+            _matchWindow = null;
+        };
 
-        _matchWindow.Show();
+        _matchWindow = matchWin;
+
+        // Content를 Window에서 분리 후 Show1에 인라인으로 표시
+        var panelContent = matchWin.DetachContent();
+        if (panelContent != null)
+            StatsPanelChanged?.Invoke(panelContent);
     }
 
     private void RebuildBadge(List<ExcelRow> rows)
@@ -2999,6 +3003,92 @@ public partial class WasteAnalysisInputPage : UserControl
 
             root.Children.Add(inputGrid);
         }
+        else if (exRow != null && isGcMode)
+        {
+            // GC 모드: 희석배수만 편집 가능, Resp./ISTD/Conc. 표시
+            var dilInput = MakeInput(exRow.P);
+
+            var respDisplay = FsBase(new TextBlock { Text = exRow.D1, FontFamily = Font,
+                Foreground = AppRes("ThemeFgSecondary"), FontWeight = FontWeight.SemiBold,
+                VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(8, 0) });
+            var istdDisplay = FsBase(new TextBlock { Text = exRow.D2, FontFamily = Font,
+                Foreground = AppRes("ThemeFgSecondary"), FontWeight = FontWeight.SemiBold,
+                VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(8, 0) });
+            fxyDisplay = FsBase(new TextBlock { Text = exRow.Fxy, FontFamily = Font,
+                Foreground = AppRes("ThemeFgSecondary"), FontWeight = FontWeight.SemiBold,
+                VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(8, 0) });
+            resultDisplay = FsLG(new TextBlock { Text = exRow.Result, FontFamily = Font,
+                Foreground = AppRes("ThemeFgSuccess"), FontWeight = FontWeight.Bold,
+                VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(8, 0) });
+
+            // GC 검량식 수식 패널
+            formulaPanel.Children.Add(FsBase(new TextBlock { Text = "GC 검량식", FontWeight = FontWeight.Bold,
+                FontFamily = Font, Foreground = AppRes("AppFg") }));
+            if (editDocInfo?.GcCompoundCals.Count > 0)
+            {
+                foreach (var comp in editDocInfo.GcCompoundCals)
+                {
+                    string rStr = string.IsNullOrEmpty(comp.R) ? "" : $"  R={comp.R}";
+                    formulaPanel.Children.Add(FsXS(new TextBlock
+                    {
+                        Text = $"{comp.Name}:  y = {comp.Slope}x + {comp.Intercept}{rStr}",
+                        FontFamily = Font, Foreground = AppRes("FgMuted"),
+                        TextWrapping = TextWrapping.Wrap,
+                    }));
+                }
+            }
+            formulaPanel.Children.Add(new Border { Height = 1, Background = AppRes("ThemeBorderSubtle"), Margin = new Thickness(0, 4) });
+            var fmResGc = FsBase(new TextBlock { FontFamily = Font, Foreground = AppRes("ThemeFgSuccess"),
+                FontWeight = FontWeight.Bold, TextWrapping = TextWrapping.Wrap });
+            formulaPanel.Children.Add(fmResGc);
+
+            void RecalcGC()
+            {
+                double.TryParse(exRow.Fxy, out var conc);
+                double.TryParse(dilInput.Text, out var dil);
+                if (dil <= 0) dil = 1;
+                double final_ = conc * dil;
+                int dp = GetDecimalPlaces(_activeItems.FirstOrDefault() ?? _activeCategory);
+                exRow.P      = dilInput.Text;
+                exRow.Result = final_.ToString($"F{dp}");
+                resultDisplay!.Text = exRow.Result;
+                fmResGc.Text = $"Result = {conc:F4} × {dil} = {final_.ToString($"F{dp}")}";
+            }
+            dilInput.TextChanged += (_, _) => RecalcGC();
+            RecalcGC();
+
+            var inputGrid = new Grid
+            {
+                ColumnDefinitions = new ColumnDefinitions("Auto,70,16,Auto,70,16,Auto,70,16,Auto,*,16,Auto,80,Auto"),
+                Margin = new Thickness(0, 6), MinHeight = 32,
+            };
+            var lbResp = FsXS(new TextBlock { Text = "Resp.", FontFamily = Font,
+                Foreground = AppRes("ThemeFgSecondary"), VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(4, 0) });
+            Grid.SetColumn(lbResp, 0); inputGrid.Children.Add(lbResp);
+            Grid.SetColumn(respDisplay, 1); inputGrid.Children.Add(respDisplay);
+            var lbIstd = FsXS(new TextBlock { Text = "ISTD", FontFamily = Font,
+                Foreground = AppRes("ThemeFgSecondary"), VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(4, 0) });
+            Grid.SetColumn(lbIstd, 3); inputGrid.Children.Add(lbIstd);
+            Grid.SetColumn(istdDisplay, 4); inputGrid.Children.Add(istdDisplay);
+            var lbConc = FsXS(new TextBlock { Text = "농도", FontFamily = Font,
+                Foreground = AppRes("ThemeFgSecondary"), VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(4, 0) });
+            Grid.SetColumn(lbConc, 6); inputGrid.Children.Add(lbConc);
+            Grid.SetColumn(fxyDisplay, 7); inputGrid.Children.Add(fxyDisplay);
+            var lbDil = FsXS(new TextBlock { Text = "희석배수", FontFamily = Font,
+                Foreground = AppRes("ThemeFgSecondary"), VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(4, 0) });
+            Grid.SetColumn(lbDil, 9); inputGrid.Children.Add(lbDil);
+            Grid.SetColumn(dilInput, 10); inputGrid.Children.Add(dilInput);
+            var lbRes = FsXS(new TextBlock { Text = "Result", FontFamily = Font,
+                Foreground = AppRes("ThemeFgSuccess"), FontWeight = FontWeight.Bold,
+                VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(4, 0) });
+            Grid.SetColumn(lbRes, 12); inputGrid.Children.Add(lbRes);
+            Grid.SetColumn(resultDisplay, 13); inputGrid.Children.Add(resultDisplay);
+            var lbUnit = FsXS(new TextBlock { Text = "ng/L", FontFamily = Font,
+                Foreground = AppRes("FgMuted"), VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(4, 0) });
+            Grid.SetColumn(lbUnit, 14); inputGrid.Children.Add(lbUnit);
+
+            root.Children.Add(inputGrid);
+        }
         else if (exRow != null && !isUV)
         {
             // BOD 모드: 시료량/D1/D2 편집 가능, f(x/y)/P/Result 자동 계산
@@ -3267,14 +3357,24 @@ public partial class WasteAnalysisInputPage : UserControl
             }
         }
 
-        root.Children.Add(new Border { Height = 1, Background = AppRes("ThemeBorderSubtle"), Margin = new Thickness(0, 6) });
+        // 계산 수식을 Show3에 병합 (별도 Show4 표시 제거)
+        if (formulaPanel.Children.Count > 0)
+        {
+            root.Children.Add(new Border
+            {
+                Child = formulaPanel,
+                BorderBrush = AppRes("ThemeBorderSubtle"),
+                BorderThickness = new Thickness(0, 1, 0, 0),
+                Margin = new Thickness(0, 6, 0, 0),
+                Padding = new Thickness(0, 6, 0, 0),
+            });
+        }
+        else
+        {
+            root.Children.Add(new Border { Height = 1, Background = AppRes("ThemeBorderSubtle"), Margin = new Thickness(0, 6) });
+        }
 
         EditPanelChanged?.Invoke(new ScrollViewer { Content = root });
-
-        // Show4에 계산 수식 표시
-        if (formulaPanel.Children.Count > 0)
-            StatsPanelChanged?.Invoke(new ScrollViewer { Content = formulaPanel });
-
     }
 
     // =========================================================================
