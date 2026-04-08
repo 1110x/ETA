@@ -596,10 +596,10 @@
                         <MenuItem Header="분석계획" x:Name="MenuItemProcessingFacility" Click="AnalysisPlan_Click"/>
                     </MenuItem>
 
-                    <MenuItem Header="분석결과입력" x:Name="MenuItemAnalysisInput">
-                        <MenuItem Header="수질분석센터" Tag="수질분석센터" x:Name="MenuItemWasteAnalysisInputWater" Click="WasteAnalysisInput_Click"/>
-                        <MenuItem Header="비용부담금/처리시설" Tag="비용부담금/처리시설" x:Name="MenuItemWasteAnalysisInputWaste" Click="WasteAnalysisInput_Click"/>
-                    </MenuItem>
+                    <MenuItem Header="분석결과입력"
+                              Tag="비용부담금/처리시설"
+                              x:Name="MenuItemAnalysisInput"
+                              Click="WasteAnalysisInput_Click"/>
 
                     <MenuItem Header="결과 제출" x:Name="MenuItemResultSubmit">
                         <MenuItem Header="측정인" x:Name="MenuItemResultSubmitMeasure" Click="ResultSubmitMeasure_Click"/>

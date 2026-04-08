@@ -48,10 +48,10 @@
                         FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                         Padding="8,3"
                         CornerRadius="10"
-                        Background="{DynamicResource ThemeBgActiveBlue}"
-                        Foreground="{DynamicResource ThemeFgInfo}"
+                        Background="{DynamicResource SubBtnBg}"
+                        Foreground="{DynamicResource FgMuted}"
                         BorderThickness="1"
-                        BorderBrush="{DynamicResource ThemeBorderInfo}"/>
+                        BorderBrush="{DynamicResource InputBorder}"/>
                 <Button x:Name="BtnModeFacility"
                         Content="🏭 처리시설"
                         Click="ModeTab_Click"
@@ -60,10 +60,10 @@
                         FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                         Padding="8,3"
                         CornerRadius="10"
-                        Background="{DynamicResource SubBtnBg}"
-                        Foreground="{DynamicResource FgMuted}"
+                        Background="{DynamicResource ThemeBgActiveBlue}"
+                        Foreground="{DynamicResource ThemeFgInfo}"
                         BorderThickness="1"
-                        BorderBrush="{DynamicResource InputBorder}"/>
+                        BorderBrush="{DynamicResource ThemeBorderInfo}"/>
                 <Button x:Name="BtnModeBilling"
                         Content="💰 비용부담금"
                         Click="ModeTab_Click"

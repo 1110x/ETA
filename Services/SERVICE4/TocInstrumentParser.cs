@@ -8,7 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using ClosedXML.Excel;
 
-namespace ETA.Services.SERVICE2;
+namespace ETA.Services.SERVICE4;
 
 public class TocInstrumentRow
 {
@@ -526,10 +526,9 @@ public static class TocInstrumentParser
                 {
                     if (parseConc && parseArea) { tcConcs.Add(conc); tcAreas.Add(area); }
                 }
-                else if (!name.StartsWith("Cal_", StringComparison.OrdinalIgnoreCase)
-                      && !IsControlName(name))
+                else if (!name.StartsWith("Cal_", StringComparison.OrdinalIgnoreCase))
                 {
-                    // 시료 데이터 행
+                    // 시료 데이터 행 (정도관리 시료도 보존 — 기록부 증거)
                     rows.Add(new TocInstrumentRow
                     {
                         RawName   = name,
@@ -537,7 +536,7 @@ public static class TocInstrumentParser
                         Area      = parseArea ? area.ToString("F4") : cols[3].Trim(),
                         Conc      = parseConc ? conc.ToString("F4") : cols[1].Trim(),
                         Method    = "NPOC", // 아래에서 확정
-                        IsControl = false,
+                        IsControl = IsControlName(name),
                     });
                 }
             }
@@ -1021,13 +1020,8 @@ public static class TocInstrumentParser
 
                 var name = NormalizeJenaName(m.Groups["name"].Value);
 
-                // 바탕/정도관리 시료 스킵
-                if (name.Equals("BK", StringComparison.OrdinalIgnoreCase) ||
-                    name.Equals("CCV", StringComparison.OrdinalIgnoreCase) ||
-                    name.Equals("DW", StringComparison.OrdinalIgnoreCase) ||
-                    name.Equals("MBK", StringComparison.OrdinalIgnoreCase) ||
-                    name.Equals("FBK", StringComparison.OrdinalIgnoreCase))
-                    continue;
+                // 정도관리 시료(BK/CCV/FBK/MBK/DW)도 기록부 증거이므로 보존 — IsControl 플래그만 세팅
+                bool isCtrl = IsControlName(name);
 
                 // 다음 6줄 이내에서 값 라인 탐색 (다음 시료 ID 만나면 중단)
                 double? tocVal = null;
@@ -1083,6 +1077,7 @@ public static class TocInstrumentParser
                     Area = tcArea?.ToString("0.####",
                         System.Globalization.CultureInfo.InvariantCulture) ?? "",
                     Method = isTcic ? "TCIC" : "NPOC",
+                    IsControl = isCtrl,
                 });
             }
 

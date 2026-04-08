@@ -16,6 +16,7 @@ using ETA.Models;
 using ETA.Services;
 using ETA.Services.SERVICE1;
 using ETA.Services.SERVICE2;
+using ETA.Services.SERVICE4;
 using ETA.Views.Pages.PAGE1;
 using ETA.Services.Common;
 using ETA.Views;
@@ -118,7 +119,7 @@ public partial class WasteAnalysisInputPage : UserControl
         int dp = GetDecimalPlaces(itemAbbr);
         return v.ToString($"F{dp}");
     }
-    private string _inputMode = "수질분석센터"; // 수질분석센터 / 처리시설 / 비용부담금
+    private string _inputMode = "처리시설"; // 수질분석센터 / 처리시설 / 비용부담금 (기본 = 처리시설, 탑레벨 메뉴로만 전환)
     private bool IsBillingMode  => _inputMode == "비용부담금";
     private bool IsFacilityMode => _inputMode == "처리시설";
     private bool IsWaterCenterMode => _inputMode == "수질분석센터";
@@ -145,82 +146,8 @@ public partial class WasteAnalysisInputPage : UserControl
     private ProgressBar?  _importPb;
     private TextBlock?    _importPbText;
 
-    private class ExcelRow
-    {
-        public string 시료명 { get; set; } = "";
-        public string 원본시료명 { get; set; } = ""; // 수동매칭 전 원래 이름
-        public string SN { get; set; } = "";
-        public string Result { get; set; } = "";
-        public string 시료량 { get; set; } = "";
-        public string D1 { get; set; } = "";
-        public string D2 { get; set; } = "";
-        public string Fxy { get; set; } = "";  // f(x/y) 식종액 함유율
-        public string P { get; set; } = "";    // 희석배수
-        // TOC TCIC 전용 (TOC_TCIC_DATA 컬럼 매핑)
-        public string TCAU  { get; set; } = "";
-        public string TCcon { get; set; } = "";
-        public string ICAU  { get; set; } = "";
-        public string ICcon { get; set; } = "";
-        public WasteSample? Matched { get; set; }               // 폐수배출업소 매칭
-        public AnalysisRequestRecord? MatchedAnalysis { get; set; } // 수질분석센터 매칭
-        public FacilityResultRow? MatchedFacility { get; set; }     // 처리시설 매칭
-        public string? MatchedFacilityName { get; set; }            // 처리시설명
-        public MatchStatus Status { get; set; }
-        public SourceType Source { get; set; }
-        public bool Enabled { get; set; } = true;
-    }
-    private enum MatchStatus { 입력가능, 덮어쓰기, 미매칭, 대기 }
-    private enum SourceType { 미분류, 폐수배출업소, 수질분석센터, 처리시설 }
-
-    // 엑셀 문서 헤더 정보 (행1~7)
-    private class ExcelDocInfo
-    {
-        public string 문서번호 { get; set; } = "";
-        public string 분석방법 { get; set; } = "";
-        public string 결과표시 { get; set; } = "";
-        public string 관련근거 { get; set; } = "";
-        // 식종수의 BOD (행6)
-        public string 식종수_시료량 { get; set; } = "";
-        public string 식종수_D1 { get; set; } = "";
-        public string 식종수_D2 { get; set; } = "";
-        public string 식종수_P { get; set; } = "";
-        public string 식종수_Result { get; set; } = "";
-        public string 식종수_Remark { get; set; } = "";  // 식종수(%) 1.5
-        // SCF (행7)
-        public string SCF_시료량 { get; set; } = "";
-        public string SCF_D1 { get; set; } = "";
-        public string SCF_D2 { get; set; } = "";
-        public string SCF_Result { get; set; } = "";
-        // N-Hexan 바탕시료 (행7)
-        public string 바탕시료_시료량 { get; set; } = "";
-        public string 바탕시료_건조전 { get; set; } = "";
-        public string 바탕시료_건조후 { get; set; } = "";
-        public string 바탕시료_무게차 { get; set; } = "";
-        public string 바탕시료_희석배수 { get; set; } = "";
-        public string 바탕시료_결과 { get; set; } = "";
-        // 검량곡선 (UV VIS 등)
-        public bool IsUVVIS { get; set; }
-        public bool IsSS { get; set; }
-        public bool IsNHEX { get; set; }
-        public string[] Standard_Points { get; set; } = Array.Empty<string>(); // 표준용액 농도
-        public string Standard_Slope { get; set; } = "";   // 기울기 a
-        public string Standard_Intercept { get; set; } = ""; // 절편 b
-        public string[] Abs_Values { get; set; } = Array.Empty<string>(); // 흡광도 측정값
-        // TOC 전용
-        public bool IsTocNPOC { get; set; }
-        public bool IsTocTCIC { get; set; }
-        public string TocSlope_TC { get; set; } = "";
-        public string TocSlope_IC { get; set; } = "";
-        public string TocIntercept_TC { get; set; } = "";
-        public string TocIntercept_IC { get; set; } = "";
-        public string TocR2_TC { get; set; } = "";
-        public string TocR2_IC { get; set; } = "";
-        public string[] TocStdConcs    { get; set; } = []; // TC ST-1~5 공칭농도
-        public string[] TocStdAreas    { get; set; } = []; // TC ST-1~5 면적(AU)
-        public string[] TocStdConcs_IC { get; set; } = []; // IC ST-1~5 공칭농도 (TCIC 전용)
-        public string[] TocStdAreas_IC { get; set; } = []; // IC ST-1~5 면적(AU) (TCIC 전용)
-        public string Abs_R2 { get; set; } = "";   // R²
-    }
+    // ExcelRow, ExcelDocInfo, GcCompoundCalInfo, MatchStatus, SourceType →
+    // Services/SERVICE4/BodExcelModels.cs 로 분리
     private readonly Dictionary<string, ExcelDocInfo> _categoryDocInfo = new();
 
     // ── 외부 연결 ────────────────────────────────────────────────────────────
@@ -281,12 +208,9 @@ public partial class WasteAnalysisInputPage : UserControl
     public void ModeTab_Click(object? sender, RoutedEventArgs e)
     {
         if (sender is not Button btn) return;
-        var mode = btn.Tag as string ?? "수질분석센터";
+        var mode = btn.Tag as string ?? "처리시설";
         if (mode == _inputMode) return;
         _inputMode = mode;
-        _categorySelected = false;
-        _activeCategory = "BOD";
-        _facilityViewMode = false;
         UpdateModeTabStyle();
         BuildCategoryButtons();
         ListPanelChanged?.Invoke(null);
@@ -406,11 +330,28 @@ public partial class WasteAnalysisInputPage : UserControl
         var path = files[0].TryGetLocalPath();
         if (string.IsNullOrEmpty(path)) return;
 
-        // CSV/TXT/PDF → TOC 기기 파일로 처리 (카테고리 무관)
+        // CSV/TXT/PDF → 파일 내용 기반 자동 감지 (TOC vs GC, 카테고리 무관)
         var ext = System.IO.Path.GetExtension(path).ToLowerInvariant();
         if (ext == ".csv" || ext == ".txt" || ext == ".pdf")
         {
-            ParseTocInstrumentFile(path);
+            // 1순위: TOC 기기 파일
+            var tocFmt = TocInstrumentParser.DetectFormat(path);
+            if (tocFmt != TocInstrumentParser.TocFileFormat.Unknown)
+            {
+                ParseTocInstrumentFile(path);
+                return;
+            }
+            // 2순위: Agilent GC CSV (.pdf는 GC 미지원)
+            if (ext != ".pdf")
+            {
+                var gcFmt = GcInstrumentParser.DetectFormat(path);
+                if (gcFmt != GcFileFormat.Unknown)
+                {
+                    ParseGcInstrumentFile(path);
+                    return;
+                }
+            }
+            ShowMessage("지원되지 않는 기기 파일 형식입니다. (TOC/GC 미인식)", true);
             return;
         }
 
@@ -457,176 +398,61 @@ public partial class WasteAnalysisInputPage : UserControl
             UpdateCategoryButtonStyles();
         }
 
-        // 엑셀 파싱
-        var rows = new List<ExcelRow>();
-        string? docDate = null;
+        // 엑셀 파싱 — 카테고리별로 Services/SERVICE4/*XlsxParser.cs 로 디스패치
+        List<ExcelRow> rows;
+        ExcelDocInfo   docInfo;
+        string?        docDate;
         try
         {
-            using var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            using var wb = new XLWorkbook(fs);
-            var ws = wb.Worksheets.First();
-
-            // Row1 B열에서 문서 날짜 추출 (텍스트 또는 Excel 날짜 서식 모두 처리)
+            switch (key)
             {
-                var b1Cell = ws.Cell(1, 2);
-                DateTime parsedDocDate;
-                if (b1Cell.TryGetValue<DateTime>(out parsedDocDate))
-                    docDate = parsedDocDate.ToString("yyyy-MM-dd");
-                else
+                case "TOC":
                 {
-                    var dateCellVal = b1Cell.GetString().Trim();
-                    if (DateTime.TryParse(dateCellVal, out parsedDocDate))
-                        docDate = parsedDocDate.ToString("yyyy-MM-dd");
+                    var p = TocXlsxParser.Parse(path, FormatResult);
+                    rows = p.Rows; docInfo = p.DocInfo; docDate = p.DocDate;
+                    _tocInstrumentMethod = p.Method;
+                    break;
+                }
+                case "SS":
+                {
+                    var p = SsXlsxParser.Parse(path, _activeItems, FormatResult);
+                    rows = p.Rows; docInfo = p.DocInfo; docDate = p.DocDate;
+                    break;
+                }
+                case "NHEX":
+                {
+                    var p = NHexXlsxParser.Parse(path, _activeItems, FormatResult);
+                    rows = p.Rows; docInfo = p.DocInfo; docDate = p.DocDate;
+                    break;
+                }
+                case "TN":
+                case "TP":
+                case "PHENOLS":
+                {
+                    var p = UvvisXlsxParser.Parse(path, _activeItems, FormatResult);
+                    rows = p.Rows; docInfo = p.DocInfo; docDate = p.DocDate;
+                    break;
+                }
+                default:
+                {
+                    var p = BodExcelParser.Parse(path, _activeItems, FormatResult);
+                    rows = p.Rows; docInfo = p.DocInfo; docDate = p.DocDate;
+                    break;
                 }
             }
-
-            // 문서 헤더 정보 (행1~7)
-            var docInfo = new ExcelDocInfo
-            {
-                문서번호 = ws.Cell(1, 2).GetString().Trim(),
-                분석방법 = ws.Cell(2, 2).GetString().Trim(),
-                결과표시 = ws.Cell(3, 2).GetString().Trim(),
-                관련근거 = ws.Cell(4, 2).GetString().Trim(),
-            };
-
-            // 엑셀 내용 기반 형식 감지
-            var row5A = ws.Cell(5, 1).GetString().Trim();
-            var row7A = ws.Cell(7, 1).GetString().Trim();
-            // TOC NPOC도 A5="STANDARD"지만 key로 구분
-            bool isTocNPOC = key == "TOC" && row5A.Equals("STANDARD", StringComparison.OrdinalIgnoreCase);
-            bool isUVVIS   = !isTocNPOC && row5A.Equals("STANDARD", StringComparison.OrdinalIgnoreCase);
-            bool isTocTCIC = key == "TOC" && !isTocNPOC; // TC-IC: A5에 "Standard (TC)" 등 다른 값
-            bool isSS   = row7A.Contains("시료명");
-            bool isNHEX = key == "NHEX";
-
-            // 감지된 형식과 선택한 카테고리 불일치 검증
-            var uvvisKeys = new HashSet<string> { "TN", "TP", "PHENOLS" };
-            string detectedFormat = isSS ? "SS" : isUVVIS ? "UVVIS" : "BOD";
-            bool formatMatch = detectedFormat switch
-            {
-                "SS"   => key == "SS",
-                "UVVIS"=> uvvisKeys.Contains(key),
-                _      => key != "SS" && !uvvisKeys.Contains(key), // BOD/NHEX/TOC 계열
-            };
-            if (!formatMatch)
-            {
-                ShowMessage($"선택한 카테고리({key})와 엑셀 형식({detectedFormat})이 일치하지 않습니다.", true);
-                return;
-            }
-
-            if (isSS)
-            {
-                docInfo.IsSS = true;
-                _categoryDocInfo[key] = docInfo;
-                // SS: A=시료명, B=시료량, C=전무게, D=후무게, E=전후무게차, F=희석배수, G=결과, H=SN
-                ParsePage(ws, rows, colName: 1, colResult: 7, colSN: 8, startRow: 8, itemAbbr: _activeItems.FirstOrDefault() ?? key);
-            }
-            else if (isNHEX)
-            {
-                // N-Hexan: A=구분, B=시료량, C=건조전무게, D=건조후무게, E=무게차, F=희석배수, G=농도, H=SN
-                // 행6=컬럼헤더, 행7=바탕시료, 데이터는 행8~
-                docInfo.IsNHEX = true;
-                // 바탕시료 (행7, 왼쪽 블록 기준)
-                docInfo.바탕시료_시료량  = ws.Cell(7, 2).GetString().Trim();
-                docInfo.바탕시료_건조전  = ws.Cell(7, 3).GetString().Trim();
-                docInfo.바탕시료_건조후  = ws.Cell(7, 4).GetString().Trim();
-                docInfo.바탕시료_무게차  = ws.Cell(7, 5).GetString().Trim();
-                docInfo.바탕시료_희석배수 = ws.Cell(7, 6).GetString().Trim();
-                var r7g = ws.Cell(7, 7).GetString().Trim();
-                if (double.TryParse(r7g, out var r7v)) r7g = r7v.ToString("F1");
-                docInfo.바탕시료_결과    = r7g;
-                _categoryDocInfo[key] = docInfo;
-                var nhexItem = _activeItems.FirstOrDefault() ?? key;
-                ParsePage(ws, rows, colName: 1, colResult: 7, colSN: 8, startRow: 8, itemAbbr: nhexItem);
-                ParsePage(ws, rows, colName: 9, colResult: 15, colSN: 16, startRow: 8, itemAbbr: nhexItem);
-            }
-            else if (isUVVIS)
-            {
-                docInfo.IsUVVIS = true;
-                // 행5: STANDARD 표준용액 농도 + 기울기(a) + 절편(b)
-                var stdPts = new List<string>();
-                for (int c = 2; c <= 6; c++)
-                {
-                    var v = ws.Cell(5, c).GetString().Trim();
-                    if (double.TryParse(v, out var dv)) v = dv.ToString("G");
-                    stdPts.Add(v);
-                }
-                docInfo.Standard_Points = stdPts.ToArray();
-                var slope = ws.Cell(5, 7).GetString().Trim();
-                if (double.TryParse(slope, out var sv)) slope = sv.ToString("G6");
-                docInfo.Standard_Slope = slope;
-                var intercept = ws.Cell(5, 8).GetString().Trim();
-                if (double.TryParse(intercept, out var iv)) intercept = iv.ToString("G6");
-                docInfo.Standard_Intercept = intercept;
-
-                // 행6: abs 흡광도 + R²
-                var absVals = new List<string>();
-                for (int c = 2; c <= 6; c++)
-                {
-                    var v = ws.Cell(6, c).GetString().Trim();
-                    if (double.TryParse(v, out var av)) v = av.ToString("G6");
-                    absVals.Add(v);
-                }
-                docInfo.Abs_Values = absVals.ToArray();
-                var r2 = ws.Cell(6, 7).GetString().Trim();
-                if (double.TryParse(r2, out var r2v)) r2 = r2v.ToString("F5");
-                docInfo.Abs_R2 = r2;
-
-                _categoryDocInfo[key] = docInfo;
-                // UV VIS: colResult=6 (BOD는 7), 페이지2는 colResult=14
-                var uvItem = _activeItems.FirstOrDefault() ?? key;
-                ParsePage(ws, rows, colName: 1, colResult: 6, colSN: 8, startRow: 8, itemAbbr: uvItem);
-                ParsePage(ws, rows, colName: 9, colResult: 14, colSN: 16, startRow: 8, itemAbbr: uvItem);
-            }
-            else
-            {
-                // BOD 형식: 행6 식종수, 행7 SCF
-                docInfo.식종수_시료량 = ws.Cell(6, 2).GetString().Trim();
-                docInfo.식종수_D1 = ws.Cell(6, 3).GetString().Trim();
-                docInfo.식종수_D2 = ws.Cell(6, 4).GetString().Trim();
-                docInfo.식종수_P = ws.Cell(6, 6).GetString().Trim();
-                var r6r = ws.Cell(6, 7).GetString().Trim();
-                if (double.TryParse(r6r, out var r6v)) r6r = r6v.ToString("F1");
-                docInfo.식종수_Result = r6r;
-                docInfo.식종수_Remark = ws.Cell(6, 8).GetString().Trim();
-                docInfo.SCF_시료량 = ws.Cell(7, 2).GetString().Trim();
-                docInfo.SCF_D1 = ws.Cell(7, 3).GetString().Trim();
-                docInfo.SCF_D2 = ws.Cell(7, 4).GetString().Trim();
-                var r7r = ws.Cell(7, 7).GetString().Trim();
-                if (double.TryParse(r7r, out var r7v)) r7r = r7v.ToString("F4");
-                docInfo.SCF_Result = r7r;
-                _categoryDocInfo[key] = docInfo;
-
-                // TOC 검정곡선 파싱
-                if (isTocNPOC)
-                {
-                    // NPOC: 행5 G=기울기(a), H=절편(b)
-                    docInfo.IsTocNPOC  = true;
-                    docInfo.TocSlope_TC     = ws.Cell(5, 7).GetString().Trim();
-                    docInfo.TocIntercept_TC = ws.Cell(5, 8).GetString().Trim();
-                    _tocInstrumentMethod = "NPOC";
-                }
-                else if (isTocTCIC)
-                {
-                    // TC-IC: 행5=Standard(TC) G=기울기, H=절편 / 행7=Standard(IC) G=기울기, H=절편
-                    docInfo.IsTocTCIC       = true;
-                    docInfo.TocSlope_TC     = ws.Cell(5, 7).GetString().Trim();
-                    docInfo.TocIntercept_TC = ws.Cell(5, 8).GetString().Trim();
-                    docInfo.TocSlope_IC     = ws.Cell(7, 7).GetString().Trim();
-                    docInfo.TocIntercept_IC = ws.Cell(7, 8).GetString().Trim();
-                    _tocInstrumentMethod = "TCIC";
-                }
-
-                var bodItem = _activeItems.FirstOrDefault() ?? key;
-                ParsePage(ws, rows, colName: 1, colResult: 7, colSN: 8, startRow: 8, itemAbbr: bodItem);
-                ParsePage(ws, rows, colName: 9, colResult: 15, colSN: 16, startRow: 8, itemAbbr: bodItem);
-            }
+        }
+        catch (XlsxParseException ex)
+        {
+            ShowMessage(ex.Message, true);
+            return;
         }
         catch (Exception ex)
         {
             ShowMessage($"엑셀 파싱 오류: {ex.Message}", true);
             return;
         }
+
+        _categoryDocInfo[key] = docInfo;
 
         if (rows.Count == 0)
         {
@@ -1274,7 +1100,8 @@ public partial class WasteAnalysisInputPage : UserControl
                 ? MatchStatus.미매칭 : MatchStatus.대기;
         }
 
-        var root = new Grid { RowDefinitions = new RowDefinitions("Auto,Auto,Auto,Auto,*") };
+        // Row 0:header / 1:docBorder(resizable) / 2:splitter / 3:badgePanel / 4:calBorder / 5:gridBorder(*)
+        var root = new Grid { RowDefinitions = new RowDefinitions("Auto,Auto,Auto,Auto,Auto,*") };
 
         // 헤더
         var catLabel = Categories.FirstOrDefault(c => c.Key == _activeCategory).Label ?? _activeCategory;
@@ -1336,6 +1163,7 @@ public partial class WasteAnalysisInputPage : UserControl
         bool isNHEXMode = false;
         bool isTocMode = false;
         bool isTocTcicMode = false;
+        bool isGcMode = false;
 
         // TOC 검량선 수식은 나중에 docInfo 확인 후 추가 (아래 isTocMode 설정 이후)
 
@@ -1369,6 +1197,7 @@ public partial class WasteAnalysisInputPage : UserControl
             isNHEXMode  = docInfo.IsNHEX;
             isTocMode   = docInfo.IsTocNPOC || docInfo.IsTocTCIC;
             isTocTcicMode = docInfo.IsTocTCIC;
+            isGcMode    = docInfo.IsGcMode;
 
             // TOC y = ax + b 수식을 분析일 바로 아래 표시
             if (isTocMode && !string.IsNullOrEmpty(docInfo.TocSlope_TC))
@@ -1377,6 +1206,21 @@ public partial class WasteAnalysisInputPage : UserControl
                 string formula = docInfo.IsTocTCIC
                     ? $"TC:  y = {docInfo.TocSlope_TC}x + {docInfo.TocIntercept_TC}{r2str}    |    IC:  y = {docInfo.TocSlope_IC}x + {docInfo.TocIntercept_IC}"
                     : $"y = {docInfo.TocSlope_TC}x + {docInfo.TocIntercept_TC}{r2str}";
+                headerContent.Children.Add(FsXS(new TextBlock
+                {
+                    Text = formula, FontFamily = Font,
+                    Foreground = AppRes("ThemeFgWarn"),
+                    FontWeight = FontWeight.SemiBold,
+                    Margin = new Thickness(0, 1, 0, 0),
+                }));
+            }
+
+            // GC 검량선 요약: "GC [VocMulti] — 10성분" + 첫 성분 수식
+            if (isGcMode && docInfo.GcCompoundCals.Count > 0)
+            {
+                var first = docInfo.GcCompoundCals[0];
+                string r2str = !string.IsNullOrEmpty(first.R) ? $"    R={first.R}" : "";
+                string formula = $"GC [{docInfo.GcFormat}] — {docInfo.GcCompoundCals.Count}성분   |   {first.Name}:  y = {first.Slope}x + {first.Intercept}{r2str}";
                 headerContent.Children.Add(FsXS(new TextBlock
                 {
                     Text = formula, FontFamily = Font,
@@ -1405,6 +1249,13 @@ public partial class WasteAnalysisInputPage : UserControl
             {
                 // TOC NPOC: 시료량 없음 — 컬럼 10개 (체크/입력/SN/시료명/D1/빈칸/농도/희석배수/결과값/시료구분)
                 colDefs = "32,50,90,190,80,0,75,60,75,80";
+                colWidths = colDefs.Split(',').Select(double.Parse).ToArray();
+            }
+            else if (isGcMode)
+            {
+                // GC: 시료량 없음, 컬럼 11개
+                //  체크/입력/SN/시료명/시료량(숨김)/Resp./ISTD/농도/희석배수/결과값/시료구분
+                colDefs = "32,50,90,220,0,75,75,65,55,70,80";
                 colWidths = colDefs.Split(',').Select(double.Parse).ToArray();
             }
 
@@ -1496,10 +1347,11 @@ public partial class WasteAnalysisInputPage : UserControl
                 bool hasCal = !string.IsNullOrWhiteSpace(docInfo.TocSlope_TC);
                 if (hasCal)
                 {
-                    // 표준점 개수에 맞춰 ST-1~N 전용 colDefs (라벨 영역 축소 + ST 간격 확대)
+                    // 표준점 개수에 맞춰 ST-1~N — 라벨 영역은 데이터 그리드의 첫 4컬럼과 동일
                     int stCount = Math.Max(docInfo.TocStdConcs.Length, 2);
                     stCount = Math.Min(stCount, 5);
-                    string tocDocColDefs = "32,50,40,90," + string.Join(",", Enumerable.Repeat("120", stCount));
+                    string labelCols = string.Join(",", colWidths.Take(4).Select(w => w.ToString("0")));
+                    string tocDocColDefs = labelCols + "," + string.Join(",", Enumerable.Repeat("120", stCount));
 
                     docTbl = new StackPanel { Spacing = 0 };
                     var hdr = new Grid { ColumnDefinitions = new ColumnDefinitions(tocDocColDefs),
@@ -1550,6 +1402,59 @@ public partial class WasteAnalysisInputPage : UserControl
                         if (docInfo.TocStdAreas_IC.Length > 0)
                             docTbl.Children.Add(BuildDocRowUnified(tocDocColDefs, "IC AU", icAuRow, "ThemeFgInfo"));
                     }
+                }
+            }
+            else if (isGcMode && docInfo.GcCompoundCals.Count > 0)
+            {
+                // GC 검량선 테이블: 성분별로 ST-1~N (공칭농도 + 응답) 한 쌍씩 렌더링
+                int maxSt = docInfo.GcCompoundCals.Max(c => c.StdConcs.Length);
+                if (maxSt < 2) maxSt = 2;
+                if (maxSt > 7) maxSt = 7;
+                // 라벨 영역(성분명)은 데이터 그리드의 첫 4컬럼과 동일 (시료명 컬럼까지 매칭)
+                string gcLabelCols = string.Join(",", colWidths.Take(4).Select(w => w.ToString("0")));
+                string gcDocColDefs = gcLabelCols + "," + string.Join(",", Enumerable.Repeat("105", maxSt));
+
+                docTbl = new StackPanel { Spacing = 0 };
+                var hdr = new Grid {
+                    ColumnDefinitions = new ColumnDefinitions(gcDocColDefs),
+                    MinHeight = 26, Background = AppRes("GridHeaderBg")
+                };
+                var hdrLabel = FsBase(new TextBlock { Text = "성분 / 구분", FontFamily = Font,
+                    FontWeight = FontWeight.SemiBold, Foreground = AppRes("FgMuted"),
+                    VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(6, 0) });
+                Grid.SetColumn(hdrLabel, 0); Grid.SetColumnSpan(hdrLabel, 4);
+                hdr.Children.Add(hdrLabel);
+                for (int c = 0; c < maxSt; c++)
+                {
+                    var tb = FsBase(new TextBlock { Text = $"ST-{c + 1}", FontFamily = Font,
+                        FontWeight = FontWeight.SemiBold, Foreground = AppRes("FgMuted"),
+                        VerticalAlignment = VerticalAlignment.Center,
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        Margin = new Thickness(4, 0) });
+                    Grid.SetColumn(tb, 4 + c); hdr.Children.Add(tb);
+                }
+                docTbl.Children.Add(new Border { Child = hdr,
+                    BorderBrush = AppRes("ThemeBorderSubtle"), BorderThickness = new Thickness(0,0,0,1) });
+
+                foreach (var comp in docInfo.GcCompoundCals)
+                {
+                    // 성분 표기: "Name (R=...)"
+                    string compLabel = string.IsNullOrEmpty(comp.R)
+                        ? comp.Name
+                        : $"{comp.Name}  (R={comp.R})";
+
+                    // 공칭농도 행 (STANDARD)
+                    string[] concRow = new string[maxSt];
+                    for (int si = 0; si < maxSt; si++)
+                        concRow[si] = si < comp.StdConcs.Length ? comp.StdConcs[si] : "";
+                    docTbl.Children.Add(BuildDocRowUnified(gcDocColDefs, compLabel, concRow, "ThemeFgWarn"));
+
+                    // 응답 행 (Resp. / AU)
+                    string[] respRow = new string[maxSt];
+                    for (int si = 0; si < maxSt; si++)
+                        respRow[si] = si < comp.StdResps.Length ? comp.StdResps[si] : "";
+                    string auLabel = comp.HasIstd ? "Resp." : "AU";
+                    docTbl.Children.Add(BuildDocRowUnified(gcDocColDefs, auLabel, respRow, "ThemeFgInfo"));
                 }
             }
             else
@@ -1605,21 +1510,47 @@ public partial class WasteAnalysisInputPage : UserControl
 
         // 배지 패널 (식종수 테이블과 데이터 그리드 사이)
         badgePanel.Margin = new Thickness(4, 4, 0, 2);
-        Grid.SetRow(badgePanel, 2);
+        Grid.SetRow(badgePanel, 3);
         root.Children.Add(badgePanel);
 
-        // 식종수/검량곡선 테이블 (데이터 그리드와 동일 마진/구조)
+        // 식종수/검량곡선 테이블 (데이터 그리드와 동일 마진/구조) — 스크롤 + 리사이즈 가능
         if (docTbl != null)
         {
+            // 자연 높이(대략 헤더+행수×28)를 기준으로 초기 높이 결정 (상한 320px)
+            int docChildren    = docTbl.Children.Count;
+            double naturalH    = 28.0 * Math.Max(docChildren, 1) + 4;
+            double initialH    = Math.Min(naturalH, 320);
+
+            var docScroll = new ScrollViewer
+            {
+                Content                       = docTbl,
+                HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+                VerticalScrollBarVisibility   = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+            };
             var docBorder = new Border
             {
-                Child = docTbl,
+                Child = docScroll,
                 BorderBrush = AppRes("ThemeBorderSubtle"),
                 BorderThickness = new Thickness(1, 0, 1, 1),
                 ClipToBounds = true,
             };
+            // Row 1: Pixel 고정 → GridSplitter 로 드래그 리사이즈
+            root.RowDefinitions[1] = new RowDefinition(initialH, GridUnitType.Pixel) { MinHeight = 30 };
             Grid.SetRow(docBorder, 1);
             root.Children.Add(docBorder);
+
+            // Row 2: 드래그 핸들
+            var splitter = new GridSplitter
+            {
+                Height              = 6,
+                Background          = AppRes("ThemeBorderSubtle"),
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                VerticalAlignment   = VerticalAlignment.Stretch,
+                ResizeDirection     = GridResizeDirection.Rows,
+                Cursor              = new Cursor(StandardCursorType.SizeNorthSouth),
+            };
+            Grid.SetRow(splitter, 2);
+            root.Children.Add(splitter);
         }
 
         // 그리드 본체
@@ -1640,6 +1571,8 @@ public partial class WasteAnalysisInputPage : UserControl
             ? new[] { "", "입력", "SN", "시료명", "TCAU", "TCcon", "ICAU", "ICcon", "희석배수", "결과값", "시료구분" }
             : isTocMode
             ? new[] { "", "입력", "SN", "시료명", "AU", "", "농도", "희석배수", "결과값", "시료구분" }
+            : isGcMode
+            ? new[] { "", "입력", "SN", "시료명", "", "Resp.", "ISTD Resp.", "농도", "희석배수", "결과값", "시료구분" }
             : new[] { "", "입력", "SN", "시료명", "시료량", "D1", "D2", "f(x/y)", "P", "결과값", "시료구분" };
         int detailStart = 4, detailEnd = isTocTcicMode ? 8 : (isUVVISMode || isTocMode) ? 7 : 8;
         for (int c = 0; c < hLabels.Length; c++)
@@ -2038,11 +1971,11 @@ public partial class WasteAnalysisInputPage : UserControl
             e.Handled = true;
         }, Avalonia.Interactivity.RoutingStrategies.Tunnel | Avalonia.Interactivity.RoutingStrategies.Bubble, true);
 
-        // 인라인 캘린더 (Row 3, 초기 숨김)
-        Grid.SetRow(calBorder, 3);
+        // 인라인 캘린더 (Row 4, 초기 숨김)
+        Grid.SetRow(calBorder, 4);
         root.Children.Add(calBorder);
 
-        Grid.SetRow(gridBorder, 4);
+        Grid.SetRow(gridBorder, 5);
         root.Children.Add(gridBorder);
 
         // 키보드 상하 이동 지원
@@ -2084,7 +2017,7 @@ public partial class WasteAnalysisInputPage : UserControl
             },
         };
         Grid.SetRow(_importOverlay, 0);
-        Grid.SetRowSpan(_importOverlay, 4);
+        Grid.SetRowSpan(_importOverlay, 6);
         root.Children.Add(_importOverlay);
 
         ListPanelChanged?.Invoke(root);
@@ -3360,16 +3293,25 @@ public partial class WasteAnalysisInputPage : UserControl
     }
 
     // ─── *_DATA 원시 측정값 저장 헬퍼 ──────────────────────────────────────
-    private void SaveRawData(ExcelRow row, WasteSample s)
+    // 매칭 여부와 무관하게 전체 행(정도관리 시료 + 미매칭 포함)을 기록부 테이블에 저장한다.
+    // s가 null이면 SN=row.SN, 업체명/구분 빈값 사용.
+    private void SaveRawData(ExcelRow row, WasteSample? s)
     {
         if (string.IsNullOrWhiteSpace(row.Result)) return;
 
         _categoryDocInfo.TryGetValue(_activeCategory, out var docInfo);
         bool isUV = docInfo?.IsUVVIS == true;
 
-        // 분석일: B1 값 우선, 없으면 채수일
+        // 분석일: B1 값 우선, 없으면 매칭된 샘플의 채수일, 그래도 없으면 오늘
         _categoryDocDates.TryGetValue(_activeCategory, out var 분석일Raw);
-        string 분석일 = !string.IsNullOrEmpty(분석일Raw) ? 분석일Raw : s.채수일;
+        string 분석일 = !string.IsNullOrEmpty(분석일Raw)
+            ? 분석일Raw
+            : (s?.채수일 ?? DateTime.Today.ToString("yyyy-MM-dd"));
+
+        // 매칭된 시료가 없으면 xlsx 행의 SN을 그대로 사용, 업체명/구분은 빈값
+        string sn     = s?.SN ?? row.SN ?? "";
+        string 업체명 = s?.업체명 ?? "";
+        string 구분   = s?.구분 ?? "";
 
         // 원본시료명이 있으면 비고에 저장 (변경내역 추적용)
         string remark = !string.IsNullOrEmpty(row.원본시료명) ? row.원본시료명 : "";
@@ -3380,7 +3322,7 @@ public partial class WasteAnalysisInputPage : UserControl
             {
                 _categoryDocInfo.TryGetValue("TOC", out var tocInfo);
                 WasteSampleService.UpsertTocData(
-                    _tocInstrumentMethod, 분석일, s.SN, s.업체명, s.구분,
+                    _tocInstrumentMethod, 분석일, sn, 업체명, 구분,
                     row.D1, row.P, tocInfo?.TocSlope_TC ?? "", row.Fxy, row.Result,
                     비고: remark);
                 break;
@@ -3388,7 +3330,7 @@ public partial class WasteAnalysisInputPage : UserControl
 
             case "BOD":
                 WasteSampleService.UpsertBodData(
-                    분석일, s.SN, s.업체명, s.구분,
+                    분석일, sn, 업체명, 구분,
                     시료량: row.시료량, d1: row.D1, d2: row.D2,
                     희석배수: row.P, 결과: row.Result,
                     식종시료량: docInfo?.식종수_시료량 ?? "",
@@ -3401,14 +3343,14 @@ public partial class WasteAnalysisInputPage : UserControl
 
             case "SS":
                 WasteSampleService.UpsertSsData(
-                    분석일, s.SN, s.업체명, s.구분,
+                    분석일, sn, 업체명, 구분,
                     row.시료량, row.D1, row.D2, row.Fxy, row.P, row.Result,
                     비고: remark);
                 break;
 
             case "NHEX":
                 WasteSampleService.UpsertNHexanData(
-                    분석일, s.SN, s.업체명, s.구분,
+                    분석일, sn, 업체명, 구분,
                     row.시료량, row.D1, row.D2, row.Fxy, row.P, row.Result,
                     비고: remark);
                 break;
@@ -3428,7 +3370,7 @@ public partial class WasteAnalysisInputPage : UserControl
                     if (string.IsNullOrEmpty(tblName)) continue;
                     WasteSampleService.UpsertUvvisData(
                         tblName,
-                        분석일, s.SN, s.업체명, s.구분,
+                        분석일, sn, 업체명, 구분,
                         시료량:  row.시료량,
                         흡광도:  row.D1,
                         희석배수: row.D2,
@@ -3679,12 +3621,11 @@ public partial class WasteAnalysisInputPage : UserControl
             return;
         }
 
-        // 스칼라/시마즈: 정도관리만 제외 (SN 없어도 포함)
+        // 스칼라/시마즈: 정도관리 시료도 기록부 증거이므로 보존 (IsControl 플래그 전달)
         var excelRows = new List<ExcelRow>();
         string method = "NPOC";
         foreach (var r in instrRows)
         {
-            if (r.IsControl) continue;
             method = r.Method;
             excelRows.Add(new ExcelRow
             {
@@ -3694,6 +3635,7 @@ public partial class WasteAnalysisInputPage : UserControl
                 Result = r.Conc,   // 결과값 (희석배수 미적용 시 동일)
                 D1     = r.Area,
                 P      = string.IsNullOrEmpty(r.Dilution) ? "" : r.Dilution,
+                IsControl = r.IsControl,
                 // TCIC 전용 raw값 매핑
                 TCAU   = r.TCAU,
                 TCcon  = r.TCcon,
@@ -3767,38 +3709,90 @@ public partial class WasteAnalysisInputPage : UserControl
     }
 
     // =========================================================================
-    // 엑셀 파싱
+    // GC 기기 파일 파싱 (Agilent ChemStation/MassHunter CSV)
     // =========================================================================
-    private static void ParsePage(IXLWorksheet ws, List<ExcelRow> rows,
-        int colName, int colResult, int colSN, int startRow, string itemAbbr = "BOD")
+    private void ParseGcInstrumentFile(string path)
     {
-        // 기초정보 컬럼: 시료량=colName+1, D1=colName+2, D2=colName+3, f(x/y)=colName+4, P=colName+5
-        int colVol = colName + 1, colD1 = colName + 2, colD2 = colName + 3;
-        int colFxy = colName + 4, colP = colName + 5;
-
-        var lastRow = ws.LastRowUsed()?.RowNumber() ?? 0;
-        for (int r = startRow; r <= lastRow; r++)
+        var gc = GcInstrumentParser.Parse(path);
+        if (gc.Format == GcFileFormat.Unknown || gc.Compounds.Count == 0)
         {
-            var nameCell   = ws.Cell(r, colName).GetString().Trim();
-            var resultCell = ws.Cell(r, colResult).GetString().Trim();
-            var snCell     = ws.Cell(r, colSN).GetString().Trim();
-
-            if (string.IsNullOrEmpty(nameCell) && string.IsNullOrEmpty(snCell)) break;
-            if (string.IsNullOrEmpty(nameCell)) continue;
-            if (nameCell.Contains("식종") || nameCell.Contains("SCF") || nameCell.Contains("분석담당")) continue;
-
-            if (double.TryParse(resultCell, out var val))
-                resultCell = FormatResult(val.ToString(), itemAbbr);
-
-            var exRow = new ExcelRow { 시료명 = nameCell, SN = snCell, Result = resultCell };
-            exRow.시료량 = ws.Cell(r, colVol).GetString().Trim();
-            exRow.D1   = ws.Cell(r, colD1).GetString().Trim();
-            exRow.D2   = ws.Cell(r, colD2).GetString().Trim();
-            exRow.Fxy  = ws.Cell(r, colFxy).GetString().Trim();
-            exRow.P    = colP < colResult ? ws.Cell(r, colP).GetString().Trim() : "";
-            rows.Add(exRow);
+            ShowMessage("지원되지 않는 GC 기기 파일 형식입니다.", true);
+            return;
         }
+
+        // 모든 성분의 Sample 행을 하나의 목록으로 합침 (정도관리 제외)
+        // 시료명은 "<성분> | <RawName>" 으로 구분하여 복수 성분 공존 허용
+        var excelRows = new List<ExcelRow>();
+        int sampleCount = 0;
+        foreach (var c in gc.Compounds)
+        {
+            foreach (var r in c.Rows)
+            {
+                if (r.IsControl) continue;
+                if (r.Type.Equals("Cal", StringComparison.OrdinalIgnoreCase)) continue;
+                excelRows.Add(new ExcelRow
+                {
+                    시료명 = string.IsNullOrEmpty(c.Name) ? r.RawName : $"{c.Name} | {r.RawName}",
+                    SN     = r.SN,
+                    D1     = r.Resp,      // 기기응답(면적)
+                    D2     = r.IstdResp,  // ISTD 응답 (없으면 빈값)
+                    Fxy    = r.FinalConc, // 기기 계산 농도
+                    Result = r.FinalConc,
+                    P      = r.Dilution,  // 희석배수 (상세블록에서 조인)
+                });
+                sampleCount++;
+            }
+        }
+
+        if (excelRows.Count == 0)
+        {
+            ShowMessage("GC 파일에 시료 데이터가 없습니다.", true);
+            return;
+        }
+
+        // GCMS 카테고리에 라우팅 (임시: 성분별 DB 테이블 라우팅은 후속 작업)
+        _activeCategory   = "GCMS";
+        var gcmsCat = Categories.FirstOrDefault(c => c.Key == "GCMS");
+        _activeItems      = gcmsCat.Items ?? Array.Empty<string>();
+        _categorySelected = true;
+        _categoryExcelData["GCMS"] = excelRows;
+
+        // 성분별 검량선 → ExcelDocInfo 에 저장 (Show2 렌더링용)
+        var gcDocInfo = _categoryDocInfo.ContainsKey("GCMS")
+            ? _categoryDocInfo["GCMS"]
+            : (_categoryDocInfo["GCMS"] = new ExcelDocInfo());
+        gcDocInfo.IsGcMode = true;
+        gcDocInfo.GcFormat = gc.Format.ToString();
+        gcDocInfo.GcCompoundCals = gc.Compounds.Select(c => new GcCompoundCalInfo
+        {
+            Name      = c.Name,
+            HasIstd   = c.HasIstd,
+            Slope     = c.SlopeA.HasValue    ? c.SlopeA.Value.ToString("G6",    System.Globalization.CultureInfo.InvariantCulture) : "",
+            Intercept = c.Intercept.HasValue ? c.Intercept.Value.ToString("G6", System.Globalization.CultureInfo.InvariantCulture) : "",
+            R         = c.R.HasValue         ? c.R.Value.ToString("F4",         System.Globalization.CultureInfo.InvariantCulture) : "",
+            StdConcs  = c.Calibration.Select(p => p.Conc).ToArray(),
+            StdResps  = c.Calibration.Select(p => p.Response).ToArray(),
+        }).ToList();
+
+        if (!_categoryDocDates.ContainsKey("GCMS") || string.IsNullOrEmpty(_categoryDocDates["GCMS"]))
+        {
+            // 배치 헤더에서 분석일 추출 시도 (예: "2026-03-17 오전 9:08:50")
+            var d = gc.AnalysisTime;
+            if (!string.IsNullOrEmpty(d) && d.Length >= 10 && DateTime.TryParse(d[..10], out var dt))
+                _categoryDocDates["GCMS"] = dt.ToString("yyyy-MM-dd");
+            else
+                _categoryDocDates["GCMS"] = DateTime.Today.ToString("yyyy-MM-dd");
+        }
+
+        UpdateCategoryButtonStyles();
+        LoadVerifiedGrid();
+
+        var compoundList = string.Join(", ", gc.Compounds.Take(3).Select(c => c.Name));
+        if (gc.Compounds.Count > 3) compoundList += $", +{gc.Compounds.Count - 3}";
+        ShowMessage($"GC 파일 감지 [{gc.Format}] — {gc.Compounds.Count}성분 ({compoundList}) / 시료 {sampleCount}개", false);
     }
+
+    // 엑셀 파싱 로직은 Services/SERVICE4/BodExcelParser.cs 로 이관
 
     // =========================================================================
     // 외부 호출: 카테고리 선택 / 검증 / 입력 / 출력 / 새로고침
@@ -3980,10 +3974,20 @@ public partial class WasteAnalysisInputPage : UserControl
 
             try
             {
+                // ── (a) 전체 행을 *_*_DATA 기록부에 저장 ─────────────────
+                // 정도관리(IsControl=true) 시료·미매칭 시료 모두 포함.
+                // 기록부 = 정상 분석 증거이므로 매칭 여부와 무관하게 전부 저장.
+                try { SaveRawData(row, row.Matched); }
+                catch (Exception rawEx)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[SaveRawData] {row.시료명}: {rawEx.Message}");
+                }
+
+                // ── (b) 매칭된 행만 의뢰/결과 테이블 갱신 ───────────────
                 switch (row.Source)
                 {
                     case SourceType.폐수배출업소 when row.Matched != null:
-                        ImportWasteSample(row);
+                        UpdateWasteSampleValues(row);
                         modifiedDates.Add(row.Matched.채수일);
                         imported++;
                         break;
@@ -4053,7 +4057,9 @@ public partial class WasteAnalysisInputPage : UserControl
         ShowMessage(msg, false);
     }
 
-    private void ImportWasteSample(ExcelRow row)
+    // 매칭된 폐수배출업소 시료의 요약 결과값을 폐수의뢰및결과 테이블에 갱신.
+    // *_*_DATA 저장은 ImportData() 루프 앞단에서 별도로 처리되므로 여기서는 요약만.
+    private void UpdateWasteSampleValues(ExcelRow row)
     {
         var s = row.Matched!;
         if (_activeItems.Length > 0)
@@ -4070,7 +4076,6 @@ public partial class WasteAnalysisInputPage : UserControl
             }
         }
         WasteSampleService.UpdateValues(s.Id, s.BOD, s.TOC, s.SS, s.TN, s.TP, s.NHexan, s.Phenols);
-        SaveRawData(row, s);
     }
 
     private void ImportAnalysisRequest(ExcelRow row)

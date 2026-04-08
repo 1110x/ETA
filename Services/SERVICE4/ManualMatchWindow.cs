@@ -8,12 +8,13 @@ using ETA.Models;
 using ETA.Services;
 using ETA.Services.SERVICE1;
 using ETA.Services.SERVICE2;
+using ETA.Views;
 using ETA.Views.Pages.PAGE1;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ETA.Views;
+namespace ETA.Services.SERVICE4;
 
 /// <summary>미매칭 시료 수동 매칭 팝업 — 의뢰시료 / 처리장 탭에서 후보 선택</summary>
 public class ManualMatchWindow : Window
