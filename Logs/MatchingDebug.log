@@ -1,0 +1,2481 @@
+[2026-04-09 04:35:05.170] DROP EVENT: rowIdx=1, dataKeys=[Text,match-facility]
+[2026-04-09 04:35:05.174] FACILITY MATCH ATTEMPT: '복합처리설비'
+[2026-04-09 04:35:05.174] FACILITY MASTERS FOUND: 59 masters
+[2026-04-09 04:35:05.175] FACILITY MATCH SUCCESS: 4단계처리시설 - 복합처리설비
+[2026-04-09 04:35:05.175] FINAL STATE: Source=처리시설, Status=입력가능, 시료명='복합처리설비'
+[2026-04-09 04:35:05.203] MATCH COMPLETED: Naphthalene | RE-06.d → 복합처리설비
+[2026-04-09 04:35:10.353] DROP EVENT: rowIdx=0, dataKeys=[Text,match-waste]
+[2026-04-09 04:35:10.354] WASTE MATCH ATTEMPT: '포스코에이치와이클린메탈㈜'
+[2026-04-09 04:35:10.372] WASTE SAMPLES FOUND: 100 samples
+[2026-04-09 04:35:10.372] WASTE MATCH SUCCESS: 포스코에이치와이클린메탈㈜
+[2026-04-09 04:35:10.372] FINAL STATE: Source=폐수배출업소, Status=입력가능, 시료명='포스코에이치와이클린메탈㈜'
+[2026-04-09 04:35:10.412] MATCH COMPLETED: Naphthalene | RE-05.d → 포스코에이치와이클린메탈㈜
+[2026-04-09 04:35:19.835] DROP EVENT: rowIdx=2, dataKeys=[Text,match-analysis]
+[2026-04-09 04:35:19.836] ANALYSIS MATCH ATTEMPT: 'HDPE 냉각탑'
+[2026-04-09 04:35:19.862] ANALYSIS RECORDS FOUND: 154 records
+[2026-04-09 04:35:19.863] ANALYSIS MATCH SUCCESS: HDPE 냉각탑
+[2026-04-09 04:35:19.864] FINAL STATE: Source=수질분석센터, Status=입력가능, 시료명='HDPE 냉각탑'
+[2026-04-09 04:35:19.943] MATCH COMPLETED: Naphthalene | RE-13.d → HDPE 냉각탑
+[2026-04-09 04:38:28.868] DROP EVENT: rowIdx=0, dataKeys=[Text,match-analysis]
+[2026-04-09 04:38:28.869] ANALYSIS MATCH ATTEMPT: 'Other 원폐수'
+[2026-04-09 04:38:28.899] ANALYSIS RECORDS FOUND: 154 records
+[2026-04-09 04:38:28.899] ANALYSIS MATCH SUCCESS: Other 원폐수
+[2026-04-09 04:38:28.899] FINAL STATE: Source=수질분석센터, Status=입력가능, 시료명='Other 원폐수'
+[2026-04-09 04:38:29.022] MATCH COMPLETED: 1,1-DCE | JR(26-03-05).D → Other 원폐수
+[2026-04-09 04:40:08.150] DROP EVENT: rowIdx=1, dataKeys=[Text,match-waste]
+[2026-04-09 04:40:08.151] WASTE MATCH ATTEMPT: 'CIS케미칼'
+[2026-04-09 04:40:08.176] WASTE SAMPLES FOUND: 100 samples
+[2026-04-09 04:40:08.176] WASTE MATCH SUCCESS: CIS케미칼
+[2026-04-09 04:40:08.176] FINAL STATE: Source=폐수배출업소, Status=입력가능, 시료명='CIS케미칼'
+[2026-04-09 04:40:08.245] MATCH COMPLETED: 1,1-DCE | RE-01.D → CIS케미칼
+[2026-04-09 04:40:15.151] DROP EVENT: rowIdx=2, dataKeys=[Text,match-facility]
+[2026-04-09 04:40:15.151] FACILITY MATCH ATTEMPT: '유입수'
+[2026-04-09 04:40:15.151] FACILITY MASTERS FOUND: 59 masters
+[2026-04-09 04:40:15.151] FACILITY MATCH SUCCESS: 4단계처리시설 - 유입수
+[2026-04-09 04:40:15.151] FINAL STATE: Source=처리시설, Status=입력가능, 시료명='유입수'
+[2026-04-09 04:40:15.272] MATCH COMPLETED: 1,1-DCE | RE-02.D → 유입수
+[2026-04-09 04:46:57.550] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 04:46:57.550] LoadVerifiedGrid: Found 11 excel rows
+[2026-04-09 04:46:57.552] Row RE-01: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-01.D', Matched=, Analysis=
+[2026-04-09 04:46:57.552] Row RE-02: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-02.D', Matched=, Analysis=
+[2026-04-09 04:46:57.552] Row RE-03: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-03.D', Matched=, Analysis=
+[2026-04-09 04:46:57.552] Row RE-04: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-04.D', Matched=, Analysis=
+[2026-04-09 04:46:57.552] Row RE-09: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-09.D', Matched=, Analysis=
+[2026-04-09 04:48:21.637] DROP EVENT: rowIdx=2, dataKeys=[Text,match-waste]
+[2026-04-09 04:48:21.641] WASTE MATCH ATTEMPT: '금호미쓰이화학㈜'
+[2026-04-09 04:48:21.658] WASTE SAMPLES FOUND: 100 samples
+[2026-04-09 04:48:21.659] WASTE MATCH SUCCESS: 금호미쓰이화학㈜
+[2026-04-09 04:48:21.659] FINAL STATE: Source=폐수배출업소, Status=입력가능, 시료명='금호미쓰이화학㈜'
+[2026-04-09 04:48:21.659] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 04:48:21.659] LoadVerifiedGrid: Found 11 excel rows
+[2026-04-09 04:48:21.659] Row RE-01: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-01.D', Matched=, Analysis=
+[2026-04-09 04:48:21.659] Row RE-02: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-02.D', Matched=, Analysis=
+[2026-04-09 04:48:21.660] Row RE-03: Source=폐수배출업소, Status=입력가능, 시료명='금호미쓰이화학㈜', Matched=금호미쓰이화학㈜, Analysis=
+[2026-04-09 04:48:21.660] Row RE-04: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-04.D', Matched=, Analysis=
+[2026-04-09 04:48:21.660] Row RE-09: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-09.D', Matched=, Analysis=
+[2026-04-09 04:48:21.691] MATCH COMPLETED: 1,4-Dioxane | RE-03.D → 금호미쓰이화학㈜
+[2026-04-09 04:48:28.119] DROP EVENT: rowIdx=1, dataKeys=[Text,match-facility]
+[2026-04-09 04:48:28.120] FACILITY MATCH ATTEMPT: '고속응집침전지'
+[2026-04-09 04:48:28.120] FACILITY MASTERS FOUND: 59 masters
+[2026-04-09 04:48:28.120] FACILITY MATCH SUCCESS: 4단계처리시설 - 고속응집침전지
+[2026-04-09 04:48:28.120] FINAL STATE: Source=처리시설, Status=입력가능, 시료명='고속응집침전지'
+[2026-04-09 04:48:28.120] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 04:48:28.120] LoadVerifiedGrid: Found 11 excel rows
+[2026-04-09 04:48:28.120] Row RE-01: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-01.D', Matched=, Analysis=
+[2026-04-09 04:48:28.121] Row RE-02: Source=처리시설, Status=입력가능, 시료명='고속응집침전지', Matched=, Analysis=
+[2026-04-09 04:48:28.121] Row RE-03: Source=미분류, Status=미매칭, 시료명='금호미쓰이화학㈜', Matched=, Analysis=
+[2026-04-09 04:48:28.121] Row RE-04: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-04.D', Matched=, Analysis=
+[2026-04-09 04:48:28.121] Row RE-09: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-09.D', Matched=, Analysis=
+[2026-04-09 04:48:28.143] MATCH COMPLETED: 1,4-Dioxane | RE-02.D → 고속응집침전지
+[2026-04-09 04:48:32.887] DROP EVENT: rowIdx=3, dataKeys=[Text,match-analysis]
+[2026-04-09 04:48:32.889] ANALYSIS MATCH ATTEMPT: '비점-유역2 유입수조'
+[2026-04-09 04:48:32.928] ANALYSIS RECORDS FOUND: 154 records
+[2026-04-09 04:48:32.931] ANALYSIS MATCH SUCCESS: 비점-유역2 유입수조
+[2026-04-09 04:48:32.931] FINAL STATE: Source=수질분석센터, Status=입력가능, 시료명='비점-유역2 유입수조'
+[2026-04-09 04:48:32.931] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 04:48:32.931] LoadVerifiedGrid: Found 11 excel rows
+[2026-04-09 04:48:32.932] Row RE-01: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-01.D', Matched=, Analysis=
+[2026-04-09 04:48:32.932] Row RE-02: Source=처리시설, Status=입력가능, 시료명='고속응집침전지', Matched=, Analysis=
+[2026-04-09 04:48:32.932] Row RE-03: Source=미분류, Status=미매칭, 시료명='금호미쓰이화학㈜', Matched=, Analysis=
+[2026-04-09 04:48:32.932] Row RE-04: Source=수질분석센터, Status=입력가능, 시료명='비점-유역2 유입수조', Matched=, Analysis=비점-유역2 유입수조
+[2026-04-09 04:48:32.932] Row RE-09: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-09.D', Matched=, Analysis=
+[2026-04-09 04:48:33.018] MATCH COMPLETED: 1,4-Dioxane | RE-04.D → 비점-유역2 유입수조
+[2026-04-09 04:49:04.435] DROP EVENT: rowIdx=3, dataKeys=[Text,match-analysis]
+[2026-04-09 04:49:04.438] ANALYSIS MATCH ATTEMPT: '비점-유역2 유입수조'
+[2026-04-09 04:49:04.464] ANALYSIS RECORDS FOUND: 154 records
+[2026-04-09 04:49:04.464] ANALYSIS MATCH SUCCESS: 비점-유역2 유입수조
+[2026-04-09 04:49:04.464] FINAL STATE: Source=수질분석센터, Status=입력가능, 시료명='비점-유역2 유입수조'
+[2026-04-09 04:49:04.465] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 04:49:04.465] LoadVerifiedGrid: Found 11 excel rows
+[2026-04-09 04:49:04.465] Row RE-01: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-01.D', Matched=, Analysis=
+[2026-04-09 04:49:04.465] Row RE-02: Source=처리시설, Status=입력가능, 시료명='고속응집침전지', Matched=, Analysis=
+[2026-04-09 04:49:04.465] Row RE-03: Source=미분류, Status=미매칭, 시료명='금호미쓰이화학㈜', Matched=, Analysis=
+[2026-04-09 04:49:04.465] Row RE-04: Source=수질분석센터, Status=입력가능, 시료명='비점-유역2 유입수조', Matched=, Analysis=비점-유역2 유입수조
+[2026-04-09 04:49:04.465] Row RE-09: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-09.D', Matched=, Analysis=
+[2026-04-09 04:49:04.545] MATCH COMPLETED: 1,4-Dioxane | RE-04.D → 비점-유역2 유입수조
+[2026-04-09 04:49:09.352] DROP EVENT: rowIdx=2, dataKeys=[Text,match-facility]
+[2026-04-09 04:49:09.352] FACILITY MATCH ATTEMPT: '방류수'
+[2026-04-09 04:49:09.353] FACILITY MASTERS FOUND: 59 masters
+[2026-04-09 04:49:09.353] FACILITY MATCH SUCCESS: 4단계처리시설 - 방류수
+[2026-04-09 04:49:09.353] FINAL STATE: Source=처리시설, Status=입력가능, 시료명='방류수'
+[2026-04-09 04:49:09.353] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 04:49:09.353] LoadVerifiedGrid: Found 11 excel rows
+[2026-04-09 04:49:09.353] Row RE-01: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-01.D', Matched=, Analysis=
+[2026-04-09 04:49:09.353] Row RE-02: Source=처리시설, Status=입력가능, 시료명='고속응집침전지', Matched=, Analysis=
+[2026-04-09 04:49:09.353] Row RE-03: Source=처리시설, Status=입력가능, 시료명='방류수', Matched=, Analysis=
+[2026-04-09 04:49:09.353] Row RE-04: Source=처리시설, Status=입력가능, 시료명='비점-유역2 유입수조', Matched=, Analysis=비점-유역2 유입수조
+[2026-04-09 04:49:09.353] Row RE-09: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-09.D', Matched=, Analysis=
+[2026-04-09 04:49:09.391] MATCH COMPLETED: 1,4-Dioxane | RE-03.D → 방류수
+[2026-04-09 04:49:13.518] DROP EVENT: rowIdx=1, dataKeys=[Text,match-waste]
+[2026-04-09 04:49:13.519] WASTE MATCH ATTEMPT: 'CIS케미칼'
+[2026-04-09 04:49:13.543] WASTE SAMPLES FOUND: 100 samples
+[2026-04-09 04:49:13.544] WASTE MATCH SUCCESS: CIS케미칼
+[2026-04-09 04:49:13.544] FINAL STATE: Source=폐수배출업소, Status=입력가능, 시료명='CIS케미칼'
+[2026-04-09 04:49:13.544] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 04:49:13.544] LoadVerifiedGrid: Found 11 excel rows
+[2026-04-09 04:49:13.544] Row RE-01: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-01.D', Matched=, Analysis=
+[2026-04-09 04:49:13.544] Row RE-02: Source=폐수배출업소, Status=입력가능, 시료명='CIS케미칼', Matched=CIS케미칼, Analysis=
+[2026-04-09 04:49:13.545] Row RE-03: Source=처리시설, Status=입력가능, 시료명='방류수', Matched=, Analysis=
+[2026-04-09 04:49:13.545] Row RE-04: Source=처리시설, Status=입력가능, 시료명='비점-유역2 유입수조', Matched=, Analysis=비점-유역2 유입수조
+[2026-04-09 04:49:13.545] Row RE-09: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-09.D', Matched=, Analysis=
+[2026-04-09 04:49:13.606] MATCH COMPLETED: 1,4-Dioxane | RE-02.D → CIS케미칼
+[2026-04-09 04:52:46.228] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 04:52:46.230] LoadVerifiedGrid: Found 11 excel rows
+[2026-04-09 04:52:46.231] Row RE-01: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-01.D', Matched=, Analysis=
+[2026-04-09 04:52:46.231] Row RE-02: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-02.D', Matched=, Analysis=
+[2026-04-09 04:52:46.231] Row RE-03: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-03.D', Matched=, Analysis=
+[2026-04-09 04:52:46.231] Row RE-04: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-04.D', Matched=, Analysis=
+[2026-04-09 04:52:46.231] Row RE-09: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-09.D', Matched=, Analysis=
+[2026-04-09 04:52:48.600] DROP EVENT: rowIdx=0, dataKeys=[Text,match-facility]
+[2026-04-09 04:52:48.602] DRAG FROM: 처리시설 탭
+[2026-04-09 04:52:48.602] FINAL STATE: Source=처리시설, Status=입력가능, 시료명='1,4-Dioxane | RE-01.D'
+[2026-04-09 04:52:48.602] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 04:52:48.602] LoadVerifiedGrid: Found 11 excel rows
+[2026-04-09 04:52:48.602] Row RE-01: Source=처리시설, Status=입력가능, 시료명='1,4-Dioxane | RE-01.D', Matched=, Analysis=
+[2026-04-09 04:52:48.602] Row RE-02: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-02.D', Matched=, Analysis=
+[2026-04-09 04:52:48.603] Row RE-03: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-03.D', Matched=, Analysis=
+[2026-04-09 04:52:48.603] Row RE-04: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-04.D', Matched=, Analysis=
+[2026-04-09 04:52:48.603] Row RE-09: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-09.D', Matched=, Analysis=
+[2026-04-09 04:52:48.607] MATCH COMPLETED:  → 1,4-Dioxane | RE-01.D
+[2026-04-09 04:52:53.314] DROP EVENT: rowIdx=0, dataKeys=[Text,match-facility]
+[2026-04-09 04:52:53.315] DRAG FROM: 처리시설 탭
+[2026-04-09 04:52:53.315] FINAL STATE: Source=처리시설, Status=입력가능, 시료명='1,4-Dioxane | RE-01.D'
+[2026-04-09 04:52:53.315] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 04:52:53.315] LoadVerifiedGrid: Found 11 excel rows
+[2026-04-09 04:52:53.315] Row RE-01: Source=처리시설, Status=입력가능, 시료명='1,4-Dioxane | RE-01.D', Matched=, Analysis=
+[2026-04-09 04:52:53.315] Row RE-02: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-02.D', Matched=, Analysis=
+[2026-04-09 04:52:53.315] Row RE-03: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-03.D', Matched=, Analysis=
+[2026-04-09 04:52:53.316] Row RE-04: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-04.D', Matched=, Analysis=
+[2026-04-09 04:52:53.316] Row RE-09: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-09.D', Matched=, Analysis=
+[2026-04-09 04:52:53.320] MATCH COMPLETED:  → 1,4-Dioxane | RE-01.D
+[2026-04-09 04:52:58.333] DROP EVENT: rowIdx=0, dataKeys=[Text,match-waste]
+[2026-04-09 04:52:58.334] DRAG FROM: 비용부담금 탭
+[2026-04-09 04:52:58.334] FINAL STATE: Source=폐수배출업소, Status=입력가능, 시료명='1,4-Dioxane | RE-01.D'
+[2026-04-09 04:52:58.334] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 04:52:58.335] LoadVerifiedGrid: Found 11 excel rows
+[2026-04-09 04:52:58.335] Row RE-01: Source=폐수배출업소, Status=입력가능, 시료명='1,4-Dioxane | RE-01.D', Matched=, Analysis=
+[2026-04-09 04:52:58.335] Row RE-02: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-02.D', Matched=, Analysis=
+[2026-04-09 04:52:58.335] Row RE-03: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-03.D', Matched=, Analysis=
+[2026-04-09 04:52:58.335] Row RE-04: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-04.D', Matched=, Analysis=
+[2026-04-09 04:52:58.336] Row RE-09: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-09.D', Matched=, Analysis=
+[2026-04-09 04:52:58.384] MATCH COMPLETED:  → 1,4-Dioxane | RE-01.D
+[2026-04-09 04:53:02.132] DROP EVENT: rowIdx=1, dataKeys=[Text,match-analysis]
+[2026-04-09 04:53:02.132] DRAG FROM: 수질분석센터 탭
+[2026-04-09 04:53:02.133] FINAL STATE: Source=수질분석센터, Status=입력가능, 시료명='1,4-Dioxane | RE-02.D'
+[2026-04-09 04:53:02.133] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 04:53:02.133] LoadVerifiedGrid: Found 11 excel rows
+[2026-04-09 04:53:02.133] Row RE-01: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-01.D', Matched=, Analysis=
+[2026-04-09 04:53:02.133] Row RE-02: Source=수질분석센터, Status=입력가능, 시료명='1,4-Dioxane | RE-02.D', Matched=, Analysis=
+[2026-04-09 04:53:02.133] Row RE-03: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-03.D', Matched=, Analysis=
+[2026-04-09 04:53:02.133] Row RE-04: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-04.D', Matched=, Analysis=
+[2026-04-09 04:53:02.133] Row RE-09: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-09.D', Matched=, Analysis=
+[2026-04-09 04:53:02.202] MATCH COMPLETED:  → 1,4-Dioxane | RE-02.D
+[2026-04-09 04:54:02.668] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 04:54:02.669] LoadVerifiedGrid: Found 6 excel rows
+[2026-04-09 04:54:02.670] Row RE-05: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-05.d', Matched=, Analysis=
+[2026-04-09 04:54:02.670] Row RE-06: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-06.d', Matched=, Analysis=
+[2026-04-09 04:54:02.670] Row RE-13: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-13.d', Matched=, Analysis=
+[2026-04-09 04:54:02.670] Row RE-14: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-14.d', Matched=, Analysis=
+[2026-04-09 04:54:02.670] Row RE-24: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-24.d', Matched=, Analysis=
+[2026-04-09 04:54:06.530] DROP EVENT: rowIdx=0, dataKeys=[Text,match-facility]
+[2026-04-09 04:54:06.531] DRAG FROM: 처리시설 탭
+[2026-04-09 04:54:06.531] FINAL STATE: Source=처리시설, Status=입력가능, 시료명='Naphthalene | RE-05.d'
+[2026-04-09 04:54:06.531] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 04:54:06.531] LoadVerifiedGrid: Found 6 excel rows
+[2026-04-09 04:54:06.531] Row RE-05: Source=처리시설, Status=입력가능, 시료명='Naphthalene | RE-05.d', Matched=, Analysis=
+[2026-04-09 04:54:06.531] Row RE-06: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-06.d', Matched=, Analysis=
+[2026-04-09 04:54:06.531] Row RE-13: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-13.d', Matched=, Analysis=
+[2026-04-09 04:54:06.531] Row RE-14: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-14.d', Matched=, Analysis=
+[2026-04-09 04:54:06.531] Row RE-24: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-24.d', Matched=, Analysis=
+[2026-04-09 04:54:06.535] MATCH COMPLETED:  → Naphthalene | RE-05.d
+[2026-04-09 04:54:56.179] DROP EVENT: rowIdx=0, dataKeys=[Text,match-waste]
+[2026-04-09 04:54:56.181] DRAG FROM: 비용부담금 탭
+[2026-04-09 04:54:56.181] FINAL STATE: Source=폐수배출업소, Status=입력가능, 시료명='Naphthalene | RE-05.d'
+[2026-04-09 04:54:56.181] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 04:54:56.181] LoadVerifiedGrid: Found 6 excel rows
+[2026-04-09 04:54:56.181] Row RE-05: Source=폐수배출업소, Status=입력가능, 시료명='Naphthalene | RE-05.d', Matched=, Analysis=
+[2026-04-09 04:54:56.181] Row RE-06: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-06.d', Matched=, Analysis=
+[2026-04-09 04:54:56.181] Row RE-13: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-13.d', Matched=, Analysis=
+[2026-04-09 04:54:56.182] Row RE-14: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-14.d', Matched=, Analysis=
+[2026-04-09 04:54:56.182] Row RE-24: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-24.d', Matched=, Analysis=
+[2026-04-09 04:54:56.214] MATCH COMPLETED:  → Naphthalene | RE-05.d
+[2026-04-09 04:55:00.964] DROP EVENT: rowIdx=1, dataKeys=[Text,match-analysis]
+[2026-04-09 04:55:00.966] DRAG FROM: 수질분석센터 탭
+[2026-04-09 04:55:00.966] FINAL STATE: Source=수질분석센터, Status=입력가능, 시료명='Naphthalene | RE-06.d'
+[2026-04-09 04:55:00.966] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 04:55:00.966] LoadVerifiedGrid: Found 6 excel rows
+[2026-04-09 04:55:00.967] Row RE-05: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-05.d', Matched=, Analysis=
+[2026-04-09 04:55:00.967] Row RE-06: Source=수질분석센터, Status=입력가능, 시료명='Naphthalene | RE-06.d', Matched=, Analysis=
+[2026-04-09 04:55:00.967] Row RE-13: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-13.d', Matched=, Analysis=
+[2026-04-09 04:55:00.967] Row RE-14: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-14.d', Matched=, Analysis=
+[2026-04-09 04:55:00.967] Row RE-24: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-24.d', Matched=, Analysis=
+[2026-04-09 04:55:01.026] MATCH COMPLETED:  → Naphthalene | RE-06.d
+[2026-04-09 04:56:21.194] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 04:56:21.195] LoadVerifiedGrid: Found 11 excel rows
+[2026-04-09 04:56:21.196] Row RE-01: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-01.D', Matched=, Analysis=
+[2026-04-09 04:56:21.196] Row RE-02: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-02.D', Matched=, Analysis=
+[2026-04-09 04:56:21.196] Row RE-03: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-03.D', Matched=, Analysis=
+[2026-04-09 04:56:21.196] Row RE-04: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-04.D', Matched=, Analysis=
+[2026-04-09 04:56:21.196] Row RE-09: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-09.D', Matched=, Analysis=
+[2026-04-09 04:56:21.208] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 04:56:21.208] UI DISPLAY: RE-01 → '—'
+[2026-04-09 04:56:21.208] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 04:56:21.209] UI DISPLAY: RE-02 → '—'
+[2026-04-09 04:56:21.209] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 04:56:21.209] UI DISPLAY: RE-03 → '—'
+[2026-04-09 04:56:21.209] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 04:56:21.209] UI DISPLAY: RE-04 → '—'
+[2026-04-09 04:56:21.209] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 04:56:21.209] UI DISPLAY: RE-09 → '—'
+[2026-04-09 04:56:21.209] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 04:56:21.209] UI DISPLAY: RE-10 → '—'
+[2026-04-09 04:56:21.209] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 04:56:21.209] UI DISPLAY: RE-11 → '—'
+[2026-04-09 04:56:21.209] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 04:56:21.209] UI DISPLAY: RE-12 → '—'
+[2026-04-09 04:56:21.209] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 04:56:21.209] UI DISPLAY: KD-01 → '—'
+[2026-04-09 04:56:21.209] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 04:56:21.210] UI DISPLAY: KD-02 → '—'
+[2026-04-09 04:56:21.210] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 04:56:21.210] UI DISPLAY: KD-03 → '—'
+[2026-04-09 04:56:22.962] DROP EVENT: rowIdx=0, dataKeys=[Text,match-facility]
+[2026-04-09 04:56:22.964] DRAG FROM: 처리시설 탭
+[2026-04-09 04:56:22.964] FINAL STATE: Source=처리시설, Status=입력가능, 시료명='1,4-Dioxane | RE-01.D'
+[2026-04-09 04:56:22.965] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 04:56:22.965] LoadVerifiedGrid: Found 11 excel rows
+[2026-04-09 04:56:22.965] Row RE-01: Source=처리시설, Status=입력가능, 시료명='1,4-Dioxane | RE-01.D', Matched=, Analysis=
+[2026-04-09 04:56:22.965] Row RE-02: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-02.D', Matched=, Analysis=
+[2026-04-09 04:56:22.965] Row RE-03: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-03.D', Matched=, Analysis=
+[2026-04-09 04:56:22.965] Row RE-04: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-04.D', Matched=, Analysis=
+[2026-04-09 04:56:22.965] Row RE-09: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-09.D', Matched=, Analysis=
+[2026-04-09 04:56:22.968] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 04:56:22.968] UI DISPLAY: RE-01 → '—'
+[2026-04-09 04:56:22.968] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 04:56:22.968] UI DISPLAY: RE-02 → '—'
+[2026-04-09 04:56:22.968] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 04:56:22.968] UI DISPLAY: RE-03 → '—'
+[2026-04-09 04:56:22.968] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 04:56:22.968] UI DISPLAY: RE-04 → '—'
+[2026-04-09 04:56:22.968] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 04:56:22.968] UI DISPLAY: RE-09 → '—'
+[2026-04-09 04:56:22.968] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 04:56:22.969] UI DISPLAY: RE-10 → '—'
+[2026-04-09 04:56:22.969] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 04:56:22.969] UI DISPLAY: RE-11 → '—'
+[2026-04-09 04:56:22.969] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 04:56:22.969] UI DISPLAY: RE-12 → '—'
+[2026-04-09 04:56:22.969] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 04:56:22.969] UI DISPLAY: KD-01 → '—'
+[2026-04-09 04:56:22.969] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 04:56:22.969] UI DISPLAY: KD-02 → '—'
+[2026-04-09 04:56:22.969] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 04:56:22.969] UI DISPLAY: KD-03 → '—'
+[2026-04-09 04:56:22.979] MATCH COMPLETED:  → 1,4-Dioxane | RE-01.D
+[2026-04-09 04:56:27.476] DROP EVENT: rowIdx=0, dataKeys=[Text,match-waste]
+[2026-04-09 04:56:27.477] DRAG FROM: 비용부담금 탭
+[2026-04-09 04:56:27.477] FINAL STATE: Source=폐수배출업소, Status=입력가능, 시료명='1,4-Dioxane | RE-01.D'
+[2026-04-09 04:56:27.477] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 04:56:27.478] LoadVerifiedGrid: Found 11 excel rows
+[2026-04-09 04:56:27.478] Row RE-01: Source=폐수배출업소, Status=입력가능, 시료명='1,4-Dioxane | RE-01.D', Matched=, Analysis=
+[2026-04-09 04:56:27.478] Row RE-02: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-02.D', Matched=, Analysis=
+[2026-04-09 04:56:27.478] Row RE-03: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-03.D', Matched=, Analysis=
+[2026-04-09 04:56:27.478] Row RE-04: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-04.D', Matched=, Analysis=
+[2026-04-09 04:56:27.478] Row RE-09: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-09.D', Matched=, Analysis=
+[2026-04-09 04:56:27.479] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 04:56:27.479] UI DISPLAY: RE-01 → '—'
+[2026-04-09 04:56:27.479] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 04:56:27.479] UI DISPLAY: RE-02 → '—'
+[2026-04-09 04:56:27.479] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 04:56:27.479] UI DISPLAY: RE-03 → '—'
+[2026-04-09 04:56:27.479] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 04:56:27.479] UI DISPLAY: RE-04 → '—'
+[2026-04-09 04:56:27.479] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 04:56:27.479] UI DISPLAY: RE-09 → '—'
+[2026-04-09 04:56:27.479] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 04:56:27.479] UI DISPLAY: RE-10 → '—'
+[2026-04-09 04:56:27.479] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 04:56:27.480] UI DISPLAY: RE-11 → '—'
+[2026-04-09 04:56:27.480] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 04:56:27.480] UI DISPLAY: RE-12 → '—'
+[2026-04-09 04:56:27.480] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 04:56:27.480] UI DISPLAY: KD-01 → '—'
+[2026-04-09 04:56:27.480] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 04:56:27.480] UI DISPLAY: KD-02 → '—'
+[2026-04-09 04:56:27.480] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 04:56:27.480] UI DISPLAY: KD-03 → '—'
+[2026-04-09 04:56:27.516] MATCH COMPLETED:  → 1,4-Dioxane | RE-01.D
+[2026-04-09 04:56:32.580] DROP EVENT: rowIdx=0, dataKeys=[Text,match-analysis]
+[2026-04-09 04:56:32.582] DRAG FROM: 수질분석센터 탭
+[2026-04-09 04:56:32.582] FINAL STATE: Source=수질분석센터, Status=입력가능, 시료명='1,4-Dioxane | RE-01.D'
+[2026-04-09 04:56:32.582] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 04:56:32.582] LoadVerifiedGrid: Found 11 excel rows
+[2026-04-09 04:56:32.583] Row RE-01: Source=수질분석센터, Status=입력가능, 시료명='1,4-Dioxane | RE-01.D', Matched=, Analysis=
+[2026-04-09 04:56:32.583] Row RE-02: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-02.D', Matched=, Analysis=
+[2026-04-09 04:56:32.583] Row RE-03: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-03.D', Matched=, Analysis=
+[2026-04-09 04:56:32.583] Row RE-04: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-04.D', Matched=, Analysis=
+[2026-04-09 04:56:32.583] Row RE-09: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-09.D', Matched=, Analysis=
+[2026-04-09 04:56:32.586] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 04:56:32.586] UI DISPLAY: RE-01 → '—'
+[2026-04-09 04:56:32.586] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 04:56:32.586] UI DISPLAY: RE-02 → '—'
+[2026-04-09 04:56:32.587] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 04:56:32.587] UI DISPLAY: RE-03 → '—'
+[2026-04-09 04:56:32.587] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 04:56:32.587] UI DISPLAY: RE-04 → '—'
+[2026-04-09 04:56:32.587] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 04:56:32.587] UI DISPLAY: RE-09 → '—'
+[2026-04-09 04:56:32.587] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 04:56:32.587] UI DISPLAY: RE-10 → '—'
+[2026-04-09 04:56:32.587] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 04:56:32.587] UI DISPLAY: RE-11 → '—'
+[2026-04-09 04:56:32.587] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 04:56:32.588] UI DISPLAY: RE-12 → '—'
+[2026-04-09 04:56:32.588] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 04:56:32.588] UI DISPLAY: KD-01 → '—'
+[2026-04-09 04:56:32.588] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 04:56:32.588] UI DISPLAY: KD-02 → '—'
+[2026-04-09 04:56:32.588] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 04:56:32.588] UI DISPLAY: KD-03 → '—'
+[2026-04-09 04:56:32.645] MATCH COMPLETED:  → 1,4-Dioxane | RE-01.D
+[2026-04-09 05:00:03.389] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:00:03.391] LoadVerifiedGrid: Found 11 excel rows
+[2026-04-09 05:00:03.392] Row RE-01: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-01.D', Matched=, Analysis=
+[2026-04-09 05:00:03.392] Row RE-02: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-02.D', Matched=, Analysis=
+[2026-04-09 05:00:03.392] Row RE-03: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-03.D', Matched=, Analysis=
+[2026-04-09 05:00:03.392] Row RE-04: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-04.D', Matched=, Analysis=
+[2026-04-09 05:00:03.393] Row RE-09: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-09.D', Matched=, Analysis=
+[2026-04-09 05:00:03.407] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:00:03.407] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:00:03.407] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:00:03.407] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:00:03.408] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:00:03.408] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:00:03.408] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:00:03.408] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:00:03.408] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:00:03.408] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:00:03.408] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:00:03.408] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:00:03.408] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:00:03.408] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:00:03.409] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:00:03.409] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:00:03.409] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:00:03.409] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:00:03.409] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:00:03.409] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:00:03.409] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:00:03.409] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:00:05.585] DROP EVENT: rowIdx=1, dataKeys=[Text,match-facility]
+[2026-04-09 05:00:05.587] DRAG FROM: 처리시설 탭
+[2026-04-09 05:00:05.587] FINAL STATE: Source=처리시설, Status=입력가능, 시료명='1,4-Dioxane | RE-02.D'
+[2026-04-09 05:00:05.587] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:00:05.587] LoadVerifiedGrid: Found 11 excel rows
+[2026-04-09 05:00:05.587] Row RE-01: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-01.D', Matched=, Analysis=
+[2026-04-09 05:00:05.587] Row RE-02: Source=처리시설, Status=입력가능, 시료명='1,4-Dioxane | RE-02.D', Matched=, Analysis=
+[2026-04-09 05:00:05.587] Row RE-03: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-03.D', Matched=, Analysis=
+[2026-04-09 05:00:05.587] Row RE-04: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-04.D', Matched=, Analysis=
+[2026-04-09 05:00:05.587] Row RE-09: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-09.D', Matched=, Analysis=
+[2026-04-09 05:00:05.588] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:00:05.588] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:00:05.588] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:00:05.589] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:00:05.589] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:00:05.589] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:00:05.589] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:00:05.589] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:00:05.589] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:00:05.589] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:00:05.589] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:00:05.589] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:00:05.589] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:00:05.589] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:00:05.589] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:00:05.589] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:00:05.589] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:00:05.589] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:00:05.589] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:00:05.589] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:00:05.589] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:00:05.590] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:00:05.593] MATCH COMPLETED:  → 1,4-Dioxane | RE-02.D
+[2026-04-09 05:00:09.448] DROP EVENT: rowIdx=0, dataKeys=[Text,match-facility]
+[2026-04-09 05:00:09.450] DRAG FROM: 처리시설 탭
+[2026-04-09 05:00:09.450] FINAL STATE: Source=처리시설, Status=입력가능, 시료명='1,4-Dioxane | RE-01.D'
+[2026-04-09 05:00:09.450] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:00:09.450] LoadVerifiedGrid: Found 11 excel rows
+[2026-04-09 05:00:09.450] Row RE-01: Source=처리시설, Status=입력가능, 시료명='1,4-Dioxane | RE-01.D', Matched=, Analysis=
+[2026-04-09 05:00:09.450] Row RE-02: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-02.D', Matched=, Analysis=
+[2026-04-09 05:00:09.450] Row RE-03: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-03.D', Matched=, Analysis=
+[2026-04-09 05:00:09.450] Row RE-04: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-04.D', Matched=, Analysis=
+[2026-04-09 05:00:09.451] Row RE-09: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-09.D', Matched=, Analysis=
+[2026-04-09 05:00:09.452] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:00:09.453] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:00:09.453] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:00:09.453] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:00:09.453] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:00:09.453] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:00:09.453] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:00:09.453] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:00:09.453] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:00:09.453] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:00:09.453] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:00:09.453] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:00:09.453] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:00:09.453] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:00:09.454] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:00:09.454] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:00:09.454] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:00:09.454] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:00:09.454] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:00:09.454] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:00:09.454] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:00:09.454] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:00:09.458] MATCH COMPLETED:  → 1,4-Dioxane | RE-01.D
+[2026-04-09 05:02:56.258] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:02:56.258] LoadVerifiedGrid: Found 6 excel rows
+[2026-04-09 05:02:56.260] Row DL-01: Source=미분류, Status=입력가능, 시료명='Acrylamide | DL-01.D', Matched=, Analysis=
+[2026-04-09 05:02:56.260] Row LT-01: Source=미분류, Status=입력가능, 시료명='Acrylamide | LT-01.D', Matched=, Analysis=
+[2026-04-09 05:02:56.260] Row LT-02: Source=미분류, Status=입력가능, 시료명='Acrylamide | LT-02.D', Matched=, Analysis=
+[2026-04-09 05:02:56.260] Row LT-03: Source=미분류, Status=입력가능, 시료명='Acrylamide | LT-03.D', Matched=, Analysis=
+[2026-04-09 05:02:56.260] Row PL-01: Source=미분류, Status=입력가능, 시료명='Acrylamide | PL-01.D', Matched=, Analysis=
+[2026-04-09 05:02:56.273] UI DISPLAY: DL-01 Source=미분류
+[2026-04-09 05:02:56.273] UI DISPLAY: DL-01 → '—'
+[2026-04-09 05:02:56.273] UI DISPLAY: LT-01 Source=미분류
+[2026-04-09 05:02:56.273] UI DISPLAY: LT-01 → '—'
+[2026-04-09 05:02:56.273] UI DISPLAY: LT-02 Source=미분류
+[2026-04-09 05:02:56.273] UI DISPLAY: LT-02 → '—'
+[2026-04-09 05:02:56.274] UI DISPLAY: LT-03 Source=미분류
+[2026-04-09 05:02:56.274] UI DISPLAY: LT-03 → '—'
+[2026-04-09 05:02:56.274] UI DISPLAY: PL-01 Source=미분류
+[2026-04-09 05:02:56.274] UI DISPLAY: PL-01 → '—'
+[2026-04-09 05:02:56.274] UI DISPLAY: PL-02 Source=미분류
+[2026-04-09 05:02:56.274] UI DISPLAY: PL-02 → '—'
+[2026-04-09 05:02:58.846] DROP EVENT: rowIdx=1, dataKeys=[Text,match-facility]
+[2026-04-09 05:02:58.849] DRAG FROM: 처리시설 탭
+[2026-04-09 05:02:58.849] FINAL STATE: Source=처리시설, Status=입력가능, 시료명='Acrylamide | LT-01.D'
+[2026-04-09 05:02:58.849] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:02:58.849] LoadVerifiedGrid: Found 6 excel rows
+[2026-04-09 05:02:58.849] Row DL-01: Source=미분류, Status=미매칭, 시료명='Acrylamide | DL-01.D', Matched=, Analysis=
+[2026-04-09 05:02:58.849] Row LT-01: Source=처리시설, Status=입력가능, 시료명='Acrylamide | LT-01.D', Matched=, Analysis=
+[2026-04-09 05:02:58.849] Row LT-02: Source=미분류, Status=미매칭, 시료명='Acrylamide | LT-02.D', Matched=, Analysis=
+[2026-04-09 05:02:58.849] Row LT-03: Source=미분류, Status=미매칭, 시료명='Acrylamide | LT-03.D', Matched=, Analysis=
+[2026-04-09 05:02:58.849] Row PL-01: Source=미분류, Status=미매칭, 시료명='Acrylamide | PL-01.D', Matched=, Analysis=
+[2026-04-09 05:02:58.850] UI DISPLAY: DL-01 Source=미분류
+[2026-04-09 05:02:58.850] UI DISPLAY: DL-01 → '—'
+[2026-04-09 05:02:58.851] UI DISPLAY: LT-01 Source=미분류
+[2026-04-09 05:02:58.851] UI DISPLAY: LT-01 → '—'
+[2026-04-09 05:02:58.851] UI DISPLAY: LT-02 Source=미분류
+[2026-04-09 05:02:58.851] UI DISPLAY: LT-02 → '—'
+[2026-04-09 05:02:58.851] UI DISPLAY: LT-03 Source=미분류
+[2026-04-09 05:02:58.851] UI DISPLAY: LT-03 → '—'
+[2026-04-09 05:02:58.851] UI DISPLAY: PL-01 Source=미분류
+[2026-04-09 05:02:58.851] UI DISPLAY: PL-01 → '—'
+[2026-04-09 05:02:58.851] UI DISPLAY: PL-02 Source=미분류
+[2026-04-09 05:02:58.851] UI DISPLAY: PL-02 → '—'
+[2026-04-09 05:02:58.854] MATCH COMPLETED:  → Acrylamide | LT-01.D
+[2026-04-09 05:04:29.360] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:04:29.362] LoadVerifiedGrid: Found 6 excel rows
+[2026-04-09 05:04:29.363] Row RE-05: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-05.d', Matched=, Analysis=
+[2026-04-09 05:04:29.363] Row RE-06: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-06.d', Matched=, Analysis=
+[2026-04-09 05:04:29.363] Row RE-13: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-13.d', Matched=, Analysis=
+[2026-04-09 05:04:29.363] Row RE-14: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-14.d', Matched=, Analysis=
+[2026-04-09 05:04:29.363] Row RE-24: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-24.d', Matched=, Analysis=
+[2026-04-09 05:04:29.375] UI DISPLAY: RE-05 Source=미분류
+[2026-04-09 05:04:29.375] UI DISPLAY: RE-05 → '—'
+[2026-04-09 05:04:29.375] UI DISPLAY: RE-06 Source=미분류
+[2026-04-09 05:04:29.375] UI DISPLAY: RE-06 → '—'
+[2026-04-09 05:04:29.375] UI DISPLAY: RE-13 Source=미분류
+[2026-04-09 05:04:29.375] UI DISPLAY: RE-13 → '—'
+[2026-04-09 05:04:29.375] UI DISPLAY: RE-14 Source=미분류
+[2026-04-09 05:04:29.375] UI DISPLAY: RE-14 → '—'
+[2026-04-09 05:04:29.375] UI DISPLAY: RE-24 Source=미분류
+[2026-04-09 05:04:29.375] UI DISPLAY: RE-24 → '—'
+[2026-04-09 05:04:29.376] UI DISPLAY: RE-25 Source=미분류
+[2026-04-09 05:04:29.376] UI DISPLAY: RE-25 → '—'
+[2026-04-09 05:04:31.042] DROP EVENT: rowIdx=1, dataKeys=[Text,match-facility]
+[2026-04-09 05:04:31.045] DRAG FROM: 처리시설 탭
+[2026-04-09 05:04:31.045] FINAL STATE: Source=처리시설, Status=입력가능, 시료명='Naphthalene | RE-06.d'
+[2026-04-09 05:04:31.046] SYNC CHECK: _activeCategory='GCMS', rowIndex=1
+[2026-04-09 05:04:31.046] SYNC CHECK: categoryRows.Count=6
+[2026-04-09 05:04:31.046] SYNC BEFORE: categoryRows[1].Source=처리시설
+[2026-04-09 05:04:31.046] SYNC AFTER: categoryRows[1].Source=처리시설
+[2026-04-09 05:04:31.046] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:04:31.046] LoadVerifiedGrid: Found 6 excel rows
+[2026-04-09 05:04:31.046] Row RE-05: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-05.d', Matched=, Analysis=
+[2026-04-09 05:04:31.046] Row RE-06: Source=처리시설, Status=입력가능, 시료명='Naphthalene | RE-06.d', Matched=, Analysis=
+[2026-04-09 05:04:31.046] Row RE-13: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-13.d', Matched=, Analysis=
+[2026-04-09 05:04:31.046] Row RE-14: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-14.d', Matched=, Analysis=
+[2026-04-09 05:04:31.046] Row RE-24: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-24.d', Matched=, Analysis=
+[2026-04-09 05:04:31.047] UI DISPLAY: RE-05 Source=미분류
+[2026-04-09 05:04:31.047] UI DISPLAY: RE-05 → '—'
+[2026-04-09 05:04:31.047] UI DISPLAY: RE-06 Source=미분류
+[2026-04-09 05:04:31.047] UI DISPLAY: RE-06 → '—'
+[2026-04-09 05:04:31.047] UI DISPLAY: RE-13 Source=미분류
+[2026-04-09 05:04:31.048] UI DISPLAY: RE-13 → '—'
+[2026-04-09 05:04:31.048] UI DISPLAY: RE-14 Source=미분류
+[2026-04-09 05:04:31.048] UI DISPLAY: RE-14 → '—'
+[2026-04-09 05:04:31.048] UI DISPLAY: RE-24 Source=미분류
+[2026-04-09 05:04:31.048] UI DISPLAY: RE-24 → '—'
+[2026-04-09 05:04:31.048] UI DISPLAY: RE-25 Source=미분류
+[2026-04-09 05:04:31.048] UI DISPLAY: RE-25 → '—'
+[2026-04-09 05:04:31.051] MATCH COMPLETED:  → Naphthalene | RE-06.d
+[2026-04-09 05:06:00.842] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:06:00.844] LoadVerifiedGrid: Found 6 excel rows
+[2026-04-09 05:06:00.845] Row RE-05: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-05.d', Matched=, Analysis=
+[2026-04-09 05:06:00.845] Row RE-06: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-06.d', Matched=, Analysis=
+[2026-04-09 05:06:00.845] Row RE-13: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-13.d', Matched=, Analysis=
+[2026-04-09 05:06:00.845] Row RE-14: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-14.d', Matched=, Analysis=
+[2026-04-09 05:06:00.845] Row RE-24: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-24.d', Matched=, Analysis=
+[2026-04-09 05:06:00.858] UI DISPLAY: RE-05 Source=미분류
+[2026-04-09 05:06:00.858] UI DISPLAY: RE-05 → '—'
+[2026-04-09 05:06:00.859] UI DISPLAY: RE-06 Source=미분류
+[2026-04-09 05:06:00.859] UI DISPLAY: RE-06 → '—'
+[2026-04-09 05:06:00.859] UI DISPLAY: RE-13 Source=미분류
+[2026-04-09 05:06:00.859] UI DISPLAY: RE-13 → '—'
+[2026-04-09 05:06:00.859] UI DISPLAY: RE-14 Source=미분류
+[2026-04-09 05:06:00.859] UI DISPLAY: RE-14 → '—'
+[2026-04-09 05:06:00.859] UI DISPLAY: RE-24 Source=미분류
+[2026-04-09 05:06:00.859] UI DISPLAY: RE-24 → '—'
+[2026-04-09 05:06:00.860] UI DISPLAY: RE-25 Source=미분류
+[2026-04-09 05:06:00.860] UI DISPLAY: RE-25 → '—'
+[2026-04-09 05:06:02.405] DROP EVENT: rowIdx=1, dataKeys=[Text,match-facility]
+[2026-04-09 05:06:02.409] DRAG FROM: 처리시설 탭
+[2026-04-09 05:06:02.409] FINAL STATE: Source=처리시설, Status=입력가능, 시료명='Naphthalene | RE-06.d'
+[2026-04-09 05:06:02.409] SYNC CHECK: _activeCategory='GCMS', rowIndex=1
+[2026-04-09 05:06:02.410] SYNC CHECK: categoryRows.Count=6
+[2026-04-09 05:06:02.410] SYNC BEFORE: categoryRows[1].Source=처리시설
+[2026-04-09 05:06:02.410] SYNC AFTER: categoryRows[1].Source=처리시설
+[2026-04-09 05:06:02.410] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:06:02.410] LoadVerifiedGrid: Found 6 excel rows
+[2026-04-09 05:06:02.410] Row RE-05: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-05.d', Matched=, Analysis=
+[2026-04-09 05:06:02.410] Row RE-06: Source=처리시설, Status=입력가능, 시료명='Naphthalene | RE-06.d', Matched=, Analysis=
+[2026-04-09 05:06:02.410] Row RE-13: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-13.d', Matched=, Analysis=
+[2026-04-09 05:06:02.411] Row RE-14: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-14.d', Matched=, Analysis=
+[2026-04-09 05:06:02.411] Row RE-24: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-24.d', Matched=, Analysis=
+[2026-04-09 05:06:02.412] UI DISPLAY: RE-05 Source=미분류
+[2026-04-09 05:06:02.412] UI DISPLAY: RE-05 → '—'
+[2026-04-09 05:06:02.412] UI DISPLAY: RE-06 Source=미분류
+[2026-04-09 05:06:02.413] UI DISPLAY: RE-06 → '—'
+[2026-04-09 05:06:02.413] UI DISPLAY: RE-13 Source=미분류
+[2026-04-09 05:06:02.413] UI DISPLAY: RE-13 → '—'
+[2026-04-09 05:06:02.413] UI DISPLAY: RE-14 Source=미분류
+[2026-04-09 05:06:02.413] UI DISPLAY: RE-14 → '—'
+[2026-04-09 05:06:02.413] UI DISPLAY: RE-24 Source=미분류
+[2026-04-09 05:06:02.413] UI DISPLAY: RE-24 → '—'
+[2026-04-09 05:06:02.413] UI DISPLAY: RE-25 Source=미분류
+[2026-04-09 05:06:02.413] UI DISPLAY: RE-25 → '—'
+[2026-04-09 05:06:02.417] MATCH COMPLETED:  → Naphthalene | RE-06.d
+[2026-04-09 05:07:11.241] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:07:11.241] LoadVerifiedGrid: Found 6 excel rows
+[2026-04-09 05:07:11.243] Row RE-05: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-05.d', Matched=, Analysis=
+[2026-04-09 05:07:11.243] Row RE-06: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-06.d', Matched=, Analysis=
+[2026-04-09 05:07:11.243] Row RE-13: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-13.d', Matched=, Analysis=
+[2026-04-09 05:07:11.243] Row RE-14: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-14.d', Matched=, Analysis=
+[2026-04-09 05:07:11.243] Row RE-24: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-24.d', Matched=, Analysis=
+[2026-04-09 05:07:11.260] UI DISPLAY: RE-05 Source=미분류
+[2026-04-09 05:07:11.260] UI DISPLAY: RE-05 → '—'
+[2026-04-09 05:07:11.260] UI DISPLAY: RE-06 Source=미분류
+[2026-04-09 05:07:11.260] UI DISPLAY: RE-06 → '—'
+[2026-04-09 05:07:11.261] UI DISPLAY: RE-13 Source=미분류
+[2026-04-09 05:07:11.261] UI DISPLAY: RE-13 → '—'
+[2026-04-09 05:07:11.261] UI DISPLAY: RE-14 Source=미분류
+[2026-04-09 05:07:11.261] UI DISPLAY: RE-14 → '—'
+[2026-04-09 05:07:11.261] UI DISPLAY: RE-24 Source=미분류
+[2026-04-09 05:07:11.261] UI DISPLAY: RE-24 → '—'
+[2026-04-09 05:07:11.261] UI DISPLAY: RE-25 Source=미분류
+[2026-04-09 05:07:11.261] UI DISPLAY: RE-25 → '—'
+[2026-04-09 05:07:13.571] DROP EVENT: rowIdx=0, dataKeys=[Text,match-facility]
+[2026-04-09 05:07:13.574] DRAG FROM: 처리시설 탭
+[2026-04-09 05:07:13.575] FINAL STATE: Source=처리시설, Status=입력가능, 시료명='Naphthalene | RE-05.d'
+[2026-04-09 05:07:13.575] SYNC CHECK: _activeCategory='GCMS', rowIndex=0
+[2026-04-09 05:07:13.575] SYNC CHECK: categoryRows.Count=6
+[2026-04-09 05:07:13.575] SYNC BEFORE: categoryRows[0].Source=처리시설
+[2026-04-09 05:07:13.575] SYNC AFTER: categoryRows[0].Source=처리시설
+[2026-04-09 05:07:13.575] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:07:13.575] LoadVerifiedGrid: Found 6 excel rows
+[2026-04-09 05:07:13.575] Row RE-05: Source=처리시설, Status=입력가능, 시료명='Naphthalene | RE-05.d', Matched=, Analysis=
+[2026-04-09 05:07:13.575] Row RE-06: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-06.d', Matched=, Analysis=
+[2026-04-09 05:07:13.575] Row RE-13: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-13.d', Matched=, Analysis=
+[2026-04-09 05:07:13.575] Row RE-14: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-14.d', Matched=, Analysis=
+[2026-04-09 05:07:13.575] Row RE-24: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-24.d', Matched=, Analysis=
+[2026-04-09 05:07:13.577] SKIP AUTO MATCH: RE-05 (manual match: 처리시설)
+[2026-04-09 05:07:13.579] UI DISPLAY: RE-05 Source=처리시설
+[2026-04-09 05:07:13.579] UI DISPLAY: RE-05 → '처리시설'
+[2026-04-09 05:07:13.579] UI DISPLAY: RE-06 Source=미분류
+[2026-04-09 05:07:13.579] UI DISPLAY: RE-06 → '—'
+[2026-04-09 05:07:13.582] UI DISPLAY: RE-13 Source=미분류
+[2026-04-09 05:07:13.582] UI DISPLAY: RE-13 → '—'
+[2026-04-09 05:07:13.582] UI DISPLAY: RE-14 Source=미분류
+[2026-04-09 05:07:13.582] UI DISPLAY: RE-14 → '—'
+[2026-04-09 05:07:13.582] UI DISPLAY: RE-24 Source=미분류
+[2026-04-09 05:07:13.582] UI DISPLAY: RE-24 → '—'
+[2026-04-09 05:07:13.582] UI DISPLAY: RE-25 Source=미분류
+[2026-04-09 05:07:13.582] UI DISPLAY: RE-25 → '—'
+[2026-04-09 05:07:13.588] MATCH COMPLETED:  → Naphthalene | RE-05.d
+[2026-04-09 05:07:20.801] DROP EVENT: rowIdx=1, dataKeys=[Text,match-waste]
+[2026-04-09 05:07:20.804] DRAG FROM: 비용부담금 탭
+[2026-04-09 05:07:20.804] FINAL STATE: Source=폐수배출업소, Status=입력가능, 시료명='Naphthalene | RE-06.d'
+[2026-04-09 05:07:20.804] SYNC CHECK: _activeCategory='GCMS', rowIndex=1
+[2026-04-09 05:07:20.804] SYNC CHECK: categoryRows.Count=6
+[2026-04-09 05:07:20.805] SYNC BEFORE: categoryRows[1].Source=폐수배출업소
+[2026-04-09 05:07:20.805] SYNC AFTER: categoryRows[1].Source=폐수배출업소
+[2026-04-09 05:07:20.805] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:07:20.805] LoadVerifiedGrid: Found 6 excel rows
+[2026-04-09 05:07:20.805] Row RE-05: Source=처리시설, Status=입력가능, 시료명='Naphthalene | RE-05.d', Matched=, Analysis=
+[2026-04-09 05:07:20.805] Row RE-06: Source=폐수배출업소, Status=입력가능, 시료명='Naphthalene | RE-06.d', Matched=, Analysis=
+[2026-04-09 05:07:20.805] Row RE-13: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-13.d', Matched=, Analysis=
+[2026-04-09 05:07:20.805] Row RE-14: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-14.d', Matched=, Analysis=
+[2026-04-09 05:07:20.805] Row RE-24: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-24.d', Matched=, Analysis=
+[2026-04-09 05:07:20.806] SKIP AUTO MATCH: RE-05 (manual match: 처리시설)
+[2026-04-09 05:07:20.807] SKIP AUTO MATCH: RE-06 (manual match: 폐수배출업소)
+[2026-04-09 05:07:20.811] UI DISPLAY: RE-05 Source=처리시설
+[2026-04-09 05:07:20.812] UI DISPLAY: RE-05 → '처리시설'
+[2026-04-09 05:07:20.812] UI DISPLAY: RE-06 Source=폐수배출업소
+[2026-04-09 05:07:20.812] UI DISPLAY: RE-06 → '폐수배출-?'
+[2026-04-09 05:07:20.812] UI DISPLAY: RE-13 Source=미분류
+[2026-04-09 05:07:20.812] UI DISPLAY: RE-13 → '—'
+[2026-04-09 05:07:20.812] UI DISPLAY: RE-14 Source=미분류
+[2026-04-09 05:07:20.812] UI DISPLAY: RE-14 → '—'
+[2026-04-09 05:07:20.812] UI DISPLAY: RE-24 Source=미분류
+[2026-04-09 05:07:20.812] UI DISPLAY: RE-24 → '—'
+[2026-04-09 05:07:20.812] UI DISPLAY: RE-25 Source=미분류
+[2026-04-09 05:07:20.812] UI DISPLAY: RE-25 → '—'
+[2026-04-09 05:07:20.847] MATCH COMPLETED:  → Naphthalene | RE-06.d
+[2026-04-09 05:07:28.267] DROP EVENT: rowIdx=2, dataKeys=[Text,match-analysis]
+[2026-04-09 05:07:28.268] DRAG FROM: 수질분석센터 탭
+[2026-04-09 05:07:28.269] FINAL STATE: Source=수질분석센터, Status=입력가능, 시료명='Naphthalene | RE-13.d'
+[2026-04-09 05:07:28.269] SYNC CHECK: _activeCategory='GCMS', rowIndex=2
+[2026-04-09 05:07:28.269] SYNC CHECK: categoryRows.Count=6
+[2026-04-09 05:07:28.269] SYNC BEFORE: categoryRows[2].Source=수질분석센터
+[2026-04-09 05:07:28.269] SYNC AFTER: categoryRows[2].Source=수질분석센터
+[2026-04-09 05:07:28.269] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:07:28.269] LoadVerifiedGrid: Found 6 excel rows
+[2026-04-09 05:07:28.269] Row RE-05: Source=처리시설, Status=입력가능, 시료명='Naphthalene | RE-05.d', Matched=, Analysis=
+[2026-04-09 05:07:28.269] Row RE-06: Source=폐수배출업소, Status=입력가능, 시료명='Naphthalene | RE-06.d', Matched=, Analysis=
+[2026-04-09 05:07:28.269] Row RE-13: Source=수질분석센터, Status=입력가능, 시료명='Naphthalene | RE-13.d', Matched=, Analysis=
+[2026-04-09 05:07:28.269] Row RE-14: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-14.d', Matched=, Analysis=
+[2026-04-09 05:07:28.269] Row RE-24: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-24.d', Matched=, Analysis=
+[2026-04-09 05:07:28.269] SKIP AUTO MATCH: RE-05 (manual match: 처리시설)
+[2026-04-09 05:07:28.269] SKIP AUTO MATCH: RE-06 (manual match: 폐수배출업소)
+[2026-04-09 05:07:28.269] SKIP AUTO MATCH: RE-13 (manual match: 수질분석센터)
+[2026-04-09 05:07:28.270] UI DISPLAY: RE-05 Source=처리시설
+[2026-04-09 05:07:28.270] UI DISPLAY: RE-05 → '처리시설'
+[2026-04-09 05:07:28.270] UI DISPLAY: RE-06 Source=폐수배출업소
+[2026-04-09 05:07:28.270] UI DISPLAY: RE-06 → '폐수배출-?'
+[2026-04-09 05:07:28.270] UI DISPLAY: RE-13 Source=수질분석센터
+[2026-04-09 05:07:28.271] UI DISPLAY: RE-13 → '수질분석'
+[2026-04-09 05:07:28.271] UI DISPLAY: RE-14 Source=미분류
+[2026-04-09 05:07:28.271] UI DISPLAY: RE-14 → '—'
+[2026-04-09 05:07:28.271] UI DISPLAY: RE-24 Source=미분류
+[2026-04-09 05:07:28.271] UI DISPLAY: RE-24 → '—'
+[2026-04-09 05:07:28.272] UI DISPLAY: RE-25 Source=미분류
+[2026-04-09 05:07:28.272] UI DISPLAY: RE-25 → '—'
+[2026-04-09 05:07:28.329] MATCH COMPLETED:  → Naphthalene | RE-13.d
+[2026-04-09 05:10:38.118] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:10:38.119] LoadVerifiedGrid: Found 11 excel rows
+[2026-04-09 05:10:38.120] Row RE-01: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-01.D', Matched=, Analysis=
+[2026-04-09 05:10:38.120] Row RE-02: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-02.D', Matched=, Analysis=
+[2026-04-09 05:10:38.121] Row RE-03: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-03.D', Matched=, Analysis=
+[2026-04-09 05:10:38.121] Row RE-04: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-04.D', Matched=, Analysis=
+[2026-04-09 05:10:38.121] Row RE-09: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-09.D', Matched=, Analysis=
+[2026-04-09 05:10:38.132] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:10:38.133] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:10:38.133] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:10:38.133] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:10:38.133] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:10:38.133] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:10:38.133] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:10:38.133] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:10:38.133] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:10:38.133] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:10:38.133] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:10:38.133] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:10:38.133] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:10:38.134] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:10:38.134] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:10:38.134] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:10:38.134] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:10:38.134] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:10:38.134] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:10:38.134] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:10:38.134] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:10:38.134] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:10:45.644] DROP EVENT: rowIdx=4, dataKeys=[Text,match-facility]
+[2026-04-09 05:10:45.646] DRAG FROM: 처리시설 탭
+[2026-04-09 05:10:45.646] FINAL STATE: Source=처리시설, Status=입력가능, 시료명='1,4-Dioxane | RE-09.D'
+[2026-04-09 05:10:45.646] SYNC CHECK: _activeCategory='GCMS', rowIndex=4
+[2026-04-09 05:10:45.646] SYNC CHECK: categoryRows.Count=11
+[2026-04-09 05:10:45.646] SYNC BEFORE: categoryRows[4].Source=처리시설
+[2026-04-09 05:10:45.646] SYNC AFTER: categoryRows[4].Source=처리시설
+[2026-04-09 05:10:45.646] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:10:45.646] LoadVerifiedGrid: Found 11 excel rows
+[2026-04-09 05:10:45.646] Row RE-01: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-01.D', Matched=, Analysis=
+[2026-04-09 05:10:45.646] Row RE-02: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-02.D', Matched=, Analysis=
+[2026-04-09 05:10:45.646] Row RE-03: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-03.D', Matched=, Analysis=
+[2026-04-09 05:10:45.647] Row RE-04: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-04.D', Matched=, Analysis=
+[2026-04-09 05:10:45.647] Row RE-09: Source=처리시설, Status=입력가능, 시료명='1,4-Dioxane | RE-09.D', Matched=, Analysis=
+[2026-04-09 05:10:45.647] SKIP AUTO MATCH: RE-09 (manual match: 처리시설)
+[2026-04-09 05:10:45.648] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:10:45.648] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:10:45.648] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:10:45.648] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:10:45.648] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:10:45.648] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:10:45.648] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:10:45.649] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:10:45.649] UI DISPLAY: RE-09 Source=처리시설
+[2026-04-09 05:10:45.649] UI DISPLAY: RE-09 → '처리시설'
+[2026-04-09 05:10:45.649] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:10:45.649] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:10:45.649] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:10:45.649] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:10:45.649] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:10:45.649] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:10:45.649] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:10:45.649] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:10:45.649] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:10:45.649] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:10:45.649] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:10:45.649] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:10:45.653] MATCH COMPLETED:  → 1,4-Dioxane | RE-09.D
+[2026-04-09 05:11:06.390] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:11:06.391] LoadVerifiedGrid: Found 11 excel rows
+[2026-04-09 05:11:06.394] Row RE-01: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-01.D', Matched=, Analysis=
+[2026-04-09 05:11:06.395] Row RE-02: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-02.D', Matched=, Analysis=
+[2026-04-09 05:11:06.395] Row RE-03: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-03.D', Matched=, Analysis=
+[2026-04-09 05:11:06.395] Row RE-04: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-04.D', Matched=, Analysis=
+[2026-04-09 05:11:06.395] Row RE-09: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-09.D', Matched=, Analysis=
+[2026-04-09 05:11:06.411] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:11:06.411] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:11:06.412] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:11:06.412] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:11:06.412] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:11:06.412] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:11:06.412] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:11:06.412] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:11:06.412] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:11:06.412] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:11:06.412] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:11:06.412] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:11:06.412] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:11:06.412] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:11:06.413] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:11:06.413] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:11:06.413] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:11:06.413] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:11:06.413] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:11:06.413] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:11:06.413] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:11:06.413] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:11:08.513] DROP EVENT: rowIdx=0, dataKeys=[Text,match-facility]
+[2026-04-09 05:11:08.517] DRAG FROM: 처리시설 탭
+[2026-04-09 05:11:08.517] FINAL STATE: Source=처리시설, Status=입력가능, 시료명='1,4-Dioxane | RE-01.D'
+[2026-04-09 05:11:08.517] SYNC CHECK: _activeCategory='GCMS', rowIndex=0
+[2026-04-09 05:11:08.518] SYNC CHECK: categoryRows.Count=11
+[2026-04-09 05:11:08.518] SYNC BEFORE: categoryRows[0].Source=처리시설
+[2026-04-09 05:11:08.518] SYNC AFTER: categoryRows[0].Source=처리시설
+[2026-04-09 05:11:08.518] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:11:08.518] LoadVerifiedGrid: Found 11 excel rows
+[2026-04-09 05:11:08.518] Row RE-01: Source=처리시설, Status=입력가능, 시료명='1,4-Dioxane | RE-01.D', Matched=, Analysis=
+[2026-04-09 05:11:08.518] Row RE-02: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-02.D', Matched=, Analysis=
+[2026-04-09 05:11:08.518] Row RE-03: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-03.D', Matched=, Analysis=
+[2026-04-09 05:11:08.518] Row RE-04: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-04.D', Matched=, Analysis=
+[2026-04-09 05:11:08.518] Row RE-09: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-09.D', Matched=, Analysis=
+[2026-04-09 05:11:08.518] SKIP AUTO MATCH: RE-01 (manual match: 처리시설)
+[2026-04-09 05:11:08.520] UI DISPLAY: RE-01 Source=처리시설
+[2026-04-09 05:11:08.520] UI DISPLAY: RE-01 → '처리시설'
+[2026-04-09 05:11:08.520] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:11:08.520] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:11:08.520] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:11:08.520] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:11:08.520] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:11:08.520] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:11:08.520] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:11:08.520] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:11:08.521] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:11:08.521] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:11:08.521] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:11:08.521] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:11:08.521] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:11:08.521] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:11:08.521] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:11:08.521] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:11:08.521] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:11:08.521] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:11:08.521] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:11:08.521] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:11:08.526] MATCH COMPLETED:  → 1,4-Dioxane | RE-01.D
+[2026-04-09 05:11:11.628] DROP EVENT: rowIdx=2, dataKeys=[Text,match-waste]
+[2026-04-09 05:11:11.629] DRAG FROM: 비용부담금 탭
+[2026-04-09 05:11:11.629] FINAL STATE: Source=폐수배출업소, Status=입력가능, 시료명='1,4-Dioxane | RE-03.D'
+[2026-04-09 05:11:11.630] SYNC CHECK: _activeCategory='GCMS', rowIndex=2
+[2026-04-09 05:11:11.630] SYNC CHECK: categoryRows.Count=11
+[2026-04-09 05:11:11.630] SYNC BEFORE: categoryRows[2].Source=폐수배출업소
+[2026-04-09 05:11:11.630] SYNC AFTER: categoryRows[2].Source=폐수배출업소
+[2026-04-09 05:11:11.630] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:11:11.630] LoadVerifiedGrid: Found 11 excel rows
+[2026-04-09 05:11:11.630] Row RE-01: Source=처리시설, Status=입력가능, 시료명='1,4-Dioxane | RE-01.D', Matched=, Analysis=
+[2026-04-09 05:11:11.630] Row RE-02: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-02.D', Matched=, Analysis=
+[2026-04-09 05:11:11.631] Row RE-03: Source=폐수배출업소, Status=입력가능, 시료명='1,4-Dioxane | RE-03.D', Matched=, Analysis=
+[2026-04-09 05:11:11.631] Row RE-04: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-04.D', Matched=, Analysis=
+[2026-04-09 05:11:11.631] Row RE-09: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-09.D', Matched=, Analysis=
+[2026-04-09 05:11:11.631] SKIP AUTO MATCH: RE-01 (manual match: 처리시설)
+[2026-04-09 05:11:11.631] SKIP AUTO MATCH: RE-03 (manual match: 폐수배출업소)
+[2026-04-09 05:11:11.633] UI DISPLAY: RE-01 Source=처리시설
+[2026-04-09 05:11:11.633] UI DISPLAY: RE-01 → '처리시설'
+[2026-04-09 05:11:11.633] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:11:11.633] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:11:11.633] UI DISPLAY: RE-03 Source=폐수배출업소
+[2026-04-09 05:11:11.633] UI DISPLAY: RE-03 → '비용부담금'
+[2026-04-09 05:11:11.633] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:11:11.633] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:11:11.633] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:11:11.633] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:11:11.634] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:11:11.634] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:11:11.634] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:11:11.634] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:11:11.634] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:11:11.634] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:11:11.634] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:11:11.634] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:11:11.634] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:11:11.634] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:11:11.634] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:11:11.634] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:11:11.666] MATCH COMPLETED:  → 1,4-Dioxane | RE-03.D
+[2026-04-09 05:11:16.127] DROP EVENT: rowIdx=1, dataKeys=[Text,match-analysis]
+[2026-04-09 05:11:16.127] DRAG FROM: 수질분석센터 탭
+[2026-04-09 05:11:16.127] FINAL STATE: Source=수질분석센터, Status=입력가능, 시료명='1,4-Dioxane | RE-02.D'
+[2026-04-09 05:11:16.127] SYNC CHECK: _activeCategory='GCMS', rowIndex=1
+[2026-04-09 05:11:16.127] SYNC CHECK: categoryRows.Count=11
+[2026-04-09 05:11:16.127] SYNC BEFORE: categoryRows[1].Source=수질분석센터
+[2026-04-09 05:11:16.127] SYNC AFTER: categoryRows[1].Source=수질분석센터
+[2026-04-09 05:11:16.127] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:11:16.127] LoadVerifiedGrid: Found 11 excel rows
+[2026-04-09 05:11:16.128] Row RE-01: Source=처리시설, Status=입력가능, 시료명='1,4-Dioxane | RE-01.D', Matched=, Analysis=
+[2026-04-09 05:11:16.128] Row RE-02: Source=수질분석센터, Status=입력가능, 시료명='1,4-Dioxane | RE-02.D', Matched=, Analysis=
+[2026-04-09 05:11:16.128] Row RE-03: Source=폐수배출업소, Status=입력가능, 시료명='1,4-Dioxane | RE-03.D', Matched=, Analysis=
+[2026-04-09 05:11:16.128] Row RE-04: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-04.D', Matched=, Analysis=
+[2026-04-09 05:11:16.128] Row RE-09: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-09.D', Matched=, Analysis=
+[2026-04-09 05:11:16.128] SKIP AUTO MATCH: RE-01 (manual match: 처리시설)
+[2026-04-09 05:11:16.128] SKIP AUTO MATCH: RE-02 (manual match: 수질분석센터)
+[2026-04-09 05:11:16.128] SKIP AUTO MATCH: RE-03 (manual match: 폐수배출업소)
+[2026-04-09 05:11:16.129] UI DISPLAY: RE-01 Source=처리시설
+[2026-04-09 05:11:16.129] UI DISPLAY: RE-01 → '처리시설'
+[2026-04-09 05:11:16.130] UI DISPLAY: RE-02 Source=수질분석센터
+[2026-04-09 05:11:16.130] UI DISPLAY: RE-02 → '수질분석'
+[2026-04-09 05:11:16.130] UI DISPLAY: RE-03 Source=폐수배출업소
+[2026-04-09 05:11:16.130] UI DISPLAY: RE-03 → '비용부담금'
+[2026-04-09 05:11:16.130] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:11:16.130] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:11:16.130] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:11:16.130] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:11:16.130] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:11:16.130] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:11:16.130] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:11:16.130] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:11:16.131] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:11:16.131] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:11:16.131] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:11:16.131] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:11:16.131] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:11:16.131] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:11:16.131] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:11:16.131] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:11:16.199] MATCH COMPLETED:  → 1,4-Dioxane | RE-02.D
+[2026-04-09 05:13:18.286] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:13:18.288] LoadVerifiedGrid: Found 130 excel rows
+[2026-04-09 05:13:18.290] Row JR(26-03-05): Source=미분류, Status=입력가능, 시료명='1,1-DCE | JR(26-03-05).D', Matched=, Analysis=
+[2026-04-09 05:13:18.290] Row RE-01: Source=미분류, Status=입력가능, 시료명='1,1-DCE | RE-01.D', Matched=, Analysis=
+[2026-04-09 05:13:18.290] Row RE-02: Source=미분류, Status=입력가능, 시료명='1,1-DCE | RE-02.D', Matched=, Analysis=
+[2026-04-09 05:13:18.290] Row RE-03: Source=미분류, Status=입력가능, 시료명='1,1-DCE | RE-03.D', Matched=, Analysis=
+[2026-04-09 05:13:18.290] Row RE-04: Source=미분류, Status=입력가능, 시료명='1,1-DCE | RE-04.D', Matched=, Analysis=
+[2026-04-09 05:13:18.315] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:13:18.315] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:13:18.315] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:13:18.315] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:13:18.316] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:13:18.316] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:13:18.316] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:13:18.316] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:13:18.316] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:13:18.316] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:13:18.316] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:13:18.316] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:13:18.316] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:13:18.316] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:13:18.316] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:13:18.316] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:13:18.316] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:13:18.316] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:13:18.316] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:13:18.316] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:13:18.316] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:13:18.317] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:13:18.317] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:13:18.317] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:13:18.317] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:13:18.317] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:13:18.317] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:13:18.317] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:13:18.317] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:13:18.317] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:13:18.317] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:13:18.317] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:13:18.317] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:13:18.317] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:13:18.317] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:13:18.317] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:13:18.317] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:13:18.318] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:13:18.318] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:13:18.318] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:13:18.318] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:13:18.318] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:13:18.318] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:13:18.318] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:13:18.318] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:13:18.318] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:13:18.318] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:13:18.318] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:13:18.318] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:13:18.318] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:13:18.319] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:13:18.319] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:13:18.319] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:13:18.319] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:13:18.319] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:13:18.319] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:13:18.319] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:13:18.319] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:13:18.319] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:13:18.319] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:13:18.319] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:13:18.319] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:13:18.319] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:13:18.319] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:13:18.319] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:13:18.319] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:13:18.320] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:13:18.320] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:13:18.320] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:13:18.320] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:13:18.320] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:13:18.320] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:13:18.320] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:13:18.320] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:13:18.320] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:13:18.320] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:13:18.320] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:13:18.320] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:13:18.320] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:13:18.320] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:13:18.320] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:13:18.320] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:13:18.321] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:13:18.321] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:13:18.321] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:13:18.321] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:13:18.321] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:13:18.321] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:13:18.321] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:13:18.321] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:13:18.321] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:13:18.321] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:13:18.321] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:13:18.321] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:13:18.321] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:13:18.321] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:13:18.321] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:13:18.322] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:13:18.322] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:13:18.322] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:13:18.322] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:13:18.322] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:13:18.322] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:13:18.322] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:13:18.322] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:13:18.322] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:13:18.322] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:13:18.322] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:13:18.322] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:13:18.322] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:13:18.323] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:13:18.323] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:13:18.323] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:13:18.323] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:13:18.323] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:13:18.323] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:13:18.323] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:13:18.323] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:13:18.323] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:13:18.323] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:13:18.323] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:13:18.323] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:13:18.323] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:13:18.323] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:13:18.323] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:13:18.323] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:13:18.324] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:13:18.324] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:13:18.324] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:13:18.324] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:13:18.324] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:13:18.324] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:13:18.324] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:13:18.324] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:13:18.324] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:13:18.324] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:13:18.330] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:13:18.330] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:13:18.330] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:13:18.330] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:13:18.330] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:13:18.330] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:13:18.330] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:13:18.330] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:13:18.331] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:13:18.331] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:13:18.331] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:13:18.331] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:13:18.331] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:13:18.331] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:13:18.331] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:13:18.331] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:13:18.331] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:13:18.331] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:13:18.331] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:13:18.331] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:13:18.331] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:13:18.331] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:13:18.331] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:13:18.331] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:13:18.332] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:13:18.332] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:13:18.332] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:13:18.332] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:13:18.332] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:13:18.332] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:13:18.332] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:13:18.332] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:13:18.332] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:13:18.332] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:13:18.332] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:13:18.332] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:13:18.332] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:13:18.332] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:13:18.332] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:13:18.332] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:13:18.333] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:13:18.333] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:13:18.333] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:13:18.333] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:13:18.333] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:13:18.333] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:13:18.333] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:13:18.333] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:13:18.333] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:13:18.333] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:13:18.333] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:13:18.333] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:13:18.333] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:13:18.333] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:13:18.333] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:13:18.333] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:13:18.333] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:13:18.333] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:13:18.334] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:13:18.334] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:13:18.334] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:13:18.334] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:13:18.334] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:13:18.334] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:13:18.334] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:13:18.334] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:13:18.334] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:13:18.334] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:13:18.334] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:13:18.334] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:13:18.334] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:13:18.334] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:13:18.334] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:13:18.334] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:13:18.334] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:13:18.334] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:13:18.334] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:13:18.335] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:13:18.335] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:13:18.335] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:13:18.335] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:13:18.335] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:13:18.335] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:13:18.335] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:13:18.335] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:13:18.335] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:13:18.335] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:13:18.335] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:13:18.335] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:13:18.335] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:13:18.336] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:13:18.336] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:13:18.336] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:13:18.336] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:13:18.336] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:13:18.336] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:13:18.336] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:13:18.336] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:13:18.336] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:13:18.336] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:13:18.336] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:13:18.336] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:13:18.336] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:13:18.336] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:13:18.336] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:13:18.337] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:13:18.337] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:13:18.337] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:13:18.337] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:13:18.337] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:13:18.337] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:13:18.337] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:13:18.337] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:13:18.337] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:13:18.337] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:13:18.337] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:13:18.337] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:13:18.337] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:13:18.337] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:13:18.337] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:13:18.337] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:13:18.337] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:13:18.338] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:13:18.338] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:15:20.343] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:15:20.344] LoadVerifiedGrid: Found 130 excel rows
+[2026-04-09 05:15:20.345] Row JR(26-03-05): Source=미분류, Status=입력가능, 시료명='1,1-DCE | JR(26-03-05).D', Matched=, Analysis=
+[2026-04-09 05:15:20.346] Row RE-01: Source=미분류, Status=입력가능, 시료명='1,1-DCE | RE-01.D', Matched=, Analysis=
+[2026-04-09 05:15:20.346] Row RE-02: Source=미분류, Status=입력가능, 시료명='1,1-DCE | RE-02.D', Matched=, Analysis=
+[2026-04-09 05:15:20.346] Row RE-03: Source=미분류, Status=입력가능, 시료명='1,1-DCE | RE-03.D', Matched=, Analysis=
+[2026-04-09 05:15:20.346] Row RE-04: Source=미분류, Status=입력가능, 시료명='1,1-DCE | RE-04.D', Matched=, Analysis=
+[2026-04-09 05:15:20.359] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:15:20.359] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:15:20.360] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:15:20.360] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:15:20.364] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:15:20.365] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:15:20.365] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:15:20.365] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:15:20.365] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:15:20.365] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:15:20.365] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:15:20.365] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:15:20.365] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:15:20.365] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:15:20.365] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:15:20.365] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:15:20.365] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:15:20.365] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:15:20.365] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:15:20.365] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:15:20.366] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:15:20.366] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:15:20.366] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:15:20.366] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:15:20.366] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:15:20.366] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:15:20.366] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:15:20.366] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:15:20.366] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:15:20.366] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:15:20.366] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:15:20.366] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:15:20.366] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:15:20.366] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:15:20.366] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:15:20.366] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:15:20.366] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:15:20.366] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:15:20.366] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:15:20.366] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:15:20.367] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:15:20.367] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:15:20.367] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:15:20.367] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:15:20.367] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:15:20.367] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:15:20.367] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:15:20.367] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:15:20.367] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:15:20.367] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:15:20.367] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:15:20.367] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:15:20.367] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:15:20.367] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:15:20.367] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:15:20.367] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:15:20.367] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:15:20.367] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:15:20.368] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:15:20.368] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:15:20.368] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:15:20.368] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:15:20.368] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:15:20.368] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:15:20.368] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:15:20.368] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:15:20.368] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:15:20.368] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:15:20.368] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:15:20.368] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:15:20.368] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:15:20.368] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:15:20.368] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:15:20.368] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:15:20.369] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:15:20.369] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:15:20.369] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:15:20.369] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:15:20.369] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:15:20.369] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:15:20.369] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:15:20.369] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:15:20.369] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:15:20.369] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:15:20.369] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:15:20.369] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:15:20.369] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:15:20.369] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:15:20.369] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:15:20.369] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:15:20.369] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:15:20.370] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:15:20.370] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:15:20.370] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:15:20.370] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:15:20.370] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:15:20.370] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:15:20.370] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:15:20.370] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:15:20.370] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:15:20.370] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:15:20.370] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:15:20.370] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:15:20.370] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:15:20.370] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:15:20.370] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:15:20.370] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:15:20.370] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:15:20.370] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:15:20.371] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:15:20.371] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:15:20.371] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:15:20.371] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:15:20.371] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:15:20.371] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:15:20.371] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:15:20.371] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:15:20.371] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:15:20.371] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:15:20.371] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:15:20.371] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:15:20.371] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:15:20.371] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:15:20.371] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:15:20.371] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:15:20.371] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:15:20.372] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:15:20.372] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:15:20.372] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:15:20.372] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:15:20.372] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:15:20.372] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:15:20.372] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:15:20.372] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:15:20.372] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:15:20.372] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:15:20.372] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:15:20.372] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:15:20.372] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:15:20.372] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:15:20.372] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:15:20.372] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:15:20.372] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:15:20.373] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:15:20.373] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:15:20.373] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:15:20.373] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:15:20.373] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:15:20.373] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:15:20.373] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:15:20.373] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:15:20.373] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:15:20.373] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:15:20.373] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:15:20.373] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:15:20.373] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:15:20.373] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:15:20.373] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:15:20.373] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:15:20.373] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:15:20.378] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:15:20.378] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:15:20.378] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:15:20.378] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:15:20.378] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:15:20.378] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:15:20.378] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:15:20.378] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:15:20.378] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:15:20.378] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:15:20.378] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:15:20.378] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:15:20.379] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:15:20.379] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:15:20.379] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:15:20.379] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:15:20.379] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:15:20.379] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:15:20.379] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:15:20.379] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:15:20.379] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:15:20.379] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:15:20.379] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:15:20.379] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:15:20.379] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:15:20.379] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:15:20.379] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:15:20.379] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:15:20.379] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:15:20.379] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:15:20.379] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:15:20.380] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:15:20.380] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:15:20.380] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:15:20.380] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:15:20.380] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:15:20.380] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:15:20.380] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:15:20.380] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:15:20.380] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:15:20.380] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:15:20.380] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:15:20.380] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:15:20.380] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:15:20.380] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:15:20.380] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:15:20.380] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:15:20.380] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:15:20.380] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:15:20.380] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:15:20.380] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:15:20.381] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:15:20.381] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:15:20.381] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:15:20.381] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:15:20.381] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:15:20.381] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:15:20.381] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:15:20.381] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:15:20.381] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:15:20.381] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:15:20.381] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:15:20.381] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:15:20.381] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:15:20.381] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:15:20.381] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:15:20.381] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:15:20.382] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:15:20.382] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:15:20.382] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:15:20.382] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:15:20.382] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:15:20.382] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:15:20.382] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:15:20.382] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:15:20.382] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:15:20.382] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:15:20.382] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:15:20.382] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:15:20.382] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:15:20.382] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:15:20.382] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:15:20.382] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:15:20.382] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:15:20.382] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:15:20.382] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:15:20.383] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:15:20.383] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:15:20.383] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:15:20.383] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:15:20.383] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:15:20.383] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:15:20.383] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:15:20.383] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:15:20.383] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:15:20.383] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:15:20.383] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:15:20.383] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:15:20.383] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:15:20.383] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:17:48.769] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:17:48.770] LoadVerifiedGrid: Found 6 excel rows
+[2026-04-09 05:17:48.771] Row RE-05: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-05.d', Matched=, Analysis=
+[2026-04-09 05:17:48.771] Row RE-06: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-06.d', Matched=, Analysis=
+[2026-04-09 05:17:48.772] Row RE-13: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-13.d', Matched=, Analysis=
+[2026-04-09 05:17:48.772] Row RE-14: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-14.d', Matched=, Analysis=
+[2026-04-09 05:17:48.772] Row RE-24: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-24.d', Matched=, Analysis=
+[2026-04-09 05:17:48.783] UI DISPLAY: RE-05 Source=미분류
+[2026-04-09 05:17:48.784] UI DISPLAY: RE-05 → '—'
+[2026-04-09 05:17:48.784] UI DISPLAY: RE-06 Source=미분류
+[2026-04-09 05:17:48.784] UI DISPLAY: RE-06 → '—'
+[2026-04-09 05:17:48.784] UI DISPLAY: RE-13 Source=미분류
+[2026-04-09 05:17:48.784] UI DISPLAY: RE-13 → '—'
+[2026-04-09 05:17:48.784] UI DISPLAY: RE-14 Source=미분류
+[2026-04-09 05:17:48.784] UI DISPLAY: RE-14 → '—'
+[2026-04-09 05:17:48.784] UI DISPLAY: RE-24 Source=미분류
+[2026-04-09 05:17:48.784] UI DISPLAY: RE-24 → '—'
+[2026-04-09 05:17:48.785] UI DISPLAY: RE-25 Source=미분류
+[2026-04-09 05:17:48.785] UI DISPLAY: RE-25 → '—'
+[2026-04-09 05:21:37.979] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:21:37.980] LoadVerifiedGrid: Found 6 excel rows
+[2026-04-09 05:21:37.982] Row RE-05: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-05.d', Matched=, Analysis=
+[2026-04-09 05:21:37.982] Row RE-06: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-06.d', Matched=, Analysis=
+[2026-04-09 05:21:37.982] Row RE-13: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-13.d', Matched=, Analysis=
+[2026-04-09 05:21:37.982] Row RE-14: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-14.d', Matched=, Analysis=
+[2026-04-09 05:21:37.982] Row RE-24: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-24.d', Matched=, Analysis=
+[2026-04-09 05:21:37.994] UI DISPLAY: RE-05 Source=미분류
+[2026-04-09 05:21:37.995] UI DISPLAY: RE-05 → '—'
+[2026-04-09 05:21:37.995] UI DISPLAY: RE-06 Source=미분류
+[2026-04-09 05:21:37.995] UI DISPLAY: RE-06 → '—'
+[2026-04-09 05:21:37.995] UI DISPLAY: RE-13 Source=미분류
+[2026-04-09 05:21:37.995] UI DISPLAY: RE-13 → '—'
+[2026-04-09 05:21:37.995] UI DISPLAY: RE-14 Source=미분류
+[2026-04-09 05:21:37.995] UI DISPLAY: RE-14 → '—'
+[2026-04-09 05:21:37.995] UI DISPLAY: RE-24 Source=미분류
+[2026-04-09 05:21:37.995] UI DISPLAY: RE-24 → '—'
+[2026-04-09 05:21:37.995] UI DISPLAY: RE-25 Source=미분류
+[2026-04-09 05:21:37.995] UI DISPLAY: RE-25 → '—'
+[2026-04-09 05:21:47.008] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:21:47.009] LoadVerifiedGrid: Found 130 excel rows
+[2026-04-09 05:21:47.009] Row JR(26-03-05): Source=미분류, Status=입력가능, 시료명='1,1-DCE | JR(26-03-05).D', Matched=, Analysis=
+[2026-04-09 05:21:47.009] Row RE-01: Source=미분류, Status=입력가능, 시료명='1,1-DCE | RE-01.D', Matched=, Analysis=
+[2026-04-09 05:21:47.009] Row RE-02: Source=미분류, Status=입력가능, 시료명='1,1-DCE | RE-02.D', Matched=, Analysis=
+[2026-04-09 05:21:47.009] Row RE-03: Source=미분류, Status=입력가능, 시료명='1,1-DCE | RE-03.D', Matched=, Analysis=
+[2026-04-09 05:21:47.009] Row RE-04: Source=미분류, Status=입력가능, 시료명='1,1-DCE | RE-04.D', Matched=, Analysis=
+[2026-04-09 05:21:47.014] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:21:47.015] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:21:47.015] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:21:47.015] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:21:47.015] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:21:47.015] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:21:47.015] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:21:47.015] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:21:47.015] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:21:47.015] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:21:47.015] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:21:47.015] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:21:47.015] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:21:47.015] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:21:47.015] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:21:47.015] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:21:47.016] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:21:47.016] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:21:47.016] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:21:47.016] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:21:47.016] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:21:47.016] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:21:47.016] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:21:47.016] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:21:47.016] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:21:47.016] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:21:47.016] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:21:47.016] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:21:47.016] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:21:47.016] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:21:47.016] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:21:47.016] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:21:47.017] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:21:47.017] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:21:47.017] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:21:47.017] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:21:47.017] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:21:47.017] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:21:47.017] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:21:47.017] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:21:47.017] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:21:47.017] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:21:47.017] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:21:47.017] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:21:47.017] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:21:47.017] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:21:47.017] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:21:47.017] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:21:47.018] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:21:47.018] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:21:47.018] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:21:47.018] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:21:47.018] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:21:47.018] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:21:47.018] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:21:47.018] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:21:47.018] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:21:47.018] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:21:47.018] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:21:47.018] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:21:47.018] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:21:47.018] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:21:47.018] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:21:47.018] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:21:47.018] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:21:47.019] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:21:47.019] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:21:47.019] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:21:47.019] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:21:47.019] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:21:47.019] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:21:47.019] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:21:47.019] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:21:47.019] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:21:47.019] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:21:47.019] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:21:47.020] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:21:47.020] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:21:47.020] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:21:47.020] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:21:47.020] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:21:47.020] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:21:47.020] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:21:47.020] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:21:47.020] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:21:47.020] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:21:47.020] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:21:47.020] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:21:47.020] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:21:47.020] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:21:47.021] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:21:47.021] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:21:47.021] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:21:47.021] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:21:47.021] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:21:47.021] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:21:47.021] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:21:47.021] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:21:47.021] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:21:47.021] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:21:47.021] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:21:47.021] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:21:47.021] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:21:47.021] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:21:47.021] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:21:47.021] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:21:47.021] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:21:47.021] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:21:47.022] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:21:47.022] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:21:47.022] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:21:47.022] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:21:47.022] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:21:47.022] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:21:47.022] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:21:47.022] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:21:47.022] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:21:47.022] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:21:47.022] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:21:47.022] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:21:47.022] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:21:47.022] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:21:47.022] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:21:47.022] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:21:47.022] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:21:47.022] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:21:47.023] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:21:47.023] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:21:47.023] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:21:47.023] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:21:47.023] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:21:47.023] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:21:47.023] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:21:47.023] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:21:47.023] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:21:47.023] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:21:47.023] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:21:47.023] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:21:47.023] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:21:47.023] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:21:47.023] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:21:47.023] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:21:47.028] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:21:47.028] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:21:47.028] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:21:47.028] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:21:47.028] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:21:47.028] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:21:47.028] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:21:47.028] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:21:47.028] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:21:47.028] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:21:47.028] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:21:47.028] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:21:47.028] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:21:47.028] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:21:47.029] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:21:47.029] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:21:47.029] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:21:47.029] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:21:47.029] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:21:47.029] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:21:47.029] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:21:47.029] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:21:47.029] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:21:47.029] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:21:47.029] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:21:47.029] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:21:47.029] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:21:47.029] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:21:47.029] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:21:47.029] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:21:47.029] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:21:47.029] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:21:47.029] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:21:47.029] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:21:47.030] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:21:47.030] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:21:47.030] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:21:47.030] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:21:47.030] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:21:47.030] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:21:47.030] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:21:47.030] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:21:47.030] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:21:47.030] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:21:47.030] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:21:47.030] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:21:47.030] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:21:47.030] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:21:47.030] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:21:47.030] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:21:47.030] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:21:47.030] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:21:47.030] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:21:47.030] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:21:47.030] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:21:47.031] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:21:47.031] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:21:47.031] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:21:47.031] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:21:47.031] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:21:47.031] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:21:47.031] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:21:47.031] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:21:47.031] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:21:47.031] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:21:47.031] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:21:47.031] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:21:47.031] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:21:47.031] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:21:47.031] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:21:47.031] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:21:47.031] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:21:47.031] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:21:47.031] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:21:47.032] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:21:47.032] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:21:47.032] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:21:47.032] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:21:47.032] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:21:47.032] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:21:47.032] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:21:47.032] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:21:47.032] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:21:47.032] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:21:47.032] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:21:47.032] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:21:47.032] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:21:47.032] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:21:47.032] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:21:47.032] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:21:47.032] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:21:47.032] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:21:47.032] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:21:47.033] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:21:47.033] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:21:47.033] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:21:47.033] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:21:47.033] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:21:47.033] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:21:47.033] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:21:47.033] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:21:47.033] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:21:47.033] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:21:47.033] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:21:47.033] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:21:47.033] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:21:47.033] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:21:47.033] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:21:47.033] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:21:47.033] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:21:47.033] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:21:47.033] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:21:47.034] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:21:47.034] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:21:47.034] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:21:47.034] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:21:47.034] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:21:47.034] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:23:15.823] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:23:15.824] LoadVerifiedGrid: Found 6 excel rows
+[2026-04-09 05:23:15.826] Row RE-05: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-05.d', Matched=, Analysis=
+[2026-04-09 05:23:15.826] Row RE-06: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-06.d', Matched=, Analysis=
+[2026-04-09 05:23:15.826] Row RE-13: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-13.d', Matched=, Analysis=
+[2026-04-09 05:23:15.826] Row RE-14: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-14.d', Matched=, Analysis=
+[2026-04-09 05:23:15.826] Row RE-24: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-24.d', Matched=, Analysis=
+[2026-04-09 05:23:15.836] UI DISPLAY: RE-05 Source=미분류
+[2026-04-09 05:23:15.836] UI DISPLAY: RE-05 → '—'
+[2026-04-09 05:23:15.836] UI DISPLAY: RE-06 Source=미분류
+[2026-04-09 05:23:15.836] UI DISPLAY: RE-06 → '—'
+[2026-04-09 05:23:15.837] UI DISPLAY: RE-13 Source=미분류
+[2026-04-09 05:23:15.837] UI DISPLAY: RE-13 → '—'
+[2026-04-09 05:23:15.837] UI DISPLAY: RE-14 Source=미분류
+[2026-04-09 05:23:15.837] UI DISPLAY: RE-14 → '—'
+[2026-04-09 05:23:15.837] UI DISPLAY: RE-24 Source=미분류
+[2026-04-09 05:23:15.837] UI DISPLAY: RE-24 → '—'
+[2026-04-09 05:23:15.837] UI DISPLAY: RE-25 Source=미분류
+[2026-04-09 05:23:15.837] UI DISPLAY: RE-25 → '—'
+[2026-04-09 05:23:21.220] DROP EVENT: rowIdx=1, dataKeys=[Text,match-facility]
+[2026-04-09 05:23:21.223] DRAG FROM: 처리시설 탭
+[2026-04-09 05:23:21.223] FINAL STATE: Source=처리시설, Status=입력가능, 시료명='Naphthalene | RE-06.d'
+[2026-04-09 05:23:21.223] SYNC CHECK: _activeCategory='GCMS', rowIndex=1
+[2026-04-09 05:23:21.223] SYNC CHECK: categoryRows.Count=6
+[2026-04-09 05:23:21.223] SYNC BEFORE: categoryRows[1].Source=처리시설
+[2026-04-09 05:23:21.223] SYNC AFTER: categoryRows[1].Source=처리시설
+[2026-04-09 05:23:21.223] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:23:21.223] LoadVerifiedGrid: Found 6 excel rows
+[2026-04-09 05:23:21.224] Row RE-05: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-05.d', Matched=, Analysis=
+[2026-04-09 05:23:21.224] Row RE-06: Source=처리시설, Status=입력가능, 시료명='Naphthalene | RE-06.d', Matched=, Analysis=
+[2026-04-09 05:23:21.224] Row RE-13: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-13.d', Matched=, Analysis=
+[2026-04-09 05:23:21.224] Row RE-14: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-14.d', Matched=, Analysis=
+[2026-04-09 05:23:21.224] Row RE-24: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-24.d', Matched=, Analysis=
+[2026-04-09 05:23:21.224] SKIP AUTO MATCH: RE-06 (manual match: 처리시설)
+[2026-04-09 05:23:21.225] UI DISPLAY: RE-05 Source=미분류
+[2026-04-09 05:23:21.225] UI DISPLAY: RE-05 → '—'
+[2026-04-09 05:23:21.225] UI DISPLAY: RE-06 Source=처리시설
+[2026-04-09 05:23:21.225] UI DISPLAY: RE-06 → '처리시설'
+[2026-04-09 05:23:21.225] UI DISPLAY: RE-13 Source=미분류
+[2026-04-09 05:23:21.225] UI DISPLAY: RE-13 → '—'
+[2026-04-09 05:23:21.225] UI DISPLAY: RE-14 Source=미분류
+[2026-04-09 05:23:21.225] UI DISPLAY: RE-14 → '—'
+[2026-04-09 05:23:21.225] UI DISPLAY: RE-24 Source=미분류
+[2026-04-09 05:23:21.225] UI DISPLAY: RE-24 → '—'
+[2026-04-09 05:23:21.226] UI DISPLAY: RE-25 Source=미분류
+[2026-04-09 05:23:21.226] UI DISPLAY: RE-25 → '—'
+[2026-04-09 05:23:21.229] MATCH COMPLETED:  → Naphthalene | RE-06.d
+[2026-04-09 05:23:29.170] DROP EVENT: rowIdx=2, dataKeys=[Text,match-waste]
+[2026-04-09 05:23:29.171] DRAG FROM: 비용부담금 탭
+[2026-04-09 05:23:29.171] FINAL STATE: Source=폐수배출업소, Status=입력가능, 시료명='Naphthalene | RE-13.d'
+[2026-04-09 05:23:29.171] SYNC CHECK: _activeCategory='GCMS', rowIndex=2
+[2026-04-09 05:23:29.171] SYNC CHECK: categoryRows.Count=6
+[2026-04-09 05:23:29.171] SYNC BEFORE: categoryRows[2].Source=폐수배출업소
+[2026-04-09 05:23:29.171] SYNC AFTER: categoryRows[2].Source=폐수배출업소
+[2026-04-09 05:23:29.171] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:23:29.171] LoadVerifiedGrid: Found 6 excel rows
+[2026-04-09 05:23:29.171] Row RE-05: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-05.d', Matched=, Analysis=
+[2026-04-09 05:23:29.171] Row RE-06: Source=처리시설, Status=입력가능, 시료명='Naphthalene | RE-06.d', Matched=, Analysis=
+[2026-04-09 05:23:29.171] Row RE-13: Source=폐수배출업소, Status=입력가능, 시료명='Naphthalene | RE-13.d', Matched=, Analysis=
+[2026-04-09 05:23:29.171] Row RE-14: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-14.d', Matched=, Analysis=
+[2026-04-09 05:23:29.171] Row RE-24: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-24.d', Matched=, Analysis=
+[2026-04-09 05:23:29.171] SKIP AUTO MATCH: RE-06 (manual match: 처리시설)
+[2026-04-09 05:23:29.171] SKIP AUTO MATCH: RE-13 (manual match: 폐수배출업소)
+[2026-04-09 05:23:29.172] UI DISPLAY: RE-05 Source=미분류
+[2026-04-09 05:23:29.172] UI DISPLAY: RE-05 → '—'
+[2026-04-09 05:23:29.172] UI DISPLAY: RE-06 Source=처리시설
+[2026-04-09 05:23:29.172] UI DISPLAY: RE-06 → '처리시설'
+[2026-04-09 05:23:29.173] UI DISPLAY: RE-13 Source=폐수배출업소
+[2026-04-09 05:23:29.173] UI DISPLAY: RE-13 → '비용부담금'
+[2026-04-09 05:23:29.173] UI DISPLAY: RE-14 Source=미분류
+[2026-04-09 05:23:29.173] UI DISPLAY: RE-14 → '—'
+[2026-04-09 05:23:29.173] UI DISPLAY: RE-24 Source=미분류
+[2026-04-09 05:23:29.173] UI DISPLAY: RE-24 → '—'
+[2026-04-09 05:23:29.173] UI DISPLAY: RE-25 Source=미분류
+[2026-04-09 05:23:29.173] UI DISPLAY: RE-25 → '—'
+[2026-04-09 05:23:29.213] MATCH COMPLETED:  → Naphthalene | RE-13.d
+[2026-04-09 05:23:35.485] DROP EVENT: rowIdx=0, dataKeys=[Text,match-analysis]
+[2026-04-09 05:23:35.486] DRAG FROM: 수질분석센터 탭
+[2026-04-09 05:23:35.486] FINAL STATE: Source=수질분석센터, Status=입력가능, 시료명='Naphthalene | RE-05.d'
+[2026-04-09 05:23:35.487] SYNC CHECK: _activeCategory='GCMS', rowIndex=0
+[2026-04-09 05:23:35.487] SYNC CHECK: categoryRows.Count=6
+[2026-04-09 05:23:35.487] SYNC BEFORE: categoryRows[0].Source=수질분석센터
+[2026-04-09 05:23:35.487] SYNC AFTER: categoryRows[0].Source=수질분석센터
+[2026-04-09 05:23:35.487] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:23:35.487] LoadVerifiedGrid: Found 6 excel rows
+[2026-04-09 05:23:35.487] Row RE-05: Source=수질분석센터, Status=입력가능, 시료명='Naphthalene | RE-05.d', Matched=, Analysis=
+[2026-04-09 05:23:35.487] Row RE-06: Source=처리시설, Status=입력가능, 시료명='Naphthalene | RE-06.d', Matched=, Analysis=
+[2026-04-09 05:23:35.487] Row RE-13: Source=폐수배출업소, Status=입력가능, 시료명='Naphthalene | RE-13.d', Matched=, Analysis=
+[2026-04-09 05:23:35.487] Row RE-14: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-14.d', Matched=, Analysis=
+[2026-04-09 05:23:35.487] Row RE-24: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-24.d', Matched=, Analysis=
+[2026-04-09 05:23:35.487] SKIP AUTO MATCH: RE-05 (manual match: 수질분석센터)
+[2026-04-09 05:23:35.488] SKIP AUTO MATCH: RE-06 (manual match: 처리시설)
+[2026-04-09 05:23:35.488] SKIP AUTO MATCH: RE-13 (manual match: 폐수배출업소)
+[2026-04-09 05:23:35.488] UI DISPLAY: RE-05 Source=수질분석센터
+[2026-04-09 05:23:35.489] UI DISPLAY: RE-05 → '수질분석센터'
+[2026-04-09 05:23:35.489] UI DISPLAY: RE-06 Source=처리시설
+[2026-04-09 05:23:35.489] UI DISPLAY: RE-06 → '처리시설'
+[2026-04-09 05:23:35.490] UI DISPLAY: RE-13 Source=폐수배출업소
+[2026-04-09 05:23:35.490] UI DISPLAY: RE-13 → '비용부담금'
+[2026-04-09 05:23:35.490] UI DISPLAY: RE-14 Source=미분류
+[2026-04-09 05:23:35.491] UI DISPLAY: RE-14 → '—'
+[2026-04-09 05:23:35.491] UI DISPLAY: RE-24 Source=미분류
+[2026-04-09 05:23:35.491] UI DISPLAY: RE-24 → '—'
+[2026-04-09 05:23:35.491] UI DISPLAY: RE-25 Source=미분류
+[2026-04-09 05:23:35.491] UI DISPLAY: RE-25 → '—'
+[2026-04-09 05:23:35.551] MATCH COMPLETED:  → Naphthalene | RE-05.d
+[2026-04-09 05:25:51.998] DROP EVENT: rowIdx=3, dataKeys=[Text,match-analysis]
+[2026-04-09 05:25:52.002] DRAG FROM: 수질분석센터 탭
+[2026-04-09 05:25:52.002] FINAL STATE: Source=수질분석센터, Status=입력가능, 시료명='Naphthalene | RE-14.d'
+[2026-04-09 05:25:52.002] SYNC CHECK: _activeCategory='GCMS', rowIndex=3
+[2026-04-09 05:25:52.002] SYNC CHECK: categoryRows.Count=6
+[2026-04-09 05:25:52.002] SYNC BEFORE: categoryRows[3].Source=수질분석센터
+[2026-04-09 05:25:52.002] SYNC AFTER: categoryRows[3].Source=수질분석센터
+[2026-04-09 05:25:52.002] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:25:52.002] LoadVerifiedGrid: Found 6 excel rows
+[2026-04-09 05:25:52.002] Row RE-05: Source=수질분석센터, Status=입력가능, 시료명='Naphthalene | RE-05.d', Matched=, Analysis=
+[2026-04-09 05:25:52.002] Row RE-06: Source=처리시설, Status=입력가능, 시료명='Naphthalene | RE-06.d', Matched=, Analysis=
+[2026-04-09 05:25:52.002] Row RE-13: Source=폐수배출업소, Status=입력가능, 시료명='Naphthalene | RE-13.d', Matched=, Analysis=
+[2026-04-09 05:25:52.002] Row RE-14: Source=수질분석센터, Status=입력가능, 시료명='Naphthalene | RE-14.d', Matched=, Analysis=
+[2026-04-09 05:25:52.002] Row RE-24: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-24.d', Matched=, Analysis=
+[2026-04-09 05:25:52.003] SKIP AUTO MATCH: RE-05 (manual match: 수질분석센터)
+[2026-04-09 05:25:52.003] SKIP AUTO MATCH: RE-06 (manual match: 처리시설)
+[2026-04-09 05:25:52.003] SKIP AUTO MATCH: RE-13 (manual match: 폐수배출업소)
+[2026-04-09 05:25:52.003] SKIP AUTO MATCH: RE-14 (manual match: 수질분석센터)
+[2026-04-09 05:25:52.008] UI DISPLAY: RE-05 Source=수질분석센터
+[2026-04-09 05:25:52.008] UI DISPLAY: RE-05 → '수질분석센터'
+[2026-04-09 05:25:52.008] UI DISPLAY: RE-06 Source=처리시설
+[2026-04-09 05:25:52.008] UI DISPLAY: RE-06 → '처리시설'
+[2026-04-09 05:25:52.008] UI DISPLAY: RE-13 Source=폐수배출업소
+[2026-04-09 05:25:52.008] UI DISPLAY: RE-13 → '비용부담금'
+[2026-04-09 05:25:52.008] UI DISPLAY: RE-14 Source=수질분석센터
+[2026-04-09 05:25:52.008] UI DISPLAY: RE-14 → '수질분석센터'
+[2026-04-09 05:25:52.008] UI DISPLAY: RE-24 Source=미분류
+[2026-04-09 05:25:52.008] UI DISPLAY: RE-24 → '—'
+[2026-04-09 05:25:52.008] UI DISPLAY: RE-25 Source=미분류
+[2026-04-09 05:25:52.008] UI DISPLAY: RE-25 → '—'
+[2026-04-09 05:25:52.066] MATCH COMPLETED:  → Naphthalene | RE-14.d
+[2026-04-09 05:28:12.735] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:28:12.737] LoadVerifiedGrid: Found 6 excel rows
+[2026-04-09 05:28:12.738] Row RE-05: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-05.d', Matched=, Analysis=
+[2026-04-09 05:28:12.738] Row RE-06: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-06.d', Matched=, Analysis=
+[2026-04-09 05:28:12.739] Row RE-13: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-13.d', Matched=, Analysis=
+[2026-04-09 05:28:12.739] Row RE-14: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-14.d', Matched=, Analysis=
+[2026-04-09 05:28:12.739] Row RE-24: Source=미분류, Status=입력가능, 시료명='Naphthalene | RE-24.d', Matched=, Analysis=
+[2026-04-09 05:28:12.751] UI DISPLAY: RE-05 Source=미분류
+[2026-04-09 05:28:12.751] UI DISPLAY: RE-05 → '—'
+[2026-04-09 05:28:12.751] UI DISPLAY: RE-06 Source=미분류
+[2026-04-09 05:28:12.751] UI DISPLAY: RE-06 → '—'
+[2026-04-09 05:28:12.751] UI DISPLAY: RE-13 Source=미분류
+[2026-04-09 05:28:12.751] UI DISPLAY: RE-13 → '—'
+[2026-04-09 05:28:12.752] UI DISPLAY: RE-14 Source=미분류
+[2026-04-09 05:28:12.752] UI DISPLAY: RE-14 → '—'
+[2026-04-09 05:28:12.752] UI DISPLAY: RE-24 Source=미분류
+[2026-04-09 05:28:12.752] UI DISPLAY: RE-24 → '—'
+[2026-04-09 05:28:12.752] UI DISPLAY: RE-25 Source=미분류
+[2026-04-09 05:28:12.752] UI DISPLAY: RE-25 → '—'
+[2026-04-09 05:28:14.629] DROP EVENT: rowIdx=1, dataKeys=[Text,match-facility]
+[2026-04-09 05:28:14.631] DRAG FROM: 처리시설 탭
+[2026-04-09 05:28:14.631] FINAL STATE: Source=처리시설, Status=입력가능, 시료명='Naphthalene | RE-06.d'
+[2026-04-09 05:28:14.631] SYNC CHECK: _activeCategory='GCMS', rowIndex=1
+[2026-04-09 05:28:14.631] SYNC CHECK: categoryRows.Count=6
+[2026-04-09 05:28:14.631] SYNC BEFORE: categoryRows[1].Source=처리시설
+[2026-04-09 05:28:14.631] SYNC AFTER: categoryRows[1].Source=처리시설
+[2026-04-09 05:28:14.631] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:28:14.632] LoadVerifiedGrid: Found 6 excel rows
+[2026-04-09 05:28:14.632] Row RE-05: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-05.d', Matched=, Analysis=
+[2026-04-09 05:28:14.632] Row RE-06: Source=처리시설, Status=입력가능, 시료명='Naphthalene | RE-06.d', Matched=, Analysis=
+[2026-04-09 05:28:14.632] Row RE-13: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-13.d', Matched=, Analysis=
+[2026-04-09 05:28:14.632] Row RE-14: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-14.d', Matched=, Analysis=
+[2026-04-09 05:28:14.632] Row RE-24: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-24.d', Matched=, Analysis=
+[2026-04-09 05:28:14.632] SKIP AUTO MATCH: RE-06 (manual match: 처리시설)
+[2026-04-09 05:28:14.632] UI DISPLAY: RE-05 Source=미분류
+[2026-04-09 05:28:14.632] UI DISPLAY: RE-05 → '—'
+[2026-04-09 05:28:14.633] UI DISPLAY: RE-06 Source=처리시설
+[2026-04-09 05:28:14.633] UI DISPLAY: RE-06 → '처리시설'
+[2026-04-09 05:28:14.633] UI DISPLAY: RE-13 Source=미분류
+[2026-04-09 05:28:14.633] UI DISPLAY: RE-13 → '—'
+[2026-04-09 05:28:14.633] UI DISPLAY: RE-14 Source=미분류
+[2026-04-09 05:28:14.633] UI DISPLAY: RE-14 → '—'
+[2026-04-09 05:28:14.633] UI DISPLAY: RE-24 Source=미분류
+[2026-04-09 05:28:14.633] UI DISPLAY: RE-24 → '—'
+[2026-04-09 05:28:14.633] UI DISPLAY: RE-25 Source=미분류
+[2026-04-09 05:28:14.633] UI DISPLAY: RE-25 → '—'
+[2026-04-09 05:28:14.636] MATCH COMPLETED: Naphthalene | RE-06.d → Naphthalene | RE-06.d
+[2026-04-09 05:28:17.576] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:28:17.576] LoadVerifiedGrid: Found 6 excel rows
+[2026-04-09 05:28:17.577] Row RE-05: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-05.d', Matched=, Analysis=
+[2026-04-09 05:28:17.577] Row RE-06: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-06.d', Matched=, Analysis=
+[2026-04-09 05:28:17.577] Row RE-13: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-13.d', Matched=, Analysis=
+[2026-04-09 05:28:17.577] Row RE-14: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-14.d', Matched=, Analysis=
+[2026-04-09 05:28:17.577] Row RE-24: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-24.d', Matched=, Analysis=
+[2026-04-09 05:28:17.577] UI DISPLAY: RE-05 Source=미분류
+[2026-04-09 05:28:17.577] UI DISPLAY: RE-05 → '—'
+[2026-04-09 05:28:17.577] UI DISPLAY: RE-06 Source=미분류
+[2026-04-09 05:28:17.577] UI DISPLAY: RE-06 → '—'
+[2026-04-09 05:28:17.578] UI DISPLAY: RE-13 Source=미분류
+[2026-04-09 05:28:17.578] UI DISPLAY: RE-13 → '—'
+[2026-04-09 05:28:17.578] UI DISPLAY: RE-14 Source=미분류
+[2026-04-09 05:28:17.578] UI DISPLAY: RE-14 → '—'
+[2026-04-09 05:28:17.578] UI DISPLAY: RE-24 Source=미분류
+[2026-04-09 05:28:17.578] UI DISPLAY: RE-24 → '—'
+[2026-04-09 05:28:17.578] UI DISPLAY: RE-25 Source=미분류
+[2026-04-09 05:28:17.578] UI DISPLAY: RE-25 → '—'
+[2026-04-09 05:28:17.585] MATCH CANCELLED: RE-06 → 미분류
+[2026-04-09 05:28:56.293] DROP EVENT: rowIdx=2, dataKeys=[Text,match-facility]
+[2026-04-09 05:28:56.296] DRAG FROM: 처리시설 탭
+[2026-04-09 05:28:56.297] FINAL STATE: Source=처리시설, Status=입력가능, 시료명='Naphthalene | RE-13.d'
+[2026-04-09 05:28:56.297] SYNC CHECK: _activeCategory='GCMS', rowIndex=2
+[2026-04-09 05:28:56.297] SYNC CHECK: categoryRows.Count=6
+[2026-04-09 05:28:56.297] SYNC BEFORE: categoryRows[2].Source=처리시설
+[2026-04-09 05:28:56.297] SYNC AFTER: categoryRows[2].Source=처리시설
+[2026-04-09 05:28:56.297] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:28:56.297] LoadVerifiedGrid: Found 6 excel rows
+[2026-04-09 05:28:56.297] Row RE-05: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-05.d', Matched=, Analysis=
+[2026-04-09 05:28:56.298] Row RE-06: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-06.d', Matched=, Analysis=
+[2026-04-09 05:28:56.298] Row RE-13: Source=처리시설, Status=입력가능, 시료명='Naphthalene | RE-13.d', Matched=, Analysis=
+[2026-04-09 05:28:56.298] Row RE-14: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-14.d', Matched=, Analysis=
+[2026-04-09 05:28:56.298] Row RE-24: Source=미분류, Status=미매칭, 시료명='Naphthalene | RE-24.d', Matched=, Analysis=
+[2026-04-09 05:28:56.298] SKIP AUTO MATCH: RE-13 (manual match: 처리시설)
+[2026-04-09 05:28:56.300] UI DISPLAY: RE-05 Source=미분류
+[2026-04-09 05:28:56.300] UI DISPLAY: RE-05 → '—'
+[2026-04-09 05:28:56.300] UI DISPLAY: RE-06 Source=미분류
+[2026-04-09 05:28:56.300] UI DISPLAY: RE-06 → '—'
+[2026-04-09 05:28:56.302] UI DISPLAY: RE-13 Source=처리시설
+[2026-04-09 05:28:56.302] UI DISPLAY: RE-13 → '처리시설'
+[2026-04-09 05:28:56.302] UI DISPLAY: RE-14 Source=미분류
+[2026-04-09 05:28:56.302] UI DISPLAY: RE-14 → '—'
+[2026-04-09 05:28:56.302] UI DISPLAY: RE-24 Source=미분류
+[2026-04-09 05:28:56.302] UI DISPLAY: RE-24 → '—'
+[2026-04-09 05:28:56.302] UI DISPLAY: RE-25 Source=미분류
+[2026-04-09 05:28:56.302] UI DISPLAY: RE-25 → '—'
+[2026-04-09 05:28:56.306] MATCH COMPLETED: Naphthalene | RE-13.d → Naphthalene | RE-13.d
+[2026-04-09 05:31:42.057] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:31:42.058] LoadVerifiedGrid: Found 11 excel rows
+[2026-04-09 05:31:42.060] Row RE-01: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-01.D', Matched=, Analysis=
+[2026-04-09 05:31:42.060] Row RE-02: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-02.D', Matched=, Analysis=
+[2026-04-09 05:31:42.060] Row RE-03: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-03.D', Matched=, Analysis=
+[2026-04-09 05:31:42.060] Row RE-04: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-04.D', Matched=, Analysis=
+[2026-04-09 05:31:42.060] Row RE-09: Source=미분류, Status=입력가능, 시료명='1,4-Dioxane | RE-09.D', Matched=, Analysis=
+[2026-04-09 05:31:42.072] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:31:42.072] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:31:42.072] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:31:42.072] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:31:42.072] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:31:42.072] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:31:42.073] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:31:42.073] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:31:42.073] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:31:42.073] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:31:42.073] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:31:42.073] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:31:42.073] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:31:42.073] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:31:42.073] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:31:42.073] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:31:42.073] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:31:42.073] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:31:42.073] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:31:42.073] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:31:42.073] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:31:42.073] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:31:44.955] DROP EVENT: rowIdx=0, dataKeys=[Text,match-facility]
+[2026-04-09 05:31:44.959] DRAG FROM: 처리시설 탭 - '고속응집침전지'
+[2026-04-09 05:31:44.960] FINAL STATE: Source=처리시설, Status=입력가능, 시료명='고속응집침전지'
+[2026-04-09 05:31:44.960] SYNC CHECK: _activeCategory='GCMS', rowIndex=0
+[2026-04-09 05:31:44.960] SYNC CHECK: categoryRows.Count=11
+[2026-04-09 05:31:44.960] SYNC BEFORE: categoryRows[0].Source=처리시설
+[2026-04-09 05:31:44.960] SYNC AFTER: categoryRows[0].Source=처리시설
+[2026-04-09 05:31:44.960] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:31:44.960] LoadVerifiedGrid: Found 11 excel rows
+[2026-04-09 05:31:44.960] Row RE-01: Source=처리시설, Status=입력가능, 시료명='고속응집침전지', Matched=, Analysis=
+[2026-04-09 05:31:44.960] Row RE-02: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-02.D', Matched=, Analysis=
+[2026-04-09 05:31:44.960] Row RE-03: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-03.D', Matched=, Analysis=
+[2026-04-09 05:31:44.961] Row RE-04: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-04.D', Matched=, Analysis=
+[2026-04-09 05:31:44.961] Row RE-09: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-09.D', Matched=, Analysis=
+[2026-04-09 05:31:44.961] SKIP AUTO MATCH: RE-01 (manual match: 처리시설)
+[2026-04-09 05:31:44.962] UI DISPLAY: RE-01 Source=처리시설
+[2026-04-09 05:31:44.962] UI DISPLAY: RE-01 → '처리시설'
+[2026-04-09 05:31:44.962] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:31:44.962] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:31:44.962] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:31:44.962] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:31:44.962] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:31:44.962] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:31:44.962] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:31:44.962] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:31:44.962] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:31:44.962] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:31:44.968] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:31:44.968] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:31:44.969] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:31:44.969] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:31:44.969] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:31:44.969] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:31:44.969] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:31:44.969] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:31:44.969] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:31:44.969] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:31:44.972] MATCH COMPLETED: 1,4-Dioxane | RE-01.D → 고속응집침전지
+[2026-04-09 05:31:48.261] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:31:48.261] LoadVerifiedGrid: Found 11 excel rows
+[2026-04-09 05:31:48.262] Row RE-01: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-01.D', Matched=, Analysis=
+[2026-04-09 05:31:48.262] Row RE-02: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-02.D', Matched=, Analysis=
+[2026-04-09 05:31:48.262] Row RE-03: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-03.D', Matched=, Analysis=
+[2026-04-09 05:31:48.262] Row RE-04: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-04.D', Matched=, Analysis=
+[2026-04-09 05:31:48.262] Row RE-09: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-09.D', Matched=, Analysis=
+[2026-04-09 05:31:48.262] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:31:48.262] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:31:48.263] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:31:48.263] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:31:48.263] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:31:48.263] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:31:48.263] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:31:48.263] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:31:48.263] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:31:48.263] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:31:48.263] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:31:48.263] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:31:48.263] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:31:48.263] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:31:48.263] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:31:48.263] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:31:48.263] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:31:48.263] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:31:48.264] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:31:48.264] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:31:48.264] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:31:48.264] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:31:48.267] MATCH CANCELLED: RE-01 → 미분류
+[2026-04-09 05:31:50.437] DROP EVENT: rowIdx=1, dataKeys=[Text,match-facility]
+[2026-04-09 05:31:50.439] DRAG FROM: 처리시설 탭 - '방류수'
+[2026-04-09 05:31:50.439] FINAL STATE: Source=처리시설, Status=입력가능, 시료명='방류수'
+[2026-04-09 05:31:50.440] SYNC CHECK: _activeCategory='GCMS', rowIndex=1
+[2026-04-09 05:31:50.440] SYNC CHECK: categoryRows.Count=11
+[2026-04-09 05:31:50.440] SYNC BEFORE: categoryRows[1].Source=처리시설
+[2026-04-09 05:31:50.440] SYNC AFTER: categoryRows[1].Source=처리시설
+[2026-04-09 05:31:50.440] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:31:50.440] LoadVerifiedGrid: Found 11 excel rows
+[2026-04-09 05:31:50.441] Row RE-01: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-01.D', Matched=, Analysis=
+[2026-04-09 05:31:50.441] Row RE-02: Source=처리시설, Status=입력가능, 시료명='방류수', Matched=, Analysis=
+[2026-04-09 05:31:50.441] Row RE-03: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-03.D', Matched=, Analysis=
+[2026-04-09 05:31:50.441] Row RE-04: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-04.D', Matched=, Analysis=
+[2026-04-09 05:31:50.441] Row RE-09: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-09.D', Matched=, Analysis=
+[2026-04-09 05:31:50.441] SKIP AUTO MATCH: RE-02 (manual match: 처리시설)
+[2026-04-09 05:31:50.443] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:31:50.443] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:31:50.443] UI DISPLAY: RE-02 Source=처리시설
+[2026-04-09 05:31:50.443] UI DISPLAY: RE-02 → '처리시설'
+[2026-04-09 05:31:50.443] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:31:50.443] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:31:50.443] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:31:50.443] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:31:50.443] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:31:50.443] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:31:50.443] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:31:50.443] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:31:50.444] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:31:50.444] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:31:50.444] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:31:50.444] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:31:50.444] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:31:50.444] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:31:50.444] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:31:50.444] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:31:50.444] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:31:50.444] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:31:50.448] MATCH COMPLETED: 1,4-Dioxane | RE-02.D → 방류수
+[2026-04-09 05:31:56.320] DROP EVENT: rowIdx=4, dataKeys=[Text,match-facility]
+[2026-04-09 05:31:56.323] DRAG FROM: 처리시설 탭 - '분배조'
+[2026-04-09 05:31:56.323] FINAL STATE: Source=처리시설, Status=입력가능, 시료명='분배조'
+[2026-04-09 05:31:56.323] SYNC CHECK: _activeCategory='GCMS', rowIndex=4
+[2026-04-09 05:31:56.323] SYNC CHECK: categoryRows.Count=11
+[2026-04-09 05:31:56.323] SYNC BEFORE: categoryRows[4].Source=처리시설
+[2026-04-09 05:31:56.323] SYNC AFTER: categoryRows[4].Source=처리시설
+[2026-04-09 05:31:56.323] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:31:56.324] LoadVerifiedGrid: Found 11 excel rows
+[2026-04-09 05:31:56.324] Row RE-01: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-01.D', Matched=, Analysis=
+[2026-04-09 05:31:56.324] Row RE-02: Source=처리시설, Status=입력가능, 시료명='방류수', Matched=, Analysis=
+[2026-04-09 05:31:56.324] Row RE-03: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-03.D', Matched=, Analysis=
+[2026-04-09 05:31:56.324] Row RE-04: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-04.D', Matched=, Analysis=
+[2026-04-09 05:31:56.324] Row RE-09: Source=처리시설, Status=입력가능, 시료명='분배조', Matched=, Analysis=
+[2026-04-09 05:31:56.324] SKIP AUTO MATCH: RE-02 (manual match: 처리시설)
+[2026-04-09 05:31:56.325] SKIP AUTO MATCH: RE-09 (manual match: 처리시설)
+[2026-04-09 05:31:56.327] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:31:56.327] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:31:56.327] UI DISPLAY: RE-02 Source=처리시설
+[2026-04-09 05:31:56.327] UI DISPLAY: RE-02 → '처리시설'
+[2026-04-09 05:31:56.327] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:31:56.327] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:31:56.327] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:31:56.327] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:31:56.328] UI DISPLAY: RE-09 Source=처리시설
+[2026-04-09 05:31:56.328] UI DISPLAY: RE-09 → '처리시설'
+[2026-04-09 05:31:56.328] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:31:56.328] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:31:56.328] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:31:56.328] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:31:56.328] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:31:56.328] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:31:56.328] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:31:56.328] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:31:56.328] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:31:56.328] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:31:56.328] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:31:56.328] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:31:56.332] MATCH COMPLETED: 1,4-Dioxane | RE-09.D → 분배조
+[2026-04-09 05:31:59.669] DROP EVENT: rowIdx=2, dataKeys=[Text,match-waste]
+[2026-04-09 05:31:59.669] DRAG FROM: 비용부담금 탭 - '포스코 필바라 리튬솔루션'
+[2026-04-09 05:31:59.670] FINAL STATE: Source=폐수배출업소, Status=입력가능, 시료명='포스코 필바라 리튬솔루션'
+[2026-04-09 05:31:59.670] SYNC CHECK: _activeCategory='GCMS', rowIndex=2
+[2026-04-09 05:31:59.670] SYNC CHECK: categoryRows.Count=11
+[2026-04-09 05:31:59.670] SYNC BEFORE: categoryRows[2].Source=폐수배출업소
+[2026-04-09 05:31:59.670] SYNC AFTER: categoryRows[2].Source=폐수배출업소
+[2026-04-09 05:31:59.670] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:31:59.670] LoadVerifiedGrid: Found 11 excel rows
+[2026-04-09 05:31:59.670] Row RE-01: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-01.D', Matched=, Analysis=
+[2026-04-09 05:31:59.670] Row RE-02: Source=처리시설, Status=입력가능, 시료명='방류수', Matched=, Analysis=
+[2026-04-09 05:31:59.670] Row RE-03: Source=폐수배출업소, Status=입력가능, 시료명='포스코 필바라 리튬솔루션', Matched=, Analysis=
+[2026-04-09 05:31:59.670] Row RE-04: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-04.D', Matched=, Analysis=
+[2026-04-09 05:31:59.670] Row RE-09: Source=처리시설, Status=입력가능, 시료명='분배조', Matched=, Analysis=
+[2026-04-09 05:31:59.670] SKIP AUTO MATCH: RE-02 (manual match: 처리시설)
+[2026-04-09 05:31:59.670] SKIP AUTO MATCH: RE-03 (manual match: 폐수배출업소)
+[2026-04-09 05:31:59.670] SKIP AUTO MATCH: RE-09 (manual match: 처리시설)
+[2026-04-09 05:31:59.671] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:31:59.671] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:31:59.671] UI DISPLAY: RE-02 Source=처리시설
+[2026-04-09 05:31:59.671] UI DISPLAY: RE-02 → '처리시설'
+[2026-04-09 05:31:59.671] UI DISPLAY: RE-03 Source=폐수배출업소
+[2026-04-09 05:31:59.671] UI DISPLAY: RE-03 → '비용부담금'
+[2026-04-09 05:31:59.671] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:31:59.671] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:31:59.671] UI DISPLAY: RE-09 Source=처리시설
+[2026-04-09 05:31:59.671] UI DISPLAY: RE-09 → '처리시설'
+[2026-04-09 05:31:59.671] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:31:59.671] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:31:59.671] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:31:59.672] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:31:59.672] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:31:59.672] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:31:59.672] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:31:59.672] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:31:59.672] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:31:59.672] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:31:59.672] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:31:59.672] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:31:59.709] MATCH COMPLETED: 1,4-Dioxane | RE-03.D → 포스코 필바라 리튬솔루션
+[2026-04-09 05:32:04.835] DROP EVENT: rowIdx=0, dataKeys=[Text,match-analysis]
+[2026-04-09 05:32:04.837] DRAG FROM: 수질분석센터 탭 - '비점-유역1 처리수조'
+[2026-04-09 05:32:04.837] FINAL STATE: Source=수질분석센터, Status=입력가능, 시료명='비점-유역1 처리수조'
+[2026-04-09 05:32:04.837] SYNC CHECK: _activeCategory='GCMS', rowIndex=0
+[2026-04-09 05:32:04.837] SYNC CHECK: categoryRows.Count=11
+[2026-04-09 05:32:04.837] SYNC BEFORE: categoryRows[0].Source=수질분석센터
+[2026-04-09 05:32:04.837] SYNC AFTER: categoryRows[0].Source=수질분석센터
+[2026-04-09 05:32:04.837] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:32:04.837] LoadVerifiedGrid: Found 11 excel rows
+[2026-04-09 05:32:04.837] Row RE-01: Source=수질분석센터, Status=입력가능, 시료명='비점-유역1 처리수조', Matched=, Analysis=
+[2026-04-09 05:32:04.837] Row RE-02: Source=처리시설, Status=입력가능, 시료명='방류수', Matched=, Analysis=
+[2026-04-09 05:32:04.837] Row RE-03: Source=폐수배출업소, Status=입력가능, 시료명='포스코 필바라 리튬솔루션', Matched=, Analysis=
+[2026-04-09 05:32:04.837] Row RE-04: Source=미분류, Status=미매칭, 시료명='1,4-Dioxane | RE-04.D', Matched=, Analysis=
+[2026-04-09 05:32:04.838] Row RE-09: Source=처리시설, Status=입력가능, 시료명='분배조', Matched=, Analysis=
+[2026-04-09 05:32:04.838] SKIP AUTO MATCH: RE-01 (manual match: 수질분석센터)
+[2026-04-09 05:32:04.838] SKIP AUTO MATCH: RE-02 (manual match: 처리시설)
+[2026-04-09 05:32:04.838] SKIP AUTO MATCH: RE-03 (manual match: 폐수배출업소)
+[2026-04-09 05:32:04.838] SKIP AUTO MATCH: RE-09 (manual match: 처리시설)
+[2026-04-09 05:32:04.838] UI DISPLAY: RE-01 Source=수질분석센터
+[2026-04-09 05:32:04.838] UI DISPLAY: RE-01 → '수질분석센터'
+[2026-04-09 05:32:04.839] UI DISPLAY: RE-02 Source=처리시설
+[2026-04-09 05:32:04.839] UI DISPLAY: RE-02 → '처리시설'
+[2026-04-09 05:32:04.839] UI DISPLAY: RE-03 Source=폐수배출업소
+[2026-04-09 05:32:04.839] UI DISPLAY: RE-03 → '비용부담금'
+[2026-04-09 05:32:04.839] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:32:04.839] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:32:04.839] UI DISPLAY: RE-09 Source=처리시설
+[2026-04-09 05:32:04.839] UI DISPLAY: RE-09 → '처리시설'
+[2026-04-09 05:32:04.839] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:32:04.839] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:32:04.840] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:32:04.840] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:32:04.840] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:32:04.840] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:32:04.840] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:32:04.840] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:32:04.840] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:32:04.840] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:32:04.840] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:32:04.840] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:32:04.893] MATCH COMPLETED: 1,4-Dioxane | RE-01.D → 비점-유역1 처리수조
+[2026-04-09 05:32:26.715] LoadVerifiedGrid CALLED for category: GCMS
+[2026-04-09 05:32:26.716] LoadVerifiedGrid: Found 130 excel rows
+[2026-04-09 05:32:26.716] Row JR(26-03-05): Source=미분류, Status=입력가능, 시료명='1,1-DCE | JR(26-03-05).D', Matched=, Analysis=
+[2026-04-09 05:32:26.716] Row RE-01: Source=미분류, Status=입력가능, 시료명='1,1-DCE | RE-01.D', Matched=, Analysis=
+[2026-04-09 05:32:26.716] Row RE-02: Source=미분류, Status=입력가능, 시료명='1,1-DCE | RE-02.D', Matched=, Analysis=
+[2026-04-09 05:32:26.716] Row RE-03: Source=미분류, Status=입력가능, 시료명='1,1-DCE | RE-03.D', Matched=, Analysis=
+[2026-04-09 05:32:26.716] Row RE-04: Source=미분류, Status=입력가능, 시료명='1,1-DCE | RE-04.D', Matched=, Analysis=
+[2026-04-09 05:32:26.718] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:32:26.718] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:32:26.718] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:32:26.718] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:32:26.719] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:32:26.719] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:32:26.719] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:32:26.719] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:32:26.719] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:32:26.719] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:32:26.719] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:32:26.719] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:32:26.719] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:32:26.719] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:32:26.719] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:32:26.719] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:32:26.719] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:32:26.719] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:32:26.719] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:32:26.719] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:32:26.720] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:32:26.720] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:32:26.720] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:32:26.720] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:32:26.720] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:32:26.720] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:32:26.720] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:32:26.720] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:32:26.720] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:32:26.720] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:32:26.720] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:32:26.720] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:32:26.720] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:32:26.720] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:32:26.720] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:32:26.720] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:32:26.720] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:32:26.721] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:32:26.721] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:32:26.721] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:32:26.721] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:32:26.721] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:32:26.721] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:32:26.721] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:32:26.721] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:32:26.721] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:32:26.721] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:32:26.721] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:32:26.721] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:32:26.721] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:32:26.721] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:32:26.721] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:32:26.721] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:32:26.721] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:32:26.722] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:32:26.722] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:32:26.722] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:32:26.722] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:32:26.722] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:32:26.722] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:32:26.722] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:32:26.722] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:32:26.722] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:32:26.722] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:32:26.722] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:32:26.722] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:32:26.722] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:32:26.722] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:32:26.722] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:32:26.722] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:32:26.722] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:32:26.723] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:32:26.723] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:32:26.723] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:32:26.723] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:32:26.723] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:32:26.723] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:32:26.723] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:32:26.723] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:32:26.723] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:32:26.723] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:32:26.723] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:32:26.723] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:32:26.723] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:32:26.723] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:32:26.723] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:32:26.723] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:32:26.723] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:32:26.724] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:32:26.724] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:32:26.724] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:32:26.724] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:32:26.724] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:32:26.724] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:32:26.724] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:32:26.724] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:32:26.724] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:32:26.724] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:32:26.724] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:32:26.724] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:32:26.728] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:32:26.728] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:32:26.729] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:32:26.729] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:32:26.729] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:32:26.729] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:32:26.729] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:32:26.729] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:32:26.729] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:32:26.729] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:32:26.729] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:32:26.729] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:32:26.729] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:32:26.729] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:32:26.729] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:32:26.729] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:32:26.729] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:32:26.729] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:32:26.729] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:32:26.729] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:32:26.730] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:32:26.730] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:32:26.730] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:32:26.730] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:32:26.730] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:32:26.730] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:32:26.730] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:32:26.730] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:32:26.730] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:32:26.730] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:32:26.730] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:32:26.730] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:32:26.730] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:32:26.730] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:32:26.730] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:32:26.730] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:32:26.730] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:32:26.730] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:32:26.730] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:32:26.730] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:32:26.731] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:32:26.731] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:32:26.731] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:32:26.731] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:32:26.731] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:32:26.731] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:32:26.731] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:32:26.731] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:32:26.731] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:32:26.731] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:32:26.731] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:32:26.731] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:32:26.731] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:32:26.731] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:32:26.731] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:32:26.731] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:32:26.731] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:32:26.731] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:32:26.732] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:32:26.732] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:32:26.732] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:32:26.732] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:32:26.732] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:32:26.732] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:32:26.732] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:32:26.732] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:32:26.732] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:32:26.732] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:32:26.732] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:32:26.732] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:32:26.732] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:32:26.732] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:32:26.732] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:32:26.732] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:32:26.732] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:32:26.732] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:32:26.732] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:32:26.732] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:32:26.733] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:32:26.733] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:32:26.733] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:32:26.733] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:32:26.733] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:32:26.733] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:32:26.733] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:32:26.733] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:32:26.733] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:32:26.733] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:32:26.733] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:32:26.733] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:32:26.733] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:32:26.733] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:32:26.733] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:32:26.733] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:32:26.733] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:32:26.733] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:32:26.733] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:32:26.733] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:32:26.734] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:32:26.734] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:32:26.734] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:32:26.734] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:32:26.734] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:32:26.734] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:32:26.734] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:32:26.734] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:32:26.734] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:32:26.734] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:32:26.734] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:32:26.734] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:32:26.734] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:32:26.734] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:32:26.734] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:32:26.734] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:32:26.734] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:32:26.734] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:32:26.734] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:32:26.734] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:32:26.735] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:32:26.735] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:32:26.735] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:32:26.735] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:32:26.735] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:32:26.735] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:32:26.735] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:32:26.735] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:32:26.735] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:32:26.735] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:32:26.735] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:32:26.735] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:32:26.735] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:32:26.735] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:32:26.735] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:32:26.735] UI DISPLAY: RE-03 R → '—'
+[2026-04-09 05:32:26.735] UI DISPLAY: JR(26-03-05) Source=미분류
+[2026-04-09 05:32:26.735] UI DISPLAY: JR(26-03-05) → '—'
+[2026-04-09 05:32:26.735] UI DISPLAY: RE-01 Source=미분류
+[2026-04-09 05:32:26.735] UI DISPLAY: RE-01 → '—'
+[2026-04-09 05:32:26.736] UI DISPLAY: RE-02 Source=미분류
+[2026-04-09 05:32:26.736] UI DISPLAY: RE-02 → '—'
+[2026-04-09 05:32:26.736] UI DISPLAY: RE-03 Source=미분류
+[2026-04-09 05:32:26.736] UI DISPLAY: RE-03 → '—'
+[2026-04-09 05:32:26.736] UI DISPLAY: RE-04 Source=미분류
+[2026-04-09 05:32:26.736] UI DISPLAY: RE-04 → '—'
+[2026-04-09 05:32:26.736] UI DISPLAY: RE-09 Source=미분류
+[2026-04-09 05:32:26.736] UI DISPLAY: RE-09 → '—'
+[2026-04-09 05:32:26.736] UI DISPLAY: RE-10 Source=미분류
+[2026-04-09 05:32:26.736] UI DISPLAY: RE-10 → '—'
+[2026-04-09 05:32:26.736] UI DISPLAY: RE-11 Source=미분류
+[2026-04-09 05:32:26.736] UI DISPLAY: RE-11 → '—'
+[2026-04-09 05:32:26.736] UI DISPLAY: RE-12 Source=미분류
+[2026-04-09 05:32:26.736] UI DISPLAY: RE-12 → '—'
+[2026-04-09 05:32:26.736] UI DISPLAY: KD-01 Source=미분류
+[2026-04-09 05:32:26.736] UI DISPLAY: KD-01 → '—'
+[2026-04-09 05:32:26.736] UI DISPLAY: KD-02 Source=미분류
+[2026-04-09 05:32:26.736] UI DISPLAY: KD-02 → '—'
+[2026-04-09 05:32:26.736] UI DISPLAY: KD-03 Source=미분류
+[2026-04-09 05:32:26.736] UI DISPLAY: KD-03 → '—'
+[2026-04-09 05:32:26.744] UI DISPLAY: RE-03 R Source=미분류
+[2026-04-09 05:32:26.744] UI DISPLAY: RE-03 R → '—'

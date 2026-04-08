@@ -1334,20 +1334,25 @@ public partial class WasteAnalysisInputPage : UserControl
                     docTbl.Children.Add(new Border { Child = hdr,
                         BorderBrush = AppRes("ThemeBorderSubtle"), BorderThickness = new Thickness(0,0,0,1) });
 
+                    int rowIdx = 0;
                     if (hasStd)
+                    {
                         docTbl.Children.Add(BuildDocRowUnified(colDefs, "STANDARD",
                             new[] { docInfo.Standard_Points.ElementAtOrDefault(0) ?? "",
                                     docInfo.Standard_Points.ElementAtOrDefault(1) ?? "",
                                     docInfo.Standard_Points.ElementAtOrDefault(2) ?? "",
                                     $"a={docInfo.Standard_Slope}",
-                                    $"b={docInfo.Standard_Intercept}", "" }, "ThemeFgWarn"));
+                                    $"b={docInfo.Standard_Intercept}", "" }, "ThemeFgWarn", rowIdx++));
+                    }
                     if (hasAbs)
+                    {
                         docTbl.Children.Add(BuildDocRowUnified(colDefs, "Absorbance",
                             new[] { docInfo.Abs_Values.ElementAtOrDefault(0) ?? "",
                                     docInfo.Abs_Values.ElementAtOrDefault(1) ?? "",
                                     docInfo.Abs_Values.ElementAtOrDefault(2) ?? "",
                                     docInfo.Abs_Values.ElementAtOrDefault(3) ?? "",
-                                    $"R²={docInfo.Abs_R2}", "" }, "ThemeFgInfo"));
+                                    $"R²={docInfo.Abs_R2}", "" }, "ThemeFgInfo", rowIdx++));
+                    }
                 }
             }
             else if (isNHEXMode)
@@ -1378,7 +1383,7 @@ public partial class WasteAnalysisInputPage : UserControl
                         BorderBrush = AppRes("ThemeBorderSubtle"), BorderThickness = new Thickness(0,0,0,1) });
                     docTbl.Children.Add(BuildDocRowUnified(colDefs, "바탕시료",
                         new[] { docInfo.바탕시료_시료량, docInfo.바탕시료_건조전, docInfo.바탕시료_건조후,
-                                docInfo.바탕시료_무게차, docInfo.바탕시료_희석배수, docInfo.바탕시료_결과, "" }, "ThemeFgInfo"));
+                                docInfo.바탕시료_무게차, docInfo.바탕시료_희석배수, docInfo.바탕시료_결과, "" }, "ThemeFgInfo", 0));
                 }
             }
             else if (isTocMode)
@@ -1422,9 +1427,10 @@ public partial class WasteAnalysisInputPage : UserControl
                     }
                     string tcLabel = docInfo.IsTocTCIC ? "TC STANDARD" : "STANDARD";
                     string auLabel = docInfo.IsTocTCIC ? "TC AU" : "NPOC AU";
-                    docTbl.Children.Add(BuildDocRowUnified(tocDocColDefs, tcLabel, stdRow, "ThemeFgWarn"));
+                    int rowIdx = 0;
+                    docTbl.Children.Add(BuildDocRowUnified(tocDocColDefs, tcLabel, stdRow, "ThemeFgWarn", rowIdx++));
                     if (docInfo.TocStdAreas.Length > 0)
-                        docTbl.Children.Add(BuildDocRowUnified(tocDocColDefs, auLabel, auRow, "ThemeFgInfo"));
+                        docTbl.Children.Add(BuildDocRowUnified(tocDocColDefs, auLabel, auRow, "ThemeFgInfo", rowIdx++));
 
                     // TCIC 전용: IC 검량선 행
                     if (docInfo.IsTocTCIC && docInfo.TocStdConcs_IC.Length > 0)
@@ -1437,9 +1443,9 @@ public partial class WasteAnalysisInputPage : UserControl
                             icStdRow[si] = docInfo.TocStdConcs_IC[si];
                             icAuRow[si]  = si < docInfo.TocStdAreas_IC.Length ? docInfo.TocStdAreas_IC[si] : "";
                         }
-                        docTbl.Children.Add(BuildDocRowUnified(tocDocColDefs, "IC STANDARD", icStdRow, "ThemeFgWarn"));
+                        docTbl.Children.Add(BuildDocRowUnified(tocDocColDefs, "IC STANDARD", icStdRow, "ThemeFgWarn", rowIdx++));
                         if (docInfo.TocStdAreas_IC.Length > 0)
-                            docTbl.Children.Add(BuildDocRowUnified(tocDocColDefs, "IC AU", icAuRow, "ThemeFgInfo"));
+                            docTbl.Children.Add(BuildDocRowUnified(tocDocColDefs, "IC AU", icAuRow, "ThemeFgInfo", rowIdx++));
                     }
                 }
             }
@@ -1499,6 +1505,7 @@ public partial class WasteAnalysisInputPage : UserControl
                 docTbl.Children.Add(new Border { Child = hdr,
                     BorderBrush = AppRes("ThemeBorderSubtle"), BorderThickness = new Thickness(0,0,0,1) });
 
+                int rowIdx = 0;
                 foreach (var comp in docInfo.GcCompoundCals)
                 {
                     // 성분명 + 공칭농도 행
@@ -1511,8 +1518,8 @@ public partial class WasteAnalysisInputPage : UserControl
                     concRow[maxSt + 1] = comp.Intercept; // 절편
                     concRow[maxSt + 2] = comp.R;     // R²
 
-                    // 시료 테이블처럼 자연스러운 행별 색상
-                    docTbl.Children.Add(BuildDocRowUnified(gcDocColDefs, comp.Name, concRow, "ThemeFgWarn"));
+                    // 진한색 연한색 교대 색상
+                    docTbl.Children.Add(BuildDocRowUnified(gcDocColDefs, comp.Name, concRow, "ThemeFgWarn", rowIdx++));
 
                     // 응답 행
                     string[] respRow = new string[maxSt + 3];
@@ -1525,7 +1532,7 @@ public partial class WasteAnalysisInputPage : UserControl
                     respRow[maxSt + 2] = "";
 
                     string auLabel = comp.HasIstd ? "Resp." : "AU";
-                    docTbl.Children.Add(BuildDocRowUnified(gcDocColDefs, auLabel, respRow, "ThemeFgSecondary"));
+                    docTbl.Children.Add(BuildDocRowUnified(gcDocColDefs, auLabel, respRow, "ThemeFgSecondary", rowIdx++));
                 }
             }
             else
@@ -1557,14 +1564,19 @@ public partial class WasteAnalysisInputPage : UserControl
                     docTbl.Children.Add(new Border { Child = hdr,
                         BorderBrush = AppRes("ThemeBorderSubtle"), BorderThickness = new Thickness(0,0,0,1) });
 
+                    int rowIdx = 0;
                     if (hasSeed)
+                    {
                         docTbl.Children.Add(BuildDocRowUnified(colDefs, "식종수의 BOD",
                             new[] { docInfo.식종수_시료량, docInfo.식종수_D1, docInfo.식종수_D2,
-                                    "-", docInfo.식종수_P, docInfo.식종수_Result, docInfo.식종수_Remark }, "ThemeFgWarn"));
+                                    "-", docInfo.식종수_P, docInfo.식종수_Result, docInfo.식종수_Remark }, "ThemeFgWarn", rowIdx++));
+                    }
                     if (hasScf)
+                    {
                         docTbl.Children.Add(BuildDocRowUnified(colDefs, "SCF(식종희석수)",
                             new[] { docInfo.SCF_시료량, docInfo.SCF_D1, docInfo.SCF_D2,
-                                    "-", "1", docInfo.SCF_Result, "" }, "ThemeFgInfo"));
+                                    "-", "1", docInfo.SCF_Result, "" }, "ThemeFgInfo", rowIdx++));
+                    }
                 }
             }
         }
@@ -1717,6 +1729,7 @@ public partial class WasteAnalysisInputPage : UserControl
 
             var rowGrid = MakeRowGrid();
             rowGrid.MinHeight = 34;
+            // 원래 교대 색상 복원
             rowGrid.Background = i % 2 == 0 ? AppRes("GridRowBg") : AppRes("GridRowAltBg");
 
             // 아이콘 + 토글 (한 셀에 합침)
@@ -2050,6 +2063,17 @@ public partial class WasteAnalysisInputPage : UserControl
             Content = _gridPanel,
             HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
         };
+
+        // ESC 키로 매칭 취소 기능
+        scroll.KeyDown += (_, e) =>
+        {
+            if (e.Key == Key.Escape && _selectedRowIndex >= 0 && _currentExcelRows != null)
+            {
+                CancelSelectedRowMatching();
+                e.Handled = true;
+            }
+        };
+        scroll.Focusable = true;
         // 헤더 고정: 헤더 + 스크롤 본체를 StackPanel으로 조합
         var gridInner = new DockPanel();
         DockPanel.SetDock(_colHeaderBorder, Dock.Top);
@@ -2262,10 +2286,16 @@ public partial class WasteAnalysisInputPage : UserControl
     {
         System.Diagnostics.Debug.WriteLine($"[MATCH] ApplyDragMatch called: rowIndex={rowIndex}, dataKeys=[{string.Join(",", data.GetDataFormats())}]");
 
-        // 드래그 소스 탭에 따라 구분 결정 (단순화)
+        // Show1에서 드래그한 실제 이름 가져오기
+        string draggedName = data.Get(DataFormats.Text)?.ToString() ?? "";
+
+        // 드래그 소스 탭에 따라 구분 결정 + Show1 이름으로 매칭명 설정
         if (data.Contains("match-waste"))
         {
-            LogMatch($"DRAG FROM: 비용부담금 탭");
+            LogMatch($"DRAG FROM: 비용부담금 탭 - '{draggedName}'");
+            if (string.IsNullOrEmpty(exRow.원본시료명))
+                exRow.원본시료명 = exRow.시료명;  // 원본 보존
+            exRow.시료명 = draggedName;  // Show1 이름으로 변경
             exRow.Source = SourceType.폐수배출업소;
             exRow.Status = MatchStatus.입력가능;
             exRow.Enabled = true;
@@ -2273,7 +2303,10 @@ public partial class WasteAnalysisInputPage : UserControl
         }
         else if (data.Contains("match-analysis"))
         {
-            LogMatch($"DRAG FROM: 수질분석센터 탭");
+            LogMatch($"DRAG FROM: 수질분석센터 탭 - '{draggedName}'");
+            if (string.IsNullOrEmpty(exRow.원본시료명))
+                exRow.원본시료명 = exRow.시료명;  // 원본 보존
+            exRow.시료명 = draggedName;  // Show1 이름으로 변경
             exRow.Source = SourceType.수질분석센터;
             exRow.Status = MatchStatus.입력가능;
             exRow.Enabled = true;
@@ -2281,7 +2314,10 @@ public partial class WasteAnalysisInputPage : UserControl
         }
         else if (data.Contains("match-facility"))
         {
-            LogMatch($"DRAG FROM: 처리시설 탭");
+            LogMatch($"DRAG FROM: 처리시설 탭 - '{draggedName}'");
+            if (string.IsNullOrEmpty(exRow.원본시료명))
+                exRow.원본시료명 = exRow.시료명;  // 원본 보존
+            exRow.시료명 = draggedName;  // Show1 이름으로 변경
             exRow.Source = SourceType.처리시설;
             exRow.Status = MatchStatus.입력가능;
             exRow.Enabled = true;
@@ -4084,12 +4120,91 @@ public partial class WasteAnalysisInputPage : UserControl
         }
     }
 
+    private void SetItemTextColor(Border item, IBrush? brush)
+    {
+        // Border 내부의 모든 TextBlock 색상 변경
+        if (item.Child is StackPanel panel)
+        {
+            foreach (var child in panel.Children)
+            {
+                if (child is TextBlock tb) tb.Foreground = brush;
+                else if (child is StackPanel subPanel)
+                {
+                    foreach (var subChild in subPanel.Children)
+                        if (subChild is TextBlock subTb) subTb.Foreground = brush;
+                }
+            }
+        }
+        else if (item.Child is TextBlock directTb)
+        {
+            directTb.Foreground = brush;
+        }
+    }
+
+    private void CancelSelectedRowMatching()
+    {
+        if (_selectedRowIndex < 0 || _currentExcelRows == null || _selectedRowIndex >= _currentExcelRows.Count)
+            return;
+
+        var row = _currentExcelRows[_selectedRowIndex];
+
+        // 매칭된 상태가 아니면 취소할 것이 없음
+        if (row.Source == SourceType.미분류 || row.Status == MatchStatus.미매칭)
+        {
+            ShowMessage("매칭되지 않은 시료입니다.", false);
+            return;
+        }
+
+        // 매칭 상태 초기화 + 원본명 복원
+        row.Source = SourceType.미분류;
+        row.Status = MatchStatus.미매칭;
+        row.Matched = null;
+        row.MatchedAnalysis = null;
+        row.MatchedFacilityName = null;
+        row.IsManualMatch = false;
+
+        // 원본 시료명으로 복원
+        if (!string.IsNullOrEmpty(row.원본시료명))
+        {
+            row.시료명 = row.원본시료명;
+            row.원본시료명 = "";  // 원본명 필드 초기화
+        }
+
+        // _categoryExcelData도 동기화
+        if (_categoryExcelData.TryGetValue(_activeCategory, out var categoryRows) &&
+            _selectedRowIndex < categoryRows.Count)
+        {
+            categoryRows[_selectedRowIndex].Source = row.Source;
+            categoryRows[_selectedRowIndex].Status = row.Status;
+            categoryRows[_selectedRowIndex].Matched = row.Matched;
+            categoryRows[_selectedRowIndex].MatchedAnalysis = row.MatchedAnalysis;
+            categoryRows[_selectedRowIndex].MatchedFacilityName = row.MatchedFacilityName;
+            categoryRows[_selectedRowIndex].IsManualMatch = row.IsManualMatch;
+            categoryRows[_selectedRowIndex].시료명 = row.시료명;
+            categoryRows[_selectedRowIndex].원본시료명 = row.원본시료명;
+        }
+
+        // UI 새로고침
+        LoadVerifiedGrid();
+        BuildStatsPanel();
+
+        ShowMessage($"'{row.SN}' 시료의 매칭이 취소되었습니다.", false);
+        LogMatch($"MATCH CANCELLED: {row.SN} → 미분류");
+    }
+
     private void SetupDragSource(Border item, string sampleName, object? sampleData = null)
     {
         item.PointerPressed += async (sender, e) =>
         {
             if (e.GetCurrentPoint(item).Properties.IsLeftButtonPressed)
             {
+                // 드래그 시작: 금색으로 변경
+                var goldBrush = new SolidColorBrush(Color.Parse("#FFD700")); // 금색
+                var defaultBrush = AppRes("AppFg"); // 기본 텍스트 색상
+
+                // item 내부의 모든 TextBlock을 금색으로 변경
+                SetItemTextColor(item, goldBrush);
+
 #pragma warning disable CS0618
                 var dragData = new DataObject();
                 dragData.Set(DataFormats.Text, sampleName);
@@ -4121,6 +4236,9 @@ public partial class WasteAnalysisInputPage : UserControl
                 dragData.Set(matchKey, sampleName);
 
                 await DragDrop.DoDragDrop(e, dragData, DragDropEffects.Link);
+
+                // 드래그 완료: 기본 색상으로 복원
+                SetItemTextColor(item, defaultBrush);
 #pragma warning restore CS0618
             }
         };
@@ -4956,10 +5074,15 @@ public partial class WasteAnalysisInputPage : UserControl
 
     /// <summary>데이터 그리드와 동일한 컬럼 구조의 문서 정보 행.
     /// 첫 4컬럼을 ColumnSpan으로 합쳐서 label 표시, vals는 col 4부터 배치.</summary>
-    private Border BuildDocRowUnified(string colDefs, string label, string[] vals, string resultFg)
+    private Border BuildDocRowUnified(string colDefs, string label, string[] vals, string resultFg, int rowIndex = 0)
     {
+        // 아주 미세한 교대 색상
+        var bgBrush = rowIndex % 2 == 0
+            ? new SolidColorBrush(Color.Parse("#2a2a2a"))  // 기본
+            : new SolidColorBrush(Color.Parse("#303030")); // 살짝 밝게
+
         var g = new Grid { ColumnDefinitions = new ColumnDefinitions(colDefs), MinHeight = 28,
-            Background = AppRes("GridRowBg") };
+            Background = bgBrush };
         // 구분명: 첫 4컬럼 합침
         var labelTb = FsBase(new TextBlock
         {
