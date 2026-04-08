@@ -28,17 +28,54 @@
 
     <Grid RowDefinitions="Auto,Auto,*">
 
-        <!-- Row 0: 헤더 -->
+        <!-- Row 0: 헤더 + 3-tab 모드 토글 -->
         <Border Grid.Row="0"
                 Background="{DynamicResource PanelBg}"
                 CornerRadius="6,6,0,0"
-                Padding="10,6">
-            <StackPanel Orientation="Horizontal" Spacing="8">
+                Padding="8,4">
+            <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
                 <TextBlock Text="📝 분석결과입력"
                            FontSize="{DynamicResource FontSizeBase}" FontWeight="SemiBold"
-                           Foreground="{DynamicResource AppFg}"
+                           Foreground="{DynamicResource FgMuted}"
                            FontFamily="avares://ETA/Assets/Fonts#Pretendard"
-                           VerticalAlignment="Center"/>
+                           VerticalAlignment="Center"
+                           Margin="0,0,8,0"/>
+                <Button x:Name="BtnModeWaterCenter"
+                        Content="🔬 수질분석센터"
+                        Click="ModeTab_Click"
+                        Tag="수질분석센터"
+                        FontSize="{DynamicResource FontSizeSM}"
+                        FontFamily="avares://ETA/Assets/Fonts#Pretendard"
+                        Padding="8,3"
+                        CornerRadius="10"
+                        Background="{DynamicResource ThemeBgActiveBlue}"
+                        Foreground="{DynamicResource ThemeFgInfo}"
+                        BorderThickness="1"
+                        BorderBrush="{DynamicResource ThemeBorderInfo}"/>
+                <Button x:Name="BtnModeFacility"
+                        Content="🏭 처리시설"
+                        Click="ModeTab_Click"
+                        Tag="처리시설"
+                        FontSize="{DynamicResource FontSizeSM}"
+                        FontFamily="avares://ETA/Assets/Fonts#Pretendard"
+                        Padding="8,3"
+                        CornerRadius="10"
+                        Background="{DynamicResource SubBtnBg}"
+                        Foreground="{DynamicResource FgMuted}"
+                        BorderThickness="1"
+                        BorderBrush="{DynamicResource InputBorder}"/>
+                <Button x:Name="BtnModeBilling"
+                        Content="💰 비용부담금"
+                        Click="ModeTab_Click"
+                        Tag="비용부담금"
+                        FontSize="{DynamicResource FontSizeSM}"
+                        FontFamily="avares://ETA/Assets/Fonts#Pretendard"
+                        Padding="8,3"
+                        CornerRadius="10"
+                        Background="{DynamicResource SubBtnBg}"
+                        Foreground="{DynamicResource FgMuted}"
+                        BorderThickness="1"
+                        BorderBrush="{DynamicResource InputBorder}"/>
             </StackPanel>
         </Border>
 

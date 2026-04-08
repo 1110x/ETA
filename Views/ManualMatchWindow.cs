@@ -118,16 +118,14 @@ public class ManualMatchWindow : Window
         // ── 탭: 의뢰시료 / 폐수배출업소 / 처리장 ────────────────────────
         var tabCtrl = new TabControl { FontFamily = Font, Margin = new Thickness(0, 0, 0, 8) };
 
-        var tabAnalysis  = new TabItem { Header = "의뢰시료",   Content = BuildAnalysisTab() };
-        var tabWaste     = _wasteSamples.Count > 0 ? new TabItem { Header = "폐수배출업소", Content = BuildWasteTab() } : null;
-        var tabFacility  = new TabItem { Header = "처리장",     Content = BuildFacilityTab() };
-        tabCtrl.Items.Add(tabAnalysis);
-        if (tabWaste != null) tabCtrl.Items.Add(tabWaste);
+        var tabWaste     = new TabItem { Header = "폐수배출업소", Content = BuildWasteTab() };
+        var tabFacility  = new TabItem { Header = "처리시설",   Content = BuildFacilityTab() };
+        tabCtrl.Items.Add(tabWaste);
         tabCtrl.Items.Add(tabFacility);
 
         // 시료명에 처리시설 키워드가 있으면 처리장 탭 우선 선택
         bool isFacilityTarget = _facilityMasters.Count > 0 && IsFacilityKeyword(시료명);
-        tabCtrl.SelectedItem = isFacilityTarget ? tabFacility : tabAnalysis;
+        tabCtrl.SelectedItem = isFacilityTarget ? tabFacility : tabWaste;
 
         // ── 닫기 버튼 ─────────────────────────────────────────────────────
         var cancelBtn = new Button

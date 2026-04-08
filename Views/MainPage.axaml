@@ -710,6 +710,7 @@
                     <Button x:Name="BT6" Content="항목6" Click="BT6_Click"/>
                     <Button x:Name="BT7" Content="항목7" Click="BT7_Click"/>
                     <Button x:Name="BT8" Content="항목8" Click="BT8_Click"/>
+                    <Button x:Name="BT9" Content="항목9" Click="BT9_Click"/>
                     <!-- 저장 진행 표시 -->
                     <StackPanel x:Name="SaveProgressPanel"
                                 Orientation="Horizontal" Spacing="6"

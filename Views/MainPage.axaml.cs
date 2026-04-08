@@ -101,13 +101,12 @@ public partial class MainPage : Window
     private AnalysisRequestDetailPanel?  _analysisRequestDetailPanel;
     private AnalysisRequestListPanel?    _analysisRequestListPanel;
     // ── 분석계획 (처리시설별 시료 × 분석항목 체크박스) ─────────────────────────
-    // 엑셀(Data/Templates/요일별 분석항목 정리.xlsx)에서 동적 로딩
     private string[] _analysisPlanItems = Array.Empty<string>();
     private Dictionary<string, string[]> _facilitySamples = new();
 
     // facility → bool[sampleCount][itemCount]
     private readonly Dictionary<string, List<bool[]>> _facilityPlanState = new();
-    private int _analysisPlanSelectedDay = -1; // -1=전체, 0=월..4=금
+    private int _analysisPlanSelectedDay = -1; // -1=전체, 0=월..6=일, -2=BASE
 
     public MainPage()
     {
@@ -2925,8 +2924,8 @@ public partial class MainPage : Window
         _currentMode = "AnalysisPlan";
         _analysisPlanSelectedDay = -1;
 
-        // 엑셀에서 시설/시료/항목 로딩
-        LoadAnalysisPlanFromExcel();
+        // DB에서 시설/시료/항목 로딩
+        LoadAnalysisPlanFromDb();
 
         Show1.Content = BuildFacilityListPanel();
         LogContentChange("Show1", Show1.Content as Control);
@@ -2939,78 +2938,534 @@ public partial class MainPage : Window
         Show2.Content = checkPanel;
         LogContentChange("Show2", checkPanel);
 
-        Show3.Content = null;
-        LogContentChange("Show3", null);
+        if (!string.IsNullOrEmpty(_selectedFacilityPlan))
+            Show3.Content = BuildFacilityEditPanel(_selectedFacilityPlan);
+        else
+            Show3.Content = null;
+        LogContentChange("Show3", Show3.Content as Control);
         Show4.Content = null;
         LogContentChange("Show4", null);
 
-        _bt1SaveAction = null;
-        SetSubMenu("새로고침", "월", "화", "수", "목", "금", "토", "일");
+        _bt1SaveAction = SaveAnalysisPlanWithProgress;
+        SetSubMenu("저장", "월", "화", "수", "목", "금", "토", "일", "BASE");
         SetLeftPanelWidth(200);
         SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 8, lowerStar: 2);
         RestoreModeLayout("AnalysisPlan");
     }
 
+    private Dictionary<string, (string 약칭, int 순서)> _facilitySettings = new();
+
     private Control BuildFacilityListPanel()
     {
         var font = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
+        _facilitySettings = FacilityResultService.GetFacilitySettings();
         var root = new StackPanel { Spacing = 0 };
 
+        // ── 헤더 ────────────────────────────────────────────────────────
         root.Children.Add(new Border
         {
-            Background = AppTheme.BgPrimary,
-            BorderBrush = AppTheme.BorderSubtle,
-            BorderThickness = new Thickness(0, 0, 0, 1),
-            Padding = new Thickness(10, 8),
+            Background = AppTheme.BgPrimary, BorderBrush = AppTheme.BorderSubtle,
+            BorderThickness = new Thickness(0, 0, 0, 1), Padding = new Thickness(10, 8),
             Child = new TextBlock
             {
-                Text = "처리시설",
-                FontFamily = font, FontWeight = FontWeight.SemiBold,
+                Text = "처리시설", FontFamily = font, FontWeight = FontWeight.SemiBold,
                 Foreground = AppTheme.FgMuted,
-            }.BindMD()
+            }.BindMD(),
+        });
+
+        // ── 시설 리스트 (드래그 순서 변경) ────────────────────────────────
+        var listStack = new StackPanel { Spacing = 0 };
+        DragDrop.SetAllowDrop(listStack, true);
+        listStack.AddHandler(DragDrop.DragOverEvent, (object? s, DragEventArgs e) =>
+        {
+            e.DragEffects = e.Data.Contains("fac-reorder") ? DragDropEffects.Move : DragDropEffects.None;
+            e.Handled = true;
+        });
+        listStack.AddHandler(DragDrop.DropEvent, (object? s, DragEventArgs e) =>
+        {
+            if (!e.Data.Contains("fac-reorder")) return;
+            var draggedName = e.Data.Get("fac-reorder") as string;
+            if (draggedName == null) return;
+
+            // 드롭 위치 찾기
+            var dropPos = e.GetPosition(listStack);
+            int dropIdx = listStack.Children.Count;
+            double y = 0;
+            for (int i = 0; i < listStack.Children.Count; i++)
+            {
+                var child = listStack.Children[i];
+                if (dropPos.Y < y + child.Bounds.Height / 2) { dropIdx = i; break; }
+                y += child.Bounds.Height;
+            }
+
+            var list = _facilityNames.ToList();
+            int oldIdx = list.IndexOf(draggedName);
+            if (oldIdx < 0 || oldIdx == dropIdx) return;
+            list.RemoveAt(oldIdx);
+            if (dropIdx > oldIdx) dropIdx--;
+            list.Insert(Math.Min(dropIdx, list.Count), draggedName);
+            _facilityNames = list.ToArray();
+
+            FacilityResultService.SaveFacilityOrder(_facilityNames);
+            Show1.Content = BuildFacilityListPanel();
+            LogContentChange("Show1", Show1.Content as Control);
         });
 
         foreach (var name in _facilityNames)
         {
             var facilityName = name;
             var isSelected = facilityName == _selectedFacilityPlan;
+            _facilitySettings.TryGetValue(facilityName, out var setting);
+
+            // 약칭 뱃지 + 시설명
+            var namePanel = new StackPanel { Orientation = Avalonia.Layout.Orientation.Horizontal, Spacing = 6 };
+            if (!string.IsNullOrEmpty(setting.약칭))
+            {
+                var (bg, fg) = BadgeColorHelper.GetBadgeColor(setting.약칭);
+                namePanel.Children.Add(new Border
+                {
+                    Background = Brush.Parse(bg), CornerRadius = new CornerRadius(3),
+                    Padding = new Thickness(5, 2),
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Child = new TextBlock
+                    {
+                        Text = setting.약칭, FontFamily = font, FontSize = 10,
+                        Foreground = Brush.Parse(fg),
+                    }
+                });
+            }
+            namePanel.Children.Add(new TextBlock
+            {
+                Text = facilityName, FontFamily = font,
+                Foreground = isSelected ? AppTheme.FgPrimary : AppTheme.FgMuted,
+                FontWeight = isSelected ? FontWeight.SemiBold : FontWeight.Normal,
+                VerticalAlignment = VerticalAlignment.Center,
+            }.BindMD());
+
+            // 드래그 핸들(☰) + 약칭뱃지 + 시설명
+            var handleTb = new TextBlock
+            {
+                Text = "\u2630", FontSize = 12,
+                Foreground = AppTheme.FgDimmed,
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(0, 0, 6, 0),
+                Cursor = new Cursor(StandardCursorType.SizeAll),
+            };
+
+            var rowPanel = new StackPanel { Orientation = Avalonia.Layout.Orientation.Horizontal };
+            rowPanel.Children.Add(handleTb);
+            foreach (var child in namePanel.Children.ToList())
+            {
+                namePanel.Children.Remove(child);
+                rowPanel.Children.Add(child);
+            }
 
             var item = new Border
             {
                 Background = isSelected ? AppTheme.BgCard : AppTheme.BgSecondary,
                 BorderBrush = isSelected ? AppTheme.BorderAccent : Brushes.Transparent,
                 BorderThickness = new Thickness(3, 0, 0, 0),
-                Padding = new Thickness(12, 10),
+                Padding = new Thickness(8, 10),
                 Cursor = new Cursor(StandardCursorType.Hand),
                 Tag = facilityName,
-                Child = new TextBlock
-                {
-                    Text = facilityName,
-                    FontFamily = font,
-                    Foreground = isSelected ? AppTheme.FgPrimary : AppTheme.FgMuted,
-                    FontWeight = isSelected ? FontWeight.SemiBold : FontWeight.Normal,
-                }.BindMD()
+                Child = rowPanel,
             };
 
-            item.PointerPressed += (_, _) =>
+            // 클릭 → 선택 + Show3 편집
+            item.PointerPressed += (_, e) =>
             {
+                if (_facilityDragStarted) return;
                 _selectedFacilityPlan = facilityName;
-                // Show1 갱신 (선택 하이라이트)
                 Show1.Content = BuildFacilityListPanel();
                 LogContentChange("Show1", Show1.Content as Control);
-                // Show2 체크박스 패널 갱신
                 Show2.Content = BuildAnalysisPlanPanel();
                 LogContentChange("Show2", Show2.Content as Control);
+                Show3.Content = BuildFacilityEditPanel(facilityName);
+                LogContentChange("Show3", Show3.Content as Control);
             };
 
-            root.Children.Add(item);
+            // 드래그 핸들러
+            AttachFacilityDrag(item, facilityName);
+            listStack.Children.Add(item);
         }
+        root.Children.Add(listStack);
+
+        // ── 시설 추가 버튼 ────────────────────────────────────────────────
+        var addBtn = new Button
+        {
+            Content = "+ 시설 추가", FontFamily = font,
+            Foreground = AppTheme.FgLink, Background = AppTheme.BgSecondary,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            HorizontalContentAlignment = HorizontalAlignment.Center,
+            Padding = new Thickness(12, 10), Margin = new Thickness(0, 4, 0, 0),
+            Cursor = new Cursor(StandardCursorType.Hand),
+        };
+        addBtn.Click += async (_, _) =>
+        {
+            var dlg = new Window
+            {
+                Title = "시설 추가", Width = 350, Height = 150,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner, CanResize = false,
+            };
+            var tb = new TextBox { Watermark = "시설명 입력", Margin = new Thickness(20, 20, 20, 10) };
+            var okBtn = new Button { Content = "추가", HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 0, 0, 20) };
+            okBtn.Click += (_, _) => dlg.Close(tb.Text?.Trim());
+            dlg.Content = new StackPanel { Children = { tb, okBtn } };
+            var result = await dlg.ShowDialog<string?>(this);
+            if (!string.IsNullOrWhiteSpace(result))
+            {
+                try
+                {
+                    FacilityResultService.AddFacility(result);
+                    LoadAnalysisPlanFromDb(_analysisPlanSelectedDay == -2 ? -1 : _analysisPlanSelectedDay);
+                    _selectedFacilityPlan = result;
+                    Show1.Content = BuildFacilityListPanel();
+                    Show2.Content = BuildAnalysisPlanPanel();
+                }
+                catch (Exception ex) { Debug.WriteLine($"[AnalysisPlan] 시설 추가 오류: {ex.Message}"); }
+            }
+        };
+        root.Children.Add(addBtn);
 
         return new ScrollViewer
         {
             VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
             Content = root,
         };
+    }
+
+    // ── 시설 드래그 순서 변경 ─────────────────────────────────────────────
+    private bool _facilityDragStarted;
+
+    private void AttachFacilityDrag(Border item, string facilityName)
+    {
+        Point? pressPos = null;
+        item.PointerPressed += (_, e) =>
+        {
+            if (!e.GetCurrentPoint(item).Properties.IsLeftButtonPressed) return;
+            pressPos = e.GetCurrentPoint(item).Position;
+            _facilityDragStarted = false;
+        };
+        item.PointerMoved += async (_, e) =>
+        {
+            if (pressPos == null || _facilityDragStarted) return;
+            if (!e.GetCurrentPoint(item).Properties.IsLeftButtonPressed) { pressPos = null; return; }
+            var diff = e.GetCurrentPoint(item).Position - pressPos.Value;
+            if (Math.Abs(diff.Y) > 8)
+            {
+                _facilityDragStarted = true;
+                pressPos = null;
+                var data = new DataObject();
+                data.Set("fac-reorder", facilityName);
+                await DragDrop.DoDragDrop(e, data, DragDropEffects.Move);
+                _facilityDragStarted = false;
+            }
+        };
+        item.PointerReleased += (_, _) => { pressPos = null; _facilityDragStarted = false; };
+    }
+
+    // ── Show3: 시설 편집 패널 ─────────────────────────────────────────────
+    private Control BuildFacilityEditPanel(string facilityName)
+    {
+        var font = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
+        _facilitySettings.TryGetValue(facilityName, out var setting);
+
+        var stack = new StackPanel { Spacing = 12, Margin = new Thickness(16) };
+
+        stack.Children.Add(new TextBlock
+        {
+            Text = "시설 설정", FontFamily = font, FontWeight = FontWeight.SemiBold,
+            Foreground = AppTheme.FgPrimary, FontSize = 15,
+        });
+
+        // 시설명
+        stack.Children.Add(new TextBlock { Text = "시설명", FontFamily = font, Foreground = AppTheme.FgMuted, FontSize = 12 });
+        var nameBox = new TextBox { Text = facilityName, FontFamily = font, Margin = new Thickness(0, 2, 0, 0) };
+        stack.Children.Add(nameBox);
+
+        // 약칭
+        stack.Children.Add(new TextBlock { Text = "약칭 (뱃지)", FontFamily = font, Foreground = AppTheme.FgMuted, FontSize = 12 });
+        var aliasBox = new TextBox { Text = setting.약칭, FontFamily = font, Watermark = "예: 중흥", Margin = new Thickness(0, 2, 0, 0) };
+        stack.Children.Add(aliasBox);
+
+        // 적용 버튼
+        var applyBtn = new Button
+        {
+            Content = "적용", FontFamily = font, Padding = new Thickness(20, 8),
+            HorizontalAlignment = HorizontalAlignment.Left,
+            Margin = new Thickness(0, 8, 0, 0),
+        };
+        applyBtn.Click += (_, _) =>
+        {
+            try
+            {
+                var newName = nameBox.Text?.Trim() ?? facilityName;
+                var newAlias = aliasBox.Text?.Trim() ?? "";
+
+                // 약칭 저장
+                FacilityResultService.SaveFacilityAlias(facilityName, newAlias);
+
+                // 시설명 변경
+                if (newName != facilityName && !string.IsNullOrEmpty(newName))
+                {
+                    FacilityResultService.RenameFacility(facilityName, newName);
+                    _selectedFacilityPlan = newName;
+                }
+
+                // UI 갱신
+                LoadAnalysisPlanFromDb(_analysisPlanSelectedDay == -2 ? -1 : _analysisPlanSelectedDay);
+                Show1.Content = BuildFacilityListPanel();
+                Show2.Content = BuildAnalysisPlanPanel();
+                Show3.Content = BuildFacilityEditPanel(_selectedFacilityPlan);
+                Debug.WriteLine($"[AnalysisPlan] 시설 설정 적용: {facilityName} → 이름={newName}, 약칭={newAlias}");
+            }
+            catch (Exception ex) { Debug.WriteLine($"[AnalysisPlan] 시설 설정 오류: {ex.Message}"); }
+        };
+        stack.Children.Add(applyBtn);
+
+        return new Border
+        {
+            Background = AppTheme.BgPrimary,
+            BorderBrush = AppTheme.BorderSubtle,
+            BorderThickness = new Thickness(0, 0, 0, 1),
+            Child = stack,
+        };
+    }
+
+    // ── 저장 (프로그레스바 포함) ─────────────────────────────────────────
+    // ── Show4: 분석항목 편집 패널 ─────────────────────────────────────────
+    private Control BuildAnalysisItemEditorPanel()
+    {
+        var font = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
+        var allItems = FacilityResultService.GetAnalysisItems(activeOnly: false);
+
+        var stack = new StackPanel { Spacing = 8, Margin = new Thickness(16) };
+        stack.Children.Add(new TextBlock
+        {
+            Text = "분석항목 관리", FontFamily = font, FontWeight = FontWeight.SemiBold,
+            Foreground = AppTheme.FgPrimary, FontSize = 15,
+        });
+
+        // ── 항목 리스트 (체크박스 + 이름 + 순서 버튼) ──────────────────
+        var listStack = new StackPanel { Spacing = 2 };
+        foreach (var item in allItems.OrderBy(i => i.순서))
+        {
+            var row = new Grid
+            {
+                ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto,Auto"),
+                MinHeight = 32,
+            };
+
+            // 활성 체크박스
+            var cb = new CheckBox
+            {
+                IsChecked = item.활성,
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(0, 0, 6, 0),
+            };
+            var capturedId = item.Id;
+            cb.IsCheckedChanged += (_, _) =>
+            {
+                FacilityResultService.SetItemActive(capturedId, cb.IsChecked == true);
+            };
+            Grid.SetColumn(cb, 0);
+            row.Children.Add(cb);
+
+            // 항목명
+            var nameTb = new TextBlock
+            {
+                Text = item.항목명, FontFamily = font,
+                Foreground = item.활성 ? AppTheme.FgPrimary : AppTheme.FgDimmed,
+                VerticalAlignment = VerticalAlignment.Center,
+            };
+            Grid.SetColumn(nameTb, 1);
+            row.Children.Add(nameTb);
+
+            // 위로 버튼
+            var upBtn = new Button
+            {
+                Content = "\u25b2", Padding = new Thickness(6, 2), FontSize = 10,
+                Background = Brushes.Transparent, Foreground = AppTheme.FgMuted,
+            };
+            upBtn.Click += (_, _) =>
+            {
+                var ordered = FacilityResultService.GetAnalysisItems(false).OrderBy(i => i.순서).ToList();
+                var idx = ordered.FindIndex(i => i.Id == capturedId);
+                if (idx > 0)
+                {
+                    (ordered[idx], ordered[idx - 1]) = (ordered[idx - 1], ordered[idx]);
+                    FacilityResultService.SaveItemOrder(ordered.Select(i => i.Id).ToList());
+                    Show4.Content = BuildAnalysisItemEditorPanel();
+                }
+            };
+            Grid.SetColumn(upBtn, 2);
+            row.Children.Add(upBtn);
+
+            // 아래로 버튼
+            var downBtn = new Button
+            {
+                Content = "\u25bc", Padding = new Thickness(6, 2), FontSize = 10,
+                Background = Brushes.Transparent, Foreground = AppTheme.FgMuted,
+            };
+            downBtn.Click += (_, _) =>
+            {
+                var ordered = FacilityResultService.GetAnalysisItems(false).OrderBy(i => i.순서).ToList();
+                var idx = ordered.FindIndex(i => i.Id == capturedId);
+                if (idx >= 0 && idx < ordered.Count - 1)
+                {
+                    (ordered[idx], ordered[idx + 1]) = (ordered[idx + 1], ordered[idx]);
+                    FacilityResultService.SaveItemOrder(ordered.Select(i => i.Id).ToList());
+                    Show4.Content = BuildAnalysisItemEditorPanel();
+                }
+            };
+            Grid.SetColumn(downBtn, 3);
+            row.Children.Add(downBtn);
+
+            listStack.Children.Add(row);
+        }
+        stack.Children.Add(new ScrollViewer
+        {
+            Content = listStack, MaxHeight = 350,
+            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+        });
+
+        // ── 새 항목 추가 ────────────────────────────────────────────────
+        var addRow = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto"), Margin = new Thickness(0, 8, 0, 0) };
+        var addBox = new TextBox { Watermark = "새 항목명", FontFamily = font };
+        Grid.SetColumn(addBox, 0);
+        addRow.Children.Add(addBox);
+
+        var addBtn = new Button
+        {
+            Content = "추가", FontFamily = font, Padding = new Thickness(12, 6),
+            Margin = new Thickness(6, 0, 0, 0),
+        };
+        addBtn.Click += (_, _) =>
+        {
+            var name = addBox.Text?.Trim();
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                try
+                {
+                    FacilityResultService.AddAnalysisItem(name);
+                    Show4.Content = BuildAnalysisItemEditorPanel();
+                }
+                catch (Exception ex) { Debug.WriteLine($"[AnalysisItems] 추가 오류: {ex.Message}"); }
+            }
+        };
+        Grid.SetColumn(addBtn, 1);
+        addRow.Children.Add(addBtn);
+        stack.Children.Add(addRow);
+
+        // ── 적용 버튼 (헤더 갱신) ────────────────────────────────────────
+        var applyBtn = new Button
+        {
+            Content = "적용 (헤더 갱신)", FontFamily = font, Padding = new Thickness(20, 8),
+            Margin = new Thickness(0, 12, 0, 0),
+        };
+        applyBtn.Click += (_, _) =>
+        {
+            FacilityResultService.InvalidateItemsCache();
+            _analysisPlanItems = FacilityResultService.AnalysisPlanItemNames;
+            LoadAnalysisPlanFromDb(_analysisPlanSelectedDay == -2 ? -1 : _analysisPlanSelectedDay);
+            Show2.Content = BuildAnalysisPlanPanel();
+            LogContentChange("Show2", Show2.Content as Control);
+        };
+        stack.Children.Add(applyBtn);
+
+        return new Border
+        {
+            Background = AppTheme.BgPrimary, BorderBrush = AppTheme.BorderSubtle,
+            BorderThickness = new Thickness(0, 0, 0, 1),
+            Child = stack,
+        };
+    }
+
+    private async void SaveAnalysisPlanWithProgress()
+    {
+        var facility = _selectedFacilityPlan;
+        if (string.IsNullOrEmpty(facility)) return;
+        if (!_facilitySamples.TryGetValue(facility, out var samples)) return;
+        if (!_facilityPlanState.TryGetValue(facility, out var checkRows)) return;
+
+        // 프로그레스바 표시 (0→100%)
+        var font = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
+        var pb = new Avalonia.Controls.ProgressBar
+        {
+            Minimum = 0, Maximum = 100, Value = 0,
+            Height = 6, Foreground = AppTheme.FgInfo,
+        };
+        var pctText = new TextBlock
+        {
+            Text = "0%", FontFamily = font, Foreground = AppTheme.FgMuted,
+            HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 8),
+        };
+        var savePanel = new StackPanel
+        {
+            VerticalAlignment = VerticalAlignment.Center,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            Margin = new Thickness(40),
+            Children = { pb, pctText },
+        };
+        Show2.Content = savePanel;
+
+        try
+        {
+            var total = samples.Length;
+            var day = _analysisPlanSelectedDay;
+            var isBase = day == -2;
+
+            await Task.Run(() =>
+            {
+                var cols = FacilityResultService.PlanDbCols;
+                using var conn = DbConnectionFactory.CreateConnection();
+                conn.Open();
+
+                for (int si = 0; si < total; si++)
+                {
+                    if (si >= checkRows.Count) continue;
+                    var checks = checkRows[si];
+                    int dayStart = isBase ? 0 : day;
+                    int dayEnd   = isBase ? 6 : day;
+
+                    for (int d = dayStart; d <= dayEnd; d++)
+                    {
+                        using var cmd = conn.CreateCommand();
+                        var sets = new List<string>();
+                        for (int i = 0; i < cols.Length && i < checks.Length; i++)
+                        {
+                            sets.Add($"{cols[i]} = @v{i}");
+                            cmd.Parameters.AddWithValue($"@v{i}", checks[i] ? "O" : "");
+                        }
+                        cmd.CommandText = $"UPDATE `처리시설_분석계획` SET {string.Join(", ", sets)} WHERE 시설명=@f AND 시료명=@s AND 요일=@d";
+                        cmd.Parameters.AddWithValue("@f", facility);
+                        cmd.Parameters.AddWithValue("@s", samples[si]);
+                        cmd.Parameters.AddWithValue("@d", d);
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    int pct = (int)((si + 1) * 100.0 / total);
+                    Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                    {
+                        pb.Value = pct;
+                        pctText.Text = $"{pct}%";
+                    });
+                }
+            });
+            pb.Value = 100;
+            pctText.Text = "100% 완료";
+            Debug.WriteLine($"[AnalysisPlan] 저장 완료: {facility}, day={_analysisPlanSelectedDay}");
+            await Task.Delay(300);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[AnalysisPlan] 저장 오류: {ex.Message}");
+        }
+        finally
+        {
+            Show2.Content = BuildAnalysisPlanPanel();
+            LogContentChange("Show2", Show2.Content as Control);
+        }
     }
 
     private Control BuildAnalysisPlanPanel()
@@ -3046,17 +3501,29 @@ public partial class MainPage : Window
         }.BindSM());
         for (int i = 0; i < _analysisPlanItems.Length; i++)
         {
-            var hdr = new TextBlock
+            var itemName = _analysisPlanItems[i];
+            var hdrBorder = new Border
             {
-                Text = _analysisPlanItems[i], FontFamily = font, FontWeight = FontWeight.SemiBold,
-                Foreground = AppTheme.FgMuted,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-                TextWrapping = TextWrapping.Wrap,
-                Margin = new Thickness(2, 4),
-            }.BindXS();
-            Grid.SetColumn(hdr, i + 1);
-            headerGrid.Children.Add(hdr);
+                Cursor = new Cursor(StandardCursorType.Hand),
+                Background = Brushes.Transparent,
+                Child = new TextBlock
+                {
+                    Text = itemName, FontFamily = font, FontWeight = FontWeight.SemiBold,
+                    Foreground = AppTheme.FgMuted,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    TextWrapping = TextWrapping.Wrap,
+                    Margin = new Thickness(2, 4),
+                }.BindXS(),
+            };
+            hdrBorder.PointerPressed += (_, _) =>
+            {
+                Show4.Content = BuildAnalysisItemEditorPanel();
+                LogContentChange("Show4", Show4.Content as Control);
+                SetContentLayout(content2Star: 1, content4Star: 1, upperStar: 6, lowerStar: 4);
+            };
+            Grid.SetColumn(hdrBorder, i + 1);
+            headerGrid.Children.Add(hdrBorder);
         }
         var headerBorder = new Border
         {
@@ -3068,11 +3535,61 @@ public partial class MainPage : Window
         Grid.SetRow(headerBorder, 0);
         root.Children.Add(headerBorder);
 
-        // ── 시료 행 ────────────────────────────────────────────────────────
+        // ── 모드 표시 ────────────────────────────────────────────────────
+        bool isBaseMode = _analysisPlanSelectedDay == -2;
+
+        // ── 시료 행 (드래그 순서 변경) ─────────────────────────────────────
         var bodyStack = new StackPanel { Spacing = 1 };
+        DragDrop.SetAllowDrop(bodyStack, true);
+        bodyStack.AddHandler(DragDrop.DragOverEvent, (object? s, DragEventArgs e) =>
+        {
+            e.DragEffects = e.Data.Contains("sample-reorder") ? DragDropEffects.Move : DragDropEffects.None;
+            e.Handled = true;
+        });
+        bodyStack.AddHandler(DragDrop.DropEvent, (object? s, DragEventArgs e) =>
+        {
+            if (!e.Data.Contains("sample-reorder")) return;
+            var draggedSample = e.Data.Get("sample-reorder") as string;
+            if (draggedSample == null || !_facilitySamples.TryGetValue(facility, out var curSamples)) return;
+
+            var dropPos = e.GetPosition(bodyStack);
+            int dropIdx = curSamples.Length;
+            double y = 0;
+            for (int i = 0; i < bodyStack.Children.Count; i++)
+            {
+                var child = bodyStack.Children[i];
+                if (child.Tag is not string) continue; // 시료 행만
+                if (dropPos.Y < y + child.Bounds.Height / 2) { dropIdx = i; break; }
+                y += child.Bounds.Height;
+            }
+
+            var list = curSamples.ToList();
+            int oldIdx = list.IndexOf(draggedSample);
+            if (oldIdx < 0 || oldIdx == dropIdx) return;
+            list.RemoveAt(oldIdx);
+            if (dropIdx > oldIdx) dropIdx--;
+            list.Insert(Math.Min(dropIdx, list.Count), draggedSample);
+            _facilitySamples[facility] = list.ToArray();
+
+            FacilityResultService.SaveSampleOrder(facility, list.ToArray());
+            // 상태도 같은 순서로 재배치
+            if (_facilityPlanState.TryGetValue(facility, out var stRows))
+            {
+                var newState = new List<bool[]>();
+                foreach (var sn in list)
+                {
+                    int origIdx = Array.IndexOf(curSamples, sn);
+                    newState.Add(origIdx >= 0 && origIdx < stRows.Count ? stRows[origIdx] : new bool[_analysisPlanItems.Length]);
+                }
+                _facilityPlanState[facility] = newState;
+            }
+            Show2.Content = BuildAnalysisPlanPanel();
+            LogContentChange("Show2", Show2.Content as Control);
+        });
 
         for (int si = 0; si < samples.Length; si++)
         {
+            int sampleIdx = si;
             var sampleName = samples[si];
             var checks     = si < stateRows.Count ? stateRows[si] : new bool[_analysisPlanItems.Length];
             bool hasAnyCheck = checks.Any(c => c);
@@ -3083,18 +3600,100 @@ public partial class MainPage : Window
                 MinHeight  = 28,
                 Background = hasAnyCheck ? AppTheme.BgSecondary : AppTheme.BgPrimary,
                 Opacity    = hasAnyCheck ? 1.0 : 0.5,
+                Tag        = sampleName, // 드래그 식별용
             };
 
-            var nameTb = new TextBlock
+            bool isMainView = _analysisPlanSelectedDay == -1; // 전체 뷰
+
+            if (isMainView || isBaseMode)
             {
-                Text = sampleName, FontFamily = font,
-                Foreground = AppTheme.FgPrimary,
-                VerticalAlignment = VerticalAlignment.Center,
-                TextTrimming = TextTrimming.CharacterEllipsis,
-                Margin = new Thickness(6, 0),
-            }.BindSM();
-            Grid.SetColumn(nameTb, 0);
-            rowGrid.Children.Add(nameTb);
+                // 전체/BASE: 시료명 편집 + ☰ 드래그 핸들(전체만)
+                var nameRow = new StackPanel { Orientation = Avalonia.Layout.Orientation.Horizontal };
+
+                if (isMainView)
+                {
+                    // ☰ 드래그 핸들 (전체 뷰에서만)
+                    var capturedName = sampleName;
+                    var handle = new TextBlock
+                    {
+                        Text = "\u2630", FontSize = 10, Foreground = AppTheme.FgDimmed,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        Margin = new Thickness(4, 0, 4, 0),
+                        Cursor = new Cursor(StandardCursorType.SizeAll),
+                    };
+                    Point? pressPos = null;
+                    bool dragStarted = false;
+                    handle.PointerPressed += (_, e) =>
+                    {
+                        if (!e.GetCurrentPoint(handle).Properties.IsLeftButtonPressed) return;
+                        pressPos = e.GetCurrentPoint(handle).Position;
+                        dragStarted = false;
+                        e.Handled = true;
+                    };
+                    handle.PointerMoved += async (_, e) =>
+                    {
+                        if (pressPos == null || dragStarted) return;
+                        if (!e.GetCurrentPoint(handle).Properties.IsLeftButtonPressed) { pressPos = null; return; }
+                        var diff = e.GetCurrentPoint(handle).Position - pressPos.Value;
+                        if (Math.Abs(diff.Y) > 8)
+                        {
+                            dragStarted = true; pressPos = null;
+                            var data = new DataObject();
+                            data.Set("sample-reorder", capturedName);
+                            await DragDrop.DoDragDrop(e, data, DragDropEffects.Move);
+                            dragStarted = false;
+                        }
+                    };
+                    handle.PointerReleased += (_, _) => { pressPos = null; dragStarted = false; };
+                    nameRow.Children.Add(handle);
+                }
+
+                // 시료명 편집 TextBox
+                var nameBox = new TextBox
+                {
+                    Text = sampleName, FontFamily = font,
+                    Foreground = AppTheme.FgPrimary,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Margin = new Thickness(2, 0), MinHeight = 26,
+                    BorderThickness = new Thickness(0, 0, 0, 1),
+                    BorderBrush = AppTheme.BorderSubtle,
+                    Background = Brushes.Transparent,
+                };
+                var oldName = sampleName;
+                nameBox.LostFocus += (_, _) =>
+                {
+                    var newName = nameBox.Text?.Trim() ?? "";
+                    if (!string.IsNullOrEmpty(newName) && newName != oldName)
+                    {
+                        try
+                        {
+                            FacilityResultService.RenameSampleAllDays(facility, oldName, newName);
+                            var list = _facilitySamples[facility].ToList();
+                            list[sampleIdx] = newName;
+                            _facilitySamples[facility] = list.ToArray();
+                            Debug.WriteLine($"[AnalysisPlan] 시료명 변경: {oldName} → {newName} (전체 요일)");
+                        }
+                        catch (Exception ex) { Debug.WriteLine($"[AnalysisPlan] 시료명 변경 오류: {ex.Message}"); }
+                    }
+                };
+                nameRow.Children.Add(nameBox);
+                Grid.SetColumn(nameRow, 0);
+                rowGrid.Children.Add(nameRow);
+            }
+            else
+            {
+                // 개별 요일: 읽기전용
+                var nameTb = new TextBlock
+                {
+                    Text = sampleName, FontFamily = font,
+                    Foreground = AppTheme.FgPrimary,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    TextTrimming = TextTrimming.CharacterEllipsis,
+                    Margin = new Thickness(6, 0),
+                }.BindSM();
+                Grid.SetColumn(nameTb, 0);
+                rowGrid.Children.Add(nameTb);
+            }
 
             for (int ii = 0; ii < _analysisPlanItems.Length; ii++)
             {
@@ -3111,6 +3710,73 @@ public partial class MainPage : Window
             }
 
             bodyStack.Children.Add(rowGrid);
+        }
+
+        // ── 시료 추가 버튼 ──────────────────────────────────────────────────
+        {
+            var addSampleBtn = new Button
+            {
+                Content = "+ 시료 추가",
+                FontFamily = font,
+                Foreground = AppTheme.FgLink,
+                Background = AppTheme.BgSecondary,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                HorizontalContentAlignment = HorizontalAlignment.Center,
+                Margin = new Thickness(0, 4, 0, 0),
+                Padding = new Thickness(6),
+                Cursor = new Cursor(StandardCursorType.Hand),
+            };
+            addSampleBtn.Click += async (_, _) =>
+            {
+                // 시설이 선택되어 있지 않으면 시설 선택 다이얼로그
+                var targetFacility = facility;
+                if (string.IsNullOrEmpty(targetFacility) || _facilityNames.Length == 0)
+                {
+                    Debug.WriteLine("[AnalysisPlan] 시설이 없어서 시료 추가 불가");
+                    return;
+                }
+                if (_facilityNames.Length > 1 && string.IsNullOrEmpty(_selectedFacilityPlan))
+                {
+                    var facDlg = new Window
+                    {
+                        Title = "시설 선택", Width = 300, Height = 200,
+                        WindowStartupLocation = WindowStartupLocation.CenterOwner, CanResize = false,
+                    };
+                    var facList = new ListBox { ItemsSource = _facilityNames, Margin = new Thickness(10) };
+                    var facOk = new Button { Content = "선택", HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 0, 0, 10) };
+                    facOk.Click += (_, _) => facDlg.Close(facList.SelectedItem as string);
+                    facDlg.Content = new StackPanel { Children = { facList, facOk } };
+                    var picked = await facDlg.ShowDialog<string?>(this);
+                    if (string.IsNullOrWhiteSpace(picked)) return;
+                    targetFacility = picked;
+                    _selectedFacilityPlan = picked;
+                }
+
+                // 시료명 입력
+                var dlg = new Window
+                {
+                    Title = $"시료 추가 ({targetFacility})", Width = 300, Height = 140,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner, CanResize = false,
+                };
+                var tb = new TextBox { Watermark = "시료명 입력", Margin = new Thickness(20, 20, 20, 10) };
+                var okBtn = new Button { Content = "추가", HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 0, 0, 20) };
+                okBtn.Click += (_, _) => dlg.Close(tb.Text?.Trim());
+                dlg.Content = new StackPanel { Children = { tb, okBtn } };
+                var result = await dlg.ShowDialog<string?>(this);
+                if (!string.IsNullOrWhiteSpace(result))
+                {
+                    try
+                    {
+                        FacilityResultService.AddSampleToFacility(targetFacility, result);
+                        LoadAnalysisPlanFromDb(_analysisPlanSelectedDay == -2 ? -1 : _analysisPlanSelectedDay);
+                        Show1.Content = BuildFacilityListPanel();
+                        Show2.Content = BuildAnalysisPlanPanel();
+                        Debug.WriteLine($"[AnalysisPlan] 시료 추가 완료: {targetFacility} → {result}");
+                    }
+                    catch (Exception ex) { Debug.WriteLine($"[AnalysisPlan] 시료 추가 오류: {ex.Message}"); }
+                }
+            };
+            bodyStack.Children.Add(addSampleBtn);
         }
 
         if (samples.Length == 0)
@@ -3132,177 +3798,75 @@ public partial class MainPage : Window
         return root;
     }
 
-    // ── 엑셀에서 분석계획 데이터 로딩 ─────────────────────────────────────
-    private static readonly string[] _daySheetNames = { "월", "화", "수", "목", "금", "토", "일" };
+    // ── DB에서 분석계획 데이터 로딩 ───────────────────────────────────────
 
-    /// <summary>엑셀 요일 시트에서 시설/시료/항목/체크 상태 로딩</summary>
-    private void LoadAnalysisPlanFromExcel(int dayIdx = -1)
+    /// <summary>DB에서 시설/시료/항목/체크 상태 로딩</summary>
+    private void LoadAnalysisPlanFromDb(int dayIdx = -1)
     {
-        var xlsxPath = GetAnalysisPlanExcelPath();
-        if (xlsxPath == null) return;
-
         try
         {
-            using var fs = new FileStream(xlsxPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            using var wb = new XLWorkbook(fs);
+            _analysisPlanItems = FacilityResultService.AnalysisPlanItemNames;
 
-            // 구조(시설/시료/항목 목록)는 첫 번째 시트에서 읽기
-            var firstSheet = wb.TryGetWorksheet(_daySheetNames[0], out var ws0) ? ws0 : wb.Worksheets.First();
-            LoadSheetStructure(firstSheet);
+            var (facilities, samples) = FacilityResultService.GetAnalysisPlanStructure();
+            _facilityNames = facilities;
+            _facilitySamples = samples;
 
-            // 체크 상태 로딩
-            if (dayIdx >= 0 && dayIdx < _daySheetNames.Length)
-            {
-                // 특정 요일 → 해당 시트에서 체크 상태
-                if (wb.TryGetWorksheet(_daySheetNames[dayIdx], out var dayWs))
-                    LoadSheetCheckState(dayWs);
-            }
-            else
-            {
-                // 전체(-1) → 모든 요일 시트 OR 합산
-                _facilityPlanState.Clear();
-                foreach (var dayName in _daySheetNames)
-                {
-                    if (!wb.TryGetWorksheet(dayName, out var dayWs)) continue;
-                    MergeSheetCheckState(dayWs);
-                }
-            }
+            _facilityPlanState.Clear();
+            var state = FacilityResultService.GetAnalysisPlanState(dayIdx);
+            foreach (var kv in state)
+                _facilityPlanState[kv.Key] = kv.Value;
 
             if (_facilityNames.Length > 0 && string.IsNullOrEmpty(_selectedFacilityPlan))
                 _selectedFacilityPlan = _facilityNames[0];
 
-            Debug.WriteLine($"[AnalysisPlan] 엑셀 로딩 완료: 시설 {_facilityNames.Length}개, 항목 {_analysisPlanItems.Length}개, 요일={dayIdx}");
+            Debug.WriteLine($"[AnalysisPlan] DB 로딩 완료: 시설 {_facilityNames.Length}개, 항목 {_analysisPlanItems.Length}개, 요일={dayIdx}");
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[AnalysisPlan] 엑셀 로딩 오류: {ex.Message}");
+            Debug.WriteLine($"[AnalysisPlan] DB 로딩 오류: {ex.Message}");
         }
     }
 
-    /// <summary>시트에서 시설/시료/항목 구조 읽기 (1행 헤더, 2행~ 데이터)</summary>
-    private void LoadSheetStructure(IXLWorksheet ws)
+    /// <summary>현재 선택된 시설의 체크 상태를 DB에 저장</summary>
+    private void SaveAnalysisPlanToDb()
     {
-        // 1행 헤더에서 분석항목 (3열부터)
-        var items = new List<string>();
-        int lastCol = ws.LastColumnUsed()?.ColumnNumber() ?? 2;
-        for (int c = 3; c <= lastCol; c++)
+        var facility = _selectedFacilityPlan;
+        if (string.IsNullOrEmpty(facility) || !_facilitySamples.TryGetValue(facility, out var samples))
+            return;
+        if (!_facilityPlanState.TryGetValue(facility, out var checkRows))
+            return;
+
+        try
         {
-            var val = ws.Cell(1, c).GetString().Trim();
-            if (!string.IsNullOrEmpty(val)) items.Add(val);
-            else break;
+            if (_analysisPlanSelectedDay == -2)
+            {
+                // BASE 모드: 전체 요일에 일괄 적용
+                FacilityResultService.ApplyBaseToAllDays(facility, samples, checkRows);
+                Debug.WriteLine($"[AnalysisPlan] BASE 저장 완료: {facility} → 전체 요일 적용");
+            }
+            else if (_analysisPlanSelectedDay >= 0)
+            {
+                FacilityResultService.SaveAnalysisPlanState(facility, samples, checkRows, _analysisPlanSelectedDay);
+                Debug.WriteLine($"[AnalysisPlan] 저장 완료: {facility}, 요일={_analysisPlanSelectedDay}");
+            }
+            else
+            {
+                Debug.WriteLine("[AnalysisPlan] 전체 보기에서는 저장 불가");
+            }
         }
-        _analysisPlanItems = items.ToArray();
-
-        // 2행부터 시설/시료
-        var facilityOrder = new List<string>();
-        var facilityMap = new Dictionary<string, List<string>>();
-        string currentFacility = "";
-
-        int lastRow = ws.LastRowUsed()?.RowNumber() ?? 1;
-        for (int r = 2; r <= lastRow; r++)
+        catch (Exception ex)
         {
-            var facName = ws.Cell(r, 1).GetString().Trim();
-            var sampleName = ws.Cell(r, 2).GetString().Trim();
-
-            if (!string.IsNullOrEmpty(facName))
-                currentFacility = facName;
-            if (string.IsNullOrEmpty(sampleName) || string.IsNullOrEmpty(currentFacility))
-                continue;
-
-            if (!facilityMap.ContainsKey(currentFacility))
-            {
-                facilityOrder.Add(currentFacility);
-                facilityMap[currentFacility] = new List<string>();
-            }
-            facilityMap[currentFacility].Add(sampleName);
+            Debug.WriteLine($"[AnalysisPlan] 저장 오류: {ex.Message}");
         }
-
-        _facilityNames = facilityOrder.ToArray();
-        _facilitySamples = facilityMap.ToDictionary(kv => kv.Key, kv => kv.Value.ToArray());
-    }
-
-    /// <summary>시트에서 체크 상태(O) 읽어서 _facilityPlanState 덮어쓰기</summary>
-    private void LoadSheetCheckState(IXLWorksheet ws)
-    {
-        _facilityPlanState.Clear();
-        string currentFacility = "";
-        int lastRow = ws.LastRowUsed()?.RowNumber() ?? 1;
-
-        for (int r = 2; r <= lastRow; r++)
-        {
-            var facName = ws.Cell(r, 1).GetString().Trim();
-            var sampleName = ws.Cell(r, 2).GetString().Trim();
-
-            if (!string.IsNullOrEmpty(facName)) currentFacility = facName;
-            if (string.IsNullOrEmpty(sampleName) || string.IsNullOrEmpty(currentFacility)) continue;
-
-            if (!_facilityPlanState.ContainsKey(currentFacility))
-                _facilityPlanState[currentFacility] = new List<bool[]>();
-
-            var checks = new bool[_analysisPlanItems.Length];
-            for (int i = 0; i < _analysisPlanItems.Length; i++)
-            {
-                var val = ws.Cell(r, 3 + i).GetString().Trim();
-                checks[i] = val.Equals("O", StringComparison.OrdinalIgnoreCase);
-            }
-            _facilityPlanState[currentFacility].Add(checks);
-        }
-    }
-
-    /// <summary>시트 체크 상태를 기존 상태에 OR 합산 (전체 보기용)</summary>
-    private void MergeSheetCheckState(IXLWorksheet ws)
-    {
-        string currentFacility = "";
-        var sampleIdx = new Dictionary<string, int>(); // 시설별 행 인덱스
-        int lastRow = ws.LastRowUsed()?.RowNumber() ?? 1;
-
-        for (int r = 2; r <= lastRow; r++)
-        {
-            var facName = ws.Cell(r, 1).GetString().Trim();
-            var sampleName = ws.Cell(r, 2).GetString().Trim();
-
-            if (!string.IsNullOrEmpty(facName))
-            {
-                currentFacility = facName;
-                sampleIdx[currentFacility] = 0;
-            }
-            if (string.IsNullOrEmpty(sampleName) || string.IsNullOrEmpty(currentFacility)) continue;
-
-            if (!_facilityPlanState.ContainsKey(currentFacility))
-                _facilityPlanState[currentFacility] = new List<bool[]>();
-
-            int idx = sampleIdx.GetValueOrDefault(currentFacility, 0);
-
-            // 행이 아직 없으면 추가
-            while (_facilityPlanState[currentFacility].Count <= idx)
-                _facilityPlanState[currentFacility].Add(new bool[_analysisPlanItems.Length]);
-
-            var existing = _facilityPlanState[currentFacility][idx];
-            for (int i = 0; i < _analysisPlanItems.Length; i++)
-            {
-                var val = ws.Cell(r, 3 + i).GetString().Trim();
-                if (val.Equals("O", StringComparison.OrdinalIgnoreCase))
-                    existing[i] = true; // OR 합산
-            }
-
-            sampleIdx[currentFacility] = idx + 1;
-        }
-    }
-
-    private static string? GetAnalysisPlanExcelPath()
-    {
-        var path = Path.GetFullPath(
-            Path.Combine(AppContext.BaseDirectory, "..", "..", "..",
-                         "Data", "Templates", "요일별 분석항목 정리.xlsx"));
-        if (File.Exists(path)) return path;
-        Debug.WriteLine($"[AnalysisPlan] 엑셀 파일 없음: {path}");
-        return null;
     }
 
     private void SetAnalysisPlanDay(int dayIdx)
     {
         _analysisPlanSelectedDay = _analysisPlanSelectedDay == dayIdx ? -1 : dayIdx;
-        LoadAnalysisPlanFromExcel(_analysisPlanSelectedDay);
+        // BASE(-2) 모드는 전체(-1) 뷰로 로딩 (OR 합산)
+        LoadAnalysisPlanFromDb(_analysisPlanSelectedDay == -2 ? -1 : _analysisPlanSelectedDay);
+        Show1.Content = BuildFacilityListPanel();
+        LogContentChange("Show1", Show1.Content as Control);
         Show2.Content = BuildAnalysisPlanPanel();
         LogContentChange("Show2", Show2.Content as Control);
     }
@@ -4276,12 +4840,12 @@ public partial class MainPage : Window
 
     private void SetSubMenu(string bt1, string bt2, string bt3,
                             string bt4, string bt5, string bt6,
-                            string bt7 = "", string bt8 = "")
+                            string bt7 = "", string bt8 = "", string bt9 = "")
     {
         SetBtn(BT1, bt1); SetBtn(BT2, bt2); SetBtn(BT3, bt3);
         SetBtn(BT4, bt4); SetBtn(BT5, bt5);
-        SetBtn(BT6, bt6); SetBtn(BT7, bt7); SetBtn(BT8, bt8);
-        SubMenu.IsVisible = new[] { bt1, bt2, bt3, bt4, bt5, bt6, bt7, bt8 }
+        SetBtn(BT6, bt6); SetBtn(BT7, bt7); SetBtn(BT8, bt8); SetBtn(BT9, bt9);
+        SubMenu.IsVisible = new[] { bt1, bt2, bt3, bt4, bt5, bt6, bt7, bt8, bt9 }
             .Any(s => !string.IsNullOrWhiteSpace(s));
         UpdateNavPath();
 
@@ -4329,12 +4893,6 @@ public partial class MainPage : Window
                 Show2.Content = _accessPage.Show2;
                 break;
             case "WasteAnalysisInput": _wasteAnalysisInputPage?.LoadData(); break;
-            case "AnalysisPlan":
-                _analysisPlanSelectedDay = -1;
-                LoadAnalysisPlanFromExcel();
-                Show1.Content = BuildFacilityListPanel();
-                Show2.Content = BuildAnalysisPlanPanel();
-                break;
             default: _bt1SaveAction?.Invoke();                          break;
         }
     }
@@ -5036,6 +5594,17 @@ public partial class MainPage : Window
             case "AnalysisPlan": SetAnalysisPlanDay(6); break; // 일
             default:
                 Debug.WriteLine($"[{_currentMode}] BT8");
+                break;
+        }
+    }
+
+    private void BT9_Click(object? sender, RoutedEventArgs e)
+    {
+        switch (_currentMode)
+        {
+            case "AnalysisPlan": SetAnalysisPlanDay(-2); break; // BASE
+            default:
+                Debug.WriteLine($"[{_currentMode}] BT9");
                 break;
         }
     }

@@ -1674,6 +1674,190 @@ public static class AnalysisRequestService
     }
 
     // =====================================================================
+    //  월별 의뢰 날짜 목록 (분석결과입력 트리뷰 용 — 수질분석센터 모드)
+    // =====================================================================
+    public static List<string> GetMonths()
+    {
+        var list = new List<string>();
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            if (!DbConnectionFactory.TableExists(conn, "분석의뢰및결과")) return list;
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"
+                SELECT DISTINCT SUBSTR(`채취일자`, 1, 7) AS ym
+                FROM `분석의뢰및결과`
+                WHERE `채취일자` IS NOT NULL AND `채취일자` <> ''
+                ORDER BY ym DESC";
+            using var r = cmd.ExecuteReader();
+            while (r.Read())
+            {
+                if (r.IsDBNull(0)) continue;
+                var ym = r.GetString(0);
+                if (!string.IsNullOrWhiteSpace(ym)) list.Add(ym);
+            }
+        }
+        catch (Exception ex) { Log($"AnalysisRequestService.GetMonths 오류: {ex.Message}"); }
+        return list;
+    }
+
+    public static List<string> GetDatesByMonth(string yearMonth)
+    {
+        var list = new List<string>();
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            if (!DbConnectionFactory.TableExists(conn, "분석의뢰및결과")) return list;
+
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"
+                SELECT DISTINCT `채취일자`
+                FROM `분석의뢰및결과`
+                WHERE SUBSTR(`채취일자`, 1, 7) = @ym
+                ORDER BY `채취일자` DESC";
+            cmd.Parameters.AddWithValue("@ym", yearMonth);
+            using var rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                if (rdr.IsDBNull(0)) continue;
+                var d = rdr.GetString(0);
+                if (!string.IsNullOrWhiteSpace(d)) list.Add(d);
+            }
+        }
+        catch (Exception ex) { Log($"GetDatesByMonth 오류: {ex.Message}"); }
+        return list;
+    }
+
+    // =====================================================================
+    //  특정 일자에 의뢰된 분석항목 상태 (분석결과입력 배지용)
+    //  → 분석의뢰및결과의 각 항목 컬럼을 스캔하여
+    //     (항목명 → 결과입력여부) 맵 리턴
+    //  - 'O' 값만 있으면 = 의뢰됐으나 결과 미입력 (requested=true, filled=false)
+    //  - 숫자/문자 값이면 = 결과 입력됨            (requested=true, filled=true)
+    //  - NULL 이면 = 의뢰 없음 (맵에 포함 안됨)
+    // =====================================================================
+    public static Dictionary<string, bool> GetRequestedItemsByDate(string date)
+    {
+        var result = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            if (!DbConnectionFactory.TableExists(conn, "분석의뢰및결과")) return result;
+
+            // 항목 컬럼 목록 = 분석정보 Analyte
+            var analyteCols = new List<string>();
+            using (var c = conn.CreateCommand())
+            {
+                c.CommandText = "SELECT DISTINCT Analyte FROM `분석정보`";
+                using var r = c.ExecuteReader();
+                while (r.Read())
+                {
+                    var name = r.IsDBNull(0) ? "" : r.GetString(0);
+                    if (!string.IsNullOrWhiteSpace(name) &&
+                        DbConnectionFactory.ColumnExists(conn, "분석의뢰및결과", name))
+                        analyteCols.Add(name);
+                }
+            }
+            if (analyteCols.Count == 0) return result;
+
+            using var cmd = conn.CreateCommand();
+            var colList = string.Join(", ", analyteCols.Select(c => $"`{c}`"));
+            cmd.CommandText = $"SELECT {colList} FROM `분석의뢰및결과` WHERE `채취일자` = @d";
+            cmd.Parameters.AddWithValue("@d", date);
+            using var rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                for (int i = 0; i < analyteCols.Count; i++)
+                {
+                    if (rdr.IsDBNull(i)) continue;
+                    var v = rdr.GetValue(i)?.ToString()?.Trim() ?? "";
+                    if (v.Length == 0) continue;
+
+                    var key = analyteCols[i];
+                    // 'O' 는 의뢰만 있는 상태, 그 외 값은 결과 입력됨
+                    bool filled = !v.Equals("O", StringComparison.OrdinalIgnoreCase);
+                    // 같은 항목이 여러 시료에 걸쳐 있을 때 filled=true 를 유지 (OR)
+                    if (result.TryGetValue(key, out var prev))
+                        result[key] = prev || filled;
+                    else
+                        result[key] = filled;
+                }
+            }
+        }
+        catch (Exception ex) { Log($"GetRequestedItemsByDate 오류: {ex.Message}"); }
+        return result;
+    }
+
+    // =====================================================================
+    //  날짜별 의뢰 카테고리 상태 (수질분석센터 뱃지용)
+    //  → 분석의뢰및결과의 항목 컬럼을 분석정보.Category 로 그룹핑
+    //     (Category명 → 결과입력여부) 맵 리턴
+    //  - 'O' 만 있으면 = 의뢰됐으나 결과 미입력
+    //  - 숫자/문자 값이면 = 결과 입력됨 (한 카테고리 내 어느 항목이라도 입력됐으면 filled=true)
+    //  - 어떤 항목도 의뢰 안 됐으면 = 맵에 포함 안됨
+    // =====================================================================
+    public static Dictionary<string, bool> GetRequestedCategoriesByDate(string date)
+    {
+        var result = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            if (!DbConnectionFactory.TableExists(conn, "분석의뢰및결과")) return result;
+            if (!DbConnectionFactory.TableExists(conn, "분석정보")) return result;
+
+            // Analyte → Category 매핑
+            var analyteToCategory = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            using (var c = conn.CreateCommand())
+            {
+                c.CommandText = "SELECT Analyte, COALESCE(Category, '') FROM `분석정보`";
+                using var r = c.ExecuteReader();
+                while (r.Read())
+                {
+                    var name = r.IsDBNull(0) ? "" : r.GetString(0);
+                    var cat  = r.IsDBNull(1) ? "" : r.GetString(1);
+                    if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(cat)) continue;
+                    analyteToCategory[name.Trim()] = cat.Trim();
+                }
+            }
+            if (analyteToCategory.Count == 0) return result;
+
+            // 분석의뢰및결과에 실제로 존재하는 컬럼만 필터
+            var validCols = analyteToCategory.Keys
+                .Where(name => DbConnectionFactory.ColumnExists(conn, "분석의뢰및결과", name))
+                .ToList();
+            if (validCols.Count == 0) return result;
+
+            using var cmd = conn.CreateCommand();
+            var colList = string.Join(", ", validCols.Select(c => $"`{c}`"));
+            cmd.CommandText = $"SELECT {colList} FROM `분석의뢰및결과` WHERE `채취일자` = @d";
+            cmd.Parameters.AddWithValue("@d", date);
+            using var rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                for (int i = 0; i < validCols.Count; i++)
+                {
+                    if (rdr.IsDBNull(i)) continue;
+                    var v = rdr.GetValue(i)?.ToString()?.Trim() ?? "";
+                    if (v.Length == 0) continue;
+
+                    var category = analyteToCategory[validCols[i]];
+                    bool filled = !v.Equals("O", StringComparison.OrdinalIgnoreCase);
+                    if (result.TryGetValue(category, out var prev))
+                        result[category] = prev || filled;
+                    else
+                        result[category] = filled;
+                }
+            }
+        }
+        catch (Exception ex) { Log($"GetRequestedCategoriesByDate 오류: {ex.Message}"); }
+        return result;
+    }
+
+    // =====================================================================
     //  최근 N개월 의뢰 목록 조회 (수동 매칭 팝업용)
     // =====================================================================
     public static List<AnalysisRequestRecord> GetRecentRecords(int months = 1)

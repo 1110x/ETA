@@ -28,6 +28,56 @@ public static class FacilityDbMigration
         EnsureWasteRequestResultTable(conn);
         EnsureAnalysisDataTables(conn);
         EnsureMigrationTable(conn);
+        EnsureAnalysisItems(conn);
+        EnsureFacilitySettings(conn);
+        EnsureAnalysisPlan(conn);
+        EnsureFacilityTocDataTables(conn);
+
+        // 수질분석센터 원자료 테이블 일괄 생성 (분석정보.Analyte 기반)
+        try
+        {
+            Log("WaterCenterDbMigration 호출 시작");
+            WaterCenterDbMigration.EnsureWaterCenterDataTables(conn);
+            Log("WaterCenterDbMigration 호출 완료");
+        }
+        catch (Exception ex) { Log($"⚠ WaterCenterDbMigration 실패: {ex}"); }
+
+        // 처리시설 기본 순서 설정
+        if (!IsMigrationDone(conn, "facility_default_order_v1"))
+        {
+            try
+            {
+                var defaultOrder = new[] { "중흥", "월내", "율촌", "4단계", "세풍", "해룡" };
+                // 실제 시설명 조회
+                var facilityNames = new List<string>();
+                using (var cmd2 = conn.CreateCommand())
+                {
+                    cmd2.CommandText = "SELECT DISTINCT 시설명 FROM `처리시설_마스터` ORDER BY id";
+                    using var r2 = cmd2.ExecuteReader();
+                    while (r2.Read()) facilityNames.Add(r2.GetString(0));
+                }
+                // 키워드 매칭으로 순서 부여
+                int order = 0;
+                foreach (var keyword in defaultOrder)
+                {
+                    var match = facilityNames.FirstOrDefault(f =>
+                        f.Contains(keyword, StringComparison.OrdinalIgnoreCase));
+                    if (match != null)
+                    {
+                        using var cmd2 = conn.CreateCommand();
+                        cmd2.CommandText = @"REPLACE INTO `처리시설_설정` (시설명, 순서) VALUES (@f, @o)";
+                        cmd2.Parameters.AddWithValue("@f", match);
+                        cmd2.Parameters.AddWithValue("@o", order++);
+                        cmd2.ExecuteNonQuery();
+                    }
+                }
+                MarkMigrationDone(conn, "facility_default_order_v1");
+                Log($"처리시설 기본 순서 설정 완료: {order}개");
+            }
+            catch (Exception ex) { Log($"처리시설 순서 설정 실패: {ex.Message}"); }
+        }
+
+        // 백필 v1 완료됨 (1063건, 2026-03-01~04-08)
         if (!IsMigrationDone(conn, "wasteresult_v2"))
         {
             MigrateDataToWasteRequestResult(conn);
@@ -141,28 +191,49 @@ public static class FacilityDbMigration
             }
         }
 
-        // TOC_TCIC_DATA, TOC_NPOC_DATA — UvVis 형식
-        foreach (var tbl in new[] { "TOC_TCIC_DATA", "TOC_NPOC_DATA" })
+        // TOC_NPOC_DATA — UvVis 형식 (시료량 포함)
+        if (!DbConnectionFactory.TableExists(conn, "TOC_NPOC_DATA"))
         {
-            if (!DbConnectionFactory.TableExists(conn, tbl))
-            {
-                Exec(conn, $@"
-                    CREATE TABLE `{tbl}` (
-                        id      INTEGER PRIMARY KEY {ai},
-                        분석일  TEXT NOT NULL,
-                        SN      TEXT NOT NULL,
-                        업체명  TEXT DEFAULT '',
-                        구분    TEXT DEFAULT '',
-                        시료량  TEXT DEFAULT '',
-                        흡광도  TEXT DEFAULT '',
-                        희석배수 TEXT DEFAULT '',
-                        검량선_a TEXT DEFAULT '',
-                        농도    TEXT DEFAULT '',
-                        등록일시 TEXT DEFAULT '',
-                        UNIQUE(분석일, SN)
-                    )");
-                Log($"{tbl} 테이블 생성");
-            }
+            Exec(conn, $@"
+                CREATE TABLE `TOC_NPOC_DATA` (
+                    id      INTEGER PRIMARY KEY {ai},
+                    분석일  TEXT NOT NULL,
+                    SN      TEXT NOT NULL,
+                    업체명  TEXT DEFAULT '',
+                    구분    TEXT DEFAULT '',
+                    시료량  TEXT DEFAULT '',
+                    흡광도  TEXT DEFAULT '',
+                    희석배수 TEXT DEFAULT '',
+                    검량선_a TEXT DEFAULT '',
+                    농도    TEXT DEFAULT '',
+                    등록일시 TEXT DEFAULT '',
+                    UNIQUE(분석일, SN)
+                )");
+            Log("TOC_NPOC_DATA 테이블 생성");
+        }
+
+        // TOC_TCIC_DATA — TocTcic 형식 (시료량 제외, TC/IC 검량선 컬럼 추가)
+        if (!DbConnectionFactory.TableExists(conn, "TOC_TCIC_DATA"))
+        {
+            Exec(conn, $@"
+                CREATE TABLE `TOC_TCIC_DATA` (
+                    id      INTEGER PRIMARY KEY {ai},
+                    분석일  TEXT NOT NULL,
+                    SN      TEXT NOT NULL,
+                    업체명  TEXT DEFAULT '',
+                    구분    TEXT DEFAULT '',
+                    흡광도  TEXT DEFAULT '',
+                    희석배수 TEXT DEFAULT '',
+                    검량선_a TEXT DEFAULT '',
+                    농도    TEXT DEFAULT '',
+                    TCAU    TEXT DEFAULT '',
+                    TCcon   TEXT DEFAULT '',
+                    ICAU    TEXT DEFAULT '',
+                    ICcon   TEXT DEFAULT '',
+                    등록일시 TEXT DEFAULT '',
+                    UNIQUE(분석일, SN)
+                )");
+            Log("TOC_TCIC_DATA 테이블 생성");
         }
 
         // *_DATA 비고 컬럼 추가 (원본시료명 보존용)
@@ -359,6 +430,143 @@ public static class FacilityDbMigration
             )");
 
         Log("처리시설_측정결과 테이블 생성");
+    }
+
+    // ── 처리시설 *_DATA 원자료 테이블들 ────────────────────────────────────
+    // 기본 키: UNIQUE(마스터_id, 분석일). 배출업소 DATA 테이블과 구조 유사.
+    private static void EnsureFacilityTocDataTables(DbConnection conn)
+    {
+        var ai = DbConnectionFactory.AutoIncrement;
+
+        // 공통 컬럼 블록 생성 헬퍼
+        string Common() => $@"
+            id         INTEGER PRIMARY KEY {ai},
+            마스터_id  INTEGER NOT NULL,
+            분석일     VARCHAR(20) NOT NULL,
+            시설명     VARCHAR(191) DEFAULT '',
+            시료명     VARCHAR(191) DEFAULT '',";
+
+        // 처리시설_BOD_DATA (BOD_DATA 미러)
+        if (!DbConnectionFactory.TableExists(conn, "처리시설_BOD_DATA"))
+        {
+            Exec(conn, $@"
+                CREATE TABLE `처리시설_BOD_DATA` (
+                    {Common()}
+                    시료량      TEXT DEFAULT '',
+                    D1          TEXT DEFAULT '',
+                    D2          TEXT DEFAULT '',
+                    희석배수    TEXT DEFAULT '',
+                    결과        TEXT DEFAULT '',
+                    식종시료량  TEXT DEFAULT '',
+                    식종D1      TEXT DEFAULT '',
+                    식종D2      TEXT DEFAULT '',
+                    식종BOD     TEXT DEFAULT '',
+                    식종함유량  TEXT DEFAULT '',
+                    비고        TEXT DEFAULT '',
+                    등록일시    TEXT DEFAULT '',
+                    UNIQUE(마스터_id, 분석일)
+                )");
+            Log("처리시설_BOD_DATA 테이블 생성");
+        }
+
+        // 처리시설_SS_DATA (SS_DATA 미러)
+        if (!DbConnectionFactory.TableExists(conn, "처리시설_SS_DATA"))
+        {
+            Exec(conn, $@"
+                CREATE TABLE `처리시설_SS_DATA` (
+                    {Common()}
+                    시료량    TEXT DEFAULT '',
+                    전무게    TEXT DEFAULT '',
+                    후무게    TEXT DEFAULT '',
+                    무게차    TEXT DEFAULT '',
+                    희석배수  TEXT DEFAULT '',
+                    결과      TEXT DEFAULT '',
+                    비고      TEXT DEFAULT '',
+                    등록일시  TEXT DEFAULT '',
+                    UNIQUE(마스터_id, 분석일)
+                )");
+            Log("처리시설_SS_DATA 테이블 생성");
+        }
+
+        // 처리시설_TN_DATA / TP_DATA — UvVis 형식 (흡광도/검량선_a/농도)
+        foreach (var tbl in new[] { "처리시설_TN_DATA", "처리시설_TP_DATA" })
+        {
+            if (!DbConnectionFactory.TableExists(conn, tbl))
+            {
+                Exec(conn, $@"
+                    CREATE TABLE `{tbl}` (
+                        {Common()}
+                        시료량    TEXT DEFAULT '',
+                        흡광도    TEXT DEFAULT '',
+                        희석배수  TEXT DEFAULT '',
+                        검량선_a  TEXT DEFAULT '',
+                        농도      TEXT DEFAULT '',
+                        결과      TEXT DEFAULT '',
+                        비고      TEXT DEFAULT '',
+                        등록일시  TEXT DEFAULT '',
+                        UNIQUE(마스터_id, 분석일)
+                    )");
+                Log($"{tbl} 테이블 생성");
+            }
+        }
+
+        // 처리시설_TOC_NPOC_DATA — UvVis 형식 (시료량 포함)
+        if (!DbConnectionFactory.TableExists(conn, "처리시설_TOC_NPOC_DATA"))
+        {
+            Exec(conn, $@"
+                CREATE TABLE `처리시설_TOC_NPOC_DATA` (
+                    {Common()}
+                    시료량    TEXT DEFAULT '',
+                    흡광도    TEXT DEFAULT '',
+                    희석배수  TEXT DEFAULT '',
+                    검량선_a  TEXT DEFAULT '',
+                    농도      TEXT DEFAULT '',
+                    결과      TEXT DEFAULT '',
+                    비고      TEXT DEFAULT '',
+                    등록일시  TEXT DEFAULT '',
+                    UNIQUE(마스터_id, 분석일)
+                )");
+            Log("처리시설_TOC_NPOC_DATA 테이블 생성");
+        }
+
+        // 처리시설_TOC_TCIC_DATA — TocTcic 형식 (시료량 제외, TC/IC 검량선 컬럼)
+        if (!DbConnectionFactory.TableExists(conn, "처리시설_TOC_TCIC_DATA"))
+        {
+            Exec(conn, $@"
+                CREATE TABLE `처리시설_TOC_TCIC_DATA` (
+                    {Common()}
+                    흡광도    TEXT DEFAULT '',
+                    희석배수  TEXT DEFAULT '',
+                    검량선_a  TEXT DEFAULT '',
+                    농도      TEXT DEFAULT '',
+                    TCAU      TEXT DEFAULT '',
+                    TCcon     TEXT DEFAULT '',
+                    ICAU      TEXT DEFAULT '',
+                    ICcon     TEXT DEFAULT '',
+                    결과      TEXT DEFAULT '',
+                    비고      TEXT DEFAULT '',
+                    등록일시  TEXT DEFAULT '',
+                    UNIQUE(마스터_id, 분석일)
+                )");
+            Log("처리시설_TOC_TCIC_DATA 테이블 생성");
+        }
+
+        // 처리시설_총대장균군_DATA / 온도_DATA / 수소이온농도_DATA — 단순 결과값
+        foreach (var tbl in new[] { "처리시설_총대장균군_DATA", "처리시설_온도_DATA", "처리시설_수소이온농도_DATA" })
+        {
+            if (!DbConnectionFactory.TableExists(conn, tbl))
+            {
+                Exec(conn, $@"
+                    CREATE TABLE `{tbl}` (
+                        {Common()}
+                        결과      TEXT DEFAULT '',
+                        비고      TEXT DEFAULT '',
+                        등록일시  TEXT DEFAULT '',
+                        UNIQUE(마스터_id, 분석일)
+                    )");
+                Log($"{tbl} 테이블 생성");
+            }
+        }
     }
 
     // ── 폐수_의뢰 / 폐수_의뢰_항목 / 처리시설_작업 ───────────────────────
@@ -1668,6 +1876,192 @@ public static class FacilityDbMigration
         catch { return false; }
     }
 
+    // ── 처리시설_분석항목 (항목 메타 관리) ─────────────────────────────
+    private static void EnsureAnalysisItems(DbConnection conn)
+    {
+        if (!DbConnectionFactory.TableExists(conn, "처리시설_분석항목"))
+        {
+            Exec(conn, $@"
+                CREATE TABLE `처리시설_분석항목` (
+                    id      INTEGER PRIMARY KEY {DbConnectionFactory.AutoIncrement},
+                    항목명  VARCHAR(50) NOT NULL UNIQUE,
+                    컬럼명  VARCHAR(50) NOT NULL,
+                    순서    INTEGER DEFAULT 0,
+                    활성    TINYINT DEFAULT 1
+                )");
+            Log("처리시설_분석항목 테이블 생성");
+
+            // 기본 항목 시드
+            var defaults = new (string 항목명, string 컬럼명, int 순서)[]
+            {
+                ("BOD", "BOD", 0), ("TOC", "TOC", 1), ("SS", "SS", 2),
+                ("T-N", "`T-N`", 3), ("T-P", "`T-P`", 4),
+                ("총대장균군", "총대장균군", 5), ("COD", "COD", 6),
+                ("염소이온", "염소이온", 7), ("영양염류", "영양염류", 8),
+                ("함수율", "함수율", 9), ("중금속", "중금속", 10),
+            };
+            foreach (var (name, col, order) in defaults)
+            {
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = @"INSERT INTO `처리시설_분석항목` (항목명, 컬럼명, 순서) VALUES (@n, @c, @o)";
+                cmd.Parameters.AddWithValue("@n", name);
+                cmd.Parameters.AddWithValue("@c", col);
+                cmd.Parameters.AddWithValue("@o", order);
+                cmd.ExecuteNonQuery();
+            }
+            Log("처리시설_분석항목 기본 항목 시드 완료");
+        }
+    }
+
+    // ── 처리시설_설정 (약칭, 순서) ─────────────────────────────────────
+    private static void EnsureFacilitySettings(DbConnection conn)
+    {
+        if (!DbConnectionFactory.TableExists(conn, "처리시설_설정"))
+        {
+            Exec(conn, $@"
+                CREATE TABLE `처리시설_설정` (
+                    시설명  VARCHAR(191) PRIMARY KEY,
+                    약칭    TEXT DEFAULT '',
+                    순서    INTEGER DEFAULT 0
+                )");
+            Log("처리시설_설정 테이블 생성");
+        }
+    }
+
+    // ── 처리시설_분석계획 ────────────────────────────────────────────────
+    private static void EnsureAnalysisPlan(DbConnection conn)
+    {
+        if (!DbConnectionFactory.TableExists(conn, "처리시설_분석계획"))
+        {
+            Exec(conn, $@"
+                CREATE TABLE `처리시설_분석계획` (
+                    id          INTEGER PRIMARY KEY {DbConnectionFactory.AutoIncrement},
+                    시설명      VARCHAR(191) NOT NULL,
+                    시료명      VARCHAR(191) NOT NULL,
+                    요일        INTEGER NOT NULL,
+                    BOD         TEXT DEFAULT '',
+                    TOC         TEXT DEFAULT '',
+                    SS          TEXT DEFAULT '',
+                    `T-N`       TEXT DEFAULT '',
+                    `T-P`       TEXT DEFAULT '',
+                    총대장균군  TEXT DEFAULT '',
+                    COD         TEXT DEFAULT '',
+                    염소이온    TEXT DEFAULT '',
+                    영양염류    TEXT DEFAULT '',
+                    함수율      TEXT DEFAULT '',
+                    중금속      TEXT DEFAULT '',
+                    UNIQUE(시설명, 시료명, 요일)
+                )");
+            Log("처리시설_분석계획 테이블 생성");
+        }
+
+        // 시료순서 컬럼 추가 (기존 테이블 호환)
+        if (!DbConnectionFactory.ColumnExists(conn, "처리시설_분석계획", "시료순서"))
+        {
+            try
+            {
+                Exec(conn, "ALTER TABLE `처리시설_분석계획` ADD COLUMN `시료순서` INTEGER DEFAULT 0");
+                Log("처리시설_분석계획 시료순서 컬럼 추가");
+            }
+            catch { }
+        }
+        // 분석계획 → 마스터 동기화 (분석계획에 있는데 마스터에 없는 시설/시료 추가)
+        try
+        {
+            Exec(conn, @"
+                INSERT IGNORE INTO `처리시설_마스터` (시설명, 시료명)
+                SELECT DISTINCT 시설명, 시료명
+                FROM `처리시설_분석계획`
+                WHERE 요일 = 0
+                  AND (시설명, 시료명) NOT IN (
+                    SELECT 시설명, 시료명 FROM `처리시설_마스터`
+                  )");
+            Log("처리시설_분석계획 → 마스터 동기화 완료");
+        }
+        catch (Exception ex) { Log($"마스터 동기화 실패: {ex.Message}"); }
+        Log("처리시설_분석계획 테이블 준비 완료");
+    }
+
+    private static readonly string[] DaySheetNames = { "월", "화", "수", "목", "금", "토", "일" };
+
+    private static void SeedAnalysisPlan(DbConnection conn)
+    {
+        var xlsxPath = FacilityResultService.GetExcelPath();
+        if (xlsxPath == null)
+        {
+            Log("처리시설_분석계획 시드 실패 — 엑셀 파일 없음");
+            return;
+        }
+
+        using var fs = new FileStream(xlsxPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+        using var wb = new XLWorkbook(fs);
+
+        // 첫 번째 시트에서 항목 헤더 읽기
+        var firstWs = wb.TryGetWorksheet(DaySheetNames[0], out var ws0) ? ws0 : wb.Worksheets.First();
+        var itemNames = new List<string>();
+        int lastCol = firstWs.LastColumnUsed()?.ColumnNumber() ?? 2;
+        for (int c = 3; c <= lastCol; c++)
+        {
+            var val = firstWs.Cell(1, c).GetString().Trim();
+            if (!string.IsNullOrEmpty(val)) itemNames.Add(val);
+            else break;
+        }
+
+        int count = 0;
+        for (int dayIdx = 0; dayIdx < DaySheetNames.Length; dayIdx++)
+        {
+            if (!wb.TryGetWorksheet(DaySheetNames[dayIdx], out var ws)) continue;
+
+            string currentFacility = "";
+            int lastRow = ws.LastRowUsed()?.RowNumber() ?? 1;
+
+            for (int r = 2; r <= lastRow; r++)
+            {
+                var facName = ws.Cell(r, 1).GetString().Trim();
+                var sampleName = ws.Cell(r, 2).GetString().Trim();
+
+                if (!string.IsNullOrEmpty(facName)) currentFacility = facName;
+                if (string.IsNullOrEmpty(sampleName) || string.IsNullOrEmpty(currentFacility)) continue;
+
+                string V(int idx) => idx < itemNames.Count
+                    ? ws.Cell(r, 3 + idx).GetString().Trim() : "";
+
+                string ItemVal(string itemName)
+                {
+                    int idx = itemNames.FindIndex(n => n.Equals(itemName, StringComparison.OrdinalIgnoreCase)
+                        || n.Replace("-", "").Equals(itemName.Replace("-", ""), StringComparison.OrdinalIgnoreCase));
+                    return idx >= 0 ? V(idx) : "";
+                }
+
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = @"
+                    REPLACE INTO `처리시설_분석계획`
+                        (시설명, 시료명, 요일, BOD, TOC, SS, `T-N`, `T-P`,
+                         총대장균군, COD, 염소이온, 영양염류, 함수율, 중금속)
+                    VALUES
+                        (@시설명, @시료명, @요일, @BOD, @TOC, @SS, @TN, @TP,
+                         @총대장균군, @COD, @염소이온, @영양염류, @함수율, @중금속)";
+                cmd.Parameters.AddWithValue("@시설명", currentFacility);
+                cmd.Parameters.AddWithValue("@시료명", sampleName);
+                cmd.Parameters.AddWithValue("@요일", dayIdx);
+                cmd.Parameters.AddWithValue("@BOD",       ItemVal("BOD"));
+                cmd.Parameters.AddWithValue("@TOC",       ItemVal("TOC"));
+                cmd.Parameters.AddWithValue("@SS",        ItemVal("SS"));
+                cmd.Parameters.AddWithValue("@TN",        ItemVal("T-N"));
+                cmd.Parameters.AddWithValue("@TP",        ItemVal("T-P"));
+                cmd.Parameters.AddWithValue("@총대장균군", ItemVal("총대장균군"));
+                cmd.Parameters.AddWithValue("@COD",       ItemVal("COD"));
+                cmd.Parameters.AddWithValue("@염소이온",  ItemVal("염소이온"));
+                cmd.Parameters.AddWithValue("@영양염류",  ItemVal("영양염류"));
+                cmd.Parameters.AddWithValue("@함수율",    ItemVal("함수율"));
+                cmd.Parameters.AddWithValue("@중금속",    ItemVal("중금속"));
+                cmd.ExecuteNonQuery();
+                count++;
+            }
+        }
+        Log($"처리시설_분석계획 시드 완료: {count}행 (7요일)");
+    }
+
     // ── 헬퍼 ─────────────────────────────────────────────────────────────
     private static void Exec(DbConnection conn, string sql)
     {
@@ -1687,7 +2081,7 @@ public static class FacilityDbMigration
         try
         {
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = "SELECT COUNT(*) FROM `_eta_migration` WHERE key=@k";
+            cmd.CommandText = "SELECT COUNT(*) FROM `_eta_migration` WHERE `key`=@k";
             cmd.Parameters.AddWithValue("@k", key);
             return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
         }
@@ -1697,7 +2091,7 @@ public static class FacilityDbMigration
     private static void MarkMigrationDone(DbConnection conn, string key)
     {
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = "INSERT OR REPLACE INTO `_eta_migration` (key, done_at) VALUES (@k, @t)";
+        cmd.CommandText = "REPLACE INTO `_eta_migration` (`key`, done_at) VALUES (@k, @t)";
         cmd.Parameters.AddWithValue("@k", key);
         cmd.Parameters.AddWithValue("@t", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
         cmd.ExecuteNonQuery();

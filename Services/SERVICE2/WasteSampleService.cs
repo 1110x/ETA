@@ -10,27 +10,37 @@ namespace ETA.Services.SERVICE2;
 
 public static class WasteSampleService
 {
-    // ── 연월 목록 (yyyy-MM 역순) ──────────────────────────────────────────────
+    // ── 연월 목록 (폐수의뢰및결과 + 처리시설_작업 UNION, 역순) ────────────────
     public static List<string> GetMonths()
     {
         var list = new List<string>();
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = "SELECT DISTINCT SUBSTR(채수일, 1, 7) FROM `폐수의뢰및결과` ORDER BY 1 DESC";
+        cmd.CommandText = @"
+            SELECT DISTINCT ym FROM (
+                SELECT SUBSTR(채수일, 1, 7) AS ym FROM `폐수의뢰및결과`
+                UNION
+                SELECT SUBSTR(채취일자, 1, 7) AS ym FROM `처리시설_작업`
+            ) t ORDER BY ym DESC";
         using var r = cmd.ExecuteReader();
         while (r.Read()) list.Add(r.GetString(0));
         return list;
     }
 
-    // ── 월별 날짜 목록 (yyyy-MM 소속, 역순) ──────────────────────────────────
+    // ── 월별 날짜 목록 (UNION, 역순) ──────────────────────────────────────────
     public static List<string> GetDatesByMonth(string yearMonth)
     {
         var list = new List<string>();
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = "SELECT DISTINCT 채수일 FROM `폐수의뢰및결과` WHERE SUBSTR(채수일,1,7)=@ym ORDER BY 채수일 DESC";
+        cmd.CommandText = @"
+            SELECT DISTINCT d FROM (
+                SELECT 채수일 AS d FROM `폐수의뢰및결과` WHERE SUBSTR(채수일,1,7)=@ym
+                UNION
+                SELECT 채취일자 AS d FROM `처리시설_작업` WHERE SUBSTR(채취일자,1,7)=@ym
+            ) t ORDER BY d DESC";
         cmd.Parameters.AddWithValue("@ym", yearMonth);
         using var r = cmd.ExecuteReader();
         while (r.Read()) list.Add(r.GetString(0));

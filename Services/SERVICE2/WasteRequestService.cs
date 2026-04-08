@@ -129,6 +129,111 @@ public static class WasteRequestService
     }
 
     // =========================================================================
+    // 날짜 트리뷰 소스 (비용부담금 모드)
+    //   - 폐수_의뢰.채취일자 기준
+    // =========================================================================
+    public static List<string> GetMonths()
+    {
+        var list = new List<string>();
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            if (!DbConnectionFactory.TableExists(conn, "폐수_의뢰")) return list;
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"
+                SELECT DISTINCT SUBSTR(채취일자, 1, 7) AS ym
+                FROM `폐수_의뢰`
+                WHERE 채취일자 IS NOT NULL AND 채취일자 <> ''
+                ORDER BY ym DESC";
+            using var r = cmd.ExecuteReader();
+            while (r.Read())
+            {
+                if (r.IsDBNull(0)) continue;
+                var ym = r.GetString(0);
+                if (!string.IsNullOrWhiteSpace(ym)) list.Add(ym);
+            }
+        }
+        catch (Exception ex) { Debug.WriteLine($"[WasteRequestService.GetMonths] {ex.Message}"); }
+        return list;
+    }
+
+    public static List<string> GetDatesByMonth(string yearMonth)
+    {
+        var list = new List<string>();
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            if (!DbConnectionFactory.TableExists(conn, "폐수_의뢰")) return list;
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"
+                SELECT DISTINCT 채취일자
+                FROM `폐수_의뢰`
+                WHERE SUBSTR(채취일자, 1, 7) = @ym
+                ORDER BY 채취일자 DESC";
+            cmd.Parameters.AddWithValue("@ym", yearMonth);
+            using var r = cmd.ExecuteReader();
+            while (r.Read())
+            {
+                if (r.IsDBNull(0)) continue;
+                var d = r.GetString(0);
+                if (!string.IsNullOrWhiteSpace(d)) list.Add(d);
+            }
+        }
+        catch (Exception ex) { Debug.WriteLine($"[WasteRequestService.GetDatesByMonth] {ex.Message}"); }
+        return list;
+    }
+
+    // =========================================================================
+    // 날짜별 의뢰 항목 키 집합 (배지 필터링용)
+    //   - 폐수_의뢰_항목.항목 → 정규화 키 (BOD/TOC/SS/TN/TP/PHENOLS/NHEX/COD)
+    //   - 비용부담금 모드 트리뷰 배지가 의뢰된 항목만 표시하도록 사용
+    // =========================================================================
+    public static HashSet<string> GetRequestedItemSetByDate(string date)
+    {
+        var set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"
+                SELECT DISTINCT i.항목
+                FROM `폐수_의뢰_항목` i
+                JOIN `폐수_의뢰` r ON r.id = i.의뢰_id
+                WHERE r.채취일자 = @d";
+            cmd.Parameters.AddWithValue("@d", date);
+            using var rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                var raw = rdr.IsDBNull(0) ? "" : rdr.GetString(0);
+                var key = NormalizeAnalyteKey(raw);
+                if (!string.IsNullOrEmpty(key)) set.Add(key);
+            }
+        }
+        catch (Exception ex) { Debug.WriteLine($"[WasteRequestService.GetRequestedItemSetByDate] {ex.Message}"); }
+        return set;
+    }
+
+    private static string NormalizeAnalyteKey(string raw)
+    {
+        var s = (raw ?? "").Trim().ToUpperInvariant().Replace(" ", "").Replace("-", "");
+        return s switch
+        {
+            "BOD"               => "BOD",
+            "TOC"               => "TOC",
+            "SS"                => "SS",
+            "TN" or "TOTALN"    => "TN",
+            "TP" or "TOTALP"    => "TP",
+            "PHENOLS" or "PHENOL" or "페놀" or "페놀류" => "PHENOLS",
+            "NHEXANE" or "NHEXAN" or "NHEX" or "노르말헥산추출물질" => "NHEX",
+            "COD"               => "COD",
+            _                   => "",
+        };
+    }
+
+    // =========================================================================
     // 상태 변경
     // =========================================================================
     public static void AssignItem(int itemId, string 배정자)
