@@ -55,6 +55,7 @@ public class GcCalibrationPoint
     public string Enable   { get; set; } = "x";
     public string Conc     { get; set; } = "";
     public string Response { get; set; } = "";
+    public string IstdResponse { get; set; } = "";
 }
 
 public class GcCompound
@@ -352,8 +353,8 @@ public static class GcInstrumentParser
                 // 예상 칼럼:
                 //   ISTD:  Path, Calibration, Level, Enable, , Conc, , Response   (8)
                 //   No:    Path, Calibration, Level, Enable, Conc, Response       (6)
-                // Type이 "Calibration"인 것만 취함 (QC 행은 스킵)
-                if (cc.Length >= 2 && cc[1].Trim().Equals("Calibration", StringComparison.OrdinalIgnoreCase))
+                // Type이 "Cal"인 것만 취함 (QC 행은 스킵)
+                if (cc.Length >= 2 && cc[1].Trim().Equals("Cal", StringComparison.OrdinalIgnoreCase))
                 {
                     var pt = new GcCalibrationPoint();
                     if (int.TryParse(cc[2].Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var lvl))
@@ -361,10 +362,14 @@ public static class GcInstrumentParser
                     if (cc.Length >= 4) pt.Enable = cc[3].Trim();
                     if (istd)
                     {
-                        if (cc.Length >= 8)
+                        if (cc.Length >= 6)
                         {
-                            pt.Conc     = cc[5].Trim();
-                            pt.Response = cc[7].Trim();
+                            pt.Conc         = cc[5].Trim(); // Final Conc.
+                            pt.Response     = cc[3].Trim(); // Resp. (main compound)
+                            pt.IstdResponse = cc[4].Trim(); // ISTD Resp
+
+                            // 디버깅 로그
+                            System.Diagnostics.Debug.WriteLine($"[GC Cal ISTD] {cc[0]}: Conc={cc[5]}, Resp={cc[3]}, ISTD={cc[4]}");
                         }
                     }
                     else

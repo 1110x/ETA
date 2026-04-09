@@ -117,4 +117,5 @@ public class GcCompoundCalInfo
     public string   R         { get; set; } = "";
     public string[] StdConcs  { get; set; } = Array.Empty<string>(); // ST-1~N 공칭농도
     public string[] StdResps  { get; set; } = Array.Empty<string>(); // ST-1~N 응답
+    public string[] StdIstdResps { get; set; } = Array.Empty<string>(); // ST-1~N ISTD 응답
 }

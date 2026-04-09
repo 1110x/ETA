@@ -2871,6 +2871,21 @@ public partial class WasteAnalysisInputPage : UserControl
 
                     string auLabel = comp.HasIstd ? "Resp." : "AU";
                     docTbl.Children.Add(BuildDocRowUnified(gcDocColDefs, auLabel, respRow, "ThemeFgSecondary", rowIdx++));
+
+                    // ISTD 응답 행 (HasIstd인 경우에만)
+                    if (comp.HasIstd && comp.StdIstdResps.Length > 0)
+                    {
+                        string[] istdRespRow = new string[maxSt + 3];
+                        for (int si = 0; si < maxSt; si++)
+                            istdRespRow[si] = si < comp.StdIstdResps.Length ? comp.StdIstdResps[si] : "";
+
+                        // 검량선 정보 컬럼은 빈 값
+                        istdRespRow[maxSt] = "";
+                        istdRespRow[maxSt + 1] = "";
+                        istdRespRow[maxSt + 2] = "";
+
+                        docTbl.Children.Add(BuildDocRowUnified(gcDocColDefs, "ISTD Resp.", istdRespRow, "ThemeFgSecondary", rowIdx++));
+                    }
                 }
             }
             else
@@ -5566,7 +5581,36 @@ public partial class WasteAnalysisInputPage : UserControl
                         비고: remark);
                 }
                 break;
+
+            case "GCMS":
+                // GC/MS 데이터를 수질분석센터_*_DATA 테이블에 저장
+                foreach (var item in _activeItems)
+                {
+                    string tableName = $"수질분석센터_{SafeName(item)}_DATA";
+                    WasteSampleService.UpsertGcData(
+                        tableName,
+                        분석일, sn, 업체명, 구분,
+                        농도: row.Result,
+                        ISTD: "",  // 개별 시료의 ISTD 값은 별도 처리 필요
+                        검량선정보: docInfo,
+                        비고: remark);
+                }
+                break;
         }
+    }
+
+    /// <summary>분석항목명 → 테이블명 안전 변환 (공백/특수문자 → 언더스코어)</summary>
+    private static string SafeName(string analyte)
+    {
+        return analyte
+            .Replace("-", "")      // 하이픈 제거 (T-N → TN)
+            .Replace(" ", "_")
+            .Replace("/", "_")
+            .Replace("\\", "_")
+            .Replace("(", "")
+            .Replace(")", "")
+            .Replace(",", "_")
+            .Replace("·", "_");
     }
 
     private void ShowExcelRowDetail(ExcelRow exRow)
@@ -6411,8 +6455,9 @@ public partial class WasteAnalysisInputPage : UserControl
             Slope     = c.SlopeA.HasValue    ? c.SlopeA.Value.ToString("G6",    System.Globalization.CultureInfo.InvariantCulture) : "",
             Intercept = c.Intercept.HasValue ? c.Intercept.Value.ToString("G6", System.Globalization.CultureInfo.InvariantCulture) : "",
             R         = c.R.HasValue         ? c.R.Value.ToString("F4",         System.Globalization.CultureInfo.InvariantCulture) : "",
-            StdConcs  = c.Calibration.Select(p => p.Conc).ToArray(),
-            StdResps  = c.Calibration.Select(p => p.Response).ToArray(),
+            StdConcs     = c.Calibration.Select(p => p.Conc).ToArray(),
+            StdResps     = c.Calibration.Select(p => p.Response).ToArray(),
+            StdIstdResps = c.Calibration.Select(p => p.IstdResponse).ToArray(),
         }).ToList();
 
         if (!_categoryDocDates.ContainsKey("GCMS") || string.IsNullOrEmpty(_categoryDocDates["GCMS"]))

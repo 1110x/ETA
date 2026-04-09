@@ -119,6 +119,10 @@ public static class WaterCenterDbMigration
         // 4. TOC TCIC 테이블 스키마 마이그레이션 (3개 테이블 공통)
         //    - 시료량 컬럼 DROP, TCAU/TCcon/ICAU/ICcon 4개 컬럼 ADD
         MigrateTocTcicTables(conn);
+
+        // 5. VOC 테이블 ISTD 컬럼 마이그레이션 (수질분석센터 VOC 테이블들)
+        //    - ST1_ISTD ~ ST7_ISTD 컬럼 ADD
+        MigrateVocIstdColumns(conn);
     }
 
     // ── TOC TCIC 3개 테이블 스키마 동기화 ─────────────────────────
@@ -209,6 +213,64 @@ public static class WaterCenterDbMigration
 
         // 4. 기본: NHexan형 (단순 결과값)
         return "NHexan";
+    }
+
+    // ── VOC 테이블 ISTD 컬럼 마이그레이션 ───────────────────────────
+    //   대상: 수질분석센터_*_DATA 테이블 중 ST1_농도 컬럼이 있는 테이블들
+    //   추가: ST1_ISTD ~ ST7_ISTD 컬럼 (VOC/유기화합물/휘발성 테이블)
+    private static void MigrateVocIstdColumns(DbConnection conn)
+    {
+        var istdCols = new[] { "ST1_ISTD", "ST2_ISTD", "ST3_ISTD", "ST4_ISTD", "ST5_ISTD", "ST6_ISTD", "ST7_ISTD" };
+
+        try
+        {
+            // 수질분석센터_*_DATA 테이블 중 VOC/유기화합물 관련 테이블만 찾기
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"
+                SELECT TABLE_NAME FROM INFORMATION_SCHEMA.COLUMNS
+                WHERE TABLE_SCHEMA = DATABASE()
+                  AND TABLE_NAME LIKE '수질분석센터\_%\_DATA' ESCAPE '\\'
+                  AND COLUMN_NAME = 'ST1_농도'
+                  AND (TABLE_NAME LIKE '%휘발성유기화합물%' OR TABLE_NAME LIKE '%유기물질%')";
+
+            var vocTables = new List<string>();
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                vocTables.Add(reader.GetString(0));
+            }
+            reader.Close();
+
+            Log($"VOC ISTD 컬럼 마이그레이션 대상: {vocTables.Count}개 테이블");
+
+            foreach (var tbl in vocTables)
+            {
+                // 이미 ST1_ISTD 컬럼이 있으면 스킵
+                if (DbConnectionFactory.ColumnExists(conn, tbl, "ST1_ISTD"))
+                {
+                    Log($"  {tbl} — 이미 ISTD 컬럼 존재, 스킵");
+                    continue;
+                }
+
+                // ST1_ISTD ~ ST7_ISTD 컬럼 추가
+                foreach (var col in istdCols)
+                {
+                    try
+                    {
+                        Exec(conn, $"ALTER TABLE `{tbl}` ADD COLUMN `{col}` TEXT DEFAULT ''");
+                        Log($"  {tbl}.{col} 추가 완료");
+                    }
+                    catch (Exception ex)
+                    {
+                        Log($"  {tbl}.{col} 추가 실패: {ex.Message}");
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Log($"VOC ISTD 마이그레이션 오류: {ex.Message}");
+        }
     }
 
     // ── Metal/VOC/Cr6 스키마 변경에 따른 기존 테이블 DROP ─────────
@@ -468,13 +530,13 @@ public static class WaterCenterDbMigration
                     희석배수 TEXT DEFAULT '',
                     농도     TEXT DEFAULT '',
                     ISTD     TEXT DEFAULT '',
-                    ST1_농도 TEXT DEFAULT '', ST1_값 TEXT DEFAULT '',
-                    ST2_농도 TEXT DEFAULT '', ST2_값 TEXT DEFAULT '',
-                    ST3_농도 TEXT DEFAULT '', ST3_값 TEXT DEFAULT '',
-                    ST4_농도 TEXT DEFAULT '', ST4_값 TEXT DEFAULT '',
-                    ST5_농도 TEXT DEFAULT '', ST5_값 TEXT DEFAULT '',
-                    ST6_농도 TEXT DEFAULT '', ST6_값 TEXT DEFAULT '',
-                    ST7_농도 TEXT DEFAULT '', ST7_값 TEXT DEFAULT '',
+                    ST1_농도 TEXT DEFAULT '', ST1_값 TEXT DEFAULT '', ST1_ISTD TEXT DEFAULT '',
+                    ST2_농도 TEXT DEFAULT '', ST2_값 TEXT DEFAULT '', ST2_ISTD TEXT DEFAULT '',
+                    ST3_농도 TEXT DEFAULT '', ST3_값 TEXT DEFAULT '', ST3_ISTD TEXT DEFAULT '',
+                    ST4_농도 TEXT DEFAULT '', ST4_값 TEXT DEFAULT '', ST4_ISTD TEXT DEFAULT '',
+                    ST5_농도 TEXT DEFAULT '', ST5_값 TEXT DEFAULT '', ST5_ISTD TEXT DEFAULT '',
+                    ST6_농도 TEXT DEFAULT '', ST6_값 TEXT DEFAULT '', ST6_ISTD TEXT DEFAULT '',
+                    ST7_농도 TEXT DEFAULT '', ST7_값 TEXT DEFAULT '', ST7_ISTD TEXT DEFAULT '',
                     기울기   TEXT DEFAULT '',
                     절편     TEXT DEFAULT '',
                     R값      TEXT DEFAULT '',",

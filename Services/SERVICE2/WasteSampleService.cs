@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using ETA.Models;
 using ETA.Services.Common;
+using ETA.Services.SERVICE4;
 
 namespace ETA.Services.SERVICE2;
 
@@ -75,6 +77,50 @@ public static class WasteSampleService
         cmd.Parameters.AddWithValue("@maxDate", maxDateInclusive);
         using var r = cmd.ExecuteReader();
         while (r.Read()) list.Add(r.GetString(0));
+        return list;
+    }
+
+    // ── 최근 N개월 시료 목록 ─────────────────────────────────────────────────
+    public static List<WasteSample> GetRecentSamples(int months)
+    {
+        var list = new List<WasteSample>();
+        var startDate = DateTime.Today.AddMonths(-months).ToString("yyyy-MM-dd");
+
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+            SELECT Id, 채수일, 구분, 순서, SN, 업체명, 관리번호,
+                   BOD, `TOC`, SS, `T-N`, `T-P`, `N-Hexan`, Phenols, 비고, 확인자
+            FROM `폐수의뢰및결과`
+            WHERE 채수일 >= @startDate
+            ORDER BY 채수일 DESC, 구분, 순서
+            LIMIT 100";
+        cmd.Parameters.AddWithValue("@startDate", startDate);
+
+        using var r = cmd.ExecuteReader();
+        while (r.Read())
+        {
+            list.Add(new WasteSample
+            {
+                Id = r.GetInt32(0),
+                채수일 = GetString(r, 1),
+                구분 = GetString(r, 2),
+                순서 = r.IsDBNull(3) ? 0 : r.GetInt32(3),
+                SN = GetString(r, 4),
+                업체명 = GetString(r, 5),
+                관리번호 = GetString(r, 6),
+                BOD = GetString(r, 7),
+                TOC = GetString(r, 8),
+                SS = GetString(r, 9),
+                TN = GetString(r, 10),
+                TP = GetString(r, 11),
+                NHexan = GetString(r, 12),
+                Phenols = GetString(r, 13),
+                비고 = GetString(r, 14),
+                확인자 = GetString(r, 15)
+            });
+        }
         return list;
     }
 
@@ -687,5 +733,100 @@ public static class WasteSampleService
         {
             System.Diagnostics.Debug.WriteLine($"[UpsertTocData:{tableName}] 오류: {ex.Message}");
         }
+    }
+
+    /// <summary>GC/MS 데이터 UPSERT — 수질분석센터_*_DATA 테이블 (VOC 스키마)</summary>
+    public static void UpsertGcData(
+        string tableName, string 분석일, string sn, string 업체명, string 구분,
+        string 농도, string ISTD, ExcelDocInfo? 검량선정보, string 비고 = "")
+    {
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var chk = conn.CreateCommand();
+            chk.CommandText = $"SELECT COUNT(*) FROM `{tableName}` WHERE LEFT(분석일,10)=@d AND SN=@sn";
+            chk.Parameters.AddWithValue("@d",  분석일);
+            chk.Parameters.AddWithValue("@sn", sn);
+            bool exists = Convert.ToInt32(chk.ExecuteScalar()) > 0;
+
+            // 검량선 데이터 추출 (첫 번째 화합물 기준)
+            var firstCompound = 검량선정보?.GcCompoundCals?.FirstOrDefault();
+            string[] st_농도s = new string[7], st_값s = new string[7], st_istds = new string[7];
+
+            if (firstCompound != null)
+            {
+                for (int i = 0; i < 7; i++)
+                {
+                    st_농도s[i] = i < firstCompound.StdConcs.Length ? firstCompound.StdConcs[i] : "";
+                    st_값s[i] = i < firstCompound.StdResps.Length ? firstCompound.StdResps[i] : "";
+                    st_istds[i] = i < firstCompound.StdIstdResps.Length ? firstCompound.StdIstdResps[i] : "";
+                }
+            }
+
+            using var cmd = conn.CreateCommand();
+            if (exists)
+            {
+                cmd.CommandText = $@"UPDATE `{tableName}`
+                    SET 농도=@conc, ISTD=@istd,
+                        ST1_농도=@st1c, ST1_값=@st1v, ST1_ISTD=@st1i,
+                        ST2_농도=@st2c, ST2_값=@st2v, ST2_ISTD=@st2i,
+                        ST3_농도=@st3c, ST3_값=@st3v, ST3_ISTD=@st3i,
+                        ST4_농도=@st4c, ST4_값=@st4v, ST4_ISTD=@st4i,
+                        ST5_농도=@st5c, ST5_값=@st5v, ST5_ISTD=@st5i,
+                        ST6_농도=@st6c, ST6_값=@st6v, ST6_ISTD=@st6i,
+                        ST7_농도=@st7c, ST7_값=@st7v, ST7_ISTD=@st7i,
+                        기울기=@slope, 절편=@intercept, R값=@r,
+                        비고=@remark, 등록일시={DbConnectionFactory.NowExpr}
+                    WHERE LEFT(분석일,10)=@d AND SN=@sn";
+            }
+            else
+            {
+                cmd.CommandText = $@"INSERT INTO `{tableName}`
+                    (분석일, SN, 업체명, 구분, 농도, ISTD,
+                     ST1_농도, ST1_값, ST1_ISTD, ST2_농도, ST2_값, ST2_ISTD,
+                     ST3_농도, ST3_값, ST3_ISTD, ST4_농도, ST4_값, ST4_ISTD,
+                     ST5_농도, ST5_값, ST5_ISTD, ST6_농도, ST6_값, ST6_ISTD,
+                     ST7_농도, ST7_값, ST7_ISTD, 기울기, 절편, R값, 비고, 등록일시)
+                    VALUES (@d, @sn, @nm, @gu, @conc, @istd,
+                            @st1c, @st1v, @st1i, @st2c, @st2v, @st2i,
+                            @st3c, @st3v, @st3i, @st4c, @st4v, @st4i,
+                            @st5c, @st5v, @st5i, @st6c, @st6v, @st6i,
+                            @st7c, @st7v, @st7i, @slope, @intercept, @r, @remark, {DbConnectionFactory.NowExpr})";
+                cmd.Parameters.AddWithValue("@nm", 업체명);
+                cmd.Parameters.AddWithValue("@gu", 구분);
+            }
+
+            cmd.Parameters.AddWithValue("@d", 분석일);
+            cmd.Parameters.AddWithValue("@sn", sn);
+            cmd.Parameters.AddWithValue("@conc", 농도);
+            cmd.Parameters.AddWithValue("@istd", ISTD);
+
+            // ST 데이터 파라미터 추가
+            for (int i = 0; i < 7; i++)
+            {
+                cmd.Parameters.AddWithValue($"@st{i+1}c", st_농도s[i]);
+                cmd.Parameters.AddWithValue($"@st{i+1}v", st_값s[i]);
+                cmd.Parameters.AddWithValue($"@st{i+1}i", st_istds[i]);
+            }
+
+            cmd.Parameters.AddWithValue("@slope", firstCompound?.Slope ?? "");
+            cmd.Parameters.AddWithValue("@intercept", firstCompound?.Intercept ?? "");
+            cmd.Parameters.AddWithValue("@r", firstCompound?.R ?? "");
+            cmd.Parameters.AddWithValue("@remark", 비고);
+
+            cmd.ExecuteNonQuery();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[UpsertGcData:{tableName}] 오류: {ex.Message}");
+        }
+    }
+
+    // ── 헬퍼 메서드 ─────────────────────────────────────────────────────────
+    private static string GetString(System.Data.Common.DbDataReader r, int index)
+    {
+        try { return r.IsDBNull(index) ? "" : r.GetString(index) ?? ""; }
+        catch { return ""; }
     }
 }
