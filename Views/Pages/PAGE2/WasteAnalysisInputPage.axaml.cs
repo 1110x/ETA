@@ -1160,7 +1160,8 @@ public partial class WasteAnalysisInputPage : UserControl
             {
                 분석방법 = tocResult.format.ToString(),
                 IsTocNPOC = tocResult.cal?.Method == "NPOC",
-                IsTocTCIC = tocResult.cal?.Method == "TCIC"
+                IsTocTCIC = tocResult.cal?.Method == "TCIC",
+                IsShimadzuToc = true,
             };
 
             if (tocResult.cal != null)
@@ -2502,6 +2503,7 @@ public partial class WasteAnalysisInputPage : UserControl
             isTocMode   = docInfo.IsTocNPOC || docInfo.IsTocTCIC;
             isTocTcicMode = docInfo.IsTocTCIC;
             isGcMode    = docInfo.IsGcMode;
+            bool isShimadzuToc = isTocMode && docInfo.IsShimadzuToc;
 
             // TOC y = ax + b 수식을 분析일 바로 아래 표시
             if (isTocMode && !string.IsNullOrEmpty(docInfo.TocSlope_TC))
@@ -2679,48 +2681,49 @@ public partial class WasteAnalysisInputPage : UserControl
                     var hdr = new Grid { ColumnDefinitions = new ColumnDefinitions(tocDocColDefs),
                         MinHeight = 26, Background = AppRes("GridHeaderBg") };
 
-                    // 토글 버튼 (기기출력값 있을 때만)
-                    if (docInfo.HasTocInstrumentCal)
+                    // ── 헤더 라벨 + 시마즈 토글 버튼 ──
                     {
-                        var togglePanel = new StackPanel { Orientation = Orientation.Horizontal,
-                            VerticalAlignment = VerticalAlignment.Center, Spacing = 0, Margin = new Thickness(4, 0) };
-                        void MakeToggleBtn(string label, bool isActive, bool switchTo)
-                        {
-                            var btn = new Border
-                            {
-                                Background = isActive ? AppRes("BtnPrimaryBg") : AppRes("ThemeBgSubtle"),
-                                CornerRadius = new CornerRadius(switchTo ? 0 : 3, switchTo ? 3 : 0, switchTo ? 3 : 0, switchTo ? 0 : 3),
-                                Padding = new Thickness(6, 2),
-                                Cursor = new Cursor(StandardCursorType.Hand),
-                                Child = FsXS(new TextBlock
-                                {
-                                    Text = label,
-                                    FontFamily = Font,
-                                    Foreground = isActive ? AppRes("BtnPrimaryFg") : AppRes("FgMuted"),
-                                    FontWeight = isActive ? FontWeight.Bold : FontWeight.Normal,
-                                    VerticalAlignment = VerticalAlignment.Center,
-                                }),
-                            };
-                            bool targetVal = switchTo;
-                            btn.PointerPressed += (_, _) =>
-                            {
-                                _tocShowInstrumentCal = targetVal;
-                                LoadVerifiedGrid();
-                            };
-                            togglePanel.Children.Add(btn);
-                        }
-                        MakeToggleBtn("파싱값",   !useInst, false);
-                        MakeToggleBtn("기기출력값", useInst,  true);
-                        Grid.SetColumn(togglePanel, 0); Grid.SetColumnSpan(togglePanel, 4);
-                        hdr.Children.Add(togglePanel);
-                    }
-                    else
-                    {
-                        var hdrLabel = FsBase(new TextBlock { Text = "구분", FontFamily = Font,
+                        var labelArea = new StackPanel { Orientation = Orientation.Horizontal,
+                            VerticalAlignment = VerticalAlignment.Center, Spacing = 6, Margin = new Thickness(4, 0) };
+                        labelArea.Children.Add(FsBase(new TextBlock { Text = "구분", FontFamily = Font,
                             FontWeight = FontWeight.SemiBold, Foreground = AppRes("FgMuted"),
-                            VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(6, 0) });
-                        Grid.SetColumn(hdrLabel, 0); Grid.SetColumnSpan(hdrLabel, 4);
-                        hdr.Children.Add(hdrLabel);
+                            VerticalAlignment = VerticalAlignment.Center }));
+
+                        if (isShimadzuToc)
+                        {
+                            bool hasInst = docInfo.HasTocInstrumentCal;
+                            void MakeToggleBtn(string label, bool isActive, bool switchTo, bool enabled)
+                            {
+                                var btn = new Border
+                                {
+                                    Background = isActive ? AppRes("BtnPrimaryBg")
+                                               : enabled  ? AppRes("ThemeBgSubtle")
+                                                          : AppRes("ThemeBorderMuted"),
+                                    CornerRadius = new CornerRadius(switchTo ? 0 : 3, switchTo ? 3 : 0, switchTo ? 3 : 0, switchTo ? 0 : 3),
+                                    Padding = new Thickness(6, 1),
+                                    Cursor = enabled ? new Cursor(StandardCursorType.Hand) : new Cursor(StandardCursorType.Arrow),
+                                    Opacity = enabled ? 1.0 : 0.45,
+                                    Child = FsXS(new TextBlock
+                                    {
+                                        Text = label, FontFamily = Font,
+                                        Foreground = isActive ? AppRes("BtnPrimaryFg") : AppRes("FgMuted"),
+                                        FontWeight = isActive ? FontWeight.Bold : FontWeight.Normal,
+                                        VerticalAlignment = VerticalAlignment.Center,
+                                    }),
+                                };
+                                if (enabled)
+                                {
+                                    bool targetVal = switchTo;
+                                    btn.PointerPressed += (_, _) => { _tocShowInstrumentCal = targetVal; LoadVerifiedGrid(); };
+                                }
+                                labelArea.Children.Add(btn);
+                            }
+                            MakeToggleBtn("파싱값",   !useInst, false, true);
+                            MakeToggleBtn("기기출력값", useInst,  true,  hasInst);
+                        }
+
+                        Grid.SetColumn(labelArea, 0); Grid.SetColumnSpan(labelArea, 4);
+                        hdr.Children.Add(labelArea);
                     }
 
                     for (int c = 0; c < stCount; c++)

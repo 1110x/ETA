@@ -79,6 +79,7 @@ public class ExcelDocInfo
     // TOC 전용
     public bool IsTocNPOC { get; set; }
     public bool IsTocTCIC { get; set; }
+    public bool IsShimadzuToc { get; set; } // 시마즈 TOC 파서 여부 (토글 표시용)
     public string TocSlope_TC { get; set; } = "";
     public string TocSlope_IC { get; set; } = "";
     public string TocIntercept_TC { get; set; } = "";

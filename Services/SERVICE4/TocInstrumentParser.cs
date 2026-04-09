@@ -870,10 +870,10 @@ public static class TocInstrumentParser
             var interceptRe = new Regex(@"^Intercept\s+([0-9.]+)", RegexOptions.IgnoreCase);
             var r2Re        = new Regex(@"^r\^2\s+([0-9.]+)", RegexOptions.IgnoreCase);
             // 표준점 Mean Area 추출:
-            //   "Conc: {x}ppm"  → 현재 표준점 농도
-            //   "Acid Add. Mean Area" → 다음 줄에 "{acid%}  {meanArea}" 형식
-            var concRe    = new Regex(@"^Conc:\s*([0-9.]+)ppm", RegexOptions.IgnoreCase);
-            var acidAddRe = new Regex(@"Acid Add\..*Mean Area", RegexOptions.IgnoreCase);
+            //   "Conc: {x}ppm"   → 현재 표준점 농도
+            //   "Mean Area {v}"  → 해당 표준점의 기기 Mean Area (별도 줄)
+            var concRe     = new Regex(@"^Conc:\s*([0-9.]+)ppm", RegexOptions.IgnoreCase);
+            var meanAreaCalRe = new Regex(@"^Mean Area\s+([0-9.]+)", RegexOptions.IgnoreCase);
 
             string slope_TC = "", intercept_TC = "", r2_TC = "";
             string slope_IC = "", intercept_IC = "", r2_IC = "";
@@ -883,51 +883,36 @@ public static class TocInstrumentParser
             var stdInstTC = new List<(double conc, double area)>();
             var stdInstIC = new List<(double conc, double area)>();
             double? curStdConc = null;
-            bool awaitMeanAreaLine = false;
 
             // 검량선 섹션 스캔: 전체 파일 순회 (Sample Name: TC_ST/IC_ST 도 검량선 페이지에 있으므로 break 금지)
             bool inCalSection = true; // 검량선 페이지인 동안만 slope 수집
             foreach (var line in allLines)
             {
-                // 실제 시료 섹션: "Sample Name:" + "Sample ID:" 조합이 아닌 곳에서 Unknown 결과 등장 시 검량선 종료
-                // 단순하게: Standard TC/IC 이후 slope 수집, 실제 시료 데이터는 slope 없으므로 영향 없음
-                if (line.Equals("Standard TC", StringComparison.OrdinalIgnoreCase)) { inIcCal = false; inCalSection = true; curStdConc = null; awaitMeanAreaLine = false; continue; }
-                if (line.Equals("Standard IC", StringComparison.OrdinalIgnoreCase)) { inIcCal = true;  inCalSection = true; curStdConc = null; awaitMeanAreaLine = false; continue; }
+                if (line.Equals("Standard TC", StringComparison.OrdinalIgnoreCase)) { inIcCal = false; inCalSection = true; curStdConc = null; continue; }
+                if (line.Equals("Standard IC", StringComparison.OrdinalIgnoreCase)) { inIcCal = true;  inCalSection = true; curStdConc = null; continue; }
+                // NPOC 검량선도 "Standard NPOC" 또는 "Standard TC" 로 시작
+                if (line.StartsWith("Standard NPOC", StringComparison.OrdinalIgnoreCase)) { inIcCal = false; inCalSection = true; curStdConc = null; continue; }
                 // 실제 시료 섹션 시작 감지 (Unknown TOC/NPOC 결과 라인)
                 if (Regex.IsMatch(line, @"^Unknown\s+(TOC|NPOC)\s+", RegexOptions.IgnoreCase))
                     { inCalSection = false; continue; }
 
-                if (!inCalSection) continue; // 시료 섹션에서는 slope 읽지 않음
+                if (!inCalSection) continue;
 
-                // 표준점 농도 감지
+                // 표준점 농도 감지: "Conc: 1.000ppm"
                 var cm = concRe.Match(line);
                 if (cm.Success && double.TryParse(cm.Groups[1].Value, NumberStyles.Any, CultureInfo.InvariantCulture, out var sc))
-                { curStdConc = sc; awaitMeanAreaLine = false; continue; }
+                { curStdConc = sc; continue; }
 
-                // "Acid Add.   Mean Area" 헤더 감지 → 다음 줄이 "{acid%}  {meanArea}"
-                if (acidAddRe.IsMatch(line)) { awaitMeanAreaLine = true; continue; }
-
-                // Mean Area 값 줄: "{acid%}   {meanArea}" 또는 숫자만
-                if (awaitMeanAreaLine && curStdConc.HasValue)
+                // Mean Area 직접 감지: "Mean Area 1.298"
+                var mam = meanAreaCalRe.Match(line);
+                if (mam.Success && curStdConc.HasValue &&
+                    double.TryParse(mam.Groups[1].Value, NumberStyles.Any, CultureInfo.InvariantCulture, out var ma))
                 {
-                    awaitMeanAreaLine = false;
-                    var parts = line.Trim().Split(new[]{' ','\t'}, StringSplitOptions.RemoveEmptyEntries);
-                    // parts[0] = acid% (e.g. "0.000%"), parts[1] = meanArea
-                    if (parts.Length >= 2 &&
-                        double.TryParse(parts[parts.Length - 1], NumberStyles.Any, CultureInfo.InvariantCulture, out var ma))
-                    {
-                        if (inIcCal) stdInstIC.Add((curStdConc.Value, ma));
-                        else         stdInstTC.Add((curStdConc.Value, ma));
-                    }
-                    else if (parts.Length == 1 &&
-                        double.TryParse(parts[0], NumberStyles.Any, CultureInfo.InvariantCulture, out var ma2))
-                    {
-                        if (inIcCal) stdInstIC.Add((curStdConc.Value, ma2));
-                        else         stdInstTC.Add((curStdConc.Value, ma2));
-                    }
+                    if (inIcCal) stdInstIC.Add((curStdConc.Value, ma));
+                    else         stdInstTC.Add((curStdConc.Value, ma));
+                    curStdConc = null; // 같은 표준점 중복 방지
                     continue;
                 }
-                awaitMeanAreaLine = false;
 
                 var sm = slopeRe.Match(line);
                 if (sm.Success) { if (inIcCal) slope_IC = sm.Groups[1].Value; else slope_TC = sm.Groups[1].Value; }
