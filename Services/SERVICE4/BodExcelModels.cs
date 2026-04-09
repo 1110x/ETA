@@ -33,6 +33,10 @@ public class ExcelRow
     public bool IsControl { get; set; }
     /// <summary>드래그-드롭으로 수동 매칭된 행 여부 — 자동 매칭에서 제외</summary>
     public bool IsManualMatch { get; set; }
+    /// <summary>중복 매칭된 행 여부 — 핑크색으로 표시</summary>
+    public bool IsDuplicate { get; set; }
+    /// <summary>중복 그룹에서 최종 결과로 선택된 행 여부</summary>
+    public bool IsSelectedForFinalResult { get; set; }
 }
 
 public enum MatchStatus { 입력가능, 덮어쓰기, 미매칭, 대기 }
@@ -85,7 +89,18 @@ public class ExcelDocInfo
     public string[] TocStdAreas    { get; set; } = Array.Empty<string>(); // TC ST-1~5 면적(AU)
     public string[] TocStdConcs_IC { get; set; } = Array.Empty<string>(); // IC ST-1~5 공칭농도 (TCIC 전용)
     public string[] TocStdAreas_IC { get; set; } = Array.Empty<string>(); // IC ST-1~5 면적(AU) (TCIC 전용)
+    // 기기출력값 (Shimadzu PDF 직독값 — null이면 기기출력값 없음)
+    public string? TocSlope_TC_Inst     { get; set; }
+    public string? TocSlope_IC_Inst     { get; set; }
+    public string? TocIntercept_TC_Inst { get; set; }
+    public string? TocIntercept_IC_Inst { get; set; }
+    public string? TocR2_TC_Inst        { get; set; }
+    public string? TocR2_IC_Inst        { get; set; }
+    public string[] TocStdAreas_Inst    { get; set; } = Array.Empty<string>(); // TC Mean Area (기기값)
+    public string[] TocStdAreas_IC_Inst { get; set; } = Array.Empty<string>(); // IC Mean Area (기기값)
+    public bool HasTocInstrumentCal => TocSlope_TC_Inst != null;
     public string Abs_R2 { get; set; } = "";   // R²
+    public string? DetectedCategory { get; set; }  // 파서가 감지한 카테고리 (CN/CR6/TP 등)
     // GC 전용 (Agilent ChemStation/MassHunter)
     public bool IsGcMode { get; set; }
     public string GcFormat { get; set; } = "";           // VocMulti/VocSingle/SingleNoIstd/SingleExpConc
