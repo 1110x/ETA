@@ -3304,7 +3304,7 @@ public partial class WasteAnalysisInputPage : UserControl
                         if (e.Data.Contains("match-compound"))
                         {
                             string draggedName = e.Data.Get(DataFormats.Text)?.ToString() ?? "";
-                            System.Diagnostics.Debug.WriteLine($"[CalRow DROP] '{capturedCompName}' ← '{draggedName}'");
+                            LogMatch($"[CalRow DROP] '{capturedCompName}' ← '{draggedName}'");
                             RegisterCompoundAliasAndUpdateGrid(capturedCompName, draggedName, capturedBorder);
                         }
                         e.Handled = true;
@@ -3312,7 +3312,7 @@ public partial class WasteAnalysisInputPage : UserControl
                     // Shift+1 모드: 클릭 시 포커스된 Show1 분석항목을 이 성분에 적용
                     compBorder.AddHandler(Avalonia.Input.InputElement.PointerPressedEvent, (object? s, PointerPressedEventArgs pe) =>
                     {
-                        System.Diagnostics.Debug.WriteLine($"[CalRow CLICK] '{capturedCompName}', keyNav={_keyNavShow1}, browse='{_show1BrowseMode}', idx={_keyNavShow1Index}");
+                        LogMatch($"[CalRow CLICK] '{capturedCompName}', keyNav={_keyNavShow1}, browse='{_show1BrowseMode}', idx={_keyNavShow1Index}");
                         if (_keyNavShow1 && _show1BrowseMode == "분석항목"
                             && _keyNavShow1Index >= 0 && _keyNavShow1Index < _matchItems.Count)
                         {
@@ -3428,6 +3428,21 @@ public partial class WasteAnalysisInputPage : UserControl
                 HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
                 VerticalScrollBarVisibility   = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
             };
+            // 검정곡선 영역 전체에 드래그앤드랍 허용 + 이벤트 로그
+            DragDrop.SetAllowDrop(docScroll, true);
+            DragDrop.SetAllowDrop(docTbl, true);
+            docScroll.AddHandler(DragDrop.DragOverEvent, (object? s, DragEventArgs e) =>
+            {
+                LogMatch($"[DocScroll DragOver] keys=[{string.Join(",", e.Data.GetDataFormats())}]");
+            }, Avalonia.Interactivity.RoutingStrategies.Tunnel);
+            docScroll.AddHandler(DragDrop.DropEvent, (object? s, DragEventArgs e) =>
+            {
+                LogMatch($"[DocScroll Drop] keys=[{string.Join(",", e.Data.GetDataFormats())}]");
+            }, Avalonia.Interactivity.RoutingStrategies.Tunnel);
+            docScroll.AddHandler(Avalonia.Input.InputElement.PointerPressedEvent, (object? s, PointerPressedEventArgs pe) =>
+            {
+                LogMatch($"[DocScroll PointerPressed] keyNav={_keyNavShow1}, browse='{_show1BrowseMode}'");
+            }, Avalonia.Interactivity.RoutingStrategies.Tunnel);
             var docBorder = new Border
             {
                 Child = docScroll,
