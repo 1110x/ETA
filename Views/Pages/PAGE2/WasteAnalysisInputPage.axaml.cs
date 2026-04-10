@@ -3781,10 +3781,23 @@ public partial class WasteAnalysisInputPage : UserControl
             }
             else
             {
+                // 다성분 별칭 자동 반영: CompoundName에 등록된 별칭이 있으면 정규명 표시
+                string displayName = row.시료명 ?? "";
+                Avalonia.Media.IBrush nameFg = AppRes("AppFg");
+                if (!string.IsNullOrEmpty(row.CompoundName))
+                {
+                    var aliasInfo = CompoundAliasService.Resolve(row.CompoundName);
+                    if (aliasInfo != null)
+                    {
+                        string samplePart = row.시료명?.Split('|').LastOrDefault()?.Trim() ?? row.시료명 ?? "";
+                        displayName = $"{aliasInfo.Value.분석항목} | {samplePart}";
+                        nameFg = new SolidColorBrush(Color.Parse("#90EE90"));
+                    }
+                }
                 nameCell.Children.Add(FsBase(new TextBlock
                 {
-                    Text = row.시료명, FontFamily = Font,
-                    Foreground = AppRes("AppFg"),
+                    Text = displayName, FontFamily = Font,
+                    Foreground = nameFg,
                     TextTrimming = TextTrimming.CharacterEllipsis,
                 }));
             }
