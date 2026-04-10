@@ -32,6 +32,7 @@ public static class FacilityDbMigration
         EnsureFacilitySettings(conn);
         EnsureAnalysisPlan(conn);
         EnsureFacilityTocDataTables(conn);
+        EnsureAnalysisRecordTables(conn);
 
         // 수질분석센터 원자료 테이블 일괄 생성 (분석정보.Analyte 기반)
         try
@@ -605,6 +606,138 @@ public static class FacilityDbMigration
                         UNIQUE(마스터_id, 분석일)
                     )");
                 Log($"{tbl} 테이블 생성");
+            }
+        }
+    }
+
+    // ── *_시험기록부 통합 테이블 ──────────────────────────────────
+    private static void EnsureAnalysisRecordTables(DbConnection conn)
+    {
+        var ai = DbConnectionFactory.AutoIncrement;
+
+        string C() => $@"
+            id       INTEGER PRIMARY KEY {ai},
+            분석일 TEXT NOT NULL,
+            SN       TEXT NOT NULL DEFAULT '',
+            업체명 TEXT DEFAULT '',
+            시료명 TEXT DEFAULT '',
+            구분   TEXT DEFAULT '',
+            비고   TEXT DEFAULT '',
+            등록일시 TEXT DEFAULT ''";
+
+        if (!DbConnectionFactory.TableExists(conn, "BOD_시험기록부"))
+        {
+            Exec(conn, $@"
+                CREATE TABLE `BOD_시험기록부` (
+                    {C()},
+                    시료량     TEXT DEFAULT '',
+                    D1         TEXT DEFAULT '',
+                    D2         TEXT DEFAULT '',
+                    희석배수   TEXT DEFAULT '',
+                    결과       TEXT DEFAULT '',
+                    식종시료량 TEXT DEFAULT '',
+                    식종D1     TEXT DEFAULT '',
+                    식종D2     TEXT DEFAULT '',
+                    식종BOD    TEXT DEFAULT '',
+                    식종함유량 TEXT DEFAULT '',
+                    UNIQUE(분석일, SN)
+                )");
+            Log("BOD_시험기록부 생성");
+        }
+
+        if (!DbConnectionFactory.TableExists(conn, "SS_시험기록부"))
+        {
+            Exec(conn, $@"
+                CREATE TABLE `SS_시험기록부` (
+                    {C()},
+                    시료량   TEXT DEFAULT '',
+                    전무게   TEXT DEFAULT '',
+                    후무게   TEXT DEFAULT '',
+                    무게차   TEXT DEFAULT '',
+                    희석배수 TEXT DEFAULT '',
+                    결과     TEXT DEFAULT '',
+                    UNIQUE(분석일, SN)
+                )");
+            Log("SS_시험기록부 생성");
+        }
+
+        if (!DbConnectionFactory.TableExists(conn, "NHexan_시험기록부"))
+        {
+            Exec(conn, $@"
+                CREATE TABLE `NHexan_시험기록부` (
+                    {C()},
+                    시료량   TEXT DEFAULT '',
+                    전무게   TEXT DEFAULT '',
+                    후무게   TEXT DEFAULT '',
+                    무게차   TEXT DEFAULT '',
+                    희석배수 TEXT DEFAULT '',
+                    결과     TEXT DEFAULT '',
+                    UNIQUE(분석일, SN)
+                )");
+            Log("NHexan_시험기록부 생성");
+        }
+
+        if (!DbConnectionFactory.TableExists(conn, "TOC_NPOC_시험기록부"))
+        {
+            Exec(conn, $@"
+                CREATE TABLE `TOC_NPOC_시험기록부` (
+                    {C()},
+                    시료량   TEXT DEFAULT '',
+                    흥광도   TEXT DEFAULT '',
+                    희석배수 TEXT DEFAULT '',
+                    검량선_a TEXT DEFAULT '',
+                    농도     TEXT DEFAULT '',
+                    결과     TEXT DEFAULT '',
+                    UNIQUE(분석일, SN)
+                )");
+            Log("TOC_NPOC_시험기록부 생성");
+        }
+
+        if (!DbConnectionFactory.TableExists(conn, "TOC_TCIC_시험기록부"))
+        {
+            Exec(conn, $@"
+                CREATE TABLE `TOC_TCIC_시험기록부` (
+                    {C()},
+                    흥광도   TEXT DEFAULT '',
+                    희석배수 TEXT DEFAULT '',
+                    검량선_a TEXT DEFAULT '',
+                    농도     TEXT DEFAULT '',
+                    TCAU     TEXT DEFAULT '',
+                    TCcon    TEXT DEFAULT '',
+                    ICAU     TEXT DEFAULT '',
+                    ICcon    TEXT DEFAULT '',
+                    결과     TEXT DEFAULT '',
+                    UNIQUE(분석일, SN)
+                )");
+            Log("TOC_TCIC_시험기록부 생성");
+        }
+
+        foreach (var tbl in new[] { "TN_시험기록부", "TP_시험기록부", "Phenols_시험기록부", "CN_시험기록부", "CR6_시험기록부" })
+        {
+            if (!DbConnectionFactory.TableExists(conn, tbl))
+            {
+                Exec(conn, $@"
+                    CREATE TABLE `{tbl}` (
+                        {C()},
+                        시료량     TEXT DEFAULT '',
+                        흥광도     TEXT DEFAULT '',
+                        희석배수   TEXT DEFAULT '',
+                        기울기     TEXT DEFAULT '',
+                        절편       TEXT DEFAULT '',
+                        R2         TEXT DEFAULT '',
+                        ST01_mgL   TEXT DEFAULT '',
+                        ST02_mgL   TEXT DEFAULT '',
+                        ST03_mgL   TEXT DEFAULT '',
+                        ST04_mgL   TEXT DEFAULT '',
+                        ST01_abs   TEXT DEFAULT '',
+                        ST02_abs   TEXT DEFAULT '',
+                        ST03_abs   TEXT DEFAULT '',
+                        ST04_abs   TEXT DEFAULT '',
+                        농도       TEXT DEFAULT '',
+                        결과       TEXT DEFAULT '',
+                        UNIQUE(분석일, SN)
+                    )");
+                Log($"{tbl} 생성");
             }
         }
     }

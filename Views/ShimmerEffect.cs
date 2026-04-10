@@ -193,6 +193,98 @@ public static class TextShimmer
         }
     }
 
+    // ── 키보드 포커스 gold shimmer (Shift+R/F 단축키용) ─────────────────────
+    private static readonly Dictionary<Control, (DispatcherTimer timer, TextBlock[] targets, IBrush?[] origBrushes)> _focus = new();
+
+    // 폰트 크기 원본 저장 (포커스 해제 시 복원용)
+    private static readonly Dictionary<TextBlock, double> _origFontSizes = new();
+
+    /// <summary>키보드 포커스 시 gold shimmer 시작 (포커스 유지 동안 계속)</summary>
+    public static void StartFocus(Control control)
+    {
+        if (_focus.ContainsKey(control)) return;
+        // 기존 hover shimmer 중단 (충돌 방지)
+        StopHover(control);
+
+        var textBlocks = control.GetVisualDescendants().OfType<TextBlock>().ToArray();
+        if (textBlocks.Length == 0 && control is TextBlock tb) textBlocks = [tb];
+        if (textBlocks.Length == 0) return;
+
+        // 폰트 크기 20% 증가
+        foreach (var t in textBlocks)
+        {
+            if (!_origFontSizes.ContainsKey(t))
+                _origFontSizes[t] = t.FontSize;
+            t.FontSize = _origFontSizes[t] * 1.2;
+        }
+
+        var goldColor   = Color.Parse("#FFD700");  // gold
+        var brightGold  = Color.Parse("#FFF380");  // 밝은 금색 (shimmer 하이라이트)
+        var brushes     = new LinearGradientBrush[textBlocks.Length];
+        var origBrushes = new IBrush?[textBlocks.Length];
+
+        for (int i = 0; i < textBlocks.Length; i++)
+        {
+            origBrushes[i] = textBlocks[i].Foreground;
+            brushes[i] = new LinearGradientBrush
+            {
+                StartPoint = new RelativePoint(0, 0.5, RelativeUnit.Relative),
+                EndPoint   = new RelativePoint(1, 0.5, RelativeUnit.Relative),
+                GradientStops =
+                {
+                    new GradientStop(goldColor,  0.0),
+                    new GradientStop(goldColor,  0.0),
+                    new GradientStop(brightGold, 0.0),
+                    new GradientStop(goldColor,  0.0),
+                    new GradientStop(goldColor,  1.0),
+                }
+            };
+            textBlocks[i].Foreground = brushes[i];
+        }
+
+        double offset = -0.3;
+        var timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(16) };
+        timer.Tick += (_, _) =>
+        {
+            offset += 0.020;
+            if (offset > 1.3) offset = -0.3;
+            double a = Math.Clamp(offset - 0.18, 0, 1);
+            double b = Math.Clamp(offset,        0, 1);
+            double c = Math.Clamp(offset + 0.18, 0, 1);
+            for (int i = 0; i < brushes.Length; i++)
+            {
+                brushes[i].GradientStops[1] = new GradientStop(goldColor,  a);
+                brushes[i].GradientStops[2] = new GradientStop(brightGold, b);
+                brushes[i].GradientStops[3] = new GradientStop(goldColor,  c);
+            }
+        };
+        timer.Start();
+        _focus[control] = (timer, textBlocks, origBrushes);
+    }
+
+    /// <summary>키보드 포커스 gold shimmer 중단 → 원본 색상·크기 복원</summary>
+    public static void StopFocus(Control control)
+    {
+        if (!_focus.TryGetValue(control, out var state)) return;
+        state.timer.Stop();
+        for (int i = 0; i < state.targets.Length; i++)
+        {
+            if (state.origBrushes[i] is ISolidColorBrush scb)
+                state.targets[i].Foreground = new SolidColorBrush(scb.Color);
+            else if (state.origBrushes[i] != null)
+                state.targets[i].Foreground = state.origBrushes[i];
+            else
+                state.targets[i].ClearValue(TextBlock.ForegroundProperty);
+            // 폰트 크기 복원
+            if (_origFontSizes.TryGetValue(state.targets[i], out var origSize))
+            {
+                state.targets[i].FontSize = origSize;
+                _origFontSizes.Remove(state.targets[i]);
+            }
+        }
+        _focus.Remove(control);
+    }
+
     // ── 전역 shimmer 부착 ────────────────────────────────────────────────
     // Window 전체 비주얼 트리를 순회하여 주요 컨트롤에 호버 shimmer를 자동 부착.
     // 이미 부착된 컨트롤은 중복 방지(_attached HashSet).

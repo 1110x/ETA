@@ -965,6 +965,90 @@ public static class FacilityResultService
         return count;
     }
 
+    // ── 오늘 분석계획 기반 처리시설_측정결과 빈 행 자동 생성 ─────────────
+    /// <summary>
+    /// 오늘 요일의 분석계획에 따라 처리시설_측정결과에 빈 행을 생성합니다.
+    /// 이미 해당 (마스터_id, 채취일자) 행이 있으면 스킵합니다.
+    /// </summary>
+    public static int EnsureTodayMeasurementResults()
+    {
+        var today = DateTime.Today;
+        string dateStr = today.ToString("yyyy-MM-dd");
+        // C# DayOfWeek: Sunday=0, Monday=1 → 분析計画: 월=0, 화=1, ..., 일=6
+        int planDay = ((int)today.DayOfWeek + 6) % 7;
+
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+
+        // 1. 마스터 조회
+        var masterMap = new Dictionary<(string 시설명, string 시료명), int>();
+        using (var cmd = conn.CreateCommand())
+        {
+            cmd.CommandText = "SELECT id, 시설명, 시료명 FROM `처리시설_마스터` ORDER BY id";
+            using var r = cmd.ExecuteReader();
+            while (r.Read())
+                masterMap[(r.GetString(1), r.GetString(2))] = Convert.ToInt32(r.GetValue(0));
+        }
+        if (masterMap.Count == 0)
+        {
+            Debug.WriteLine("[EnsureToday] 처리시설_마스터 비어있음 — 스킵");
+            return 0;
+        }
+
+        // 2. 오늘 요일의 분析계획 로딩
+        var todayPlan = new List<(string 시설명, string 시료명)>();
+        using (var cmd = conn.CreateCommand())
+        {
+            cmd.CommandText = @"
+                SELECT 시설명, 시료명
+                FROM `처리시설_분析계획`
+                WHERE 요일 = @day ORDER BY id";
+            cmd.Parameters.AddWithValue("@day", planDay);
+            using var r = cmd.ExecuteReader();
+            while (r.Read())
+                todayPlan.Add((r.GetString(0), r.GetString(1)));
+        }
+        if (todayPlan.Count == 0)
+        {
+            Debug.WriteLine($"[EnsureToday] {dateStr} (요일코드={planDay}) 분析계획 없음 — 스킵");
+            return 0;
+        }
+
+        // 3. 이미 존재하는 (마스터_id, 채취일자) 조회
+        var existing = new HashSet<int>();
+        using (var cmd = conn.CreateCommand())
+        {
+            cmd.CommandText = "SELECT 마스터_id FROM `처리시설_측정결과` WHERE 채취일자 = @d";
+            cmd.Parameters.AddWithValue("@d", dateStr);
+            using var r = cmd.ExecuteReader();
+            while (r.Read())
+                existing.Add(Convert.ToInt32(r.GetValue(0)));
+        }
+
+        // 4. 없는 행만 삽입
+        int count = 0;
+        foreach (var (시설명, 시료명) in todayPlan)
+        {
+            if (!masterMap.TryGetValue((시설명, 시료명), out var masterId)) continue;
+            if (existing.Contains(masterId)) continue;
+
+            using var ins = conn.CreateCommand();
+            ins.CommandText = @"INSERT INTO `처리시설_측정결과`
+                (마스터_id, 시설명, 시료명, 채취일자)
+                VALUES (@mid, @f, @s, @d)";
+            ins.Parameters.AddWithValue("@mid", masterId);
+            ins.Parameters.AddWithValue("@f", 시설명);
+            ins.Parameters.AddWithValue("@s", 시료명);
+            ins.Parameters.AddWithValue("@d", dateStr);
+            ins.ExecuteNonQuery();
+            existing.Add(masterId); // 중복 방지
+            count++;
+        }
+
+        Debug.WriteLine($"[EnsureToday] {dateStr} 처리시설_측정결과 자동 생성: {count}건");
+        return count;
+    }
+
     // ── 시료명으로 시설 검색 (부분일치) ──────────────────────────────────
     public static (string 시설명, int 마스터Id)? FindBySampleName(
         List<(string 시설명, string 시료명, int 마스터Id)> masters, string sampleName)

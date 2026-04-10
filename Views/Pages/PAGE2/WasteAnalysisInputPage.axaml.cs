@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
@@ -6,6 +6,7 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
+using Avalonia.VisualTree;
 using ClosedXML.Excel;
 using System;
 using System.Collections.Generic;
@@ -269,10 +270,32 @@ public partial class WasteAnalysisInputPage : UserControl
     private StackPanel? _summaryBadgePanel;
     private ExcelRow? _currentEditExcelRow;
 
+    // ── 키보드 단축키 네비게이션 ──────────────────────────────────────────
+    private bool _keyNavShow1 = false;  // Shift+R: Show1 매칭패널 W/S 모드
+    private bool _keyNavShow2 = false;  // Shift+F: Show2 그리드 W/S 모드
+    private TreeViewItem? _keyNavTreeFocused = null; // (미사용 - 하위호환)
+    private int _keyNavShow1Index = -1;             // 현재 포커스된 Show1 아이템 인덱스
+    private List<(Border Item, string Name, object? Data)> _matchItems = new(); // Show1 의뢰시료 목록
+    private Window? _attachedWindow;    // KeyDown 핸들러 등록된 창
+
     public WasteAnalysisInputPage()
     {
         InitializeComponent();
         BuildCategoryButtons();
+        AttachedToVisualTree += (_, _) =>
+        {
+            var win = this.GetVisualAncestors().OfType<Window>().FirstOrDefault();
+            if (win != null && win != _attachedWindow)
+            {
+                if (_attachedWindow != null) _attachedWindow.KeyDown -= OnWindowKeyDown;
+                _attachedWindow = win;
+                win.KeyDown += OnWindowKeyDown;
+            }
+        };
+        DetachedFromVisualTree += (_, _) =>
+        {
+            if (_attachedWindow != null) { _attachedWindow.KeyDown -= OnWindowKeyDown; _attachedWindow = null; }
+        };
     }
 
     public void SetInputMode(string mode)
@@ -3851,11 +3874,16 @@ public partial class WasteAnalysisInputPage : UserControl
                     int capturedVolIdx = i;
                     uvVolInput.KeyDown += (_, ke) =>
                     {
-                        if (ke.Key == Key.Enter)
+                        if (ke.Key == Key.Enter || ke.Key == Key.Down)
                         {
                             ke.Handled = true; CommitVol();
-                            // 다음 행 시료량 버튼으로 이동
                             for (int nj = capturedVolIdx + 1; nj < _rowVolButtons.Count; nj++)
+                                if (_rowVolButtons[nj] != null) { _rowVolButtons[nj]!.RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent)); break; }
+                        }
+                        else if (ke.Key == Key.Up)
+                        {
+                            ke.Handled = true; CommitVol();
+                            for (int nj = capturedVolIdx - 1; nj >= 0; nj--)
                                 if (_rowVolButtons[nj] != null) { _rowVolButtons[nj]!.RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent)); break; }
                         }
                         else if (ke.Key == Key.Escape) { ke.Handled = true; CommitVol(); }
@@ -3949,7 +3977,14 @@ public partial class WasteAnalysisInputPage : UserControl
                 ClipToBounds = false,
             };
             var capturedIdx = i;
-            border.PointerPressed += (_, pe) => { if (!pe.Handled) SelectGridRow(capturedIdx); };
+            border.PointerPressed += (_, pe) =>
+            {
+                if (pe.Handled) return;
+                // Shift+1 모드: Show1 포커스 아이템을 이 행에 즉시 매핑
+                if (_keyNavShow1)
+                    TryApplyShow1FocusToRow(capturedRow, capturedIdx);
+                SelectGridRow(capturedIdx);
+            };
             TextShimmer.AttachHover(border);
 
             // 드래그 드롭 수신: Show1에서 의뢰시료를 드래그하여 매칭
@@ -4258,6 +4293,8 @@ public partial class WasteAnalysisInputPage : UserControl
                 prevBorder.Background = null;
                 prevBorder.BorderBrush = AppRes("ThemeBorderSubtle");
                 prevBorder.BorderThickness = new Thickness(0, 0, 0, 1);
+                // Shift+F 모드면 gold shimmer / 크기 해제
+                if (_keyNavShow2) TextShimmer.StopFocus(prevBorder);
             }
         }
 
@@ -4270,6 +4307,8 @@ public partial class WasteAnalysisInputPage : UserControl
             border.BorderBrush = AppRes("BtnPrimaryBg");
             border.BorderThickness = new Thickness(3, 0, 0, 1);
             border.BringIntoView();
+            // Shift+F 모드면 gold shimmer + 글자 20% 증가
+            if (_keyNavShow2) TextShimmer.StartFocus(border);
         }
 
         var row = _currentExcelRows[index];
@@ -4288,13 +4327,9 @@ public partial class WasteAnalysisInputPage : UserControl
             }
             else
             {
-                // 처리시설/수질분석센터/기기파서: Show3에 상세 표시 + 인라인 희석배수 오픈
+                // 처리시설/수질분석센터/기기파서: Show3에 상세 표시
+                // 키보드 네비 모드(Shift+1/2)에서는 희석배수·시료량 인라인편집 자동 오픈 안 함
                 ShowExcelRowDetail(row);
-                if (index < _rowDilButtons.Count && _rowDilButtons[index] != null)
-                {
-                    _rowDilButtons[index]!.RaiseEvent(
-                        new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
-                }
             }
         }
         // 미매칭(빨간색) 또는 대기 → Show1 드래그앤드랍 안내
@@ -4873,6 +4908,182 @@ public partial class WasteAnalysisInputPage : UserControl
             SelectGridRow(_selectedRowIndex - 1);
             e.Handled = true;
         }
+    }
+
+    // =========================================================================
+    // 키보드 단축키 네비게이션  (Shift+R = Show1 트리, Shift+F = Show2 그리드)
+    // =========================================================================
+
+    private void OnWindowKeyDown(object? sender, KeyEventArgs e)
+    {
+        // TextBox 포커스 중에는 단축키 무시
+        if (e.Source is TextBox) return;
+
+        bool shift = e.KeyModifiers.HasFlag(KeyModifiers.Shift);
+
+        // ── Shift+1: Show1(의뢰시료 목록) W/S 모드 토글 ─────────────────
+        if (shift && e.Key == Key.D1)
+        {
+            e.Handled = true;
+            if (_keyNavShow2) { _keyNavShow2 = false; ClearShow2Focus(); }
+            _keyNavShow1 = !_keyNavShow1;
+            if (_keyNavShow1 && _keyNavShow1Index < 0 && _matchItems.Count > 0)
+                NavShow1(0); // 첫 번째 아이템 포커스
+            else if (!_keyNavShow1)
+                ClearShow1Focus();
+            return;
+        }
+
+        // ── Shift+2: Show2(그리드) W/S 모드 토글 ────────────────────────
+        if (shift && e.Key == Key.D2)
+        {
+            e.Handled = true;
+            if (_keyNavShow1) { _keyNavShow1 = false; ClearShow1Focus(); }
+            _keyNavShow2 = !_keyNavShow2;
+            if (_keyNavShow2 && _selectedRowIndex < 0 && _currentExcelRows?.Count > 0)
+                SelectGridRow(0);
+            else if (!_keyNavShow2)
+                ClearShow2Focus();
+            return;
+        }
+
+        // ── Shift+Q: 선택 행을 정도관리(QC) 시료로 지정 ────────────────
+        if (shift && e.Key == Key.Q)
+        {
+            e.Handled = true;
+            if (_selectedRowIndex >= 0 && _currentExcelRows != null
+                && _selectedRowIndex < _currentExcelRows.Count)
+            {
+                var qRow = _currentExcelRows[_selectedRowIndex];
+                // 매칭 초기화 (조기 반환 조건 무시)
+                qRow.Source              = SourceType.미분류;
+                qRow.Status              = MatchStatus.미매칭;
+                qRow.Matched             = null;
+                qRow.MatchedAnalysis     = null;
+                qRow.MatchedFacilityName = null;
+                qRow.IsManualMatch       = false;
+                if (!string.IsNullOrEmpty(qRow.원본시료명))
+                {
+                    qRow.시료명    = qRow.원본시료명;
+                    qRow.원본시료명 = "";
+                }
+                // QC 지정
+                qRow.SN        = "QC";
+                qRow.IsControl = true;
+                // _categoryExcelData 동기화
+                if (_categoryExcelData.TryGetValue(_activeCategory, out var catRows)
+                    && _selectedRowIndex < catRows.Count)
+                {
+                    catRows[_selectedRowIndex].Source              = qRow.Source;
+                    catRows[_selectedRowIndex].Status              = qRow.Status;
+                    catRows[_selectedRowIndex].Matched             = null;
+                    catRows[_selectedRowIndex].MatchedAnalysis     = null;
+                    catRows[_selectedRowIndex].MatchedFacilityName = null;
+                    catRows[_selectedRowIndex].IsManualMatch       = false;
+                    catRows[_selectedRowIndex].시료명               = qRow.시료명;
+                    catRows[_selectedRowIndex].원본시료명            = qRow.원본시료명;
+                }
+                // 셀 갱신
+                if (_selectedRowIndex < _rowSnCells.Count)
+                    _rowSnCells[_selectedRowIndex].Text = "QC";
+                if (_selectedRowIndex < _rowSourceCells.Count)
+                {
+                    _rowSourceCells[_selectedRowIndex].Text       = "정도관리";
+                    _rowSourceCells[_selectedRowIndex].Foreground = new Avalonia.Media.SolidColorBrush(
+                        Avalonia.Media.Color.Parse("#c084fc"));
+                }
+                BuildStatsPanel();
+            }
+            return;
+        }
+
+        // ── ESC: 매칭 취소 (포커스 위치와 무관하게 처리) ──────────────────
+        if (!shift && e.Key == Key.Escape)
+        {
+            CancelSelectedRowMatching();
+            e.Handled = true;
+            return;
+        }
+
+        // ── W / S: 활성 모드에서 위/아래 ────────────────────────────────
+        if (!shift && (e.Key == Key.W || e.Key == Key.S))
+        {
+            if (_keyNavShow1 && _matchItems.Count > 0)
+            {
+                e.Handled = true;
+                int next = Math.Clamp(_keyNavShow1Index + (e.Key == Key.W ? -1 : 1), 0, _matchItems.Count - 1);
+                NavShow1(next);
+                return;
+            }
+            if (_keyNavShow2)
+            {
+                e.Handled = true;
+                SelectGridRow(_selectedRowIndex + (e.Key == Key.W ? -1 : 1));
+                return;
+            }
+        }
+    }
+
+    /// <summary>Show1 의뢰시료 아이템 포커스 이동</summary>
+    private void NavShow1(int index)
+    {
+        if (index < 0 || index >= _matchItems.Count) return;
+        // 이전 포커스 해제
+        if (_keyNavShow1Index >= 0 && _keyNavShow1Index < _matchItems.Count)
+            TextShimmer.StopFocus(_matchItems[_keyNavShow1Index].Item);
+
+        _keyNavShow1Index = index;
+        var (item, _, _) = _matchItems[index];
+        TextShimmer.StartFocus(item);
+        item.BringIntoView();
+    }
+
+    private void ClearShow1Focus()
+    {
+        if (_keyNavShow1Index >= 0 && _keyNavShow1Index < _matchItems.Count)
+            TextShimmer.StopFocus(_matchItems[_keyNavShow1Index].Item);
+        _keyNavShow1Index = -1;
+    }
+
+    private void ClearShow2Focus()
+    {
+        // SelectGridRow의 gold shimmer는 다음 SelectGridRow 호출 때 자동 해제됨
+        // 모드 해제 시 현재 선택된 행의 shimmer만 제거
+        if (_selectedRowIndex >= 0 && _gridPanel != null
+            && _selectedRowIndex < _gridPanel.Children.Count
+            && _gridPanel.Children[_selectedRowIndex] is Border b)
+            TextShimmer.StopFocus(b);
+    }
+
+    // ── Shift+R 모드: Show2 행 클릭 시 포커스된 Show1 아이템 적용 ────────
+    private void TryApplyShow1FocusToRow(ExcelRow exRow, int rowIndex)
+    {
+        if (!_keyNavShow1 || _keyNavShow1Index < 0 || _keyNavShow1Index >= _matchItems.Count) return;
+        var (_, name, data) = _matchItems[_keyNavShow1Index];
+        // DataObject 생성하여 ApplyDragMatch 재사용
+#pragma warning disable CS0618
+        var dragData = new DataObject();
+        dragData.Set(DataFormats.Text, name);
+        if (data != null)
+        {
+            dynamic d = data;
+            string sampleType = d.Type;
+            string matchKey = sampleType switch
+            {
+                "Analysis" => "match-analysis",
+                "Facility" => "match-facility",
+                _ => "match-waste"
+            };
+            dragData.Set(matchKey, name);
+            try { dragData.Set("sample-sn", (string)(d.SN?.ToString() ?? "")); } catch { }
+        }
+        else
+            dragData.Set("match-waste", name);
+#pragma warning restore CS0618
+        ApplyDragMatch(exRow, rowIndex, dragData);
+        // 다음 Show1 아이템으로 자동 전진
+        if (_keyNavShow1Index + 1 < _matchItems.Count)
+            NavShow1(_keyNavShow1Index + 1);
     }
 
     // =========================================================================
@@ -6013,7 +6224,7 @@ public partial class WasteAnalysisInputPage : UserControl
     // ─── *_DATA 원시 측정값 저장 헬퍼 ──────────────────────────────────────
     // 매칭 여부와 무관하게 전체 행(정도관리 시료 + 미매칭 포함)을 기록부 테이블에 저장한다.
     // s가 null이면 SN=row.SN, 업체명/구분 빈값 사용.
-    private void SaveRawData(ExcelRow row, WasteSample? s)
+    private void SaveRawData(ExcelRow row, WasteSample? s, string 소스구분 = "폐수배출업소")
     {
         if (string.IsNullOrWhiteSpace(row.Result)) return;
 
@@ -6042,7 +6253,7 @@ public partial class WasteAnalysisInputPage : UserControl
                 WasteSampleService.UpsertTocData(
                     _tocInstrumentMethod, 분석일, sn, 업체명, 구분,
                     row.D1, row.P, tocInfo?.TocSlope_TC ?? "", row.Fxy, row.Result,
-                    비고: remark);
+                    소스구분: 소스구분, 비고: remark);
                 break;
             }
 
@@ -6051,6 +6262,7 @@ public partial class WasteAnalysisInputPage : UserControl
                     분석일, sn, 업체명, 구분,
                     시료량: row.시료량, d1: row.D1, d2: row.D2,
                     희석배수: row.P, 결과: row.Result,
+                    소스구분: 소스구분,
                     식종시료량: docInfo?.식종수_시료량 ?? "",
                     식종D1:     docInfo?.식종수_D1    ?? "",
                     식종D2:     docInfo?.식종수_D2    ?? "",
@@ -6063,14 +6275,14 @@ public partial class WasteAnalysisInputPage : UserControl
                 WasteSampleService.UpsertSsData(
                     분석일, sn, 업체명, 구분,
                     row.시료량, row.D1, row.D2, row.Fxy, row.P, row.Result,
-                    비고: remark);
+                    소스구분: 소스구분, 비고: remark);
                 break;
 
             case "NHEX":
                 WasteSampleService.UpsertNHexanData(
                     분석일, sn, 업체명, 구분,
                     row.시료량, row.D1, row.D2, row.Fxy, row.P, row.Result,
-                    비고: remark);
+                    소스구분: 소스구분, 비고: remark);
                 break;
 
             case "TN" when isUV:
@@ -6080,15 +6292,15 @@ public partial class WasteAnalysisInputPage : UserControl
                 {
                     string tblName = item switch
                     {
-                        "T-N"     => "TN_DATA",
-                        "T-P"     => "TP_DATA",
-                        "Phenols" => "Phenols_DATA",
+                        "T-N"     => "TN_시험기록부",
+                        "T-P"     => "TP_시험기록부",
+                        "Phenols" => "Phenols_시험기록부",
                         _         => ""
                     };
                     if (string.IsNullOrEmpty(tblName)) continue;
                     WasteSampleService.UpsertUvvisData(
                         tblName,
-                        분석일, sn, 업체명, 구분,
+                        분석일, sn, 업체명, 소스구분,
                         시료량:  row.시료량,
                         흡광도:  row.D1,
                         희석배수: row.D2,
@@ -6113,10 +6325,10 @@ public partial class WasteAnalysisInputPage : UserControl
                 // GC/MS 데이터를 수질분석센터_*_DATA 테이블에 저장
                 foreach (var item in _activeItems)
                 {
-                    string tableName = $"수질분석센터_{SafeName(item)}_DATA";
+                    string tableName = $"{SafeName(item)}_시험기록부";
                     WasteSampleService.UpsertGcData(
                         tableName,
-                        분석일, sn, 업체명, 구분,
+                        분석일, sn, 업체명, 소스구분,
                         농도: row.Result,
                         ISTD: "",  // 개별 시료의 ISTD 값은 별도 처리 필요
                         검량선정보: docInfo,
@@ -6350,6 +6562,14 @@ public partial class WasteAnalysisInputPage : UserControl
     // =========================================================================
     /// <summary>Show1: 의뢰시료 드래그앤드랍 분류 패널</summary>
     private void BuildMatchBrowsePanel()
+    {
+        // 매칭 아이템 목록 초기화 (키보드 네비용)
+        ClearShow1Focus();
+        _matchItems.Clear();
+        _keyNavShow1Index = -1;
+        BuildMatchBrowsePanelInner();
+    }
+    private void BuildMatchBrowsePanelInner()
     {
         var root = new Grid
         {
@@ -6609,6 +6829,7 @@ public partial class WasteAnalysisInputPage : UserControl
                 {
                     sampleItem.Tag = sample;
                     SetupDragSource(sampleItem, s.Name, sample);
+                    _matchItems.Add((sampleItem, (string)s.Name, (object?)sample));
                 }
 
                 container.Children.Add(sampleItem);
@@ -7259,31 +7480,24 @@ public partial class WasteAnalysisInputPage : UserControl
 
             try
             {
-                // ── (a) 전체 행을 *_*_DATA 기록부에 저장 ─────────────────
-                // 정도관리(IsControl=true) 시료·미매칭 시료 모두 포함.
-                // 기록부 = 정상 분석 증거이므로 매칭 여부와 무관하게 전부 저장.
-                try { SaveRawData(row, row.Matched); }
-                catch (Exception rawEx)
-                {
-                    System.Diagnostics.Debug.WriteLine($"[SaveRawData] {row.시료명}: {rawEx.Message}");
-                }
-
-                // ── (b) 매칭된 행만 의뢰/결과 테이블 갱신 ───────────────
                 switch (row.Source)
                 {
                     case SourceType.폐수배출업소 when row.Matched != null:
+                        try { SaveRawData(row, row.Matched, "폐수배출업소"); } catch { }
                         UpdateWasteSampleValues(row);
                         modifiedDates.Add(row.Matched.채수일);
                         imported++;
                         break;
 
                     case SourceType.수질분석센터 when row.MatchedAnalysis != null:
+                        try { SaveRawData(row, row.Matched, "수질분석센터"); } catch { }
                         ImportAnalysisRequest(row);
                         if (row.Matched != null) modifiedDates.Add(row.Matched.채수일);
                         imported++;
                         break;
 
                     case SourceType.처리시설 when row.MatchedFacilityName != null:
+                        try { SaveRawData(row, null, "처리시설"); } catch { }
                         ImportFacilityResult(row);
                         docDates.TryGetValue(category, out var fd);
                         if (!string.IsNullOrEmpty(fd)) modifiedDates.Add(fd);
@@ -7291,7 +7505,13 @@ public partial class WasteAnalysisInputPage : UserControl
                         break;
 
                     default:
-                        skipped++;
+                        if (row.IsControl)
+                        {
+                            if (string.IsNullOrEmpty(row.SN)) row.SN = row.시료명;
+                            try { SaveRawData(row, null, "QAQC"); } catch { }
+                            imported++;
+                        }
+                        else skipped++;
                         break;
                 }
             }
@@ -7322,7 +7542,7 @@ public partial class WasteAnalysisInputPage : UserControl
                 try
                 {
                     WasteSampleService.UpsertSimpleData(
-                        "NHexan_DATA", "결과",
+                        "NHexan_시험기록부", "결과",
                         nhexDate, "바탕시료", "바탕시료", "",
                         nhexDocInfo.바탕시료_시료량, nhexDocInfo.바탕시료_결과);
                 }
@@ -7408,8 +7628,7 @@ public partial class WasteAnalysisInputPage : UserControl
         string user = ETA.Services.Common.CurrentUserManager.Instance.CurrentUserId ?? "";
         FacilityResultService.SaveRows(row.MatchedFacilityName!, docDate, new List<FacilityResultRow> { target }, user);
 
-        // 카테고리별 처리시설 원자료 저장 (배출업소 *_DATA 와 유사, 마스터_id 기준)
-        SaveFacilityRawData(row, target, docDate);
+        // 원자료 저장은 ImportData에서 SaveRawData("처리시설") 로 통합
     }
 
     private void SaveFacilityRawData(ExcelRow row, FacilityResultRow target, string docDate)

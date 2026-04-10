@@ -241,7 +241,22 @@ public partial class Login : Window
             }
             await Task.Delay(120);
 
-            // ── Step 7: 완료 ─────────────────────────────────────────────────
+            // ── Step 7: 처리시설 오늘 측정결과 자동 생성 ──────────────────────
+            SetProgress("처리시설 측정결과 준비 중...", 88);
+            try
+            {
+                int gen = await Task.Run(() => FacilityResultService.EnsureTodayMeasurementResults());
+                SetProgress($"처리시설 준비 완료 ({gen}건)", 94);
+                Log($"[Init] EnsureTodayMeasurementResults: {gen}건");
+            }
+            catch (Exception ex)
+            {
+                Log($"[Init] EnsureTodayMeasurementResults 실패: {ex.Message}");
+                SetProgress("처리시설 준비 완료", 94);
+            }
+            await Task.Delay(120);
+
+            // ── Step 8: 완료 ─────────────────────────────────────────────────
             SetProgress("시스템 준비 완료", 96);
             await Task.Delay(250);
             SetProgress("✓ 완료!", 100);
