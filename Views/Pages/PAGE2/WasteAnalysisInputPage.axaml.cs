@@ -261,7 +261,8 @@ public partial class WasteAnalysisInputPage : UserControl
     private List<TextBlock> _rowSnCells = new();
     private List<StackPanel> _rowNameCells = new();
     private List<TextBlock> _rowSourceCells = new(); // 시료구분 셀
-    private List<Button?> _rowDilButtons = new(); // TOC 희석배수 버튼 (행별, null=미해당)
+    private List<Button?> _rowDilButtons = new(); // TOC/UV 희석배수 버튼 (행별, null=미해당)
+    private List<Button?> _rowVolButtons = new(); // UV 시료량 버튼 (행별, null=미해당)
     private Dictionary<string, List<CheckBox>> _dupCheckboxGroups = new(); // SN 그룹별 체크박스
     private Dictionary<string, List<Border>> _dupIconGroups = new(); // SN 그룹별 아이콘
     private List<StackPanel> _rowIconPanels = new(); // col0Panel (아이콘+체크박스 컨테이너)
@@ -2908,7 +2909,7 @@ public partial class WasteAnalysisInputPage : UserControl
             }
             else if (isUVVISMode)
             {
-                colDefs = "32,50,90,190,60,65,65,75,75,80";
+                colDefs = "32,50,90,190,60,65,75,65,75,80";
                 colWidths = colDefs.Split(',').Select(double.Parse).ToArray();
             }
             else if (isTocTcicMode)
@@ -3371,7 +3372,7 @@ public partial class WasteAnalysisInputPage : UserControl
             : isNHEXMode
             ? new[] { "", "입력", "SN", "시료명", "시료량", "건조전무게", "건조후무게", "무게차", "희석배수", "결과값", "시료구분" }
             : isUVVISMode
-            ? new[] { "", "입력", "SN", "시료명", "시료량", "흡광도", "희석배수", "계산농도", "결과값", "시료구분" }
+            ? new[] { "", "입력", "SN", "시료명", "시료량", "흡광도", "계산농도", "희석배수", "결과값", "시료구분" }
             : isTocTcicMode
             ? new[] { "", "입력", "SN", "시료명", "TCAU", "TCcon", "ICAU", "ICcon", "희석배수", "결과값", "시료구분" }
             : isTocMode
@@ -3493,6 +3494,7 @@ public partial class WasteAnalysisInputPage : UserControl
         _rowNameCells = new List<StackPanel>();
         _rowSourceCells = new List<TextBlock>();
         _rowDilButtons = new List<Button?>();
+        _rowVolButtons = new List<Button?>();
         _dupCheckboxGroups = new Dictionary<string, List<CheckBox>>();
         _dupIconGroups = new Dictionary<string, List<Border>>();
         _rowIconPanels = new List<StackPanel>();
@@ -3698,12 +3700,42 @@ public partial class WasteAnalysisInputPage : UserControl
             Grid.SetColumn(nameCell, 3);
             rowGrid.Children.Add(nameCell);
 
+            // UV VIS: 흡광도가 있으면 계산농도(Fxy) + 결과값(Result) 항상 재계산
+            if (isUVVISMode && !string.IsNullOrEmpty(row.D1))
+            {
+                double uvS = 0, uvI = 0;
+                if (docInfo != null)
+                {
+                    double.TryParse(docInfo.Standard_Slope,     System.Globalization.NumberStyles.Float,
+                        System.Globalization.CultureInfo.InvariantCulture, out uvS);
+                    double.TryParse(docInfo.Standard_Intercept, System.Globalization.NumberStyles.Float,
+                        System.Globalization.CultureInfo.InvariantCulture, out uvI);
+                }
+                if (uvS > 0 && double.TryParse(row.D1, System.Globalization.NumberStyles.Float,
+                    System.Globalization.CultureInfo.InvariantCulture, out var uvAbs))
+                {
+                    double.TryParse(row.시료량, System.Globalization.NumberStyles.Float,
+                        System.Globalization.CultureInfo.InvariantCulture, out var uvVol);
+                    double uvCalcConc = ((uvAbs - uvI) / uvS) * (uvVol > 0 ? 60.0 / uvVol : 1.0);
+                    row.Fxy = uvCalcConc.ToString("F4");
+                    // 결과값 항상 재계산 (PDF 기기 농도값 → ETA 공식으로 덮어쓰기)
+                    double.TryParse(string.IsNullOrEmpty(row.D2) ? "1" : row.D2,
+                        System.Globalization.NumberStyles.Float,
+                        System.Globalization.CultureInfo.InvariantCulture, out var uvDil0);
+                    if (uvDil0 <= 0) uvDil0 = 1;
+                    int uvDp0 = (_activeCategory == "TN" || _activeItems.Any(x => x == "T-N"))
+                        ? (row.Source == SourceType.폐수배출업소 ? 3 : 1)
+                        : GetDecimalPlaces(_activeItems.FirstOrDefault() ?? _activeCategory);
+                    row.Result = (uvCalcConc * uvDil0).ToString($"F{uvDp0}");
+                }
+            }
+
             // 기초정보: UV VIS는 시료량/흡광도/희석배수/계산농도,
             //          TOC TCIC는 TCAU/TCcon/ICAU/ICcon/희석배수,
             //          TOC NPOC는 D1/공백/농도/희석배수 (시료량 없음),
             //          BOD는 시료량/D1/D2/f(x/y)/P
             string[] infoVals = isUVVISMode
-                ? new[] { row.시료량, row.D1, row.D2, row.Fxy }
+                ? new[] { row.시료량, row.D1, row.Fxy, row.D2 }
                 : isTocTcicMode
                 ? new[] { row.TCAU, row.TCcon, row.ICAU, row.ICcon, row.P }
                 : isTocMode
@@ -3722,10 +3754,13 @@ public partial class WasteAnalysisInputPage : UserControl
                 HorizontalAlignment = HorizontalAlignment.Center,
             });
 
+            // UV: 시료량 변경 시 재계산을 위해 루프 밖에서 선언 (ci==3에서 할당, ci==0에서 참조)
+            Func<double, string>? uvResultCalc = null;
+
             for (int ci = 0; ci < infoVals.Length; ci++)
             {
                 // UV VIS: 희석배수(ci=2) 인라인 편집 → 결과 재계산
-                if (isUVVISMode && ci == 2)
+                if (isUVVISMode && ci == 3)
                 {
                     var capturedUvRow = row;
                     double uvSlope = 0, uvIntercept = 0;
@@ -3734,18 +3769,25 @@ public partial class WasteAnalysisInputPage : UserControl
                         double.TryParse(docInfo.Standard_Slope,     out uvSlope);
                         double.TryParse(docInfo.Standard_Intercept, out uvIntercept);
                     }
-                    int uvDp = GetDecimalPlaces(_activeItems.FirstOrDefault() ?? _activeCategory);
-                    Func<double, string> calcUvResult = dil =>
+                    // TN: 비용부담금(폐수배출업소)은 소수점 3자리, 나머지 1자리
+                    int uvDp = (_activeCategory == "TN" || _activeItems.Any(x => x == "T-N"))
+                        ? (capturedUvRow.Source == SourceType.폐수배출업소 ? 3 : 1)
+                        : GetDecimalPlaces(_activeItems.FirstOrDefault() ?? _activeCategory);
+                    uvResultCalc = dil =>
                     {
                         double.TryParse(capturedUvRow.D1, System.Globalization.NumberStyles.Float,
                             System.Globalization.CultureInfo.InvariantCulture, out var abs);
-                        double calcConc = uvSlope * abs + uvIntercept;
+                        double.TryParse(capturedUvRow.시료량, System.Globalization.NumberStyles.Float,
+                            System.Globalization.CultureInfo.InvariantCulture, out var vol);
+                        double calcConc = uvSlope > 0
+                            ? ((abs - uvIntercept) / uvSlope) * (vol > 0 ? 60.0 / vol : 1.0)
+                            : 0;
                         capturedUvRow.Fxy = calcConc.ToString("F4");
                         return (calcConc * dil).ToString($"F{uvDp}");
                     };
                     // D2(희석배수) 필드를 P처럼 쓰기 위해 P에도 동기화
                     if (string.IsNullOrEmpty(capturedUvRow.P)) capturedUvRow.P = capturedUvRow.D2;
-                    var uvDilPanel = BuildInlineDilCell(capturedUvRow, valTb, i, calcUvResult);
+                    var uvDilPanel = BuildInlineDilCell(capturedUvRow, valTb, i, uvResultCalc);
                     // BuildInlineDilCell는 row.P를 씀 → D2도 같이 동기화
                     Grid.SetColumn(uvDilPanel, 4 + ci);
                     rowGrid.Children.Add(uvDilPanel);
@@ -3786,10 +3828,41 @@ public partial class WasteAnalysisInputPage : UserControl
                     });
                     uvVolPanel.Children.Add(uvVolBtn);
                     uvVolPanel.Children.Add(uvVolInput);
+                    void CommitVol()
+                    {
+                        capturedUvRow.시료량 = uvVolInput.Text ?? "";
+                        uvVolBtn.Content = string.IsNullOrEmpty(capturedUvRow.시료량) ? "—" : capturedUvRow.시료량;
+                        uvVolInput.IsVisible = false;
+                        uvVolBtn.IsVisible = true;
+                        // 시료량 변경 시 결과값 즉시 재계산
+                        if (uvResultCalc != null)
+                        {
+                            double.TryParse(string.IsNullOrEmpty(capturedUvRow.P) ? "1" : capturedUvRow.P,
+                                System.Globalization.NumberStyles.Float,
+                                System.Globalization.CultureInfo.InvariantCulture, out var curDil);
+                            if (curDil <= 0) curDil = 1;
+                            capturedUvRow.Result = uvResultCalc(curDil);
+                            valTb.Text = capturedUvRow.Result;
+                        }
+                    }
                     uvVolBtn.Click   += (_, _) => { uvVolBtn.IsVisible = false; uvVolInput.IsVisible = true; uvVolInput.Focus(); uvVolInput.SelectAll(); };
                     uvVolPanel.PointerPressed += (_, e) => { e.Handled = true; uvVolBtn.IsVisible = false; uvVolInput.IsVisible = true; uvVolInput.Focus(); uvVolInput.SelectAll(); };
-                    uvVolInput.LostFocus += (_, _) => { capturedUvRow.시료량 = uvVolInput.Text ?? ""; uvVolBtn.Content = string.IsNullOrEmpty(capturedUvRow.시료량) ? "—" : capturedUvRow.시료량; uvVolInput.IsVisible = false; uvVolBtn.IsVisible = true; };
-                    uvVolInput.KeyDown += (_, ke) => { if (ke.Key == Key.Enter || ke.Key == Key.Escape) { ke.Handled = true; uvVolInput.LostFocus -= null; capturedUvRow.시료량 = uvVolInput.Text ?? ""; uvVolBtn.Content = string.IsNullOrEmpty(capturedUvRow.시료량) ? "—" : capturedUvRow.시료량; uvVolInput.IsVisible = false; uvVolBtn.IsVisible = true; } };
+                    uvVolInput.LostFocus += (_, _) => CommitVol();
+                    int capturedVolIdx = i;
+                    uvVolInput.KeyDown += (_, ke) =>
+                    {
+                        if (ke.Key == Key.Enter)
+                        {
+                            ke.Handled = true; CommitVol();
+                            // 다음 행 시료량 버튼으로 이동
+                            for (int nj = capturedVolIdx + 1; nj < _rowVolButtons.Count; nj++)
+                                if (_rowVolButtons[nj] != null) { _rowVolButtons[nj]!.RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent)); break; }
+                        }
+                        else if (ke.Key == Key.Escape) { ke.Handled = true; CommitVol(); }
+                    };
+                    // _rowVolButtons에 등록 (행 인덱스 맞춤)
+                    while (_rowVolButtons.Count <= i) _rowVolButtons.Add(null);
+                    _rowVolButtons[i] = uvVolBtn;
                     Grid.SetColumn(uvVolPanel, 4 + ci);
                     rowGrid.Children.Add(uvVolPanel);
                     continue;
@@ -5788,7 +5861,7 @@ public partial class WasteAnalysisInputPage : UserControl
             var fmRes = FsBase(new TextBlock { FontFamily = Font, Foreground = AppRes("ThemeFgSuccess"),
                 FontWeight = FontWeight.Bold, TextWrapping = TextWrapping.Wrap });
             var fmCurve = FsSM(new TextBlock { FontFamily = Font, Foreground = AppRes("ThemeFgWarn"), TextWrapping = TextWrapping.Wrap,
-                Text = $"검량곡선: y = {slope:G6}x + {intercept:G6}" });
+                Text = $"검량곡선:  Conc = (Abs/{{slope:G6}} - {{intercept:G6}}) × (60/시료량)" });
 
             formulaPanel.Children.Add(fmTitle);
             formulaPanel.Children.Add(fmCurve);
@@ -5801,7 +5874,7 @@ public partial class WasteAnalysisInputPage : UserControl
                 if (!double.TryParse(absInput.Text, out var abs)) return;
                 if (!double.TryParse(dilInput.Text, out var dil)) return;
 
-                double calcConc = slope * abs + intercept;
+                double calcConc = slope > 0 ? ((abs - intercept) / slope) : 0;
                 double result = calcConc * dil;
 
                 int dp = GetDecimalPlaces(_activeItems.FirstOrDefault() ?? _activeCategory);
@@ -6021,6 +6094,17 @@ public partial class WasteAnalysisInputPage : UserControl
                         희석배수: row.D2,
                         검량선a: docInfo?.Standard_Slope ?? "",
                         농도:    row.Result,
+                        st01mgl: docInfo?.Standard_Points?.ElementAtOrDefault(0) ?? "",
+                        st02mgl: docInfo?.Standard_Points?.ElementAtOrDefault(1) ?? "",
+                        st03mgl: docInfo?.Standard_Points?.ElementAtOrDefault(2) ?? "",
+                        st04mgl: docInfo?.Standard_Points?.ElementAtOrDefault(3) ?? "",
+                        st01abs: docInfo?.Abs_Values?.ElementAtOrDefault(0) ?? "",
+                        st02abs: docInfo?.Abs_Values?.ElementAtOrDefault(1) ?? "",
+                        st03abs: docInfo?.Abs_Values?.ElementAtOrDefault(2) ?? "",
+                        st04abs: docInfo?.Abs_Values?.ElementAtOrDefault(3) ?? "",
+                        기울기:  docInfo?.Standard_Slope ?? "",
+                        절편:    docInfo?.Standard_Intercept ?? "",
+                        R2:      docInfo?.Abs_R2 ?? "",
                         비고: remark);
                 }
                 break;
@@ -6109,7 +6193,9 @@ public partial class WasteAnalysisInputPage : UserControl
             var resultTb = FsLG(new TextBlock { FontFamily = Font, Foreground = AppRes("ThemeFgSuccess"),
                 FontWeight = FontWeight.Bold, VerticalAlignment = VerticalAlignment.Center });
 
-            int dp = GetDecimalPlaces(_activeItems.FirstOrDefault() ?? _activeCategory);
+            int dp = (_activeCategory == "TN" || _activeItems.Any(x => x == "T-N"))
+                ? (exRow.Source == SourceType.폐수배출업소 ? 3 : 1)
+                : GetDecimalPlaces(_activeItems.FirstOrDefault() ?? _activeCategory);
 
             void RecalcUV()
             {
@@ -6117,12 +6203,17 @@ public partial class WasteAnalysisInputPage : UserControl
                     System.Globalization.CultureInfo.InvariantCulture, out var abs);
                 double.TryParse(dilInput.Text?.Replace(",", "."), System.Globalization.NumberStyles.Float,
                     System.Globalization.CultureInfo.InvariantCulture, out var dil);
+                double.TryParse(volInput.Text?.Replace(",", "."), System.Globalization.NumberStyles.Float,
+                    System.Globalization.CultureInfo.InvariantCulture, out var vol);
                 if (dil <= 0) dil = 1;
 
-                double calcConc = slope * abs + intercept;
+                double calcConc = slope > 0
+                    ? ((abs - intercept) / slope) * (vol > 0 ? 60.0 / vol : 1.0)
+                    : 0;
                 double result   = calcConc * dil;
 
-                calcTb.Text   = $"계산농도 = {slope:G6} × {abs} + {intercept:G6}  =  {calcConc:F4}";
+                string volFactor = vol > 0 ? $" × (60/{vol})" : "";
+                calcTb.Text   = $"계산농도 = ({abs} - {intercept:G6}) / {slope:G6}{volFactor}  =  {calcConc:F4}";
                 resultTb.Text = $"결과값  =  {calcConc:F4} × {dil}  =  {result.ToString($"F{dp}")} mg/L";
 
                 exRow.시료량 = volInput.Text ?? "";
@@ -6134,7 +6225,7 @@ public partial class WasteAnalysisInputPage : UserControl
 
             absInput.TextChanged += (_, _) => RecalcUV();
             dilInput.TextChanged += (_, _) => RecalcUV();
-            volInput.TextChanged += (_, _) => { exRow.시료량 = volInput.Text ?? ""; };
+            volInput.TextChanged += (_, _) => RecalcUV();
             RecalcUV();
 
             // 검량선 수식 표시
@@ -6144,7 +6235,7 @@ public partial class WasteAnalysisInputPage : UserControl
                 Padding = new Thickness(10, 6), Margin = new Thickness(0, 2, 0, 0),
                 Child = FsSM(new TextBlock
                 {
-                    Text = $"검량곡선:  y = {slope:G6}x + {intercept:G6}   R²={di.Abs_R2}",
+                    Text = $"검량곡선:  Conc = (Abs/{{slope:G6}} - {{intercept:G6}}) × (60/시료량)   R²={di.Abs_R2}",
                     FontFamily = Font, Foreground = AppRes("ThemeFgWarn"),
                     FontWeight = FontWeight.SemiBold,
                 }),
@@ -7385,6 +7476,17 @@ public partial class WasteAnalysisInputPage : UserControl
             case "TN":
                 Upsert("처리시설_TN_DATA", new Dictionary<string, string>
                 {
+                    ["ST01_mgL"]  = docInfo?.Standard_Points?.ElementAtOrDefault(0) ?? "",
+                    ["ST02_mgL"]  = docInfo?.Standard_Points?.ElementAtOrDefault(1) ?? "",
+                    ["ST03_mgL"]  = docInfo?.Standard_Points?.ElementAtOrDefault(2) ?? "",
+                    ["ST04_mgL"]  = docInfo?.Standard_Points?.ElementAtOrDefault(3) ?? "",
+                    ["ST01_abs"]  = docInfo?.Abs_Values?.ElementAtOrDefault(0) ?? "",
+                    ["ST02_abs"]  = docInfo?.Abs_Values?.ElementAtOrDefault(1) ?? "",
+                    ["ST03_abs"]  = docInfo?.Abs_Values?.ElementAtOrDefault(2) ?? "",
+                    ["ST04_abs"]  = docInfo?.Abs_Values?.ElementAtOrDefault(3) ?? "",
+                    ["기울기"]    = docInfo?.Standard_Slope ?? "",
+                    ["절편"]      = docInfo?.Standard_Intercept ?? "",
+                    ["R2"]        = docInfo?.Abs_R2 ?? "",
                     ["시료량"]    = row.시료량 ?? "",
                     ["흡광도"]    = row.D1 ?? "",
                     ["희석배수"]  = row.D2 ?? "",
@@ -7397,6 +7499,17 @@ public partial class WasteAnalysisInputPage : UserControl
             case "TP":
                 Upsert("처리시설_TP_DATA", new Dictionary<string, string>
                 {
+                    ["ST01_mgL"]  = docInfo?.Standard_Points?.ElementAtOrDefault(0) ?? "",
+                    ["ST02_mgL"]  = docInfo?.Standard_Points?.ElementAtOrDefault(1) ?? "",
+                    ["ST03_mgL"]  = docInfo?.Standard_Points?.ElementAtOrDefault(2) ?? "",
+                    ["ST04_mgL"]  = docInfo?.Standard_Points?.ElementAtOrDefault(3) ?? "",
+                    ["ST01_abs"]  = docInfo?.Abs_Values?.ElementAtOrDefault(0) ?? "",
+                    ["ST02_abs"]  = docInfo?.Abs_Values?.ElementAtOrDefault(1) ?? "",
+                    ["ST03_abs"]  = docInfo?.Abs_Values?.ElementAtOrDefault(2) ?? "",
+                    ["ST04_abs"]  = docInfo?.Abs_Values?.ElementAtOrDefault(3) ?? "",
+                    ["기울기"]    = docInfo?.Standard_Slope ?? "",
+                    ["절편"]      = docInfo?.Standard_Intercept ?? "",
+                    ["R2"]        = docInfo?.Abs_R2 ?? "",
                     ["시료량"]    = row.시료량 ?? "",
                     ["흡광도"]    = row.D1 ?? "",
                     ["희석배수"]  = row.D2 ?? "",

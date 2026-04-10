@@ -167,27 +167,47 @@ public static class FacilityDbMigration
             Log("NHexan_DATA 테이블 생성");
         }
 
-        // TN_DATA, TP_DATA, Phenols_DATA — UvVis 형식 (흡광도/검량선_a/농도)
+        // TN_DATA, TP_DATA, Phenols_DATA — UvVis 형식 (흡광도/검량선_a/농도 + 검정곳선)
         foreach (var tbl in new[] { "TN_DATA", "TP_DATA", "Phenols_DATA" })
         {
             if (!DbConnectionFactory.TableExists(conn, tbl))
             {
                 Exec(conn, $@"
                     CREATE TABLE `{tbl}` (
-                        id      INTEGER PRIMARY KEY {ai},
-                        분석일  TEXT NOT NULL,
-                        SN      TEXT NOT NULL,
-                        업체명  TEXT DEFAULT '',
-                        구분    TEXT DEFAULT '',
-                        시료량  TEXT DEFAULT '',
-                        흡광도  TEXT DEFAULT '',
+                        id       INTEGER PRIMARY KEY {ai},
+                        분석일   TEXT NOT NULL,
+                        SN       TEXT NOT NULL,
+                        업체명   TEXT DEFAULT '',
+                        구분     TEXT DEFAULT '',
+                        ST01_mgL TEXT DEFAULT '', ST02_mgL TEXT DEFAULT '', ST03_mgL TEXT DEFAULT '',
+                        ST04_mgL TEXT DEFAULT '', ST05_mgL TEXT DEFAULT '',
+                        ST01_abs TEXT DEFAULT '', ST02_abs TEXT DEFAULT '', ST03_abs TEXT DEFAULT '',
+                        ST04_abs TEXT DEFAULT '', ST05_abs TEXT DEFAULT '',
+                        기울기   TEXT DEFAULT '',
+                        절편     TEXT DEFAULT '',
+                        R2       TEXT DEFAULT '',
+                        시료량   TEXT DEFAULT '',
+                        흡광도   TEXT DEFAULT '',
                         희석배수 TEXT DEFAULT '',
                         검량선_a TEXT DEFAULT '',
-                        농도    TEXT DEFAULT '',
+                        농도     TEXT DEFAULT '',
                         등록일시 TEXT DEFAULT '',
                         UNIQUE(분석일, SN)
                     )");
                 Log($"{tbl} 테이블 생성");
+            }
+            else
+            {
+                // 기존 테이블에 검정곳선 콼럼 추가
+                foreach (var col in new[] {
+                    "ST01_mgL", "ST02_mgL", "ST03_mgL", "ST04_mgL", "ST05_mgL",
+                    "ST01_abs", "ST02_abs", "ST03_abs", "ST04_abs", "ST05_abs",
+                    "기울기", "절편", "R2" })
+                {
+                    if (!DbConnectionFactory.ColumnExists(conn, tbl, col))
+                        try { Exec(conn, $"ALTER TABLE `{tbl}` ADD COLUMN `{col}` TEXT DEFAULT ''"); }
+                        catch { }
+                }
             }
         }
 
@@ -496,6 +516,13 @@ public static class FacilityDbMigration
                 Exec(conn, $@"
                     CREATE TABLE `{tbl}` (
                         {Common()}
+                        ST01_mgL TEXT DEFAULT '', ST02_mgL TEXT DEFAULT '', ST03_mgL TEXT DEFAULT '',
+                        ST04_mgL TEXT DEFAULT '', ST05_mgL TEXT DEFAULT '',
+                        ST01_abs TEXT DEFAULT '', ST02_abs TEXT DEFAULT '', ST03_abs TEXT DEFAULT '',
+                        ST04_abs TEXT DEFAULT '', ST05_abs TEXT DEFAULT '',
+                        기울기   TEXT DEFAULT '',
+                        절편     TEXT DEFAULT '',
+                        R2       TEXT DEFAULT '',
                         시료량    TEXT DEFAULT '',
                         흡광도    TEXT DEFAULT '',
                         희석배수  TEXT DEFAULT '',
@@ -507,6 +534,19 @@ public static class FacilityDbMigration
                         UNIQUE(마스터_id, 분석일)
                     )");
                 Log($"{tbl} 테이블 생성");
+            }
+            else
+            {
+                // 기존 테이블에 검정곡선 컬럼 추가
+                foreach (var col in new[] {
+                    "ST01_mgL", "ST02_mgL", "ST03_mgL", "ST04_mgL", "ST05_mgL",
+                    "ST01_abs", "ST02_abs", "ST03_abs", "ST04_abs", "ST05_abs",
+                    "기울기", "절편", "R2" })
+                {
+                    if (!DbConnectionFactory.ColumnExists(conn, tbl, col))
+                        try { Exec(conn, $"ALTER TABLE `{tbl}` ADD COLUMN `{col}` TEXT DEFAULT ''"); }
+                        catch { }
+                }
             }
         }
 

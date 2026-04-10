@@ -18,6 +18,7 @@ public class WindowPositionManager
 {
     private static readonly string LogFileName = "PageHW.log";
     private readonly string _logFilePath;
+    private readonly string _layoutLogPath;
     private Dictionary<string, PageLayoutInfo> _layouts = new();
 
     /// <summary>
@@ -33,17 +34,18 @@ public class WindowPositionManager
         if (string.IsNullOrWhiteSpace(currentUserId))
             currentUserId = "DefaultUser";
 
-        // 사용자별 로그 파일 경로: AppData/ETA/Users/{UserId}/PageHW.log
-        string appDataFolder = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), 
-            "ETA");
-        string userFolder = Path.Combine(appDataFolder, "Users", currentUserId);
-        
+        // 사용자별 로그 파일 경로: 프로젝트/Logs/Users/{UserId}/PageHW.log
+        string projectFolder = Directory.GetCurrentDirectory(); // 프로젝트 루트 디렉터리
+        string logsFolder = Path.Combine(projectFolder, "Logs");
+        string userFolder = Path.Combine(logsFolder, "Users", currentUserId);
+
         if (!Directory.Exists(userFolder))
             Directory.CreateDirectory(userFolder);
-        
+
         _logFilePath = Path.Combine(userFolder, LogFileName);
-        
+        _layoutLogPath = Path.Combine(userFolder, "LAYOUT.log");
+
+        LogLayout($"WindowPositionManager 초기화 - 사용자: {currentUserId}, 로그 경로: {_logFilePath}");
         System.Diagnostics.Debug.WriteLine($"[WindowPositionManager] 사용자: {currentUserId}, 로그 경로: {_logFilePath}");
         LoadLayouts();
     }
@@ -70,19 +72,32 @@ public class WindowPositionManager
     {
         try
         {
+            LogLayout($"레이아웃 로드 시작 - 파일 경로: {_logFilePath}");
+
             if (!File.Exists(_logFilePath))
             {
                 _layouts = new Dictionary<string, PageLayoutInfo>();
+                LogLayout("레이아웃 파일이 존재하지 않음 - 새로운 빈 레이아웃 딕셔너리 생성");
                 return;
             }
 
             string json = File.ReadAllText(_logFilePath);
+            LogLayout($"레이아웃 파일 읽기 성공 - 크기: {json.Length} bytes");
+
             var data = JsonSerializer.Deserialize<Dictionary<string, PageLayoutInfo>>(json);
             _layouts = data ?? new Dictionary<string, PageLayoutInfo>();
+
+            LogLayout($"레이아웃 로드 완료 - 총 {_layouts.Count}개 레이아웃");
+            foreach (var layout in _layouts)
+            {
+                LogLayout($"  - {layout.Key}: {layout.Value}");
+            }
+
             System.Diagnostics.Debug.WriteLine($"[WindowPositionManager] 로드됨: {_layouts.Count}개 레이아웃");
         }
         catch (Exception ex)
         {
+            LogLayout($"레이아웃 로드 오류: {ex.Message}");
             System.Diagnostics.Debug.WriteLine($"[WindowPositionManager] 로드 오류: {ex.Message}");
             _layouts = new Dictionary<string, PageLayoutInfo>();
         }
@@ -93,26 +108,39 @@ public class WindowPositionManager
     /// </summary>
     public void SaveLayouts()
     {
-        try
+        // 백그라운드 스레드에서 비동기 저장 (UI 스레드 블록킹 방지)
+        System.Threading.Tasks.Task.Run(() =>
         {
-            string? directory = Path.GetDirectoryName(_logFilePath);
-            if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
-                Directory.CreateDirectory(directory);
+            try
+            {
+                LogLayout($"레이아웃 저장 시작 - 총 {_layouts.Count}개 레이아웃");
 
-            var options = new JsonSerializerOptions 
-            { 
-                WriteIndented = true,
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-            };
-            string json = JsonSerializer.Serialize(_layouts, options);
-            File.WriteAllText(_logFilePath, json);
-            
-            System.Diagnostics.Debug.WriteLine($"[WindowPositionManager] 저장 완료: {_logFilePath}");
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"[WindowPositionManager] 저장 오류: {ex.Message}");
-        }
+                string? directory = Path.GetDirectoryName(_logFilePath);
+                if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                    LogLayout($"디렉터리 생성: {directory}");
+                }
+
+                var options = new JsonSerializerOptions
+                {
+                    WriteIndented = true,
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+                };
+                // 복사본으로 직렬화 (thread-safe)
+                var snapshot = new Dictionary<string, PageLayoutInfo>(_layouts);
+                string json = JsonSerializer.Serialize(snapshot, options);
+                File.WriteAllText(_logFilePath, json);
+
+                LogLayout($"레이아웃 저장 완료 - 파일: {_logFilePath}, 크기: {json.Length} bytes");
+                System.Diagnostics.Debug.WriteLine($"[WindowPositionManager] 저장 완료: {_logFilePath}");
+            }
+            catch (Exception ex)
+            {
+                LogLayout($"레이아웃 저장 오류: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"[WindowPositionManager] 저장 오류: {ex.Message}");
+            }
+        });
     }
 
     /// <summary>
@@ -120,8 +148,13 @@ public class WindowPositionManager
     /// </summary>
     public void SavePageLayout(string pageName, PageLayoutInfo layoutInfo)
     {
+        LogLayout($"페이지 레이아웃 저장 요청 - 페이지: {pageName}");
+        LogLayout($"  레이아웃 정보: {layoutInfo}");
+
         _layouts[pageName] = layoutInfo;
         SaveLayouts();
+
+        LogLayout($"페이지 레이아웃 저장 완료 - {pageName}");
         System.Diagnostics.Debug.WriteLine($"[WindowPositionManager] 저장: {pageName} - {layoutInfo}");
     }
 
@@ -130,11 +163,16 @@ public class WindowPositionManager
     /// </summary>
     public PageLayoutInfo? GetPageLayout(string pageName)
     {
+        LogLayout($"페이지 레이아웃 조회 요청 - 페이지: {pageName}");
+
         if (_layouts.TryGetValue(pageName, out var layout))
         {
+            LogLayout($"  레이아웃 발견: {layout}");
             System.Diagnostics.Debug.WriteLine($"[WindowPositionManager] 조회: {pageName} - {layout}");
             return layout;
         }
+
+        LogLayout($"  레이아웃 없음 - 사용 가능한 페이지: {string.Join(", ", _layouts.Keys)}");
         return null;
     }
 
@@ -169,6 +207,27 @@ public class WindowPositionManager
     /// 로그 파일 경로 조회 (디버깅용)
     /// </summary>
     public string GetLogFilePath() => _logFilePath;
+
+    /// <summary>
+    /// 레이아웃 디버깅 로그 기록
+    /// </summary>
+    private void LogLayout(string message)
+    {
+        try
+        {
+            string logLine = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] {message}";
+            string? directory = Path.GetDirectoryName(_layoutLogPath);
+            if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+                Directory.CreateDirectory(directory);
+
+            File.AppendAllText(_layoutLogPath, logLine + "\n");
+            System.Diagnostics.Debug.WriteLine($"[LayoutLog] {message}");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[LayoutLog] 로깅 실패: {ex.Message}");
+        }
+    }
 }
 
 /// <summary>

@@ -340,11 +340,9 @@ public partial class Login : Window
         startupOverlay.IsVisible = false;
         loginForm.IsVisible = true;
 
-        // 자동 ID/비밀번호 입력
-        if (txtEmail != null) txtEmail.Text = "201000308";
+        if (txtEmail    != null) txtEmail.Text    = "201000308";
         if (txtPassword != null) txtPassword.Text = "1212xx!!AA";
-
-        txtEmail?.Focus();
+        txtPassword?.Focus();
     }
 
     private void SetStartupProgress(string status, int value)

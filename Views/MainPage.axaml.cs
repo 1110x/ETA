@@ -21,6 +21,7 @@ using ETA.Views.Pages.PAGE1;
 using ETA.Views.Pages.PAGE2;
 using ETA.Views.Pages.PAGE3;
 using ETA.Views.Pages.Common;
+using ETA.Views.Pages.PAGE5;
 using ClosedXML.Excel;
 using System;
 using System.Collections.Generic;
@@ -57,6 +58,8 @@ public partial class MainPage : Window
     private WasteAnalysisInputPage?      _wasteAnalysisInputPage;
     private ResultSubmitErpPage?         _resultSubmitErpPage;
     private AccessPage?                  _accessPage;
+    private AiDocClassificationPage?     _aiDocClassificationPage;
+    private ParserGeneratorPage?          _parserGeneratorPage;
     private ResultSubmitZero4Page?       _resultSubmitZero4Page;
     private PurchasePage?      _purchasePage;
     private RepairPage?       _repairPage;
@@ -114,12 +117,15 @@ public partial class MainPage : Window
         DataContext = new MainWindowViewModel();
         ApplyTheme(0);
 
-        // WindowPositionManager 초기화
-        _positionManager = new WindowPositionManager(CurrentUserManager.Instance.CurrentUserId);
+        // WindowPositionManager 초기화 - 완전 비활성화 (스턱 방지)
+        _positionManager = null; // new WindowPositionManager(CurrentUserManager.Instance.CurrentUserId);
 
         // 윈도우 이벤트 연결
         this.Opened += MainPage_Opened;
         this.Closing += MainPage_Closing;
+
+        // GridSplitter 실시간 레이아웃 저장 이벤트 연결
+        this.Loaded += SetupSplitterEvents;
 
         // SubMenu 버튼 호버 시 텍스트 그라데이션 효과
         TextShimmer.AttachHover(BT1); TextShimmer.AttachHover(BT2);
@@ -2842,7 +2848,7 @@ public partial class MainPage : Window
         Show2.Content = null; Show3.Content = null;
         string attachLabel = inputMode == "비용부담금/처리시설" ? "파일첨부" : "";
         SetSubMenu("새로고침", "검증", "입력", "출력", attachLabel, "", "");
-        SetLeftPanelWidth(260);
+        SetLeftPanelWidth(320);
 
         // 레이아웃: Show2 전체폭 상단, Show3+Show4 하단 병렬 (Show4 = WasteAnalysisInputPage)
         SetContentLayout(content2Star: 1, content4Star: 1, upperStar: 6, lowerStar: 4);
@@ -4801,6 +4807,54 @@ public partial class MainPage : Window
     }
 
 
+    private void AiDocClassification_Click(object? sender, RoutedEventArgs e)
+    {
+        _currentMode = "AiDocClassification";
+
+        if (_aiDocClassificationPage == null)
+        {
+            _aiDocClassificationPage = new AiDocClassificationPage();
+            _aiDocClassificationPage.ListPanelChanged   += panel => Show2.Content = panel;
+            _aiDocClassificationPage.DetailPanelChanged += panel => Show3.Content = panel;
+            _aiDocClassificationPage.StatsPanelChanged  += panel => Show4.Content = panel;
+        }
+
+        Show1.Content = _aiDocClassificationPage;
+        Show2.Content = null;
+        Show3.Content = null;
+        _aiDocClassificationPage.RefreshShow4();
+        _bt1SaveAction = null;
+
+        SetSubMenu("학습", "새로고침", "", "", "", "", "");
+        SetLeftPanelWidth(220);
+        SetContentLayout(content2Star: 8, content4Star: 2, upperStar: 7, lowerStar: 3);
+        RestoreModeLayout("AiDocClassification");
+    }
+
+    private void ParserGenerator_Click(object? sender, RoutedEventArgs e)
+    {
+        _currentMode = "ParserGenerator";
+
+        if (_parserGeneratorPage == null)
+        {
+            _parserGeneratorPage = new ParserGeneratorPage();
+            _parserGeneratorPage.ListPanelChanged   += panel => Show2.Content = panel;
+            _parserGeneratorPage.DetailPanelChanged += panel => Show3.Content = panel;
+            _parserGeneratorPage.StatsPanelChanged  += panel => Show4.Content = panel;
+        }
+
+        Show1.Content = _parserGeneratorPage;
+        Show2.Content = null;
+        Show3.Content = null;
+        Show4.Content = null;
+        _bt1SaveAction = null;
+
+        SetSubMenu("파일 추가", "", "", "", "", "", "");
+        SetLeftPanelWidth(220);
+        SetContentLayout(content2Star: 8, content4Star: 2, upperStar: 7, lowerStar: 3);
+        RestoreModeLayout("ParserGenerator");
+    }
+
     // ══════════════════════════════════════════════════════════════════════
     //  서브메뉴 버튼
     // ══════════════════════════════════════════════════════════════════════
@@ -4896,6 +4950,14 @@ public partial class MainPage : Window
                 Show2.Content = _accessPage.Show2;
                 break;
             case "WasteAnalysisInput": _wasteAnalysisInputPage?.LoadData(); break;
+            case "AiDocClassification":
+                if (_aiDocClassificationPage != null)
+                    _ = _aiDocClassificationPage.LearnAsync();
+                break;
+            case "ParserGenerator":
+                if (_parserGeneratorPage != null)
+                    _ = _parserGeneratorPage.UploadAndAnalyzeAsync();
+                break;
             default: _bt1SaveAction?.Invoke();                          break;
         }
     }
@@ -4928,6 +4990,7 @@ public partial class MainPage : Window
             case "Repair":          _repairPage?.ApproveSelected();     break;
             case "RiskManage":      _riskPage?.DeleteSelected();        break;
             case "AnalysisPlan":    SetAnalysisPlanDay(0); break; // 월
+            case "AiDocClassification": AiDocClassification_Click(null, null!); break;
             default: Debug.WriteLine($"[{_currentMode}] BT2");   break;
         }
     }
@@ -6410,11 +6473,16 @@ public partial class MainPage : Window
     private void SaveCurrentModeLayout()
     {
         if (_positionManager == null || string.IsNullOrEmpty(_currentMode) || _currentMode == "None")
+        {
+            System.Diagnostics.Debug.WriteLine($"[MainPage] SaveCurrentModeLayout 건너뛰기 - PositionManager: {_positionManager != null}, CurrentMode: {_currentMode}");
             return;
+        }
 
         try
         {
             string modeKey = LayoutStorageModePrefix + _currentMode;
+            System.Diagnostics.Debug.WriteLine($"[MainPage] SaveCurrentModeLayout 시작 - Mode: {_currentMode}, Key: {modeKey}");
+
             var layout = new PageLayoutInfo();
 
             // 윈도우 위치/크기
@@ -6449,8 +6517,8 @@ public partial class MainPage : Window
             }
 
             layout.SavedAt = DateTime.Now;
-            _positionManager.SavePageLayout(modeKey, layout);
-            System.Diagnostics.Debug.WriteLine($"[MainPage] 저장: {modeKey} - {layout}");
+            _positionManager?.SavePageLayout(modeKey, layout); // null 체크 - WindowPositionManager 비활성화 시
+            System.Diagnostics.Debug.WriteLine($"[MainPage] 저장 완료: {modeKey} - {layout}");
         }
         catch (Exception ex)
         {
@@ -6464,17 +6532,24 @@ public partial class MainPage : Window
     private void RestoreModeLayout(string modeName, double minLowerStar = 0)
     {
         if (_positionManager == null)
+        {
+            System.Diagnostics.Debug.WriteLine($"[MainPage] RestoreModeLayout 건너뛰기 - PositionManager가 null");
             return;
+        }
 
         try
         {
             string modeKey = LayoutStorageModePrefix + modeName;
-            var layout = _positionManager.GetPageLayout(modeKey);
+            System.Diagnostics.Debug.WriteLine($"[MainPage] RestoreModeLayout 시작 - Mode: {modeName}, Key: {modeKey}");
+
+            var layout = _positionManager?.GetPageLayout(modeKey); // null 체크 - WindowPositionManager 비활성화 시
             if (layout == null)
             {
                 System.Diagnostics.Debug.WriteLine($"[MainPage] 복원할 레이아웃 없음: {modeKey}");
                 return;
             }
+
+            System.Diagnostics.Debug.WriteLine($"[MainPage] 레이아웃 발견, 복원 진행: {layout}");
 
             // 왼쪽 패널 너비 복원
             if (layout.LeftPanelWidth > 0)
@@ -6487,7 +6562,7 @@ public partial class MainPage : Window
                 upperStar: layout.UpperStar,
                 lowerStar: Math.Max(layout.LowerStar, minLowerStar));
 
-            System.Diagnostics.Debug.WriteLine($"[MainPage] 복원: {modeKey} - {layout}");
+            System.Diagnostics.Debug.WriteLine($"[MainPage] 복원 완료: {modeKey} - {layout}");
         }
         catch (Exception ex)
         {
@@ -6504,8 +6579,8 @@ public partial class MainPage : Window
         if (!string.IsNullOrWhiteSpace(newUserId))
         {
             CurrentUserManager.Instance.SetCurrentUser(newUserId);
-            // 새 사용자로 WindowPositionManager 재초기화
-            _positionManager = new WindowPositionManager(newUserId);
+            // 새 사용자로 WindowPositionManager 재초기화 - 완전 비활성화 (스턱 방지)
+            _positionManager = null; // new WindowPositionManager(newUserId);
             System.Diagnostics.Debug.WriteLine($"[MainPage] 사용자 변경: {newUserId}");
         }
     }
@@ -6516,6 +6591,72 @@ public partial class MainPage : Window
     public string GetPositionLogFilePath()
     {
         return _positionManager?.GetLogFilePath() ?? "Unknown";
+    }
+
+    // ═════════════════════════════════════════════════════════════════════════
+    //  GridSplitter 실시간 레이아웃 저장
+    // ═════════════════════════════════════════════════════════════════════════
+
+    private System.Threading.Timer? _layoutSaveTimer;
+
+    /// <summary>
+    /// GridSplitter 이벤트 핸들러 연결 (창 로드 후 한번만 실행)
+    /// </summary>
+    private void SetupSplitterEvents(object? sender, EventArgs e)
+    {
+        try
+        {
+            // 메인 좌우 스플리터 (Show1 ↔ Show2,3,4)
+            var mainSplitter = this.FindControl<GridSplitter>("MainSplitter");
+            if (mainSplitter != null)
+            {
+                mainSplitter.DragCompleted += OnSplitterMoved;
+                System.Diagnostics.Debug.WriteLine("[MainPage] MainSplitter 이벤트 연결됨");
+            }
+
+            // 수평 스플리터 (Show2,3 ↔ Show4)
+            var horizontalSplitter = this.FindControl<GridSplitter>("HorizontalSplitter");
+            if (horizontalSplitter != null)
+            {
+                horizontalSplitter.DragCompleted += OnSplitterMoved;
+                System.Diagnostics.Debug.WriteLine("[MainPage] HorizontalSplitter 이벤트 연결됨");
+            }
+
+            // 수직 스플리터 (Show2 ↔ Show3)
+            var verticalSplitter = this.FindControl<GridSplitter>("VerticalSplitter");
+            if (verticalSplitter != null)
+            {
+                verticalSplitter.DragCompleted += OnSplitterMoved;
+                System.Diagnostics.Debug.WriteLine("[MainPage] VerticalSplitter 이벤트 연결됨");
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[MainPage] Splitter 이벤트 연결 오류: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// GridSplitter 이동 완료 시 지연 저장 (300ms 후)
+    /// </summary>
+    private void OnSplitterMoved(object? sender, VectorEventArgs e)
+    {
+        // 기존 타이머가 있으면 취소
+        _layoutSaveTimer?.Dispose();
+
+        // 300ms 후 레이아웃 저장 (연속 드래그 중 중복 저장 방지)
+        _layoutSaveTimer = new System.Threading.Timer(
+            callback: _ =>
+            {
+                Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    SaveCurrentModeLayout();
+                    System.Diagnostics.Debug.WriteLine($"[MainPage] Splitter 이동 후 레이아웃 자동 저장: {_currentMode}");
+                });
+            },
+            state: null,
+            dueTime: TimeSpan.FromMilliseconds(300),
+            period: System.Threading.Timeout.InfiniteTimeSpan);
     }
 
     private void TEST_Click(object? sender, RoutedEventArgs e) { }

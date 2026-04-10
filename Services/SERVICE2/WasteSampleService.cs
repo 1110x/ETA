@@ -80,50 +80,6 @@ public static class WasteSampleService
         return list;
     }
 
-    // ── 최근 N개월 시료 목록 ─────────────────────────────────────────────────
-    public static List<WasteSample> GetRecentSamples(int months)
-    {
-        var list = new List<WasteSample>();
-        var startDate = DateTime.Today.AddMonths(-months).ToString("yyyy-MM-dd");
-
-        using var conn = DbConnectionFactory.CreateConnection();
-        conn.Open();
-        using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"
-            SELECT Id, 채수일, 구분, 순서, SN, 업체명, 관리번호,
-                   BOD, `TOC`, SS, `T-N`, `T-P`, `N-Hexan`, Phenols, 비고, 확인자
-            FROM `폐수의뢰및결과`
-            WHERE 채수일 >= @startDate
-            ORDER BY 채수일 DESC, 구분, 순서
-            LIMIT 100";
-        cmd.Parameters.AddWithValue("@startDate", startDate);
-
-        using var r = cmd.ExecuteReader();
-        while (r.Read())
-        {
-            list.Add(new WasteSample
-            {
-                Id = r.GetInt32(0),
-                채수일 = GetString(r, 1),
-                구분 = GetString(r, 2),
-                순서 = r.IsDBNull(3) ? 0 : r.GetInt32(3),
-                SN = GetString(r, 4),
-                업체명 = GetString(r, 5),
-                관리번호 = GetString(r, 6),
-                BOD = GetString(r, 7),
-                TOC = GetString(r, 8),
-                SS = GetString(r, 9),
-                TN = GetString(r, 10),
-                TP = GetString(r, 11),
-                NHexan = GetString(r, 12),
-                Phenols = GetString(r, 13),
-                비고 = GetString(r, 14),
-                확인자 = GetString(r, 15)
-            });
-        }
-        return list;
-    }
-
     // ── 날짜별 전체 행 (순서 오름차순) ──────────────────────────────────────
     public static List<WasteSample> GetByDate(string 채수일)
     {
@@ -143,6 +99,35 @@ public static class WasteSampleService
         using var r = cmd.ExecuteReader();
         while (r.Read())
             list.Add(Map(r));
+        return list;
+    }
+
+    // ── 최근 N개월 시료 목록 조회 (수동 매칭 팝업용) ────────────────────────
+    public static List<WasteSample> GetRecentSamples(int months = 1)
+    {
+        var list = new List<WasteSample>();
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            var cutoff = DateTime.Today.AddMonths(-months).ToString("yyyy-MM-dd");
+            cmd.CommandText = @"
+                SELECT Id, 채수일, 구분, 순서, SN, 업체명, 관리번호,
+                       BOD, `TOC`, SS, `T-N`, `T-P`, `N-Hexan`, Phenols,
+                       비고, 확인자
+                FROM `폐수의뢰및결과`
+                WHERE 채수일 >= @cutoff
+                ORDER BY 채수일 DESC, 순서 ASC";
+            cmd.Parameters.AddWithValue("@cutoff", cutoff);
+            using var r = cmd.ExecuteReader();
+            while (r.Read())
+                list.Add(Map(r));
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"GetRecentSamples 오류: {ex.Message}");
+        }
         return list;
     }
 
@@ -642,6 +627,9 @@ public static class WasteSampleService
     public static void UpsertUvvisData(string tableName,
         string 채수일, string sn, string 업체명, string 구분,
         string 시료량, string 흡광도, string 희석배수, string 검량선a, string 농도,
+        string st01mgl = "", string st02mgl = "", string st03mgl = "", string st04mgl = "", string st05mgl = "",
+        string st01abs = "", string st02abs = "", string st03abs = "", string st04abs = "", string st05abs = "",
+        string 기울기 = "", string 절편 = "", string R2 = "",
         string 비고 = "")
     {
         try
@@ -649,7 +637,7 @@ public static class WasteSampleService
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var chk = conn.CreateCommand();
-            chk.CommandText = $"SELECT COUNT(*) FROM `{tableName}` WHERE LEFT(분석일,10)=@d AND SN=@sn";
+            chk.CommandText = $"SELECT COUNT(*) FROM `{tableName}` WHERE LEFT(분析일,10)=@d AND SN=@sn";
             chk.Parameters.AddWithValue("@d",  채수일);
             chk.Parameters.AddWithValue("@sn", sn);
             bool exists = Convert.ToInt32(chk.ExecuteScalar()) > 0;
@@ -659,25 +647,43 @@ public static class WasteSampleService
             {
                 cmd.CommandText = $@"UPDATE `{tableName}`
                     SET 시료량=@vol, 흡광도=@abs, 희석배수=@dil, 검량선_a=@slope, 농도=@r,
+                        ST01_mgL=@s1c, ST02_mgL=@s2c, ST03_mgL=@s3c, ST04_mgL=@s4c, ST05_mgL=@s5c,
+                        ST01_abs=@s1a, ST02_abs=@s2a, ST03_abs=@s3a, ST04_abs=@s4a, ST05_abs=@s5a,
+                        기울기=@slope2, 절편=@intercept, R2=@r2,
                         비고=@remark, 등록일시={DbConnectionFactory.NowExpr}
-                    WHERE LEFT(분석일,10)=@d AND SN=@sn";
+                    WHERE LEFT(분析일,10)=@d AND SN=@sn";
             }
             else
             {
                 cmd.CommandText = $@"INSERT INTO `{tableName}`
-                    (분석일, SN, 업체명, 구분, 시료량, 흡광도, 희석배수, 검량선_a, 농도, 비고, 등록일시)
-                    VALUES (@d, @sn, @nm, @gu, @vol, @abs, @dil, @slope, @r, @remark, {DbConnectionFactory.NowExpr})";
+                    (분析일, SN, 업체명, 구분, 시료량, 흡광도, 희석배수, 검량선_a, 농도,
+                     ST01_mgL, ST02_mgL, ST03_mgL, ST04_mgL, ST05_mgL,
+                     ST01_abs, ST02_abs, ST03_abs, ST04_abs, ST05_abs,
+                     기울기, 절편, R2, 비고, 등록일시)
+                    VALUES (@d, @sn, @nm, @gu, @vol, @abs, @dil, @slope, @r,
+                            @s1c, @s2c, @s3c, @s4c, @s5c,
+                            @s1a, @s2a, @s3a, @s4a, @s5a,
+                            @slope2, @intercept, @r2, @remark, {DbConnectionFactory.NowExpr})";
                 cmd.Parameters.AddWithValue("@nm", 업체명);
                 cmd.Parameters.AddWithValue("@gu", 구분);
             }
-            cmd.Parameters.AddWithValue("@d",     채수일);
-            cmd.Parameters.AddWithValue("@sn",    sn);
-            cmd.Parameters.AddWithValue("@vol",   시료량);
-            cmd.Parameters.AddWithValue("@abs",   흡광도);
-            cmd.Parameters.AddWithValue("@dil",   희석배수);
-            cmd.Parameters.AddWithValue("@slope", 검량선a);
-            cmd.Parameters.AddWithValue("@r",     농도);
-            cmd.Parameters.AddWithValue("@remark", 비고);
+            cmd.Parameters.AddWithValue("@d",         채수일);
+            cmd.Parameters.AddWithValue("@sn",        sn);
+            cmd.Parameters.AddWithValue("@vol",       시료량);
+            cmd.Parameters.AddWithValue("@abs",       흡광도);
+            cmd.Parameters.AddWithValue("@dil",       희석배수);
+            cmd.Parameters.AddWithValue("@slope",     검량선a);
+            cmd.Parameters.AddWithValue("@r",         농도);
+            cmd.Parameters.AddWithValue("@s1c", st01mgl); cmd.Parameters.AddWithValue("@s2c", st02mgl);
+            cmd.Parameters.AddWithValue("@s3c", st03mgl); cmd.Parameters.AddWithValue("@s4c", st04mgl);
+            cmd.Parameters.AddWithValue("@s5c", st05mgl);
+            cmd.Parameters.AddWithValue("@s1a", st01abs); cmd.Parameters.AddWithValue("@s2a", st02abs);
+            cmd.Parameters.AddWithValue("@s3a", st03abs); cmd.Parameters.AddWithValue("@s4a", st04abs);
+            cmd.Parameters.AddWithValue("@s5a", st05abs);
+            cmd.Parameters.AddWithValue("@slope2",    기울기);
+            cmd.Parameters.AddWithValue("@intercept", 절편);
+            cmd.Parameters.AddWithValue("@r2",        R2);
+            cmd.Parameters.AddWithValue("@remark",    비고);
             cmd.ExecuteNonQuery();
         }
         catch (Exception ex)

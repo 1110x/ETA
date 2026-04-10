@@ -624,6 +624,11 @@
                         <MenuItem Header="폐수배출업소명칭"  x:Name="MenuItemWasteNameReconcile"          Click="WasteNameReconcile_Click"/>
                         <MenuItem Header="접근관리"         Click="Access_Click" x:Name="MenuItemAccess"/>
                     </MenuItem>
+
+                    <MenuItem Header="AI 학습" x:Name="MenuItemAiLearning">
+                        <MenuItem Header="AI 문서분류"  Click="AiDocClassification_Click"  x:Name="MenuItemAiDocClassification"/>
+                        <MenuItem Header="파서 생성기"  Click="ParserGenerator_Click"      x:Name="MenuItemParserGenerator"/>
+                    </MenuItem>
                 </Menu>
 
                 <!-- 오른쪽: 글자 크기 슬라이더 + 테마 토글 -->
