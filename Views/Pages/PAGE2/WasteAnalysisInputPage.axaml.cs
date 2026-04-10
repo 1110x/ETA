@@ -116,6 +116,12 @@ public partial class WasteAnalysisInputPage : UserControl
         ["N-Hexan"] = "NH", ["총대장균군"] = "대장균",
     };
 
+    // 다성분 동시분석: CompoundAliasService (DB 기반 화합물 별칭)로 대체됨
+    // 별칭 관리: 화합물별명 DB 테이블 → CompoundAliasService.Resolve()
+
+    private static bool IsMultiCompoundCategory(string cat) =>
+        cat is "GCMS" or "ICP" or "PFAS" or "IC";
+
     // 약칭 → 소수점 자릿수 캐시 (분석정보 DB 기반)
     private static Dictionary<string, int>? _decimalPlacesCache;
     private static int GetDecimalPlaces(string itemAbbr)
@@ -277,6 +283,7 @@ public partial class WasteAnalysisInputPage : UserControl
     private TreeViewItem? _keyNavTreeFocused = null; // (미사용 - 하위호환)
     private int _keyNavShow1Index = -1;             // 현재 포커스된 Show1 아이템 인덱스
     private List<(Border Item, string Name, object? Data)> _matchItems = new(); // Show1 의뢰시료 목록
+    private string _show1BrowseMode = ""; // Show1 전용 모드 (기본: _inputMode 따라감, "분석항목" 등 독립 모드)
     private Window? _attachedWindow;    // KeyDown 핸들러 등록된 창
 
     public WasteAnalysisInputPage()
@@ -3260,8 +3267,59 @@ public partial class WasteAnalysisInputPage : UserControl
                     concRow[maxSt + 1] = comp.Intercept; // 절편
                     concRow[maxSt + 2] = comp.R;     // R²
 
-                    // 진한색 연한색 교대 색상
-                    docTbl.Children.Add(BuildDocRowUnified(gcDocColDefs, comp.Name, concRow, "ThemeFgWarn", rowIdx++));
+                    // 진한색 연한색 교대 색상 — 성분명 행에 드래그앤드랍 + Shift+1 매칭 지원
+                    var compLabel = comp.Name;
+                    var existingAlias = CompoundAliasService.Resolve(compLabel);
+                    string displayLabel = existingAlias != null ? $"{compLabel} → {existingAlias.Value.분석항목}" : compLabel;
+                    var compBorder = BuildDocRowUnified(gcDocColDefs, displayLabel, concRow, "ThemeFgWarn", rowIdx++);
+                    if (existingAlias != null && compBorder.Child is Grid existGrid)
+                    {
+                        foreach (var ch in existGrid.Children)
+                            if (ch is TextBlock etb && Grid.GetColumn(etb) == 0)
+                            { etb.Foreground = new SolidColorBrush(Color.Parse("#90EE90")); break; }
+                    }
+                    docTbl.Children.Add(compBorder);
+
+                    // 검정곡선 성분 행: 드래그앤드랍 수신 (Show1 분석항목 → 별칭 등록)
+                    var capturedCompName = comp.Name;
+                    var capturedBorder = compBorder;
+                    DragDrop.SetAllowDrop(compBorder, true);
+                    compBorder.Cursor = new Cursor(StandardCursorType.Hand);
+                    compBorder.AddHandler(DragDrop.DragOverEvent, (object? s, DragEventArgs e) =>
+                    {
+                        bool acceptable = e.Data.Contains("match-compound");
+                        e.DragEffects = acceptable ? DragDropEffects.Link : DragDropEffects.None;
+                        if (acceptable)
+                            capturedBorder.Background = AppRes("ThemeBorderActive");
+                        e.Handled = true;
+                    });
+                    compBorder.AddHandler(DragDrop.DragLeaveEvent, (object? s, RoutedEventArgs e) =>
+                    {
+                        capturedBorder.Background = null;
+                    });
+                    compBorder.AddHandler(DragDrop.DropEvent, (object? s, DragEventArgs e) =>
+                    {
+                        capturedBorder.Background = null;
+                        if (e.Data.Contains("match-compound"))
+                        {
+                            string draggedName = e.Data.Get(DataFormats.Text)?.ToString() ?? "";
+                            RegisterCompoundAliasAndUpdateGrid(capturedCompName, draggedName, capturedBorder);
+                        }
+                        e.Handled = true;
+                    });
+                    // Shift+1 모드: 클릭 시 포커스된 Show1 분석항목을 이 성분에 적용
+                    compBorder.PointerPressed += (_, pe) =>
+                    {
+                        if (_keyNavShow1 && _show1BrowseMode == "분석항목"
+                            && _keyNavShow1Index >= 0 && _keyNavShow1Index < _matchItems.Count)
+                        {
+                            var (_, itemName, _) = _matchItems[_keyNavShow1Index];
+                            RegisterCompoundAliasAndUpdateGrid(capturedCompName, itemName, capturedBorder);
+                            if (_keyNavShow1Index + 1 < _matchItems.Count)
+                                NavShow1(_keyNavShow1Index + 1);
+                            pe.Handled = true;
+                        }
+                    };
 
                     // 응답 행
                     string[] respRow = new string[maxSt + 3];
@@ -4013,7 +4071,8 @@ public partial class WasteAnalysisInputPage : UserControl
             {
                 bool acceptable = e.Data.Contains("match-analysis")
                                || e.Data.Contains("match-facility")
-                               || e.Data.Contains("match-waste");
+                               || e.Data.Contains("match-waste")
+                               || e.Data.Contains("match-compound");
                 e.DragEffects = acceptable ? DragDropEffects.Link : DragDropEffects.None;
                 if (acceptable)
                     capturedBorderForDrop.Background = AppRes("ThemeBorderActive");
@@ -4453,6 +4512,9 @@ public partial class WasteAnalysisInputPage : UserControl
             exRow.Status = MatchStatus.입력가능;
             exRow.Enabled = true;
             exRow.IsManualMatch = true;
+            // Matched 객체 설정 (ImportData에서 when 조건 통과용)
+            exRow.Matched = WasteSampleService.FindBySN(draggedSN)
+                ?? new WasteSample { SN = draggedSN, 업체명 = draggedName };
         }
         else if (data.Contains("match-analysis"))
         {
@@ -4465,6 +4527,8 @@ public partial class WasteAnalysisInputPage : UserControl
             exRow.Status = MatchStatus.입력가능;
             exRow.Enabled = true;
             exRow.IsManualMatch = true;
+            // MatchedAnalysis 객체 설정 (ImportData에서 when 조건 통과용)
+            exRow.MatchedAnalysis = new AnalysisRequestRecord { 약칭 = draggedSN, 시료명 = draggedName };
         }
         else if (data.Contains("match-facility"))
         {
@@ -4478,6 +4542,19 @@ public partial class WasteAnalysisInputPage : UserControl
             exRow.Status = MatchStatus.입력가능;
             exRow.Enabled = true;
             exRow.IsManualMatch = true;
+        }
+        else if (data.Contains("match-compound"))
+        {
+            // 분석항목 드래그: 화합물 별칭 등록 + 시료 그리드 일괄 업데이트
+            LogMatch($"DRAG FROM: 분석항목 탭 - '{draggedName}' (카테고리: '{draggedSN}')");
+            string rawCompound = exRow.CompoundName;
+            if (string.IsNullOrEmpty(rawCompound))
+            {
+                LogMatch($"COMPOUND ALIAS: CompoundName이 비어있음 — 무시");
+                return;
+            }
+            RegisterCompoundAliasAndUpdateGrid(rawCompound, draggedName);
+            return;
         }
         else
         {
@@ -5059,6 +5136,7 @@ public partial class WasteAnalysisInputPage : UserControl
             {
                 "Analysis" => "match-analysis",
                 "Facility" => "match-facility",
+                "Compound" => "match-compound",
                 _ => "match-waste"
             };
             dragData.Set(matchKey, name);
@@ -5399,8 +5477,7 @@ public partial class WasteAnalysisInputPage : UserControl
     {
         "BOD" => s.BOD, "TOC" => s.TOC, "SS" => s.SS,
         "T-N" => s.TN, "T-P" => s.TP, "N-Hexan" => s.NHexan, "Phenols" => s.Phenols,
-        // 새로운 UV 항목들 (WasteSample 모델에 필드 추가 필요 시 수정)
-        "시안" => "", "6가크롬" => "", "색도" => "", "ABS" => "", "불소" => "",
+        "시안" => s.CN, "6가크롬" => s.CR6, "색도" => s.COLOR, "ABS" => s.ABS, "불소" => s.FLUORIDE,
         _ => ""
     };
 
@@ -6242,13 +6319,66 @@ public partial class WasteAnalysisInputPage : UserControl
             ? 분석일Raw
             : (s?.채수일 ?? DateTime.Today.ToString("yyyy-MM-dd"));
 
-        // 매칭된 시료가 없으면 시료명을 SN으로 사용 (빈 SN 방지 → UNIQUE 충돌 방지)
-        string sn     = s?.SN ?? row.SN ?? "";
+        // SN 결정: QAQC=QC고정, 처리시설=시료명, 그 외=매칭SN
+        string sn;
+        if (소스구분 == "QAQC")
+            sn = "QC";
+        else if (소스구분 == "처리시설")
+            sn = row.시료명 ?? row.SN ?? "";
+        else
+            sn = s?.SN ?? row.SN ?? "";
         if (string.IsNullOrEmpty(sn)) sn = row.시료명 ?? "";
-        string 업체명 = s?.업체명 ?? "";
-        string 구분   = s?.구분 ?? "";
+        string 업체명;
+        string 구분;
+        if (소스구분 == "처리시설")
+        {
+            업체명 = row.MatchedFacilityName ?? row.SN ?? "";
+            구분 = "";
+        }
+        else if (s != null)
+        {
+            업체명 = s.업체명;
+            구분 = s.구분;
+        }
+        else if (row.MatchedAnalysis != null)
+        {
+            업체명 = row.MatchedAnalysis.약칭;
+            구분 = "";
+        }
+        else
+        {
+            업체명 = "";
+            구분 = "";
+            if (!string.IsNullOrEmpty(sn) && 소스구분 != "QAQC")
+            {
+                if (소스구분 == "수질분석센터")
+                {
+                    // 수질분석센터: SN이 약칭(업체명)
+                    업체명 = sn;
+                }
+                else
+                {
+                    // 폐수배출업소: SN으로 DB 조회
+                    try
+                    {
+                        var found = WasteSampleService.FindBySN(sn);
+                        if (found != null) { 업체명 = found.업체명; 구분 = found.구분; }
+                    }
+                    catch { }
+                }
+            }
+        }
 
-        // 원본시료명이 있으면 비고에 저장 (변경내역 추적용)
+        // 희석배수 기본값: 비어있으면 "1"
+        if (string.IsNullOrEmpty(row.P)) row.P = "1";
+
+        // 시료명: 원본시료명이 있으면 "원본\n↳ 매칭명" 형태로 변경내역 보존
+        string 시료명Full;
+        if (!string.IsNullOrEmpty(row.원본시료명) && row.원본시료명 != row.시료명)
+            시료명Full = $"{row.원본시료명}\n↳ {row.시료명}";
+        else
+            시료명Full = row.시료명 ?? "";
+
         string remark = !string.IsNullOrEmpty(row.원본시료명) ? row.원본시료명 : "";
 
         switch (_activeCategory)
@@ -6259,7 +6389,7 @@ public partial class WasteAnalysisInputPage : UserControl
                 WasteSampleService.UpsertTocData(
                     _tocInstrumentMethod, 분석일, sn, 업체명, 구분,
                     row.D1, row.P, tocInfo?.TocSlope_TC ?? "", row.Fxy, row.Result,
-                    소스구분: 소스구분, 비고: remark, 시료명: row.시료명);
+                    소스구분: 소스구분, 비고: remark, 시료명: 시료명Full);
                 break;
             }
 
@@ -6274,21 +6404,21 @@ public partial class WasteAnalysisInputPage : UserControl
                     식종D2:     docInfo?.식종수_D2    ?? "",
                     식종BOD:    docInfo?.식종수_Result ?? "",
                     식종함유량: docInfo?.식종수_Remark  ?? "",
-                    비고: remark, 시료명: row.시료명);
+                    비고: remark, 시료명: 시료명Full);
                 break;
 
             case "SS":
                 WasteSampleService.UpsertSsData(
                     분석일, sn, 업체명, 구분,
                     row.시료량, row.D1, row.D2, row.Fxy, row.P, row.Result,
-                    소스구분: 소스구분, 비고: remark, 시료명: row.시료명);
+                    소스구분: 소스구분, 비고: remark, 시료명: 시료명Full);
                 break;
 
             case "NHEX":
                 WasteSampleService.UpsertNHexanData(
                     분석일, sn, 업체명, 구분,
                     row.시료량, row.D1, row.D2, row.Fxy, row.P, row.Result,
-                    소스구분: 소스구분, 비고: remark, 시료명: row.시료명);
+                    소스구분: 소스구분, 비고: remark, 시료명: 시료명Full);
                 break;
 
             case "TN" when isUV:
@@ -6324,23 +6454,74 @@ public partial class WasteAnalysisInputPage : UserControl
                         절편:    docInfo?.Standard_Intercept ?? "",
                         R2:      docInfo?.Abs_R2 ?? "",
                         비고: remark,
-                        시료명: row.시료명,
+                        시료명: 시료명Full,
                         소스구분: 소스구분);
                 }
                 break;
 
             case "GCMS":
-                // GC/MS 데이터를 수질분석센터_*_DATA 테이블에 저장
+            {
+                // 성분별 테이블 라우팅: CompoundAliasService로 정규화 후 라우팅
+                string compound = row.CompoundName;
+                if (string.IsNullOrEmpty(compound)) break;
+
+                var resolved = CompoundAliasService.ResolveOrFallback(compound);
+                string tableName = $"{SafeName(resolved.표준코드)}_시험기록부";
+
+                // 해당 성분의 검량선 찾기 (첫 번째가 아닌 매칭되는 성분)
+                var compoundCal = docInfo?.GcCompoundCals?
+                    .FirstOrDefault(c => c.Name.Equals(compound, StringComparison.OrdinalIgnoreCase));
+
+                WasteSampleService.UpsertGcData(
+                    tableName,
+                    분석일, sn, 업체명, 소스구분,
+                    농도: row.Result,
+                    ISTD: row.D2 ?? "",  // 시료별 ISTD 응답값
+                    검량선정보: docInfo,
+                    compoundCal: compoundCal,
+                    비고: remark, 시료명: 시료명Full);
+                break;
+            }
+
+            case "CN" when isUV:
+            case "CR6" when isUV:
+            case "COLOR" when isUV:
+            case "ABS" when isUV:
+            case "FLUORIDE" when isUV:
                 foreach (var item in _activeItems)
                 {
-                    string tableName = $"{SafeName(item)}_시험기록부";
-                    WasteSampleService.UpsertGcData(
-                        tableName,
+                    string tblName = item switch
+                    {
+                        "시안"     => "시안_시험기록부",
+                        "6가크롬"  => "6가크롬_시험기록부",
+                        "색도"     => "색도_시험기록부",
+                        "ABS"      => "ABS_시험기록부",
+                        "불소"     => "불소_시험기록부",
+                        _          => ""
+                    };
+                    if (string.IsNullOrEmpty(tblName)) continue;
+                    WasteSampleService.UpsertUvvisData(
+                        tblName,
                         분석일, sn, 업체명, 소스구분,
-                        농도: row.Result,
-                        ISTD: "",  // 개별 시료의 ISTD 값은 별도 처리 필요
-                        검량선정보: docInfo,
-                        비고: remark, 시료명: row.시료명);
+                        시료량:  row.시료량,
+                        흡광도:  row.D1,
+                        희석배수: row.P,
+                        검량선a: docInfo?.Standard_Slope ?? "",
+                        농도:    row.Result,
+                        st01mgl: docInfo?.Standard_Points?.ElementAtOrDefault(0) ?? "",
+                        st02mgl: docInfo?.Standard_Points?.ElementAtOrDefault(1) ?? "",
+                        st03mgl: docInfo?.Standard_Points?.ElementAtOrDefault(2) ?? "",
+                        st04mgl: docInfo?.Standard_Points?.ElementAtOrDefault(3) ?? "",
+                        st01abs: docInfo?.Abs_Values?.ElementAtOrDefault(0) ?? "",
+                        st02abs: docInfo?.Abs_Values?.ElementAtOrDefault(1) ?? "",
+                        st03abs: docInfo?.Abs_Values?.ElementAtOrDefault(2) ?? "",
+                        st04abs: docInfo?.Abs_Values?.ElementAtOrDefault(3) ?? "",
+                        기울기:  docInfo?.Standard_Slope ?? "",
+                        절편:    docInfo?.Standard_Intercept ?? "",
+                        R2:      docInfo?.Abs_R2 ?? "",
+                        비고: remark,
+                        시료명: 시료명Full,
+                        소스구분: 소스구분);
                 }
                 break;
 
@@ -6603,9 +6784,12 @@ public partial class WasteAnalysisInputPage : UserControl
             Margin = new Thickness(0, 0, 0, 12)
         };
 
-        tabPanel.Children.Add(BuildModeTab("수질분석센터", "🧪", _inputMode == "수질분석센터"));
-        tabPanel.Children.Add(BuildModeTab("처리시설", "🏭", _inputMode == "처리시설"));
-        tabPanel.Children.Add(BuildModeTab("비용부담금", "💰", _inputMode == "비용부담금"));
+        // 분석항목 모드일 때는 분석항목 탭만 활성, 아닐 때는 현재 _inputMode 탭 활성
+        bool isCompoundMode = _show1BrowseMode == "분석항목";
+        tabPanel.Children.Add(BuildModeTab("수질분석센터", "🧪", !isCompoundMode && _inputMode == "수질분석센터"));
+        tabPanel.Children.Add(BuildModeTab("처리시설", "🏭", !isCompoundMode && _inputMode == "처리시설"));
+        tabPanel.Children.Add(BuildModeTab("비용부담금", "💰", !isCompoundMode && _inputMode == "비용부담금"));
+        tabPanel.Children.Add(BuildModeTab("분석항목", "🔬", isCompoundMode));
 
         Grid.SetRow(tabPanel, 0);
         root.Children.Add(tabPanel);
@@ -6688,6 +6872,14 @@ public partial class WasteAnalysisInputPage : UserControl
 
         tab.PointerPressed += (_, _) =>
         {
+            if (title == "분석항목")
+            {
+                // 분석항목 탭은 메인 모드 변경 없이 Show1만 전환
+                _show1BrowseMode = "분석항목";
+                BuildMatchBrowsePanel();
+                return;
+            }
+
             var mode = title switch
             {
                 "수질분석센터" => "수질분석센터",
@@ -6696,10 +6888,10 @@ public partial class WasteAnalysisInputPage : UserControl
                 _ => _inputMode
             };
 
-            if (mode != _inputMode)
+            if (mode != _inputMode || _show1BrowseMode == "분석항목")
             {
+                _show1BrowseMode = ""; // 분석항목 모드 해제
                 SetInputMode(mode);
-                // Show1 갱신 (탭별 의뢰시료 목록 다시 로드)
                 BuildMatchBrowsePanel();
             }
         };
@@ -6714,8 +6906,11 @@ public partial class WasteAnalysisInputPage : UserControl
 
         try
         {
+            // Show1 브라우즈 모드 우선 (분석항목 등 독립 모드)
+            var browseMode = !string.IsNullOrEmpty(_show1BrowseMode) ? _show1BrowseMode : _inputMode;
+
             // 선택된 탭에 따른 필터링
-            switch (_inputMode)
+            switch (browseMode)
             {
                 case "수질분석센터":
                     var analysisRecords = AnalysisRequestService.GetRecentRecords(3);
@@ -6746,6 +6941,46 @@ public partial class WasteAnalysisInputPage : UserControl
                             DisplayText = $"💰 {sample.SN} | {sample.업체명}",
                             Color = "#50C878"  // 더 밝은 초록색
                         });
+                    }
+                    break;
+
+                case "분석항목":
+                    // 분석정보 테이블에서 Analyte 목록 로드 (화합물 별칭 매칭용)
+                    var analyteItems = AnalysisService.GetAllItems();
+                    // 카테고리별 그룹핑
+                    var grouped = analyteItems
+                        .Where(a => !string.IsNullOrWhiteSpace(a.Analyte))
+                        .GroupBy(a => string.IsNullOrEmpty(a.Category) ? "기타" : a.Category)
+                        .OrderBy(g => g.Key);
+                    foreach (var group in grouped)
+                    {
+                        // 카테고리 헤더 (그룹 노드)
+                        allSamples.Add(new
+                        {
+                            Type = "CompoundGroup",
+                            SN = group.Key,
+                            Name = group.Key,
+                            Source = "분석항목",
+                            DisplayText = $"🔬 {group.Key} ({group.Count()})",
+                            Color = "#9B59B6",
+                            IsGroup = true
+                        });
+                        // 각 분석항목 (드래그 가능)
+                        foreach (var item in group)
+                        {
+                            allSamples.Add(new
+                            {
+                                Type = "Compound",
+                                SN = item.Category,  // 카테고리를 SN으로 사용
+                                Name = item.Analyte,
+                                Source = "분석항목",
+                                DisplayText = $"   {item.Analyte}",
+                                Color = "#BB8FCE",
+                                IsGroup = false,
+                                Analyte = item.Analyte,
+                                Category = item.Category
+                            });
+                        }
                     }
                     break;
 
@@ -6797,17 +7032,22 @@ public partial class WasteAnalysisInputPage : UserControl
         if (allSamples.Count > 0)
         {
             // 탭별 헤더 텍스트
-            string headerIcon = _inputMode switch
+            var currentBrowse = !string.IsNullOrEmpty(_show1BrowseMode) ? _show1BrowseMode : _inputMode;
+            string headerIcon = currentBrowse switch
             {
                 "수질분석센터" => "🧪",
                 "비용부담금" => "💰",
                 "처리시설" => "🏭",
+                "분석항목" => "🔬",
                 _ => "📋"
             };
 
+            string headerText = currentBrowse == "분석항목"
+                ? $"{headerIcon} 분석항목 ({allSamples.Count}개)"
+                : $"{headerIcon} {currentBrowse} 의뢰시료 ({allSamples.Count}개)";
             container.Children.Add(FsSM(new TextBlock
             {
-                Text = $"{headerIcon} {_inputMode} 의뢰시료 ({allSamples.Count}개)",
+                Text = headerText,
                 FontWeight = FontWeight.SemiBold,
                 Foreground = AppRes("AppFg"), // 헤더도 흰색으로 통일
                 Margin = new Thickness(4, 0, 0, 8)
@@ -7065,6 +7305,7 @@ public partial class WasteAnalysisInputPage : UserControl
                         "Analysis" => "match-analysis",
                         "Facility" => "match-facility",
                         "Waste" => "match-waste",
+                        "Compound" => "match-compound",
                         "Excel" => _inputMode switch
                         {
                             "수질분석센터" => "match-analysis",
@@ -7082,6 +7323,7 @@ public partial class WasteAnalysisInputPage : UserControl
                             "Analysis" => dynSample.SN?.ToString() ?? "", // 수질분석센터: 약칭을 SN으로 사용
                             "Facility" => dynSample.SN?.ToString() ?? "", // 처리시설: 시설명을 SN으로 사용
                             "Waste" => dynSample.SN?.ToString() ?? "", // 비용부담금: 실제 SN 사용
+                            "Compound" => dynSample.SN?.ToString() ?? "", // 분석항목: 카테고리를 SN으로 사용
                             _ => ""
                         };
                     }
@@ -7337,7 +7579,8 @@ public partial class WasteAnalysisInputPage : UserControl
             return;
         }
 
-        // 모든 성분의 Sample 행을 하나의 목록으로 합침 (정도관리 제외)
+        // 모든 성분의 행을 하나의 목록으로 합침
+        // Cal(검정곡선 원자료)만 제외, 정도관리(BK/CCV/FBK/MBK)는 IsControl 플래그 세팅하여 포함
         // 시료명은 "<성분> | <RawName>" 으로 구분하여 복수 성분 공존 허용
         var excelRows = new List<ExcelRow>();
         int sampleCount = 0;
@@ -7345,19 +7588,20 @@ public partial class WasteAnalysisInputPage : UserControl
         {
             foreach (var r in c.Rows)
             {
-                if (r.IsControl) continue;
                 if (r.Type.Equals("Cal", StringComparison.OrdinalIgnoreCase)) continue;
                 excelRows.Add(new ExcelRow
                 {
-                    시료명 = string.IsNullOrEmpty(c.Name) ? r.RawName : $"{c.Name} | {r.RawName}",
-                    SN     = r.SN,
-                    D1     = r.Resp,      // 기기응답(면적)
-                    D2     = r.IstdResp,  // ISTD 응답 (없으면 빈값)
-                    Fxy    = r.FinalConc, // 기기 계산 농도
-                    Result = r.FinalConc,
-                    P      = r.Dilution,  // 희석배수 (상세블록에서 조인)
+                    시료명       = string.IsNullOrEmpty(c.Name) ? r.RawName : $"{c.Name} | {r.RawName}",
+                    CompoundName = c.Name,       // 성분별 라우팅 키
+                    SN           = r.SN,
+                    D1           = r.Resp,        // 기기응답(면적)
+                    D2           = r.IstdResp,    // ISTD 응답 (없으면 빈값)
+                    Fxy          = r.FinalConc,   // 기기 계산 농도
+                    Result       = r.FinalConc,
+                    P            = r.Dilution,    // 희석배수 (상세블록에서 조인)
+                    IsControl    = r.IsControl,
                 });
-                sampleCount++;
+                if (!r.IsControl) sampleCount++;
             }
         }
 
@@ -7367,10 +7611,12 @@ public partial class WasteAnalysisInputPage : UserControl
             return;
         }
 
-        // GCMS 카테고리에 라우팅 (임시: 성분별 DB 테이블 라우팅은 후속 작업)
+        // GCMS 카테고리에 라우팅 — _activeItems를 파싱된 성분명으로 동적 구성
         _activeCategory   = "GCMS";
-        var gcmsCat = Categories.FirstOrDefault(c => c.Key == "GCMS");
-        _activeItems      = gcmsCat.Items ?? Array.Empty<string>();
+        _activeItems      = gc.Compounds
+            .Select(c => c.Name)
+            .Where(n => !string.IsNullOrEmpty(n))
+            .Distinct().ToArray();
         _categorySelected = true;
         _categoryExcelData["GCMS"] = excelRows;
 
@@ -7629,9 +7875,13 @@ public partial class WasteAnalysisInputPage : UserControl
 
                     default:
                         if (string.IsNullOrEmpty(row.SN)) row.SN = row.시료명;
-                        var srcTag = row.IsControl ? "QAQC" : "미분류";
-                        LogImport($"[{processed}] {srcTag}: {row.시료명} Source={row.Source} Enabled={row.Enabled} FacilityName={row.MatchedFacilityName}");
-                        try { SaveRawData(row, null, srcTag); }
+                        var srcTag = row.IsControl ? "QAQC"
+                            : row.Source == SourceType.폐수배출업소 ? "폐수배출업소"
+                            : row.Source == SourceType.수질분석센터 ? "수질분석센터"
+                            : row.Source == SourceType.처리시설     ? "처리시설"
+                            : "미분류";
+                        LogImport($"[{processed}] {srcTag}: {row.시료명} Source={row.Source} Matched={row.Matched != null} MatchedAnalysis={row.MatchedAnalysis != null} FacilityName={row.MatchedFacilityName}");
+                        try { SaveRawData(row, row.Matched, srcTag); }
                         catch (Exception ex) { LogImport($"  오류: {ex.Message}"); }
                         imported++;
                         break;
@@ -7689,6 +7939,16 @@ public partial class WasteAnalysisInputPage : UserControl
     private void UpdateWasteSampleValues(ExcelRow row)
     {
         var s = row.Matched!;
+
+        // 다성분 카테고리(GC/ICP/PFAS)는 동적 컬럼 갱신 (CompoundAliasService로 정규화)
+        if (IsMultiCompoundCategory(_activeCategory) && !string.IsNullOrEmpty(row.CompoundName))
+        {
+            var resolved = CompoundAliasService.ResolveOrFallback(row.CompoundName);
+            if (!string.IsNullOrEmpty(resolved.분석항목))
+                WasteSampleService.UpdateDynamicValue("폐수의뢰및결과", s.Id, resolved.분석항목, row.Result);
+            return;
+        }
+
         if (_activeItems.Length > 0)
         {
             switch (_activeItems[0])
@@ -7700,25 +7960,40 @@ public partial class WasteAnalysisInputPage : UserControl
                 case "T-P": s.TP  = row.Result; break;
                 case "N-Hexan": s.NHexan = row.Result; break;
                 case "Phenols": s.Phenols = row.Result; break;
-                // TODO: WasteSample 모델에 새로운 UV 필드 추가 후 활성화
-                // case "시안": s.CN = row.Result; break;
-                // case "6가크롬": s.CR6 = row.Result; break;
-                // case "색도": s.COLOR = row.Result; break;
-                // case "ABS": s.ABS = row.Result; break;
-                // case "불소": s.FLUORIDE = row.Result; break;
+                case "시안": s.CN = row.Result; break;
+                case "6가크롬": s.CR6 = row.Result; break;
+                case "색도": s.COLOR = row.Result; break;
+                case "ABS": s.ABS = row.Result; break;
+                case "불소": s.FLUORIDE = row.Result; break;
             }
         }
-        WasteSampleService.UpdateValues(s.Id, s.BOD, s.TOC, s.SS, s.TN, s.TP, s.NHexan, s.Phenols);
+        WasteSampleService.UpdateValues(s.Id, s.BOD, s.TOC, s.SS, s.TN, s.TP, s.NHexan, s.Phenols,
+            s.CN, s.CR6, s.COLOR, s.ABS, s.FLUORIDE);
     }
 
     private void ImportAnalysisRequest(ExcelRow row)
     {
         var ar = row.MatchedAnalysis!;
-        // 약칭으로 컬럼명 매핑 (BOD → 생물화학적 산소요구량 등)
         var shortNames = AnalysisRequestService.GetShortNames();
+
+        // 다성분 카테고리(GC/ICP/PFAS)는 성분명으로 컬럼 매핑 (CompoundAliasService로 정규화)
+        if (IsMultiCompoundCategory(_activeCategory) && !string.IsNullOrEmpty(row.CompoundName))
+        {
+            var analyteName = CompoundAliasService.ResolveOrFallback(row.CompoundName).분석항목;
+            if (!string.IsNullOrEmpty(analyteName))
+            {
+                var colName = shortNames.FirstOrDefault(kv =>
+                    kv.Value.Equals(analyteName, StringComparison.OrdinalIgnoreCase)
+                    || kv.Key.Equals(analyteName, StringComparison.OrdinalIgnoreCase)).Key;
+                if (!string.IsNullOrEmpty(colName))
+                    AnalysisRequestService.UpdateResultValue(ar.Id, colName, row.Result);
+            }
+            return;
+        }
+
+        // 단일 항목: 약칭으로 컬럼명 매핑 (BOD → 생물화학적 산소요구량 등)
         foreach (var item in _activeItems)
         {
-            // 약칭 → 전체 컬럼명 역매핑
             var colName = shortNames.FirstOrDefault(kv =>
                 kv.Value.Equals(item, StringComparison.OrdinalIgnoreCase)).Key;
             if (!string.IsNullOrEmpty(colName))
@@ -7736,7 +8011,14 @@ public partial class WasteAnalysisInputPage : UserControl
         var target = facilityRows.FirstOrDefault(f => f.시료명 == row.시료명);
         if (target == null) return;
 
-        if (_activeItems.Length > 0)
+        // 다성분 카테고리(GC/ICP/PFAS)는 성분명으로 동적 매핑 (CompoundAliasService로 정규화)
+        if (IsMultiCompoundCategory(_activeCategory) && !string.IsNullOrEmpty(row.CompoundName))
+        {
+            var resolved = CompoundAliasService.ResolveOrFallback(row.CompoundName);
+            if (!string.IsNullOrEmpty(resolved.분석항목))
+                target[resolved.분석항목] = row.Result;
+        }
+        else if (_activeItems.Length > 0)
         {
             switch (_activeItems[0])
             {
@@ -7745,6 +8027,13 @@ public partial class WasteAnalysisInputPage : UserControl
                 case "SS":  target.SS  = row.Result; break;
                 case "T-N": target.TN  = row.Result; break;
                 case "T-P": target.TP  = row.Result; break;
+                case "N-Hexan": target["N-Hexan"] = row.Result; break;
+                case "Phenols": target["Phenols"] = row.Result; break;
+                case "시안": target["시안"] = row.Result; break;
+                case "6가크롬": target["6가크롬"] = row.Result; break;
+                case "색도": target["색도"] = row.Result; break;
+                case "ABS": target["ABS"] = row.Result; break;
+                case "불소": target["불소"] = row.Result; break;
             }
         }
         string user = ETA.Services.Common.CurrentUserManager.Instance.CurrentUserId ?? "";
@@ -7994,6 +8283,65 @@ public partial class WasteAnalysisInputPage : UserControl
             }
             UpdateInItems(DateTreeView.Items);
         }
+    }
+
+    /// <summary>화합물 별칭 등록 + 검정곡선 라벨 + 시료 그리드 일괄 업데이트 (공유 메서드)</summary>
+    private void RegisterCompoundAliasAndUpdateGrid(string rawCompound, string analyteName, Border? calRowBorder = null)
+    {
+        if (string.IsNullOrEmpty(rawCompound) || string.IsNullOrEmpty(analyteName)) return;
+
+        // 1. 별칭 등록 (미등록 시)
+        var existing = CompoundAliasService.Resolve(rawCompound);
+        if (existing == null)
+        {
+            string standardCode = CompoundAliasService.FindStandardCodeByAnalyte(analyteName) ?? rawCompound;
+            bool added = CompoundAliasService.AddAlias(rawCompound, standardCode, analyteName);
+            LogMatch($"COMPOUND ALIAS: '{rawCompound}' → 표준코드='{standardCode}', 분석항목='{analyteName}' (등록: {added})");
+        }
+        else
+        {
+            LogMatch($"COMPOUND ALIAS: '{rawCompound}' 이미 등록됨 → {existing.Value.표준코드}/{existing.Value.분석항목}");
+        }
+
+        var resolved = CompoundAliasService.ResolveOrFallback(rawCompound);
+
+        // 2. 검정곡선 행 라벨 업데이트
+        if (calRowBorder?.Child is Grid calGrid)
+        {
+            foreach (var child in calGrid.Children)
+            {
+                if (child is TextBlock tb && Grid.GetColumn(tb) == 0)
+                {
+                    tb.Text = $"{rawCompound} → {resolved.분석항목}";
+                    tb.Foreground = new SolidColorBrush(Color.Parse("#90EE90"));
+                    break;
+                }
+            }
+        }
+
+        // 3. 같은 CompoundName을 가진 모든 시료 행 UI 업데이트
+        if (_currentExcelRows == null) return;
+        int updated = 0;
+        for (int i = 0; i < _currentExcelRows.Count; i++)
+        {
+            if (_currentExcelRows[i].CompoundName != rawCompound) continue;
+            updated++;
+            if (i < _rowNameCells.Count)
+            {
+                var nameCell = _rowNameCells[i];
+                var row = _currentExcelRows[i];
+                string samplePart = row.시료명?.Split('|').LastOrDefault()?.Trim() ?? row.시료명 ?? "";
+                nameCell.Children.Clear();
+                nameCell.Children.Add(FsBase(new TextBlock
+                {
+                    Text = $"{resolved.분석항목} | {samplePart}",
+                    FontFamily = Font,
+                    Foreground = new SolidColorBrush(Color.Parse("#90EE90")),
+                    TextTrimming = TextTrimming.CharacterEllipsis,
+                }));
+            }
+        }
+        LogMatch($"COMPOUND ALIAS: '{rawCompound}' → {updated}개 시료 행에 적용됨");
     }
 
     /// <summary>데이터 그리드와 동일한 컬럼 구조의 문서 정보 행.
