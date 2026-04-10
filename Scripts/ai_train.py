@@ -61,7 +61,6 @@ def train(texts, labels):
             max_iter     = 1000,
             C            = 1.0,
             solver       = "lbfgs",
-            multi_class  = "auto",
         )),
     ])
 

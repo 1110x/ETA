@@ -109,6 +109,20 @@ public partial class WasteAnalysisInputPage : UserControl
         ["TOC"]               = "TOC_Shimadzu",
     };
 
+    // ── 분류기 레이블 → 카테고리 키 매핑 (AI파서선택 시 카테고리 자동 전환) ──
+    private static readonly Dictionary<string, string> _classifierToCategory = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["BOD"] = "BOD", ["SS"] = "SS", ["NHex"] = "NHEX",
+        ["UVVIS"] = "TN",  // UV 계열 기본값 (실제로는 파서가 항목 구분)
+        ["TOC_Shimadzu"] = "TOC", ["TOC_Shimadzu_PDF"] = "TOC",
+        ["TOC_NPOC"] = "TOC", ["TOC_Scalar_NPOC"] = "TOC", ["TOC_Scalar_TCIC"] = "TOC",
+        ["TOC"] = "TOC",
+        ["GC"] = "GCMS",
+        ["UV_Shimadzu_PDF"] = "TN", ["UV_Shimadzu_ASCII"] = "TN",
+        ["UV_Cary_PDF"] = "TN", ["UV_Cary_CSV"] = "TN",
+        ["ICP"] = "ICP", ["LCMS"] = "PFAS",
+    };
+
     // Items값 → DB약칭 별명 매핑 (분장표준처리 약칭과 다른 경우)
     private static readonly Dictionary<string, string> _itemAliases = new(StringComparer.OrdinalIgnoreCase)
     {
@@ -401,7 +415,26 @@ public partial class WasteAnalysisInputPage : UserControl
             TextShimmer.AttachIfNew(btn);
         }
 
-        // 첨부 파일 버튼 제거 — 모든 모드에서 서브메뉴 버튼 사용
+        // AI 파서 자동선택 버튼
+        if (AiParserClassifier.IsModelReady() || ETA.Services.SERVICE4.SignatureClassifier.HasSignatures())
+        {
+            var aiBtn = FsSM(new Button
+            {
+                Content = "🤖 AI파서",
+                FontFamily = Font,
+                Padding = new Thickness(8, 4),
+                Margin = new Thickness(4, 2),
+                CornerRadius = new CornerRadius(4),
+                Cursor = new Cursor(StandardCursorType.Hand),
+                MinWidth = 72, MinHeight = 0,
+                HorizontalContentAlignment = HorizontalAlignment.Center,
+                Background = new SolidColorBrush(Color.Parse("#2E7D32")),
+                Foreground = Avalonia.Media.Brushes.White,
+            });
+            aiBtn.Click += async (_, _) => await OnAiParserButtonClick();
+            AnalysisItemButtons.Children.Add(aiBtn);
+        }
+
         UpdateCategoryButtonStyles();
     }
 
@@ -423,6 +456,43 @@ public partial class WasteAnalysisInputPage : UserControl
 
         EditPanelChanged?.Invoke(null);
         BuildStatsPanel();
+    }
+
+    /// <summary>AI파서선택 버튼: 파일 선택 → ONNX 분류 → 카테고리 자동 전환 → 파서 실행 → Show2 로드</summary>
+    private async Task OnAiParserButtonClick()
+    {
+        var aiResult = await AiPickAndPredictAsync();
+        if (aiResult == null) return;
+
+        if (aiResult.Value.ParserKey == "__MANUAL__")
+        {
+            // 사용자가 "직접 선택" → 기존 수동 다이얼로그
+            var manualParser = await ShowParserSelectionDialogFirst();
+            if (manualParser == null) return;
+            await RunParserAsync(manualParser, null, "AI파서");
+        }
+        else
+        {
+            // AI 분류 결과에서 카테고리 자동 전환
+            // aiResult에서 원본 분류 레이블 찾기 → 카테고리 키 매핑
+            var filePath = aiResult.Value.FilePath;
+            var parserKey = aiResult.Value.ParserKey;
+
+            // 파서키에서 역으로 분류 레이블 찾기
+            string? classLabel = _classifierToRunner
+                .Where(kv => kv.Value == parserKey)
+                .Select(kv => kv.Key)
+                .FirstOrDefault();
+
+            // 카테고리 자동 전환
+            if (classLabel != null && _classifierToCategory.TryGetValue(classLabel, out var catKey))
+            {
+                OnCategoryButtonClick(catKey);
+            }
+
+            var match = Categories.FirstOrDefault(c => c.Key == _activeCategory);
+            await RunParserAsync(parserKey, filePath, match.Label);
+        }
     }
 
     /// <summary>서브메뉴 "새로고침" 또는 별도 첨부 시 파서 선택 먼저 진행</summary>
