@@ -55,6 +55,8 @@ public static class ShimadzuUvPdfParser
         var pages = doc.GetPages().ToList();
         Log($"총 {pages.Count}페이지");
 
+        string? docDate = null;
+
         for (int pi = 0; pi < pages.Count; pi++)
         {
             var lines = ExtractLines(pages[pi]);
@@ -64,13 +66,22 @@ public static class ShimadzuUvPdfParser
             foreach (var l in lines) Log($"  [{l}]");
 
             if (pi == 0)
+            {
                 ParseStandardPage(lines, docInfo);
+                docDate = ExtractDate(lines);
+                // 파일명/폴더명에서 UV 항목 감지 → DetectedCategory
+                if (docInfo.DetectedCategory == null)
+                    docInfo.DetectedCategory = DetectUvItemFromLines(lines);
+                // 감지된 항목으로 item 재설정
+                if (!string.IsNullOrEmpty(docInfo.DetectedCategory))
+                    item = CatToItemName(docInfo.DetectedCategory);
+            }
             else
                 ParseSamplePage(lines, rows, item, resultFormatter);
         }
 
-        Log($"\n결과: 시료 {rows.Count}건, 기울기={docInfo.Standard_Slope}, R²={docInfo.Abs_R2}");
-        return new ParseResult(rows, docInfo, null, "Shimadzu_UV_PDF");
+        Log($"\n결과: 시료 {rows.Count}건, 기울기={docInfo.Standard_Slope}, R²={docInfo.Abs_R2}, 날짜={docDate}, 항목={docInfo.DetectedCategory}");
+        return new ParseResult(rows, docInfo, docDate, "Shimadzu_UV_PDF");
     }
 
     // ── 텍스트 추출 ──────────────────────────────────────────────────────────
@@ -126,6 +137,70 @@ public static class ShimadzuUvPdfParser
         docInfo.Abs_Values      = stdAbs.ToArray();
         docInfo.분석방법 = "Shimadzu UV-1800";
     }
+
+    // ── 날짜 추출: "2026-04-07  02:39:44 오" 패턴 ────────────────────────────
+    private static readonly Regex DateRe = new(@"(\d{4}-\d{2}-\d{2})", RegexOptions.Compiled);
+    private static string? ExtractDate(List<string> lines)
+    {
+        foreach (var line in lines)
+        {
+            var m = DateRe.Match(line);
+            if (m.Success && DateTime.TryParse(m.Groups[1].Value, out _))
+            {
+                Log($"날짜 감지: {m.Groups[1].Value}");
+                return m.Groups[1].Value;
+            }
+        }
+        return null;
+    }
+
+    // ── UV 항목 감지: File Name 경로 또는 페이지 텍스트에서 ────────────────────
+    private static readonly (string Keyword, string Category)[] UvKeywords =
+    [
+        ("Phenols", "PHENOLS"), ("페놀",   "PHENOLS"),
+        ("T-P",     "TP"),      ("TP",     "TP"),
+        ("T-N",     "TN"),      ("TN",     "TN"),
+        ("시안",    "CN"),      ("CN",     "CN"),
+        ("6가크롬", "CR6"),     ("Cr6",    "CR6"),
+        ("색도",    "COLOR"),
+        ("ABS",     "ABS"),
+        ("불소",    "FLUORIDE"),
+    ];
+
+    private static string? DetectUvItemFromLines(List<string> lines)
+    {
+        // "File Name:" 줄 우선 검색 (경로에 폴더명/파일명으로 항목 표시)
+        var fileNameLine = lines.FirstOrDefault(l =>
+            l.StartsWith("File Name", StringComparison.OrdinalIgnoreCase) ||
+            l.StartsWith("File:") ||
+            l.Contains(":\\") || l.Contains(":/"));
+
+        var searchTargets = fileNameLine != null
+            ? new[] { fileNameLine }.Concat(lines)
+            : lines;
+
+        foreach (var line in searchTargets)
+            foreach (var (kw, cat) in UvKeywords)
+                if (line.Contains(kw, StringComparison.OrdinalIgnoreCase))
+                {
+                    Log($"UV 항목 감지: '{kw}' → {cat}  (줄: {line})");
+                    return cat;
+                }
+        return null;
+    }
+
+    private static string CatToItemName(string category) => category switch
+    {
+        "PHENOLS"  => "Phenols",
+        "TP"       => "T-P",
+        "TN"       => "T-N",
+        "CN"       => "시안",
+        "CR6"      => "6가크롬",
+        "COLOR"    => "색도",
+        "ABS"      => "ABS",
+        "FLUORIDE" => "불소",
+        _          => "UVVIS",
+    };
 
     // ── 2페이지~: 시료 데이터 ────────────────────────────────────────────────
     // 전략: 줄에 "Unknown"이 포함되면 파싱 시도

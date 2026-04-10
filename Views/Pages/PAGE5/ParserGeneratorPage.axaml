@@ -1,0 +1,34 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ETA.Views.Pages.PAGE5.ParserGeneratorPage">
+
+    <UserControl.Styles>
+        <Style Selector="ListBoxItem">
+            <Setter Property="Padding"   Value="2,3" />
+            <Setter Property="Margin"    Value="0,1" />
+            <Setter Property="FontSize"  Value="{DynamicResource FontSizeBase}" />
+            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#Pretendard" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- 헤더 -->
+        <Border Grid.Row="0"
+                Padding="12,8"
+                BorderThickness="0,0,0,1"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}">
+            <TextBlock Text="파서 생성기 — 분석 파일"
+                       FontFamily="avares://ETA/Assets/Fonts#Pretendard"
+                       FontSize="{DynamicResource FontSizeSM}"
+                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+        </Border>
+
+        <!-- 파일 목록 -->
+        <ListBox Grid.Row="1"
+                 x:Name="FileListBox"
+                 SelectionChanged="FileListBox_SelectionChanged"
+                 Margin="4" />
+
+    </Grid>
+</UserControl>

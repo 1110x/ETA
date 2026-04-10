@@ -1,0 +1,41 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ETA.Views.Pages.PAGE5.AiDocClassificationPage">
+
+    <UserControl.Styles>
+        <Style Selector="TreeViewItem">
+            <Setter Property="Padding"    Value="1,4" />
+            <Setter Property="Margin"     Value="0,1" />
+            <Setter Property="MinHeight"  Value="0" />
+            <Setter Property="FontSize"   Value="{DynamicResource FontSizeBase}" />
+            <Setter Property="Foreground" Value="{DynamicResource TreeFg}" />
+            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#Pretendard" />
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="TreeViewItem:selected /template/ ContentPresenter#PART_HeaderPresenter">
+            <Setter Property="Background" Value="{DynamicResource SystemAccentColor}" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- 헤더 -->
+        <Border Grid.Row="0"
+                Padding="12,8"
+                BorderThickness="0,0,0,1"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}">
+            <TextBlock x:Name="HeaderText"
+                       Text="AI 문서분류 — 파서 선택"
+                       FontFamily="avares://ETA/Assets/Fonts#Pretendard"
+                       FontSize="{DynamicResource FontSizeSM}"
+                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+        </Border>
+
+        <!-- 파서 트리뷰 -->
+        <TreeView Grid.Row="1"
+                  x:Name="ParserTreeView"
+                  SelectionChanged="ParserTreeView_SelectionChanged"
+                  Margin="4,4,4,4" />
+
+    </Grid>
+</UserControl>

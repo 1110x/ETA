@@ -2,6 +2,42 @@
 
 ---
 
+## 2026-04-10
+
+### AI 학습 메뉴 신규 구현 (AI 문서분류)
+
+**파일**:
+- `Views/MainPage.axaml` — "AI 학습 > AI 문서분류" MenuItem 추가
+- `Views/MainPage.axaml.cs` — `AiDocClassification_Click`, BT1(학습), BT2(새로고침) 케이스
+- `Views/Pages/PAGE5/AiDocClassificationPage.axaml` — 트리뷰 AXAML (신규)
+- `Views/Pages/PAGE5/AiDocClassificationPage.axaml.cs` — 전체 로직 (신규)
+
+**화면 구성**:
+- Show1: 파서/분석항목 트리뷰 (13종, 파일 수 배지 + AI 학습 완료 표시)
+- Show2: `+ 파일 추가` 버튼 + 파일 목록 리스트
+- Show3: 선택 파일 미리보기 또는 AI 학습 패턴 결과
+- 서브메뉴: `학습` (BT1) → Claude API 호출, `새로고침` (BT2)
+
+**DB 테이블** (앱 시작 시 자동 생성):
+- `AI_문서분류_학습데이터`: 파서타입 + 파일명 + 파일형식 + BLOB 데이터
+- `AI_문서분류_패턴`: 파서타입 UNIQUE + Claude 분석 결과 텍스트
+
+**AI 학습 흐름**:
+1. 사용자가 Show1에서 분석항목 선택 (예: "BOD")
+2. Show2의 `+ 파일 추가` 클릭 → 파일 선택 → DB 저장 → 목록 갱신
+3. 서브메뉴 `학습` 클릭 → DB 파일 읽기 → Claude API 전송 → 패턴 저장 → Show3 결과 표시
+
+**Claude API 설정**:
+- `appsettings.json`에 `"AnthropicApiKey": "sk-ant-..."` 추가 필요
+- 모델: `claude-haiku-4-5-20251001` (빠른 분석용)
+- CSV/TXT: 텍스트 추출 전송, Excel/PDF: 파일명+메타데이터 전송
+- 파일당 최대 3,000자, 한 번에 최대 5개 파일 전송
+
+**수정된 기존 버그**:
+- `WasteSampleService.cs` — git stash pop 후 `GetRecentSamples` 중복 메서드 제거
+
+---
+
 ## 2026-04-05 (오늘)
 
 ### 1. 견적발행내역 🔵🔴 아이콘 배지에 가려지는 문제 수정
