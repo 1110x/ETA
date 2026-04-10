@@ -3280,36 +3280,39 @@ public partial class WasteAnalysisInputPage : UserControl
                     }
                     docTbl.Children.Add(compBorder);
 
-                    // 검정곡선 성분 행: 드래그앤드랍 수신 (Show1 분석항목 → 별칭 등록)
+                    // 검정곡선 성분 행: 드래그앤드랍 + Shift+1 클릭 수신
                     var capturedCompName = comp.Name;
                     var capturedBorder = compBorder;
-                    DragDrop.SetAllowDrop(compBorder, true);
+                    compBorder.Background = Avalonia.Media.Brushes.Transparent; // 히트테스트 보장
                     compBorder.Cursor = new Cursor(StandardCursorType.Hand);
+                    DragDrop.SetAllowDrop(compBorder, true);
                     compBorder.AddHandler(DragDrop.DragOverEvent, (object? s, DragEventArgs e) =>
                     {
                         bool acceptable = e.Data.Contains("match-compound");
                         e.DragEffects = acceptable ? DragDropEffects.Link : DragDropEffects.None;
                         if (acceptable)
-                            capturedBorder.Background = AppRes("ThemeBorderActive");
+                            capturedBorder.BorderBrush = new SolidColorBrush(Color.Parse("#4CAF50"));
                         e.Handled = true;
-                    });
+                    }, Avalonia.Interactivity.RoutingStrategies.Tunnel);
                     compBorder.AddHandler(DragDrop.DragLeaveEvent, (object? s, RoutedEventArgs e) =>
                     {
-                        capturedBorder.Background = null;
-                    });
+                        capturedBorder.BorderBrush = AppRes("ThemeBorderSubtle");
+                    }, Avalonia.Interactivity.RoutingStrategies.Tunnel);
                     compBorder.AddHandler(DragDrop.DropEvent, (object? s, DragEventArgs e) =>
                     {
-                        capturedBorder.Background = null;
+                        capturedBorder.BorderBrush = AppRes("ThemeBorderSubtle");
                         if (e.Data.Contains("match-compound"))
                         {
                             string draggedName = e.Data.Get(DataFormats.Text)?.ToString() ?? "";
+                            System.Diagnostics.Debug.WriteLine($"[CalRow DROP] '{capturedCompName}' ← '{draggedName}'");
                             RegisterCompoundAliasAndUpdateGrid(capturedCompName, draggedName, capturedBorder);
                         }
                         e.Handled = true;
-                    });
+                    }, Avalonia.Interactivity.RoutingStrategies.Tunnel);
                     // Shift+1 모드: 클릭 시 포커스된 Show1 분석항목을 이 성분에 적용
-                    compBorder.PointerPressed += (_, pe) =>
+                    compBorder.AddHandler(Avalonia.Input.InputElement.PointerPressedEvent, (object? s, PointerPressedEventArgs pe) =>
                     {
+                        System.Diagnostics.Debug.WriteLine($"[CalRow CLICK] '{capturedCompName}', keyNav={_keyNavShow1}, browse='{_show1BrowseMode}', idx={_keyNavShow1Index}");
                         if (_keyNavShow1 && _show1BrowseMode == "분석항목"
                             && _keyNavShow1Index >= 0 && _keyNavShow1Index < _matchItems.Count)
                         {
@@ -3319,7 +3322,7 @@ public partial class WasteAnalysisInputPage : UserControl
                                 NavShow1(_keyNavShow1Index + 1);
                             pe.Handled = true;
                         }
-                    };
+                    }, Avalonia.Interactivity.RoutingStrategies.Tunnel);
 
                     // 응답 행
                     string[] respRow = new string[maxSt + 3];
