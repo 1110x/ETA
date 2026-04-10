@@ -409,16 +409,23 @@ public static class WasteSampleService
         string 채수일, string sn, string 업체명, string 구분,
         string 시료량, string d1, string d2, string 희석배수, string 결과,
         string 소스구분 = "폐수배출업소", string 식종시료량 = "", string 식종D1 = "", string 식종D2 = "",
-        string 식종BOD = "", string 식종함유량 = "", string 비고 = "")
+        string 식종BOD = "", string 식종함유량 = "", string 비고 = "", string 시료명 = "")
     {
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
+            if (!DbConnectionFactory.ColumnExists(conn, "BOD_시험기록부", "시료명"))
+            {
+                using var alt = conn.CreateCommand();
+                alt.CommandText = "ALTER TABLE `BOD_시험기록부` ADD COLUMN `시료명` TEXT DEFAULT ''";
+                alt.ExecuteNonQuery();
+            }
             using var chk = conn.CreateCommand();
-            chk.CommandText = "SELECT COUNT(*) FROM `BOD_시험기록부` WHERE LEFT(분석일,10)=@d AND SN=@sn";
+            chk.CommandText = "SELECT COUNT(*) FROM `BOD_시험기록부` WHERE LEFT(분석일,10)=@d AND SN=@sn AND 시료명=@nm2";
             chk.Parameters.AddWithValue("@d",  채수일);
             chk.Parameters.AddWithValue("@sn", sn);
+            chk.Parameters.AddWithValue("@nm2", 시료명);
             bool exists = Convert.ToInt32(chk.ExecuteScalar()) > 0;
 
             using var cmd = conn.CreateCommand();
@@ -428,14 +435,14 @@ public static class WasteSampleService
                     SET 시료량=@vol, D1=@d1, D2=@d2, 희석배수=@dil, 결과=@r,
                         식종시료량=@sv, 식종D1=@sd1, 식종D2=@sd2, 식종BOD=@sbod, 식종함유량=@spct,
                         비고=@remark, 등록일시={DbConnectionFactory.NowExpr}
-                    WHERE LEFT(분석일,10)=@d AND SN=@sn";
+                    WHERE LEFT(분석일,10)=@d AND SN=@sn AND 시료명=@nm2";
             }
             else
             {
                 cmd.CommandText = $@"INSERT INTO `BOD_시험기록부`
-                    (분석일, SN, 업체명, 구분, 소스구분, 시료량, D1, D2, 희석배수, 결과,
+                    (분석일, SN, 업체명, 구분, 소스구분, 시료명, 시료량, D1, D2, 희석배수, 결과,
                      식종시료량, 식종D1, 식종D2, 식종BOD, 식종함유량, 비고, 등록일시)
-                    VALUES (@d, @sn, @nm, @gu, @src, @vol, @d1, @d2, @dil, @r,
+                    VALUES (@d, @sn, @nm, @gu, @src, @nm2, @vol, @d1, @d2, @dil, @r,
                             @sv, @sd1, @sd2, @sbod, @spct, @remark, {DbConnectionFactory.NowExpr})";
                 cmd.Parameters.AddWithValue("@nm", 업체명);
                 cmd.Parameters.AddWithValue("@gu", 구분);
@@ -443,6 +450,7 @@ public static class WasteSampleService
             }
             cmd.Parameters.AddWithValue("@d",    채수일);
             cmd.Parameters.AddWithValue("@sn",   sn);
+            cmd.Parameters.AddWithValue("@nm2",  시료명);
             cmd.Parameters.AddWithValue("@vol",  시료량);
             cmd.Parameters.AddWithValue("@d1",   d1);
             cmd.Parameters.AddWithValue("@d2",   d2);
@@ -509,7 +517,7 @@ public static class WasteSampleService
     public static void UpsertSsData(
         string 채수일, string sn, string 업체명, string 구분,
         string 시료량, string 전무게, string 후무게, string 무게차, string 희석배수, string 결과,
-        string 소스구분 = "폐수배출업소", string 비고 = "")
+        string 소스구분 = "폐수배출업소", string 비고 = "", string 시료명 = "")
     {
         try
         {
@@ -517,9 +525,9 @@ public static class WasteSampleService
             conn.Open();
 
             // 컬럼 존재 확인 및 추가
-            foreach (var col in new[] { "전무게", "후무게", "무게차", "희석배수" })
+            foreach (var col in new[] { "전무게", "후무게", "무게차", "희석배수", "시료명" })
             {
-                if (!DbConnectionFactory.ColumnExists(conn, "SS_DATA", col))
+                if (!DbConnectionFactory.ColumnExists(conn, "SS_시험기록부", col))
                 {
                     using var alt = conn.CreateCommand();
                     alt.CommandText = $"ALTER TABLE `SS_시험기록부` ADD COLUMN `{col}` TEXT DEFAULT ''";
@@ -528,9 +536,10 @@ public static class WasteSampleService
             }
 
             using var chk = conn.CreateCommand();
-            chk.CommandText = "SELECT COUNT(*) FROM `SS_시험기록부` WHERE LEFT(분석일,10)=@d AND SN=@sn";
+            chk.CommandText = "SELECT COUNT(*) FROM `SS_시험기록부` WHERE LEFT(분석일,10)=@d AND SN=@sn AND 시료명=@nm2";
             chk.Parameters.AddWithValue("@d", 채수일);
             chk.Parameters.AddWithValue("@sn", sn);
+            chk.Parameters.AddWithValue("@nm2", 시료명);
             bool exists = Convert.ToInt32(chk.ExecuteScalar()) > 0;
 
             using var cmd = conn.CreateCommand();
@@ -539,19 +548,20 @@ public static class WasteSampleService
                 cmd.CommandText = $@"UPDATE `SS_시험기록부`
                     SET 시료량=@vol, `전무게`=@pre, `후무게`=@post, `무게차`=@diff, `희석배수`=@dil, `결과`=@r,
                         비고=@remark, 등록일시={DbConnectionFactory.NowExpr}
-                    WHERE LEFT(분석일,10)=@d AND SN=@sn";
+                    WHERE LEFT(분석일,10)=@d AND SN=@sn AND 시료명=@nm2";
             }
             else
             {
                 cmd.CommandText = $@"INSERT INTO `SS_시험기록부`
-                    (분석일, SN, 업체명, 구분, 소스구분, 시료량, `전무게`, `후무게`, `무게차`, `희석배수`, `결과`, 비고, 등록일시)
-                    VALUES (@d, @sn, @nm, @gu, @src, @vol, @pre, @post, @diff, @dil, @r, @remark, {DbConnectionFactory.NowExpr})";
+                    (분석일, SN, 업체명, 구분, 소스구분, 시료명, 시료량, `전무게`, `후무게`, `무게차`, `희석배수`, `결과`, 비고, 등록일시)
+                    VALUES (@d, @sn, @nm, @gu, @src, @nm2, @vol, @pre, @post, @diff, @dil, @r, @remark, {DbConnectionFactory.NowExpr})";
                 cmd.Parameters.AddWithValue("@nm", 업체명);
                 cmd.Parameters.AddWithValue("@gu", 구분);
                 cmd.Parameters.AddWithValue("@src", 소스구분);
             }
             cmd.Parameters.AddWithValue("@d", 채수일);
             cmd.Parameters.AddWithValue("@sn", sn);
+            cmd.Parameters.AddWithValue("@nm2", 시료명);
             cmd.Parameters.AddWithValue("@vol", 시료량);
             cmd.Parameters.AddWithValue("@pre", 전무게);
             cmd.Parameters.AddWithValue("@post", 후무게);
@@ -571,15 +581,15 @@ public static class WasteSampleService
     public static void UpsertNHexanData(
         string 채수일, string sn, string 업체명, string 구분,
         string 시료량, string 전무게, string 후무게, string 무게차, string 희석배수, string 결과,
-        string 소스구분 = "폐수배출업소", string 비고 = "")
+        string 소스구분 = "폐수배출업소", string 비고 = "", string 시료명 = "")
     {
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
 
-            foreach (var col in new[] { "전무게", "후무게", "무게차", "희석배수" })
-                if (!DbConnectionFactory.ColumnExists(conn, "NHexan_DATA", col))
+            foreach (var col in new[] { "전무게", "후무게", "무게차", "희석배수", "시료명" })
+                if (!DbConnectionFactory.ColumnExists(conn, "NHexan_시험기록부", col))
                 {
                     using var alt = conn.CreateCommand();
                     alt.CommandText = $"ALTER TABLE `NHexan_시험기록부` ADD COLUMN `{col}` TEXT DEFAULT ''";
@@ -587,9 +597,10 @@ public static class WasteSampleService
                 }
 
             using var chk = conn.CreateCommand();
-            chk.CommandText = "SELECT COUNT(*) FROM `NHexan_시험기록부` WHERE LEFT(분석일,10)=@d AND SN=@sn";
+            chk.CommandText = "SELECT COUNT(*) FROM `NHexan_시험기록부` WHERE LEFT(분석일,10)=@d AND SN=@sn AND 시료명=@nm2";
             chk.Parameters.AddWithValue("@d", 채수일);
             chk.Parameters.AddWithValue("@sn", sn);
+            chk.Parameters.AddWithValue("@nm2", 시료명);
             bool exists = Convert.ToInt32(chk.ExecuteScalar()) > 0;
 
             using var cmd = conn.CreateCommand();
@@ -598,19 +609,20 @@ public static class WasteSampleService
                 cmd.CommandText = $@"UPDATE `NHexan_시험기록부`
                     SET 시료량=@vol, 전무게=@pre, 후무게=@post, 무게차=@diff, 희석배수=@dil, 결과=@r,
                         비고=@remark, 등록일시={DbConnectionFactory.NowExpr}
-                    WHERE LEFT(분석일,10)=@d AND SN=@sn";
+                    WHERE LEFT(분석일,10)=@d AND SN=@sn AND 시료명=@nm2";
             }
             else
             {
                 cmd.CommandText = $@"INSERT INTO `NHexan_시험기록부`
-                    (분석일, SN, 업체명, 구분, 소스구분, 시료량, 전무게, 후무게, 무게차, 희석배수, 결과, 비고, 등록일시)
-                    VALUES (@d, @sn, @nm, @gu, @src, @vol, @pre, @post, @diff, @dil, @r, @remark, {DbConnectionFactory.NowExpr})";
+                    (분석일, SN, 업체명, 구분, 소스구분, 시료명, 시료량, 전무게, 후무게, 무게차, 희석배수, 결과, 비고, 등록일시)
+                    VALUES (@d, @sn, @nm, @gu, @src, @nm2, @vol, @pre, @post, @diff, @dil, @r, @remark, {DbConnectionFactory.NowExpr})";
                 cmd.Parameters.AddWithValue("@nm", 업체명);
                 cmd.Parameters.AddWithValue("@gu", 구분);
                 cmd.Parameters.AddWithValue("@src", 소스구분);
             }
             cmd.Parameters.AddWithValue("@d", 채수일);
             cmd.Parameters.AddWithValue("@sn", sn);
+            cmd.Parameters.AddWithValue("@nm2", 시료명);
             cmd.Parameters.AddWithValue("@vol", 시료량);
             cmd.Parameters.AddWithValue("@pre", 전무게);
             cmd.Parameters.AddWithValue("@post", 후무게);
@@ -640,21 +652,22 @@ public static class WasteSampleService
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var chk = conn.CreateCommand();
-            chk.CommandText = $"SELECT COUNT(*) FROM `{tableName}` WHERE LEFT(분석일,10)=@d AND SN=@sn";
+            chk.CommandText = $"SELECT COUNT(*) FROM `{tableName}` WHERE LEFT(분석일,10)=@d AND SN=@sn AND 시료명=@nm2";
             chk.Parameters.AddWithValue("@d",  채수일);
             chk.Parameters.AddWithValue("@sn", sn);
+            chk.Parameters.AddWithValue("@nm2", 시료명);
             bool exists = Convert.ToInt32(chk.ExecuteScalar()) > 0;
 
             using var cmd = conn.CreateCommand();
             if (exists)
             {
                 cmd.CommandText = $@"UPDATE `{tableName}`
-                    SET 시료명=@nm2, 소스구분=@src, 시료량=@vol, 흡광도=@abs, 희석배수=@dil, 검량선_a=@slope, 농도=@r,
+                    SET 소스구분=@src, 시료량=@vol, 흡광도=@abs, 희석배수=@dil, 검량선_a=@slope, 농도=@r,
                         ST01_mgL=@s1c, ST02_mgL=@s2c, ST03_mgL=@s3c, ST04_mgL=@s4c, ST05_mgL=@s5c,
                         ST01_abs=@s1a, ST02_abs=@s2a, ST03_abs=@s3a, ST04_abs=@s4a, ST05_abs=@s5a,
                         기울기=@slope2, 절편=@intercept, R2=@r2,
                         비고=@remark, 등록일시={DbConnectionFactory.NowExpr}
-                    WHERE LEFT(분석일,10)=@d AND SN=@sn";
+                    WHERE LEFT(분석일,10)=@d AND SN=@sn AND 시료명=@nm2";
             }
             else
             {
@@ -701,7 +714,7 @@ public static class WasteSampleService
     public static void UpsertTocData(
         string method, string 분석일, string sn, string 업체명, string 구분,
         string 흡광도, string 희석배수, string 검량선a, string 측정농도, string 결과,
-        string 소스구분 = "폐수배출업소", string 비고 = "")
+        string 소스구분 = "폐수배출업소", string 비고 = "", string 시료명 = "")
     {
         string tableName = method.Equals("TCIC", StringComparison.OrdinalIgnoreCase)
             ? "TOC_TCIC_시험기록부" : "TOC_NPOC_시험기록부";
@@ -709,10 +722,17 @@ public static class WasteSampleService
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
+            if (!DbConnectionFactory.ColumnExists(conn, tableName, "시료명"))
+            {
+                using var alt = conn.CreateCommand();
+                alt.CommandText = $"ALTER TABLE `{tableName}` ADD COLUMN `시료명` TEXT DEFAULT ''";
+                alt.ExecuteNonQuery();
+            }
             using var chk = conn.CreateCommand();
-            chk.CommandText = $"SELECT COUNT(*) FROM `{tableName}` WHERE LEFT(분석일,10)=@d AND SN=@sn";
+            chk.CommandText = $"SELECT COUNT(*) FROM `{tableName}` WHERE LEFT(분석일,10)=@d AND SN=@sn AND 시료명=@nm2";
             chk.Parameters.AddWithValue("@d",  분석일);
             chk.Parameters.AddWithValue("@sn", sn);
+            chk.Parameters.AddWithValue("@nm2", 시료명);
             bool exists = Convert.ToInt32(chk.ExecuteScalar()) > 0;
 
             using var cmd = conn.CreateCommand();
@@ -721,19 +741,20 @@ public static class WasteSampleService
                 cmd.CommandText = $@"UPDATE `{tableName}`
                     SET 흡광도=@abs, 희석배수=@dil, 검량선_a=@slope, 농도=@r,
                         비고=@remark, 등록일시={DbConnectionFactory.NowExpr}
-                    WHERE LEFT(분석일,10)=@d AND SN=@sn";
+                    WHERE LEFT(분석일,10)=@d AND SN=@sn AND 시료명=@nm2";
             }
             else
             {
                 cmd.CommandText = $@"INSERT INTO `{tableName}`
-                    (분석일, SN, 업체명, 구분, 소스구분, 흡광도, 희석배수, 검량선_a, 농도, 비고, 등록일시)
-                    VALUES (@d, @sn, @nm, @gu, @src, @abs, @dil, @slope, @r, @remark, {DbConnectionFactory.NowExpr})";
+                    (분석일, SN, 업체명, 구분, 소스구분, 시료명, 흡광도, 희석배수, 검량선_a, 농도, 비고, 등록일시)
+                    VALUES (@d, @sn, @nm, @gu, @src, @nm2, @abs, @dil, @slope, @r, @remark, {DbConnectionFactory.NowExpr})";
                 cmd.Parameters.AddWithValue("@nm", 업체명);
                 cmd.Parameters.AddWithValue("@gu", 구분);
                 cmd.Parameters.AddWithValue("@src", 소스구분);
             }
             cmd.Parameters.AddWithValue("@d",     분석일);
             cmd.Parameters.AddWithValue("@sn",    sn);
+            cmd.Parameters.AddWithValue("@nm2",   시료명);
             cmd.Parameters.AddWithValue("@abs",   흡광도);
             cmd.Parameters.AddWithValue("@dil",   string.IsNullOrEmpty(희석배수) ? "1" : 희석배수);
             cmd.Parameters.AddWithValue("@slope", 검량선a);
@@ -750,16 +771,23 @@ public static class WasteSampleService
     /// <summary>GC/MS 데이터 UPSERT — 수질분석센터_*_DATA 테이블 (VOC 스키마)</summary>
     public static void UpsertGcData(
         string tableName, string 분석일, string sn, string 업체명, string 구분,
-        string 농도, string ISTD, ExcelDocInfo? 검량선정보, string 비고 = "")
+        string 농도, string ISTD, ExcelDocInfo? 검량선정보, string 비고 = "", string 시료명 = "")
     {
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
+            if (!DbConnectionFactory.ColumnExists(conn, tableName, "시료명"))
+            {
+                using var alt = conn.CreateCommand();
+                alt.CommandText = $"ALTER TABLE `{tableName}` ADD COLUMN `시료명` TEXT DEFAULT ''";
+                alt.ExecuteNonQuery();
+            }
             using var chk = conn.CreateCommand();
-            chk.CommandText = $"SELECT COUNT(*) FROM `{tableName}` WHERE LEFT(분석일,10)=@d AND SN=@sn";
+            chk.CommandText = $"SELECT COUNT(*) FROM `{tableName}` WHERE LEFT(분석일,10)=@d AND SN=@sn AND 시료명=@nm2";
             chk.Parameters.AddWithValue("@d",  분석일);
             chk.Parameters.AddWithValue("@sn", sn);
+            chk.Parameters.AddWithValue("@nm2", 시료명);
             bool exists = Convert.ToInt32(chk.ExecuteScalar()) > 0;
 
             // 검량선 데이터 추출 (첫 번째 화합물 기준)
@@ -790,17 +818,17 @@ public static class WasteSampleService
                         ST7_농도=@st7c, ST7_값=@st7v, ST7_ISTD=@st7i,
                         기울기=@slope, 절편=@intercept, R값=@r,
                         비고=@remark, 등록일시={DbConnectionFactory.NowExpr}
-                    WHERE LEFT(분석일,10)=@d AND SN=@sn";
+                    WHERE LEFT(분석일,10)=@d AND SN=@sn AND 시료명=@nm2";
             }
             else
             {
                 cmd.CommandText = $@"INSERT INTO `{tableName}`
-                    (분석일, SN, 업체명, 구분, 농도, ISTD,
+                    (분석일, SN, 업체명, 구분, 시료명, 농도, ISTD,
                      ST1_농도, ST1_값, ST1_ISTD, ST2_농도, ST2_값, ST2_ISTD,
                      ST3_농도, ST3_값, ST3_ISTD, ST4_농도, ST4_값, ST4_ISTD,
                      ST5_농도, ST5_값, ST5_ISTD, ST6_농도, ST6_값, ST6_ISTD,
                      ST7_농도, ST7_값, ST7_ISTD, 기울기, 절편, R값, 비고, 등록일시)
-                    VALUES (@d, @sn, @nm, @gu, @conc, @istd,
+                    VALUES (@d, @sn, @nm, @gu, @nm2, @conc, @istd,
                             @st1c, @st1v, @st1i, @st2c, @st2v, @st2i,
                             @st3c, @st3v, @st3i, @st4c, @st4v, @st4i,
                             @st5c, @st5v, @st5i, @st6c, @st6v, @st6i,
@@ -811,6 +839,7 @@ public static class WasteSampleService
 
             cmd.Parameters.AddWithValue("@d", 분석일);
             cmd.Parameters.AddWithValue("@sn", sn);
+            cmd.Parameters.AddWithValue("@nm2", 시료명);
             cmd.Parameters.AddWithValue("@conc", 농도);
             cmd.Parameters.AddWithValue("@istd", ISTD);
 

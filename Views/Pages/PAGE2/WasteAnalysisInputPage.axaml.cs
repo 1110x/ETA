@@ -6259,7 +6259,7 @@ public partial class WasteAnalysisInputPage : UserControl
                 WasteSampleService.UpsertTocData(
                     _tocInstrumentMethod, 분석일, sn, 업체명, 구분,
                     row.D1, row.P, tocInfo?.TocSlope_TC ?? "", row.Fxy, row.Result,
-                    소스구분: 소스구분, 비고: remark);
+                    소스구분: 소스구분, 비고: remark, 시료명: row.시료명);
                 break;
             }
 
@@ -6274,21 +6274,21 @@ public partial class WasteAnalysisInputPage : UserControl
                     식종D2:     docInfo?.식종수_D2    ?? "",
                     식종BOD:    docInfo?.식종수_Result ?? "",
                     식종함유량: docInfo?.식종수_Remark  ?? "",
-                    비고: remark);
+                    비고: remark, 시료명: row.시료명);
                 break;
 
             case "SS":
                 WasteSampleService.UpsertSsData(
                     분석일, sn, 업체명, 구분,
                     row.시료량, row.D1, row.D2, row.Fxy, row.P, row.Result,
-                    소스구분: 소스구분, 비고: remark);
+                    소스구분: 소스구분, 비고: remark, 시료명: row.시료명);
                 break;
 
             case "NHEX":
                 WasteSampleService.UpsertNHexanData(
                     분석일, sn, 업체명, 구분,
                     row.시료량, row.D1, row.D2, row.Fxy, row.P, row.Result,
-                    소스구분: 소스구분, 비고: remark);
+                    소스구분: 소스구분, 비고: remark, 시료명: row.시료명);
                 break;
 
             case "TN" when isUV:
@@ -6340,7 +6340,7 @@ public partial class WasteAnalysisInputPage : UserControl
                         농도: row.Result,
                         ISTD: "",  // 개별 시료의 ISTD 값은 별도 처리 필요
                         검량선정보: docInfo,
-                        비고: remark);
+                        비고: remark, 시료명: row.시료명);
                 }
                 break;
 
