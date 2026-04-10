@@ -8323,15 +8323,21 @@ public partial class WasteAnalysisInputPage : UserControl
 
         // 1. 별칭 등록 (미등록 시)
         var existing = CompoundAliasService.Resolve(rawCompound);
+        // 신규 또는 다른 분석항목으로 변경 시 DB 갱신
+        string standardCode = CompoundAliasService.FindStandardCodeByAnalyte(analyteName) ?? rawCompound;
         if (existing == null)
         {
-            string standardCode = CompoundAliasService.FindStandardCodeByAnalyte(analyteName) ?? rawCompound;
-            bool added = CompoundAliasService.AddAlias(rawCompound, standardCode, analyteName);
-            LogMatch($"COMPOUND ALIAS: '{rawCompound}' → 표준코드='{standardCode}', 분석항목='{analyteName}' (등록: {added})");
+            CompoundAliasService.AddOrUpdateAlias(rawCompound, standardCode, analyteName);
+            LogMatch($"COMPOUND ALIAS 신규: '{rawCompound}' → 표준코드='{standardCode}', 분석항목='{analyteName}'");
+        }
+        else if (!existing.Value.분석항목.Equals(analyteName, StringComparison.OrdinalIgnoreCase))
+        {
+            CompoundAliasService.AddOrUpdateAlias(rawCompound, standardCode, analyteName);
+            LogMatch($"COMPOUND ALIAS 변경: '{rawCompound}' → {existing.Value.분석항목} ⇒ {analyteName} (표준코드: {standardCode})");
         }
         else
         {
-            LogMatch($"COMPOUND ALIAS: '{rawCompound}' 이미 등록됨 → {existing.Value.표준코드}/{existing.Value.분석항목}");
+            LogMatch($"COMPOUND ALIAS 유지: '{rawCompound}' → {existing.Value.표준코드}/{existing.Value.분석항목}");
         }
 
         var resolved = CompoundAliasService.ResolveOrFallback(rawCompound);
