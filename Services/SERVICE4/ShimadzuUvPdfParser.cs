@@ -49,6 +49,8 @@ public static class ShimadzuUvPdfParser
         string item = activeItems.FirstOrDefault() ?? "UVVIS";
 
         // 로그 초기화
+        var logDir = Path.GetDirectoryName(LogPath)!;
+        if (!Directory.Exists(logDir)) Directory.CreateDirectory(logDir);
         File.WriteAllText(LogPath, $"=== ShimadzuUvPdf Parse Start: {Path.GetFileName(path)} ===\n");
 
         using var doc = UglyToad.PdfPig.PdfDocument.Open(path);

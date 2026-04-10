@@ -1898,7 +1898,7 @@ public static class AnalysisRequestService
     }
 
     // =====================================================================
-    //  단일 컬럼 결과값 업데이트 (분析결과입력용)
+    //  단일 컬럼 결과값 업데이트 (분석결과입력용)
     // =====================================================================
     public static void UpdateResultValue(int rowId, string columnName, string value)
     {

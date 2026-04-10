@@ -82,7 +82,7 @@ public static class MyTaskService
 
             // 각 row에서 analyteFullName 컬럼이 'O'인 것만 필터
             using var cmd2 = conn.CreateCommand();
-            cmd2.CommandText = $"SELECT {DbConnectionFactory.RowId}, `{analyteFullName}` FROM `분析의뢰및결과` WHERE `채취일자` = @d";
+            cmd2.CommandText = $"SELECT {DbConnectionFactory.RowId}, `{analyteFullName}` FROM `분석의뢰및결과` WHERE `채취일자` = @d";
             cmd2.Parameters.AddWithValue("@d", dateStr);
 
             var markedIds = new HashSet<int>();

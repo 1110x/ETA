@@ -172,7 +172,7 @@ public static class WaterCenterDbMigration
     }
 
     // ── Analyte + Category + Method → 스키마 결정 ──────────────────
-    private static string DetermineSchema(string analyte, string category, string method, string instrument)
+    internal static string DetermineSchema(string analyte, string category, string method, string instrument)
     {
         // -1. 특수 항목 (Category 보다 우선)
         //     6가크롬: 자외선/가시선분광법 + 검량선 5점 → Cr6형
@@ -419,7 +419,7 @@ public static class WaterCenterDbMigration
     //   처리시설_TN_DATA / 처리시설_TP_DATA 네이밍과 통일:
     //   · 하이픈 제거 (T-N → TN, T-P → TP, N-Hexan → NHexan)
     //   · 공백/특수문자 치환
-    private static string SafeName(string analyte)
+    internal static string SafeName(string analyte)
     {
         var result = analyte
             .Replace("-", "")      // 하이픈 제거 (T-N → TN)

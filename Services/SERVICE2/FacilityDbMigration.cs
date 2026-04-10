@@ -28,20 +28,42 @@ public static class FacilityDbMigration
         EnsureWasteRequestResultTable(conn);
         EnsureAnalysisDataTables(conn);
         EnsureMigrationTable(conn);
+
+        // 수질분석센터 + 처리시설 DATA 테이블 DROP (일회성)
+        Log("drop_data_tables_v3 체크 시작");
+        if (!IsMigrationDone(conn, "drop_data_tables_v3"))
+        {
+            try
+            {
+                Log("수질분석센터_*_DATA + 처리시설_*_DATA 일괄 DROP 시작");
+                var dropList = new List<string>();
+                using (var cmd2 = conn.CreateCommand())
+                {
+                    cmd2.CommandText = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA=DATABASE() AND (TABLE_NAME LIKE '수질분석센터_%_DATA' OR TABLE_NAME LIKE '처리시설_%_DATA')";
+                    using var r2 = cmd2.ExecuteReader();
+                    while (r2.Read()) dropList.Add(r2.GetString(0));
+                }
+                Log($"DROP 대상: {dropList.Count}개 테이블");
+                foreach (var tbl in dropList)
+                {
+                    Exec(conn, $"DROP TABLE `{tbl}`");
+                    Log($"  DROP: {tbl}");
+                }
+                Log($"DATA 테이블 {dropList.Count}개 DROP 완료");
+                MarkMigrationDone(conn, "drop_data_tables_v3");
+            }
+            catch (Exception ex) { Log($"DATA 테이블 DROP 실패: {ex.Message}"); }
+        }
+        else
+        {
+            Log("drop_data_tables_v3 이미 완료됨 — 건너뜀");
+        }
+
         EnsureAnalysisItems(conn);
         EnsureFacilitySettings(conn);
         EnsureAnalysisPlan(conn);
         EnsureFacilityTocDataTables(conn);
         EnsureAnalysisRecordTables(conn);
-
-        // 수질분석센터 원자료 테이블 일괄 생성 (분석정보.Analyte 기반)
-        try
-        {
-            Log("WaterCenterDbMigration 호출 시작");
-            WaterCenterDbMigration.EnsureWaterCenterDataTables(conn);
-            Log("WaterCenterDbMigration 호출 완료");
-        }
-        catch (Exception ex) { Log($"⚠ WaterCenterDbMigration 실패: {ex}"); }
 
         // 처리시설 기본 순서 설정
         if (!IsMigrationDone(conn, "facility_default_order_v1"))
@@ -121,7 +143,7 @@ public static class FacilityDbMigration
             Log("BOD_DATA 테이블 생성");
         }
 
-        // SS_DATA — 기존 테이블 컬럼명 불일치 수정 (한자 析U+6790·日U+65E5 → 한글 석U+C11D·일U+C77C)
+        // SS_DATA — 기존 테이블 컬럼명 불일치 수정 (한자→한글)
         if (DbConnectionFactory.ColumnExists(conn, "SS_DATA", "\uBD84\u6790\u65E5"))
         {
             try { Exec(conn, "ALTER TABLE `SS_DATA` CHANGE `\uBD84\u6790\u65E5` `\uBD84\uC11D\uC77C` TEXT NOT NULL"); Log("SS_DATA 컬럼명 한자→한글 마이그레이션 완료"); }
@@ -613,133 +635,181 @@ public static class FacilityDbMigration
     // ── *_시험기록부 통합 테이블 ──────────────────────────────────
     private static void EnsureAnalysisRecordTables(DbConnection conn)
     {
+        Log("EnsureAnalysisRecordTables 시작");
         var ai = DbConnectionFactory.AutoIncrement;
 
-        string C() => $@"
+        // MariaDB에서 TEXT에 UNIQUE 제약 불가 → VARCHAR(191) 사용
+        string BaseColumns() => $@"
             id       INTEGER PRIMARY KEY {ai},
-            분석일 TEXT NOT NULL,
-            SN       TEXT NOT NULL DEFAULT '',
-            업체명 TEXT DEFAULT '',
-            시료명 TEXT DEFAULT '',
-            구분   TEXT DEFAULT '',
-            비고   TEXT DEFAULT '',
-            등록일시 TEXT DEFAULT ''";
+            분석일   VARCHAR(20) NOT NULL,
+            SN       VARCHAR(191) NOT NULL DEFAULT '',
+            업체명   VARCHAR(191) DEFAULT '',
+            시료명   VARCHAR(191) DEFAULT '',
+            구분     VARCHAR(50) DEFAULT '',
+            소스구분 VARCHAR(50) DEFAULT '',
+            비고     TEXT DEFAULT '',
+            등록일시 VARCHAR(30) DEFAULT ''";
 
-        if (!DbConnectionFactory.TableExists(conn, "BOD_시험기록부"))
+        void TryCreate(string name, string sql)
         {
-            Exec(conn, $@"
-                CREATE TABLE `BOD_시험기록부` (
-                    {C()},
-                    시료량     TEXT DEFAULT '',
-                    D1         TEXT DEFAULT '',
-                    D2         TEXT DEFAULT '',
-                    희석배수   TEXT DEFAULT '',
-                    결과       TEXT DEFAULT '',
-                    식종시료량 TEXT DEFAULT '',
-                    식종D1     TEXT DEFAULT '',
-                    식종D2     TEXT DEFAULT '',
-                    식종BOD    TEXT DEFAULT '',
-                    식종함유량 TEXT DEFAULT '',
-                    UNIQUE(분석일, SN)
-                )");
-            Log("BOD_시험기록부 생성");
-        }
-
-        if (!DbConnectionFactory.TableExists(conn, "SS_시험기록부"))
-        {
-            Exec(conn, $@"
-                CREATE TABLE `SS_시험기록부` (
-                    {C()},
-                    시료량   TEXT DEFAULT '',
-                    전무게   TEXT DEFAULT '',
-                    후무게   TEXT DEFAULT '',
-                    무게차   TEXT DEFAULT '',
-                    희석배수 TEXT DEFAULT '',
-                    결과     TEXT DEFAULT '',
-                    UNIQUE(분석일, SN)
-                )");
-            Log("SS_시험기록부 생성");
-        }
-
-        if (!DbConnectionFactory.TableExists(conn, "NHexan_시험기록부"))
-        {
-            Exec(conn, $@"
-                CREATE TABLE `NHexan_시험기록부` (
-                    {C()},
-                    시료량   TEXT DEFAULT '',
-                    전무게   TEXT DEFAULT '',
-                    후무게   TEXT DEFAULT '',
-                    무게차   TEXT DEFAULT '',
-                    희석배수 TEXT DEFAULT '',
-                    결과     TEXT DEFAULT '',
-                    UNIQUE(분석일, SN)
-                )");
-            Log("NHexan_시험기록부 생성");
-        }
-
-        if (!DbConnectionFactory.TableExists(conn, "TOC_NPOC_시험기록부"))
-        {
-            Exec(conn, $@"
-                CREATE TABLE `TOC_NPOC_시험기록부` (
-                    {C()},
-                    시료량   TEXT DEFAULT '',
-                    흥광도   TEXT DEFAULT '',
-                    희석배수 TEXT DEFAULT '',
-                    검량선_a TEXT DEFAULT '',
-                    농도     TEXT DEFAULT '',
-                    결과     TEXT DEFAULT '',
-                    UNIQUE(분석일, SN)
-                )");
-            Log("TOC_NPOC_시험기록부 생성");
-        }
-
-        if (!DbConnectionFactory.TableExists(conn, "TOC_TCIC_시험기록부"))
-        {
-            Exec(conn, $@"
-                CREATE TABLE `TOC_TCIC_시험기록부` (
-                    {C()},
-                    흥광도   TEXT DEFAULT '',
-                    희석배수 TEXT DEFAULT '',
-                    검량선_a TEXT DEFAULT '',
-                    농도     TEXT DEFAULT '',
-                    TCAU     TEXT DEFAULT '',
-                    TCcon    TEXT DEFAULT '',
-                    ICAU     TEXT DEFAULT '',
-                    ICcon    TEXT DEFAULT '',
-                    결과     TEXT DEFAULT '',
-                    UNIQUE(분석일, SN)
-                )");
-            Log("TOC_TCIC_시험기록부 생성");
-        }
-
-        foreach (var tbl in new[] { "TN_시험기록부", "TP_시험기록부", "Phenols_시험기록부", "CN_시험기록부", "CR6_시험기록부" })
-        {
-            if (!DbConnectionFactory.TableExists(conn, tbl))
+            try
             {
-                Exec(conn, $@"
-                    CREATE TABLE `{tbl}` (
-                        {C()},
-                        시료량     TEXT DEFAULT '',
-                        흥광도     TEXT DEFAULT '',
-                        희석배수   TEXT DEFAULT '',
-                        기울기     TEXT DEFAULT '',
-                        절편       TEXT DEFAULT '',
-                        R2         TEXT DEFAULT '',
-                        ST01_mgL   TEXT DEFAULT '',
-                        ST02_mgL   TEXT DEFAULT '',
-                        ST03_mgL   TEXT DEFAULT '',
-                        ST04_mgL   TEXT DEFAULT '',
-                        ST01_abs   TEXT DEFAULT '',
-                        ST02_abs   TEXT DEFAULT '',
-                        ST03_abs   TEXT DEFAULT '',
-                        ST04_abs   TEXT DEFAULT '',
-                        농도       TEXT DEFAULT '',
-                        결과       TEXT DEFAULT '',
-                        UNIQUE(분석일, SN)
-                    )");
-                Log($"{tbl} 생성");
+                if (!DbConnectionFactory.TableExists(conn, name))
+                {
+                    Exec(conn, sql);
+                    Log($"{name} 생성 완료");
+                }
+            }
+            catch (Exception ex) { Log($"{name} 생성 실패: {ex.Message}"); }
+        }
+
+        // 스키마별 컬럼 정의
+        string BodCols() => @"
+                시료량     TEXT DEFAULT '',
+                D1         TEXT DEFAULT '',
+                D2         TEXT DEFAULT '',
+                희석배수   TEXT DEFAULT '',
+                결과       TEXT DEFAULT '',
+                식종시료량 TEXT DEFAULT '',
+                식종D1     TEXT DEFAULT '',
+                식종D2     TEXT DEFAULT '',
+                식종BOD    TEXT DEFAULT '',
+                식종함유량 TEXT DEFAULT ''";
+
+        string SsCols() => @"
+                시료량   TEXT DEFAULT '',
+                전무게   TEXT DEFAULT '',
+                후무게   TEXT DEFAULT '',
+                무게차   TEXT DEFAULT '',
+                희석배수 TEXT DEFAULT '',
+                결과     TEXT DEFAULT ''";
+
+        string NHexanCols() => @"
+                시료량   TEXT DEFAULT '',
+                전무게   TEXT DEFAULT '',
+                후무게   TEXT DEFAULT '',
+                무게차   TEXT DEFAULT '',
+                희석배수 TEXT DEFAULT '',
+                결과     TEXT DEFAULT ''";
+
+        string UvVisCols() => @"
+                시료량     TEXT DEFAULT '',
+                흡광도     TEXT DEFAULT '',
+                희석배수   TEXT DEFAULT '',
+                검량선_a   TEXT DEFAULT '',
+                기울기     TEXT DEFAULT '',
+                절편       TEXT DEFAULT '',
+                R2         TEXT DEFAULT '',
+                ST01_mgL   TEXT DEFAULT '',
+                ST02_mgL   TEXT DEFAULT '',
+                ST03_mgL   TEXT DEFAULT '',
+                ST04_mgL   TEXT DEFAULT '',
+                ST05_mgL   TEXT DEFAULT '',
+                ST01_abs   TEXT DEFAULT '',
+                ST02_abs   TEXT DEFAULT '',
+                ST03_abs   TEXT DEFAULT '',
+                ST04_abs   TEXT DEFAULT '',
+                ST05_abs   TEXT DEFAULT '',
+                농도       TEXT DEFAULT '',
+                결과       TEXT DEFAULT ''";
+
+        string TocNpocCols() => @"
+                시료량   TEXT DEFAULT '',
+                흡광도   TEXT DEFAULT '',
+                희석배수 TEXT DEFAULT '',
+                검량선_a TEXT DEFAULT '',
+                농도     TEXT DEFAULT '',
+                결과     TEXT DEFAULT ''";
+
+        string TocTcicCols() => @"
+                흡광도   TEXT DEFAULT '',
+                희석배수 TEXT DEFAULT '',
+                검량선_a TEXT DEFAULT '',
+                농도     TEXT DEFAULT '',
+                TCAU     TEXT DEFAULT '',
+                TCcon    TEXT DEFAULT '',
+                ICAU     TEXT DEFAULT '',
+                ICcon    TEXT DEFAULT '',
+                결과     TEXT DEFAULT ''";
+
+        // VOC/유기물질: ST1~ST7 + ISTD
+        string VocCols() => @"
+                농도     TEXT DEFAULT '',
+                ISTD     TEXT DEFAULT '',
+                ST1_농도 TEXT DEFAULT '', ST1_값 TEXT DEFAULT '', ST1_ISTD TEXT DEFAULT '',
+                ST2_농도 TEXT DEFAULT '', ST2_값 TEXT DEFAULT '', ST2_ISTD TEXT DEFAULT '',
+                ST3_농도 TEXT DEFAULT '', ST3_값 TEXT DEFAULT '', ST3_ISTD TEXT DEFAULT '',
+                ST4_농도 TEXT DEFAULT '', ST4_값 TEXT DEFAULT '', ST4_ISTD TEXT DEFAULT '',
+                ST5_농도 TEXT DEFAULT '', ST5_값 TEXT DEFAULT '', ST5_ISTD TEXT DEFAULT '',
+                ST6_농도 TEXT DEFAULT '', ST6_값 TEXT DEFAULT '', ST6_ISTD TEXT DEFAULT '',
+                ST7_농도 TEXT DEFAULT '', ST7_값 TEXT DEFAULT '', ST7_ISTD TEXT DEFAULT '',
+                기울기   TEXT DEFAULT '',
+                절편     TEXT DEFAULT '',
+                R값      TEXT DEFAULT '',
+                결과     TEXT DEFAULT ''";
+
+        string SchemaColumns(string schema) => schema switch
+        {
+            "BOD"     => BodCols(),
+            "SS"      => SsCols(),
+            "NHexan"  => NHexanCols(),
+            "UvVis"   => UvVisCols(),
+            "Cr6"     => UvVisCols(),    // 6가크롬도 UV 5점 스키마
+            "Metal"   => UvVisCols(),    // 금속도 UV형 (검량선 포인트)
+            "GcLc"    => UvVisCols(),    // GC/LC도 UV형 기반
+            "VOC"     => VocCols(),
+            _         => NHexanCols(),
+        };
+
+        // ── 1. 분석정보 테이블에서 Analyte 목록 수집 ─────────────────────
+        var items = new List<(string Analyte, string Category, string Method, string Instrument)>();
+        try
+        {
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"SELECT DISTINCT Analyte,
+                                       COALESCE(Category, ''),
+                                       COALESCE(Method, ''),
+                                       COALESCE(instrument, '')
+                                FROM `분석정보`
+                                WHERE Analyte IS NOT NULL AND Analyte <> ''";
+            using var r = cmd.ExecuteReader();
+            while (r.Read())
+            {
+                var a = r.IsDBNull(0) ? "" : r.GetString(0).Trim();
+                var c = r.IsDBNull(1) ? "" : r.GetString(1).Trim();
+                var m = r.IsDBNull(2) ? "" : r.GetString(2).Trim();
+                var i = r.IsDBNull(3) ? "" : r.GetString(3).Trim();
+                if (!string.IsNullOrWhiteSpace(a)) items.Add((a, c, m, i));
             }
         }
+        catch (Exception ex) { Log($"분석정보 조회 실패: {ex.Message}"); }
+        Log($"분석정보에서 Analyte {items.Count}개 수집");
+
+        // ── 2. 각 Analyte에 대해 시험기록부 테이블 생성 ──────────────────
+        int created = 0;
+        foreach (var (analyte, category, method, instrument) in items)
+        {
+            // TOC 특수: NPOC / TCIC 2개 테이블
+            if (analyte.Equals("TOC", StringComparison.OrdinalIgnoreCase))
+            {
+                var npoc = "TOC_NPOC_시험기록부";
+                TryCreate(npoc, $@"CREATE TABLE `{npoc}` ({BaseColumns()}, {TocNpocCols()}, UNIQUE(분석일, SN))");
+                var tcic = "TOC_TCIC_시험기록부";
+                TryCreate(tcic, $@"CREATE TABLE `{tcic}` ({BaseColumns()}, {TocTcicCols()}, UNIQUE(분석일, SN))");
+                created += 2;
+                continue;
+            }
+
+            var schema    = WaterCenterDbMigration.DetermineSchema(analyte, category, method, instrument);
+            var safeName  = WaterCenterDbMigration.SafeName(analyte);
+            var tableName = $"{safeName}_시험기록부";
+            var cols      = SchemaColumns(schema);
+
+            TryCreate(tableName, $@"CREATE TABLE `{tableName}` ({BaseColumns()}, {cols}, UNIQUE(분석일, SN))");
+            created++;
+        }
+
+        Log($"EnsureAnalysisRecordTables 완료 — {items.Count}개 항목 처리, {created}개 시도");
     }
 
     // ── 폐수_의뢰 / 폐수_의뢰_항목 / 처리시설_작업 ───────────────────────

@@ -974,7 +974,7 @@ public static class FacilityResultService
     {
         var today = DateTime.Today;
         string dateStr = today.ToString("yyyy-MM-dd");
-        // C# DayOfWeek: Sunday=0, Monday=1 → 분析計画: 월=0, 화=1, ..., 일=6
+        // C# DayOfWeek: Sunday=0, Monday=1 → 분석계획: 월=0, 화=1, ..., 일=6
         int planDay = ((int)today.DayOfWeek + 6) % 7;
 
         using var conn = DbConnectionFactory.CreateConnection();
@@ -995,13 +995,13 @@ public static class FacilityResultService
             return 0;
         }
 
-        // 2. 오늘 요일의 분析계획 로딩
+        // 2. 오늘 요일의 분석계획 로딩
         var todayPlan = new List<(string 시설명, string 시료명)>();
         using (var cmd = conn.CreateCommand())
         {
             cmd.CommandText = @"
                 SELECT 시설명, 시료명
-                FROM `처리시설_분析계획`
+                FROM `처리시설_분석계획`
                 WHERE 요일 = @day ORDER BY id";
             cmd.Parameters.AddWithValue("@day", planDay);
             using var r = cmd.ExecuteReader();
@@ -1010,7 +1010,7 @@ public static class FacilityResultService
         }
         if (todayPlan.Count == 0)
         {
-            Debug.WriteLine($"[EnsureToday] {dateStr} (요일코드={planDay}) 분析계획 없음 — 스킵");
+            Debug.WriteLine($"[EnsureToday] {dateStr} (요일코드={planDay}) 분석계획 없음 — 스킵");
             return 0;
         }
 

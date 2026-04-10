@@ -633,14 +633,14 @@ public static class WasteSampleService
         string st01mgl = "", string st02mgl = "", string st03mgl = "", string st04mgl = "", string st05mgl = "",
         string st01abs = "", string st02abs = "", string st03abs = "", string st04abs = "", string st05abs = "",
         string 기울기 = "", string 절편 = "", string R2 = "",
-        string 비고 = "")
+        string 비고 = "", string 시료명 = "", string 소스구분 = "")
     {
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var chk = conn.CreateCommand();
-            chk.CommandText = $"SELECT COUNT(*) FROM `{tableName}` WHERE LEFT(분析일,10)=@d AND SN=@sn";
+            chk.CommandText = $"SELECT COUNT(*) FROM `{tableName}` WHERE LEFT(분석일,10)=@d AND SN=@sn";
             chk.Parameters.AddWithValue("@d",  채수일);
             chk.Parameters.AddWithValue("@sn", sn);
             bool exists = Convert.ToInt32(chk.ExecuteScalar()) > 0;
@@ -649,21 +649,21 @@ public static class WasteSampleService
             if (exists)
             {
                 cmd.CommandText = $@"UPDATE `{tableName}`
-                    SET 시료량=@vol, 흡광도=@abs, 희석배수=@dil, 검량선_a=@slope, 농도=@r,
+                    SET 시료명=@nm2, 소스구분=@src, 시료량=@vol, 흡광도=@abs, 희석배수=@dil, 검량선_a=@slope, 농도=@r,
                         ST01_mgL=@s1c, ST02_mgL=@s2c, ST03_mgL=@s3c, ST04_mgL=@s4c, ST05_mgL=@s5c,
                         ST01_abs=@s1a, ST02_abs=@s2a, ST03_abs=@s3a, ST04_abs=@s4a, ST05_abs=@s5a,
                         기울기=@slope2, 절편=@intercept, R2=@r2,
                         비고=@remark, 등록일시={DbConnectionFactory.NowExpr}
-                    WHERE LEFT(분析일,10)=@d AND SN=@sn";
+                    WHERE LEFT(분석일,10)=@d AND SN=@sn";
             }
             else
             {
                 cmd.CommandText = $@"INSERT INTO `{tableName}`
-                    (분析일, SN, 업체명, 구분, 시료량, 흡광도, 희석배수, 검량선_a, 농도,
+                    (분석일, SN, 업체명, 구분, 시료명, 소스구분, 시료량, 흡광도, 희석배수, 검량선_a, 농도,
                      ST01_mgL, ST02_mgL, ST03_mgL, ST04_mgL, ST05_mgL,
                      ST01_abs, ST02_abs, ST03_abs, ST04_abs, ST05_abs,
                      기울기, 절편, R2, 비고, 등록일시)
-                    VALUES (@d, @sn, @nm, @gu, @vol, @abs, @dil, @slope, @r,
+                    VALUES (@d, @sn, @nm, @gu, @nm2, @src, @vol, @abs, @dil, @slope, @r,
                             @s1c, @s2c, @s3c, @s4c, @s5c,
                             @s1a, @s2a, @s3a, @s4a, @s5a,
                             @slope2, @intercept, @r2, @remark, {DbConnectionFactory.NowExpr})";
@@ -672,6 +672,8 @@ public static class WasteSampleService
             }
             cmd.Parameters.AddWithValue("@d",         채수일);
             cmd.Parameters.AddWithValue("@sn",        sn);
+            cmd.Parameters.AddWithValue("@nm2",       시료명);
+            cmd.Parameters.AddWithValue("@src",       소스구분);
             cmd.Parameters.AddWithValue("@vol",       시료량);
             cmd.Parameters.AddWithValue("@abs",       흡광도);
             cmd.Parameters.AddWithValue("@dil",       희석배수);

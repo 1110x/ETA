@@ -10,12 +10,12 @@ namespace ETA.Services.SERVICE4;
 
 /// <summary>
 /// ONNX 기반 분석항목 파서 자동 분류기
-/// Data/분析항목_분류.onnx 로드 → 파일 텍스트 → 파서 키 반환
+/// Data/분석항목_분류.onnx 로드 → 파일 텍스트 → 파서 키 반환
 /// </summary>
 public static class AiParserClassifier
 {
     private static InferenceSession? _session;
-    private static readonly string OnnxPath = Path.Combine(AppContext.BaseDirectory, "Data", "분析항목_분류.onnx");
+    private static readonly string OnnxPath = Path.Combine(AppContext.BaseDirectory, "Data", "분석항목_분류.onnx");
     private static readonly object _lock = new();
 
     // ── 모델 준비 여부 ──────────────────────────────────────────────────

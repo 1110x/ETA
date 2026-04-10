@@ -273,6 +273,7 @@ public partial class WasteAnalysisInputPage : UserControl
     // ── 키보드 단축키 네비게이션 ──────────────────────────────────────────
     private bool _keyNavShow1 = false;  // Shift+R: Show1 매칭패널 W/S 모드
     private bool _keyNavShow2 = false;  // Shift+F: Show2 그리드 W/S 모드
+    private bool _shiftQHeld = false;  // Shift+Q 누르고 있는 동안 QC 클릭 모드
     private TreeViewItem? _keyNavTreeFocused = null; // (미사용 - 하위호환)
     private int _keyNavShow1Index = -1;             // 현재 포커스된 Show1 아이템 인덱스
     private List<(Border Item, string Name, object? Data)> _matchItems = new(); // Show1 의뢰시료 목록
@@ -287,14 +288,24 @@ public partial class WasteAnalysisInputPage : UserControl
             var win = this.GetVisualAncestors().OfType<Window>().FirstOrDefault();
             if (win != null && win != _attachedWindow)
             {
-                if (_attachedWindow != null) _attachedWindow.KeyDown -= OnWindowKeyDown;
+                if (_attachedWindow != null)
+                {
+                    _attachedWindow.KeyDown -= OnWindowKeyDown;
+                    _attachedWindow.KeyUp -= OnWindowKeyUp;
+                }
                 _attachedWindow = win;
                 win.KeyDown += OnWindowKeyDown;
+                win.KeyUp += OnWindowKeyUp;
             }
         };
         DetachedFromVisualTree += (_, _) =>
         {
-            if (_attachedWindow != null) { _attachedWindow.KeyDown -= OnWindowKeyDown; _attachedWindow = null; }
+            if (_attachedWindow != null)
+            {
+                _attachedWindow.KeyDown -= OnWindowKeyDown;
+                _attachedWindow.KeyUp -= OnWindowKeyUp;
+                _attachedWindow = null;
+            }
         };
     }
 
@@ -3980,6 +3991,13 @@ public partial class WasteAnalysisInputPage : UserControl
             border.PointerPressed += (_, pe) =>
             {
                 if (pe.Handled) return;
+                // Shift+Q 누른 상태에서 클릭: 정도관리로 지정
+                if (_shiftQHeld)
+                {
+                    SelectGridRow(capturedIdx);
+                    ApplyQcToRow(capturedRow, capturedIdx);
+                    return;
+                }
                 // Shift+1 모드: Show1 포커스 아이템을 이 행에 즉시 매핑
                 if (_keyNavShow1)
                     TryApplyShow1FocusToRow(capturedRow, capturedIdx);
@@ -4857,6 +4875,7 @@ public partial class WasteAnalysisInputPage : UserControl
             double.TryParse(dilInput.Text, out var dil);
             if (dil <= 0) dil = 1;
             row.P = dil.ToString("G");
+            row.D2 = row.P;  // UV Show3/DB 저장용 동기화
             row.Result = calcResult(dil);
             dilBtn.Content = row.P;
             resultTb.Text = row.Result;
@@ -4947,52 +4966,14 @@ public partial class WasteAnalysisInputPage : UserControl
             return;
         }
 
-        // ── Shift+Q: 선택 행을 정도관리(QC) 시료로 지정 ────────────────
+        // ── Shift+Q: QC 클릭 모드 (누르고 있는 동안 활성) ────────────
         if (shift && e.Key == Key.Q)
         {
             e.Handled = true;
-            if (_selectedRowIndex >= 0 && _currentExcelRows != null
-                && _selectedRowIndex < _currentExcelRows.Count)
+            if (!_shiftQHeld)
             {
-                var qRow = _currentExcelRows[_selectedRowIndex];
-                // 매칭 초기화 (조기 반환 조건 무시)
-                qRow.Source              = SourceType.미분류;
-                qRow.Status              = MatchStatus.미매칭;
-                qRow.Matched             = null;
-                qRow.MatchedAnalysis     = null;
-                qRow.MatchedFacilityName = null;
-                qRow.IsManualMatch       = false;
-                if (!string.IsNullOrEmpty(qRow.원본시료명))
-                {
-                    qRow.시료명    = qRow.원본시료명;
-                    qRow.원본시료명 = "";
-                }
-                // QC 지정
-                qRow.SN        = "QC";
-                qRow.IsControl = true;
-                // _categoryExcelData 동기화
-                if (_categoryExcelData.TryGetValue(_activeCategory, out var catRows)
-                    && _selectedRowIndex < catRows.Count)
-                {
-                    catRows[_selectedRowIndex].Source              = qRow.Source;
-                    catRows[_selectedRowIndex].Status              = qRow.Status;
-                    catRows[_selectedRowIndex].Matched             = null;
-                    catRows[_selectedRowIndex].MatchedAnalysis     = null;
-                    catRows[_selectedRowIndex].MatchedFacilityName = null;
-                    catRows[_selectedRowIndex].IsManualMatch       = false;
-                    catRows[_selectedRowIndex].시료명               = qRow.시료명;
-                    catRows[_selectedRowIndex].원본시료명            = qRow.원본시료명;
-                }
-                // 셀 갱신
-                if (_selectedRowIndex < _rowSnCells.Count)
-                    _rowSnCells[_selectedRowIndex].Text = "QC";
-                if (_selectedRowIndex < _rowSourceCells.Count)
-                {
-                    _rowSourceCells[_selectedRowIndex].Text       = "정도관리";
-                    _rowSourceCells[_selectedRowIndex].Foreground = new Avalonia.Media.SolidColorBrush(
-                        Avalonia.Media.Color.Parse("#c084fc"));
-                }
-                BuildStatsPanel();
+                _shiftQHeld = true;
+                ShowMessage("QC 모드 — 클릭하면 정도관리로 지정됩니다", false);
             }
             return;
         }
@@ -5036,6 +5017,12 @@ public partial class WasteAnalysisInputPage : UserControl
         var (item, _, _) = _matchItems[index];
         TextShimmer.StartFocus(item);
         item.BringIntoView();
+    }
+
+    private void OnWindowKeyUp(object? sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Q || e.Key == Key.LeftShift || e.Key == Key.RightShift)
+            _shiftQHeld = false;
     }
 
     private void ClearShow1Focus()
@@ -6224,12 +6211,30 @@ public partial class WasteAnalysisInputPage : UserControl
     // ─── *_DATA 원시 측정값 저장 헬퍼 ──────────────────────────────────────
     // 매칭 여부와 무관하게 전체 행(정도관리 시료 + 미매칭 포함)을 기록부 테이블에 저장한다.
     // s가 null이면 SN=row.SN, 업체명/구분 빈값 사용.
+    private static readonly string ImportLogPath = System.IO.Path.Combine(
+        Directory.GetCurrentDirectory(), "Logs", "ImportDebug.log");
+    private static void LogImport(string msg)
+    {
+        try
+        {
+            var dir = System.IO.Path.GetDirectoryName(ImportLogPath)!;
+            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+            File.AppendAllText(ImportLogPath, $"[{DateTime.Now:HH:mm:ss}] {msg}\n");
+        }
+        catch { }
+    }
+
     private void SaveRawData(ExcelRow row, WasteSample? s, string 소스구분 = "폐수배출업소")
     {
-        if (string.IsNullOrWhiteSpace(row.Result)) return;
+        if (string.IsNullOrWhiteSpace(row.Result))
+        {
+            LogImport($"SKIP(빈결과): SN={row.SN}, 시료명={row.시료명}");
+            return;
+        }
 
         _categoryDocInfo.TryGetValue(_activeCategory, out var docInfo);
         bool isUV = docInfo?.IsUVVIS == true;
+        LogImport($"SaveRawData: cat={_activeCategory}, isUV={isUV}, SN={row.SN}, Result={row.Result}, Source={소스구분}");
 
         // 분석일: B1 값 우선, 없으면 매칭된 샘플의 채수일, 그래도 없으면 오늘
         _categoryDocDates.TryGetValue(_activeCategory, out var 분석일Raw);
@@ -6237,8 +6242,9 @@ public partial class WasteAnalysisInputPage : UserControl
             ? 분석일Raw
             : (s?.채수일 ?? DateTime.Today.ToString("yyyy-MM-dd"));
 
-        // 매칭된 시료가 없으면 xlsx 행의 SN을 그대로 사용, 업체명/구분은 빈값
+        // 매칭된 시료가 없으면 시료명을 SN으로 사용 (빈 SN 방지 → UNIQUE 충돌 방지)
         string sn     = s?.SN ?? row.SN ?? "";
+        if (string.IsNullOrEmpty(sn)) sn = row.시료명 ?? "";
         string 업체명 = s?.업체명 ?? "";
         string 구분   = s?.구분 ?? "";
 
@@ -6303,7 +6309,7 @@ public partial class WasteAnalysisInputPage : UserControl
                         분석일, sn, 업체명, 소스구분,
                         시료량:  row.시료량,
                         흡광도:  row.D1,
-                        희석배수: row.D2,
+                        희석배수: row.P,
                         검량선a: docInfo?.Standard_Slope ?? "",
                         농도:    row.Result,
                         st01mgl: docInfo?.Standard_Points?.ElementAtOrDefault(0) ?? "",
@@ -6317,7 +6323,9 @@ public partial class WasteAnalysisInputPage : UserControl
                         기울기:  docInfo?.Standard_Slope ?? "",
                         절편:    docInfo?.Standard_Intercept ?? "",
                         R2:      docInfo?.Abs_R2 ?? "",
-                        비고: remark);
+                        비고: remark,
+                        시료명: row.시료명,
+                        소스구분: 소스구분);
                 }
                 break;
 
@@ -6334,6 +6342,10 @@ public partial class WasteAnalysisInputPage : UserControl
                         검량선정보: docInfo,
                         비고: remark);
                 }
+                break;
+
+            default:
+                LogImport($"  매칭되지 않은 카테고리: '{_activeCategory}' (isUV={isUV})");
                 break;
         }
     }
@@ -6911,12 +6923,115 @@ public partial class WasteAnalysisInputPage : UserControl
             categoryRows[_selectedRowIndex].원본시료명 = row.원본시료명;
         }
 
-        // UI 새로고침
-        { /* LoadVerifiedGrid 제거됨 */ }
+        // UI 시각적 업데이트: 시료명 셀 → 원본명만 표시
+        if (_selectedRowIndex < _rowNameCells.Count)
+        {
+            var nameCell = _rowNameCells[_selectedRowIndex];
+            nameCell.Children.Clear();
+            nameCell.Children.Add(FsBase(new TextBlock
+            {
+                Text = row.시료명, FontFamily = Font,
+                Foreground = AppRes("AppFg"),
+                TextTrimming = TextTrimming.CharacterEllipsis,
+            }));
+        }
+
+        // 시료구분 셀 초기화
+        if (_selectedRowIndex < _rowSourceCells.Count)
+        {
+            _rowSourceCells[_selectedRowIndex].Text = "—";
+            _rowSourceCells[_selectedRowIndex].Foreground = AppRes("FgMuted");
+        }
+
+        // 아이콘 초기화
+        if (_selectedRowIndex < _rowIcons.Count)
+        {
+            _rowIcons[_selectedRowIndex].Background = AppRes("FgMuted");
+            _rowIcons[_selectedRowIndex].Opacity = 1.0;
+        }
+
+        // SN 셀 초기화
+        if (_selectedRowIndex < _rowSnCells.Count)
+            _rowSnCells[_selectedRowIndex].Text = row.SN;
+
+        // 토글 OFF
+        if (_selectedRowIndex < _rowToggles.Count)
+        {
+            var (track, knob) = _rowToggles[_selectedRowIndex];
+            track.Background = AppRes("FgMuted");
+            track.Opacity    = 0.5;
+            knob.Margin      = new Thickness(2, 2, 0, 2);
+        }
+
+        RefreshDuplicateIcons();
         BuildStatsPanel();
 
-        ShowMessage($"'{row.SN}' 시료의 매칭이 취소되었습니다.", false);
-        LogMatch($"MATCH CANCELLED: {row.SN} → 미분류");
+        ShowMessage($"'{row.시료명}' 시료의 매칭이 취소되었습니다.", false);
+        LogMatch($"MATCH CANCELLED: {row.시료명} → 미분류");
+    }
+
+    /// <summary>지정 행을 정도관리(QC) 시료로 설정</summary>
+    private void ApplyQcToRow(ExcelRow qRow, int rowIndex)
+    {
+        // 매칭 초기화
+        qRow.Source              = SourceType.미분류;
+        qRow.Status              = MatchStatus.미매칭;
+        qRow.Matched             = null;
+        qRow.MatchedAnalysis     = null;
+        qRow.MatchedFacilityName = null;
+        qRow.IsManualMatch       = false;
+        if (!string.IsNullOrEmpty(qRow.원본시료명))
+        {
+            qRow.시료명    = qRow.원본시료명;
+            qRow.원본시료명 = "";
+        }
+        // QC 지정
+        qRow.SN        = "QC";
+        qRow.IsControl = true;
+        // _categoryExcelData 동기화
+        if (_categoryExcelData.TryGetValue(_activeCategory, out var catRows)
+            && rowIndex < catRows.Count)
+        {
+            catRows[rowIndex].Source              = qRow.Source;
+            catRows[rowIndex].Status              = qRow.Status;
+            catRows[rowIndex].Matched             = null;
+            catRows[rowIndex].MatchedAnalysis     = null;
+            catRows[rowIndex].MatchedFacilityName = null;
+            catRows[rowIndex].IsManualMatch       = false;
+            catRows[rowIndex].시료명               = qRow.시료명;
+            catRows[rowIndex].원본시료명            = qRow.원본시료명;
+            catRows[rowIndex].SN                  = "QC";
+            catRows[rowIndex].IsControl           = true;
+        }
+        // 셀 갱신
+        if (rowIndex < _rowSnCells.Count)
+            _rowSnCells[rowIndex].Text = "QC";
+        if (rowIndex < _rowSourceCells.Count)
+        {
+            _rowSourceCells[rowIndex].Text       = "정도관리";
+            _rowSourceCells[rowIndex].Foreground = new Avalonia.Media.SolidColorBrush(
+                Avalonia.Media.Color.Parse("#c084fc"));
+        }
+        // 시료명 셀: 매칭명 제거, 원본명만 표시
+        if (rowIndex < _rowNameCells.Count)
+        {
+            var nameCell = _rowNameCells[rowIndex];
+            nameCell.Children.Clear();
+            nameCell.Children.Add(FsBase(new TextBlock
+            {
+                Text = qRow.시료명, FontFamily = Font,
+                Foreground = AppRes("AppFg"),
+                TextTrimming = TextTrimming.CharacterEllipsis,
+            }));
+        }
+        // 아이콘 금색으로 변경
+        if (rowIndex < _rowIcons.Count)
+        {
+            _rowIcons[rowIndex].Background = new Avalonia.Media.SolidColorBrush(
+                Avalonia.Media.Color.Parse("#FFD700"));
+            _rowIcons[rowIndex].Opacity = 1.0;
+        }
+        BuildStatsPanel();
     }
 
     private void SetupDragSource(Border item, string sampleName, object? sampleData = null)
@@ -7457,6 +7572,8 @@ public partial class WasteAnalysisInputPage : UserControl
         if (!_categoryExcelData.TryGetValue(_activeCategory, out var rows))
         { ShowMessage("먼저 파일을 첨부하세요.", true); return; }
 
+        try { File.WriteAllText(ImportLogPath, $"=== ImportData 시작: {DateTime.Now:yyyy-MM-dd HH:mm:ss} cat={_activeCategory} rows={rows.Count} ===\n"); } catch { }
+
         // 진행 오버레이 표시
         if (_importOverlay != null) _importOverlay.IsVisible = true;
         int totalRows = rows.Count;
@@ -7475,29 +7592,35 @@ public partial class WasteAnalysisInputPage : UserControl
         {
         foreach (var row in rows)
         {
-            if (string.IsNullOrWhiteSpace(row.Result)) { processed++; continue; }
-            if (!row.Enabled) { disabled++; processed++; continue; }
+            if (string.IsNullOrWhiteSpace(row.Result)) { LogImport($"SKIP(빈결과): [{processed}] {row.시료명}"); processed++; continue; }
+            if (!row.Enabled) { LogImport($"SKIP(비활성): [{processed}] {row.시료명}"); disabled++; processed++; continue; }
 
             try
             {
                 switch (row.Source)
                 {
                     case SourceType.폐수배출업소 when row.Matched != null:
-                        try { SaveRawData(row, row.Matched, "폐수배출업소"); } catch { }
+                        LogImport($"[{processed}] 폐수배출업소: {row.시료명} SN={row.SN}");
+                        try { SaveRawData(row, row.Matched, "폐수배출업소"); }
+                        catch (Exception ex) { LogImport($"  오류: {ex.Message}"); }
                         UpdateWasteSampleValues(row);
                         modifiedDates.Add(row.Matched.채수일);
                         imported++;
                         break;
 
                     case SourceType.수질분석센터 when row.MatchedAnalysis != null:
-                        try { SaveRawData(row, row.Matched, "수질분석센터"); } catch { }
+                        LogImport($"[{processed}] 수질분석센터: {row.시료명} SN={row.SN}");
+                        try { SaveRawData(row, row.Matched, "수질분석센터"); }
+                        catch (Exception ex) { LogImport($"  오류: {ex.Message}"); }
                         ImportAnalysisRequest(row);
                         if (row.Matched != null) modifiedDates.Add(row.Matched.채수일);
                         imported++;
                         break;
 
                     case SourceType.처리시설 when row.MatchedFacilityName != null:
-                        try { SaveRawData(row, null, "처리시설"); } catch { }
+                        LogImport($"[{processed}] 처리시설: {row.시료명} SN={row.SN} 시설={row.MatchedFacilityName}");
+                        try { SaveRawData(row, null, "처리시설"); }
+                        catch (Exception ex) { LogImport($"  오류: {ex.Message}"); }
                         ImportFacilityResult(row);
                         docDates.TryGetValue(category, out var fd);
                         if (!string.IsNullOrEmpty(fd)) modifiedDates.Add(fd);
@@ -7505,13 +7628,12 @@ public partial class WasteAnalysisInputPage : UserControl
                         break;
 
                     default:
-                        if (row.IsControl)
-                        {
-                            if (string.IsNullOrEmpty(row.SN)) row.SN = row.시료명;
-                            try { SaveRawData(row, null, "QAQC"); } catch { }
-                            imported++;
-                        }
-                        else skipped++;
+                        if (string.IsNullOrEmpty(row.SN)) row.SN = row.시료명;
+                        var srcTag = row.IsControl ? "QAQC" : "미분류";
+                        LogImport($"[{processed}] {srcTag}: {row.시료명} Source={row.Source} Enabled={row.Enabled} FacilityName={row.MatchedFacilityName}");
+                        try { SaveRawData(row, null, srcTag); }
+                        catch (Exception ex) { LogImport($"  오류: {ex.Message}"); }
+                        imported++;
                         break;
                 }
             }
