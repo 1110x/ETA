@@ -12,6 +12,36 @@ namespace ETA.Services.SERVICE2;
 
 public static class WasteSampleService
 {
+    // UV 5항목 컬럼이 폐수의뢰및결과 테이블에 존재하는지 여부 캐시
+    private static bool _uvColumnsEnsured;
+    private static readonly string[] _uvColumnNames = { "시안", "6가크롬", "색도", "ABS", "불소" };
+
+    /// <summary>폐수의뢰및결과 테이블에 UV 5항목 컬럼이 존재하는지 확인하고, 없으면 추가</summary>
+    private static void EnsureUvColumns(DbConnection conn)
+    {
+        if (_uvColumnsEnsured) return;
+        foreach (var col in _uvColumnNames)
+        {
+            if (!DbConnectionFactory.ColumnExists(conn, "폐수의뢰및결과", col))
+            {
+                try
+                {
+                    using var alt = conn.CreateCommand();
+                    alt.CommandText = $"ALTER TABLE `폐수의뢰및결과` ADD COLUMN `{col}` TEXT DEFAULT ''";
+                    alt.ExecuteNonQuery();
+                }
+                catch { /* 이미 존재하거나 병렬 마이그레이션 */ }
+            }
+        }
+        _uvColumnsEnsured = true;
+    }
+
+    // 폐수의뢰및결과 SELECT의 공통 컬럼 목록
+    private const string SelectColumns = @"Id, 채수일, 구분, 순서, SN, 업체명, 관리번호,
+                   BOD, `TOC`, SS, `T-N`, `T-P`, `N-Hexan`, Phenols,
+                   비고, 확인자,
+                   `시안`, `6가크롬`, `색도`, `ABS`, `불소`";
+
     // ── 연월 목록 (폐수의뢰및결과 + 처리시설_작업 UNION, 역순) ────────────────
     public static List<string> GetMonths()
     {
@@ -86,11 +116,10 @@ public static class WasteSampleService
         var list = new List<WasteSample>();
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
+        EnsureUvColumns(conn);
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"
-            SELECT Id, 채수일, 구분, 순서, SN, 업체명, 관리번호,
-                   BOD, `TOC`, SS, `T-N`, `T-P`, `N-Hexan`, Phenols,
-                   비고, 확인자
+        cmd.CommandText = $@"
+            SELECT {SelectColumns}
             FROM `폐수의뢰및결과`
             WHERE 채수일 = @d
             ORDER BY CASE 구분 WHEN '여수' THEN 0 WHEN '율촌' THEN 1 WHEN '세풍' THEN 2 ELSE 3 END,
@@ -110,12 +139,11 @@ public static class WasteSampleService
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
+            EnsureUvColumns(conn);
             using var cmd = conn.CreateCommand();
             var cutoff = DateTime.Today.AddMonths(-months).ToString("yyyy-MM-dd");
-            cmd.CommandText = @"
-                SELECT Id, 채수일, 구분, 순서, SN, 업체명, 관리번호,
-                       BOD, `TOC`, SS, `T-N`, `T-P`, `N-Hexan`, Phenols,
-                       비고, 확인자
+            cmd.CommandText = $@"
+                SELECT {SelectColumns}
                 FROM `폐수의뢰및결과`
                 WHERE 채수일 >= @cutoff
                 ORDER BY 채수일 DESC, 순서 ASC";
@@ -273,15 +301,19 @@ public static class WasteSampleService
 
     // ── 내부 헬퍼 ─────────────────────────────────────────────────────────────
     public static void UpdateValues(int id, string bod, string toc, string ss,
-                                     string tn, string tp, string nHexan, string phenols)
+                                     string tn, string tp, string nHexan, string phenols,
+                                     string cn = "", string cr6 = "", string color = "",
+                                     string abs = "", string fluoride = "")
     {
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
+        EnsureUvColumns(conn);
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
             UPDATE `폐수의뢰및결과`
             SET BOD=@bod, `TOC`=@toc, SS=@ss,
-                `T-N`=@tn, `T-P`=@tp, `N-Hexan`=@nh, Phenols=@ph
+                `T-N`=@tn, `T-P`=@tp, `N-Hexan`=@nh, Phenols=@ph,
+                `시안`=@cn, `6가크롬`=@cr6, `색도`=@color, `ABS`=@abs, `불소`=@fl
             WHERE Id=@id";
         cmd.Parameters.AddWithValue("@bod", bod);
         cmd.Parameters.AddWithValue("@toc", toc);
@@ -290,6 +322,11 @@ public static class WasteSampleService
         cmd.Parameters.AddWithValue("@tp",  tp);
         cmd.Parameters.AddWithValue("@nh",  nHexan);
         cmd.Parameters.AddWithValue("@ph",  phenols);
+        cmd.Parameters.AddWithValue("@cn",  cn);
+        cmd.Parameters.AddWithValue("@cr6", cr6);
+        cmd.Parameters.AddWithValue("@color", color);
+        cmd.Parameters.AddWithValue("@abs", abs);
+        cmd.Parameters.AddWithValue("@fl",  fluoride);
         cmd.Parameters.AddWithValue("@id",  id);
         cmd.ExecuteNonQuery();
     }
@@ -338,25 +375,39 @@ public static class WasteSampleService
         }
     }
 
-    private static WasteSample Map(DbDataReader r) => new()
+    /// <summary>폐수의뢰및결과 SELECT 결과를 WasteSample로 매핑 (UV 5항목은 SELECT에 포함된 경우만)</summary>
+    private static WasteSample Map(DbDataReader r)
     {
-        Id       = r.GetInt32(0),
-        채수일   = r.IsDBNull(1) ? "" : r.GetString(1),
-        구분     = r.IsDBNull(2) ? "" : r.GetString(2),
-        순서     = r.GetInt32(3),
-        SN       = r.IsDBNull(4) ? "" : r.GetString(4),
-        업체명   = r.IsDBNull(5) ? "" : r.GetString(5),
-        관리번호 = r.IsDBNull(6) ? "" : r.GetString(6),
-        BOD      = r.IsDBNull(7) ? "" : r.GetString(7),
-        TOC= r.IsDBNull(8) ? "" : r.GetString(8),
-        SS       = r.IsDBNull(9) ? "" : r.GetString(9),
-        TN       = r.IsDBNull(10) ? "" : r.GetString(10),
-        TP       = r.IsDBNull(11) ? "" : r.GetString(11),
-        NHexan   = r.IsDBNull(12) ? "" : r.GetString(12),
-        Phenols  = r.IsDBNull(13) ? "" : r.GetString(13),
-        비고     = r.IsDBNull(14) ? "" : r.GetString(14),
-        확인자   = r.IsDBNull(15) ? "" : r.GetString(15),
-    };
+        var s = new WasteSample
+        {
+            Id       = r.GetInt32(0),
+            채수일   = r.IsDBNull(1) ? "" : r.GetString(1),
+            구분     = r.IsDBNull(2) ? "" : r.GetString(2),
+            순서     = r.GetInt32(3),
+            SN       = r.IsDBNull(4) ? "" : r.GetString(4),
+            업체명   = r.IsDBNull(5) ? "" : r.GetString(5),
+            관리번호 = r.IsDBNull(6) ? "" : r.GetString(6),
+            BOD      = r.IsDBNull(7) ? "" : r.GetString(7),
+            TOC      = r.IsDBNull(8) ? "" : r.GetString(8),
+            SS       = r.IsDBNull(9) ? "" : r.GetString(9),
+            TN       = r.IsDBNull(10) ? "" : r.GetString(10),
+            TP       = r.IsDBNull(11) ? "" : r.GetString(11),
+            NHexan   = r.IsDBNull(12) ? "" : r.GetString(12),
+            Phenols  = r.IsDBNull(13) ? "" : r.GetString(13),
+            비고     = r.IsDBNull(14) ? "" : r.GetString(14),
+            확인자   = r.IsDBNull(15) ? "" : r.GetString(15),
+        };
+        // UV 5항목 (r.FieldCount > 16 이면 SELECT에 포함됨)
+        if (r.FieldCount > 16)
+        {
+            s.CN       = r.IsDBNull(16) ? "" : r.GetString(16);
+            s.CR6      = r.IsDBNull(17) ? "" : r.GetString(17);
+            s.COLOR    = r.IsDBNull(18) ? "" : r.GetString(18);
+            s.ABS      = r.IsDBNull(19) ? "" : r.GetString(19);
+            s.FLUORIDE = r.IsDBNull(20) ? "" : r.GetString(20);
+        }
+        return s;
+    }
 
     // ── *_DATA 원시 측정값 조회 ──────────────────────────────────────────────
 
@@ -771,7 +822,9 @@ public static class WasteSampleService
     /// <summary>GC/MS 데이터 UPSERT — 수질분석센터_*_DATA 테이블 (VOC 스키마)</summary>
     public static void UpsertGcData(
         string tableName, string 분석일, string sn, string 업체명, string 구분,
-        string 농도, string ISTD, ExcelDocInfo? 검량선정보, string 비고 = "", string 시료명 = "")
+        string 농도, string ISTD, ExcelDocInfo? 검량선정보,
+        GcCompoundCalInfo? compoundCal = null,
+        string 비고 = "", string 시료명 = "")
     {
         try
         {
@@ -790,8 +843,8 @@ public static class WasteSampleService
             chk.Parameters.AddWithValue("@nm2", 시료명);
             bool exists = Convert.ToInt32(chk.ExecuteScalar()) > 0;
 
-            // 검량선 데이터 추출 (첫 번째 화합물 기준)
-            var firstCompound = 검량선정보?.GcCompoundCals?.FirstOrDefault();
+            // 검량선 데이터 추출 (지정된 성분 우선, 없으면 첫 번째 화합물)
+            var firstCompound = compoundCal ?? 검량선정보?.GcCompoundCals?.FirstOrDefault();
             string[] st_농도s = new string[7], st_값s = new string[7], st_istds = new string[7];
 
             if (firstCompound != null)
@@ -864,10 +917,138 @@ public static class WasteSampleService
         }
     }
 
+    /// <summary>의뢰및결과 테이블의 동적 컬럼 갱신 (다성분 GC/ICP/PFAS용)</summary>
+    public static void UpdateDynamicValue(string tableName, int id, string columnName, string value)
+    {
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            if (!DbConnectionFactory.ColumnExists(conn, tableName, columnName))
+            {
+                using var alt = conn.CreateCommand();
+                alt.CommandText = $"ALTER TABLE `{tableName}` ADD COLUMN `{columnName}` TEXT DEFAULT ''";
+                alt.ExecuteNonQuery();
+            }
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = $"UPDATE `{tableName}` SET `{columnName}` = @v WHERE {DbConnectionFactory.RowId} = @id";
+            cmd.Parameters.AddWithValue("@v", value);
+            cmd.Parameters.AddWithValue("@id", id);
+            cmd.ExecuteNonQuery();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[UpdateDynamicValue:{tableName}.{columnName}] 오류: {ex.Message}");
+        }
+    }
+
+    // ── 생태독성 UPSERT ──────────────────────────────────────────────────────
+    public static void UpsertEcotoxData(
+        string 채수일, string sn, string 업체명, string 구분, string 시료명, string 소스구분,
+        string 시험종, string 시험시간, string 시험시간단위,
+        int 대조군_생물수, int 대조군_사망수,
+        double[] 농도, int[] 생물수, int[] 사망수,
+        EcotoxicityService.EcotoxResult? result = null,
+        string 비고 = "")
+    {
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var chk = conn.CreateCommand();
+            chk.CommandText = "SELECT COUNT(*) FROM `생태독성_시험기록부` WHERE LEFT(분석일,10)=@d AND SN=@sn";
+            chk.Parameters.AddWithValue("@d", 채수일);
+            chk.Parameters.AddWithValue("@sn", sn);
+            bool exists = Convert.ToInt32(chk.ExecuteScalar()) > 0;
+
+            int cnt = Math.Min(농도.Length, 8);
+
+            using var cmd = conn.CreateCommand();
+            if (exists)
+            {
+                var setCols = new System.Text.StringBuilder();
+                setCols.Append("시료명=@nm2, 소스구분=@src, 시험종=@sp, 시험시간=@dur, 시험시간단위=@duru, ");
+                setCols.Append("대조군_생물수=@co, 대조군_사망수=@cm, ");
+                for (int i = 1; i <= 8; i++)
+                    setCols.Append($"농도_{i}=@c{i}, 생물수_{i}=@o{i}, 사망수_{i}=@m{i}, ");
+                setCols.Append("LC50=@lc, LC50_하한=@lcl, LC50_상한=@lcu, TU=@tu, 분석방법=@method, trim_percent=@trim, ");
+                setCols.Append($"결과=@result, 비고=@remark, 등록일시={DbConnectionFactory.NowExpr}");
+                cmd.CommandText = $"UPDATE `생태독성_시험기록부` SET {setCols} WHERE LEFT(분석일,10)=@d AND SN=@sn";
+            }
+            else
+            {
+                var cols = new System.Text.StringBuilder();
+                var vals = new System.Text.StringBuilder();
+                cols.Append("분석일, SN, 업체명, 구분, 시료명, 소스구분, 시험종, 시험시간, 시험시간단위, 대조군_생물수, 대조군_사망수, ");
+                vals.Append("@d, @sn, @nm, @gu, @nm2, @src, @sp, @dur, @duru, @co, @cm, ");
+                for (int i = 1; i <= 8; i++)
+                {
+                    cols.Append($"농도_{i}, 생물수_{i}, 사망수_{i}, ");
+                    vals.Append($"@c{i}, @o{i}, @m{i}, ");
+                }
+                cols.Append("LC50, LC50_하한, LC50_상한, TU, 분석방법, trim_percent, 결과, 비고, 등록일시");
+                vals.Append($"@lc, @lcl, @lcu, @tu, @method, @trim, @result, @remark, {DbConnectionFactory.NowExpr}");
+                cmd.CommandText = $"INSERT INTO `생태독성_시험기록부` ({cols}) VALUES ({vals})";
+                cmd.Parameters.AddWithValue("@nm", 업체명);
+                cmd.Parameters.AddWithValue("@gu", 구분);
+            }
+
+            cmd.Parameters.AddWithValue("@d", 채수일);
+            cmd.Parameters.AddWithValue("@sn", sn);
+            cmd.Parameters.AddWithValue("@nm2", 시료명);
+            cmd.Parameters.AddWithValue("@src", 소스구분);
+            cmd.Parameters.AddWithValue("@sp", 시험종);
+            cmd.Parameters.AddWithValue("@dur", 시험시간);
+            cmd.Parameters.AddWithValue("@duru", 시험시간단위);
+            cmd.Parameters.AddWithValue("@co", 대조군_생물수.ToString());
+            cmd.Parameters.AddWithValue("@cm", 대조군_사망수.ToString());
+
+            for (int i = 1; i <= 8; i++)
+            {
+                int idx = i - 1;
+                cmd.Parameters.AddWithValue($"@c{i}", idx < cnt ? 농도[idx].ToString("G") : "");
+                cmd.Parameters.AddWithValue($"@o{i}", idx < cnt ? 생물수[idx].ToString() : "");
+                cmd.Parameters.AddWithValue($"@m{i}", idx < cnt ? 사망수[idx].ToString() : "");
+            }
+
+            cmd.Parameters.AddWithValue("@lc",     result?.EC50.ToString("G") ?? "");
+            cmd.Parameters.AddWithValue("@lcl",    result?.LowerCI.ToString("G") ?? "");
+            cmd.Parameters.AddWithValue("@lcu",    result?.UpperCI.ToString("G") ?? "");
+            cmd.Parameters.AddWithValue("@tu",     result?.TU.ToString("G") ?? "");
+            cmd.Parameters.AddWithValue("@method", result?.Method ?? "");
+            cmd.Parameters.AddWithValue("@trim",   result?.TrimPercent.ToString("G") ?? "");
+            cmd.Parameters.AddWithValue("@result", result?.TU.ToString("F1") ?? "");
+            cmd.Parameters.AddWithValue("@remark", 비고);
+            cmd.ExecuteNonQuery();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[UpsertEcotoxData] 오류: {ex.Message}");
+        }
+    }
+
     // ── 헬퍼 메서드 ─────────────────────────────────────────────────────────
     private static string GetString(System.Data.Common.DbDataReader r, int index)
     {
         try { return r.IsDBNull(index) ? "" : r.GetString(index) ?? ""; }
         catch { return ""; }
+    }
+
+    /// <summary>SN으로 폐수의뢰및결과에서 업체명/구분 조회</summary>
+    public static WasteSample? FindBySN(string sn)
+    {
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT SN, 업체명, 구분 FROM `폐수의뢰및결과` WHERE SN=@sn LIMIT 1";
+            cmd.Parameters.AddWithValue("@sn", sn);
+            using var r = cmd.ExecuteReader();
+            if (r.Read())
+                return new WasteSample { SN = GetString(r, 0), 업체명 = GetString(r, 1), 구분 = GetString(r, 2) };
+        }
+        catch { }
+        return null;
     }
 }

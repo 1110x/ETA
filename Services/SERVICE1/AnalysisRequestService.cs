@@ -1897,6 +1897,46 @@ public static class AnalysisRequestService
         return list;
     }
 
+    /// <summary>생태독성이 포함된 의뢰 목록 (채취일자별 그룹)</summary>
+    public static List<(string 채취일자, int Id, string 약칭, string 시료명, string 접수번호, string 결과)> GetEcotoxRecords(int months = 6)
+    {
+        var list = new List<(string, int, string, string, string, string)>();
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            if (!DbConnectionFactory.TableExists(conn, "분석의뢰및결과")) return list;
+            if (!DbConnectionFactory.ColumnExists(conn, "분석의뢰및결과", "생태독성")) return list;
+            using var cmd = conn.CreateCommand();
+            var cutoff = DateTime.Today.AddMonths(-months).ToString("yyyy-MM-dd");
+            cmd.CommandText = $@"
+                SELECT {DbConnectionFactory.RowId},
+                       COALESCE(`약칭`, ''),
+                       COALESCE(`시료명`, ''),
+                       COALESCE(`견적번호`, ''),
+                       COALESCE(`채취일자`, ''),
+                       COALESCE(`생태독성`, '')
+                FROM `분석의뢰및결과`
+                WHERE `채취일자` >= @cutoff
+                  AND `생태독성` IS NOT NULL AND `생태독성` <> ''
+                ORDER BY `채취일자` DESC, {DbConnectionFactory.RowId}";
+            cmd.Parameters.AddWithValue("@cutoff", cutoff);
+            using var rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                list.Add((
+                    rdr.GetString(4),
+                    Convert.ToInt32(rdr.GetValue(0)),
+                    rdr.GetString(1),
+                    rdr.GetString(2),
+                    rdr.GetString(3),
+                    rdr.GetString(5)));
+            }
+        }
+        catch (Exception ex) { Log($"GetEcotoxRecords 오류: {ex.Message}"); }
+        return list;
+    }
+
     // =====================================================================
     //  단일 컬럼 결과값 업데이트 (분석결과입력용)
     // =====================================================================

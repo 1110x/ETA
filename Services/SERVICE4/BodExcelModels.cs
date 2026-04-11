@@ -17,6 +17,7 @@ public class ExcelRow
     public string D2 { get; set; } = "";
     public string Fxy { get; set; } = "";  // f(x/y) 식종액 함유율
     public string P { get; set; } = "";    // 희석배수
+    public string CompoundName { get; set; } = "";  // 다성분: 성분명 (GC/ICP/PFAS)
     // TOC TCIC 전용 (TOC_TCIC_DATA 컬럼 매핑)
     public string TCAU  { get; set; } = "";
     public string TCcon { get; set; } = "";
@@ -37,6 +38,22 @@ public class ExcelRow
     public bool IsDuplicate { get; set; }
     /// <summary>중복 그룹에서 최종 결과로 선택된 행 여부</summary>
     public bool IsSelectedForFinalResult { get; set; }
+    /// <summary>생태독성 시험 데이터 (ECO 카테고리 전용)</summary>
+    public EcotoxTestData? EcotoxData { get; set; }
+}
+
+/// <summary>생태독성 물벼룩 급성독성시험 데이터</summary>
+public class EcotoxTestData
+{
+    public string Species { get; set; } = "물벼룩";
+    public string Duration { get; set; } = "24";
+    public string DurationUnit { get; set; } = "H";
+    public int ControlOrganisms { get; set; } = 20;
+    public int ControlMortalities { get; set; }
+    public double[] Concentrations { get; set; } = Array.Empty<double>();
+    public int[] Organisms { get; set; } = Array.Empty<int>();
+    public int[] Mortalities { get; set; } = Array.Empty<int>();
+    public ETA.Services.SERVICE2.EcotoxicityService.EcotoxResult? Result { get; set; }
 }
 
 public enum MatchStatus { 입력가능, 덮어쓰기, 미매칭, 대기 }

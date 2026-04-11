@@ -65,6 +65,19 @@ public static class FacilityDbMigration
         EnsureFacilityTocDataTables(conn);
         EnsureAnalysisRecordTables(conn);
 
+        // 화합물 별칭 테이블 생성 + Seed
+        if (!IsMigrationDone(conn, "compound_alias_v1"))
+        {
+            try
+            {
+                CompoundAliasService.EnsureTable(conn);
+                CompoundAliasService.SeedIfNeeded(conn);
+                MarkMigrationDone(conn, "compound_alias_v1");
+                Log("화합물별명 테이블 생성 + Seed 완료");
+            }
+            catch (Exception ex) { Log($"화합물별명 마이그레이션 실패: {ex.Message}"); }
+        }
+
         // 처리시설 기본 순서 설정
         if (!IsMigrationDone(conn, "facility_default_order_v1"))
         {
@@ -748,16 +761,40 @@ public static class FacilityDbMigration
                 R값      TEXT DEFAULT '',
                 결과     TEXT DEFAULT ''";
 
+        // 생태독성: 농도별 생물수/사망수 (최대 8농도) + LC50/TU 결과
+        string EcotoxCols() => @"
+                시험종       TEXT DEFAULT '',
+                시험시간     TEXT DEFAULT '',
+                시험시간단위 TEXT DEFAULT '',
+                대조군_생물수 TEXT DEFAULT '',
+                대조군_사망수 TEXT DEFAULT '',
+                농도_1 TEXT DEFAULT '', 생물수_1 TEXT DEFAULT '', 사망수_1 TEXT DEFAULT '',
+                농도_2 TEXT DEFAULT '', 생물수_2 TEXT DEFAULT '', 사망수_2 TEXT DEFAULT '',
+                농도_3 TEXT DEFAULT '', 생물수_3 TEXT DEFAULT '', 사망수_3 TEXT DEFAULT '',
+                농도_4 TEXT DEFAULT '', 생물수_4 TEXT DEFAULT '', 사망수_4 TEXT DEFAULT '',
+                농도_5 TEXT DEFAULT '', 생물수_5 TEXT DEFAULT '', 사망수_5 TEXT DEFAULT '',
+                농도_6 TEXT DEFAULT '', 생물수_6 TEXT DEFAULT '', 사망수_6 TEXT DEFAULT '',
+                농도_7 TEXT DEFAULT '', 생물수_7 TEXT DEFAULT '', 사망수_7 TEXT DEFAULT '',
+                농도_8 TEXT DEFAULT '', 생물수_8 TEXT DEFAULT '', 사망수_8 TEXT DEFAULT '',
+                LC50       TEXT DEFAULT '',
+                LC50_하한  TEXT DEFAULT '',
+                LC50_상한  TEXT DEFAULT '',
+                TU         TEXT DEFAULT '',
+                분석방법   TEXT DEFAULT '',
+                trim_percent TEXT DEFAULT '',
+                결과       TEXT DEFAULT ''";
+
         string SchemaColumns(string schema) => schema switch
         {
             "BOD"     => BodCols(),
             "SS"      => SsCols(),
             "NHexan"  => NHexanCols(),
             "UvVis"   => UvVisCols(),
-            "Cr6"     => UvVisCols(),    // 6가크롬도 UV 5점 스키마
-            "Metal"   => UvVisCols(),    // 금속도 UV형 (검량선 포인트)
-            "GcLc"    => UvVisCols(),    // GC/LC도 UV형 기반
+            "Cr6"     => UvVisCols(),
+            "Metal"   => UvVisCols(),
+            "GcLc"    => UvVisCols(),
             "VOC"     => VocCols(),
+            "Ecotox"  => EcotoxCols(),
             _         => NHexanCols(),
         };
 
@@ -808,6 +845,30 @@ public static class FacilityDbMigration
             TryCreate(tableName, $@"CREATE TABLE `{tableName}` ({BaseColumns()}, {cols}, UNIQUE(분석일, SN))");
             created++;
         }
+
+        // ── 3. 화합물별명 표준코드 기반 시험기록부 테이블 추가 생성 ────────
+        // GCMS SaveRawData는 표준코드(예: "DCM")로 테이블 접근 → 해당 테이블도 보장
+        try
+        {
+            var aliasCodes = CompoundAliasService.GetDistinctStandardCodes();
+            foreach (var (code, analyte) in aliasCodes)
+            {
+                var codeSafe = WaterCenterDbMigration.SafeName(code);
+                var codeTable = $"{codeSafe}_시험기록부";
+                if (DbConnectionFactory.TableExists(conn, codeTable)) continue;
+
+                // 분석정보에서 해당 analyte의 카테고리/메서드 찾기
+                var match = items.FirstOrDefault(i =>
+                    i.Analyte.Equals(analyte, StringComparison.OrdinalIgnoreCase));
+                var codeSchema = match.Analyte != null
+                    ? WaterCenterDbMigration.DetermineSchema(match.Analyte, match.Category, match.Method, match.Instrument)
+                    : "VOC";
+                var codeCols = SchemaColumns(codeSchema);
+                TryCreate(codeTable, $@"CREATE TABLE `{codeTable}` ({BaseColumns()}, {codeCols}, UNIQUE(분석일, SN))");
+                created++;
+            }
+        }
+        catch (Exception ex) { Log($"화합물별명 표준코드 테이블 생성 실패: {ex.Message}"); }
 
         Log($"EnsureAnalysisRecordTables 완료 — {items.Count}개 항목 처리, {created}개 시도");
     }

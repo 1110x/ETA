@@ -339,6 +339,166 @@ public partial class WasteAnalysisInputPage : UserControl
         BuildCategoryButtons();
     }
 
+    // ── 생태독성 전용 패널 ─────────────────────────────────────────────────
+    public void ShowEcotoxPanel()
+    {
+        _activeCategory = "ECO";
+
+        var root = new StackPanel { Spacing = 8, Margin = new Thickness(12) };
+
+        // 헤더
+        root.Children.Add(FsLG(new TextBlock
+        {
+            Text = "🐟 생태독성 — 물벼룩 급성독성시험",
+            FontWeight = FontWeight.Bold, FontFamily = Font, Foreground = AppRes("AppFg"),
+        }));
+        root.Children.Add(FsSM(new TextBlock
+        {
+            Text = "시료를 추가하고 클릭하면 우측(Show3)에서 농도/사망수를 입력할 수 있습니다.",
+            FontFamily = Font, Foreground = AppRes("FgMuted"), TextWrapping = TextWrapping.Wrap,
+        }));
+
+        // 시료 추가 입력
+        var addPanel = new StackPanel { Orientation = Avalonia.Layout.Orientation.Horizontal, Spacing = 8, Margin = new Thickness(0, 8) };
+        var nameInput = new TextBox
+        {
+            Watermark = "시료명 입력 (예: 중흥 유입수)",
+            FontFamily = Font, Width = 250,
+            Foreground = AppRes("InputFg"), Background = AppRes("InputBg"),
+            BorderBrush = AppRes("InputBorder"), BorderThickness = new Thickness(1),
+            CornerRadius = new CornerRadius(4), Padding = new Thickness(8, 4),
+        };
+        var addBtn = new Button
+        {
+            Content = "시료 추가", FontFamily = Font,
+            Background = AppRes("BtnPrimaryBg"), Foreground = Brushes.White,
+            Padding = new Thickness(12, 4), CornerRadius = new CornerRadius(4),
+        };
+        addPanel.Children.Add(nameInput);
+        addPanel.Children.Add(addBtn);
+        root.Children.Add(addPanel);
+
+        // 시료 목록
+        var listPanel = new StackPanel { Spacing = 4 };
+        root.Children.Add(new Border { Height = 1, Background = AppRes("ThemeBorderSubtle"), Margin = new Thickness(0, 4) });
+        root.Children.Add(listPanel);
+
+        // ECO 카테고리 데이터 초기화
+        if (!_categoryExcelData.ContainsKey("ECO"))
+            _categoryExcelData["ECO"] = new List<ExcelRow>();
+        var ecoRows = _categoryExcelData["ECO"];
+        _currentExcelRows = ecoRows;
+
+        void RebuildList()
+        {
+            listPanel.Children.Clear();
+            for (int i = 0; i < ecoRows.Count; i++)
+            {
+                var row = ecoRows[i];
+                var idx = i;
+                var rowBorder = new Border
+                {
+                    Background = i % 2 == 0 ? AppRes("GridRowBg") : AppRes("GridRowAltBg"),
+                    CornerRadius = new CornerRadius(4),
+                    Padding = new Thickness(8, 6),
+                    Margin = new Thickness(0, 1),
+                    Cursor = new Cursor(StandardCursorType.Hand),
+                };
+                TextShimmer.AttachHover(rowBorder);
+
+                var rowGrid = new Grid();
+                rowGrid.ColumnDefinitions.Add(new ColumnDefinition(30, GridUnitType.Pixel));  // #
+                rowGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Star));    // 시료명
+                rowGrid.ColumnDefinitions.Add(new ColumnDefinition(80, GridUnitType.Pixel));  // TU
+                rowGrid.ColumnDefinitions.Add(new ColumnDefinition(60, GridUnitType.Pixel));  // 방법
+                rowGrid.ColumnDefinitions.Add(new ColumnDefinition(30, GridUnitType.Pixel));  // 삭제
+
+                rowGrid.Children.Add(FsSM(new TextBlock
+                {
+                    Text = $"{i + 1}", FontFamily = Font, Foreground = AppRes("FgMuted"),
+                    VerticalAlignment = VerticalAlignment.Center, HorizontalAlignment = HorizontalAlignment.Center,
+                }));
+
+                var nameTb = FsBase(new TextBlock
+                {
+                    Text = row.시료명, FontFamily = Font, Foreground = AppRes("AppFg"),
+                    VerticalAlignment = VerticalAlignment.Center, FontWeight = FontWeight.SemiBold,
+                });
+                Grid.SetColumn(nameTb, 1); rowGrid.Children.Add(nameTb);
+
+                var tuTb = FsBase(new TextBlock
+                {
+                    Text = string.IsNullOrEmpty(row.Result) ? "—" : $"{row.Result} TU",
+                    FontFamily = Font, FontWeight = FontWeight.Bold,
+                    Foreground = string.IsNullOrEmpty(row.Result) ? AppRes("FgMuted") : AppRes("ThemeFgSuccess"),
+                    VerticalAlignment = VerticalAlignment.Center, HorizontalAlignment = HorizontalAlignment.Center,
+                });
+                Grid.SetColumn(tuTb, 2); rowGrid.Children.Add(tuTb);
+
+                var methodTb = FsXS(new TextBlock
+                {
+                    Text = row.EcotoxData?.Result?.Method ?? "",
+                    FontFamily = Font, Foreground = AppRes("ThemeFgInfo"),
+                    VerticalAlignment = VerticalAlignment.Center, HorizontalAlignment = HorizontalAlignment.Center,
+                });
+                Grid.SetColumn(methodTb, 3); rowGrid.Children.Add(methodTb);
+
+                var delBtn = new Button
+                {
+                    Content = "✕", FontFamily = Font, FontSize = 10,
+                    Background = Brushes.Transparent, Foreground = AppRes("ThemeFgDanger"),
+                    BorderThickness = new Thickness(0), Padding = new Thickness(4, 2),
+                    VerticalAlignment = VerticalAlignment.Center,
+                };
+                delBtn.Click += (_, _) => { ecoRows.RemoveAt(idx); RebuildList(); };
+                Grid.SetColumn(delBtn, 4); rowGrid.Children.Add(delBtn);
+
+                rowBorder.Child = rowGrid;
+                rowBorder.PointerPressed += (_, _) =>
+                {
+                    _selectedRowIndex = idx;
+                    _currentEditExcelRow = row;
+                    ShowExcelRowDetail(row);
+                };
+
+                listPanel.Children.Add(rowBorder);
+            }
+
+            if (ecoRows.Count == 0)
+            {
+                listPanel.Children.Add(FsSM(new TextBlock
+                {
+                    Text = "시료가 없습니다. 위에서 시료명을 입력하고 추가하세요.",
+                    FontFamily = Font, Foreground = AppRes("FgMuted"),
+                    Margin = new Thickness(0, 12),
+                }));
+            }
+        }
+
+        addBtn.Click += (_, _) =>
+        {
+            var name = nameInput.Text?.Trim();
+            if (string.IsNullOrEmpty(name)) return;
+            ecoRows.Add(new ExcelRow
+            {
+                시료명 = name, SN = name, Source = SourceType.미분류,
+                Status = MatchStatus.입력가능, Enabled = true,
+                EcotoxData = new EcotoxTestData(),
+            });
+            nameInput.Text = "";
+            nameInput.Focus();
+            RebuildList();
+        };
+        nameInput.KeyDown += (_, e) =>
+        {
+            if (e.Key == Key.Enter) { addBtn.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); e.Handled = true; }
+        };
+
+        RebuildList();
+
+        ListPanelChanged?.Invoke(new ScrollViewer { Content = root });
+    }
+
     // ── 3-tab 모드 토글 (수질분석센터 / 처리시설 / 비용부담금) ────────────
     public void ModeTab_Click(object? sender, RoutedEventArgs e)
     {
@@ -415,26 +575,6 @@ public partial class WasteAnalysisInputPage : UserControl
             TextShimmer.AttachIfNew(btn);
         }
 
-        // AI 파서 자동선택 버튼
-        if (AiParserClassifier.IsModelReady() || ETA.Services.SERVICE4.SignatureClassifier.HasSignatures())
-        {
-            var aiBtn = FsSM(new Button
-            {
-                Content = "🤖 AI파서",
-                FontFamily = Font,
-                Padding = new Thickness(8, 4),
-                Margin = new Thickness(4, 2),
-                CornerRadius = new CornerRadius(4),
-                Cursor = new Cursor(StandardCursorType.Hand),
-                MinWidth = 72, MinHeight = 0,
-                HorizontalContentAlignment = HorizontalAlignment.Center,
-                Background = new SolidColorBrush(Color.Parse("#2E7D32")),
-                Foreground = Avalonia.Media.Brushes.White,
-            });
-            aiBtn.Click += async (_, _) => await OnAiParserButtonClick();
-            AnalysisItemButtons.Children.Add(aiBtn);
-        }
-
         UpdateCategoryButtonStyles();
     }
 
@@ -459,7 +599,7 @@ public partial class WasteAnalysisInputPage : UserControl
     }
 
     /// <summary>AI파서선택 버튼: 파일 선택 → ONNX 분류 → 카테고리 자동 전환 → 파서 실행 → Show2 로드</summary>
-    private async Task OnAiParserButtonClick()
+    public async Task OnAiParserButtonClick()
     {
         var aiResult = await AiPickAndPredictAsync();
         if (aiResult == null) return;
@@ -6083,6 +6223,181 @@ public partial class WasteAnalysisInputPage : UserControl
 
             root.Children.Add(inputGrid);
         }
+        else if (exRow != null && _activeCategory == "ECO")
+        {
+            // ── 생태독성 직접 입력 UI ─────────────────────────────────────
+            var eco = exRow.EcotoxData ?? new EcotoxTestData();
+            exRow.EcotoxData = eco;
+
+            // 시험 메타
+            var metaGrid = new Grid { Margin = new Thickness(0, 4) };
+            metaGrid.ColumnDefinitions.Add(new ColumnDefinition(60, GridUnitType.Pixel));
+            metaGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Star));
+            metaGrid.ColumnDefinitions.Add(new ColumnDefinition(60, GridUnitType.Pixel));
+            metaGrid.ColumnDefinitions.Add(new ColumnDefinition(60, GridUnitType.Pixel));
+            metaGrid.ColumnDefinitions.Add(new ColumnDefinition(30, GridUnitType.Pixel));
+
+            var spInput = MakeInput(eco.Species);
+            var durInput = MakeInput(eco.Duration);
+            metaGrid.Children.Add(FsXS(new TextBlock { Text = "시험종", FontFamily = Font, Foreground = AppRes("FgMuted"), VerticalAlignment = VerticalAlignment.Center }));
+            Grid.SetColumn(spInput, 1); metaGrid.Children.Add(spInput);
+            metaGrid.Children.Add(FsXS(new TextBlock { Text = "시험시간", FontFamily = Font, Foreground = AppRes("FgMuted"), VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(8, 0, 0, 0) }));
+            Grid.SetColumn(metaGrid.Children[^1], 2);
+            Grid.SetColumn(durInput, 3); metaGrid.Children.Add(durInput);
+            metaGrid.Children.Add(FsXS(new TextBlock { Text = "H", FontFamily = Font, Foreground = AppRes("FgMuted"), VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(4, 0) }));
+            Grid.SetColumn(metaGrid.Children[^1], 4);
+            root.Children.Add(metaGrid);
+
+            // 대조군
+            var ctrlGrid = new Grid { Margin = new Thickness(0, 2) };
+            ctrlGrid.ColumnDefinitions.Add(new ColumnDefinition(60, GridUnitType.Pixel));
+            ctrlGrid.ColumnDefinitions.Add(new ColumnDefinition(60, GridUnitType.Pixel));
+            ctrlGrid.ColumnDefinitions.Add(new ColumnDefinition(60, GridUnitType.Pixel));
+            ctrlGrid.ColumnDefinitions.Add(new ColumnDefinition(60, GridUnitType.Pixel));
+            ctrlGrid.Children.Add(FsXS(new TextBlock { Text = "대조군", FontFamily = Font, Foreground = AppRes("ThemeFgWarn"), FontWeight = FontWeight.SemiBold, VerticalAlignment = VerticalAlignment.Center }));
+            var ctrlOrgInput = MakeInput(eco.ControlOrganisms.ToString());
+            var ctrlMortInput = MakeInput(eco.ControlMortalities.ToString());
+            Grid.SetColumn(ctrlOrgInput, 1); ctrlGrid.Children.Add(ctrlOrgInput);
+            ctrlGrid.Children.Add(FsXS(new TextBlock { Text = "사망", FontFamily = Font, Foreground = AppRes("FgMuted"), VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(4, 0) }));
+            Grid.SetColumn(ctrlGrid.Children[^1], 2);
+            Grid.SetColumn(ctrlMortInput, 3); ctrlGrid.Children.Add(ctrlMortInput);
+            root.Children.Add(ctrlGrid);
+
+            // 농도별 데이터 (최대 8행)
+            int numConc = Math.Max(eco.Concentrations.Length, 5); // 최소 5행
+            numConc = Math.Min(numConc, 8);
+            var concInputs = new TextBox[numConc];
+            var orgInputs = new TextBox[numConc];
+            var mortInputs = new TextBox[numConc];
+
+            root.Children.Add(new Border { Height = 1, Background = AppRes("ThemeBorderSubtle"), Margin = new Thickness(0, 4) });
+
+            // 헤더
+            var hdrGrid = new Grid();
+            hdrGrid.ColumnDefinitions.Add(new ColumnDefinition(30, GridUnitType.Pixel));
+            hdrGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Star));
+            hdrGrid.ColumnDefinitions.Add(new ColumnDefinition(60, GridUnitType.Pixel));
+            hdrGrid.ColumnDefinitions.Add(new ColumnDefinition(60, GridUnitType.Pixel));
+            hdrGrid.Children.Add(FsXS(new TextBlock { Text = "#", FontFamily = Font, Foreground = AppRes("FgMuted"), HorizontalAlignment = HorizontalAlignment.Center }));
+            var h1 = FsXS(new TextBlock { Text = "농도(%)", FontFamily = Font, Foreground = AppRes("ThemeFgInfo"), FontWeight = FontWeight.SemiBold });
+            Grid.SetColumn(h1, 1); hdrGrid.Children.Add(h1);
+            var h2 = FsXS(new TextBlock { Text = "생물수", FontFamily = Font, Foreground = AppRes("ThemeFgInfo"), FontWeight = FontWeight.SemiBold, HorizontalAlignment = HorizontalAlignment.Center });
+            Grid.SetColumn(h2, 2); hdrGrid.Children.Add(h2);
+            var h3 = FsXS(new TextBlock { Text = "사망수", FontFamily = Font, Foreground = AppRes("ThemeFgWarn"), FontWeight = FontWeight.SemiBold, HorizontalAlignment = HorizontalAlignment.Center });
+            Grid.SetColumn(h3, 3); hdrGrid.Children.Add(h3);
+            root.Children.Add(hdrGrid);
+
+            for (int ci = 0; ci < numConc; ci++)
+            {
+                var rowG = new Grid { Margin = new Thickness(0, 1) };
+                rowG.ColumnDefinitions.Add(new ColumnDefinition(30, GridUnitType.Pixel));
+                rowG.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Star));
+                rowG.ColumnDefinitions.Add(new ColumnDefinition(60, GridUnitType.Pixel));
+                rowG.ColumnDefinitions.Add(new ColumnDefinition(60, GridUnitType.Pixel));
+
+                rowG.Children.Add(FsXS(new TextBlock { Text = $"{ci + 1}", FontFamily = Font, Foreground = AppRes("FgMuted"), HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center }));
+
+                concInputs[ci] = MakeInput(ci < eco.Concentrations.Length ? eco.Concentrations[ci].ToString("G") : "");
+                orgInputs[ci] = MakeInput(ci < eco.Organisms.Length ? eco.Organisms[ci].ToString() : "20");
+                mortInputs[ci] = MakeInput(ci < eco.Mortalities.Length ? eco.Mortalities[ci].ToString() : "");
+
+                Grid.SetColumn(concInputs[ci], 1); rowG.Children.Add(concInputs[ci]);
+                Grid.SetColumn(orgInputs[ci], 2); rowG.Children.Add(orgInputs[ci]);
+                Grid.SetColumn(mortInputs[ci], 3); rowG.Children.Add(mortInputs[ci]);
+                root.Children.Add(rowG);
+            }
+
+            root.Children.Add(new Border { Height = 1, Background = AppRes("ThemeBorderSubtle"), Margin = new Thickness(0, 4) });
+
+            // 결과 표시
+            var resultPanel = new StackPanel { Spacing = 4 };
+            var resultTb = FsLG(new TextBlock { FontFamily = Font, Foreground = AppRes("ThemeFgSuccess"), FontWeight = FontWeight.Bold });
+            var detailTb = FsSM(new TextBlock { FontFamily = Font, Foreground = AppRes("FgMuted"), TextWrapping = TextWrapping.Wrap });
+            resultPanel.Children.Add(resultTb);
+            resultPanel.Children.Add(detailTb);
+
+            if (eco.Result != null)
+            {
+                resultTb.Text = $"TU = {eco.Result.TU}  (LC50 = {eco.Result.EC50})";
+                detailTb.Text = $"95% CI: {eco.Result.LowerCI} ~ {eco.Result.UpperCI}  |  {eco.Result.Method}  |  Trim: {eco.Result.TrimPercent}%";
+            }
+
+            // 계산 버튼 (TSK / Probit)
+            var btnPanel = new StackPanel { Orientation = Avalonia.Layout.Orientation.Horizontal, Spacing = 8, Margin = new Thickness(0, 4) };
+
+            void DoCalc(bool useTSK)
+            {
+                // 입력값 수집
+                eco.Species = spInput.Text ?? "물벼룩";
+                eco.Duration = durInput.Text ?? "24";
+                int.TryParse(ctrlOrgInput.Text, out var cOrg); eco.ControlOrganisms = cOrg > 0 ? cOrg : 20;
+                int.TryParse(ctrlMortInput.Text, out var cMort); eco.ControlMortalities = cMort;
+
+                var concList = new List<double>();
+                var orgList = new List<int>();
+                var mortList = new List<int>();
+                for (int ci = 0; ci < numConc; ci++)
+                {
+                    if (double.TryParse(concInputs[ci].Text, out var c) && c > 0)
+                    {
+                        concList.Add(c);
+                        int.TryParse(orgInputs[ci].Text, out var o); orgList.Add(o > 0 ? o : 20);
+                        int.TryParse(mortInputs[ci].Text, out var m); mortList.Add(m);
+                    }
+                }
+                if (concList.Count < 2) { resultTb.Text = "최소 2개 농도가 필요합니다."; return; }
+
+                eco.Concentrations = concList.ToArray();
+                eco.Organisms = orgList.ToArray();
+                eco.Mortalities = mortList.ToArray();
+
+                try
+                {
+                    var result = useTSK
+                        ? EcotoxicityService.CalculateTSK(eco.Concentrations, eco.Organisms, eco.Mortalities, eco.ControlOrganisms, eco.ControlMortalities)
+                        : EcotoxicityService.CalculateProbit(eco.Concentrations, eco.Organisms, eco.Mortalities, eco.ControlOrganisms, eco.ControlMortalities);
+
+                    eco.Result = result;
+                    exRow.Result = result.TU.ToString("F1");
+                    resultTb.Text = $"TU = {result.TU}  (LC50 = {result.EC50})";
+                    detailTb.Text = $"95% CI: {result.LowerCI} ~ {result.UpperCI}  |  {result.Method}"
+                        + (result.TrimPercent > 0 ? $"  |  Trim: {result.TrimPercent}%" : "")
+                        + (result.Smoothed ? "  |  단조보정 적용" : "");
+
+                    // Show2 결과값 셀 업데이트
+                    if (_selectedRowIndex >= 0 && _selectedRowIndex < _gridPanel?.Children.Count)
+                    {
+                        // 결과값 텍스트 찾아서 업데이트
+                    }
+                }
+                catch (Exception ex)
+                {
+                    resultTb.Text = $"계산 오류: {ex.Message}";
+                    detailTb.Text = "";
+                }
+            }
+
+            var tskBtn = new Button
+            {
+                Content = "TSK 계산", FontFamily = Font,
+                Background = AppRes("BtnPrimaryBg"), Foreground = Brushes.White,
+                Padding = new Thickness(16, 6), CornerRadius = new CornerRadius(4),
+            };
+            tskBtn.Click += (_, _) => DoCalc(true);
+
+            var probitBtn = new Button
+            {
+                Content = "Probit 계산", FontFamily = Font,
+                Background = AppRes("ThemeFgInfo"), Foreground = Brushes.White,
+                Padding = new Thickness(16, 6), CornerRadius = new CornerRadius(4),
+            };
+            probitBtn.Click += (_, _) => DoCalc(false);
+
+            btnPanel.Children.Add(tskBtn);
+            btnPanel.Children.Add(probitBtn);
+            root.Children.Add(btnPanel);
+            root.Children.Add(resultPanel);
+        }
         else if (exRow != null && !isUV)
         {
             // BOD 모드: 시료량/D1/D2 편집 가능, f(x/y)/P/Result 자동 계산
@@ -6625,6 +6940,22 @@ public partial class WasteAnalysisInputPage : UserControl
                         소스구분: 소스구분);
                 }
                 break;
+
+            case "ECO":
+            {
+                // 생태독성: ExcelRow에 저장된 독성시험 데이터로 계산 + 저장
+                var ecoData = row.EcotoxData;
+                if (ecoData != null)
+                {
+                    WasteSampleService.UpsertEcotoxData(
+                        분석일, sn, 업체명, 구분, 시료명Full, 소스구분,
+                        ecoData.Species, ecoData.Duration, ecoData.DurationUnit,
+                        ecoData.ControlOrganisms, ecoData.ControlMortalities,
+                        ecoData.Concentrations, ecoData.Organisms, ecoData.Mortalities,
+                        ecoData.Result, 비고: remark);
+                }
+                break;
+            }
 
             default:
                 LogImport($"  매칭되지 않은 카테고리: '{_activeCategory}' (isUV={isUV})");

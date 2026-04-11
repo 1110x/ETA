@@ -56,6 +56,7 @@ public partial class MainPage : Window
     private ResultSubmitMeasurePage?     _resultSubmitMeasurePage;
     private TestReportPage?              _resultSubmitMeasureTestReport;
     private WasteAnalysisInputPage?      _wasteAnalysisInputPage;
+    private EcotoxicityPage?             _ecotoxicityPage;
     private ResultSubmitErpPage?         _resultSubmitErpPage;
     private AccessPage?                  _accessPage;
     private AiDocClassificationPage?     _aiDocClassificationPage;
@@ -2847,7 +2848,7 @@ public partial class MainPage : Window
         Show1.Content = null;
         Show2.Content = null; Show3.Content = null;
         string attachLabel = inputMode == "비용부담금/처리시설" ? "파일첨부" : "";
-        SetSubMenu("새로고침", "검증", "입력", "출력", attachLabel, "", "");
+        SetSubMenu("새로고침", "검증", "입력", "출력", attachLabel, "AI파서", "생태독성");
         SetLeftPanelWidth(320);
 
         // 레이아웃: Show2 전체폭 상단, Show3+Show4 하단 병렬 (Show4 = WasteAnalysisInputPage)
@@ -2857,6 +2858,42 @@ public partial class MainPage : Window
 
         Avalonia.Threading.Dispatcher.UIThread.Post(
             () => _wasteAnalysisInputPage.LoadData(),
+            Avalonia.Threading.DispatcherPriority.Render);
+    }
+
+    private void Ecotoxicity_Click(object? sender, RoutedEventArgs e)
+    {
+        _currentMode = "Ecotoxicity";
+
+        if (_ecotoxicityPage == null)
+        {
+            _ecotoxicityPage = new EcotoxicityPage();
+            _ecotoxicityPage.StatsPanelChanged += panel =>
+            {
+                Show1.Content = panel;
+                LogContentChange("Show1", panel);
+            };
+            _ecotoxicityPage.ListPanelChanged += panel =>
+            {
+                Show2.Content = panel;
+                LogContentChange("Show2", panel);
+            };
+            _ecotoxicityPage.EditPanelChanged += panel =>
+            {
+                Show3.Content = panel;
+                LogContentChange("Show3", panel);
+            };
+        }
+
+        Show1.Content = null;
+        Show2.Content = null; Show3.Content = null; Show4.Content = null;
+        SetSubMenu("새로고침", "", "", "", "", "", "");
+        SetLeftPanelWidth(250);
+        SetContentLayout(content2Star: 6, content4Star: 4, upperStar: 9, lowerStar: 1);
+        RestoreModeLayout("Ecotoxicity");
+
+        Avalonia.Threading.Dispatcher.UIThread.Post(
+            () => _ecotoxicityPage.LoadData(),
             Avalonia.Threading.DispatcherPriority.Render);
     }
 
@@ -5101,6 +5138,7 @@ public partial class MainPage : Window
             case "TestReport":      _testReportPage?.BatchPrintExcel();     break;
             case "Quotation":       ShowTradeStatementEditor();             break;
             case "QuotationIssue":  IssueTradeStatementFromChecklist();     break;
+            case "WasteAnalysisInput": _ = _wasteAnalysisInputPage?.OnAiParserButtonClick(); break;
             case "AnalysisPlan":    SetAnalysisPlanDay(4); break; // 금
             default: Debug.WriteLine($"[{_currentMode}] BT6");             break;
         }
@@ -5644,6 +5682,9 @@ public partial class MainPage : Window
                 new MeasurerLoginWindow().Show(this);
                 break;
             case "AnalysisPlan": SetAnalysisPlanDay(5); break; // 토
+            case "WasteAnalysisInput":
+                _wasteAnalysisInputPage?.ShowEcotoxPanel();
+                break;
             default:
                 Debug.WriteLine($"[{_currentMode}] BT7");
                 break;

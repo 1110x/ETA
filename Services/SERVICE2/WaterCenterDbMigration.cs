@@ -174,6 +174,10 @@ public static class WaterCenterDbMigration
     // ── Analyte + Category + Method → 스키마 결정 ──────────────────
     internal static string DetermineSchema(string analyte, string category, string method, string instrument)
     {
+        // -2. 생태독성 (물벼룩 독성시험)
+        if (analyte.Contains("생태독성") || category.Contains("생물류") || method.Contains("독성"))
+            return "Ecotox";
+
         // -1. 특수 항목 (Category 보다 우선)
         //     6가크롬: 자외선/가시선분광법 + 검량선 5점 → Cr6형
         if (analyte.Contains("6가크롬") || (analyte.Contains("6가") && analyte.Contains("크롬")))

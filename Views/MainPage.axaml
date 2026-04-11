@@ -601,6 +601,10 @@
                               x:Name="MenuItemAnalysisInput"
                               Click="WasteAnalysisInput_Click"/>
 
+                    <MenuItem Header="생태독성"
+                              x:Name="MenuItemEcotoxicity"
+                              Click="Ecotoxicity_Click"/>
+
                     <MenuItem Header="결과 제출" x:Name="MenuItemResultSubmit">
                         <MenuItem Header="측정인" x:Name="MenuItemResultSubmitMeasure" Click="ResultSubmitMeasure_Click"/>
                         <MenuItem Header="ERP"    x:Name="MenuItemResultSubmitErp"     Click="ResultSubmitErp_Click"/>
