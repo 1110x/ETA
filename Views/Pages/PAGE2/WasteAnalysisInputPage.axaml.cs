@@ -137,6 +137,32 @@ public partial class WasteAnalysisInputPage : UserControl
         cat is "GCMS" or "ICP" or "PFAS" or "IC";
 
     // 약칭 → 소수점 자릿수 캐시 (분석정보 DB 기반)
+
+    /// <summary>
+    /// 현재 활성 카테고리/항목에 대응하는 분석정보.Analyte 한글명을 반환.
+    /// - 단성분 카테고리: Categories.Label (예: "페놀류")
+    /// - 다성분 카테고리(GCMS 등): _activeItems[0]의 약칭으로 DB 역조회 (예: "Formaldehyde" → "폼알데하이드")
+    /// </summary>
+    private string GetActiveAnalyteKey()
+    {
+        if (IsMultiCompoundCategory(_activeCategory))
+        {
+            var abbrev = _activeItems.FirstOrDefault();
+            if (abbrev != null)
+            {
+                // 1순위: CompoundAliasService (GC 성분명 → 한글 분석항목)
+                var aliasInfo = ETA.Services.Common.CompoundAliasService.Resolve(abbrev);
+                if (!string.IsNullOrEmpty(aliasInfo?.분석항목)) return aliasInfo!.Value.분석항목;
+                // 2순위: 분석정보.약칭 역조회
+                var korean = ETA.Services.SERVICE1.AnalysisService.GetAnalyteByShortName(abbrev);
+                if (!string.IsNullOrEmpty(korean)) return korean;
+            }
+            return abbrev ?? _activeCategory;
+        }
+        return Categories.FirstOrDefault(c => c.Key == _activeCategory).Label
+               ?? _activeItems.FirstOrDefault() ?? _activeCategory;
+    }
+
     private static Dictionary<string, int>? _decimalPlacesCache;
     private static int GetDecimalPlaces(string itemAbbr)
     {
@@ -209,13 +235,16 @@ public partial class WasteAnalysisInputPage : UserControl
 
     private static void LogMatch(string msg)
     {
-        string line = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] {msg}";
-        try
+        if (App.EnableLogging)
         {
-            Directory.CreateDirectory(System.IO.Path.GetDirectoryName(MatchLogPath)!);
-            File.AppendAllText(MatchLogPath, line + "\n");
+            string line = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] {msg}";
+            try
+            {
+                Directory.CreateDirectory(System.IO.Path.GetDirectoryName(MatchLogPath)!);
+                File.AppendAllText(MatchLogPath, line + "\n");
+            }
+            catch { }
         }
-        catch { }
     }
 
     /// <summary>모든 행의 Enabled 상태를 체크해서 전체 토글 상태 업데이트</summary>
@@ -284,6 +313,7 @@ public partial class WasteAnalysisInputPage : UserControl
     private List<TextBlock> _rowSourceCells = new(); // 시료구분 셀
     private List<Button?> _rowDilButtons = new(); // TOC/UV 희석배수 버튼 (행별, null=미해당)
     private List<Button?> _rowVolButtons = new(); // UV 시료량 버튼 (행별, null=미해당)
+    private bool _navEditDil = true;  // true=희석배수, false=시료량 (Shift+2 A/D 전환)
     private Dictionary<string, List<CheckBox>> _dupCheckboxGroups = new(); // SN 그룹별 체크박스
     private Dictionary<string, List<Border>> _dupIconGroups = new(); // SN 그룹별 아이콘
     private List<StackPanel> _rowIconPanels = new(); // col0Panel (아이콘+체크박스 컨테이너)
@@ -311,10 +341,12 @@ public partial class WasteAnalysisInputPage : UserControl
             {
                 if (_attachedWindow != null)
                 {
+                    _attachedWindow.RemoveHandler(InputElement.KeyDownEvent, OnNavKeyDownTunnel);
                     _attachedWindow.KeyDown -= OnWindowKeyDown;
                     _attachedWindow.KeyUp -= OnWindowKeyUp;
                 }
                 _attachedWindow = win;
+                win.AddHandler(InputElement.KeyDownEvent, OnNavKeyDownTunnel, Avalonia.Interactivity.RoutingStrategies.Tunnel);
                 win.KeyDown += OnWindowKeyDown;
                 win.KeyUp += OnWindowKeyUp;
             }
@@ -323,6 +355,7 @@ public partial class WasteAnalysisInputPage : UserControl
         {
             if (_attachedWindow != null)
             {
+                _attachedWindow.RemoveHandler(InputElement.KeyDownEvent, OnNavKeyDownTunnel);
                 _attachedWindow.KeyDown -= OnWindowKeyDown;
                 _attachedWindow.KeyUp -= OnWindowKeyUp;
                 _attachedWindow = null;
@@ -635,32 +668,10 @@ public partial class WasteAnalysisInputPage : UserControl
         }
     }
 
-    /// <summary>서브메뉴 "새로고침" 또는 별도 첨부 시 파서 선택 먼저 진행</summary>
+    /// <summary>파일첨부: 파서 선택 먼저 → 파일 선택</summary>
     public async void AttachExcel()
     {
         var match = Categories.FirstOrDefault(c => c.Key == _activeCategory);
-
-        // ── 시그니처 또는 ONNX 모델이 있으면 자동 분류 경로 ────────────
-        if (ETA.Services.SERVICE4.SignatureClassifier.HasSignatures() || AiParserClassifier.IsModelReady())
-        {
-            var aiResult = await AiPickAndPredictAsync();
-            if (aiResult == null) return; // 취소
-
-            if (aiResult.Value.ParserKey == "__MANUAL__")
-            {
-                // 사용자가 "직접 선택" 선택 → 기존 수동 다이얼로그
-                var manualParser = await ShowParserSelectionDialogFirst();
-                if (manualParser == null) return;
-                await RunParserAsync(manualParser, null, match.Label);
-            }
-            else
-            {
-                await RunParserAsync(aiResult.Value.ParserKey, aiResult.Value.FilePath, match.Label);
-            }
-            return;
-        }
-
-        // ── ONNX 없으면 기존 수동 파서 선택 ──────────────────────────
         var selectedParser = await ShowParserSelectionDialogFirst();
         if (selectedParser == null) return;
         await RunParserAsync(selectedParser, null, match.Label);
@@ -721,7 +732,6 @@ public partial class WasteAnalysisInputPage : UserControl
                 catch (Exception ex)
                 {
                     ShowMessage($"파서 오류: {ex.Message}", true);
-                    System.Diagnostics.Debug.WriteLine($"[RunParserAsync] 파서 예외: {ex}");
                     return;
                 }
                 if (selectedParser != "Scalar_NPOC")
@@ -1059,244 +1069,221 @@ public partial class WasteAnalysisInputPage : UserControl
     /// </summary>
     private async Task<string?> ShowParserSelectionDialogFirst()
     {
-        var dialogContent = new StackPanel
-        {
-            Spacing = 12,
-            MinWidth = 400
-        };
-
-        // 제목
-        dialogContent.Children.Add(FsSM(new TextBlock
-        {
-            Text = "📂 분석기기 파서 선택",
-            FontWeight = FontWeight.Bold,
-            Foreground = AppRes("ThemeFgPrimary"),
-            Margin = new Thickness(0, 0, 0, 8)
-        }));
-
-        // 안내 메시지
-        dialogContent.Children.Add(FsXS(new TextBlock
-        {
-            Text = "사용할 파서를 먼저 선택해주세요. 선택 후 해당 파서에 맞는 파일을 첨부할 수 있습니다.",
-            Foreground = AppRes("ThemeFgSecondary"),
-            TextWrapping = TextWrapping.Wrap,
-            Margin = new Thickness(0, 0, 0, 12)
-        }));
-
-        // 파서 옵션들 (모든 옵션 활성화)
-        var parserOptions = new List<(string Key, string Label, string Description, bool IsTocGroup)>
-        {
-            ("TOC_Shimadzu", "🧪 Shimadzu TOC-L", "CSV/TXT (NPOC/TC-IC 자동감지)", true),
-            ("TOC_NPOC", "🧪 예나 multi N/C", "PDF 파일 (NPOC/TC-IC 자동감지)", true),
-            ("Scalar_NPOC", "🧪 스칼라 NPOC", "NPOC 단일 파일", true),
-            ("Scalar_TCIC", "🧪 스칼라 TCIC", "TC+IC CSV만 지원", true),
-
-            ("GC", "⚗️ GC 기기", "Agilent GC-MS CSV 파일", false),
-            ("Shimadzu_UV", "🔬 Shimadzu UV-1800", "PDF 파일 (T-N, T-P, Phenols)", false),
-            ("Agilent_Cary", "📊 Agilent Cary-3500", "PDF 파일 (Concentration report)", false),
-            ("ICP_PDF", "⚡ ICP 분석기기", "PDF 결과 파일 (중금속 원소)", false),
-            ("LCMS_PFAS", "💊 LCMS 과불화화합물", "PDF 결과 파일 (PFOA/PFOS/PFBS)", false),
-            ("Excel", "📋 표준 Excel 양식", "BOD/SS/N-Hexan/T-N/T-P/Phenols Excel 템플릿", false)
-        };
-
         string? selectedParser = null;
+        bool confirmed = false;
 
-        // 버튼 참조 미리 선언 (업데이트 함수에서 사용)
-        var okButton = new Button
+        // ── 파서 목록 정의 ──────────────────────────────────────────
+        var groups = new[]
         {
-            Content = "확인",
-            Padding = new Thickness(16, 8),
-            Background = AppRes("ThemeAccent"),
-            IsEnabled = false
-        };
-
-        // 파서 선택 시 확인 버튼 활성화
-        var updateOkButton = new Action(() => okButton.IsEnabled = !string.IsNullOrEmpty(selectedParser));
-
-        // TOC 그룹 헤더
-        dialogContent.Children.Add(FsBase(new TextBlock
-        {
-            Text = "🧪 TOC 분석기기",
-            FontWeight = FontWeight.Bold,
-            Foreground = AppRes("ThemeFgPrimary"),
-            Margin = new Thickness(0, 8, 0, 4)
-        }));
-
-        // TOC 파서들 4개 컬럼 그리드
-        var tocGrid = new Grid
-        {
-            ColumnDefinitions =
+            ("TOC 분석기기", new[]
             {
-                new ColumnDefinition(GridLength.Star),
-                new ColumnDefinition(GridLength.Star),
-                new ColumnDefinition(GridLength.Star),
-                new ColumnDefinition(GridLength.Star)
-            },
-            Margin = new Thickness(0, 0, 0, 16)
-        };
-
-        var tocOptions = parserOptions.Where(p => p.IsTocGroup).ToList();
-        for (int i = 0; i < tocOptions.Count; i++)
-        {
-            var option = tocOptions[i];
-            var optionPanel = CreateParserOptionPanel(option.Key, option.Label, option.Description, true,
-                key => { selectedParser = key; updateOkButton(); });
-
-            Grid.SetColumn(optionPanel, i);
-            tocGrid.Children.Add(optionPanel);
-        }
-        dialogContent.Children.Add(tocGrid);
-
-        // 기타 파서들 헤더
-        dialogContent.Children.Add(FsBase(new TextBlock
-        {
-            Text = "📂 기타 분석기기",
-            FontWeight = FontWeight.Bold,
-            Foreground = AppRes("ThemeFgPrimary"),
-            Margin = new Thickness(0, 8, 0, 4)
-        }));
-
-        // 기타 파서들 3열 그리드
-        var otherOptions = parserOptions.Where(p => !p.IsTocGroup).ToList();
-        var otherGrid = new Grid
-        {
-            ColumnDefinitions =
+                ("TOC_Shimadzu", "Shimadzu TOC-L",   "CSV/TXT"),
+                ("TOC_NPOC",     "예나 multi N/C",    "PDF"),
+                ("Scalar_NPOC",  "스칼라 NPOC",       "단일파일"),
+                ("Scalar_TCIC",  "스칼라 TCIC",       "TC+IC CSV"),
+            }),
+            ("기타 분석기기", new[]
             {
-                new ColumnDefinition(GridLength.Star),
-                new ColumnDefinition(GridLength.Star),
-                new ColumnDefinition(GridLength.Star)
-            },
-            Margin = new Thickness(0, 0, 0, 8)
+                ("GC",           "GC 기기",           "Agilent CSV"),
+                ("Shimadzu_UV",  "Shimadzu UV-1800",  "PDF"),
+                ("Agilent_Cary", "Agilent Cary-3500", "PDF"),
+                ("ICP_PDF",      "ICP 분석기기",      "PDF"),
+                ("LCMS_PFAS",    "LCMS 과불화화합물", "PDF"),
+                ("Excel",        "Excel 양식",        "BOD/SS/T-N/T-P"),
+            }),
         };
-        for (int i = 0; i < otherOptions.Count; i++)
-        {
-            var option = otherOptions[i];
-            var row = i / 3;
-            var col = i % 3;
-            if (row >= otherGrid.RowDefinitions.Count)
-                otherGrid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
-            var optionPanel = CreateParserOptionPanel(option.Key, option.Label, option.Description, true,
-                key => { selectedParser = key; updateOkButton(); });
-            Grid.SetColumn(optionPanel, col);
-            Grid.SetRow(optionPanel, row);
-            otherGrid.Children.Add(optionPanel);
-        }
-        dialogContent.Children.Add(otherGrid);
 
-        // 버튼 패널
-        var buttonPanel = new StackPanel
+        // ── 선택 카드 Border 목록 (선택 시 하이라이트 토글용) ──────
+        var cardMap = new Dictionary<string, Border>();
+
+        void SelectParser(string key)
         {
-            Orientation = Orientation.Horizontal,
+            selectedParser = key;
+            foreach (var (k, b) in cardMap)
+            {
+                bool sel = k == key;
+                b.Background   = sel ? AppRes("ThemeBgActiveGreen", "#1a3a1a")
+                                     : AppRes("ThemeBgInput", "#1e1e2e");
+                b.BorderBrush  = sel ? AppRes("ThemeBorderActive", "#44ff88")
+                                     : AppRes("ThemeBorder", "#333344");
+                b.BorderThickness = sel ? new Thickness(1.5) : new Thickness(1);
+            }
+        }
+
+        // ── 레이아웃 ─────────────────────────────────────────────────
+        var body = new StackPanel { Spacing = 10, Margin = new Thickness(18, 14, 18, 10) };
+
+        foreach (var (groupTitle, items) in groups)
+        {
+            // 그룹 헤더
+            body.Children.Add(new TextBlock
+            {
+                Text       = groupTitle,
+                FontSize   = AppFonts.SM,
+                FontWeight = FontWeight.SemiBold,
+                Foreground = AppRes("FgMuted", "#aaaaaa"),
+                Margin     = new Thickness(0, 6, 0, 4),
+            });
+
+            // 카드 행 (WrapPanel)
+            var wrap = new WrapPanel { Orientation = Orientation.Horizontal };
+            foreach (var (key, label, hint) in items)
+            {
+                var card = new Border
+                {
+                    Width           = 140,
+                    Height          = 52,
+                    CornerRadius    = new CornerRadius(6),
+                    BorderThickness = new Thickness(1),
+                    BorderBrush     = AppRes("ThemeBorder", "#333344"),
+                    Background      = AppRes("ThemeBgInput", "#1e1e2e"),
+                    Margin          = new Thickness(0, 0, 6, 6),
+                    Cursor          = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
+                    Child = new StackPanel
+                    {
+                        VerticalAlignment = VerticalAlignment.Center,
+                        Margin  = new Thickness(10, 0),
+                        Spacing = 2,
+                        Children =
+                        {
+                            new TextBlock
+                            {
+                                Text       = label,
+                                FontSize   = AppFonts.SM,
+                                FontWeight = FontWeight.SemiBold,
+                                Foreground = AppRes("AppFg", "#e0e0e0"),
+                            },
+                            new TextBlock
+                            {
+                                Text       = hint,
+                                FontSize   = 9,
+                                Foreground = AppRes("FgMuted", "#888888"),
+                            },
+                        }
+                    }
+                };
+
+                string capturedKey = key;
+                cardMap[capturedKey] = card;
+
+                card.PointerPressed += (_, _) => SelectParser(capturedKey);
+
+                wrap.Children.Add(card);
+            }
+            body.Children.Add(wrap);
+        }
+
+        // ── 버튼 줄 ──────────────────────────────────────────────────
+        var okBtn = new Button
+        {
+            Content    = "확인",
+            FontSize   = AppFonts.SM,
+            Width      = 80,
+            Height     = 30,
+            IsEnabled  = false,
+            Background = AppRes("ThemeAccent", "#2255aa"),
+            Foreground = Brushes.White,
+        };
+        var cancelBtn = new Button
+        {
+            Content    = "취소",
+            FontSize   = AppFonts.SM,
+            Width      = 80,
+            Height     = 30,
+            Background = AppRes("ThemeBgSecondary", "#2a2a3a"),
+            Foreground = AppRes("FgMuted", "#aaaaaa"),
+        };
+
+        // 카드 선택 시 확인 버튼 활성화
+        foreach (var (k, b) in cardMap)
+        {
+            b.PointerPressed += (_, _) => okBtn.IsEnabled = true;
+        }
+
+        var btnRow = new StackPanel
+        {
+            Orientation         = Orientation.Horizontal,
             HorizontalAlignment = HorizontalAlignment.Right,
-            Spacing = 8,
-            Margin = new Thickness(0, 16, 0, 0)
+            Spacing             = 8,
+            Margin              = new Thickness(0, 8, 0, 0),
+            Children            = { cancelBtn, okBtn }
         };
+        body.Children.Add(btnRow);
 
-        var cancelButton = new Button
-        {
-            Content = "취소",
-            Padding = new Thickness(16, 8),
-            Background = AppRes("ThemeBgSecondary")
-        };
-
-        // 이벤트 핸들러는 CreateParserOptionPanel에서 자동으로 처리됨
-
-        cancelButton.Click += (s, e) => selectedParser = null;
-        okButton.Click += (s, e) => { };
-
-        buttonPanel.Children.Add(cancelButton);
-        buttonPanel.Children.Add(okButton);
-        dialogContent.Children.Add(buttonPanel);
-
-        // 스크롤 기능 추가
-        var scrollViewer = new ScrollViewer
-        {
-            Content = dialogContent,
-            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
-            HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
-            Padding = new Thickness(20)
-        };
-
+        // ── 다이얼로그 윈도우 ─────────────────────────────────────────
         var dialog = new Window
         {
-            Title = "파서 선택",
-            Content = scrollViewer,
-            Width = 700,
-            Height = 640,
-            WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            CanResize = true
+            Title                   = "파서 선택",
+            SizeToContent           = SizeToContent.WidthAndHeight,
+            WindowStartupLocation   = WindowStartupLocation.CenterOwner,
+            CanResize               = false,
+            Content                 = new ScrollViewer
+            {
+                Content                      = body,
+                VerticalScrollBarVisibility  = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+                HorizontalScrollBarVisibility= Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
+                MaxHeight                    = 520,
+            },
         };
 
-        cancelButton.Click += (s, e) => dialog.Close();
-        okButton.Click += (s, e) => dialog.Close();
+        cancelBtn.Click += (_, _) => { selectedParser = null; dialog.Close(); };
+        okBtn.Click     += (_, _) => { confirmed = true;      dialog.Close(); };
 
-        var parentWindow = TopLevel.GetTopLevel(this) as Window;
-        if (parentWindow != null)
-            await dialog.ShowDialog(parentWindow);
-        else
-            dialog.Show();
+        // 더블클릭 즉시 확정
+        foreach (var (k, b) in cardMap)
+        {
+            b.DoubleTapped += (_, _) =>
+            {
+                confirmed = true;
+                dialog.Close();
+            };
+        }
 
-        return selectedParser;
+        var parent = TopLevel.GetTopLevel(this) as Window;
+        if (parent != null) await dialog.ShowDialog(parent);
+        else                dialog.Show();
+
+        return confirmed ? selectedParser : null;
     }
 
-    /// <summary>
-    /// 단일 파일 선택을 위한 파일 피커
-    /// </summary>
     private async Task<string?> OpenSingleFilePicker(string parserType, string categoryLabel)
     {
         var topLevel = _topLevel ?? TopLevel.GetTopLevel(this);
         if (topLevel == null) return null;
 
-        // 파서 타입에 따른 파일 필터 설정
         var fileTypes = parserType switch
         {
-            "TOC_NPOC" =>
-                new[] { new FilePickerFileType("PDF 파일") { Patterns = new[] { "*.pdf" } } },
-            "GC" =>
-                new[] { new FilePickerFileType("CSV/TXT 파일") { Patterns = new[] { "*.csv", "*.txt" } } },
-            "TOC_Shimadzu" =>
-                new[] { new FilePickerFileType("Shimadzu TOC 파일") { Patterns = new[] { "*.csv", "*.txt", "*.pdf" } } },
-            "Shimadzu_UV" or "Agilent_Cary" =>
-                new[] { new FilePickerFileType("PDF 파일") { Patterns = new[] { "*.pdf" } } },
-            "Scalar_NPOC" =>
-                new[] { new FilePickerFileType("스칼라 파일") { Patterns = new[] { "*.csv", "*.txt", "*.pdf" } } },
-            "ICP_PDF" or "LCMS_PFAS" =>
-                new[] { new FilePickerFileType("PDF 파일") { Patterns = new[] { "*.pdf" } } },
-            "Excel" =>
-                new[] { new FilePickerFileType("Excel 파일") { Patterns = new[] { "*.xlsx", "*.xls" } } },
-            _ =>
-                new[] { new FilePickerFileType("분석결과 파일") { Patterns = new[] { "*.xlsx", "*.xls", "*.csv", "*.txt", "*.pdf" } } }
+            "TOC_NPOC"                       => new[] { new FilePickerFileType("PDF 파일")          { Patterns = new[] { "*.pdf" } } },
+            "GC"                             => new[] { new FilePickerFileType("GC 결과 파일")       { Patterns = new[] { "*.csv", "*.txt", "*.pdf" } } },
+            "TOC_Shimadzu"                   => new[] { new FilePickerFileType("Shimadzu TOC 파일")  { Patterns = new[] { "*.csv", "*.txt", "*.pdf" } } },
+            "Shimadzu_UV" or "Agilent_Cary" => new[] { new FilePickerFileType("PDF 파일")           { Patterns = new[] { "*.pdf" } } },
+            "Scalar_NPOC"                   => new[] { new FilePickerFileType("스칼라 파일")         { Patterns = new[] { "*.csv", "*.txt", "*.pdf" } } },
+            "ICP_PDF"                        => new[] { new FilePickerFileType("ICP 결과 파일")       { Patterns = new[] { "*.pdf", "*.csv" } } },
+            "LCMS_PFAS"                      => new[] { new FilePickerFileType("PDF 파일")           { Patterns = new[] { "*.pdf" } } },
+            "Excel"                         => new[] { new FilePickerFileType("Excel 파일")         { Patterns = new[] { "*.xlsx", "*.xls" } } },
+            _                               => new[] { new FilePickerFileType("분석결과 파일")       { Patterns = new[] { "*.xlsx", "*.xls", "*.csv", "*.txt", "*.pdf" } } },
         };
 
         var parserNames = new Dictionary<string, string>
         {
-            ["TOC_Shimadzu"] = "Shimadzu TOC-L",
-            ["TOC_NPOC"] = "예나 multi N/C",
-            ["Scalar_NPOC"] = "스칼라 NPOC",
-            ["Scalar_TCIC"] = "스칼라 TCIC",
-            ["GC"] = "GC 기기",
-            ["Shimadzu_UV"] = "Shimadzu UV-1800",
-            ["Agilent_Cary"] = "Agilent Cary-3500",
-            ["ICP_PDF"] = "ICP 분석기기",
-            ["LCMS_PFAS"] = "LCMS 과불화화합물",
-            ["Excel"] = "표준 Excel 양식"
+            ["TOC_Shimadzu"] = "Shimadzu TOC-L",   ["TOC_NPOC"]    = "예나 multi N/C",
+            ["Scalar_NPOC"]  = "스칼라 NPOC",       ["Scalar_TCIC"] = "스칼라 TCIC",
+            ["GC"]           = "GC 기기",           ["Shimadzu_UV"] = "Shimadzu UV-1800",
+            ["Agilent_Cary"] = "Agilent Cary-3500", ["ICP_PDF"]     = "ICP 분석기기",
+            ["LCMS_PFAS"]    = "LCMS 과불화화합물", ["Excel"]       = "표준 Excel 양식",
         };
-
-        var parserName = parserNames.ContainsKey(parserType) ? parserNames[parserType] : parserType;
+        var name = parserNames.TryGetValue(parserType, out var n) ? n : parserType;
 
         var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
-            Title = $"📂 {parserName} 분석결과 파일 선택",
+            Title         = $"{name} 분석결과 파일 선택",
             AllowMultiple = false,
             FileTypeFilter = fileTypes,
         });
 
-        if (files.Count == 0) return null;
-        return files[0].TryGetLocalPath();
+        return files.Count == 0 ? null : files[0].TryGetLocalPath();
     }
 
-    /// <summary>
-    /// 사용자에게 파서 선택 다이얼로그 표시 (기존 메서드 - 파일 경로 기반)
     /// </summary>
     private async Task<string?> ShowParserSelectionDialog(string filePath)
     {
@@ -1333,10 +1320,10 @@ public partial class WasteAnalysisInputPage : UserControl
             ("TOC_NPOC", "🧪 예나 multi N/C", "PDF 파일 (NPOC/TC-IC 자동감지)", fileExt == ".pdf", true),
             ("Scalar_TC", "🧪 스칼라 TC", "TC 파일 (IC 추가선택)", fileExt is ".csv" or ".txt", true),
             ("Scalar_IC", "🧪 스칼라 IC", "IC 파일 (TC 추가선택)", fileExt is ".csv" or ".txt", true),
-            ("GC", "⚗️ GC 기기", "Agilent GC-MS CSV 파일", fileExt is ".csv" or ".txt", false),
+            ("GC", "⚗️ GC 기기", "Agilent GC-MS CSV/PDF 파일", fileExt is ".csv" or ".txt" or ".pdf", false),
             ("Shimadzu_UV", "🔬 Shimadzu UV-1800", "ASCII 텍스트 파일 (T-N, T-P, Phenols)", fileExt is ".txt" or ".csv", false),
             ("Agilent_Cary", "📊 Agilent Cary-3500", "PDF 파일 (Concentration report)", fileExt == ".pdf", false),
-            ("ICP_PDF", "⚡ ICP 분석기기", "PDF 결과 파일 (중금속 원소)", fileExt == ".pdf", false),
+            ("ICP_PDF", "⚡ ICP 분석기기", "PDF/CSV 결과 파일 (중금속 원소)", fileExt is ".pdf" or ".csv", false),
             ("LCMS_PFAS", "💊 LCMS 과불화화합물", "PDF 결과 파일 (PFOA/PFOS/PFBS)", fileExt == ".pdf", false),
             ("Excel", "📋 표준 Excel 양식", "BOD/SS/N-Hexan/T-N/T-P/Phenols Excel 템플릿", fileExt is ".xlsx" or ".xls", false)
         };
@@ -1624,7 +1611,6 @@ public partial class WasteAnalysisInputPage : UserControl
         catch (OperationCanceledException)
         {
             // 파일 피커 취소 시 정상 동작 - 메시지 없이 조용히 종료
-            System.Diagnostics.Debug.WriteLine("[OpenScalarFilePickers] 사용자 취소");
         }
         catch (Exception ex)
         {
@@ -1704,7 +1690,6 @@ public partial class WasteAnalysisInputPage : UserControl
         }
         catch (OperationCanceledException)
         {
-            System.Diagnostics.Debug.WriteLine("[ScalarCalPdf] 사용자 취소");
         }
         catch (Exception ex)
         {
@@ -1719,21 +1704,22 @@ public partial class WasteAnalysisInputPage : UserControl
     {
         try
         {
-            string logLine = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] [스칼라 TCIC] {message}";
-            string projectFolder = Directory.GetCurrentDirectory();
-            string logsFolder = System.IO.Path.Combine(projectFolder, "Logs", "Users", Environment.UserName);
+            if (App.EnableLogging)
+            {
+                string logLine = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] [스칼라 TCIC] {message}";
+                string projectFolder = Directory.GetCurrentDirectory();
+                string logsFolder = System.IO.Path.Combine(projectFolder, "Logs", "Users", Environment.UserName);
 
-            if (!Directory.Exists(logsFolder))
-                Directory.CreateDirectory(logsFolder);
+                if (!Directory.Exists(logsFolder))
+                    Directory.CreateDirectory(logsFolder);
 
-            string logPath = System.IO.Path.Combine(logsFolder, "SCALAR_TCIC.log");
-            File.AppendAllText(logPath, logLine + "\n");
+                string logPath = System.IO.Path.Combine(logsFolder, "SCALAR_TCIC.log");
+                File.AppendAllText(logPath, logLine + "\n");
+            }
 
-            System.Diagnostics.Debug.WriteLine(logLine);
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"[LogScalarTcic] 로깅 실패: {ex.Message}");
         }
     }
 
@@ -3123,7 +3109,7 @@ public partial class WasteAnalysisInputPage : UserControl
             isGcMode    = docInfo.IsGcMode;
             bool isShimadzuToc = isTocMode && docInfo.IsShimadzuToc;
 
-            // TOC y = ax + b 수식을 분析일 바로 아래 표시
+            // TOC y = ax + b 수식을 분석일 바로 아래 표시
             if (isTocMode && !string.IsNullOrEmpty(docInfo.TocSlope_TC))
             {
                 string r2str = !string.IsNullOrEmpty(docInfo.TocR2_TC) ? $"    R²={docInfo.TocR2_TC}" : "";
@@ -3155,31 +3141,31 @@ public partial class WasteAnalysisInputPage : UserControl
             }
             if (isSSMode)
             {
-                colDefs = "32,50,90,190,60,60,60,60,50,75,80";
+                colDefs = "32,50,130,190,60,60,60,60,50,75,80";
                 colWidths = colDefs.Split(',').Select(double.Parse).ToArray();
             }
             else if (isUVVISMode)
             {
-                colDefs = "32,50,90,190,60,65,75,65,75,80";
+                colDefs = "32,50,130,190,60,65,75,65,75,80";
                 colWidths = colDefs.Split(',').Select(double.Parse).ToArray();
             }
             else if (isTocTcicMode)
             {
                 // TOC TCIC: 컬럼 11개 — 체크/입력/SN/시료명/TCAU/TCcon/ICAU/ICcon/희석배수/결과값/시료구분
-                colDefs = "32,50,90,190,65,65,65,65,55,70,80";
+                colDefs = "32,50,130,190,65,65,65,65,55,70,80";
                 colWidths = colDefs.Split(',').Select(double.Parse).ToArray();
             }
             else if (isTocMode)
             {
                 // TOC NPOC: 시료량 없음 — 컬럼 8개 (체크/입력/SN/시료명/AU/희석배수/결과값/시료구분)
-                colDefs = "32,50,90,190,80,60,75,80";
+                colDefs = "32,50,130,190,80,60,75,80";
                 colWidths = colDefs.Split(',').Select(double.Parse).ToArray();
             }
             else if (isGcMode)
             {
                 // GC: 시료량 없음, 컬럼 11개
                 //  체크/입력/SN/시료명/시료량(숨김)/Resp./ISTD/농도/희석배수/결과값/시료구분
-                colDefs = "32,50,90,220,0,75,75,65,55,70,80";
+                colDefs = "32,50,130,220,0,75,75,65,55,70,80";
                 colWidths = colDefs.Split(',').Select(double.Parse).ToArray();
             }
 
@@ -3191,6 +3177,18 @@ public partial class WasteAnalysisInputPage : UserControl
                     Foreground = AppRes("FgMuted"), Margin = new Thickness(0, 2, 0, 0),
                 }));
 
+            // 표준형식 (스키마) 표시 — 항상 DB(schema_override)에서 로드
+            {
+                string _schAnalyte = GetActiveAnalyteKey();
+                string _schema     = ETA.Services.SERVICE3.AnalysisNoteService.GetSchemaOverride(_schAnalyte) ?? "";
+                if (!string.IsNullOrWhiteSpace(_schema))
+                    headerContent.Children.Add(FsXS(new TextBlock
+                    {
+                        Text = $"표준형식: {_schema}", FontFamily = Font,
+                        Foreground = AppRes("FgMuted"), Margin = new Thickness(0, 0, 0, 0),
+                    }));
+            }
+
             // 식종수/SCF 또는 검량곡선 테이블 — 데이터 그리드와 동일 구조로 별도 행 배치
             if (docInfo.IsUVVIS)
             {
@@ -3198,8 +3196,13 @@ public partial class WasteAnalysisInputPage : UserControl
                 bool hasAbs = docInfo.Abs_Values.Length > 0;
                 if (hasStd || hasAbs)
                 {
-                    // 검량선 테이블 전용 colDefs: 구분(140) + 숨김3개 + ST1~ST4 + 검량계수(160) + 여백(0)
-                    string uvDocColDefs = "140,0,0,0,60,65,65,75,160,0";
+                    // 검량선 테이블: 실제 표준점 개수에 맞춰 ST 컬럼 동적 생성
+                    int uvStCount = Math.Max(
+                        hasStd ? docInfo.Standard_Points.Length : 0,
+                        hasAbs ? docInfo.Abs_Values.Length : 0);
+                    uvStCount = Math.Max(uvStCount, 1);
+                    // 구분(140) + 숨김3개 + STn×60 + 검량계수(160) + 여백(0)
+                    string uvDocColDefs = "140,0,0,0," + string.Join(",", Enumerable.Repeat("60", uvStCount)) + ",160,0";
 
                     docTbl = new StackPanel { Spacing = 0 };
                     var hdr = new Grid { ColumnDefinitions = new ColumnDefinitions(uvDocColDefs),
@@ -3209,37 +3212,42 @@ public partial class WasteAnalysisInputPage : UserControl
                         VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(6, 0) });
                     Grid.SetColumn(hdrLabel, 0); Grid.SetColumnSpan(hdrLabel, 4);
                     hdr.Children.Add(hdrLabel);
-                    string[] uvCols = { "ST1", "ST2", "ST3", "ST4", "검량계수", "" };
-                    for (int c = 0; c < uvCols.Length; c++)
+                    // ST1~STn 헤더
+                    for (int c = 0; c < uvStCount; c++)
                     {
-                        var tb = FsBase(new TextBlock { Text = uvCols[c], FontFamily = Font,
+                        var tb = FsBase(new TextBlock { Text = $"ST-{c + 1}", FontFamily = Font,
                             FontWeight = FontWeight.SemiBold, Foreground = AppRes("FgMuted"),
                             VerticalAlignment = VerticalAlignment.Center,
                             HorizontalAlignment = HorizontalAlignment.Center,
                             Margin = new Thickness(4, 0) });
                         Grid.SetColumn(tb, 4 + c); hdr.Children.Add(tb);
                     }
+                    // 검량계수 헤더
+                    var calHdrTb = FsBase(new TextBlock { Text = "검량계수", FontFamily = Font,
+                        FontWeight = FontWeight.SemiBold, Foreground = AppRes("FgMuted"),
+                        VerticalAlignment = VerticalAlignment.Center,
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        Margin = new Thickness(4, 0) });
+                    Grid.SetColumn(calHdrTb, 4 + uvStCount); hdr.Children.Add(calHdrTb);
                     docTbl.Children.Add(new Border { Child = hdr,
                         BorderBrush = AppRes("ThemeBorderSubtle"), BorderThickness = new Thickness(0,0,0,1) });
 
                     int rowIdx = 0;
                     if (hasStd)
                     {
-                        docTbl.Children.Add(BuildDocRowUnified(uvDocColDefs, "STANDARD",
-                            new[] { docInfo.Standard_Points.ElementAtOrDefault(0) ?? "",
-                                    docInfo.Standard_Points.ElementAtOrDefault(1) ?? "",
-                                    docInfo.Standard_Points.ElementAtOrDefault(2) ?? "",
-                                    docInfo.Standard_Points.ElementAtOrDefault(3) ?? "",
-                                    $"a={docInfo.Standard_Slope}  b={docInfo.Standard_Intercept}", "" }, "ThemeFgWarn", rowIdx++));
+                        var stdVals = Enumerable.Range(0, uvStCount)
+                            .Select(i => docInfo.Standard_Points.ElementAtOrDefault(i) ?? "")
+                            .Append($"a={docInfo.Standard_Slope}  b={docInfo.Standard_Intercept}")
+                            .Append("").ToArray();
+                        docTbl.Children.Add(BuildDocRowUnified(uvDocColDefs, "STANDARD", stdVals, "ThemeFgWarn", rowIdx++));
                     }
                     if (hasAbs)
                     {
-                        docTbl.Children.Add(BuildDocRowUnified(uvDocColDefs, "Absorbance",
-                            new[] { docInfo.Abs_Values.ElementAtOrDefault(0) ?? "",
-                                    docInfo.Abs_Values.ElementAtOrDefault(1) ?? "",
-                                    docInfo.Abs_Values.ElementAtOrDefault(2) ?? "",
-                                    docInfo.Abs_Values.ElementAtOrDefault(3) ?? "",
-                                    $"R²={docInfo.Abs_R2}", "" }, "ThemeFgInfo", rowIdx++));
+                        var absVals = Enumerable.Range(0, uvStCount)
+                            .Select(i => docInfo.Abs_Values.ElementAtOrDefault(i) ?? "")
+                            .Append($"R²={docInfo.Abs_R2}")
+                            .Append("").ToArray();
+                        docTbl.Children.Add(BuildDocRowUnified(uvDocColDefs, "Absorbance", absVals, "ThemeFgInfo", rowIdx++));
                     }
                 }
             }
@@ -3502,12 +3510,12 @@ public partial class WasteAnalysisInputPage : UserControl
                         e.DragEffects = acceptable ? DragDropEffects.Link : DragDropEffects.None;
                         if (acceptable)
                             capturedBorder.BorderBrush = new SolidColorBrush(Color.Parse("#4CAF50"));
-                        e.Handled = true;
-                    }, Avalonia.Interactivity.RoutingStrategies.Tunnel);
+                        e.Handled = acceptable;
+                    });
                     compBorder.AddHandler(DragDrop.DragLeaveEvent, (object? s, RoutedEventArgs e) =>
                     {
                         capturedBorder.BorderBrush = AppRes("ThemeBorderSubtle");
-                    }, Avalonia.Interactivity.RoutingStrategies.Tunnel);
+                    });
                     compBorder.AddHandler(DragDrop.DropEvent, (object? s, DragEventArgs e) =>
                     {
                         capturedBorder.BorderBrush = AppRes("ThemeBorderSubtle");
@@ -3516,9 +3524,9 @@ public partial class WasteAnalysisInputPage : UserControl
                             string draggedName = e.Data.Get(DataFormats.Text)?.ToString() ?? "";
                             LogMatch($"[CalRow DROP] '{capturedCompName}' ← '{draggedName}'");
                             RegisterCompoundAliasAndUpdateGrid(capturedCompName, draggedName, capturedBorder);
+                            e.Handled = true;
                         }
-                        e.Handled = true;
-                    }, Avalonia.Interactivity.RoutingStrategies.Tunnel);
+                    });
                     // Shift+1 모드: 클릭 시 포커스된 Show1 분석항목을 이 성분에 적용
                     compBorder.AddHandler(Avalonia.Input.InputElement.PointerPressedEvent, (object? s, PointerPressedEventArgs pe) =>
                     {
@@ -3643,12 +3651,15 @@ public partial class WasteAnalysisInputPage : UserControl
             DragDrop.SetAllowDrop(docTbl, true);
             docScroll.AddHandler(DragDrop.DragOverEvent, (object? s, DragEventArgs e) =>
             {
+                // match-compound는 자식(compBorder)에서 처리 — 여기서 허용만 해 줌
+                if (e.Data.Contains("match-compound"))
+                    e.DragEffects = DragDropEffects.Link;
                 LogMatch($"[DocScroll DragOver] keys=[{string.Join(",", e.Data.GetDataFormats())}]");
-            }, Avalonia.Interactivity.RoutingStrategies.Tunnel);
+            });
             docScroll.AddHandler(DragDrop.DropEvent, (object? s, DragEventArgs e) =>
             {
                 LogMatch($"[DocScroll Drop] keys=[{string.Join(",", e.Data.GetDataFormats())}]");
-            }, Avalonia.Interactivity.RoutingStrategies.Tunnel);
+            });
             docScroll.AddHandler(Avalonia.Input.InputElement.PointerPressedEvent, (object? s, PointerPressedEventArgs pe) =>
             {
                 LogMatch($"[DocScroll PointerPressed] keyNav={_keyNavShow1}, browse='{_show1BrowseMode}'");
@@ -4155,10 +4166,13 @@ public partial class WasteAnalysisInputPage : UserControl
                         BorderBrush = AppRes("InputBorder"),
                         BorderThickness = new Thickness(1),
                         CornerRadius = new CornerRadius(3),
-                        Padding = new Thickness(4, 2),
+                        Padding = new Thickness(4, 0),
                         HorizontalContentAlignment = HorizontalAlignment.Center,
+                        VerticalContentAlignment = VerticalAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center,
                         Watermark = "mL", IsVisible = false,
                     });
+                    NumericOnly(uvVolInput);
                     uvVolPanel.Children.Add(uvVolBtn);
                     uvVolPanel.Children.Add(uvVolInput);
                     void CommitVol()
@@ -4182,7 +4196,7 @@ public partial class WasteAnalysisInputPage : UserControl
                     uvVolPanel.PointerPressed += (_, e) => { e.Handled = true; uvVolBtn.IsVisible = false; uvVolInput.IsVisible = true; uvVolInput.Focus(); uvVolInput.SelectAll(); };
                     uvVolInput.LostFocus += (_, _) => CommitVol();
                     int capturedVolIdx = i;
-                    uvVolInput.KeyDown += (_, ke) =>
+                    uvVolInput.AddHandler(TextBox.KeyDownEvent, (object? _, KeyEventArgs ke) =>
                     {
                         if (ke.Key == Key.Enter || ke.Key == Key.Down)
                         {
@@ -4197,7 +4211,10 @@ public partial class WasteAnalysisInputPage : UserControl
                                 if (_rowVolButtons[nj] != null) { _rowVolButtons[nj]!.RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent)); break; }
                         }
                         else if (ke.Key == Key.Escape) { ke.Handled = true; CommitVol(); }
-                    };
+                        // Shift+2 모드: Left/Right=시료량↔희석배수 전환 (WASD 제거 — IME 방지)
+                        else if (_keyNavShow2 && ke.Key == Key.Left)  { ke.Handled = true; CommitVol(); _navEditDil = false; OpenNavEditCell(capturedVolIdx); }
+                        else if (_keyNavShow2 && ke.Key == Key.Right) { ke.Handled = true; CommitVol(); _navEditDil = true;  OpenNavEditCell(capturedVolIdx); }
+                    }, Avalonia.Interactivity.RoutingStrategies.Tunnel);
                     // _rowVolButtons에 등록 (행 인덱스 맞춤)
                     while (_rowVolButtons.Count <= i) _rowVolButtons.Add(null);
                     _rowVolButtons[i] = uvVolBtn;
@@ -4554,7 +4571,7 @@ public partial class WasteAnalysisInputPage : UserControl
         LogMatch($"LoadVerifiedGridUIOnly 완료: {excelRows.Count}건");
     }
 
-    /// <summary>
+        /// <summary>
     /// 두 문자열 간의 유사도 계산 (0.0~1.0)
     /// </summary>
     private static double CalculateSimilarity(string a, string b)
@@ -4726,20 +4743,22 @@ public partial class WasteAnalysisInputPage : UserControl
     /// <summary>Show1에서 드래그된 의뢰시료를 Show2 행에 매칭</summary>
     private void ApplyDragMatch(ExcelRow exRow, int rowIndex, IDataObject data)
     {
-        System.Diagnostics.Debug.WriteLine($"[MATCH] ApplyDragMatch called: rowIndex={rowIndex}, dataKeys=[{string.Join(",", data.GetDataFormats())}]");
 
         // Show1에서 드래그한 실제 이름 가져오기
         string draggedName = data.Get(DataFormats.Text)?.ToString() ?? "";
         string draggedSN = data.Get("sample-sn")?.ToString() ?? "";
 
         // 디버그: 드래그된 데이터 확인 (로그파일로 기록)
-        try
+        if (App.EnableLogging)
         {
-            var logPath = @"c:\Users\ironu\Documents\ETA\Logs\DragDropDebug.log";
-            var logEntry = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - [DRAG DEBUG] draggedName: '{draggedName}', draggedSN: '{draggedSN}'{Environment.NewLine}";
-            File.AppendAllText(logPath, logEntry);
+            try
+            {
+                var logPath = @"c:\Users\ironu\Documents\ETA\Logs\DragDropDebug.log";
+                var logEntry = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - [DRAG DEBUG] draggedName: '{draggedName}', draggedSN: '{draggedSN}'{Environment.NewLine}";
+                File.AppendAllText(logPath, logEntry);
+            }
+            catch { /* 로그 실패해도 무시 */ }
         }
-        catch { /* 로그 실패해도 무시 */ }
 
         // 드래그 소스 탭에 따라 구분 결정 + Show1 이름으로 매칭명 설정
         if (data.Contains("match-waste"))
@@ -4920,8 +4939,11 @@ public partial class WasteAnalysisInputPage : UserControl
                 _ => exRow.SN,
             };
             _rowSnCells[rowIndex].Text = snText;
-            try { File.AppendAllText(@"c:\Users\ironu\Documents\ETA\Logs\DragDropDebug.log",
-                $"{DateTime.Now:HH:mm:ss} - [SN CELL] rowIndex={rowIndex}, Source={exRow.Source}, SN='{exRow.SN}', FacilityName='{exRow.MatchedFacilityName}', snText='{snText}'{Environment.NewLine}"); } catch { }
+            if (App.EnableLogging)
+            {
+                try { File.AppendAllText(@"c:\Users\ironu\Documents\ETA\Logs\DragDropDebug.log",
+                    $"{DateTime.Now:HH:mm:ss} - [SN CELL] rowIndex={rowIndex}, Source={exRow.Source}, SN='{exRow.SN}', FacilityName='{exRow.MatchedFacilityName}', snText='{snText}'{Environment.NewLine}"); } catch { }
+            }
         }
 
         // 토글 스위치 ON으로 전환
@@ -4999,13 +5021,19 @@ public partial class WasteAnalysisInputPage : UserControl
             _rowSnCells[rowIndex].Text = snText;
 
             // SN 셀 업데이트 로그
-            try { File.AppendAllText(@"c:\Users\ironu\Documents\ETA\Logs\DragDropDebug.log",
-                $"{DateTime.Now:HH:mm:ss} - [SN CELL] rowIndex={rowIndex}, Source={exRow.Source}, SN='{exRow.SN}', FacilityName='{exRow.MatchedFacilityName}', snText='{snText}', _rowSnCells.Count={_rowSnCells.Count}{Environment.NewLine}"); } catch { }
+            if (App.EnableLogging)
+            {
+                try { File.AppendAllText(@"c:\Users\ironu\Documents\ETA\Logs\DragDropDebug.log",
+                    $"{DateTime.Now:HH:mm:ss} - [SN CELL] rowIndex={rowIndex}, Source={exRow.Source}, SN='{exRow.SN}', FacilityName='{exRow.MatchedFacilityName}', snText='{snText}', _rowSnCells.Count={_rowSnCells.Count}{Environment.NewLine}"); } catch { }
+            }
         }
         else
         {
-            try { File.AppendAllText(@"c:\Users\ironu\Documents\ETA\Logs\DragDropDebug.log",
-                $"{DateTime.Now:HH:mm:ss} - [SN CELL ERROR] rowIndex={rowIndex} >= _rowSnCells.Count={_rowSnCells.Count}{Environment.NewLine}"); } catch { }
+            if (App.EnableLogging)
+            {
+                try { File.AppendAllText(@"c:\Users\ironu\Documents\ETA\Logs\DragDropDebug.log",
+                    $"{DateTime.Now:HH:mm:ss} - [SN CELL ERROR] rowIndex={rowIndex} >= _rowSnCells.Count={_rowSnCells.Count}{Environment.NewLine}"); } catch { }
+            }
         }
 
         // 토글 스위치 ON으로 전환
@@ -5168,12 +5196,15 @@ public partial class WasteAnalysisInputPage : UserControl
             BorderBrush = AppRes("ThemeFgWarn"),
             BorderThickness = new Thickness(1),
             CornerRadius = new CornerRadius(3),
-            Padding = new Thickness(4, 2),
+            Padding = new Thickness(4, 0),
             MinWidth = 40,
             HorizontalContentAlignment = HorizontalAlignment.Center,
+            VerticalContentAlignment = VerticalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
             Watermark = "1",
             IsVisible = false,
         });
+        NumericOnly(dilInput);
         dilPanel.Children.Add(dilBtn);
         dilPanel.Children.Add(dilInput);
 
@@ -5220,12 +5251,15 @@ public partial class WasteAnalysisInputPage : UserControl
         dilPanel.PointerPressed += (_, e) => { e.Handled = true; OpenDilInput(); };
         dilBtn.Click += (_, _) => OpenDilInput();
         dilInput.LostFocus += (_, _) => CommitDil();
-        dilInput.KeyDown += (_, ke) =>
+        dilInput.AddHandler(TextBox.KeyDownEvent, (object? _, KeyEventArgs ke) =>
         {
             if (ke.Key == Key.Enter || ke.Key == Key.Down) { ke.Handled = true; MoveDilFocus(+1); }
             else if (ke.Key == Key.Up)                     { ke.Handled = true; MoveDilFocus(-1); }
             else if (ke.Key == Key.Escape)                 { ke.Handled = true; dilInput.IsVisible = false; dilBtn.IsVisible = true; }
-        };
+            // Shift+2 모드: Left/Right=시료량↔희석배수 전환 (WASD 제거 — IME 방지)
+            else if (_keyNavShow2 && ke.Key == Key.Left)  { ke.Handled = true; CommitDil(); _navEditDil = false; OpenNavEditCell(rowIdx); }
+            else if (_keyNavShow2 && ke.Key == Key.Right) { ke.Handled = true; CommitDil(); _navEditDil = true;  OpenNavEditCell(rowIdx); }
+        }, Avalonia.Interactivity.RoutingStrategies.Tunnel);
 
         _rowDilButtons.Add(dilBtn);
         return dilPanel;
@@ -5251,9 +5285,74 @@ public partial class WasteAnalysisInputPage : UserControl
     // 키보드 단축키 네비게이션  (Shift+R = Show1 트리, Shift+F = Show2 그리드)
     // =========================================================================
 
+    /// <summary>Tunnel 핸들러: _keyNavShow2 활성 시 방향키(↑↓←→)로만 행·열 이동 — WASD 완전 제거로 한글 IME 방지</summary>
+    private void OnNavKeyDownTunnel(object? sender, KeyEventArgs e)
+    {
+        if (e.Handled) return;
+        bool shift = e.KeyModifiers.HasFlag(KeyModifiers.Shift);
+
+        // ── _keyNavShow2 모드: 방향키만 = 이동 (WASD 제거 — IME 방지), Enter = 편집 ──
+        if (!shift && _keyNavShow2)
+        {
+            // Up/Down → 행 이동 (편집 중이면 LostFocus로 커밋 후 이동)
+            if (e.Key == Key.Up || e.Key == Key.Down)
+            {
+                e.Handled = true;
+                TopLevel.GetTopLevel(this)?.FocusManager?.ClearFocus(); // 편집 중이면 LostFocus → 커밋
+                bool up = e.Key == Key.Up;
+                int newIdx = _selectedRowIndex + (up ? -1 : 1);
+                SelectGridRow(newIdx);
+                return;
+            }
+            // Left/Right → 열 전환만 (입력창은 열지 않음 — 순수 방향키)
+            if (e.Key == Key.Left || e.Key == Key.Right)
+            {
+                e.Handled = true;
+                TopLevel.GetTopLevel(this)?.FocusManager?.ClearFocus(); // 편집 중이면 LostFocus → 커밋
+                _navEditDil = e.Key == Key.Right;
+                return;
+            }
+            // Enter → TextBox 편집 중이면 내부 핸들러(MoveDilFocus)에 위임, 아니면 현재 셀 열기
+            if (e.Key == Key.Enter)
+            {
+                if (e.Source is TextBox) return; // 내부 Tunnel 핸들러가 다음 행으로 이동 처리
+                e.Handled = true;
+                OpenNavEditCell(_selectedRowIndex);
+                return;
+            }
+            // 숫자/소수점 → 즉시 편집 시작 + 해당 키를 TextBox에 전달
+            if (e.Key >= Key.D0 && e.Key <= Key.D9 || e.Key >= Key.NumPad0 && e.Key <= Key.NumPad9 || e.Key == Key.OemPeriod || e.Key == Key.Decimal)
+            {
+                e.Handled = true;
+                OpenNavEditCell(_selectedRowIndex);
+                // 열린 TextBox를 찾아서 초기값으로 입력한 숫자를 넣어줌
+                var focused = TopLevel.GetTopLevel(this)?.FocusManager?.GetFocusedElement() as TextBox;
+                if (focused != null)
+                {
+                    char ch = e.Key switch
+                    {
+                        Key.D0 or Key.NumPad0 => '0', Key.D1 or Key.NumPad1 => '1',
+                        Key.D2 or Key.NumPad2 => '2', Key.D3 or Key.NumPad3 => '3',
+                        Key.D4 or Key.NumPad4 => '4', Key.D5 or Key.NumPad5 => '5',
+                        Key.D6 or Key.NumPad6 => '6', Key.D7 or Key.NumPad7 => '7',
+                        Key.D8 or Key.NumPad8 => '8', Key.D9 or Key.NumPad9 => '9',
+                        Key.OemPeriod or Key.Decimal => '.',
+                        _ => '\0'
+                    };
+                    if (ch != '\0')
+                    {
+                        focused.Text = ch.ToString();
+                        focused.CaretIndex = 1;
+                    }
+                }
+                return;
+            }
+        }
+    }
+
     private void OnWindowKeyDown(object? sender, KeyEventArgs e)
     {
-        // TextBox 포커스 중에는 단축키 무시
+        // TextBox 포커스 중에는 단축키 무시 (Tunnel 핸들러에서 이미 처리)
         if (e.Source is TextBox) return;
 
         bool shift = e.KeyModifiers.HasFlag(KeyModifiers.Shift);
@@ -5304,22 +5403,33 @@ public partial class WasteAnalysisInputPage : UserControl
             return;
         }
 
-        // ── W / S: 활성 모드에서 위/아래 ────────────────────────────────
-        if (!shift && (e.Key == Key.W || e.Key == Key.S))
+        // ── Up / Down: 활성 모드에서 위/아래 ────────────────────────────────
+        if (!shift && (e.Key == Key.Up || e.Key == Key.Down))
         {
             if (_keyNavShow1 && _matchItems.Count > 0)
             {
                 e.Handled = true;
-                int next = Math.Clamp(_keyNavShow1Index + (e.Key == Key.W ? -1 : 1), 0, _matchItems.Count - 1);
+                bool up = e.Key == Key.Up;
+                int next = Math.Clamp(_keyNavShow1Index + (up ? -1 : 1), 0, _matchItems.Count - 1);
                 NavShow1(next);
                 return;
             }
-            if (_keyNavShow2)
+            else if (_keyNavShow2)
             {
                 e.Handled = true;
-                SelectGridRow(_selectedRowIndex + (e.Key == Key.W ? -1 : 1));
+                bool up = e.Key == Key.Up;
+                int newIdx = _selectedRowIndex + (up ? -1 : 1);
+                SelectGridRow(newIdx);
                 return;
             }
+        }
+
+        // ── Left / Right: Shift+2 모드에서 희석배수 ↔ 시료량 전환 ──────────
+        if (!shift && _keyNavShow2 && (e.Key == Key.Left || e.Key == Key.Right))
+        {
+            e.Handled = true;
+            _navEditDil = e.Key == Key.Right; // Left=시료량, Right=희석배수
+            return;
         }
     }
 
@@ -5335,6 +5445,27 @@ public partial class WasteAnalysisInputPage : UserControl
         var (item, _, _) = _matchItems[index];
         TextShimmer.StartFocus(item);
         item.BringIntoView();
+    }
+
+    /// <summary>Shift+2 모드: 현재 행의 희석배수 또는 시료량 인라인 편집 자동 오픈</summary>
+    private void OpenNavEditCell(int rowIndex)
+    {
+        if (rowIndex < 0) return;
+
+        if (_navEditDil)
+        {
+            // 희석배수 버튼 클릭 → 인라인 편집 오픈
+            if (rowIndex < _rowDilButtons.Count && _rowDilButtons[rowIndex] != null)
+                _rowDilButtons[rowIndex]!.RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
+        }
+        else
+        {
+            // 시료량 버튼 클릭 → 인라인 편집 오픈
+            if (rowIndex < _rowVolButtons.Count && _rowVolButtons[rowIndex] != null)
+                _rowVolButtons[rowIndex]!.RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
+            else if (rowIndex < _rowDilButtons.Count && _rowDilButtons[rowIndex] != null)
+                _rowDilButtons[rowIndex]!.RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
+        }
     }
 
     private void OnWindowKeyUp(object? sender, KeyEventArgs e)
@@ -6278,6 +6409,7 @@ public partial class WasteAnalysisInputPage : UserControl
             hdrGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Star));
             hdrGrid.ColumnDefinitions.Add(new ColumnDefinition(60, GridUnitType.Pixel));
             hdrGrid.ColumnDefinitions.Add(new ColumnDefinition(60, GridUnitType.Pixel));
+            hdrGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
             hdrGrid.Children.Add(FsXS(new TextBlock { Text = "#", FontFamily = Font, Foreground = AppRes("FgMuted"), HorizontalAlignment = HorizontalAlignment.Center }));
             var h1 = FsXS(new TextBlock { Text = "농도(%)", FontFamily = Font, Foreground = AppRes("ThemeFgInfo"), FontWeight = FontWeight.SemiBold });
             Grid.SetColumn(h1, 1); hdrGrid.Children.Add(h1);
@@ -6285,6 +6417,23 @@ public partial class WasteAnalysisInputPage : UserControl
             Grid.SetColumn(h2, 2); hdrGrid.Children.Add(h2);
             var h3 = FsXS(new TextBlock { Text = "사망수", FontFamily = Font, Foreground = AppRes("ThemeFgWarn"), FontWeight = FontWeight.SemiBold, HorizontalAlignment = HorizontalAlignment.Center });
             Grid.SetColumn(h3, 3); hdrGrid.Children.Add(h3);
+            var stdBtn = FsXS(new Button
+            {
+                Content = "표준농도입력", FontFamily = Font,
+                Background = AppRes("ThemeFgInfo"), Foreground = Brushes.White,
+                Padding = new Thickness(8, 2), CornerRadius = new CornerRadius(3),
+                VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(4, 0),
+            });
+            stdBtn.Click += (_, _) =>
+            {
+                var std = EcotoxicityService.StandardConcentrations; // 6.25, 12.5, 25, 50, 100
+                for (int si = 0; si < Math.Min(std.Length, numConc); si++)
+                {
+                    concInputs[si].Text = std[si].ToString("G");
+                    orgInputs[si].Text = "20";
+                }
+            };
+            Grid.SetColumn(stdBtn, 4); hdrGrid.Children.Add(stdBtn);
             root.Children.Add(hdrGrid);
 
             for (int ci = 0; ci < numConc; ci++)
@@ -6318,16 +6467,20 @@ public partial class WasteAnalysisInputPage : UserControl
 
             if (eco.Result != null)
             {
-                resultTb.Text = $"TU = {eco.Result.TU}  (LC50 = {eco.Result.EC50})";
-                detailTb.Text = $"95% CI: {eco.Result.LowerCI} ~ {eco.Result.UpperCI}  |  {eco.Result.Method}  |  Trim: {eco.Result.TrimPercent}%";
+                resultTb.Text = $"TU = {eco.Result.TU}  (100/EC50 = 100/{eco.Result.EC50})";
+                var initDetails = new List<string>();
+                if (eco.Result.LowerCI > 0 || eco.Result.UpperCI > 0)
+                    initDetails.Add($"95% CI: {eco.Result.LowerCI} ~ {eco.Result.UpperCI}");
+                initDetails.Add(eco.Result.Method);
+                if (eco.Result.TrimPercent > 0) initDetails.Add($"Trim: {eco.Result.TrimPercent}%");
+                if (eco.Result.Smoothed) initDetails.Add("단조보정 적용");
+                if (!string.IsNullOrEmpty(eco.Result.Warning)) initDetails.Add(eco.Result.Warning);
+                detailTb.Text = string.Join("  |  ", initDetails);
             }
 
-            // 계산 버튼 (TSK / Probit)
-            var btnPanel = new StackPanel { Orientation = Avalonia.Layout.Orientation.Horizontal, Spacing = 8, Margin = new Thickness(0, 4) };
-
-            void DoCalc(bool useTSK)
+            // 입력값 수집 공통
+            void CollectInputs()
             {
-                // 입력값 수집
                 eco.Species = spInput.Text ?? "물벼룩";
                 eco.Duration = durInput.Text ?? "24";
                 int.TryParse(ctrlOrgInput.Text, out var cOrg); eco.ControlOrganisms = cOrg > 0 ? cOrg : 20;
@@ -6345,30 +6498,89 @@ public partial class WasteAnalysisInputPage : UserControl
                         int.TryParse(mortInputs[ci].Text, out var m); mortList.Add(m);
                     }
                 }
-                if (concList.Count < 2) { resultTb.Text = "최소 2개 농도가 필요합니다."; return; }
-
                 eco.Concentrations = concList.ToArray();
                 eco.Organisms = orgList.ToArray();
                 eco.Mortalities = mortList.ToArray();
+            }
+
+            void ApplyResult(EcotoxicityService.EcotoxResult result)
+            {
+                eco.Result = result;
+                exRow.Result = result.TU.ToString("F1");
+                resultTb.Text = $"TU = {result.TU}  (100/EC50 = 100/{result.EC50})";
+                var details = new List<string>();
+                if (result.LowerCI > 0 || result.UpperCI > 0)
+                    details.Add($"95% CI: {result.LowerCI} ~ {result.UpperCI}");
+                details.Add(result.Method);
+                if (result.TrimPercent > 0) details.Add($"Trim: {result.TrimPercent}%");
+                if (result.Smoothed) details.Add("단조보정 적용");
+                if (!string.IsNullOrEmpty(result.Warning)) details.Add(result.Warning);
+                detailTb.Text = string.Join("  |  ", details);
+            }
+
+            // ── TU 직접 산출 (100/EC50) ──────────────────────────────────
+            void DoDirectCalc()
+            {
+                CollectInputs();
+                if (eco.Concentrations.Length < 1) { resultTb.Text = "최소 1개 농도를 입력하세요."; return; }
+
+                // EC50 직접 산출: 사망률 50% 이상인 최저 농도 찾기
+                int n = eco.Concentrations.Length;
+                int idx50 = -1;
+                for (int ci = 0; ci < n; ci++)
+                {
+                    if (eco.Organisms[ci] > 0)
+                    {
+                        double rate = (double)eco.Mortalities[ci] / eco.Organisms[ci];
+                        if (rate >= 0.5) { idx50 = ci; break; }
+                    }
+                }
+
+                if (idx50 < 0)
+                {
+                    // 50% 이상 사망 없음 → fallback (ES 04704.1c 8.1.2)
+                    int lastOrg = eco.Organisms.Length > 0 ? eco.Organisms[^1] : 0;
+                    int lastMort = eco.Mortalities.Length > 0 ? eco.Mortalities[^1] : 0;
+                    var fallback = EcotoxicityService.CalculateFallbackTU(lastOrg, lastMort);
+                    ApplyResult(fallback);
+                    return;
+                }
+
+                // 50% 전후 구간에서 선형보간으로 EC50 추정
+                double ec50;
+                if (idx50 > 0)
+                {
+                    double rLow = (double)eco.Mortalities[idx50 - 1] / eco.Organisms[idx50 - 1];
+                    double rHigh = (double)eco.Mortalities[idx50] / eco.Organisms[idx50];
+                    double cLow = eco.Concentrations[idx50 - 1];
+                    double cHigh = eco.Concentrations[idx50];
+                    ec50 = (rHigh - rLow) > 0.001
+                        ? cLow + (0.5 - rLow) / (rHigh - rLow) * (cHigh - cLow)
+                        : cHigh;
+                }
+                else
+                {
+                    ec50 = eco.Concentrations[idx50];
+                }
+
+                ec50 = Math.Round(Math.Max(ec50, 0.01), 2);
+                double tu = Math.Round(100.0 / ec50, 1);
+                var result = new EcotoxicityService.EcotoxResult(ec50, 0, 0, tu, "직접산출", 0, false);
+                ApplyResult(result);
+            }
+
+            // ── TSK / Probit 계산 ────────────────────────────────────────
+            void DoCalc(bool useTSK)
+            {
+                CollectInputs();
+                if (eco.Concentrations.Length < 2) { resultTb.Text = "최소 2개 농도가 필요합니다."; return; }
 
                 try
                 {
                     var result = useTSK
                         ? EcotoxicityService.CalculateTSK(eco.Concentrations, eco.Organisms, eco.Mortalities, eco.ControlOrganisms, eco.ControlMortalities)
                         : EcotoxicityService.CalculateProbit(eco.Concentrations, eco.Organisms, eco.Mortalities, eco.ControlOrganisms, eco.ControlMortalities);
-
-                    eco.Result = result;
-                    exRow.Result = result.TU.ToString("F1");
-                    resultTb.Text = $"TU = {result.TU}  (LC50 = {result.EC50})";
-                    detailTb.Text = $"95% CI: {result.LowerCI} ~ {result.UpperCI}  |  {result.Method}"
-                        + (result.TrimPercent > 0 ? $"  |  Trim: {result.TrimPercent}%" : "")
-                        + (result.Smoothed ? "  |  단조보정 적용" : "");
-
-                    // Show2 결과값 셀 업데이트
-                    if (_selectedRowIndex >= 0 && _selectedRowIndex < _gridPanel?.Children.Count)
-                    {
-                        // 결과값 텍스트 찾아서 업데이트
-                    }
+                    ApplyResult(result);
                 }
                 catch (Exception ex)
                 {
@@ -6377,11 +6589,23 @@ public partial class WasteAnalysisInputPage : UserControl
                 }
             }
 
+            // 버튼 패널
+            // 버튼: TU 직접 산출 (메인) + TSK / Probit (개별)
+            var btnPanel = new WrapPanel { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 4) };
+
+            var directBtn = new Button
+            {
+                Content = "TU 직접 산출", FontFamily = Font,
+                Background = new SolidColorBrush(Color.Parse("#2E7D32")), Foreground = Brushes.White,
+                Padding = new Thickness(16, 6), CornerRadius = new CornerRadius(4), Margin = new Thickness(0, 0, 8, 4),
+            };
+            directBtn.Click += (_, _) => DoDirectCalc();
+
             var tskBtn = new Button
             {
                 Content = "TSK 계산", FontFamily = Font,
                 Background = AppRes("BtnPrimaryBg"), Foreground = Brushes.White,
-                Padding = new Thickness(16, 6), CornerRadius = new CornerRadius(4),
+                Padding = new Thickness(16, 6), CornerRadius = new CornerRadius(4), Margin = new Thickness(0, 0, 8, 4),
             };
             tskBtn.Click += (_, _) => DoCalc(true);
 
@@ -6389,10 +6613,11 @@ public partial class WasteAnalysisInputPage : UserControl
             {
                 Content = "Probit 계산", FontFamily = Font,
                 Background = AppRes("ThemeFgInfo"), Foreground = Brushes.White,
-                Padding = new Thickness(16, 6), CornerRadius = new CornerRadius(4),
+                Padding = new Thickness(16, 6), CornerRadius = new CornerRadius(4), Margin = new Thickness(0, 0, 0, 4),
             };
             probitBtn.Click += (_, _) => DoCalc(false);
 
+            btnPanel.Children.Add(directBtn);
             btnPanel.Children.Add(tskBtn);
             btnPanel.Children.Add(probitBtn);
             root.Children.Add(btnPanel);
@@ -6552,7 +6777,9 @@ public partial class WasteAnalysisInputPage : UserControl
             var fmRes = FsBase(new TextBlock { FontFamily = Font, Foreground = AppRes("ThemeFgSuccess"),
                 FontWeight = FontWeight.Bold, TextWrapping = TextWrapping.Wrap });
             var fmCurve = FsSM(new TextBlock { FontFamily = Font, Foreground = AppRes("ThemeFgWarn"), TextWrapping = TextWrapping.Wrap,
-                Text = $"검량곡선:  Conc = (Abs/{{slope:G6}} - {{intercept:G6}}) × (60/시료량)" });
+                Text = "검량곡선:  " + (ETA.Services.SERVICE3.AnalysisNoteService.GetFormula(GetActiveAnalyteKey()) is string _cf && !string.IsNullOrWhiteSpace(_cf)
+                    ? $"공식: {_cf}"
+                    : $"Conc = (Abs - {{intercept:G6}}) / {{slope:G6}} × (60/시료량)") });
 
             formulaPanel.Children.Add(fmTitle);
             formulaPanel.Children.Add(fmCurve);
@@ -6708,13 +6935,16 @@ public partial class WasteAnalysisInputPage : UserControl
         Directory.GetCurrentDirectory(), "Logs", "ImportDebug.log");
     private static void LogImport(string msg)
     {
-        try
+        if (App.EnableLogging)
         {
-            var dir = System.IO.Path.GetDirectoryName(ImportLogPath)!;
-            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
-            File.AppendAllText(ImportLogPath, $"[{DateTime.Now:HH:mm:ss}] {msg}\n");
+            try
+            {
+                var dir = System.IO.Path.GetDirectoryName(ImportLogPath)!;
+                if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+                File.AppendAllText(ImportLogPath, $"[{DateTime.Now:HH:mm:ss}] {msg}\n");
+            }
+            catch { }
         }
-        catch { }
     }
 
     private void SaveRawData(ExcelRow row, WasteSample? s, string 소스구분 = "폐수배출업소")
@@ -6862,10 +7092,12 @@ public partial class WasteAnalysisInputPage : UserControl
                         st02mgl: docInfo?.Standard_Points?.ElementAtOrDefault(1) ?? "",
                         st03mgl: docInfo?.Standard_Points?.ElementAtOrDefault(2) ?? "",
                         st04mgl: docInfo?.Standard_Points?.ElementAtOrDefault(3) ?? "",
+                        st05mgl: docInfo?.Standard_Points?.ElementAtOrDefault(4) ?? "",
                         st01abs: docInfo?.Abs_Values?.ElementAtOrDefault(0) ?? "",
                         st02abs: docInfo?.Abs_Values?.ElementAtOrDefault(1) ?? "",
                         st03abs: docInfo?.Abs_Values?.ElementAtOrDefault(2) ?? "",
                         st04abs: docInfo?.Abs_Values?.ElementAtOrDefault(3) ?? "",
+                        st05abs: docInfo?.Abs_Values?.ElementAtOrDefault(4) ?? "",
                         기울기:  docInfo?.Standard_Slope ?? "",
                         절편:    docInfo?.Standard_Intercept ?? "",
                         R2:      docInfo?.Abs_R2 ?? "",
@@ -6928,10 +7160,12 @@ public partial class WasteAnalysisInputPage : UserControl
                         st02mgl: docInfo?.Standard_Points?.ElementAtOrDefault(1) ?? "",
                         st03mgl: docInfo?.Standard_Points?.ElementAtOrDefault(2) ?? "",
                         st04mgl: docInfo?.Standard_Points?.ElementAtOrDefault(3) ?? "",
+                        st05mgl: docInfo?.Standard_Points?.ElementAtOrDefault(4) ?? "",
                         st01abs: docInfo?.Abs_Values?.ElementAtOrDefault(0) ?? "",
                         st02abs: docInfo?.Abs_Values?.ElementAtOrDefault(1) ?? "",
                         st03abs: docInfo?.Abs_Values?.ElementAtOrDefault(2) ?? "",
                         st04abs: docInfo?.Abs_Values?.ElementAtOrDefault(3) ?? "",
+                        st05abs: docInfo?.Abs_Values?.ElementAtOrDefault(4) ?? "",
                         기울기:  docInfo?.Standard_Slope ?? "",
                         절편:    docInfo?.Standard_Intercept ?? "",
                         R2:      docInfo?.Abs_R2 ?? "",
@@ -6964,6 +7198,26 @@ public partial class WasteAnalysisInputPage : UserControl
     }
 
     /// <summary>분석항목명 → 테이블명 안전 변환 (공백/특수문자 → 언더스코어)</summary>
+    /// <summary>TextBox에 숫자(0-9), 소수점, 마이너스만 입력 허용</summary>
+    private static void NumericOnly(TextBox tb)
+    {
+        // TextInputEvent Tunnel: 비숫자 문자 즉시 차단
+        tb.AddHandler(TextBox.TextInputEvent, (object? s, TextInputEventArgs e) =>
+        {
+            if (string.IsNullOrEmpty(e.Text)) return;
+            foreach (var ch in e.Text)
+                if (!char.IsDigit(ch) && ch != '.' && ch != '-')
+                    { e.Handled = true; return; }
+        }, Avalonia.Interactivity.RoutingStrategies.Tunnel);
+        // TextChanged: IME 조합 완료 후 비숫자 문자 제거 (TextInputEvent 우회 방어)
+        tb.TextChanged += (_, _) =>
+        {
+            var text = tb.Text ?? "";
+            var clean = new string(text.Where(c => char.IsDigit(c) || c == '.' || c == '-').ToArray());
+            if (clean != text) tb.Text = clean;
+        };
+    }
+
     private static string SafeName(string analyte)
     {
         return analyte
@@ -7044,14 +7298,37 @@ public partial class WasteAnalysisInputPage : UserControl
                     System.Globalization.CultureInfo.InvariantCulture, out var vol);
                 if (dil <= 0) dil = 1;
 
-                double calcConc = slope > 0
-                    ? ((abs - intercept) / slope) * (vol > 0 ? 60.0 / vol : 1.0)
-                    : 0;
-                double result   = calcConc * dil;
+                double calcConc, result;
+                string analyteKey = GetActiveAnalyteKey();
+                string formulaStr = ETA.Services.SERVICE3.AnalysisNoteService.GetFormula(analyteKey);
+                var evaluated = ETA.Services.SERVICE3.AnalysisNoteService.EvaluateFormula(formulaStr,
+                    new System.Collections.Generic.Dictionary<string, double>
+                    {
+                        ["흡광도"]  = abs,
+                        ["절편"]   = intercept,
+                        ["기울기"]  = slope,
+                        ["시료량"]  = vol > 0 ? vol : 1.0,
+                        ["희석배수"] = dil,
+                    });
 
-                string volFactor = vol > 0 ? $" × (60/{vol})" : "";
-                calcTb.Text   = $"계산농도 = ({abs} - {intercept:G6}) / {slope:G6}{volFactor}  =  {calcConc:F4}";
-                resultTb.Text = $"결과값  =  {calcConc:F4} × {dil}  =  {result.ToString($"F{dp}")} mg/L";
+                if (evaluated.HasValue)
+                {
+                    result   = evaluated.Value;
+                    calcConc = dil > 0 ? result / dil : result;
+                    calcTb.Text   = $"계산농도 = {calcConc:F4}  (공식 적용)";
+                    resultTb.Text = $"결과값  =  {result.ToString($"F{dp}")} mg/L";
+                }
+                else
+                {
+                    // 공식 없음 — 기본 UvVis 계산 (60/시료량)
+                    calcConc = slope > 0
+                        ? ((abs - intercept) / slope) * (vol > 0 ? 60.0 / vol : 1.0)
+                        : 0;
+                    result = calcConc * dil;
+                    string volFactor = vol > 0 ? $" × (60/{vol})" : "";
+                    calcTb.Text   = $"계산농도 = ({abs} - {intercept:G6}) / {slope:G6}{volFactor}  =  {calcConc:F4}";
+                    resultTb.Text = $"결과값  =  {calcConc:F4} × {dil}  =  {result.ToString($"F{dp}")} mg/L";
+                }
 
                 exRow.시료량 = volInput.Text ?? "";
                 exRow.D1   = absInput.Text ?? "";
@@ -7072,7 +7349,9 @@ public partial class WasteAnalysisInputPage : UserControl
                 Padding = new Thickness(10, 6), Margin = new Thickness(0, 2, 0, 0),
                 Child = FsSM(new TextBlock
                 {
-                    Text = $"검량곡선:  Conc = (Abs/{{slope:G6}} - {{intercept:G6}}) × (60/시료량)   R²={di.Abs_R2}",
+                    Text = "검량곡선:  " + (ETA.Services.SERVICE3.AnalysisNoteService.GetFormula(GetActiveAnalyteKey()) is string _cf && !string.IsNullOrWhiteSpace(_cf)
+                    ? $"공식: {_cf}"
+                    : $"Conc = (Abs - {{intercept:G6}}) / {{slope:G6}} × (60/시료량)") + $"   R²={di.Abs_R2}",
                     FontFamily = Font, Foreground = AppRes("ThemeFgWarn"),
                     FontWeight = FontWeight.SemiBold,
                 }),
@@ -7377,42 +7656,25 @@ public partial class WasteAnalysisInputPage : UserControl
                     break;
 
                 case "분석항목":
-                    // 분석정보 테이블에서 Analyte 목록 로드 (화합물 별칭 매칭용)
-                    var analyteItems = AnalysisService.GetAllItems();
-                    // 카테고리별 그룹핑
-                    var grouped = analyteItems
+                    // 분석정보 약칭 컬럼 기준으로 flat list 구성
+                    var analyteItems2 = AnalysisService.GetAllItems()
                         .Where(a => !string.IsNullOrWhiteSpace(a.Analyte))
-                        .GroupBy(a => string.IsNullOrEmpty(a.Category) ? "기타" : a.Category)
-                        .OrderBy(g => g.Key);
-                    foreach (var group in grouped)
+                        .ToList();
+                    foreach (var ai in analyteItems2)
                     {
-                        // 카테고리 헤더 (그룹 노드)
+                        string sn = string.IsNullOrWhiteSpace(ai.약칭) ? ai.Analyte : ai.약칭;
                         allSamples.Add(new
                         {
-                            Type = "CompoundGroup",
-                            SN = group.Key,
-                            Name = group.Key,
-                            Source = "분석항목",
-                            DisplayText = $"🔬 {group.Key} ({group.Count()})",
-                            Color = "#9B59B6",
-                            IsGroup = true
+                            Type      = "Compound",
+                            SN        = sn,
+                            Name      = ai.Analyte,
+                            ShortName = sn,
+                            Source    = "분석항목",
+                            DisplayText = ai.Analyte,
+                            Color     = "#BB8FCE",
+                            IsGroup   = false,
+                            Analyte   = ai.Analyte,
                         });
-                        // 각 분석항목 (드래그 가능)
-                        foreach (var item in group)
-                        {
-                            allSamples.Add(new
-                            {
-                                Type = "Compound",
-                                SN = item.Category,  // 카테고리를 SN으로 사용
-                                Name = item.Analyte,
-                                Source = "분석항목",
-                                DisplayText = $"   {item.Analyte}",
-                                Color = "#BB8FCE",
-                                IsGroup = false,
-                                Analyte = item.Analyte,
-                                Category = item.Category
-                            });
-                        }
                     }
                     break;
 
@@ -7457,7 +7719,6 @@ public partial class WasteAnalysisInputPage : UserControl
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"[BuildSampleList] 오류: {ex.Message}");
         }
 
         // UI 생성
@@ -7492,20 +7753,56 @@ public partial class WasteAnalysisInputPage : UserControl
                 // 그룹 노드와 일반 노드 구분
                 bool isGroup = s.GetType().GetProperty("IsGroup")?.GetValue(s, null) is true;
 
+                // Compound 타입 (분석항목 flat list): 약칭 배지 + 전체명
+                bool isCompound = !isGroup && s.GetType().GetProperty("ShortName") != null;
+                Control itemChild;
+                if (isCompound)
+                {
+                    string shortN = (string)(s.GetType().GetProperty("ShortName")!.GetValue(s) ?? "");
+                    var (badgeBg, badgeFg) = BadgeColorHelper.GetBadgeColor(shortN);
+                    var inner = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*") };
+                    inner.Children.Add(new Border
+                    {
+                        Background   = new SolidColorBrush(Color.Parse(badgeBg)),
+                        CornerRadius = new CornerRadius(3),
+                        Padding      = new Thickness(5, 1),
+                        Margin       = new Thickness(0, 0, 7, 0),
+                        [Grid.ColumnProperty] = 0,
+                        Child = FsXS(new TextBlock
+                        {
+                            Text       = shortN,
+                            Foreground = new SolidColorBrush(Color.Parse(badgeFg)),
+                            VerticalAlignment = VerticalAlignment.Center,
+                        })
+                    });
+                    inner.Children.Add(FsSM(new TextBlock
+                    {
+                        Text              = (string)s.Name,
+                        Foreground        = AppRes("AppFg"),
+                        VerticalAlignment = VerticalAlignment.Center,
+                        [Grid.ColumnProperty] = 1,
+                    }));
+                    itemChild = inner;
+                }
+                else
+                {
+                    itemChild = FsSM(new TextBlock
+                    {
+                        Text       = s.DisplayText,
+                        Foreground = AppRes("AppFg"),
+                        FontWeight = isGroup ? FontWeight.SemiBold : FontWeight.Normal
+                    });
+                }
+
                 var sampleItem = new Border
                 {
-                    Background = isGroup ? AppRes("ThemeBgSecondary") : AppRes("ThemeBgInput"),
+                    Background   = isGroup ? AppRes("ThemeBgSecondary") : AppRes("ThemeBgInput"),
                     CornerRadius = new CornerRadius(isGroup ? 8 : 6),
-                    Padding = new Thickness(isGroup ? 12 : 10, isGroup ? 8 : 6),
-                    Margin = new Thickness(0, isGroup ? 4 : 2),
-                    Height = isGroup ? 36 : 28, // 고정 높이로 더 컴팩트하게
-                    Cursor = new Cursor(StandardCursorType.Hand),
-                    Child = FsSM(new TextBlock
-                    {
-                        Text = s.DisplayText,
-                        Foreground = AppRes("AppFg"), // 모든 텍스트 흰색으로 통일
-                        FontWeight = isGroup ? FontWeight.SemiBold : FontWeight.Normal
-                    })
+                    Padding      = new Thickness(isGroup ? 12 : 10, isGroup ? 8 : 6),
+                    Margin       = new Thickness(0, isGroup ? 4 : 2),
+                    Height       = isGroup ? 36 : 28,
+                    Cursor       = new Cursor(StandardCursorType.Hand),
+                    Child        = itemChild,
                 };
 
                 // 그룹이 아닌 드래그 가능한 시료만 드래그 설정
@@ -8004,7 +8301,11 @@ public partial class WasteAnalysisInputPage : UserControl
     // =========================================================================
     private void ParseGcInstrumentFile(string path)
     {
-        var gc = GcInstrumentParser.Parse(path);
+        string ext = System.IO.Path.GetExtension(path).ToLowerInvariant();
+        var gc = ext == ".pdf"
+            ? Voc10PdfParser.Parse(path)
+            : GcInstrumentParser.Parse(path);
+
         if (gc.Format == GcFileFormat.Unknown || gc.Compounds.Count == 0)
         {
             ShowMessage("지원되지 않는 GC 기기 파일 형식입니다.", true);
@@ -8250,7 +8551,10 @@ public partial class WasteAnalysisInputPage : UserControl
         if (!_categoryExcelData.TryGetValue(_activeCategory, out var rows))
         { ShowMessage("먼저 파일을 첨부하세요.", true); return; }
 
-        try { File.WriteAllText(ImportLogPath, $"=== ImportData 시작: {DateTime.Now:yyyy-MM-dd HH:mm:ss} cat={_activeCategory} rows={rows.Count} ===\n"); } catch { }
+        if (App.EnableLogging)
+        {
+            try { File.WriteAllText(ImportLogPath, $"=== ImportData 시작: {DateTime.Now:yyyy-MM-dd HH:mm:ss} cat={_activeCategory} rows={rows.Count} ===\n"); } catch { }
+        }
 
         // 진행 오버레이 표시
         if (_importOverlay != null) _importOverlay.IsVisible = true;
@@ -8921,12 +9225,25 @@ public partial class WasteAnalysisInputPage : UserControl
     {
         try
         {
-            ShowMessage("ICP PDF 파일 파싱 중...", false);
+            string ext = System.IO.Path.GetExtension(path).ToLowerInvariant();
+            ShowMessage($"ICP 파일 파싱 중...", false);
             string icpCategory = "ICP";
             var icpCatMatch = Categories.FirstOrDefault(c => c.Key == icpCategory);
             string[] icpItems = icpCatMatch.Items ?? Array.Empty<string>();
-            var parseResult = await System.Threading.Tasks.Task.Run(() =>
-                IcpPdfParser.Parse(path, icpItems, FormatResult));
+
+            IcpPdfParser.ParseResult parseResult;
+            if (ext == ".csv")
+            {
+                var r = await System.Threading.Tasks.Task.Run(() =>
+                    IcpAaCsvParser.Parse(path, icpItems, FormatResult));
+                parseResult = new IcpPdfParser.ParseResult(r.Rows, r.DocInfo, r.DocDate, r.DetectedFormat);
+            }
+            else
+            {
+                parseResult = await System.Threading.Tasks.Task.Run(() =>
+                    IcpPdfParser.Parse(path, icpItems, FormatResult));
+            }
+
             _categoryDocInfo[icpCategory] = parseResult.DocInfo;
             _categoryExcelData[icpCategory] = parseResult.Rows;
             _categoryFilePaths[icpCategory] = path;
@@ -8937,9 +9254,9 @@ public partial class WasteAnalysisInputPage : UserControl
             UpdateCategoryButtonStyles();
             LoadVerifiedGrid();
             BuildStatsPanel();
-            ShowMessage($"✅ ICP PDF 파싱 완료 - {parseResult.Rows.Count}건", false);
+            ShowMessage($"✅ ICP 파싱 완료 ({parseResult.DetectedFormat}) - {parseResult.Rows.Count}건", false);
         }
-        catch (Exception ex) { ShowMessage($"❌ ICP PDF 오류: {ex.Message}", true); }
+        catch (Exception ex) { ShowMessage($"❌ ICP 파싱 오류: {ex.Message}", true); }
     }
 
     private async System.Threading.Tasks.Task ParseLcmsPfasFileAsync(string path)
@@ -9106,44 +9423,49 @@ public partial class WasteAnalysisInputPage : UserControl
     }
 
     /// <summary>
-    /// ICP PDF 파일 파싱 및 처리
+    /// ICP 파일 파싱 및 처리 (PDF 또는 CSV)
     /// </summary>
     private async void ParseIcpPdfFile(string path)
     {
         try
         {
-            ShowMessage("ICP PDF 파일 파싱 중...", false);
+            string ext = System.IO.Path.GetExtension(path).ToLowerInvariant();
+            ShowMessage("ICP 파일 파싱 중...", false);
 
-            // ICP 카테고리로 설정
             string icpCategory = "ICP";
             var icpCatMatch = Categories.FirstOrDefault(c => c.Key == icpCategory);
             string[] icpItems = icpCatMatch.Items ?? Array.Empty<string>();
 
-            var parseResult = await System.Threading.Tasks.Task.Run(() =>
-                IcpPdfParser.Parse(path, icpItems, FormatResult));
+            IcpPdfParser.ParseResult parseResult;
+            if (ext == ".csv")
+            {
+                var r = await System.Threading.Tasks.Task.Run(() =>
+                    IcpAaCsvParser.Parse(path, icpItems, FormatResult));
+                parseResult = new IcpPdfParser.ParseResult(r.Rows, r.DocInfo, r.DocDate, r.DetectedFormat);
+            }
+            else
+            {
+                parseResult = await System.Threading.Tasks.Task.Run(() =>
+                    IcpPdfParser.Parse(path, icpItems, FormatResult));
+            }
 
-            // ICP 카테고리에 파싱 결과 저장
             _categoryDocInfo[icpCategory] = parseResult.DocInfo;
             _categoryExcelData[icpCategory] = parseResult.Rows;
             _categoryFilePaths[icpCategory] = path;
-
-            // ICP 카테고리로 자동 전환
             _activeCategory = icpCategory;
             _activeItems = icpItems;
             _categorySelected = true;
-
-            // UI 업데이트
             _currentExcelRows = parseResult.Rows;
             UpdateCategoryButtonStyles();
 
             LoadVerifiedGrid();
             BuildStatsPanel();
 
-            ShowMessage($"✅ ICP PDF 파일 파싱 완료 - {parseResult.Rows.Count}건 로드됨", false);
+            ShowMessage($"✅ ICP 파싱 완료 ({parseResult.DetectedFormat}) - {parseResult.Rows.Count}건 로드됨", false);
         }
         catch (Exception ex)
         {
-            ShowMessage($"❌ ICP PDF 파일 파싱 오류: {ex.Message}", true);
+            ShowMessage($"❌ ICP 파싱 오류: {ex.Message}", true);
         }
     }
 
