@@ -3073,6 +3073,7 @@ public partial class WasteAnalysisInputPage : UserControl
         bool isTocMode = false;
         bool isTocTcicMode = false;
         bool isGcMode = false;
+        bool isIcpMode = false;
 
         // TOC 검량선 수식은 나중에 docInfo 확인 후 추가 (아래 isTocMode 설정 이후)
 
@@ -3107,6 +3108,7 @@ public partial class WasteAnalysisInputPage : UserControl
             isTocMode   = docInfo.IsTocNPOC || docInfo.IsTocTCIC;
             isTocTcicMode = docInfo.IsTocTCIC;
             isGcMode    = docInfo.IsGcMode;
+            isIcpMode   = isGcMode && (docInfo.GcFormat?.StartsWith("ICP", StringComparison.OrdinalIgnoreCase) == true);
             bool isShimadzuToc = isTocMode && docInfo.IsShimadzuToc;
 
             // TOC y = ax + b 수식을 분석일 바로 아래 표시
@@ -3159,6 +3161,12 @@ public partial class WasteAnalysisInputPage : UserControl
             {
                 // TOC NPOC: 시료량 없음 — 컬럼 8개 (체크/입력/SN/시료명/AU/희석배수/결과값/시료구분)
                 colDefs = "32,50,130,190,80,60,75,80";
+                colWidths = colDefs.Split(',').Select(double.Parse).ToArray();
+            }
+            else if (isIcpMode)
+            {
+                // ICP: 체크/입력/SN/시료명/성분명/농도/희석배수/결과값/시료구분 (9컬럼)
+                colDefs = "32,50,130,220,70,65,55,70,80";
                 colWidths = colDefs.Split(',').Select(double.Parse).ToArray();
             }
             else if (isGcMode)
@@ -3708,10 +3716,12 @@ public partial class WasteAnalysisInputPage : UserControl
             ? new[] { "", "입력", "SN", "시료명", "TCAU", "TCcon", "ICAU", "ICcon", "희석배수", "결과값", "시료구분" }
             : isTocMode
             ? new[] { "", "입력", "SN", "시료명", "AU", "희석배수", "결과값", "시료구분" }
+            : isIcpMode
+            ? new[] { "", "입력", "SN", "시료명", "성분명", "농도", "희석배수", "결과값", "시료구분" }
             : isGcMode
             ? new[] { "", "입력", "SN", "시료명", "", "Resp.", "ISTD Resp.", "농도", "희석배수", "결과값", "시료구분" }
             : new[] { "", "입력", "SN", "시료명", "시료량", "D1", "D2", "f(x/y)", "P", "결과값", "시료구분" };
-        int detailStart = 4, detailEnd = isTocTcicMode ? 8 : isTocMode ? 5 : isUVVISMode ? 7 : 8;
+        int detailStart = 4, detailEnd = isTocTcicMode ? 8 : isTocMode ? 5 : isUVVISMode ? 7 : isIcpMode ? 6 : 8;
         for (int c = 0; c < hLabels.Length; c++)
         {
             if (c == 0) // 첫 번째 컬럼: 전체 토글 스위치
@@ -3979,15 +3989,17 @@ public partial class WasteAnalysisInputPage : UserControl
             Grid.SetColumn(toggleWrap, 1);
             rowGrid.Children.Add(toggleWrap);
 
-            // SN (처리시설이면 시설명 표시)
-            string snDisplay = row.Source switch
-            {
-                SourceType.처리시설     when !string.IsNullOrEmpty(row.MatchedFacilityName) => row.MatchedFacilityName,
-                SourceType.처리시설     => row.SN, // 드래그앤드롭 매칭 시 SN 사용
-                SourceType.수질분석센터 when !string.IsNullOrEmpty(row.MatchedAnalysis?.약칭) => row.MatchedAnalysis!.약칭,
-                SourceType.수질분석센터 => row.SN, // 드래그앤드롭 매칭 시 SN 사용
-                _ => row.SN,
-            };
+            // SN (처리시설이면 시설명 표시, IsControl이면 "QC" 고정)
+            string snDisplay = row.IsControl && row.Source == SourceType.미분류
+                ? "QC"
+                : row.Source switch
+                {
+                    SourceType.처리시설     when !string.IsNullOrEmpty(row.MatchedFacilityName) => row.MatchedFacilityName,
+                    SourceType.처리시설     => row.SN,
+                    SourceType.수질분석센터 when !string.IsNullOrEmpty(row.MatchedAnalysis?.약칭) => row.MatchedAnalysis!.약칭,
+                    SourceType.수질분석센터 => row.SN,
+                    _ => row.SN,
+                };
             var snTb = FsBase(new TextBlock
             {
                 Text = snDisplay, FontFamily = Font,
@@ -4077,9 +4089,12 @@ public partial class WasteAnalysisInputPage : UserControl
             // 기초정보: UV VIS는 시료량/흡광도/희석배수/계산농도,
             //          TOC TCIC는 TCAU/TCcon/ICAU/ICcon/희석배수,
             //          TOC NPOC는 D1/공백/농도/희석배수 (시료량 없음),
+            //          ICP는 성분명/농도/희석배수,
             //          BOD는 시료량/D1/D2/f(x/y)/P
             string[] infoVals = isUVVISMode
                 ? new[] { row.시료량, row.D1, row.Fxy, row.D2 }
+                : isIcpMode
+                ? new[] { row.CompoundName ?? "", row.Result, row.P }
                 : isTocTcicMode
                 ? new[] { row.TCAU, row.TCcon, row.ICAU, row.ICcon, row.P }
                 : isTocMode
@@ -4269,19 +4284,31 @@ public partial class WasteAnalysisInputPage : UserControl
             rowGrid.Children.Add(valTb);
 
             // 시료구분
-            LogMatch($"UI DISPLAY: {row.SN} Source={row.Source}");
-            var (srcLabel, srcFg) = row.Source switch
+            LogMatch($"UI DISPLAY: {row.SN} Source={row.Source} IsControl={row.IsControl}");
+            // IsControl: 파서가 이미 정도관리로 표시\ed�� 행 — 매칭 전에도 "정도관리" 표시
+            string srcLabel;
+            Avalonia.Media.IBrush srcBrush;
+            if (row.IsControl && row.Source == SourceType.미분류)
             {
-                SourceType.폐수배출업소 => (row.IsManualMatch ? "비용부담금" : $"폐수배출-{row.Matched?.구분 ?? "?"}", "ThemeFgInfo"),
-                SourceType.수질분석센터 => ("수질분석센터", "ThemeFgSuccess"),
-                SourceType.처리시설     => ("처리시설", "ThemeFgWarn"),
-                _                      => ("—", "FgMuted"),
-            };
+                srcLabel = "정도관리";
+                srcBrush = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#c084fc"));
+            }
+            else
+            {
+                (srcLabel, var srcFgKey) = row.Source switch
+                {
+                    SourceType.폐수배출업소 => (row.IsManualMatch ? "비용부담금" : $"폐수배출-{row.Matched?.구분 ?? "?"}", "ThemeFgInfo"),
+                    SourceType.수질분석센터 => ("수질분석센터", "ThemeFgSuccess"),
+                    SourceType.처리시설     => ("처리시설", "ThemeFgWarn"),
+                    _                      => ("—", "FgMuted"),
+                };
+                srcBrush = AppRes(srcFgKey);
+            }
             LogMatch($"UI DISPLAY: {row.SN} → '{srcLabel}'");
             var srcTb = FsBase(new TextBlock
             {
                 Text = srcLabel, FontFamily = Font, FontWeight = FontWeight.SemiBold,
-                Foreground = AppRes(srcFg),
+                Foreground = srcBrush,
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center,
             });
@@ -7107,6 +7134,44 @@ public partial class WasteAnalysisInputPage : UserControl
                 }
                 break;
 
+            case "ICP":
+            {
+                // ICP-OES/VGA: 원소별 시험기록부 — UvvisData 스키마 재사용
+                string icpCompound = row.CompoundName;
+                if (string.IsNullOrEmpty(icpCompound)) break;
+
+                var icpResolved  = CompoundAliasService.ResolveOrFallback(icpCompound);
+                string icpTable  = $"{SafeName(icpResolved.표준코드)}_시험기록부";
+                var icpCal       = docInfo?.GcCompoundCals?
+                    .FirstOrDefault(c => c.Name.Equals(icpCompound, StringComparison.OrdinalIgnoreCase));
+
+                WasteSampleService.UpsertUvvisData(
+                    icpTable,
+                    분석일, sn, 업체명, 소스구분,
+                    시료량:  row.시료량,
+                    흡광도:  row.D1,
+                    희석배수: string.IsNullOrEmpty(row.P) ? "1" : row.P,
+                    검량선a: icpCal?.Intercept ?? "",
+                    농도:    row.Result,
+                    st01mgl: icpCal?.StdConcs.ElementAtOrDefault(0) ?? "",
+                    st02mgl: icpCal?.StdConcs.ElementAtOrDefault(1) ?? "",
+                    st03mgl: icpCal?.StdConcs.ElementAtOrDefault(2) ?? "",
+                    st04mgl: icpCal?.StdConcs.ElementAtOrDefault(3) ?? "",
+                    st05mgl: icpCal?.StdConcs.ElementAtOrDefault(4) ?? "",
+                    st01abs: icpCal?.StdResps.ElementAtOrDefault(0) ?? "",
+                    st02abs: icpCal?.StdResps.ElementAtOrDefault(1) ?? "",
+                    st03abs: icpCal?.StdResps.ElementAtOrDefault(2) ?? "",
+                    st04abs: icpCal?.StdResps.ElementAtOrDefault(3) ?? "",
+                    st05abs: icpCal?.StdResps.ElementAtOrDefault(4) ?? "",
+                    기울기:  icpCal?.Slope ?? "",
+                    절편:    icpCal?.Intercept ?? "",
+                    R2:      icpCal?.R ?? "",
+                    비고: remark,
+                    시료명: 시료명Full,
+                    소스구분: 소스구분);
+                break;
+            }
+
             case "GCMS":
             {
                 // 성분별 테이블 라우팅: CompoundAliasService로 정규화 후 라우팅
@@ -7949,7 +8014,9 @@ public partial class WasteAnalysisInputPage : UserControl
         qRow.MatchedAnalysis     = null;
         qRow.MatchedFacilityName = null;
         qRow.IsManualMatch       = false;
-        if (!string.IsNullOrEmpty(qRow.원본시료명))
+        // 매칭 해제 여부 추적 (셀 재빌드 판단용)
+        bool nameReverted = !string.IsNullOrEmpty(qRow.원본시료명);
+        if (nameReverted)
         {
             qRow.시료명    = qRow.원본시료명;
             qRow.원본시료명 = "";
@@ -7981,15 +8048,27 @@ public partial class WasteAnalysisInputPage : UserControl
             _rowSourceCells[rowIndex].Foreground = new Avalonia.Media.SolidColorBrush(
                 Avalonia.Media.Color.Parse("#c084fc"));
         }
-        // 시료명 셀: 매칭명 제거, 원본명만 표시
-        if (rowIndex < _rowNameCells.Count)
+        // 시료명 셀: 매칭이 해제된 경우에만 재빌드 (자동 QC 상태에서 수동 QC 시 이름 유지)
+        if (nameReverted && rowIndex < _rowNameCells.Count)
         {
+            string displayName = qRow.시료명 ?? "";
+            Avalonia.Media.IBrush nameFg = AppRes("AppFg");
+            if (!string.IsNullOrEmpty(qRow.CompoundName))
+            {
+                var aliasInfo = CompoundAliasService.Resolve(qRow.CompoundName);
+                if (aliasInfo != null)
+                {
+                    string samplePart = qRow.시료명?.Split('|').LastOrDefault()?.Trim() ?? qRow.시료명 ?? "";
+                    displayName = $"{aliasInfo.Value.분석항목} | {samplePart}";
+                    nameFg = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#90EE90"));
+                }
+            }
             var nameCell = _rowNameCells[rowIndex];
             nameCell.Children.Clear();
             nameCell.Children.Add(FsBase(new TextBlock
             {
-                Text = qRow.시료명, FontFamily = Font,
-                Foreground = AppRes("AppFg"),
+                Text = displayName, FontFamily = Font,
+                Foreground = nameFg,
                 TextTrimming = TextTrimming.CharacterEllipsis,
             }));
         }
