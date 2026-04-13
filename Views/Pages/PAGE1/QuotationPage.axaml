@@ -59,40 +59,22 @@
                        FontFamily="avares://ETA/Assets/Fonts#Pretendard" />
         </StackPanel>
 
-        <!-- 업체 목록 -->
+        <!-- 업체 목록 (ListBox) -->
         <ListBox Grid.Row="3"
-                 x:Name="lbxCompanies"
+                 x:Name="lbCompanies"
+                 SelectionChanged="LbCompanies_SelectionChanged"
                  Background="Transparent"
                  BorderThickness="0"
-                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                 SelectionChanged="LbxCompanies_SelectionChanged">
+                 HorizontalAlignment="Stretch"
+                 VerticalAlignment="Stretch">
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="models:Contract">
-                    <Grid ColumnDefinitions="Auto,Auto,*,Auto"
-                          ToolTip.Tip="{Binding C_ContractEndStr}">
-                        <!-- 업체명 -->
-                        <TextBlock Grid.Column="0"
-                                   Text="{Binding C_CompanyName}"
-                                   FontSize="{DynamicResource FontSizeBase}"
-                                   FontFamily="avares://ETA/Assets/Fonts#Pretendard"
-                                   TextTrimming="CharacterEllipsis"
-                                   VerticalAlignment="Center" />
-                        <!-- 약칭 배지 -->
-                        <Border Grid.Column="1"
-                                Background="{Binding BadgeBg}" CornerRadius="3"
-                                Padding="4,1" Margin="4,0,0,0"
-                                IsVisible="{Binding HasAbbr}">
-                            <TextBlock Text="{Binding C_Abbreviation}"
-                                       FontSize="{DynamicResource FontSizeSM}" Foreground="{Binding BadgeFg}" />
-                        </Border>
-                        <!-- 잔여계약일 배지 (오른쪽 끝) -->
-                        <Border Grid.Column="3"
-                                Background="{Binding DaysLeftBg}" CornerRadius="3"
-                                Padding="4,1" Margin="4,0,0,0"
-                                IsVisible="{Binding HasDaysLeft}">
-                            <TextBlock Text="{Binding DaysLeftText}"
-                                       FontSize="{DynamicResource FontSizeSM}" Foreground="{Binding DaysLeftFg}" />
-                        </Border>
+                    <Grid ColumnDefinitions="2*,*,*,*,*">
+                        <TextBlock Grid.Column="0" Text="{Binding C_CompanyName}" Margin="6,2"/>
+                        <TextBlock Grid.Column="1" Text="{Binding C_Abbreviation}" Margin="6,2"/>
+                        <TextBlock Grid.Column="2" Text="{Binding C_ContractStartStr}" Margin="6,2"/>
+                        <TextBlock Grid.Column="3" Text="{Binding C_ContractEndStr}" Margin="6,2"/>
+                        <TextBlock Grid.Column="4" Text="{Binding DaysLeftText}" HorizontalAlignment="Right" Margin="6,2"/>
                     </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>

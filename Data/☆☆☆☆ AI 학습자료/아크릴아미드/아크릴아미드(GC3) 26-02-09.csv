@@ -1,0 +1,346 @@
+Batch Data Path,"V:\2026\2026-02\ACRYL(KD 2.4, JR 2.5)\QuantResults\ACRYL.batch.bin"
+Analysis Time,2026-02-10 오전 11:52:14,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:52:13,Analyze Quant Version,10.2,Report Quant Version,10.2
+Acrylamide
+Data File,,Type,RT,,Resp.,,ISTD Resp,,Final Conc.
+ACRYL ST-01.d,,Cal,4.861,,1794,,10752,,0.008
+ACRYL ST-02.d,,Cal,4.861,,3172,,9572,,0.013
+ACRYL ST-03.d,,Cal,4.861,,3512,,9384,,0.014
+ACRYL ST-04.d,,Cal,4.856,,7755,,9862,,0.027
+ACRYL ST-05.d,,Cal,4.856,,8299,,9313,,0.030
+ACRYL ST-06.d,,Cal,4.856,,12188,,9578,,0.042
+BK-.d,,Blank,,,,,8371,,ND
+FBK(KD 26-02-04).d,,Blank,,,,,8603,,ND
+FBK(JR 26-02-05).d,,Blank,,,,,8884,,ND
+JR-01.d,,Sample,,,,,4233,,ND
+JR-02.d,,Sample,,,,,9307,,ND
+JR-03.d,,Sample,,,,,5678,,ND
+JR-04.d,,Sample,,,,,12073,,ND
+JR-05.d,,Sample,,,,,5440,,ND
+JR-06.d,,Sample,,,,,19792,,ND
+JR-07.d,,Sample,,,,,25074,,ND
+JR-08.d,,Sample,,,,,14099,,ND
+KD-01.d,,Sample,,,,,13696,,ND
+KD-02.d,,Sample,,,,,11967,,ND
+KD-04.d,,Sample,,,,,9282,,ND
+MBK.d,,Blank,,,,,10435,,ND
+-C-C-V-.d,,QC,4.861,,4915,,11248,,0.016
+Calibration,,
+Acrylamide,,
+
+Cal. Path,Type,Level,Enable,,Conc.,,Response
+"V:\2026\2026-02\ACRYL(KD 2.4, JR 2.5)\ACRYL ST-01.d",Calibration,1,x,,3.000,,1794
+"V:\2026\2026-02\ACRYL(KD 2.4, JR 2.5)\ACRYL ST-02.d",Calibration,2,,,5.000,,3172
+"V:\2026\2026-02\ACRYL(KD 2.4, JR 2.5)\ACRYL ST-03.d",Calibration,3,x,,8.000,,3512
+"V:\2026\2026-02\ACRYL(KD 2.4, JR 2.5)\ACRYL ST-04.d",Calibration,4,,,10.000,,7755
+"V:\2026\2026-02\ACRYL(KD 2.4, JR 2.5)\-C-C-V-.d",QC,4,x,,10.000,,4915
+"V:\2026\2026-02\ACRYL(KD 2.4, JR 2.5)\ACRYL ST-05.d",Calibration,5,x,,16.000,,8299
+"V:\2026\2026-02\ACRYL(KD 2.4, JR 2.5)\ACRYL ST-06.d",Calibration,6,x,,20.000,,12188
+Batch Data Path,"V:\2026\2026-02\ACRYL(KD 2.4, JR 2.5)\QuantResults\ACRYL.batch.bin"
+Analysis Time,2026-02-10 오전 11:52:14,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:17:23,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:52:13,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 6:14:03,Data File,ACRYL ST-01.d
+Type,Cal,Name,ACRYL ST-01
+Dil.,0.002,Acq. Method File,VOCs(Acrylamide)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylamide,,4.861,1794,10752,,0.008,mg/L
+Acrylamide
+,,
+Batch Data Path,"V:\2026\2026-02\ACRYL(KD 2.4, JR 2.5)\QuantResults\ACRYL.batch.bin"
+Analysis Time,2026-02-10 오전 11:52:14,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:17:23,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:52:13,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 6:23:12,Data File,ACRYL ST-02.d
+Type,Cal,Name,ACRYL ST-02
+Dil.,0.002,Acq. Method File,VOCs(Acrylamide)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylamide,,4.861,3172,9572,,0.013,mg/L
+Acrylamide
+,,
+Batch Data Path,"V:\2026\2026-02\ACRYL(KD 2.4, JR 2.5)\QuantResults\ACRYL.batch.bin"
+Analysis Time,2026-02-10 오전 11:52:14,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:17:23,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:52:13,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 6:32:21,Data File,ACRYL ST-03.d
+Type,Cal,Name,ACRYL ST-03
+Dil.,0.002,Acq. Method File,VOCs(Acrylamide)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylamide,,4.861,3512,9384,,0.014,mg/L
+Acrylamide
+,,
+Batch Data Path,"V:\2026\2026-02\ACRYL(KD 2.4, JR 2.5)\QuantResults\ACRYL.batch.bin"
+Analysis Time,2026-02-10 오전 11:52:14,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:17:23,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:52:13,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 6:41:30,Data File,ACRYL ST-04.d
+Type,Cal,Name,ACRYL ST-04
+Dil.,0.002,Acq. Method File,VOCs(Acrylamide)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylamide,,4.856,7755,9862,,0.027,mg/L
+Acrylamide
+,,
+Batch Data Path,"V:\2026\2026-02\ACRYL(KD 2.4, JR 2.5)\QuantResults\ACRYL.batch.bin"
+Analysis Time,2026-02-10 오전 11:52:14,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:17:23,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:52:13,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 6:50:43,Data File,ACRYL ST-05.d
+Type,Cal,Name,ACRYL ST-05
+Dil.,0.002,Acq. Method File,VOCs(Acrylamide)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylamide,,4.856,8299,9313,,0.030,mg/L
+Acrylamide
+,,
+Batch Data Path,"V:\2026\2026-02\ACRYL(KD 2.4, JR 2.5)\QuantResults\ACRYL.batch.bin"
+Analysis Time,2026-02-10 오전 11:52:14,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:17:23,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:52:13,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 6:59:54,Data File,ACRYL ST-06.d
+Type,Cal,Name,ACRYL ST-06
+Dil.,0.002,Acq. Method File,VOCs(Acrylamide)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylamide,,4.856,12188,9578,,0.042,mg/L
+Acrylamide
+,,
+Batch Data Path,"V:\2026\2026-02\ACRYL(KD 2.4, JR 2.5)\QuantResults\ACRYL.batch.bin"
+Analysis Time,2026-02-10 오전 11:52:14,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:17:23,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:52:13,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 7:18:06,Data File,BK-.d
+Type,Blank,Name,BK-
+Dil.,0.002,Acq. Method File,VOCs(Acrylamide)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylamide,,,,8371,,ND,mg/L
+Acrylamide
+,,
+Batch Data Path,"V:\2026\2026-02\ACRYL(KD 2.4, JR 2.5)\QuantResults\ACRYL.batch.bin"
+Analysis Time,2026-02-10 오전 11:52:14,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:17:23,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:52:13,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 7:27:18,Data File,FBK(KD 26-02-04).d
+Type,Blank,Name,FBK(KD 26-02-04)
+Dil.,0.002,Acq. Method File,VOCs(Acrylamide)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylamide,,,,8603,,ND,mg/L
+Acrylamide
+,,
+Batch Data Path,"V:\2026\2026-02\ACRYL(KD 2.4, JR 2.5)\QuantResults\ACRYL.batch.bin"
+Analysis Time,2026-02-10 오전 11:52:14,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:17:23,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:52:13,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 7:36:26,Data File,FBK(JR 26-02-05).d
+Type,Blank,Name,FBK(JR 26-02-05)
+Dil.,0.002,Acq. Method File,VOCs(Acrylamide)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylamide,,,,8884,,ND,mg/L
+Acrylamide
+,,
+Batch Data Path,"V:\2026\2026-02\ACRYL(KD 2.4, JR 2.5)\QuantResults\ACRYL.batch.bin"
+Analysis Time,2026-02-10 오전 11:52:14,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:17:23,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:52:13,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 7:45:33,Data File,JR-01.d
+Type,Sample,Name,JR-01
+Dil.,0.002,Acq. Method File,VOCs(Acrylamide)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylamide,,,,4233,,ND,mg/L
+Acrylamide
+,,
+Batch Data Path,"V:\2026\2026-02\ACRYL(KD 2.4, JR 2.5)\QuantResults\ACRYL.batch.bin"
+Analysis Time,2026-02-10 오전 11:52:14,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:17:23,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:52:13,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 7:54:43,Data File,JR-02.d
+Type,Sample,Name,JR-02
+Dil.,0.002,Acq. Method File,VOCs(Acrylamide)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylamide,,,,9307,,ND,mg/L
+Acrylamide
+,,
+Batch Data Path,"V:\2026\2026-02\ACRYL(KD 2.4, JR 2.5)\QuantResults\ACRYL.batch.bin"
+Analysis Time,2026-02-10 오전 11:52:14,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:17:23,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:52:13,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 8:03:52,Data File,JR-03.d
+Type,Sample,Name,JR-03
+Dil.,0.002,Acq. Method File,VOCs(Acrylamide)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylamide,,,,5678,,ND,mg/L
+Acrylamide
+,,
+Batch Data Path,"V:\2026\2026-02\ACRYL(KD 2.4, JR 2.5)\QuantResults\ACRYL.batch.bin"
+Analysis Time,2026-02-10 오전 11:52:14,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:17:23,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:52:13,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 8:13:02,Data File,JR-04.d
+Type,Sample,Name,JR-04
+Dil.,0.002,Acq. Method File,VOCs(Acrylamide)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylamide,,,,12073,,ND,mg/L
+Acrylamide
+,,
+Batch Data Path,"V:\2026\2026-02\ACRYL(KD 2.4, JR 2.5)\QuantResults\ACRYL.batch.bin"
+Analysis Time,2026-02-10 오전 11:52:14,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:17:23,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:52:13,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 8:22:15,Data File,JR-05.d
+Type,Sample,Name,JR-05
+Dil.,0.002,Acq. Method File,VOCs(Acrylamide)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylamide,,,,5440,,ND,mg/L
+Acrylamide
+,,
+Batch Data Path,"V:\2026\2026-02\ACRYL(KD 2.4, JR 2.5)\QuantResults\ACRYL.batch.bin"
+Analysis Time,2026-02-10 오전 11:52:14,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:17:23,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:52:13,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 8:31:24,Data File,JR-06.d
+Type,Sample,Name,JR-06
+Dil.,0.002,Acq. Method File,VOCs(Acrylamide)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylamide,,,,19792,,ND,mg/L
+Acrylamide
+,,
+Batch Data Path,"V:\2026\2026-02\ACRYL(KD 2.4, JR 2.5)\QuantResults\ACRYL.batch.bin"
+Analysis Time,2026-02-10 오전 11:52:14,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:17:23,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:52:13,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 8:40:36,Data File,JR-07.d
+Type,Sample,Name,JR-07
+Dil.,0.002,Acq. Method File,VOCs(Acrylamide)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylamide,,,,25074,,ND,mg/L
+Acrylamide
+,,
+Batch Data Path,"V:\2026\2026-02\ACRYL(KD 2.4, JR 2.5)\QuantResults\ACRYL.batch.bin"
+Analysis Time,2026-02-10 오전 11:52:14,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:17:23,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:52:13,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 8:49:44,Data File,JR-08.d
+Type,Sample,Name,JR-08
+Dil.,0.002,Acq. Method File,VOCs(Acrylamide)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylamide,,,,14099,,ND,mg/L
+Acrylamide
+,,
+Batch Data Path,"V:\2026\2026-02\ACRYL(KD 2.4, JR 2.5)\QuantResults\ACRYL.batch.bin"
+Analysis Time,2026-02-10 오전 11:52:14,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:17:23,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:52:13,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 8:58:54,Data File,KD-01.d
+Type,Sample,Name,KD-01
+Dil.,0.002,Acq. Method File,VOCs(Acrylamide)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylamide,,,,13696,,ND,mg/L
+Acrylamide
+,,
+Batch Data Path,"V:\2026\2026-02\ACRYL(KD 2.4, JR 2.5)\QuantResults\ACRYL.batch.bin"
+Analysis Time,2026-02-10 오전 11:52:14,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:17:23,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:52:13,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 9:08:08,Data File,KD-02.d
+Type,Sample,Name,KD-02
+Dil.,0.002,Acq. Method File,VOCs(Acrylamide)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylamide,,,,11967,,ND,mg/L
+Acrylamide
+,,
+Batch Data Path,"V:\2026\2026-02\ACRYL(KD 2.4, JR 2.5)\QuantResults\ACRYL.batch.bin"
+Analysis Time,2026-02-10 오전 11:52:14,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:17:23,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:52:13,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 9:17:19,Data File,KD-04.d
+Type,Sample,Name,KD-04
+Dil.,0.002,Acq. Method File,VOCs(Acrylamide)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylamide,,,,9282,,ND,mg/L
+Acrylamide
+,,
+Batch Data Path,"V:\2026\2026-02\ACRYL(KD 2.4, JR 2.5)\QuantResults\ACRYL.batch.bin"
+Analysis Time,2026-02-10 오전 11:52:14,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:17:23,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:52:13,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 9:26:29,Data File,MBK.d
+Type,Blank,Name,MBK
+Dil.,0.002,Acq. Method File,VOCs(Acrylamide)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylamide,,,,10435,,ND,mg/L
+Acrylamide
+,,
+Batch Data Path,"V:\2026\2026-02\ACRYL(KD 2.4, JR 2.5)\QuantResults\ACRYL.batch.bin"
+Analysis Time,2026-02-10 오전 11:52:14,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:17:23,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:52:13,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 9:44:44,Data File,-C-C-V-.d
+Type,QC,Name,-C-C-V-
+Dil.,0.002,Acq. Method File,VOCs(Acrylamide)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylamide,,4.861,4915,11248,,0.016,mg/L
+Acrylamide
+,,

@@ -1,0 +1,351 @@
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC3(KD 2.4, JR 2.5, HC 2.9)\QuantResults\ACRYLO.batch.bin"
+Analysis Time,2026-02-10 오전 11:17:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:17:33,Analyze Quant Version,10.2,Report Quant Version,10.2
+Acrylonitrile
+Data File,,Type,RT,,Resp.,,ISTD Resp,,Final Conc.
+VOC(3) ST-01.D,,Cal,6.488,,91,,1772,,0.010
+VOC(3) ST-02.D,,Cal,6.499,,221,,1988,,0.015
+VOC(3) ST-03.D,,Cal,6.499,,1117,,2258,,0.046
+VOC(3) ST-04.D,,Cal,6.499,,2283,,2272,,0.088
+VOC(3) ST-05.D,,Cal,6.499,,4088,,1667,,0.207
+BK-.D,,Blank,,,,,2030,,ND
+FBK(KD 26-02-04).D,,Blank,,,,,1837,,ND
+FBK(JR 26-02-05).D,,Blank,,,,,1587,,ND
+JR-01.D,,Sample,,,,,2362,,ND
+JR-02.D,,Sample,,,,,1810,,ND
+JR-03.D,,Sample,,,,,2036,,ND
+JR-04.D,,Sample,,,,,2043,,ND
+JR-05.D,,Sample,,,,,2025,,ND
+JR-06.D,,Sample,,,,,1710,,ND
+JR-07.D,,Sample,,,,,1891,,ND
+JR-08.D,,Sample,,,,,2048,,ND
+KD-01.D,,Sample,,,,,2416,,ND
+KD-02.D,,Sample,,,,,2444,,ND
+KD-04.D,,Sample,,,,,2609,,ND
+MBK.D,,Blank,,,,,2064,,ND
+CCV.D,,QC,6.499,,2109,,1887,,0.097
+Calibration,,
+Acrylonitrile,,
+
+Cal. Path,Type,Level,Enable,,Conc.,,Response
+"D:\DATA\2026년\2. 2026년 2월\VOC3(KD 2.4, JR 2.5, HC 2.9)\VOC(3) ST-01.D",Calibration,1,x,,0.005,,91
+"D:\DATA\2026년\2. 2026년 2월\VOC3(KD 2.4, JR 2.5, HC 2.9)\VOC(3) ST-02.D",Calibration,2,x,,0.010,,221
+"D:\DATA\2026년\2. 2026년 2월\VOC3(KD 2.4, JR 2.5, HC 2.9)\VOC(3) ST-03.D",Calibration,3,x,,0.050,,1117
+"D:\DATA\2026년\2. 2026년 2월\VOC3(KD 2.4, JR 2.5, HC 2.9)\VOC(3) ST-04.D",Calibration,4,x,,0.100,,2283
+"D:\DATA\2026년\2. 2026년 2월\VOC3(KD 2.4, JR 2.5, HC 2.9)\CCV.D",QC,4,,,0.100,,2109
+"D:\DATA\2026년\2. 2026년 2월\VOC3(KD 2.4, JR 2.5, HC 2.9)\VOC(3) ST-05.D",Calibration,5,x,,0.200,,4088
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC3(KD 2.4, JR 2.5, HC 2.9)\QuantResults\ACRYLO.batch.bin"
+Analysis Time,2026-02-10 오전 11:17:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:34:32,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:17:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 4:35:57,Data File,VOC(3) ST-01.D
+Type,Cal,Name,VOC(3) ST-01
+Dil.,1,Acq. Method File,2025-VOCs(3) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylonitrile,,6.488,91,1772,,0.010,mg/L
+Acrylonitrile
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC3(KD 2.4, JR 2.5, HC 2.9)\QuantResults\ACRYLO.batch.bin"
+Analysis Time,2026-02-10 오전 11:17:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:34:32,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:17:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 4:53:44,Data File,VOC(3) ST-02.D
+Type,Cal,Name,VOC(3) ST-02
+Dil.,1,Acq. Method File,2025-VOCs(3) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylonitrile,,6.499,221,1988,,0.015,mg/L
+Acrylonitrile
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC3(KD 2.4, JR 2.5, HC 2.9)\QuantResults\ACRYLO.batch.bin"
+Analysis Time,2026-02-10 오전 11:17:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:34:32,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:17:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 5:11:43,Data File,VOC(3) ST-03.D
+Type,Cal,Name,VOC(3) ST-03
+Dil.,1,Acq. Method File,2025-VOCs(3) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylonitrile,,6.499,1117,2258,,0.046,mg/L
+Acrylonitrile
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC3(KD 2.4, JR 2.5, HC 2.9)\QuantResults\ACRYLO.batch.bin"
+Analysis Time,2026-02-10 오전 11:17:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:34:32,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:17:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 5:29:39,Data File,VOC(3) ST-04.D
+Type,Cal,Name,VOC(3) ST-04
+Dil.,1,Acq. Method File,2025-VOCs(3) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylonitrile,,6.499,2283,2272,,0.088,mg/L
+Acrylonitrile
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC3(KD 2.4, JR 2.5, HC 2.9)\QuantResults\ACRYLO.batch.bin"
+Analysis Time,2026-02-10 오전 11:17:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:34:32,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:17:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 5:47:38,Data File,VOC(3) ST-05.D
+Type,Cal,Name,VOC(3) ST-05
+Dil.,1,Acq. Method File,2025-VOCs(3) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylonitrile,,6.499,4088,1667,,0.207,mg/L
+Acrylonitrile
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC3(KD 2.4, JR 2.5, HC 2.9)\QuantResults\ACRYLO.batch.bin"
+Analysis Time,2026-02-10 오전 11:17:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:34:32,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:17:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 6:41:26,Data File,BK-.D
+Type,Blank,Name,BK-
+Dil.,1,Acq. Method File,2025-VOCs(3) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylonitrile,,,,2030,,ND,mg/L
+Acrylonitrile
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC3(KD 2.4, JR 2.5, HC 2.9)\QuantResults\ACRYLO.batch.bin"
+Analysis Time,2026-02-10 오전 11:17:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:34:32,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:17:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 6:59:21,Data File,FBK(KD 26-02-04).D
+Type,Blank,Name,FBK(KD 26-02-04)
+Dil.,1,Acq. Method File,2025-VOCs(3) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylonitrile,,,,1837,,ND,mg/L
+Acrylonitrile
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC3(KD 2.4, JR 2.5, HC 2.9)\QuantResults\ACRYLO.batch.bin"
+Analysis Time,2026-02-10 오전 11:17:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:34:32,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:17:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 7:17:15,Data File,FBK(JR 26-02-05).D
+Type,Blank,Name,FBK(JR 26-02-05)
+Dil.,1,Acq. Method File,2025-VOCs(3) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylonitrile,,,,1587,,ND,mg/L
+Acrylonitrile
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC3(KD 2.4, JR 2.5, HC 2.9)\QuantResults\ACRYLO.batch.bin"
+Analysis Time,2026-02-10 오전 11:17:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:34:32,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:17:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 7:53:08,Data File,JR-01.D
+Type,Sample,Name,JR-01
+Dil.,1,Acq. Method File,2025-VOCs(3) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylonitrile,,,,2362,,ND,mg/L
+Acrylonitrile
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC3(KD 2.4, JR 2.5, HC 2.9)\QuantResults\ACRYLO.batch.bin"
+Analysis Time,2026-02-10 오전 11:17:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:34:32,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:17:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 8:11:05,Data File,JR-02.D
+Type,Sample,Name,JR-02
+Dil.,1,Acq. Method File,2025-VOCs(3) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylonitrile,,,,1810,,ND,mg/L
+Acrylonitrile
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC3(KD 2.4, JR 2.5, HC 2.9)\QuantResults\ACRYLO.batch.bin"
+Analysis Time,2026-02-10 오전 11:17:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:34:32,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:17:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 8:29:00,Data File,JR-03.D
+Type,Sample,Name,JR-03
+Dil.,1,Acq. Method File,2025-VOCs(3) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylonitrile,,,,2036,,ND,mg/L
+Acrylonitrile
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC3(KD 2.4, JR 2.5, HC 2.9)\QuantResults\ACRYLO.batch.bin"
+Analysis Time,2026-02-10 오전 11:17:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:34:32,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:17:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 8:46:55,Data File,JR-04.D
+Type,Sample,Name,JR-04
+Dil.,1,Acq. Method File,2025-VOCs(3) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylonitrile,,,,2043,,ND,mg/L
+Acrylonitrile
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC3(KD 2.4, JR 2.5, HC 2.9)\QuantResults\ACRYLO.batch.bin"
+Analysis Time,2026-02-10 오전 11:17:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:34:32,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:17:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 9:04:52,Data File,JR-05.D
+Type,Sample,Name,JR-05
+Dil.,1,Acq. Method File,2025-VOCs(3) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylonitrile,,,,2025,,ND,mg/L
+Acrylonitrile
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC3(KD 2.4, JR 2.5, HC 2.9)\QuantResults\ACRYLO.batch.bin"
+Analysis Time,2026-02-10 오전 11:17:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:34:32,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:17:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 9:22:47,Data File,JR-06.D
+Type,Sample,Name,JR-06
+Dil.,1,Acq. Method File,2025-VOCs(3) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylonitrile,,,,1710,,ND,mg/L
+Acrylonitrile
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC3(KD 2.4, JR 2.5, HC 2.9)\QuantResults\ACRYLO.batch.bin"
+Analysis Time,2026-02-10 오전 11:17:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:34:32,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:17:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 9:40:43,Data File,JR-07.D
+Type,Sample,Name,JR-07
+Dil.,1,Acq. Method File,2025-VOCs(3) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylonitrile,,,,1891,,ND,mg/L
+Acrylonitrile
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC3(KD 2.4, JR 2.5, HC 2.9)\QuantResults\ACRYLO.batch.bin"
+Analysis Time,2026-02-10 오전 11:17:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:34:32,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:17:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 9:58:39,Data File,JR-08.D
+Type,Sample,Name,JR-08
+Dil.,1,Acq. Method File,2025-VOCs(3) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylonitrile,,,,2048,,ND,mg/L
+Acrylonitrile
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC3(KD 2.4, JR 2.5, HC 2.9)\QuantResults\ACRYLO.batch.bin"
+Analysis Time,2026-02-10 오전 11:17:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:34:32,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:17:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 10:34:33,Data File,KD-01.D
+Type,Sample,Name,KD-01
+Dil.,1,Acq. Method File,2025-VOCs(3) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylonitrile,,,,2416,,ND,mg/L
+Acrylonitrile
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC3(KD 2.4, JR 2.5, HC 2.9)\QuantResults\ACRYLO.batch.bin"
+Analysis Time,2026-02-10 오전 11:17:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:34:32,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:17:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 10:52:31,Data File,KD-02.D
+Type,Sample,Name,KD-02
+Dil.,1,Acq. Method File,2025-VOCs(3) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylonitrile,,,,2444,,ND,mg/L
+Acrylonitrile
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC3(KD 2.4, JR 2.5, HC 2.9)\QuantResults\ACRYLO.batch.bin"
+Analysis Time,2026-02-10 오전 11:17:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:34:32,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:17:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 11:10:25,Data File,KD-04.D
+Type,Sample,Name,KD-04
+Dil.,1,Acq. Method File,2025-VOCs(3) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylonitrile,,,,2609,,ND,mg/L
+Acrylonitrile
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC3(KD 2.4, JR 2.5, HC 2.9)\QuantResults\ACRYLO.batch.bin"
+Analysis Time,2026-02-10 오전 11:17:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:34:32,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:17:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 11:28:19,Data File,MBK.D
+Type,Blank,Name,MBK
+Dil.,1,Acq. Method File,2025-VOCs(3) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylonitrile,,,,2064,,ND,mg/L
+Acrylonitrile
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC3(KD 2.4, JR 2.5, HC 2.9)\QuantResults\ACRYLO.batch.bin"
+Analysis Time,2026-02-10 오전 11:17:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:34:32,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오전 11:17:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-09 오후 11:46:17,Data File,CCV.D
+Type,QC,Name,CCV
+Dil.,1,Acq. Method File,2025-VOCs(3) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Acrylonitrile,,6.499,2109,1887,,0.097,mg/L
+Acrylonitrile
+,,

@@ -1,0 +1,175 @@
+Batch Data Path,D:\DATA\2026년\1. 2026년 1월\VOC3(HC 12.29 PL 12.30)\QuantResults\VOC3.batch.bin
+Analysis Time,2026-01-02 오후 1:27:05,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-01-02 오후 1:27:05,Analyze Quant Version,10.2,Report Quant Version,10.2
+Vinylchloride
+Data File,,Type,RT,,Resp.,,ISTD Resp,,Final Conc.
+VOC3 ST-01.D,,Cal,4.831,,650,,383,,0.008
+VOC3 ST-02.D,,Cal,4.820,,1846,,330,,0.014
+VOC3 ST-03.D,,Cal,4.820,,9919,,420,,0.039
+VOC3 ST-04.D,,Cal,4.820,,24400,,352,,0.103
+VOC3 ST-05.D,,Cal,4.820,,52685,,377,,0.201
+BK-.D,,Blank,,,,,599,,ND
+FBK(HC 25-12-29).D,,Blank,,,,,449,,ND
+HC 25-12-29.D,,Sample,4.820,,10095,,564,,0.031
+MBK.D,,Blank,,,,,419,,ND
+CCV.D,,QC,4.820,,25433,,357,,0.106
+Calibration,,
+Vinylchloride,,
+
+Cal. Path,Type,Level,Enable,,Conc.,,Response
+D:\DATA\2026년\1. 2026년 1월\VOC3(HC 12.29 PL 12.30)\VOC3 ST-01.D,Calibration,1,x,,0.005,,650
+D:\DATA\2026년\1. 2026년 1월\VOC3(HC 12.29 PL 12.30)\VOC3 ST-02.D,Calibration,2,x,,0.010,,1846
+D:\DATA\2026년\1. 2026년 1월\VOC3(HC 12.29 PL 12.30)\VOC3 ST-03.D,Calibration,3,x,,0.050,,9919
+D:\DATA\2026년\1. 2026년 1월\VOC3(HC 12.29 PL 12.30)\VOC3 ST-04.D,Calibration,4,x,,0.100,,24400
+D:\DATA\2026년\1. 2026년 1월\VOC3(HC 12.29 PL 12.30)\CCV.D,QC,4,,,0.100,,25433
+D:\DATA\2026년\1. 2026년 1월\VOC3(HC 12.29 PL 12.30)\VOC3 ST-05.D,Calibration,5,x,,0.200,,52685
+Batch Data Path,D:\DATA\2026년\1. 2026년 1월\VOC3(HC 12.29 PL 12.30)\QuantResults\VOC3.batch.bin
+Analysis Time,2026-01-02 오후 1:27:05,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:26:20,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-01-02 오후 1:27:05,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-01 오후 2:24:34,Data File,VOC3 ST-01.D
+Type,Cal,Name,VOC3 ST-01
+Dil.,1,Acq. Method File,2025-VOCs(3) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Vinylchloride,,4.831,650,383,,0.008,mg/L
+Vinylchloride
+,,
+Batch Data Path,D:\DATA\2026년\1. 2026년 1월\VOC3(HC 12.29 PL 12.30)\QuantResults\VOC3.batch.bin
+Analysis Time,2026-01-02 오후 1:27:05,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:26:20,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-01-02 오후 1:27:05,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-01 오후 2:42:19,Data File,VOC3 ST-02.D
+Type,Cal,Name,VOC3 ST-02
+Dil.,1,Acq. Method File,2025-VOCs(3) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Vinylchloride,,4.820,1846,330,,0.014,mg/L
+Vinylchloride
+,,
+Batch Data Path,D:\DATA\2026년\1. 2026년 1월\VOC3(HC 12.29 PL 12.30)\QuantResults\VOC3.batch.bin
+Analysis Time,2026-01-02 오후 1:27:05,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:26:20,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-01-02 오후 1:27:05,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-01 오후 3:00:06,Data File,VOC3 ST-03.D
+Type,Cal,Name,VOC3 ST-03
+Dil.,1,Acq. Method File,2025-VOCs(3) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Vinylchloride,,4.820,9919,420,,0.039,mg/L
+Vinylchloride
+,,
+Batch Data Path,D:\DATA\2026년\1. 2026년 1월\VOC3(HC 12.29 PL 12.30)\QuantResults\VOC3.batch.bin
+Analysis Time,2026-01-02 오후 1:27:05,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:26:20,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-01-02 오후 1:27:05,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-01 오후 3:17:58,Data File,VOC3 ST-04.D
+Type,Cal,Name,VOC3 ST-04
+Dil.,1,Acq. Method File,2025-VOCs(3) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Vinylchloride,,4.820,24400,352,,0.103,mg/L
+Vinylchloride
+,,
+Batch Data Path,D:\DATA\2026년\1. 2026년 1월\VOC3(HC 12.29 PL 12.30)\QuantResults\VOC3.batch.bin
+Analysis Time,2026-01-02 오후 1:27:05,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:26:20,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-01-02 오후 1:27:05,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-01 오후 3:35:51,Data File,VOC3 ST-05.D
+Type,Cal,Name,VOC3 ST-05
+Dil.,1,Acq. Method File,2025-VOCs(3) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Vinylchloride,,4.820,52685,377,,0.201,mg/L
+Vinylchloride
+,,
+Batch Data Path,D:\DATA\2026년\1. 2026년 1월\VOC3(HC 12.29 PL 12.30)\QuantResults\VOC3.batch.bin
+Analysis Time,2026-01-02 오후 1:27:05,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:26:20,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-01-02 오후 1:27:05,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-01 오후 4:29:24,Data File,BK-.D
+Type,Blank,Name,BK-
+Dil.,1,Acq. Method File,2025-VOCs(3) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Vinylchloride,,,,599,,ND,mg/L
+Vinylchloride
+,,
+Batch Data Path,D:\DATA\2026년\1. 2026년 1월\VOC3(HC 12.29 PL 12.30)\QuantResults\VOC3.batch.bin
+Analysis Time,2026-01-02 오후 1:27:05,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:26:20,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-01-02 오후 1:27:05,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-01 오후 4:47:12,Data File,FBK(HC 25-12-29).D
+Type,Blank,Name,FBK(HC 25-12-29)
+Dil.,1,Acq. Method File,2025-VOCs(3) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Vinylchloride,,,,449,,ND,mg/L
+Vinylchloride
+,,
+Batch Data Path,D:\DATA\2026년\1. 2026년 1월\VOC3(HC 12.29 PL 12.30)\QuantResults\VOC3.batch.bin
+Analysis Time,2026-01-02 오후 1:27:05,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:26:20,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-01-02 오후 1:27:05,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-01 오후 5:05:00,Data File,HC 25-12-29.D
+Type,Sample,Name,HC 25-12-29
+Dil.,1,Acq. Method File,2025-VOCs(3) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Vinylchloride,,4.820,10095,564,,0.031,mg/L
+Vinylchloride
+,,
+Batch Data Path,D:\DATA\2026년\1. 2026년 1월\VOC3(HC 12.29 PL 12.30)\QuantResults\VOC3.batch.bin
+Analysis Time,2026-01-02 오후 1:27:05,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:26:20,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-01-02 오후 1:27:05,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-01 오후 6:16:09,Data File,MBK.D
+Type,Blank,Name,MBK
+Dil.,1,Acq. Method File,2025-VOCs(3) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Vinylchloride,,,,419,,ND,mg/L
+Vinylchloride
+,,
+Batch Data Path,D:\DATA\2026년\1. 2026년 1월\VOC3(HC 12.29 PL 12.30)\QuantResults\VOC3.batch.bin
+Analysis Time,2026-01-02 오후 1:27:05,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:26:20,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-01-02 오후 1:27:05,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-01 오후 6:33:59,Data File,CCV.D
+Type,QC,Name,CCV
+Dil.,1,Acq. Method File,2025-VOCs(3) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Vinylchloride,,4.820,25433,357,,0.106,mg/L
+Vinylchloride
+,,

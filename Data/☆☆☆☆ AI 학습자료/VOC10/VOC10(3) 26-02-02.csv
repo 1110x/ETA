@@ -1,0 +1,1317 @@
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Analyze Quant Version,10.2,Report Quant Version,10.2
+DCM
+Data File,,Type,RT,,Resp.,,ISTD Resp,,Final Conc.
+VOC10 ST-01.D,,Cal,5.153,,26890,,6246,,0.011
+VOC10 ST-02.D,,Cal,5.153,,38931,,5947,,0.021
+VOC10 ST-03.D,,Cal,5.153,,79349,,6549,,0.047
+VOC10 ST-04.D,,Cal,5.153,,147363,,6329,,0.100
+VOC10 ST-05.D,,Cal,5.153,,282756,,6309,,0.201
+BK-.D,,Blank,5.153,,19327,,9531,,0.000
+FBK(HC 26-01-26).D,,Blank,5.153,,18280,,8607,,0.001
+FBK(YS 26-01-27).D,,Blank,5.153,,18776,,8636,,0.001
+FBK(YS 26-01-28).D,,Blank,5.153,,19288,,9098,,0.001
+FBK(HJ 26-01-28).D,,Blank,5.153,,19298,,9445,,0.000
+HC 26-01-26.D,,Sample,5.153,,69255,,8354,,0.030
+HC 26-01-27.D,,Sample,5.153,,14421,,3554,,0.010
+MBK-1.D,,Blank,5.153,,13944,,7428,,0.000
+CCV-1.D,,QC,5.153,,104255,,4795,,0.093
+YS-01.D,,Sample,5.153,,227718,,4552,,0.225
+YS-02.D,,Sample,5.153,,140110,,5324,,0.114
+YS-03.D,,Sample,5.153,,112402,,5580,,0.085
+YS-04.D,,Sample,5.153,,179637,,6410,,0.122
+YS-05.D,,Sample,5.153,,59497,,5884,,0.038
+YS-06.D,,Sample,5.153,,95868,,5104,,0.079
+YS-07.D,,Sample,5.153,,218436,,5043,,0.194
+YS-08.D,,Sample,5.153,,75258,,219,,1.599
+YS-09.D,,Sample,5.153,,94067,,4322,,0.093
+YS-10.D,,Sample,5.153,,120358,,4279,,0.122
+YS-11.D,,Sample,5.153,,100105,,3788,,0.114
+YS-12.D,,Sample,5.153,,75183,,3979,,0.079
+YS-13.D,,Sample,5.153,,258854,,3261,,0.362
+YS-14.D,,Sample,5.153,,75060,,3054,,0.106
+YS-15.D,,Sample,5.153,,167629,,2957,,0.256
+YS-16.D,,Sample,5.153,,79961,,2987,,0.116
+YS-17.D,,Sample,5.153,,66150,,3036,,0.093
+YS-18.D,,Sample,5.153,,223807,,2463,,0.416
+MBK-2.D,,Blank,5.153,,4413,,2970,,0.000
+CCV-2.D,,QC,5.153,,36588,,2104,,0.072
+HJ-01.D,,Sample,5.153,,48909,,3247,,0.061
+HJ-02.D,,Sample,5.153,,30757,,3017,,0.038
+HJ-03.D,,Sample,5.153,,22100,,2795,,0.028
+HJ-04.D,,Sample,5.153,,22315,,2272,,0.037
+HJ-05.D,,Sample,5.153,,14274,,2237,,0.021
+HJ-06.D,,Sample,5.153,,21199,,2866,,0.025
+HJ-07.D,,Sample,5.153,,24565,,2952,,0.030
+HJ-08.D,,Sample,5.153,,41093,,3021,,0.054
+HJ-09.D,,Sample,5.153,,9833,,2374,,0.010
+HJ-10.D,,Sample,5.153,,10838,,2480,,0.011
+HJ-11.D,,Sample,5.153,,18772,,2289,,0.029
+HJ-12.D,,Sample,5.153,,20521,,2087,,0.037
+HJ-13.D,,Sample,5.153,,10916,,1949,,0.017
+HJ-14.D,,Sample,5.153,,24378,,2082,,0.046
+HJ-15.D,,Sample,5.153,,9553,,1878,,0.015
+HJ-16.D,,Sample,5.153,,26898,,2150,,0.049
+HJ-17.D,,Sample,5.153,,24627,,1606,,0.063
+MBK-3.D,,Blank,5.148,,4799,,2965,,0.000
+CCV-3.D,,QC,5.153,,42576,,2257,,0.079
+Chloroform
+Data File,,Type,RT,,Resp.,,ISTD Resp,,Final Conc.
+VOC10 ST-01.D,,Cal,5.720,,19685,,6246,,0.011
+VOC10 ST-02.D,,Cal,5.720,,32171,,5947,,0.022
+VOC10 ST-03.D,,Cal,5.720,,71097,,6549,,0.047
+VOC10 ST-04.D,,Cal,5.720,,137329,,6329,,0.098
+VOC10 ST-05.D,,Cal,5.720,,275234,,6309,,0.201
+BK-.D,,Blank,5.720,,13438,,9531,,0.003
+FBK(HC 26-01-26).D,,Blank,5.720,,11467,,8607,,0.003
+FBK(YS 26-01-27).D,,Blank,5.720,,11950,,8636,,0.003
+FBK(YS 26-01-28).D,,Blank,5.720,,12775,,9098,,0.003
+FBK(HJ 26-01-28).D,,Blank,5.720,,13249,,9445,,0.003
+HC 26-01-26.D,,Sample,,,,,8354,,ND
+HC 26-01-27.D,,Sample,5.720,,0,,3554,,ND
+MBK-1.D,,Blank,5.720,,9511,,7428,,0.002
+CCV-1.D,,QC,5.720,,105670,,4795,,0.100
+YS-01.D,,Sample,,,,,4552,,ND
+YS-02.D,,Sample,,,,,5324,,ND
+YS-03.D,,Sample,,,,,5580,,ND
+YS-04.D,,Sample,,,,,6410,,ND
+YS-05.D,,Sample,,,,,5884,,ND
+YS-06.D,,Sample,,,,,5104,,ND
+YS-07.D,,Sample,5.720,,0,,5043,,ND
+YS-08.D,,Sample,,,,,219,,ND
+YS-09.D,,Sample,,,,,4322,,ND
+YS-10.D,,Sample,5.720,,42667,,4279,,0.043
+YS-11.D,,Sample,,,,,3788,,ND
+YS-12.D,,Sample,,,,,3979,,ND
+YS-13.D,,Sample,,,,,3261,,ND
+YS-14.D,,Sample,,,,,3054,,ND
+YS-15.D,,Sample,,,,,2957,,ND
+YS-16.D,,Sample,,,,,2987,,ND
+YS-17.D,,Sample,,,,,3036,,ND
+YS-18.D,,Sample,,,,,2463,,ND
+MBK-2.D,,Blank,,,,,2970,,ND
+CCV-2.D,,QC,5.720,,47504,,2104,,0.102
+HJ-01.D,,Sample,,,,,3247,,ND
+HJ-02.D,,Sample,,,,,3017,,ND
+HJ-03.D,,Sample,,,,,2795,,ND
+HJ-04.D,,Sample,,,,,2272,,ND
+HJ-05.D,,Sample,,,,,2237,,ND
+HJ-06.D,,Sample,,,,,2866,,ND
+HJ-07.D,,Sample,,,,,2952,,ND
+HJ-08.D,,Sample,,,,,3021,,ND
+HJ-09.D,,Sample,,,,,2374,,ND
+HJ-10.D,,Sample,5.720,,9034,,2480,,0.014
+HJ-11.D,,Sample,5.720,,51938,,2289,,0.103
+HJ-12.D,,Sample,5.720,,12843,,2087,,0.025
+HJ-13.D,,Sample,,,,,1949,,ND
+HJ-14.D,,Sample,,,,,2082,,ND
+HJ-15.D,,Sample,5.720,,11632,,1878,,0.026
+HJ-16.D,,Sample,5.720,,5118,,2150,,0.008
+HJ-17.D,,Sample,,,,,1606,,ND
+MBK-3.D,,Blank,5.720,,4150,,2965,,0.003
+CCV-3.D,,QC,5.720,,53974,,2257,,0.109
+Benzene
+Data File,,Type,RT,,Resp.,,ISTD Resp,,Final Conc.
+VOC10 ST-01.D,,Cal,5.999,,20814,,6246,,0.011
+VOC10 ST-02.D,,Cal,5.999,,51496,,5947,,0.022
+VOC10 ST-03.D,,Cal,5.999,,145858,,6549,,0.048
+VOC10 ST-04.D,,Cal,5.999,,306253,,6329,,0.098
+VOC10 ST-05.D,,Cal,5.999,,644094,,6309,,0.201
+BK-.D,,Blank,,,,,9531,,ND
+FBK(HC 26-01-26).D,,Blank,,,,,8607,,ND
+FBK(YS 26-01-27).D,,Blank,,,,,8636,,ND
+FBK(YS 26-01-28).D,,Blank,,,,,9098,,ND
+FBK(HJ 26-01-28).D,,Blank,,,,,9445,,ND
+HC 26-01-26.D,,Sample,,,,,8354,,ND
+HC 26-01-27.D,,Sample,,,,,3554,,ND
+MBK-1.D,,Blank,,,,,7428,,ND
+CCV-1.D,,QC,5.999,,222784,,4795,,0.094
+YS-01.D,,Sample,5.980,,0,,4552,,ND
+YS-02.D,,Sample,,,,,5324,,ND
+YS-03.D,,Sample,,,,,5580,,ND
+YS-04.D,,Sample,,,,,6410,,ND
+YS-05.D,,Sample,,,,,5884,,ND
+YS-06.D,,Sample,,,,,5104,,ND
+YS-07.D,,Sample,,,,,5043,,ND
+YS-08.D,,Sample,,,,,219,,ND
+YS-09.D,,Sample,,,,,4322,,ND
+YS-10.D,,Sample,,,,,4279,,ND
+YS-11.D,,Sample,,,,,3788,,ND
+YS-12.D,,Sample,,,,,3979,,ND
+YS-13.D,,Sample,,,,,3261,,ND
+YS-14.D,,Sample,,,,,3054,,ND
+YS-15.D,,Sample,,,,,2957,,ND
+YS-16.D,,Sample,,,,,2987,,ND
+YS-17.D,,Sample,,,,,3036,,ND
+YS-18.D,,Sample,,,,,2463,,ND
+MBK-2.D,,Blank,,,,,2970,,ND
+CCV-2.D,,QC,5.999,,79212,,2104,,0.077
+HJ-01.D,,Sample,5.999,,0,,3247,,ND
+HJ-02.D,,Sample,,,,,3017,,ND
+HJ-03.D,,Sample,,,,,2795,,ND
+HJ-04.D,,Sample,5.999,,9645,,2272,,0.013
+HJ-05.D,,Sample,,,,,2237,,ND
+HJ-06.D,,Sample,,,,,2866,,ND
+HJ-07.D,,Sample,5.999,,43421,,2952,,0.033
+HJ-08.D,,Sample,,,,,3021,,ND
+HJ-09.D,,Sample,,,,,2374,,ND
+HJ-10.D,,Sample,,,,,2480,,ND
+HJ-11.D,,Sample,,,,,2289,,ND
+HJ-12.D,,Sample,,,,,2087,,ND
+HJ-13.D,,Sample,,,,,1949,,ND
+HJ-14.D,,Sample,,,,,2082,,ND
+HJ-15.D,,Sample,,,,,1878,,ND
+HJ-16.D,,Sample,,,,,2150,,ND
+HJ-17.D,,Sample,,,,,1606,,ND
+MBK-3.D,,Blank,,,,,2965,,ND
+CCV-3.D,,QC,5.999,,89311,,2257,,0.081
+Calibration,,
+DCM,,
+
+Cal. Path,Type,Level,Enable,,Conc.,,Response
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-01.D",Calibration,1,x,,0.010,,26890
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-02.D",Calibration,2,x,,0.020,,38931
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-03.D",Calibration,3,x,,0.050,,79349
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-04.D",Calibration,4,x,,0.100,,147363
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\CCV-1.D",QC,4,x,,0.100,,104255
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\CCV-2.D",QC,4,x,,0.100,,36588
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\CCV-3.D",QC,4,x,,0.100,,42576
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-05.D",Calibration,5,x,,0.200,,282756
+Calibration,,
+Chloroform,,
+
+Cal. Path,Type,Level,Enable,,Conc.,,Response
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-01.D",Calibration,1,x,,0.010,,19685
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-02.D",Calibration,2,x,,0.020,,32171
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-03.D",Calibration,3,x,,0.050,,71097
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-04.D",Calibration,4,x,,0.100,,137329
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\CCV-1.D",QC,4,x,,0.100,,105670
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\CCV-2.D",QC,4,x,,0.100,,47504
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\CCV-3.D",QC,4,x,,0.100,,53974
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-05.D",Calibration,5,x,,0.200,,275234
+Calibration,,
+Benzene,,
+
+Cal. Path,Type,Level,Enable,,Conc.,,Response
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-01.D",Calibration,1,x,,0.010,,20814
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-02.D",Calibration,2,x,,0.020,,51496
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-03.D",Calibration,3,x,,0.050,,145858
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-04.D",Calibration,4,x,,0.100,,306253
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\CCV-1.D",QC,4,x,,0.100,,222784
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\CCV-2.D",QC,4,x,,0.100,,79212
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\CCV-3.D",QC,4,x,,0.100,,89311
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-05.D",Calibration,5,x,,0.200,,644094
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오전 10:34:29,Data File,VOC10 ST-01.D
+Type,Cal,Name,VOC10 ST-01
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,26890,6246,,0.011,mg/L
+Chloroform,,5.720,19685,6246,,0.011,mg/L
+Benzene,,5.999,20814,6246,,0.011,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오전 10:47:09,Data File,VOC10 ST-02.D
+Type,Cal,Name,VOC10 ST-02
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,38931,5947,,0.021,mg/L
+Chloroform,,5.720,32171,5947,,0.022,mg/L
+Benzene,,5.999,51496,5947,,0.022,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오전 10:59:50,Data File,VOC10 ST-03.D
+Type,Cal,Name,VOC10 ST-03
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,79349,6549,,0.047,mg/L
+Chloroform,,5.720,71097,6549,,0.047,mg/L
+Benzene,,5.999,145858,6549,,0.048,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오전 11:12:31,Data File,VOC10 ST-04.D
+Type,Cal,Name,VOC10 ST-04
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,147363,6329,,0.100,mg/L
+Chloroform,,5.720,137329,6329,,0.098,mg/L
+Benzene,,5.999,306253,6329,,0.098,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오전 11:25:14,Data File,VOC10 ST-05.D
+Type,Cal,Name,VOC10 ST-05
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,282756,6309,,0.201,mg/L
+Chloroform,,5.720,275234,6309,,0.201,mg/L
+Benzene,,5.999,644094,6309,,0.201,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 12:03:22,Data File,BK-.D
+Type,Blank,Name,BK-
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,19327,9531,,0.000,mg/L
+Chloroform,,5.720,13438,9531,,0.003,mg/L
+Benzene,,,,9531,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 12:16:04,Data File,FBK(HC 26-01-26).D
+Type,Blank,Name,FBK(HC 26-01-26)
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,18280,8607,,0.001,mg/L
+Chloroform,,5.720,11467,8607,,0.003,mg/L
+Benzene,,,,8607,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 12:28:48,Data File,FBK(YS 26-01-27).D
+Type,Blank,Name,FBK(YS 26-01-27)
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,18776,8636,,0.001,mg/L
+Chloroform,,5.720,11950,8636,,0.003,mg/L
+Benzene,,,,8636,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 12:41:33,Data File,FBK(YS 26-01-28).D
+Type,Blank,Name,FBK(YS 26-01-28)
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,19288,9098,,0.001,mg/L
+Chloroform,,5.720,12775,9098,,0.003,mg/L
+Benzene,,,,9098,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 12:54:16,Data File,FBK(HJ 26-01-28).D
+Type,Blank,Name,FBK(HJ 26-01-28)
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,19298,9445,,0.000,mg/L
+Chloroform,,5.720,13249,9445,,0.003,mg/L
+Benzene,,,,9445,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 1:06:58,Data File,HC 26-01-26.D
+Type,Sample,Name,HC 26-01-26
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,69255,8354,,0.030,mg/L
+Chloroform,,,,8354,,ND,mg/L
+Benzene,,,,8354,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 1:19:43,Data File,HC 26-01-27.D
+Type,Sample,Name,HC 26-01-27
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,14421,3554,,0.010,mg/L
+Chloroform,,5.720,0,3554,,ND,mg/L
+Benzene,,,,3554,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 1:32:28,Data File,MBK-1.D
+Type,Blank,Name,MBK-1
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,13944,7428,,0.000,mg/L
+Chloroform,,5.720,9511,7428,,0.002,mg/L
+Benzene,,,,7428,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 1:45:10,Data File,CCV-1.D
+Type,QC,Name,CCV-1
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,104255,4795,,0.093,mg/L
+Chloroform,,5.720,105670,4795,,0.100,mg/L
+Benzene,,5.999,222784,4795,,0.094,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 2:10:38,Data File,YS-01.D
+Type,Sample,Name,YS-01
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,227718,4552,,0.225,mg/L
+Chloroform,,,,4552,,ND,mg/L
+Benzene,,5.980,0,4552,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 2:23:22,Data File,YS-02.D
+Type,Sample,Name,YS-02
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,140110,5324,,0.114,mg/L
+Chloroform,,,,5324,,ND,mg/L
+Benzene,,,,5324,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 2:36:06,Data File,YS-03.D
+Type,Sample,Name,YS-03
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,112402,5580,,0.085,mg/L
+Chloroform,,,,5580,,ND,mg/L
+Benzene,,,,5580,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 2:48:51,Data File,YS-04.D
+Type,Sample,Name,YS-04
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,179637,6410,,0.122,mg/L
+Chloroform,,,,6410,,ND,mg/L
+Benzene,,,,6410,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 3:01:34,Data File,YS-05.D
+Type,Sample,Name,YS-05
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,59497,5884,,0.038,mg/L
+Chloroform,,,,5884,,ND,mg/L
+Benzene,,,,5884,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 3:14:21,Data File,YS-06.D
+Type,Sample,Name,YS-06
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,95868,5104,,0.079,mg/L
+Chloroform,,,,5104,,ND,mg/L
+Benzene,,,,5104,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 3:27:05,Data File,YS-07.D
+Type,Sample,Name,YS-07
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,218436,5043,,0.194,mg/L
+Chloroform,,5.720,0,5043,,ND,mg/L
+Benzene,,,,5043,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 3:39:52,Data File,YS-08.D
+Type,Sample,Name,YS-08
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,75258,219,,1.599,mg/L
+Chloroform,,,,219,,ND,mg/L
+Benzene,,,,219,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 3:52:38,Data File,YS-09.D
+Type,Sample,Name,YS-09
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,94067,4322,,0.093,mg/L
+Chloroform,,,,4322,,ND,mg/L
+Benzene,,,,4322,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 4:05:37,Data File,YS-10.D
+Type,Sample,Name,YS-10
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,120358,4279,,0.122,mg/L
+Chloroform,,5.720,42667,4279,,0.043,mg/L
+Benzene,,,,4279,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 4:18:23,Data File,YS-11.D
+Type,Sample,Name,YS-11
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,100105,3788,,0.114,mg/L
+Chloroform,,,,3788,,ND,mg/L
+Benzene,,,,3788,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 4:31:09,Data File,YS-12.D
+Type,Sample,Name,YS-12
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,75183,3979,,0.079,mg/L
+Chloroform,,,,3979,,ND,mg/L
+Benzene,,,,3979,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 4:49:39,Data File,YS-13.D
+Type,Sample,Name,YS-13
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,258854,3261,,0.362,mg/L
+Chloroform,,,,3261,,ND,mg/L
+Benzene,,,,3261,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 5:02:36,Data File,YS-14.D
+Type,Sample,Name,YS-14
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,75060,3054,,0.106,mg/L
+Chloroform,,,,3054,,ND,mg/L
+Benzene,,,,3054,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 5:15:32,Data File,YS-15.D
+Type,Sample,Name,YS-15
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,167629,2957,,0.256,mg/L
+Chloroform,,,,2957,,ND,mg/L
+Benzene,,,,2957,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 5:28:27,Data File,YS-16.D
+Type,Sample,Name,YS-16
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,79961,2987,,0.116,mg/L
+Chloroform,,,,2987,,ND,mg/L
+Benzene,,,,2987,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 5:41:20,Data File,YS-17.D
+Type,Sample,Name,YS-17
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,66150,3036,,0.093,mg/L
+Chloroform,,,,3036,,ND,mg/L
+Benzene,,,,3036,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 5:54:12,Data File,YS-18.D
+Type,Sample,Name,YS-18
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,223807,2463,,0.416,mg/L
+Chloroform,,,,2463,,ND,mg/L
+Benzene,,,,2463,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 6:07:08,Data File,MBK-2.D
+Type,Blank,Name,MBK-2
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,4413,2970,,0.000,mg/L
+Chloroform,,,,2970,,ND,mg/L
+Benzene,,,,2970,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 6:20:01,Data File,CCV-2.D
+Type,QC,Name,CCV-2
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,36588,2104,,0.072,mg/L
+Chloroform,,5.720,47504,2104,,0.102,mg/L
+Benzene,,5.999,79212,2104,,0.077,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 6:45:44,Data File,HJ-01.D
+Type,Sample,Name,HJ-01
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,48909,3247,,0.061,mg/L
+Chloroform,,,,3247,,ND,mg/L
+Benzene,,5.999,0,3247,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 6:58:36,Data File,HJ-02.D
+Type,Sample,Name,HJ-02
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,30757,3017,,0.038,mg/L
+Chloroform,,,,3017,,ND,mg/L
+Benzene,,,,3017,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 7:11:28,Data File,HJ-03.D
+Type,Sample,Name,HJ-03
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,22100,2795,,0.028,mg/L
+Chloroform,,,,2795,,ND,mg/L
+Benzene,,,,2795,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 7:24:23,Data File,HJ-04.D
+Type,Sample,Name,HJ-04
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,22315,2272,,0.037,mg/L
+Chloroform,,,,2272,,ND,mg/L
+Benzene,,5.999,9645,2272,,0.013,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 7:37:12,Data File,HJ-05.D
+Type,Sample,Name,HJ-05
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,14274,2237,,0.021,mg/L
+Chloroform,,,,2237,,ND,mg/L
+Benzene,,,,2237,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 7:50:07,Data File,HJ-06.D
+Type,Sample,Name,HJ-06
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,21199,2866,,0.025,mg/L
+Chloroform,,,,2866,,ND,mg/L
+Benzene,,,,2866,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 8:02:59,Data File,HJ-07.D
+Type,Sample,Name,HJ-07
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,24565,2952,,0.030,mg/L
+Chloroform,,,,2952,,ND,mg/L
+Benzene,,5.999,43421,2952,,0.033,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 8:15:49,Data File,HJ-08.D
+Type,Sample,Name,HJ-08
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,41093,3021,,0.054,mg/L
+Chloroform,,,,3021,,ND,mg/L
+Benzene,,,,3021,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 8:28:40,Data File,HJ-09.D
+Type,Sample,Name,HJ-09
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,9833,2374,,0.010,mg/L
+Chloroform,,,,2374,,ND,mg/L
+Benzene,,,,2374,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 8:41:34,Data File,HJ-10.D
+Type,Sample,Name,HJ-10
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,10838,2480,,0.011,mg/L
+Chloroform,,5.720,9034,2480,,0.014,mg/L
+Benzene,,,,2480,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 8:54:28,Data File,HJ-11.D
+Type,Sample,Name,HJ-11
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,18772,2289,,0.029,mg/L
+Chloroform,,5.720,51938,2289,,0.103,mg/L
+Benzene,,,,2289,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 9:07:17,Data File,HJ-12.D
+Type,Sample,Name,HJ-12
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,20521,2087,,0.037,mg/L
+Chloroform,,5.720,12843,2087,,0.025,mg/L
+Benzene,,,,2087,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 9:20:10,Data File,HJ-13.D
+Type,Sample,Name,HJ-13
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,10916,1949,,0.017,mg/L
+Chloroform,,,,1949,,ND,mg/L
+Benzene,,,,1949,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 9:33:04,Data File,HJ-14.D
+Type,Sample,Name,HJ-14
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,24378,2082,,0.046,mg/L
+Chloroform,,,,2082,,ND,mg/L
+Benzene,,,,2082,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 9:45:53,Data File,HJ-15.D
+Type,Sample,Name,HJ-15
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,9553,1878,,0.015,mg/L
+Chloroform,,5.720,11632,1878,,0.026,mg/L
+Benzene,,,,1878,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 9:58:43,Data File,HJ-16.D
+Type,Sample,Name,HJ-16
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,26898,2150,,0.049,mg/L
+Chloroform,,5.720,5118,2150,,0.008,mg/L
+Benzene,,,,2150,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 10:11:32,Data File,HJ-17.D
+Type,Sample,Name,HJ-17
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,24627,1606,,0.063,mg/L
+Chloroform,,,,1606,,ND,mg/L
+Benzene,,,,1606,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 10:24:21,Data File,MBK-3.D
+Type,Blank,Name,MBK-3
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.148,4799,2965,,0.000,mg/L
+Chloroform,,5.720,4150,2965,,0.003,mg/L
+Benzene,,,,2965,,ND,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\B C D.batch.bin"
+Analysis Time,2026-02-03 오후 2:46:36,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:02:39,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:46:36,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 10:37:11,Data File,CCV-3.D
+Type,QC,Name,CCV-3
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+DCM,,5.153,42576,2257,,0.079,mg/L
+Chloroform,,5.720,53974,2257,,0.109,mg/L
+Benzene,,5.999,89311,2257,,0.081,mg/L
+DCM
+,,
+Chloroform
+,,
+Benzene
+,,

@@ -1,0 +1,285 @@
+Batch Data Path,D:\DATA\2026년\3. 2026년 3월\PCB(RE 3.11 RE 17 RE 3.18)\QuantResults\PCB.batch.bin
+Analysis Time,2026-03-26 오전 8:57:38,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-26 오전 8:57:38,Analyze Quant Version,10.2,Report Quant Version,10.2
+PCBS,,,,
+Data File,Type,RT,Resp.,Final Conc.
+PCB ST-01.D,Cal,7.268,160207489,0.5197
+PCB ST-02.D,Cal,7.214,213955476,0.6358
+PCB ST-03.D,Cal,7.214,353044038,0.9362
+PCB ST-04.D,Cal,7.264,594547863,1.4578
+PCB ST-05.D,Cal,7.290,706843516,1.7004
+BK-.D,Blank,0.000,0,ND
+FBK(RE 26-03-17).D,Blank,0.000,0,ND
+FBK(RE 26-03-18).D,Blank,0.000,0,ND
+RE-05.D,Sample,0.000,0,ND
+RE-06.D,Sample,0.000,0,ND
+RE-13.D,Sample,0.000,0,ND
+RE-14.D,Sample,0.000,0,ND
+RE-15.D,Sample,0.000,0,ND
+RE-16.D,Sample,0.000,0,ND
+RE-24.D,Sample,0.000,0,ND
+RE-25.D,Sample,0.000,0,ND
+MBK.D,Blank,0.000,0,ND
+-CCV-.D,QC,7.317,391238954,1.0187
+,,
+PCBS,,
+
+Cal. Path,Type,Level,Enable,Conc.,Response
+D:\DATA\2026년\3. 2026년 3월\PCB(RE 3.11 RE 17 RE 3.18)\PCB ST-01.D,Calibration,1,x,0.525,160207489
+D:\DATA\2026년\3. 2026년 3월\PCB(RE 3.11 RE 17 RE 3.18)\PCB ST-02.D,Calibration,2,x,0.700,213955476
+D:\DATA\2026년\3. 2026년 3월\PCB(RE 3.11 RE 17 RE 3.18)\PCB ST-03.D,Calibration,3,x,0.875,353044038
+D:\DATA\2026년\3. 2026년 3월\PCB(RE 3.11 RE 17 RE 3.18)\-CCV-.D,QC,3,x,0.875,391238954
+D:\DATA\2026년\3. 2026년 3월\PCB(RE 3.11 RE 17 RE 3.18)\PCB ST-04.D,Calibration,4,x,1.400,594547863
+D:\DATA\2026년\3. 2026년 3월\PCB(RE 3.11 RE 17 RE 3.18)\PCB ST-05.D,Calibration,5,x,1.750,706843516
+Batch Data Path,D:\DATA\2026년\3. 2026년 3월\PCB(RE 3.11 RE 17 RE 3.18)\QuantResults\PCB.batch.bin
+Analysis Time,2026-03-26 오전 8:57:38,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:32:48,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-26 오전 8:57:38,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-24 오전 10:43:43,Data File,PCB ST-01.D
+Type,Cal,Name,PCB ST-01
+Dil.,1,Acq. Method File,ORG(PCB-TEST)
+
+
+Name,RT,Resp.,Final Conc.,Units
+PCBS,7.268,160207489,0.5197,mg/L
+PCBS
+,,
+Batch Data Path,D:\DATA\2026년\3. 2026년 3월\PCB(RE 3.11 RE 17 RE 3.18)\QuantResults\PCB.batch.bin
+Analysis Time,2026-03-26 오전 8:57:38,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:32:48,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-26 오전 8:57:38,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-24 오전 10:58:16,Data File,PCB ST-02.D
+Type,Cal,Name,PCB ST-02
+Dil.,1,Acq. Method File,ORG(PCB-TEST)
+
+
+Name,RT,Resp.,Final Conc.,Units
+PCBS,7.214,213955476,0.6358,mg/L
+PCBS
+,,
+Batch Data Path,D:\DATA\2026년\3. 2026년 3월\PCB(RE 3.11 RE 17 RE 3.18)\QuantResults\PCB.batch.bin
+Analysis Time,2026-03-26 오전 8:57:38,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:32:48,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-26 오전 8:57:38,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-24 오전 11:12:47,Data File,PCB ST-03.D
+Type,Cal,Name,PCB ST-03
+Dil.,1,Acq. Method File,ORG(PCB-TEST)
+
+
+Name,RT,Resp.,Final Conc.,Units
+PCBS,7.214,353044038,0.9362,mg/L
+PCBS
+,,
+Batch Data Path,D:\DATA\2026년\3. 2026년 3월\PCB(RE 3.11 RE 17 RE 3.18)\QuantResults\PCB.batch.bin
+Analysis Time,2026-03-26 오전 8:57:38,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:32:48,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-26 오전 8:57:38,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-24 오전 11:27:25,Data File,PCB ST-04.D
+Type,Cal,Name,PCB ST-04
+Dil.,1,Acq. Method File,ORG(PCB-TEST)
+
+
+Name,RT,Resp.,Final Conc.,Units
+PCBS,7.264,594547863,1.4578,mg/L
+PCBS
+,,
+Batch Data Path,D:\DATA\2026년\3. 2026년 3월\PCB(RE 3.11 RE 17 RE 3.18)\QuantResults\PCB.batch.bin
+Analysis Time,2026-03-26 오전 8:57:38,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:32:48,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-26 오전 8:57:38,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-24 오전 11:42:04,Data File,PCB ST-05.D
+Type,Cal,Name,PCB ST-05
+Dil.,1,Acq. Method File,ORG(PCB-TEST)
+
+
+Name,RT,Resp.,Final Conc.,Units
+PCBS,7.290,706843516,1.7004,mg/L
+PCBS
+,,
+Batch Data Path,D:\DATA\2026년\3. 2026년 3월\PCB(RE 3.11 RE 17 RE 3.18)\QuantResults\PCB.batch.bin
+Analysis Time,2026-03-26 오전 8:57:38,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:32:48,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-26 오전 8:57:38,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-24 오후 12:25:59,Data File,BK-.D
+Type,Blank,Name,BK-
+Dil.,0.001,Acq. Method File,ORG(PCB-TEST)
+
+
+Name,RT,Resp.,Final Conc.,Units
+PCBS,0.000,0,ND,mg/L
+PCBS
+,,
+Batch Data Path,D:\DATA\2026년\3. 2026년 3월\PCB(RE 3.11 RE 17 RE 3.18)\QuantResults\PCB.batch.bin
+Analysis Time,2026-03-26 오전 8:57:38,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:32:48,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-26 오전 8:57:38,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-24 오후 12:40:41,Data File,FBK(RE 26-03-17).D
+Type,Blank,Name,FBK(RE 26-03-17)
+Dil.,0.001,Acq. Method File,ORG(PCB-TEST)
+
+
+Name,RT,Resp.,Final Conc.,Units
+PCBS,0.000,0,ND,mg/L
+PCBS
+,,
+Batch Data Path,D:\DATA\2026년\3. 2026년 3월\PCB(RE 3.11 RE 17 RE 3.18)\QuantResults\PCB.batch.bin
+Analysis Time,2026-03-26 오전 8:57:38,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:32:48,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-26 오전 8:57:38,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-24 오후 12:55:22,Data File,FBK(RE 26-03-18).D
+Type,Blank,Name,FBK(RE 26-03-18)
+Dil.,0.001,Acq. Method File,ORG(PCB-TEST)
+
+
+Name,RT,Resp.,Final Conc.,Units
+PCBS,0.000,0,ND,mg/L
+PCBS
+,,
+Batch Data Path,D:\DATA\2026년\3. 2026년 3월\PCB(RE 3.11 RE 17 RE 3.18)\QuantResults\PCB.batch.bin
+Analysis Time,2026-03-26 오전 8:57:38,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:32:48,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-26 오전 8:57:38,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-24 오후 1:10:02,Data File,RE-05.D
+Type,Sample,Name,RE-05
+Dil.,0.001,Acq. Method File,ORG(PCB-TEST)
+
+
+Name,RT,Resp.,Final Conc.,Units
+PCBS,0.000,0,ND,mg/L
+PCBS
+,,
+Batch Data Path,D:\DATA\2026년\3. 2026년 3월\PCB(RE 3.11 RE 17 RE 3.18)\QuantResults\PCB.batch.bin
+Analysis Time,2026-03-26 오전 8:57:38,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:32:48,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-26 오전 8:57:38,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-24 오후 1:24:35,Data File,RE-06.D
+Type,Sample,Name,RE-06
+Dil.,0.001,Acq. Method File,ORG(PCB-TEST)
+
+
+Name,RT,Resp.,Final Conc.,Units
+PCBS,0.000,0,ND,mg/L
+PCBS
+,,
+Batch Data Path,D:\DATA\2026년\3. 2026년 3월\PCB(RE 3.11 RE 17 RE 3.18)\QuantResults\PCB.batch.bin
+Analysis Time,2026-03-26 오전 8:57:38,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:32:48,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-26 오전 8:57:38,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-24 오후 2:21:48,Data File,RE-13.D
+Type,Sample,Name,RE-13
+Dil.,0.001,Acq. Method File,ORG(PCB-TEST)
+
+
+Name,RT,Resp.,Final Conc.,Units
+PCBS,0.000,0,ND,mg/L
+PCBS
+,,
+Batch Data Path,D:\DATA\2026년\3. 2026년 3월\PCB(RE 3.11 RE 17 RE 3.18)\QuantResults\PCB.batch.bin
+Analysis Time,2026-03-26 오전 8:57:38,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:32:48,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-26 오전 8:57:38,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-24 오후 2:36:25,Data File,RE-14.D
+Type,Sample,Name,RE-14
+Dil.,0.001,Acq. Method File,ORG(PCB-TEST)
+
+
+Name,RT,Resp.,Final Conc.,Units
+PCBS,0.000,0,ND,mg/L
+PCBS
+,,
+Batch Data Path,D:\DATA\2026년\3. 2026년 3월\PCB(RE 3.11 RE 17 RE 3.18)\QuantResults\PCB.batch.bin
+Analysis Time,2026-03-26 오전 8:57:38,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:32:48,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-26 오전 8:57:38,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-24 오후 2:51:03,Data File,RE-15.D
+Type,Sample,Name,RE-15
+Dil.,0.001,Acq. Method File,ORG(PCB-TEST)
+
+
+Name,RT,Resp.,Final Conc.,Units
+PCBS,0.000,0,ND,mg/L
+PCBS
+,,
+Batch Data Path,D:\DATA\2026년\3. 2026년 3월\PCB(RE 3.11 RE 17 RE 3.18)\QuantResults\PCB.batch.bin
+Analysis Time,2026-03-26 오전 8:57:38,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:32:48,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-26 오전 8:57:38,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-24 오후 3:05:41,Data File,RE-16.D
+Type,Sample,Name,RE-16
+Dil.,0.001,Acq. Method File,ORG(PCB-TEST)
+
+
+Name,RT,Resp.,Final Conc.,Units
+PCBS,0.000,0,ND,mg/L
+PCBS
+,,
+Batch Data Path,D:\DATA\2026년\3. 2026년 3월\PCB(RE 3.11 RE 17 RE 3.18)\QuantResults\PCB.batch.bin
+Analysis Time,2026-03-26 오전 8:57:38,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:32:48,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-26 오전 8:57:38,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-24 오후 3:37:02,Data File,RE-24.D
+Type,Sample,Name,RE-24
+Dil.,0.001,Acq. Method File,ORG(PCB-TEST)
+
+
+Name,RT,Resp.,Final Conc.,Units
+PCBS,0.000,0,ND,mg/L
+PCBS
+,,
+Batch Data Path,D:\DATA\2026년\3. 2026년 3월\PCB(RE 3.11 RE 17 RE 3.18)\QuantResults\PCB.batch.bin
+Analysis Time,2026-03-26 오전 8:57:38,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:32:48,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-26 오전 8:57:38,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-24 오후 3:51:38,Data File,RE-25.D
+Type,Sample,Name,RE-25
+Dil.,0.001,Acq. Method File,ORG(PCB-TEST)
+
+
+Name,RT,Resp.,Final Conc.,Units
+PCBS,0.000,0,ND,mg/L
+PCBS
+,,
+Batch Data Path,D:\DATA\2026년\3. 2026년 3월\PCB(RE 3.11 RE 17 RE 3.18)\QuantResults\PCB.batch.bin
+Analysis Time,2026-03-26 오전 8:57:38,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:32:48,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-26 오전 8:57:38,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-24 오후 4:06:16,Data File,MBK.D
+Type,Blank,Name,MBK
+Dil.,0.001,Acq. Method File,ORG(PCB-TEST)
+
+
+Name,RT,Resp.,Final Conc.,Units
+PCBS,0.000,0,ND,mg/L
+PCBS
+,,
+Batch Data Path,D:\DATA\2026년\3. 2026년 3월\PCB(RE 3.11 RE 17 RE 3.18)\QuantResults\PCB.batch.bin
+Analysis Time,2026-03-26 오전 8:57:38,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:32:48,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-26 오전 8:57:38,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-24 오후 4:15:19,Data File,-CCV-.D
+Type,QC,Name,-CCV-
+Dil.,1,Acq. Method File,ORG(PCB-TEST)
+
+
+Name,RT,Resp.,Final Conc.,Units
+PCBS,7.317,391238954,1.0187,mg/L
+PCBS
+,,

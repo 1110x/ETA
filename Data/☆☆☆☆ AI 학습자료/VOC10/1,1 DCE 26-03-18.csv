@@ -1,0 +1,288 @@
+Batch Data Path,"D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.17.18 HS 3.18)\QuantResults\1,1 DCE.batch.bin"
+Analysis Time,2026-03-23 오전 11:10:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-23 오전 11:10:20,Analyze Quant Version,10.2,Report Quant Version,10.2
+"1,1-DCE"
+Data File,,Type,RT,,Resp.,,ISTD Resp,,Final Conc.
+VOC10 ST-01.D,,Cal,4.996,,7610,,2754,,0.002
+VOC10 ST-02.D,,Cal,4.996,,23170,,4117,,0.012
+VOC10 ST-03.D,,Cal,4.996,,59632,,3846,,0.045
+VOC10 ST-04.D,,Cal,4.996,,139884,,4154,,0.107
+VOC10 ST-05.D,,Cal,4.996,,293284,,4186,,0.230
+VOC10 ST-06.D,,Cal,4.996,,450863,,3891,,0.385
+BK-.D,,Blank,,,,,4913,,ND
+FBK(RE 26-03-17).D,,Blank,,,,,4647,,ND
+FBK(RE 26-03-18).D,,Blank,,,,,4929,,ND
+RE-05.D,,Sample,5.034,,0,,4844,,ND
+RE-06.D,,Sample,,,,,3704,,ND
+RE-13.D,,Sample,,,,,4024,,ND
+RE-14.D,,Sample,,,,,4163,,ND
+RE-24.D,,Sample,,,,,4158,,ND
+RE-25.D,,Sample,,,,,3851,,ND
+MBK.D,,Blank,,,,,4335,,ND
+CCV.D,,QC,4.991,,192813,,3486,,0.180
+Calibration,,
+"1,1-DCE",,
+
+Cal. Path,Type,Level,Enable,,Conc.,,Response
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.17.18 HS 3.18)\VOC10 ST-01.D,Calibration,1,x,,0.010,,7610
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.17.18 HS 3.18)\VOC10 ST-02.D,Calibration,2,x,,0.020,,23170
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.17.18 HS 3.18)\VOC10 ST-03.D,Calibration,3,x,,0.050,,59632
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.17.18 HS 3.18)\VOC10 ST-04.D,Calibration,4,x,,0.100,,139884
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.17.18 HS 3.18)\VOC10 ST-05.D,Calibration,5,x,,0.200,,293284
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.17.18 HS 3.18)\CCV.D,QC,5,x,,0.200,,192813
+D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.17.18 HS 3.18)\VOC10 ST-06.D,Calibration,6,x,,0.400,,450863
+Batch Data Path,"D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.17.18 HS 3.18)\QuantResults\1,1 DCE.batch.bin"
+Analysis Time,2026-03-23 오전 11:10:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:12:03,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-23 오전 11:10:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-18 오후 4:18:45,Data File,VOC10 ST-01.D
+Type,Cal,Name,VOC10 ST-01
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,4.996,7610,2754,,0.002,mg/L
+"1,1-DCE"
+,,
+Batch Data Path,"D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.17.18 HS 3.18)\QuantResults\1,1 DCE.batch.bin"
+Analysis Time,2026-03-23 오전 11:10:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:12:03,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-23 오전 11:10:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-18 오후 4:31:25,Data File,VOC10 ST-02.D
+Type,Cal,Name,VOC10 ST-02
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,4.996,23170,4117,,0.012,mg/L
+"1,1-DCE"
+,,
+Batch Data Path,"D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.17.18 HS 3.18)\QuantResults\1,1 DCE.batch.bin"
+Analysis Time,2026-03-23 오전 11:10:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:12:03,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-23 오전 11:10:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-18 오후 4:44:04,Data File,VOC10 ST-03.D
+Type,Cal,Name,VOC10 ST-03
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,4.996,59632,3846,,0.045,mg/L
+"1,1-DCE"
+,,
+Batch Data Path,"D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.17.18 HS 3.18)\QuantResults\1,1 DCE.batch.bin"
+Analysis Time,2026-03-23 오전 11:10:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:12:03,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-23 오전 11:10:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-18 오후 4:56:45,Data File,VOC10 ST-04.D
+Type,Cal,Name,VOC10 ST-04
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,4.996,139884,4154,,0.107,mg/L
+"1,1-DCE"
+,,
+Batch Data Path,"D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.17.18 HS 3.18)\QuantResults\1,1 DCE.batch.bin"
+Analysis Time,2026-03-23 오전 11:10:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:12:03,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-23 오전 11:10:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-18 오후 5:09:25,Data File,VOC10 ST-05.D
+Type,Cal,Name,VOC10 ST-05
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,4.996,293284,4186,,0.230,mg/L
+"1,1-DCE"
+,,
+Batch Data Path,"D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.17.18 HS 3.18)\QuantResults\1,1 DCE.batch.bin"
+Analysis Time,2026-03-23 오전 11:10:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:12:03,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-23 오전 11:10:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-18 오후 5:22:06,Data File,VOC10 ST-06.D
+Type,Cal,Name,VOC10 ST-06
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,4.996,450863,3891,,0.385,mg/L
+"1,1-DCE"
+,,
+Batch Data Path,"D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.17.18 HS 3.18)\QuantResults\1,1 DCE.batch.bin"
+Analysis Time,2026-03-23 오전 11:10:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:12:03,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-23 오전 11:10:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-18 오후 5:47:27,Data File,BK-.D
+Type,Blank,Name,BK-
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,4913,,ND,mg/L
+"1,1-DCE"
+,,
+Batch Data Path,"D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.17.18 HS 3.18)\QuantResults\1,1 DCE.batch.bin"
+Analysis Time,2026-03-23 오전 11:10:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:12:03,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-23 오전 11:10:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-18 오후 6:00:08,Data File,FBK(RE 26-03-17).D
+Type,Blank,Name,FBK(RE 26-03-17)
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,4647,,ND,mg/L
+"1,1-DCE"
+,,
+Batch Data Path,"D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.17.18 HS 3.18)\QuantResults\1,1 DCE.batch.bin"
+Analysis Time,2026-03-23 오전 11:10:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:12:03,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-23 오전 11:10:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-18 오후 6:12:49,Data File,FBK(RE 26-03-18).D
+Type,Blank,Name,FBK(RE 26-03-18)
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,4929,,ND,mg/L
+"1,1-DCE"
+,,
+Batch Data Path,"D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.17.18 HS 3.18)\QuantResults\1,1 DCE.batch.bin"
+Analysis Time,2026-03-23 오전 11:10:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:12:03,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-23 오전 11:10:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-18 오후 6:50:49,Data File,RE-05.D
+Type,Sample,Name,RE-05
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,5.034,0,4844,,ND,mg/L
+"1,1-DCE"
+,,
+Batch Data Path,"D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.17.18 HS 3.18)\QuantResults\1,1 DCE.batch.bin"
+Analysis Time,2026-03-23 오전 11:10:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:12:03,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-23 오전 11:10:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-18 오후 7:03:29,Data File,RE-06.D
+Type,Sample,Name,RE-06
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,3704,,ND,mg/L
+"1,1-DCE"
+,,
+Batch Data Path,"D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.17.18 HS 3.18)\QuantResults\1,1 DCE.batch.bin"
+Analysis Time,2026-03-23 오전 11:10:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:12:03,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-23 오전 11:10:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-18 오후 7:16:08,Data File,RE-13.D
+Type,Sample,Name,RE-13
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,4024,,ND,mg/L
+"1,1-DCE"
+,,
+Batch Data Path,"D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.17.18 HS 3.18)\QuantResults\1,1 DCE.batch.bin"
+Analysis Time,2026-03-23 오전 11:10:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:12:03,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-23 오전 11:10:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-18 오후 7:28:49,Data File,RE-14.D
+Type,Sample,Name,RE-14
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,4163,,ND,mg/L
+"1,1-DCE"
+,,
+Batch Data Path,"D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.17.18 HS 3.18)\QuantResults\1,1 DCE.batch.bin"
+Analysis Time,2026-03-23 오전 11:10:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:12:03,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-23 오전 11:10:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-18 오후 8:06:49,Data File,RE-24.D
+Type,Sample,Name,RE-24
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,4158,,ND,mg/L
+"1,1-DCE"
+,,
+Batch Data Path,"D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.17.18 HS 3.18)\QuantResults\1,1 DCE.batch.bin"
+Analysis Time,2026-03-23 오전 11:10:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:12:03,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-23 오전 11:10:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-18 오후 8:19:28,Data File,RE-25.D
+Type,Sample,Name,RE-25
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,3851,,ND,mg/L
+"1,1-DCE"
+,,
+Batch Data Path,"D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.17.18 HS 3.18)\QuantResults\1,1 DCE.batch.bin"
+Analysis Time,2026-03-23 오전 11:10:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:12:03,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-23 오전 11:10:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-18 오후 8:32:08,Data File,MBK.D
+Type,Blank,Name,MBK
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,4335,,ND,mg/L
+"1,1-DCE"
+,,
+Batch Data Path,"D:\DATA\2026년\3. 2026년 3월\VOC10(RE 3.17.18 HS 3.18)\QuantResults\1,1 DCE.batch.bin"
+Analysis Time,2026-03-23 오전 11:10:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:12:03,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-23 오전 11:10:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-18 오후 8:44:47,Data File,CCV.D
+Type,QC,Name,CCV
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,4.991,192813,3486,,0.180,mg/L
+"1,1-DCE"
+,,

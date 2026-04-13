@@ -1,0 +1,186 @@
+Batch Data Path,D:\DATA\2026년\1. 2026년 1월\Org-P(PL 12.30)\QuantResults\ORG-P.batch.bin
+Analysis Time,2026-01-08 오후 2:08:11,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-01-08 오후 2:08:11,Analyze Quant Version,10.2,Report Quant Version,10.2
+Org-P,,,,,
+Data File,Type,RT,Resp.,Final Conc.,Exp. Conc.
+Org-P ST-01.D,Cal,10.890,4572494,0.3483,0.250
+Org-P ST-02.D,Cal,10.885,9340668,0.5343,0.500
+Org-P ST-03.D,Cal,10.312,11513377,0.6191,0.750
+Org-P ST-04.D,Cal,10.307,12515840,0.6582,1.000
+Org-P ST-05.D,Cal,10.299,32114623,1.4228,1.500
+Org-P ST-06.D,Cal,10.294,48299927,2.0542,2.000
+Org-P ST-07.D,Cal,10.291,73089137,3.0213,3.000
+BK-.D,Blank,0.000,0,ND,
+FBK(PL 25-12-30).D,Blank,0.000,0,ND,
+PL-01.D,Sample,0.000,0,ND,
+PL-02.D,Sample,0.000,0,ND,
+MBK-1.D,Blank,0.000,0,ND,
+-CCV-1.D,QC,10.292,34389018,1.5115,1.500
+Calibration,,
+Org-P,Relative Standard Error,22.0
+
+Cal. Path,Type,Level,Enable,Conc.,Response
+D:\DATA\2026년\1. 2026년 1월\Org-P(PL 12.30)\Org-P ST-01.D,Calibration,1,x,0.250,4572494
+D:\DATA\2026년\1. 2026년 1월\Org-P(PL 12.30)\Org-P ST-02.D,Calibration,2,x,0.500,9340668
+D:\DATA\2026년\1. 2026년 1월\Org-P(PL 12.30)\Org-P ST-03.D,Calibration,3,x,0.750,11513377
+D:\DATA\2026년\1. 2026년 1월\Org-P(PL 12.30)\Org-P ST-04.D,Calibration,4,,1.000,12515840
+D:\DATA\2026년\1. 2026년 1월\Org-P(PL 12.30)\Org-P ST-05.D,Calibration,5,x,1.500,32114623
+D:\DATA\2026년\1. 2026년 1월\Org-P(PL 12.30)\-CCV-1.D,QC,5,x,1.500,34389018
+D:\DATA\2026년\1. 2026년 1월\Org-P(PL 12.30)\Org-P ST-06.D,Calibration,6,x,2.000,48299927
+D:\DATA\2026년\1. 2026년 1월\Org-P(PL 12.30)\Org-P ST-07.D,Calibration,7,x,3.000,73089137
+Batch Data Path,D:\DATA\2026년\1. 2026년 1월\Org-P(PL 12.30)\QuantResults\ORG-P.batch.bin
+Analysis Time,2026-01-08 오후 2:08:11,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:39:15,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-01-08 오후 2:08:11,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-07 오전 11:37:18,Data File,Org-P ST-01.D
+Type,Cal,Name,Org-P ST-01
+Dil.,1,Acq. Method File,ORG(Org-P)
+
+
+Name,RT,Resp.,Final Conc.,Units
+Org-P,10.890,4572494,0.3483,mg/L
+Batch Data Path,D:\DATA\2026년\1. 2026년 1월\Org-P(PL 12.30)\QuantResults\ORG-P.batch.bin
+Analysis Time,2026-01-08 오후 2:08:11,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:39:15,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-01-08 오후 2:08:11,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-07 오전 11:55:47,Data File,Org-P ST-02.D
+Type,Cal,Name,Org-P ST-02
+Dil.,1,Acq. Method File,ORG(Org-P)
+
+
+Name,RT,Resp.,Final Conc.,Units
+Org-P,10.885,9340668,0.5343,mg/L
+Batch Data Path,D:\DATA\2026년\1. 2026년 1월\Org-P(PL 12.30)\QuantResults\ORG-P.batch.bin
+Analysis Time,2026-01-08 오후 2:08:11,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:39:15,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-01-08 오후 2:08:11,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-07 오후 12:14:21,Data File,Org-P ST-03.D
+Type,Cal,Name,Org-P ST-03
+Dil.,1,Acq. Method File,ORG(Org-P)
+
+
+Name,RT,Resp.,Final Conc.,Units
+Org-P,10.312,11513377,0.6191,mg/L
+Batch Data Path,D:\DATA\2026년\1. 2026년 1월\Org-P(PL 12.30)\QuantResults\ORG-P.batch.bin
+Analysis Time,2026-01-08 오후 2:08:11,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:39:15,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-01-08 오후 2:08:11,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-07 오후 12:32:49,Data File,Org-P ST-04.D
+Type,Cal,Name,Org-P ST-04
+Dil.,1,Acq. Method File,ORG(Org-P)
+
+
+Name,RT,Resp.,Final Conc.,Units
+Org-P,10.307,12515840,0.6582,mg/L
+Batch Data Path,D:\DATA\2026년\1. 2026년 1월\Org-P(PL 12.30)\QuantResults\ORG-P.batch.bin
+Analysis Time,2026-01-08 오후 2:08:11,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:39:15,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-01-08 오후 2:08:11,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-07 오후 12:51:20,Data File,Org-P ST-05.D
+Type,Cal,Name,Org-P ST-05
+Dil.,1,Acq. Method File,ORG(Org-P)
+
+
+Name,RT,Resp.,Final Conc.,Units
+Org-P,10.299,32114623,1.4228,mg/L
+Batch Data Path,D:\DATA\2026년\1. 2026년 1월\Org-P(PL 12.30)\QuantResults\ORG-P.batch.bin
+Analysis Time,2026-01-08 오후 2:08:11,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:39:15,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-01-08 오후 2:08:11,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-07 오후 1:09:58,Data File,Org-P ST-06.D
+Type,Cal,Name,Org-P ST-06
+Dil.,1,Acq. Method File,ORG(Org-P)
+
+
+Name,RT,Resp.,Final Conc.,Units
+Org-P,10.294,48299927,2.0542,mg/L
+Batch Data Path,D:\DATA\2026년\1. 2026년 1월\Org-P(PL 12.30)\QuantResults\ORG-P.batch.bin
+Analysis Time,2026-01-08 오후 2:08:11,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:39:15,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-01-08 오후 2:08:11,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-07 오후 1:28:26,Data File,Org-P ST-07.D
+Type,Cal,Name,Org-P ST-07
+Dil.,1,Acq. Method File,ORG(Org-P)
+
+
+Name,RT,Resp.,Final Conc.,Units
+Org-P,10.291,73089137,3.0213,mg/L
+Batch Data Path,D:\DATA\2026년\1. 2026년 1월\Org-P(PL 12.30)\QuantResults\ORG-P.batch.bin
+Analysis Time,2026-01-08 오후 2:08:11,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:39:15,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-01-08 오후 2:08:11,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-07 오후 2:05:36,Data File,BK-.D
+Type,Blank,Name,BK-
+Dil.,0.002,Acq. Method File,ORG(Org-P)
+
+
+Name,RT,Resp.,Final Conc.,Units
+Org-P,0.000,0,ND,mg/L
+Batch Data Path,D:\DATA\2026년\1. 2026년 1월\Org-P(PL 12.30)\QuantResults\ORG-P.batch.bin
+Analysis Time,2026-01-08 오후 2:08:11,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:39:15,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-01-08 오후 2:08:11,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-07 오후 2:24:08,Data File,FBK(PL 25-12-30).D
+Type,Blank,Name,FBK(PL 25-12-30)
+Dil.,0.002,Acq. Method File,ORG(Org-P)
+
+
+Name,RT,Resp.,Final Conc.,Units
+Org-P,0.000,0,ND,mg/L
+Batch Data Path,D:\DATA\2026년\1. 2026년 1월\Org-P(PL 12.30)\QuantResults\ORG-P.batch.bin
+Analysis Time,2026-01-08 오후 2:08:11,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:39:15,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-01-08 오후 2:08:11,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-07 오후 2:42:43,Data File,PL-01.D
+Type,Sample,Name,PL-01
+Dil.,0.002,Acq. Method File,ORG(Org-P)
+
+
+Name,RT,Resp.,Final Conc.,Units
+Org-P,0.000,0,ND,mg/L
+Batch Data Path,D:\DATA\2026년\1. 2026년 1월\Org-P(PL 12.30)\QuantResults\ORG-P.batch.bin
+Analysis Time,2026-01-08 오후 2:08:11,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:39:15,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-01-08 오후 2:08:11,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-07 오후 3:01:20,Data File,PL-02.D
+Type,Sample,Name,PL-02
+Dil.,0.002,Acq. Method File,ORG(Org-P)
+
+
+Name,RT,Resp.,Final Conc.,Units
+Org-P,0.000,0,ND,mg/L
+Batch Data Path,D:\DATA\2026년\1. 2026년 1월\Org-P(PL 12.30)\QuantResults\ORG-P.batch.bin
+Analysis Time,2026-01-08 오후 2:08:11,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:39:15,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-01-08 오후 2:08:11,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-07 오후 3:19:56,Data File,MBK-1.D
+Type,Blank,Name,MBK-1
+Dil.,0.002,Acq. Method File,ORG(Org-P)
+
+
+Name,RT,Resp.,Final Conc.,Units
+Org-P,0.000,0,ND,mg/L
+Batch Data Path,D:\DATA\2026년\1. 2026년 1월\Org-P(PL 12.30)\QuantResults\ORG-P.batch.bin
+Analysis Time,2026-01-08 오후 2:08:11,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:39:15,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-01-08 오후 2:08:11,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-07 오후 4:15:35,Data File,-CCV-1.D
+Type,QC,Name,-CCV-1
+Dil.,1,Acq. Method File,ORG(Org-P)
+
+
+Name,RT,Resp.,Final Conc.,Units
+Org-P,10.292,34389018,1.5115,mg/L

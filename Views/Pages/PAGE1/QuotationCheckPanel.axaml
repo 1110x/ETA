@@ -3,33 +3,18 @@
              x:Class="ETA.Views.Pages.PAGE1.QuotationCheckPanel">
 
     <UserControl.Styles>
-        <!-- 컬럼 컨테이너 스타일 -->
-        <Style Selector="Border.column-container">
-            <Setter Property="Background" Value="{DynamicResource PanelInnerBg}"/>
-            <Setter Property="CornerRadius" Value="4"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush" Value="{DynamicResource InputBorder}"/>
-            <Setter Property="Padding" Value="8"/>
-            <Setter Property="Margin" Value="0,0,6,0"/>
-        </Style>
-
-        <!-- 컬럼 헤더 스타일 -->
-        <Style Selector="TextBlock.column-header">
-            <Setter Property="FontSize" Value="{DynamicResource FontSizeMD}"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Foreground" Value="#a0d060"/>
-            <Setter Property="Margin" Value="0,0,0,8"/>
-            <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#Pretendard"/>
-            <Setter Property="TextWrapping" Value="Wrap"/>
-        </Style>
-
         <!-- 항목 체크박스 스타일 -->
         <Style Selector="CheckBox">
-            <Setter Property="FontSize" Value="{DynamicResource FontSizeBase}"/>
+            <Setter Property="FontSize" Value="{DynamicResource FontSizeSM}"/>
             <Setter Property="Foreground" Value="{DynamicResource AppFg}"/>
-            <Setter Property="Padding" Value="2,3"/>
-            <Setter Property="Margin" Value="0,0,0,4"/>
+            <Setter Property="Padding" Value="2,1"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="MinHeight" Value="20"/>
             <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#Pretendard"/>
+        </Style>
+        <!-- 카테고리 헤더 호버 -->
+        <Style Selector="Border.cat-header:pointerover">
+            <Setter Property="Background" Value="{DynamicResource ThemeBgHover}"/>
         </Style>
     </UserControl.Styles>
 
@@ -39,8 +24,8 @@
         <!-- 헤더: 제목 + 전체선택/해제 + 저장 영역 -->
         <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto,Auto" Margin="0,0,0,6">
             <TextBlock Grid.Column="0"
-                       Text="분석 항목 (7개 카테고리)"
-                       FontSize="{DynamicResource FontSizeXL}" FontWeight="Bold"
+                       Text="분석 항목"
+                       FontSize="{DynamicResource FontSizeLG}" FontWeight="Bold"
                        Foreground="{DynamicResource AppFg}"
                        VerticalAlignment="Center"
                        FontFamily="avares://ETA/Assets/Fonts#Pretendard" />
@@ -99,13 +84,10 @@
                    Margin="2,0,0,6"
                    FontFamily="avares://ETA/Assets/Fonts#Pretendard" />
 
-        <!-- 7개 컬럼 레이아웃 (각 컬럼은 코드비하인드에서 동적 생성) -->
-        <Grid Grid.Row="3" x:Name="ColumnsGrid"
-              ColumnDefinitions="*,*,*,*,*,*,*"
-              Margin="0"
-              HorizontalAlignment="Stretch"
-              VerticalAlignment="Stretch">
-        </Grid>
+        <!-- 분석항목 트리뷰 (카테고리별 Expander, 코드비하인드에서 동적 생성) -->
+        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto">
+            <StackPanel x:Name="ItemsContainer" Spacing="0" Margin="0"/>
+        </ScrollViewer>
 
     </Grid>
 </UserControl>

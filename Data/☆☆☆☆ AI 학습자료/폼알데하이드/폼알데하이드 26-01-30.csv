@@ -1,0 +1,874 @@
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Analyze Quant Version,10.2,Report Quant Version,10.2
+Formaldehyde
+Data File,,Type,RT,,Resp.,,ISTD Resp,,Final Conc.
+FORM ST-01.d,,Cal,5.020,,203152,,21370,,0.000
+FORM ST-02.d,,Cal,5.016,,975995,,20161,,0.033
+FORM ST-03.d,,Cal,5.016,,1942470,,15736,,0.114
+FORM ST-04.d,,Cal,5.016,,4634238,,18573,,0.250
+FORM ST-05.d,,Cal,5.016,,8414855,,16195,,0.542
+FORM ST-06.d,,Cal,5.016,,11505415,,12448,,0.979
+BK-.d,,Blank,5.023,,55734,,20398,,0.000
+FBK(YS 26-01-27).d,,Blank,5.027,,37841,,20881,,0.000
+FBK(YS 26-01-28).d,,Blank,5.027,,33063,,22290,,0.000
+FBK(HJ 26-01-28).d,,Blank,5.027,,41568,,20721,,0.000
+YS-01.d,,Sample,5.016,,1656868,,17805,,0.082
+YS-02.d,,Sample,5.023,,25012735,,14138,,1.890
+YS-03.d,,Sample,5.023,,104609,,11536,,0.000
+YS-04.d,,Sample,5.018,,17152145,,17207,,1.057
+YS-05.d,,Sample,5.020,,473008,,14525,,0.016
+YS-06.d,,Sample,5.019,,208681,,14649,,0.000
+YS-07.d,,Sample,5.020,,192655,,15520,,0.000
+YS-08.d,,Sample,5.020,,203970,,19378,,0.000
+YS-09.d,,Sample,5.020,,176858,,15723,,0.000
+YS-10.d,,Sample,5.016,,1575960,,20878,,0.063
+YS-11.d,,Sample,5.023,,54780,,14777,,0.000
+YS-12.d,,Sample,5.019,,164125,,16250,,0.000
+YS-13.d,,Sample,5.020,,172658,,16897,,0.000
+MBK-1.d,,Blank,5.023,,37313,,15762,,0.000
+-CCV-1.d,,QC,5.016,,6243481,,13173,,0.493
+YS-14.d,,Sample,5.020,,690406,,15216,,0.030
+YS-15.d,,Sample,5.020,,119944,,16505,,0.000
+YS-16.d,,Sample,5.020,,148992,,14821,,0.000
+YS-17.d,,Sample,5.019,,148618,,14551,,0.000
+YS-18.d,,Sample,5.020,,147649,,17100,,0.000
+HJ-01.d,,Sample,5.019,,588080,,12702,,0.031
+HJ-02.d,,Sample,5.023,,25963584,,12387,,2.243
+HJ-03.d,,Sample,5.016,,9040599,,17206,,0.548
+HJ-04.d,,Sample,5.018,,17265545,,18850,,0.970
+HJ-05.d,,Sample,5.020,,718759,,12990,,0.041
+HJ-06.d,,Sample,5.018,,18143402,,13965,,1.383
+HJ-07.d,,Sample,5.020,,570902,,13698,,0.026
+HJ-08.d,,Sample,5.016,,742810,,13442,,0.041
+HJ-09.d,,Sample,5.020,,492236,,17214,,0.012
+HJ-10.d,,Sample,5.020,,468370,,16090,,0.013
+HJ-11.d,,Sample,5.016,,1727022,,13868,,0.116
+HJ-12.d,,Sample,5.020,,317366,,13373,,0.007
+MBK-2.d,,Blank,5.023,,67244,,14223,,0.000
+-CCV-2.d,,QC,5.016,,5494502,,10925,,0.524
+HJ-13.d,,Sample,5.020,,208697,,14657,,0.000
+HJ-14.d,,Sample,5.020,,151369,,14819,,0.000
+HJ-15.d,,Sample,5.020,,435261,,16990,,0.009
+HJ-16.d,,Sample,5.020,,810934,,16230,,0.035
+HJ-17.d,,Sample,5.020,,428699,,15553,,0.011
+YS-02 R.d,,Sample,5.016,,1448962,,16835,,1.851
+YS-04 R.d,,Sample,5.016,,961302,,15457,,0.965
+MBK-3.d,,Blank,5.023,,45960,,16126,,0.000
+-CCV-3.d,,QC,5.016,,5756872,,11704,,0.512
+HJ-02 R.d,,Sample,5.017,,3850884,,14405,,2.696
+HJ-06 R.d,,Sample,5.016,,1671527,,23385,,1.166
+MBK-4.d,,Blank,5.019,,358266,,24536,,0.000
+-CCV-4.d,,QC,5.016,,7746475,,18744,,0.427
+Calibration,,
+Formaldehyde,,
+
+Cal. Path,Type,Level,Enable,,Conc.,,Response
+V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\FORM ST-01.d,Calibration,1,x,,0.010,,203152
+V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\FORM ST-02.d,Calibration,2,x,,0.050,,975995
+V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\FORM ST-03.d,Calibration,3,x,,0.100,,1942470
+V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\FORM ST-04.d,Calibration,4,x,,0.250,,4634238
+V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\FORM ST-05.d,Calibration,5,x,,0.500,,8414855
+V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\-CCV-1.d,QC,5,x,,0.500,,6243481
+V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\-CCV-2.d,QC,5,x,,0.500,,5494502
+V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\-CCV-3.d,QC,5,x,,0.500,,5756872
+V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\-CCV-4.d,QC,5,x,,0.500,,7746475
+V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\FORM ST-06.d,Calibration,6,x,,1.000,,11505415
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 12:10:33,Data File,FORM ST-01.d
+Type,Cal,Name,FORM ST-01
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.020,203152,21370,,0.000,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 1:05:18,Data File,FORM ST-02.d
+Type,Cal,Name,FORM ST-02
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.016,975995,20161,,0.033,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 1:24:18,Data File,FORM ST-03.d
+Type,Cal,Name,FORM ST-03
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.016,1942470,15736,,0.114,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 1:43:16,Data File,FORM ST-04.d
+Type,Cal,Name,FORM ST-04
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.016,4634238,18573,,0.250,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 2:02:16,Data File,FORM ST-05.d
+Type,Cal,Name,FORM ST-05
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.016,8414855,16195,,0.542,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 2:16:00,Data File,FORM ST-06.d
+Type,Cal,Name,FORM ST-06
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.016,11505415,12448,,0.979,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 2:47:24,Data File,BK-.d
+Type,Blank,Name,BK-
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.023,55734,20398,,0.000,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 3:01:15,Data File,FBK(YS 26-01-27).d
+Type,Blank,Name,FBK(YS 26-01-27)
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.027,37841,20881,,0.000,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 3:15:21,Data File,FBK(YS 26-01-28).d
+Type,Blank,Name,FBK(YS 26-01-28)
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.027,33063,22290,,0.000,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 3:32:30,Data File,FBK(HJ 26-01-28).d
+Type,Blank,Name,FBK(HJ 26-01-28)
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.027,41568,20721,,0.000,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 3:46:28,Data File,YS-01.d
+Type,Sample,Name,YS-01
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.016,1656868,17805,,0.082,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 4:00:29,Data File,YS-02.d
+Type,Sample,Name,YS-02
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.023,25012735,14138,,1.890,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 4:17:34,Data File,YS-03.d
+Type,Sample,Name,YS-03
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.023,104609,11536,,0.000,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 4:31:33,Data File,YS-04.d
+Type,Sample,Name,YS-04
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.018,17152145,17207,,1.057,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 4:45:33,Data File,YS-05.d
+Type,Sample,Name,YS-05
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.020,473008,14525,,0.016,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 5:02:42,Data File,YS-06.d
+Type,Sample,Name,YS-06
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.019,208681,14649,,0.000,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 5:16:39,Data File,YS-07.d
+Type,Sample,Name,YS-07
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.020,192655,15520,,0.000,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 5:26:50,Data File,YS-08.d
+Type,Sample,Name,YS-08
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.020,203970,19378,,0.000,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 6:30:25,Data File,YS-09.d
+Type,Sample,Name,YS-09
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.020,176858,15723,,0.000,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 6:49:23,Data File,YS-10.d
+Type,Sample,Name,YS-10
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.016,1575960,20878,,0.063,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 7:08:19,Data File,YS-11.d
+Type,Sample,Name,YS-11
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.023,54780,14777,,0.000,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 7:22:11,Data File,YS-12.d
+Type,Sample,Name,YS-12
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.019,164125,16250,,0.000,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 7:36:12,Data File,YS-13.d
+Type,Sample,Name,YS-13
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.020,172658,16897,,0.000,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 7:53:21,Data File,MBK-1.d
+Type,Blank,Name,MBK-1
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.023,37313,15762,,0.000,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 8:21:16,Data File,-CCV-1.d
+Type,QC,Name,-CCV-1
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.016,6243481,13173,,0.493,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 8:38:25,Data File,YS-14.d
+Type,Sample,Name,YS-14
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.020,690406,15216,,0.030,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 8:52:25,Data File,YS-15.d
+Type,Sample,Name,YS-15
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.020,119944,16505,,0.000,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 9:06:27,Data File,YS-16.d
+Type,Sample,Name,YS-16
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.020,148992,14821,,0.000,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 9:23:34,Data File,YS-17.d
+Type,Sample,Name,YS-17
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.019,148618,14551,,0.000,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 9:37:32,Data File,YS-18.d
+Type,Sample,Name,YS-18
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.020,147649,17100,,0.000,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 9:51:37,Data File,HJ-01.d
+Type,Sample,Name,HJ-01
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.019,588080,12702,,0.031,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 10:08:34,Data File,HJ-02.d
+Type,Sample,Name,HJ-02
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.023,25963584,12387,,2.243,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 10:22:39,Data File,HJ-03.d
+Type,Sample,Name,HJ-03
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.016,9040599,17206,,0.548,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 10:36:44,Data File,HJ-04.d
+Type,Sample,Name,HJ-04
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.018,17265545,18850,,0.970,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 10:53:34,Data File,HJ-05.d
+Type,Sample,Name,HJ-05
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.020,718759,12990,,0.041,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 11:07:39,Data File,HJ-06.d
+Type,Sample,Name,HJ-06
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.018,18143402,13965,,1.383,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 11:21:51,Data File,HJ-07.d
+Type,Sample,Name,HJ-07
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.020,570902,13698,,0.026,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 11:38:43,Data File,HJ-08.d
+Type,Sample,Name,HJ-08
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.016,742810,13442,,0.041,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-30 오후 11:52:49,Data File,HJ-09.d
+Type,Sample,Name,HJ-09
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.020,492236,17214,,0.012,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-31 오전 12:06:57,Data File,HJ-10.d
+Type,Sample,Name,HJ-10
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.020,468370,16090,,0.013,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-31 오전 12:23:51,Data File,HJ-11.d
+Type,Sample,Name,HJ-11
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.016,1727022,13868,,0.116,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-31 오전 12:38:02,Data File,HJ-12.d
+Type,Sample,Name,HJ-12
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.020,317366,13373,,0.007,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-31 오전 12:52:06,Data File,MBK-2.d
+Type,Blank,Name,MBK-2
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.023,67244,14223,,0.000,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-31 오전 1:23:15,Data File,-CCV-2.d
+Type,QC,Name,-CCV-2
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.016,5494502,10925,,0.524,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-31 오전 1:37:12,Data File,HJ-13.d
+Type,Sample,Name,HJ-13
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.020,208697,14657,,0.000,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-31 오전 1:47:28,Data File,HJ-14.d
+Type,Sample,Name,HJ-14
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.020,151369,14819,,0.000,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-31 오전 2:51:01,Data File,HJ-15.d
+Type,Sample,Name,HJ-15
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.020,435261,16990,,0.009,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-31 오전 3:09:56,Data File,HJ-16.d
+Type,Sample,Name,HJ-16
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.020,810934,16230,,0.035,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-31 오전 3:28:55,Data File,HJ-17.d
+Type,Sample,Name,HJ-17
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.020,428699,15553,,0.011,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-31 오전 3:42:42,Data File,YS-02 R.d
+Type,Sample,Name,YS-02 R
+Dil.,25,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.016,1448962,16835,,1.851,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-31 오전 3:56:27,Data File,YS-04 R.d
+Type,Sample,Name,YS-04 R
+Dil.,20,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.016,961302,15457,,0.965,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-31 오전 4:13:54,Data File,MBK-3.d
+Type,Blank,Name,MBK-3
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.023,45960,16126,,0.000,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-31 오전 4:41:28,Data File,-CCV-3.d
+Type,QC,Name,-CCV-3
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.016,5756872,11704,,0.512,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-31 오전 5:09:23,Data File,HJ-02 R.d
+Type,Sample,Name,HJ-02 R
+Dil.,10,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.017,3850884,14405,,2.696,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-31 오전 5:28:21,Data File,HJ-06 R.d
+Type,Sample,Name,HJ-06 R
+Dil.,20,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.016,1671527,23385,,1.166,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-31 오전 5:47:17,Data File,MBK-4.d
+Type,Blank,Name,MBK-4
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.019,358266,24536,,0.000,mg/L
+Formaldehyde
+,,
+Batch Data Path,V:\2026\2026-01\FORM(YS 1.27.28 HJ 1.28)\QuantResults\FORM.batch.bin
+Analysis Time,2026-02-02 오후 3:50:35,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:33:31,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-02 오후 3:50:35,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-31 오전 6:06:06,Data File,-CCV-4.d
+Type,QC,Name,-CCV-4
+Dil.,1,Acq. Method File,VOCs(Form)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Formaldehyde,,5.016,7746475,18744,,0.427,mg/L
+Formaldehyde
+,,

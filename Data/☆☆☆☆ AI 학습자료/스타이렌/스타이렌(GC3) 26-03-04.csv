@@ -1,0 +1,317 @@
+Batch Data Path,V:\2026\2026-03\VOC2(RE 3.4 KD 3.4)\QuantResults\ST.batch.bin
+Analysis Time,2026-03-05 오후 3:43:41,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-05 오후 3:43:41,Analyze Quant Version,10.2,Report Quant Version,10.2
+Styrene,,,,
+Data File,Type,RT,Resp.,Final Conc.
+STY ST-01.d,Cal,4.607,9898,0.000
+STY ST-02.d,Cal,4.600,52033,0.003
+STY ST-03.d,Cal,4.592,265776,0.055
+STY ST-04.d,Cal,4.588,1159585,0.270
+STY ST-05.d,Cal,4.588,2075019,0.490
+BK-.d,Blank,4.607,5022,0.000
+FBK(RE 26-03-04).d,Blank,4.614,4746,0.000
+FBK(KD 26-03-04).d,Blank,4.611,3893,0.000
+RE-01.d,Sample,4.599,0,ND
+RE-02.d,Sample,4.607,0,ND
+RE-03.d,Sample,4.625,0,ND
+RE-04.d,Sample,4.614,0,ND
+RE-09.d,Sample,4.611,0,ND
+RE-10.d,Sample,,,ND
+RE-11.d,Sample,,,ND
+RE-12.d,Sample,,,ND
+KD-01.d,Sample,,,ND
+KD-02.d,Sample,,,ND
+KD-03.d,Sample,,,ND
+MBK-1.d,Blank,,,ND
+CCV S.d,QC,4.592,943522,0.218
+,,
+Styrene,,
+
+Cal. Path,Type,Level,Enable,Conc.,Response
+V:\2026\2026-03\VOC2(RE 3.4 KD 3.4)\STY ST-01.d,Calibration,1,x,0.001,9898
+V:\2026\2026-03\VOC2(RE 3.4 KD 3.4)\STY ST-02.d,Calibration,2,x,0.010,52033
+V:\2026\2026-03\VOC2(RE 3.4 KD 3.4)\STY ST-03.d,Calibration,3,x,0.050,265776
+V:\2026\2026-03\VOC2(RE 3.4 KD 3.4)\STY ST-04.d,Calibration,4,x,0.250,1159585
+V:\2026\2026-03\VOC2(RE 3.4 KD 3.4)\CCV S.d,QC,4,x,0.250,943522
+V:\2026\2026-03\VOC2(RE 3.4 KD 3.4)\STY ST-05.d,Calibration,5,x,0.500,2075019
+Batch Data Path,V:\2026\2026-03\VOC2(RE 3.4 KD 3.4)\QuantResults\ST.batch.bin
+Analysis Time,2026-03-05 오후 3:43:41,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 3:15:36,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-05 오후 3:43:41,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-04 오후 3:53:03,Data File,STY ST-01.d
+Type,Cal,Name,STY ST-01
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Styrene,4.607,9898,0.000,mg/L
+Styrene
+,,
+Batch Data Path,V:\2026\2026-03\VOC2(RE 3.4 KD 3.4)\QuantResults\ST.batch.bin
+Analysis Time,2026-03-05 오후 3:43:41,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 3:15:36,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-05 오후 3:43:41,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-04 오후 4:10:05,Data File,STY ST-02.d
+Type,Cal,Name,STY ST-02
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Styrene,4.600,52033,0.003,mg/L
+Styrene
+,,
+Batch Data Path,V:\2026\2026-03\VOC2(RE 3.4 KD 3.4)\QuantResults\ST.batch.bin
+Analysis Time,2026-03-05 오후 3:43:41,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 3:15:36,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-05 오후 3:43:41,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-04 오후 4:27:05,Data File,STY ST-03.d
+Type,Cal,Name,STY ST-03
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Styrene,4.592,265776,0.055,mg/L
+Styrene
+,,
+Batch Data Path,V:\2026\2026-03\VOC2(RE 3.4 KD 3.4)\QuantResults\ST.batch.bin
+Analysis Time,2026-03-05 오후 3:43:41,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 3:15:36,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-05 오후 3:43:41,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-04 오후 4:44:09,Data File,STY ST-04.d
+Type,Cal,Name,STY ST-04
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Styrene,4.588,1159585,0.270,mg/L
+Styrene
+,,
+Batch Data Path,V:\2026\2026-03\VOC2(RE 3.4 KD 3.4)\QuantResults\ST.batch.bin
+Analysis Time,2026-03-05 오후 3:43:41,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 3:15:36,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-05 오후 3:43:41,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-04 오후 5:01:10,Data File,STY ST-05.d
+Type,Cal,Name,STY ST-05
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Styrene,4.588,2075019,0.490,mg/L
+Styrene
+,,
+Batch Data Path,V:\2026\2026-03\VOC2(RE 3.4 KD 3.4)\QuantResults\ST.batch.bin
+Analysis Time,2026-03-05 오후 3:43:41,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 3:15:36,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-05 오후 3:43:41,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-04 오후 5:35:11,Data File,BK-.d
+Type,Blank,Name,BK-
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Styrene
+,,
+Batch Data Path,V:\2026\2026-03\VOC2(RE 3.4 KD 3.4)\QuantResults\ST.batch.bin
+Analysis Time,2026-03-05 오후 3:43:41,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 3:15:36,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-05 오후 3:43:41,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-04 오후 5:52:15,Data File,FBK(RE 26-03-04).d
+Type,Blank,Name,FBK(RE 26-03-04)
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Styrene
+,,
+Batch Data Path,V:\2026\2026-03\VOC2(RE 3.4 KD 3.4)\QuantResults\ST.batch.bin
+Analysis Time,2026-03-05 오후 3:43:41,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 3:15:36,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-05 오후 3:43:41,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-04 오후 6:09:15,Data File,FBK(KD 26-03-04).d
+Type,Blank,Name,FBK(KD 26-03-04)
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Styrene
+,,
+Batch Data Path,V:\2026\2026-03\VOC2(RE 3.4 KD 3.4)\QuantResults\ST.batch.bin
+Analysis Time,2026-03-05 오후 3:43:41,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 3:15:36,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-05 오후 3:43:41,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-04 오후 6:26:18,Data File,RE-01.d
+Type,Sample,Name,RE-01
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Styrene,4.599,0,ND,mg/L
+Styrene
+,,
+Batch Data Path,V:\2026\2026-03\VOC2(RE 3.4 KD 3.4)\QuantResults\ST.batch.bin
+Analysis Time,2026-03-05 오후 3:43:41,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 3:15:36,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-05 오후 3:43:41,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-04 오후 6:43:17,Data File,RE-02.d
+Type,Sample,Name,RE-02
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Styrene
+,,
+Batch Data Path,V:\2026\2026-03\VOC2(RE 3.4 KD 3.4)\QuantResults\ST.batch.bin
+Analysis Time,2026-03-05 오후 3:43:41,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 3:15:36,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-05 오후 3:43:41,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-04 오후 7:00:17,Data File,RE-03.d
+Type,Sample,Name,RE-03
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Styrene,4.625,0,ND,mg/L
+Styrene
+,,
+Batch Data Path,V:\2026\2026-03\VOC2(RE 3.4 KD 3.4)\QuantResults\ST.batch.bin
+Analysis Time,2026-03-05 오후 3:43:41,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 3:15:36,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-05 오후 3:43:41,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-04 오후 7:17:19,Data File,RE-04.d
+Type,Sample,Name,RE-04
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Styrene
+,,
+Batch Data Path,V:\2026\2026-03\VOC2(RE 3.4 KD 3.4)\QuantResults\ST.batch.bin
+Analysis Time,2026-03-05 오후 3:43:41,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 3:15:36,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-05 오후 3:43:41,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-04 오후 7:34:21,Data File,RE-09.d
+Type,Sample,Name,RE-09
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Styrene
+,,
+Batch Data Path,V:\2026\2026-03\VOC2(RE 3.4 KD 3.4)\QuantResults\ST.batch.bin
+Analysis Time,2026-03-05 오후 3:43:41,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 3:15:36,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-05 오후 3:43:41,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-04 오후 7:51:20,Data File,RE-10.d
+Type,Sample,Name,RE-10
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Styrene
+,,
+Batch Data Path,V:\2026\2026-03\VOC2(RE 3.4 KD 3.4)\QuantResults\ST.batch.bin
+Analysis Time,2026-03-05 오후 3:43:41,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 3:15:36,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-05 오후 3:43:41,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-04 오후 8:08:22,Data File,RE-11.d
+Type,Sample,Name,RE-11
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Styrene
+,,
+Batch Data Path,V:\2026\2026-03\VOC2(RE 3.4 KD 3.4)\QuantResults\ST.batch.bin
+Analysis Time,2026-03-05 오후 3:43:41,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 3:15:36,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-05 오후 3:43:41,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-04 오후 8:25:23,Data File,RE-12.d
+Type,Sample,Name,RE-12
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Styrene
+,,
+Batch Data Path,V:\2026\2026-03\VOC2(RE 3.4 KD 3.4)\QuantResults\ST.batch.bin
+Analysis Time,2026-03-05 오후 3:43:41,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 3:15:36,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-05 오후 3:43:41,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-04 오후 8:42:24,Data File,KD-01.d
+Type,Sample,Name,KD-01
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Styrene
+,,
+Batch Data Path,V:\2026\2026-03\VOC2(RE 3.4 KD 3.4)\QuantResults\ST.batch.bin
+Analysis Time,2026-03-05 오후 3:43:41,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 3:15:36,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-05 오후 3:43:41,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-04 오후 8:59:26,Data File,KD-02.d
+Type,Sample,Name,KD-02
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Styrene
+,,
+Batch Data Path,V:\2026\2026-03\VOC2(RE 3.4 KD 3.4)\QuantResults\ST.batch.bin
+Analysis Time,2026-03-05 오후 3:43:41,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 3:15:36,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-05 오후 3:43:41,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-04 오후 9:16:27,Data File,KD-03.d
+Type,Sample,Name,KD-03
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Styrene
+,,
+Batch Data Path,V:\2026\2026-03\VOC2(RE 3.4 KD 3.4)\QuantResults\ST.batch.bin
+Analysis Time,2026-03-05 오후 3:43:41,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 3:15:36,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-05 오후 3:43:41,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-04 오후 9:33:29,Data File,MBK-1.d
+Type,Blank,Name,MBK-1
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Styrene
+,,
+Batch Data Path,V:\2026\2026-03\VOC2(RE 3.4 KD 3.4)\QuantResults\ST.batch.bin
+Analysis Time,2026-03-05 오후 3:43:41,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 3:15:36,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-05 오후 3:43:41,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-04 오후 10:07:23,Data File,CCV S.d
+Type,QC,Name,CCV S
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Styrene,4.592,943522,0.218,mg/L
+Styrene
+,,

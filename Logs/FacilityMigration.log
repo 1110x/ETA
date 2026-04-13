@@ -557,3 +557,678 @@
 [22:26:39] [WaterCenterDb]   수질분석센터_TOC_TCIC_DATA 없음 — 스킵
 [22:26:39] [FacilityMigration] WaterCenterDbMigration 호출 완료
 [22:26:39] [FacilityMigration] 마이그레이션 이미 완료됨 (wasteresult_v2) — 건너뜀
+[19:18:17] [FacilityMigration] 처리시설_분석계획 → 마스터 동기화 완료
+[19:18:17] [FacilityMigration] 처리시설_분석계획 테이블 준비 완료
+[19:23:35] [FacilityMigration] 처리시설_분석계획 → 마스터 동기화 완료
+[19:23:35] [FacilityMigration] 처리시설_분석계획 테이블 준비 완료
+[19:26:48] [FacilityMigration] 처리시설_분석계획 → 마스터 동기화 완료
+[19:26:48] [FacilityMigration] 처리시설_분석계획 테이블 준비 완료
+[19:29:33] [FacilityMigration] 처리시설_분석계획 → 마스터 동기화 완료
+[19:29:33] [FacilityMigration] 처리시설_분석계획 테이블 준비 완료
+[19:32:36] [FacilityMigration] 처리시설_분석계획 → 마스터 동기화 완료
+[19:32:36] [FacilityMigration] 처리시설_분석계획 테이블 준비 완료
+[19:47:59] [FacilityMigration] 처리시설_분석계획 → 마스터 동기화 완료
+[19:47:59] [FacilityMigration] 처리시설_분석계획 테이블 준비 완료
+[19:54:49] [FacilityMigration] 처리시설_분석계획 → 마스터 동기화 완료
+[19:54:49] [FacilityMigration] 처리시설_분석계획 테이블 준비 완료
+[19:54:50] [FacilityMigration] EnsureAnalysisRecordTables 시작
+[19:54:51] [FacilityMigration] BOD_시험기록부 생성 완료
+[19:54:51] [FacilityMigration] SS_시험기록부 생성 완료
+[19:54:51] [FacilityMigration] NHexan_시험기록부 생성 완료
+[19:54:52] [FacilityMigration] TOC_NPOC_시험기록부 생성 완료
+[19:54:52] [FacilityMigration] TOC_TCIC_시험기록부 생성 완료
+[19:54:53] [FacilityMigration] TN_시험기록부 생성 완료
+[19:54:53] [FacilityMigration] TP_시험기록부 생성 완료
+[19:54:53] [FacilityMigration] Phenols_시험기록부 생성 완료
+[19:54:54] [FacilityMigration] CN_시험기록부 생성 완료
+[19:54:54] [FacilityMigration] CR6_시험기록부 생성 완료
+[19:54:54] [FacilityMigration] EnsureAnalysisRecordTables 완료
+[19:54:54] [FacilityMigration] WaterCenterDbMigration 호출 시작
+[19:54:54] [WaterCenterDb] ══ EnsureWaterCenterDataTables 진입 ══
+[19:54:54] [WaterCenterDb] 분석정보 테이블 확인됨
+[19:54:54] [WaterCenterDb] 구 GcLc 스키마 테이블 없음 — 스킵
+[19:54:56] [WaterCenterDb] 스키마 불일치 테이블 DROP 완료: 0개 / 대상 43개
+[19:54:56] [WaterCenterDb] 분석정보에서 Analyte 67개 수집
+[19:54:57] [WaterCenterDb] 수질분석센터 DATA 테이블 확인 완료 — 0개 신규 생성
+[19:54:58] [WaterCenterDb]   수질분석센터_TOC_TCIC_DATA 없음 — 스킵
+[19:54:58] [WaterCenterDb] VOC ISTD 컬럼 마이그레이션 대상: 0개 테이블
+[19:54:58] [FacilityMigration] WaterCenterDbMigration 호출 완료
+[19:54:58] [FacilityMigration] 마이그레이션 이미 완료됨 (wasteresult_v2) — 건너뜀
+[20:08:10] [FacilityMigration] 처리시설_분석계획 → 마스터 동기화 완료
+[20:08:10] [FacilityMigration] 처리시설_분석계획 테이블 준비 완료
+[20:08:11] [FacilityMigration] EnsureAnalysisRecordTables 시작
+[20:08:11] [FacilityMigration] 분석정보에서 Analyte 67개 수집
+[20:08:11] [FacilityMigration] 노말헥산_추출물질_시험기록부 생성 완료
+[20:08:11] [FacilityMigration] 노말헥산_추출물질광유류_시험기록부 생성 완료
+[20:08:12] [FacilityMigration] 노말헥산추출물질동_식물_유지류_시험기록부 생성 완료
+[20:08:12] [FacilityMigration] 부유물질_시험기록부 생성 완료
+[20:08:13] [FacilityMigration] 색도_시험기록부 생성 완료
+[20:08:13] [FacilityMigration] 생물화학적_산소요구량_시험기록부 생성 완료
+[20:08:14] [FacilityMigration] 수소이온농도_시험기록부 생성 완료
+[20:08:14] [FacilityMigration] 온도_시험기록부 생성 완료
+[20:08:15] [FacilityMigration] 전기전도도_시험기록부 생성 완료
+[20:08:15] [FacilityMigration] 총_유기탄소_시험기록부 생성 완료
+[20:08:16] [FacilityMigration] 탁도_시험기록부 생성 완료
+[20:08:17] [FacilityMigration] 화학적_산소요구량_시험기록부 생성 완료
+[20:08:17] [FacilityMigration] 시안_시험기록부 생성 완료
+[20:08:18] [FacilityMigration] 음이온계면활성제_시험기록부 생성 완료
+[20:08:18] [FacilityMigration] 총인_시험기록부 생성 완료
+[20:08:19] [FacilityMigration] 총질소_시험기록부 생성 완료
+[20:08:19] [FacilityMigration] 퍼클로레이트_시험기록부 생성 완료
+[20:08:20] [FacilityMigration] 페놀류_시험기록부 생성 완료
+[20:08:20] [FacilityMigration] 불소화합물_시험기록부 생성 완료
+[20:08:21] [FacilityMigration] 염소이온_시험기록부 생성 완료
+[20:08:21] [FacilityMigration] 황산이온_시험기록부 생성 완료
+[20:08:22] [FacilityMigration] 구리_시험기록부 생성 완료
+[20:08:22] [FacilityMigration] 납_시험기록부 생성 완료
+[20:08:22] [FacilityMigration] 니켈_시험기록부 생성 완료
+[20:08:23] [FacilityMigration] 망간_시험기록부 생성 완료
+[20:08:23] [FacilityMigration] 바륨_시험기록부 생성 완료
+[20:08:24] [FacilityMigration] 비소_시험기록부 생성 완료
+[20:08:24] [FacilityMigration] 아연_시험기록부 생성 완료
+[20:08:25] [FacilityMigration] 안티몬_시험기록부 생성 완료
+[20:08:26] [FacilityMigration] 주석_시험기록부 생성 완료
+[20:08:27] [FacilityMigration] 철_시험기록부 생성 완료
+[20:08:27] [FacilityMigration] 셀레늄_시험기록부 생성 완료
+[20:08:27] [FacilityMigration] 수은_시험기록부 생성 완료
+[20:08:28] [FacilityMigration] 카드뮴_시험기록부 생성 완료
+[20:08:28] [FacilityMigration] 크롬_시험기록부 생성 완료
+[20:08:29] [FacilityMigration] 6가크롬_시험기록부 생성 완료
+[20:08:29] [FacilityMigration] 다이에틸헥실프탈레이트_시험기록부 생성 완료
+[20:08:29] [FacilityMigration] 유기인_시험기록부 생성 완료
+[20:08:30] [FacilityMigration] 폴리클로리네이티드비페닐_시험기록부 생성 완료
+[20:08:30] [FacilityMigration] 다이에틸헥실아디페이트_시험기록부 생성 완료
+[20:08:31] [FacilityMigration] 과불화헥산술폰산PFHxS_시험기록부 생성 완료
+[20:08:31] [FacilityMigration] 과불화옥탄술폰산PFOS_시험기록부 생성 완료
+[20:08:32] [FacilityMigration] 과불화옥탄산PFOA_시험기록부 생성 완료
+[20:08:32] [FacilityMigration] 1_4다이옥산_시험기록부 생성 완료
+[20:08:33] [FacilityMigration] 아크릴로니트릴_시험기록부 생성 완료
+[20:08:33] [FacilityMigration] 염화비닐_시험기록부 생성 완료
+[20:08:34] [FacilityMigration] 브로모포름_시험기록부 생성 완료
+[20:08:35] [FacilityMigration] 1_1다이클로로에틸렌_시험기록부 생성 완료
+[20:08:36] [FacilityMigration] 다이클로로메탄_시험기록부 생성 완료
+[20:08:37] [FacilityMigration] 클로로폼_시험기록부 생성 완료
+[20:08:38] [FacilityMigration] 1_2다이클로로에탄_시험기록부 생성 완료
+[20:08:39] [FacilityMigration] 벤젠_시험기록부 생성 완료
+[20:08:39] [FacilityMigration] 사염화탄소_시험기록부 생성 완료
+[20:08:40] [FacilityMigration] 트리클로로에틸렌_시험기록부 생성 완료
+[20:08:41] [FacilityMigration] 톨루엔_시험기록부 생성 완료
+[20:08:41] [FacilityMigration] 테트라클로로에틸렌_시험기록부 생성 완료
+[20:08:42] [FacilityMigration] 자일렌_시험기록부 생성 완료
+[20:08:43] [FacilityMigration] 폼알데하이드_시험기록부 생성 완료
+[20:08:43] [FacilityMigration] 나프탈렌_시험기록부 생성 완료
+[20:08:44] [FacilityMigration] 아크릴아미드_시험기록부 생성 완료
+[20:08:45] [FacilityMigration] 에피클로로하이드린_시험기록부 생성 완료
+[20:08:46] [FacilityMigration] 스타이렌_시험기록부 생성 완료
+[20:08:47] [FacilityMigration] 페놀_시험기록부 생성 완료
+[20:08:47] [FacilityMigration] 펜타클로로페놀_시험기록부 생성 완료
+[20:08:48] [FacilityMigration] 총대장균군_시험기록부 생성 완료
+[20:08:48] [FacilityMigration] 생태독성_시험기록부 생성 완료
+[20:08:49] [FacilityMigration] 현장측정_및_시료채취_시험기록부 생성 완료
+[20:08:49] [FacilityMigration] EnsureAnalysisRecordTables 완료 — 67개 항목 처리, 67개 시도
+[20:08:49] [FacilityMigration] 수질분석센터_*_DATA 테이블 일괄 DROP 시작
+[20:08:50] [FacilityMigration]   DROP: 수질분석센터_1_1다이클로로에틸렌_DATA
+[20:08:50] [FacilityMigration]   DROP: 수질분석센터_1_2다이클로로에탄_DATA
+[20:08:51] [FacilityMigration]   DROP: 수질분석센터_1_4다이옥산_DATA
+[20:08:51] [FacilityMigration]   DROP: 수질분석센터_6가크롬_DATA
+[20:08:52] [FacilityMigration]   DROP: 수질분석센터_과불화옥탄산PFOA_DATA
+[20:08:53] [FacilityMigration]   DROP: 수질분석센터_과불화옥탄술폰산PFOS_DATA
+[20:08:54] [FacilityMigration]   DROP: 수질분석센터_과불화헥산술폰산PFHxS_DATA
+[20:08:54] [FacilityMigration]   DROP: 수질분석센터_구리_DATA
+[20:08:55] [FacilityMigration]   DROP: 수질분석센터_나프탈렌_DATA
+[20:08:55] [FacilityMigration]   DROP: 수질분석센터_납_DATA
+[20:08:56] [FacilityMigration]   DROP: 수질분석센터_노말헥산추출물질동_식물_유지류_DATA
+[20:08:56] [FacilityMigration]   DROP: 수질분석센터_노말헥산_추출물질광유류_DATA
+[20:08:57] [FacilityMigration]   DROP: 수질분석센터_노말헥산_추출물질_DATA
+[20:08:58] [FacilityMigration]   DROP: 수질분석센터_니켈_DATA
+[20:08:58] [FacilityMigration]   DROP: 수질분석센터_다이에틸헥실아디페이트_DATA
+[20:08:59] [FacilityMigration]   DROP: 수질분석센터_다이에틸헥실프탈레이트_DATA
+[20:09:00] [FacilityMigration]   DROP: 수질분석센터_다이클로로메탄_DATA
+[20:09:01] [FacilityMigration]   DROP: 수질분석센터_망간_DATA
+[20:09:01] [FacilityMigration]   DROP: 수질분석센터_바륨_DATA
+[20:09:02] [FacilityMigration]   DROP: 수질분석센터_벤젠_DATA
+[20:09:02] [FacilityMigration]   DROP: 수질분석센터_부유물질_DATA
+[20:09:03] [FacilityMigration]   DROP: 수질분석센터_불소화합물_DATA
+[20:09:03] [FacilityMigration]   DROP: 수질분석센터_브로모포름_DATA
+[20:09:04] [FacilityMigration]   DROP: 수질분석센터_비소_DATA
+[20:09:05] [FacilityMigration]   DROP: 수질분석센터_사염화탄소_DATA
+[20:09:05] [FacilityMigration]   DROP: 수질분석센터_색도_DATA
+[20:09:06] [FacilityMigration]   DROP: 수질분석센터_생물화학적_산소요구량_DATA
+[20:09:06] [FacilityMigration]   DROP: 수질분석센터_생태독성_DATA
+[20:09:07] [FacilityMigration]   DROP: 수질분석센터_셀레늄_DATA
+[20:09:07] [FacilityMigration]   DROP: 수질분석센터_수소이온농도_DATA
+[20:09:08] [FacilityMigration]   DROP: 수질분석센터_수은_DATA
+[20:09:08] [FacilityMigration]   DROP: 수질분석센터_스타이렌_DATA
+[20:09:09] [FacilityMigration]   DROP: 수질분석센터_시안_DATA
+[20:09:09] [FacilityMigration]   DROP: 수질분석센터_아연_DATA
+[20:09:10] [FacilityMigration]   DROP: 수질분석센터_아크릴로니트릴_DATA
+[20:09:10] [FacilityMigration]   DROP: 수질분석센터_아크릴아미드_DATA
+[20:09:11] [FacilityMigration]   DROP: 수질분석센터_안티몬_DATA
+[20:09:11] [FacilityMigration]   DROP: 수질분석센터_에피클로로하이드린_DATA
+[20:09:12] [FacilityMigration]   DROP: 수질분석센터_염소이온_DATA
+[20:09:12] [FacilityMigration]   DROP: 수질분석센터_염화비닐_DATA
+[20:09:13] [FacilityMigration]   DROP: 수질분석센터_온도_DATA
+[20:09:13] [FacilityMigration]   DROP: 수질분석센터_유기인_DATA
+[20:09:13] [FacilityMigration]   DROP: 수질분석센터_음이온계면활성제_DATA
+[20:09:14] [FacilityMigration]   DROP: 수질분석센터_자일렌_DATA
+[20:09:14] [FacilityMigration]   DROP: 수질분석센터_전기전도도_DATA
+[20:09:15] [FacilityMigration]   DROP: 수질분석센터_주석_DATA
+[20:09:15] [FacilityMigration]   DROP: 수질분석센터_철_DATA
+[20:09:16] [FacilityMigration]   DROP: 수질분석센터_총대장균군_DATA
+[20:09:16] [FacilityMigration]   DROP: 수질분석센터_총인_DATA
+[20:09:17] [FacilityMigration]   DROP: 수질분석센터_총질소_DATA
+[20:09:17] [FacilityMigration]   DROP: 수질분석센터_총_유기탄소_DATA
+[20:09:18] [FacilityMigration]   DROP: 수질분석센터_카드뮴_DATA
+[20:09:18] [FacilityMigration]   DROP: 수질분석센터_크롬_DATA
+[20:09:19] [FacilityMigration]   DROP: 수질분석센터_클로로폼_DATA
+[20:09:19] [FacilityMigration]   DROP: 수질분석센터_탁도_DATA
+[20:09:20] [FacilityMigration]   DROP: 수질분석센터_테트라클로로에틸렌_DATA
+[20:09:20] [FacilityMigration]   DROP: 수질분석센터_톨루엔_DATA
+[20:09:21] [FacilityMigration]   DROP: 수질분석센터_트리클로로에틸렌_DATA
+[20:09:21] [FacilityMigration]   DROP: 수질분석센터_퍼클로레이트_DATA
+[20:09:22] [FacilityMigration]   DROP: 수질분석센터_페놀류_DATA
+[20:09:22] [FacilityMigration]   DROP: 수질분석센터_페놀_DATA
+[20:09:23] [FacilityMigration]   DROP: 수질분석센터_펜타클로로페놀_DATA
+[20:09:23] [FacilityMigration]   DROP: 수질분석센터_폴리클로리네이티드비페닐_DATA
+[20:09:24] [FacilityMigration]   DROP: 수질분석센터_폼알데하이드_DATA
+[20:09:24] [FacilityMigration]   DROP: 수질분석센터_현장측정_및_시료채취_DATA
+[20:09:24] [FacilityMigration]   DROP: 수질분석센터_화학적_산소요구량_DATA
+[20:09:25] [FacilityMigration]   DROP: 수질분석센터_황산이온_DATA
+[20:09:25] [FacilityMigration] 수질분석센터_*_DATA 67개 테이블 DROP 완료
+[20:09:25] [FacilityMigration] 마이그레이션 완료 표시: drop_watercenter_data_v1
+[20:09:25] [FacilityMigration] WaterCenterDbMigration 호출 시작
+[20:09:25] [WaterCenterDb] ══ EnsureWaterCenterDataTables 진입 ══
+[20:09:25] [WaterCenterDb] 분석정보 테이블 확인됨
+[20:09:25] [WaterCenterDb] 구 GcLc 스키마 테이블 없음 — 스킵
+[20:09:26] [WaterCenterDb] 스키마 불일치 테이블 DROP 완료: 0개 / 대상 43개
+[20:09:26] [WaterCenterDb] 분석정보에서 Analyte 67개 수집
+[20:09:27] [WaterCenterDb] 수질분석센터_노말헥산_추출물질_DATA 생성 (NHexan형)
+[20:09:28] [WaterCenterDb] 수질분석센터_노말헥산_추출물질광유류_DATA 생성 (NHexan형)
+[20:09:29] [WaterCenterDb] 수질분석센터_노말헥산추출물질동_식물_유지류_DATA 생성 (NHexan형)
+[20:09:29] [WaterCenterDb] 수질분석센터_부유물질_DATA 생성 (SS형)
+[20:09:30] [WaterCenterDb] 수질분석센터_색도_DATA 생성 (UvVis형)
+[20:09:31] [WaterCenterDb] 수질분석센터_생물화학적_산소요구량_DATA 생성 (BOD형)
+[20:09:32] [WaterCenterDb] 수질분석센터_수소이온농도_DATA 생성 (NHexan형)
+[20:09:33] [WaterCenterDb] 수질분석센터_온도_DATA 생성 (NHexan형)
+[20:09:33] [WaterCenterDb] 수질분석센터_전기전도도_DATA 생성 (NHexan형)
+[20:09:34] [WaterCenterDb] 수질분석센터_총_유기탄소_DATA 생성 (NHexan형)
+[20:09:35] [WaterCenterDb] 수질분석센터_탁도_DATA 생성 (NHexan형)
+[20:09:36] [WaterCenterDb] 수질분석센터_화학적_산소요구량_DATA 생성 (NHexan형)
+[20:09:37] [WaterCenterDb] 수질분석센터_시안_DATA 생성 (UvVis형)
+[20:09:38] [WaterCenterDb] 수질분석센터_음이온계면활성제_DATA 생성 (UvVis형)
+[20:09:38] [WaterCenterDb] 수질분석센터_총인_DATA 생성 (UvVis형)
+[20:09:40] [WaterCenterDb] 수질분석센터_총질소_DATA 생성 (UvVis형)
+[20:09:41] [WaterCenterDb] 수질분석센터_퍼클로레이트_DATA 생성 (GcLc형)
+[20:09:42] [WaterCenterDb] 수질분석센터_페놀류_DATA 생성 (UvVis형)
+[20:09:43] [WaterCenterDb] 수질분석센터_불소화합물_DATA 생성 (UvVis형)
+[20:09:44] [WaterCenterDb] 수질분석센터_염소이온_DATA 생성 (UvVis형)
+[20:09:44] [WaterCenterDb] 수질분석센터_황산이온_DATA 생성 (GcLc형)
+[20:09:45] [WaterCenterDb] 수질분석센터_구리_DATA 생성 (Metal형)
+[20:09:45] [WaterCenterDb] 수질분석센터_납_DATA 생성 (Metal형)
+[20:09:46] [WaterCenterDb] 수질분석센터_니켈_DATA 생성 (Metal형)
+[20:09:47] [WaterCenterDb] 수질분석센터_망간_DATA 생성 (Metal형)
+[20:09:47] [WaterCenterDb] 수질분석센터_바륨_DATA 생성 (Metal형)
+[20:09:48] [WaterCenterDb] 수질분석센터_비소_DATA 생성 (Metal형)
+[20:09:49] [WaterCenterDb] 수질분석센터_아연_DATA 생성 (Metal형)
+[20:09:50] [WaterCenterDb] 수질분석센터_안티몬_DATA 생성 (Metal형)
+[20:09:51] [WaterCenterDb] 수질분석센터_주석_DATA 생성 (Metal형)
+[20:09:51] [WaterCenterDb] 수질분석센터_철_DATA 생성 (Metal형)
+[20:09:52] [WaterCenterDb] 수질분석센터_셀레늄_DATA 생성 (Metal형)
+[20:09:52] [WaterCenterDb] 수질분석센터_수은_DATA 생성 (Metal형)
+[20:09:54] [WaterCenterDb] 수질분석센터_카드뮴_DATA 생성 (Metal형)
+[20:09:54] [WaterCenterDb] 수질분석센터_크롬_DATA 생성 (Metal형)
+[20:09:55] [WaterCenterDb] 수질분석센터_6가크롬_DATA 생성 (Cr6형)
+[20:09:56] [WaterCenterDb] 수질분석센터_다이에틸헥실프탈레이트_DATA 생성 (VOC형)
+[20:09:57] [WaterCenterDb] 수질분석센터_유기인_DATA 생성 (VOC형)
+[20:09:57] [WaterCenterDb] 수질분석센터_폴리클로리네이티드비페닐_DATA 생성 (VOC형)
+[20:09:58] [WaterCenterDb] 수질분석센터_다이에틸헥실아디페이트_DATA 생성 (VOC형)
+[20:09:59] [WaterCenterDb] 수질분석센터_과불화헥산술폰산PFHxS_DATA 생성 (VOC형)
+[20:10:01] [WaterCenterDb] 수질분석센터_과불화옥탄술폰산PFOS_DATA 생성 (VOC형)
+[20:10:02] [WaterCenterDb] 수질분석센터_과불화옥탄산PFOA_DATA 생성 (VOC형)
+[20:10:03] [WaterCenterDb] 수질분석센터_1_4다이옥산_DATA 생성 (VOC형)
+[20:10:03] [WaterCenterDb] 수질분석센터_아크릴로니트릴_DATA 생성 (VOC형)
+[20:10:04] [WaterCenterDb] 수질분석센터_염화비닐_DATA 생성 (VOC형)
+[20:10:05] [WaterCenterDb] 수질분석센터_브로모포름_DATA 생성 (VOC형)
+[20:10:05] [WaterCenterDb] 수질분석센터_1_1다이클로로에틸렌_DATA 생성 (VOC형)
+[20:10:06] [WaterCenterDb] 수질분석센터_다이클로로메탄_DATA 생성 (VOC형)
+[20:10:06] [WaterCenterDb] 수질분석센터_클로로폼_DATA 생성 (VOC형)
+[20:10:07] [WaterCenterDb] 수질분석센터_1_2다이클로로에탄_DATA 생성 (VOC형)
+[20:10:08] [WaterCenterDb] 수질분석센터_벤젠_DATA 생성 (VOC형)
+[20:10:09] [WaterCenterDb] 수질분석센터_사염화탄소_DATA 생성 (VOC형)
+[20:10:10] [WaterCenterDb] 수질분석센터_트리클로로에틸렌_DATA 생성 (VOC형)
+[20:10:10] [WaterCenterDb] 수질분석센터_톨루엔_DATA 생성 (VOC형)
+[20:10:11] [WaterCenterDb] 수질분석센터_테트라클로로에틸렌_DATA 생성 (VOC형)
+[20:10:12] [WaterCenterDb] 수질분석센터_자일렌_DATA 생성 (VOC형)
+[20:10:12] [WaterCenterDb] 수질분석센터_폼알데하이드_DATA 생성 (VOC형)
+[20:10:13] [WaterCenterDb] 수질분석센터_나프탈렌_DATA 생성 (VOC형)
+[20:10:14] [WaterCenterDb] 수질분석센터_아크릴아미드_DATA 생성 (VOC형)
+[20:10:14] [WaterCenterDb] 수질분석센터_에피클로로하이드린_DATA 생성 (VOC형)
+[20:10:15] [WaterCenterDb] 수질분석센터_스타이렌_DATA 생성 (VOC형)
+[20:10:16] [WaterCenterDb] 수질분석센터_페놀_DATA 생성 (VOC형)
+[20:10:17] [WaterCenterDb] 수질분석센터_펜타클로로페놀_DATA 생성 (VOC형)
+[20:10:18] [WaterCenterDb] 수질분석센터_총대장균군_DATA 생성 (NHexan형)
+[20:10:19] [WaterCenterDb] 수질분석센터_생태독성_DATA 생성 (NHexan형)
+[20:10:19] [WaterCenterDb] 수질분석센터_현장측정_및_시료채취_DATA 생성 (NHexan형)
+[20:10:19] [WaterCenterDb] 수질분석센터 DATA 테이블 확인 완료 — 67개 신규 생성
+[20:10:19] [WaterCenterDb]   수질분석센터_TOC_TCIC_DATA 없음 — 스킵
+[20:10:20] [WaterCenterDb] VOC ISTD 컬럼 마이그레이션 대상: 0개 테이블
+[20:10:20] [FacilityMigration] WaterCenterDbMigration 호출 완료
+[20:10:20] [FacilityMigration] 마이그레이션 이미 완료됨 (wasteresult_v2) — 건너뜀
+[20:11:02] [FacilityMigration] 처리시설_분석계획 → 마스터 동기화 완료
+[20:11:02] [FacilityMigration] 처리시설_분석계획 테이블 준비 완료
+[20:11:03] [FacilityMigration] EnsureAnalysisRecordTables 시작
+[20:11:03] [FacilityMigration] 분석정보에서 Analyte 67개 수집
+[20:11:04] [FacilityMigration] EnsureAnalysisRecordTables 완료 — 67개 항목 처리, 67개 시도
+[20:11:04] [FacilityMigration] 수질분석센터_*_DATA + 처리시설_*_DATA 일괄 DROP 시작
+[20:11:04] [FacilityMigration]   DROP: 수질분석센터_1_1다이클로로에틸렌_DATA
+[20:11:05] [FacilityMigration]   DROP: 수질분석센터_1_2다이클로로에탄_DATA
+[20:11:05] [FacilityMigration]   DROP: 수질분석센터_1_4다이옥산_DATA
+[20:11:06] [FacilityMigration]   DROP: 수질분석센터_6가크롬_DATA
+[20:11:06] [FacilityMigration]   DROP: 수질분석센터_과불화옥탄산PFOA_DATA
+[20:11:07] [FacilityMigration]   DROP: 수질분석센터_과불화옥탄술폰산PFOS_DATA
+[20:11:07] [FacilityMigration]   DROP: 수질분석센터_과불화헥산술폰산PFHxS_DATA
+[20:11:08] [FacilityMigration]   DROP: 수질분석센터_구리_DATA
+[20:11:08] [FacilityMigration]   DROP: 수질분석센터_나프탈렌_DATA
+[20:11:09] [FacilityMigration]   DROP: 수질분석센터_납_DATA
+[20:11:09] [FacilityMigration]   DROP: 수질분석센터_노말헥산추출물질동_식물_유지류_DATA
+[20:11:10] [FacilityMigration]   DROP: 수질분석센터_노말헥산_추출물질광유류_DATA
+[20:11:10] [FacilityMigration]   DROP: 수질분석센터_노말헥산_추출물질_DATA
+[20:11:11] [FacilityMigration]   DROP: 수질분석센터_니켈_DATA
+[20:11:11] [FacilityMigration]   DROP: 수질분석센터_다이에틸헥실아디페이트_DATA
+[20:11:11] [FacilityMigration]   DROP: 수질분석센터_다이에틸헥실프탈레이트_DATA
+[20:11:12] [FacilityMigration]   DROP: 수질분석센터_다이클로로메탄_DATA
+[20:11:13] [FacilityMigration]   DROP: 수질분석센터_망간_DATA
+[20:11:13] [FacilityMigration]   DROP: 수질분석센터_바륨_DATA
+[20:11:14] [FacilityMigration]   DROP: 수질분석센터_벤젠_DATA
+[20:11:14] [FacilityMigration]   DROP: 수질분석센터_부유물질_DATA
+[20:11:15] [FacilityMigration]   DROP: 수질분석센터_불소화합물_DATA
+[20:11:15] [FacilityMigration]   DROP: 수질분석센터_브로모포름_DATA
+[20:11:16] [FacilityMigration]   DROP: 수질분석센터_비소_DATA
+[20:11:16] [FacilityMigration]   DROP: 수질분석센터_사염화탄소_DATA
+[20:11:17] [FacilityMigration]   DROP: 수질분석센터_색도_DATA
+[20:11:17] [FacilityMigration]   DROP: 수질분석센터_생물화학적_산소요구량_DATA
+[20:11:18] [FacilityMigration]   DROP: 수질분석센터_생태독성_DATA
+[20:11:19] [FacilityMigration]   DROP: 수질분석센터_셀레늄_DATA
+[20:11:19] [FacilityMigration]   DROP: 수질분석센터_수소이온농도_DATA
+[20:11:20] [FacilityMigration]   DROP: 수질분석센터_수은_DATA
+[20:11:20] [FacilityMigration]   DROP: 수질분석센터_스타이렌_DATA
+[20:11:20] [FacilityMigration]   DROP: 수질분석센터_시안_DATA
+[20:11:21] [FacilityMigration]   DROP: 수질분석센터_아연_DATA
+[20:11:22] [FacilityMigration]   DROP: 수질분석센터_아크릴로니트릴_DATA
+[20:11:22] [FacilityMigration]   DROP: 수질분석센터_아크릴아미드_DATA
+[20:11:23] [FacilityMigration]   DROP: 수질분석센터_안티몬_DATA
+[20:11:23] [FacilityMigration]   DROP: 수질분석센터_에피클로로하이드린_DATA
+[20:11:24] [FacilityMigration]   DROP: 수질분석센터_염소이온_DATA
+[20:11:25] [FacilityMigration]   DROP: 수질분석센터_염화비닐_DATA
+[20:11:25] [FacilityMigration]   DROP: 수질분석센터_온도_DATA
+[20:11:26] [FacilityMigration]   DROP: 수질분석센터_유기인_DATA
+[20:11:26] [FacilityMigration]   DROP: 수질분석센터_음이온계면활성제_DATA
+[20:11:27] [FacilityMigration]   DROP: 수질분석센터_자일렌_DATA
+[20:11:28] [FacilityMigration]   DROP: 수질분석센터_전기전도도_DATA
+[20:11:28] [FacilityMigration]   DROP: 수질분석센터_주석_DATA
+[20:11:29] [FacilityMigration]   DROP: 수질분석센터_철_DATA
+[20:11:29] [FacilityMigration]   DROP: 수질분석센터_총대장균군_DATA
+[20:11:30] [FacilityMigration]   DROP: 수질분석센터_총인_DATA
+[20:11:30] [FacilityMigration]   DROP: 수질분석센터_총질소_DATA
+[20:11:31] [FacilityMigration]   DROP: 수질분석센터_총_유기탄소_DATA
+[20:11:32] [FacilityMigration]   DROP: 수질분석센터_카드뮴_DATA
+[20:11:33] [FacilityMigration]   DROP: 수질분석센터_크롬_DATA
+[20:11:34] [FacilityMigration]   DROP: 수질분석센터_클로로폼_DATA
+[20:11:35] [FacilityMigration]   DROP: 수질분석센터_탁도_DATA
+[20:11:36] [FacilityMigration]   DROP: 수질분석센터_테트라클로로에틸렌_DATA
+[20:11:37] [FacilityMigration]   DROP: 수질분석센터_톨루엔_DATA
+[20:11:38] [FacilityMigration]   DROP: 수질분석센터_트리클로로에틸렌_DATA
+[20:11:39] [FacilityMigration]   DROP: 수질분석센터_퍼클로레이트_DATA
+[20:11:39] [FacilityMigration]   DROP: 수질분석센터_페놀류_DATA
+[20:11:40] [FacilityMigration]   DROP: 수질분석센터_페놀_DATA
+[20:11:40] [FacilityMigration]   DROP: 수질분석센터_펜타클로로페놀_DATA
+[20:11:40] [FacilityMigration]   DROP: 수질분석센터_폴리클로리네이티드비페닐_DATA
+[20:11:41] [FacilityMigration]   DROP: 수질분석센터_폼알데하이드_DATA
+[20:11:42] [FacilityMigration]   DROP: 수질분석센터_현장측정_및_시료채취_DATA
+[20:11:42] [FacilityMigration]   DROP: 수질분석센터_화학적_산소요구량_DATA
+[20:11:43] [FacilityMigration]   DROP: 수질분석센터_황산이온_DATA
+[20:11:43] [FacilityMigration]   DROP: 처리시설_수소이온농도_DATA
+[20:11:43] [FacilityMigration]   DROP: 처리시설_온도_DATA
+[20:11:44] [FacilityMigration]   DROP: 처리시설_총대장균군_DATA
+[20:11:44] [FacilityMigration]   DROP: 처리시설_BOD_DATA
+[20:11:45] [FacilityMigration]   DROP: 처리시설_SS_DATA
+[20:11:45] [FacilityMigration]   DROP: 처리시설_TN_DATA
+[20:11:46] [FacilityMigration]   DROP: 처리시설_TOC_NPOC_DATA
+[20:11:46] [FacilityMigration]   DROP: 처리시설_TOC_TCIC_DATA
+[20:11:47] [FacilityMigration]   DROP: 처리시설_TP_DATA
+[20:11:47] [FacilityMigration] DATA 테이블 76개 DROP 완료
+[20:11:47] [FacilityMigration] 마이그레이션 완료 표시: drop_data_tables_v2
+[20:11:47] [FacilityMigration] WaterCenterDbMigration 호출 시작
+[20:11:47] [WaterCenterDb] ══ EnsureWaterCenterDataTables 진입 ══
+[20:11:47] [WaterCenterDb] 분석정보 테이블 확인됨
+[20:11:47] [WaterCenterDb] 구 GcLc 스키마 테이블 없음 — 스킵
+[20:11:48] [WaterCenterDb] 스키마 불일치 테이블 DROP 완료: 0개 / 대상 43개
+[20:11:48] [WaterCenterDb] 분석정보에서 Analyte 67개 수집
+[20:11:48] [WaterCenterDb] 수질분석센터_노말헥산_추출물질_DATA 생성 (NHexan형)
+[20:11:49] [WaterCenterDb] 수질분석센터_노말헥산_추출물질광유류_DATA 생성 (NHexan형)
+[20:11:50] [WaterCenterDb] 수질분석센터_노말헥산추출물질동_식물_유지류_DATA 생성 (NHexan형)
+[20:11:51] [WaterCenterDb] 수질분석센터_부유물질_DATA 생성 (SS형)
+[20:11:52] [WaterCenterDb] 수질분석센터_색도_DATA 생성 (UvVis형)
+[20:11:53] [WaterCenterDb] 수질분석센터_생물화학적_산소요구량_DATA 생성 (BOD형)
+[20:11:53] [WaterCenterDb] 수질분석센터_수소이온농도_DATA 생성 (NHexan형)
+[20:11:54] [WaterCenterDb] 수질분석센터_온도_DATA 생성 (NHexan형)
+[20:11:55] [WaterCenterDb] 수질분석센터_전기전도도_DATA 생성 (NHexan형)
+[20:11:56] [WaterCenterDb] 수질분석센터_총_유기탄소_DATA 생성 (NHexan형)
+[20:11:57] [WaterCenterDb] 수질분석센터_탁도_DATA 생성 (NHexan형)
+[20:11:57] [WaterCenterDb] 수질분석센터_화학적_산소요구량_DATA 생성 (NHexan형)
+[20:11:58] [WaterCenterDb] 수질분석센터_시안_DATA 생성 (UvVis형)
+[20:11:59] [WaterCenterDb] 수질분석센터_음이온계면활성제_DATA 생성 (UvVis형)
+[20:12:00] [WaterCenterDb] 수질분석센터_총인_DATA 생성 (UvVis형)
+[20:12:00] [WaterCenterDb] 수질분석센터_총질소_DATA 생성 (UvVis형)
+[20:12:01] [WaterCenterDb] 수질분석센터_퍼클로레이트_DATA 생성 (GcLc형)
+[20:12:02] [WaterCenterDb] 수질분석센터_페놀류_DATA 생성 (UvVis형)
+[20:12:03] [WaterCenterDb] 수질분석센터_불소화합물_DATA 생성 (UvVis형)
+[20:12:03] [WaterCenterDb] 수질분석센터_염소이온_DATA 생성 (UvVis형)
+[20:12:04] [WaterCenterDb] 수질분석센터_황산이온_DATA 생성 (GcLc형)
+[20:12:04] [WaterCenterDb] 수질분석센터_구리_DATA 생성 (Metal형)
+[20:12:05] [WaterCenterDb] 수질분석센터_납_DATA 생성 (Metal형)
+[20:12:06] [WaterCenterDb] 수질분석센터_니켈_DATA 생성 (Metal형)
+[20:12:07] [WaterCenterDb] 수질분석센터_망간_DATA 생성 (Metal형)
+[20:12:07] [WaterCenterDb] 수질분석센터_바륨_DATA 생성 (Metal형)
+[20:12:08] [WaterCenterDb] 수질분석센터_비소_DATA 생성 (Metal형)
+[20:12:09] [WaterCenterDb] 수질분석센터_아연_DATA 생성 (Metal형)
+[20:12:09] [WaterCenterDb] 수질분석센터_안티몬_DATA 생성 (Metal형)
+[20:12:10] [WaterCenterDb] 수질분석센터_주석_DATA 생성 (Metal형)
+[20:12:11] [WaterCenterDb] 수질분석센터_철_DATA 생성 (Metal형)
+[20:12:12] [WaterCenterDb] 수질분석센터_셀레늄_DATA 생성 (Metal형)
+[20:12:13] [WaterCenterDb] 수질분석센터_수은_DATA 생성 (Metal형)
+[20:12:13] [WaterCenterDb] 수질분석센터_카드뮴_DATA 생성 (Metal형)
+[20:12:14] [WaterCenterDb] 수질분석센터_크롬_DATA 생성 (Metal형)
+[20:12:15] [WaterCenterDb] 수질분석센터_6가크롬_DATA 생성 (Cr6형)
+[20:12:16] [WaterCenterDb] 수질분석센터_다이에틸헥실프탈레이트_DATA 생성 (VOC형)
+[20:12:17] [WaterCenterDb] 수질분석센터_유기인_DATA 생성 (VOC형)
+[20:12:18] [WaterCenterDb] 수질분석센터_폴리클로리네이티드비페닐_DATA 생성 (VOC형)
+[20:12:18] [WaterCenterDb] 수질분석센터_다이에틸헥실아디페이트_DATA 생성 (VOC형)
+[20:12:19] [WaterCenterDb] 수질분석센터_과불화헥산술폰산PFHxS_DATA 생성 (VOC형)
+[20:12:20] [WaterCenterDb] 수질분석센터_과불화옥탄술폰산PFOS_DATA 생성 (VOC형)
+[20:12:20] [WaterCenterDb] 수질분석센터_과불화옥탄산PFOA_DATA 생성 (VOC형)
+[20:12:21] [WaterCenterDb] 수질분석센터_1_4다이옥산_DATA 생성 (VOC형)
+[20:12:21] [WaterCenterDb] 수질분석센터_아크릴로니트릴_DATA 생성 (VOC형)
+[20:12:23] [WaterCenterDb] 수질분석센터_염화비닐_DATA 생성 (VOC형)
+[20:12:23] [WaterCenterDb] 수질분석센터_브로모포름_DATA 생성 (VOC형)
+[20:12:24] [WaterCenterDb] 수질분석센터_1_1다이클로로에틸렌_DATA 생성 (VOC형)
+[20:12:25] [WaterCenterDb] 수질분석센터_다이클로로메탄_DATA 생성 (VOC형)
+[20:12:25] [WaterCenterDb] 수질분석센터_클로로폼_DATA 생성 (VOC형)
+[20:12:26] [WaterCenterDb] 수질분석센터_1_2다이클로로에탄_DATA 생성 (VOC형)
+[20:12:27] [WaterCenterDb] 수질분석센터_벤젠_DATA 생성 (VOC형)
+[20:12:27] [WaterCenterDb] 수질분석센터_사염화탄소_DATA 생성 (VOC형)
+[20:12:28] [WaterCenterDb] 수질분석센터_트리클로로에틸렌_DATA 생성 (VOC형)
+[20:12:29] [WaterCenterDb] 수질분석센터_톨루엔_DATA 생성 (VOC형)
+[20:12:30] [WaterCenterDb] 수질분석센터_테트라클로로에틸렌_DATA 생성 (VOC형)
+[20:12:30] [WaterCenterDb] 수질분석센터_자일렌_DATA 생성 (VOC형)
+[20:12:31] [WaterCenterDb] 수질분석센터_폼알데하이드_DATA 생성 (VOC형)
+[20:12:32] [WaterCenterDb] 수질분석센터_나프탈렌_DATA 생성 (VOC형)
+[20:12:33] [WaterCenterDb] 수질분석센터_아크릴아미드_DATA 생성 (VOC형)
+[20:12:34] [WaterCenterDb] 수질분석센터_에피클로로하이드린_DATA 생성 (VOC형)
+[20:12:34] [WaterCenterDb] 수질분석센터_스타이렌_DATA 생성 (VOC형)
+[20:12:35] [WaterCenterDb] 수질분석센터_페놀_DATA 생성 (VOC형)
+[20:12:35] [WaterCenterDb] 수질분석센터_펜타클로로페놀_DATA 생성 (VOC형)
+[20:12:36] [WaterCenterDb] 수질분석센터_총대장균군_DATA 생성 (NHexan형)
+[20:12:37] [WaterCenterDb] 수질분석센터_생태독성_DATA 생성 (NHexan형)
+[20:12:38] [WaterCenterDb] 수질분석센터_현장측정_및_시료채취_DATA 생성 (NHexan형)
+[20:12:38] [WaterCenterDb] 수질분석센터 DATA 테이블 확인 완료 — 67개 신규 생성
+[20:12:38] [WaterCenterDb]   수질분석센터_TOC_TCIC_DATA 없음 — 스킵
+[20:12:38] [WaterCenterDb]   처리시설_TOC_TCIC_DATA 없음 — 스킵
+[20:12:38] [WaterCenterDb] VOC ISTD 컬럼 마이그레이션 대상: 0개 테이블
+[20:12:38] [FacilityMigration] WaterCenterDbMigration 호출 완료
+[20:12:38] [FacilityMigration] 마이그레이션 이미 완료됨 (wasteresult_v2) — 건너뜀
+[20:16:42] [FacilityMigration] 처리시설_분석계획 → 마스터 동기화 완료
+[20:16:42] [FacilityMigration] 처리시설_분석계획 테이블 준비 완료
+[20:16:42] [FacilityMigration] 처리시설_BOD_DATA 테이블 생성
+[20:16:43] [FacilityMigration] 처리시설_SS_DATA 테이블 생성
+[20:16:43] [FacilityMigration] 처리시설_TN_DATA 테이블 생성
+[20:16:44] [FacilityMigration] 처리시설_TP_DATA 테이블 생성
+[20:16:44] [FacilityMigration] 처리시설_TOC_NPOC_DATA 테이블 생성
+[20:16:45] [FacilityMigration] 처리시설_TOC_TCIC_DATA 테이블 생성
+[20:16:45] [FacilityMigration] 처리시설_총대장균군_DATA 테이블 생성
+[20:16:46] [FacilityMigration] 처리시설_온도_DATA 테이블 생성
+[20:16:47] [FacilityMigration] 처리시설_수소이온농도_DATA 테이블 생성
+[20:16:47] [FacilityMigration] EnsureAnalysisRecordTables 시작
+[20:16:47] [FacilityMigration] 분석정보에서 Analyte 67개 수집
+[20:16:48] [FacilityMigration] EnsureAnalysisRecordTables 완료 — 67개 항목 처리, 67개 시도
+[20:16:48] [FacilityMigration] 마이그레이션 이미 완료됨 (wasteresult_v2) — 건너뜀
+[20:18:55] [FacilityMigration] drop_data_tables_v3 체크 시작
+[20:18:55] [FacilityMigration] 수질분석센터_*_DATA + 처리시설_*_DATA 일괄 DROP 시작
+[20:18:55] [FacilityMigration] DROP 대상: 76개 테이블
+[20:18:55] [FacilityMigration]   DROP: 수질분석센터_1_1다이클로로에틸렌_DATA
+[20:18:55] [FacilityMigration]   DROP: 수질분석센터_1_2다이클로로에탄_DATA
+[20:18:55] [FacilityMigration]   DROP: 수질분석센터_1_4다이옥산_DATA
+[20:18:56] [FacilityMigration]   DROP: 수질분석센터_6가크롬_DATA
+[20:18:56] [FacilityMigration]   DROP: 수질분석센터_과불화옥탄산PFOA_DATA
+[20:18:56] [FacilityMigration]   DROP: 수질분석센터_과불화옥탄술폰산PFOS_DATA
+[20:18:57] [FacilityMigration]   DROP: 수질분석센터_과불화헥산술폰산PFHxS_DATA
+[20:18:57] [FacilityMigration]   DROP: 수질분석센터_구리_DATA
+[20:18:57] [FacilityMigration]   DROP: 수질분석센터_나프탈렌_DATA
+[20:18:58] [FacilityMigration]   DROP: 수질분석센터_납_DATA
+[20:18:58] [FacilityMigration]   DROP: 수질분석센터_노말헥산추출물질동_식물_유지류_DATA
+[20:18:59] [FacilityMigration]   DROP: 수질분석센터_노말헥산_추출물질광유류_DATA
+[20:18:59] [FacilityMigration]   DROP: 수질분석센터_노말헥산_추출물질_DATA
+[20:18:59] [FacilityMigration]   DROP: 수질분석센터_니켈_DATA
+[20:19:00] [FacilityMigration]   DROP: 수질분석센터_다이에틸헥실아디페이트_DATA
+[20:19:00] [FacilityMigration]   DROP: 수질분석센터_다이에틸헥실프탈레이트_DATA
+[20:19:01] [FacilityMigration]   DROP: 수질분석센터_다이클로로메탄_DATA
+[20:19:01] [FacilityMigration]   DROP: 수질분석센터_망간_DATA
+[20:19:02] [FacilityMigration]   DROP: 수질분석센터_바륨_DATA
+[20:19:02] [FacilityMigration]   DROP: 수질분석센터_벤젠_DATA
+[20:19:03] [FacilityMigration]   DROP: 수질분석센터_부유물질_DATA
+[20:19:03] [FacilityMigration]   DROP: 수질분석센터_불소화합물_DATA
+[20:19:04] [FacilityMigration]   DROP: 수질분석센터_브로모포름_DATA
+[20:19:04] [FacilityMigration]   DROP: 수질분석센터_비소_DATA
+[20:19:05] [FacilityMigration]   DROP: 수질분석센터_사염화탄소_DATA
+[20:19:05] [FacilityMigration]   DROP: 수질분석센터_색도_DATA
+[20:19:06] [FacilityMigration]   DROP: 수질분석센터_생물화학적_산소요구량_DATA
+[20:19:06] [FacilityMigration]   DROP: 수질분석센터_생태독성_DATA
+[20:19:07] [FacilityMigration]   DROP: 수질분석센터_셀레늄_DATA
+[20:19:07] [FacilityMigration]   DROP: 수질분석센터_수소이온농도_DATA
+[20:19:07] [FacilityMigration]   DROP: 수질분석센터_수은_DATA
+[20:19:08] [FacilityMigration]   DROP: 수질분석센터_스타이렌_DATA
+[20:19:08] [FacilityMigration]   DROP: 수질분석센터_시안_DATA
+[20:19:09] [FacilityMigration]   DROP: 수질분석센터_아연_DATA
+[20:19:09] [FacilityMigration]   DROP: 수질분석센터_아크릴로니트릴_DATA
+[20:19:10] [FacilityMigration]   DROP: 수질분석센터_아크릴아미드_DATA
+[20:19:10] [FacilityMigration]   DROP: 수질분석센터_안티몬_DATA
+[20:19:10] [FacilityMigration]   DROP: 수질분석센터_에피클로로하이드린_DATA
+[20:19:11] [FacilityMigration]   DROP: 수질분석센터_염소이온_DATA
+[20:19:11] [FacilityMigration]   DROP: 수질분석센터_염화비닐_DATA
+[20:19:12] [FacilityMigration]   DROP: 수질분석센터_온도_DATA
+[20:19:12] [FacilityMigration]   DROP: 수질분석센터_유기인_DATA
+[20:19:12] [FacilityMigration]   DROP: 수질분석센터_음이온계면활성제_DATA
+[20:19:13] [FacilityMigration]   DROP: 수질분석센터_자일렌_DATA
+[20:19:13] [FacilityMigration]   DROP: 수질분석센터_전기전도도_DATA
+[20:19:14] [FacilityMigration]   DROP: 수질분석센터_주석_DATA
+[20:19:14] [FacilityMigration]   DROP: 수질분석센터_철_DATA
+[20:19:14] [FacilityMigration]   DROP: 수질분석센터_총대장균군_DATA
+[20:19:15] [FacilityMigration]   DROP: 수질분석센터_총인_DATA
+[20:19:15] [FacilityMigration]   DROP: 수질분석센터_총질소_DATA
+[20:19:16] [FacilityMigration]   DROP: 수질분석센터_총_유기탄소_DATA
+[20:19:16] [FacilityMigration]   DROP: 수질분석센터_카드뮴_DATA
+[20:19:17] [FacilityMigration]   DROP: 수질분석센터_크롬_DATA
+[20:19:17] [FacilityMigration]   DROP: 수질분석센터_클로로폼_DATA
+[20:19:17] [FacilityMigration]   DROP: 수질분석센터_탁도_DATA
+[20:19:18] [FacilityMigration]   DROP: 수질분석센터_테트라클로로에틸렌_DATA
+[20:19:18] [FacilityMigration]   DROP: 수질분석센터_톨루엔_DATA
+[20:19:19] [FacilityMigration]   DROP: 수질분석센터_트리클로로에틸렌_DATA
+[20:19:19] [FacilityMigration]   DROP: 수질분석센터_퍼클로레이트_DATA
+[20:19:20] [FacilityMigration]   DROP: 수질분석센터_페놀류_DATA
+[20:19:20] [FacilityMigration]   DROP: 수질분석센터_페놀_DATA
+[20:19:20] [FacilityMigration]   DROP: 수질분석센터_펜타클로로페놀_DATA
+[20:19:21] [FacilityMigration]   DROP: 수질분석센터_폴리클로리네이티드비페닐_DATA
+[20:19:21] [FacilityMigration]   DROP: 수질분석센터_폼알데하이드_DATA
+[20:19:22] [FacilityMigration]   DROP: 수질분석센터_현장측정_및_시료채취_DATA
+[20:19:22] [FacilityMigration]   DROP: 수질분석센터_화학적_산소요구량_DATA
+[20:19:22] [FacilityMigration]   DROP: 수질분석센터_황산이온_DATA
+[20:19:23] [FacilityMigration]   DROP: 처리시설_수소이온농도_DATA
+[20:19:23] [FacilityMigration]   DROP: 처리시설_온도_DATA
+[20:19:24] [FacilityMigration]   DROP: 처리시설_총대장균군_DATA
+[20:19:24] [FacilityMigration]   DROP: 처리시설_BOD_DATA
+[20:19:25] [FacilityMigration]   DROP: 처리시설_SS_DATA
+[20:19:25] [FacilityMigration]   DROP: 처리시설_TN_DATA
+[20:19:26] [FacilityMigration]   DROP: 처리시설_TOC_NPOC_DATA
+[20:19:26] [FacilityMigration]   DROP: 처리시설_TOC_TCIC_DATA
+[20:19:27] [FacilityMigration]   DROP: 처리시설_TP_DATA
+[20:19:27] [FacilityMigration] DATA 테이블 76개 DROP 완료
+[20:19:27] [FacilityMigration] 마이그레이션 완료 표시: drop_data_tables_v3
+[20:19:27] [FacilityMigration] 처리시설_분석계획 → 마스터 동기화 완료
+[20:19:27] [FacilityMigration] 처리시설_분석계획 테이블 준비 완료
+[20:19:28] [FacilityMigration] 처리시설_BOD_DATA 테이블 생성
+[20:19:28] [FacilityMigration] 처리시설_SS_DATA 테이블 생성
+[20:19:29] [FacilityMigration] 처리시설_TN_DATA 테이블 생성
+[20:19:30] [FacilityMigration] 처리시설_TP_DATA 테이블 생성
+[20:19:30] [FacilityMigration] 처리시설_TOC_NPOC_DATA 테이블 생성
+[20:19:31] [FacilityMigration] 처리시설_TOC_TCIC_DATA 테이블 생성
+[20:19:32] [FacilityMigration] 처리시설_총대장균군_DATA 테이블 생성
+[20:19:32] [FacilityMigration] 처리시설_온도_DATA 테이블 생성
+[20:19:33] [FacilityMigration] 처리시설_수소이온농도_DATA 테이블 생성
+[20:19:33] [FacilityMigration] EnsureAnalysisRecordTables 시작
+[20:19:33] [FacilityMigration] 분석정보에서 Analyte 67개 수집
+[20:19:34] [FacilityMigration] EnsureAnalysisRecordTables 완료 — 67개 항목 처리, 67개 시도
+[20:19:34] [FacilityMigration] 마이그레이션 이미 완료됨 (wasteresult_v2) — 건너뜀
+[20:54:42] [FacilityMigration] drop_data_tables_v3 체크 시작
+[20:54:42] [FacilityMigration] drop_data_tables_v3 이미 완료됨 — 건너뜀
+[20:54:42] [FacilityMigration] 처리시설_분석계획 → 마스터 동기화 완료
+[20:54:42] [FacilityMigration] 처리시설_분석계획 테이블 준비 완료
+[20:54:43] [FacilityMigration] EnsureAnalysisRecordTables 시작
+[20:54:43] [FacilityMigration] 분석정보에서 Analyte 67개 수집
+[20:54:44] [FacilityMigration] EnsureAnalysisRecordTables 완료 — 67개 항목 처리, 67개 시도
+[20:54:44] [FacilityMigration] 마이그레이션 이미 완료됨 (wasteresult_v2) — 건너뜀
+[01:30:18] [FacilityMigration] drop_data_tables_v3 체크 시작
+[01:30:19] [FacilityMigration] drop_data_tables_v3 이미 완료됨 — 건너뜀
+[01:30:19] [FacilityMigration] 처리시설_분석계획 → 마스터 동기화 완료
+[01:30:19] [FacilityMigration] 처리시설_분석계획 테이블 준비 완료
+[01:30:19] [FacilityMigration] EnsureAnalysisRecordTables 시작
+[01:30:19] [FacilityMigration] 분석정보에서 Analyte 67개 수집
+[01:30:19] [FacilityMigration] EnsureAnalysisRecordTables 완료 — 67개 항목 처리, 67개 시도
+[01:30:19] [FacilityMigration] 마이그레이션 이미 완료됨 (wasteresult_v2) — 건너뜀
+[09:39:01] [FacilityMigration] drop_data_tables_v3 체크 시작
+[09:39:01] [FacilityMigration] drop_data_tables_v3 이미 완료됨 — 건너뜀
+[09:39:01] [FacilityMigration] 처리시설_분석계획 → 마스터 동기화 완료
+[09:39:01] [FacilityMigration] 처리시설_분석계획 테이블 준비 완료
+[09:39:01] [FacilityMigration] EnsureAnalysisRecordTables 시작
+[09:39:01] [FacilityMigration] 분석정보에서 Analyte 67개 수집
+[09:39:02] [FacilityMigration] EnsureAnalysisRecordTables 완료 — 67개 항목 처리, 67개 시도
+[09:39:02] [FacilityMigration] 마이그레이션 이미 완료됨 (wasteresult_v2) — 건너뜀
+[09:45:05] [FacilityMigration] drop_data_tables_v3 체크 시작
+[09:45:05] [FacilityMigration] drop_data_tables_v3 이미 완료됨 — 건너뜀
+[09:45:05] [FacilityMigration] 처리시설_분석계획 → 마스터 동기화 완료
+[09:45:05] [FacilityMigration] 처리시설_분석계획 테이블 준비 완료
+[09:45:06] [FacilityMigration] EnsureAnalysisRecordTables 시작
+[09:45:06] [FacilityMigration] 분석정보에서 Analyte 67개 수집
+[09:45:06] [FacilityMigration] EnsureAnalysisRecordTables 완료 — 67개 항목 처리, 67개 시도
+[09:45:06] [FacilityMigration] 마이그레이션 이미 완료됨 (wasteresult_v2) — 건너뜀
+[09:50:52] [FacilityMigration] drop_data_tables_v3 체크 시작
+[09:50:52] [FacilityMigration] drop_data_tables_v3 이미 완료됨 — 건너뜀
+[09:50:52] [FacilityMigration] 처리시설_분석계획 → 마스터 동기화 완료
+[09:50:52] [FacilityMigration] 처리시설_분석계획 테이블 준비 완료
+[09:50:52] [FacilityMigration] EnsureAnalysisRecordTables 시작
+[09:50:52] [FacilityMigration] 분석정보에서 Analyte 67개 수집
+[09:50:53] [FacilityMigration] EnsureAnalysisRecordTables 완료 — 67개 항목 처리, 67개 시도
+[09:50:53] [FacilityMigration] 마이그레이션 이미 완료됨 (wasteresult_v2) — 건너뜀
+[09:59:46] [FacilityMigration] drop_data_tables_v3 체크 시작
+[09:59:46] [FacilityMigration] drop_data_tables_v3 이미 완료됨 — 건너뜀
+[09:59:46] [FacilityMigration] 처리시설_분석계획 → 마스터 동기화 완료
+[09:59:46] [FacilityMigration] 처리시설_분석계획 테이블 준비 완료
+[09:59:46] [FacilityMigration] EnsureAnalysisRecordTables 시작
+[09:59:46] [FacilityMigration] 분석정보에서 Analyte 67개 수집
+[09:59:47] [FacilityMigration] EnsureAnalysisRecordTables 완료 — 67개 항목 처리, 67개 시도
+[09:59:47] [FacilityMigration] 마이그레이션 이미 완료됨 (wasteresult_v2) — 건너뜀
+[10:12:11] [FacilityMigration] drop_data_tables_v3 체크 시작
+[10:12:11] [FacilityMigration] drop_data_tables_v3 이미 완료됨 — 건너뜀
+[10:12:11] [FacilityMigration] 처리시설_분석계획 → 마스터 동기화 완료
+[10:12:11] [FacilityMigration] 처리시설_분석계획 테이블 준비 완료
+[10:12:11] [FacilityMigration] EnsureAnalysisRecordTables 시작
+[10:12:11] [FacilityMigration] 분석정보에서 Analyte 67개 수집
+[10:12:11] [FacilityMigration] EnsureAnalysisRecordTables 완료 — 67개 항목 처리, 67개 시도
+[10:12:11] [FacilityMigration] 마이그레이션 이미 완료됨 (wasteresult_v2) — 건너뜀
+[10:17:14] [FacilityMigration] drop_data_tables_v3 체크 시작
+[10:17:14] [FacilityMigration] drop_data_tables_v3 이미 완료됨 — 건너뜀
+[10:17:14] [FacilityMigration] 처리시설_분석계획 → 마스터 동기화 완료
+[10:17:14] [FacilityMigration] 처리시설_분석계획 테이블 준비 완료
+[10:17:15] [FacilityMigration] EnsureAnalysisRecordTables 시작
+[10:17:15] [FacilityMigration] 분석정보에서 Analyte 67개 수집
+[10:17:15] [FacilityMigration] EnsureAnalysisRecordTables 완료 — 67개 항목 처리, 67개 시도
+[10:17:15] [FacilityMigration] 마이그레이션 이미 완료됨 (wasteresult_v2) — 건너뜀
+[10:39:48] [FacilityMigration] drop_data_tables_v3 체크 시작
+[10:39:48] [FacilityMigration] drop_data_tables_v3 이미 완료됨 — 건너뜀
+[10:39:48] [FacilityMigration] 처리시설_분석계획 → 마스터 동기화 완료
+[10:39:48] [FacilityMigration] 처리시설_분석계획 테이블 준비 완료
+[10:39:48] [FacilityMigration] EnsureAnalysisRecordTables 시작
+[10:39:48] [FacilityMigration] 분석정보에서 Analyte 67개 수집
+[10:39:49] [FacilityMigration] EnsureAnalysisRecordTables 완료 — 67개 항목 처리, 67개 시도
+[10:39:49] [FacilityMigration] 마이그레이션 이미 완료됨 (wasteresult_v2) — 건너뜀
+[10:46:27] [FacilityMigration] drop_data_tables_v3 체크 시작
+[10:46:27] [FacilityMigration] drop_data_tables_v3 이미 완료됨 — 건너뜀
+[10:46:27] [FacilityMigration] 처리시설_분석계획 → 마스터 동기화 완료
+[10:46:27] [FacilityMigration] 처리시설_분석계획 테이블 준비 완료
+[10:46:27] [FacilityMigration] EnsureAnalysisRecordTables 시작
+[10:46:27] [FacilityMigration] 분석정보에서 Analyte 67개 수집
+[10:46:27] [FacilityMigration] EnsureAnalysisRecordTables 완료 — 67개 항목 처리, 67개 시도
+[10:46:27] [FacilityMigration] 마이그레이션 이미 완료됨 (wasteresult_v2) — 건너뜀
+[10:57:01] [FacilityMigration] drop_data_tables_v3 체크 시작
+[10:57:01] [FacilityMigration] drop_data_tables_v3 이미 완료됨 — 건너뜀
+[10:57:01] [FacilityMigration] 처리시설_분석계획 → 마스터 동기화 완료
+[10:57:01] [FacilityMigration] 처리시설_분석계획 테이블 준비 완료
+[10:57:01] [FacilityMigration] EnsureAnalysisRecordTables 시작
+[10:57:01] [FacilityMigration] 분석정보에서 Analyte 67개 수집
+[10:57:01] [FacilityMigration] EnsureAnalysisRecordTables 완료 — 67개 항목 처리, 67개 시도
+[10:57:01] [FacilityMigration] 마이그레이션 이미 완료됨 (wasteresult_v2) — 건너뜀
+[11:03:50] [FacilityMigration] drop_data_tables_v3 체크 시작
+[11:03:50] [FacilityMigration] drop_data_tables_v3 이미 완료됨 — 건너뜀
+[11:03:50] [FacilityMigration] 처리시설_분석계획 → 마스터 동기화 완료
+[11:03:50] [FacilityMigration] 처리시설_분석계획 테이블 준비 완료
+[11:03:51] [FacilityMigration] EnsureAnalysisRecordTables 시작
+[11:03:51] [FacilityMigration] 분석정보에서 Analyte 67개 수집
+[11:03:51] [FacilityMigration] EnsureAnalysisRecordTables 완료 — 67개 항목 처리, 67개 시도
+[11:03:51] [FacilityMigration] 마이그레이션 이미 완료됨 (wasteresult_v2) — 건너뜀
+[12:50:13] [FacilityMigration] drop_data_tables_v3 체크 시작
+[12:50:13] [FacilityMigration] drop_data_tables_v3 이미 완료됨 — 건너뜀
+[12:50:13] [FacilityMigration] 처리시설_분석계획 → 마스터 동기화 완료
+[12:50:13] [FacilityMigration] 처리시설_분석계획 테이블 준비 완료
+[12:50:13] [FacilityMigration] EnsureAnalysisRecordTables 시작
+[12:50:13] [FacilityMigration] 분석정보에서 Analyte 67개 수집
+[12:50:14] [FacilityMigration] EnsureAnalysisRecordTables 완료 — 67개 항목 처리, 67개 시도
+[12:50:14] [FacilityMigration] 마이그레이션 이미 완료됨 (wasteresult_v2) — 건너뜀
+[13:14:03] [FacilityMigration] drop_data_tables_v3 체크 시작
+[13:14:03] [FacilityMigration] drop_data_tables_v3 이미 완료됨 — 건너뜀
+[13:14:03] [FacilityMigration] 처리시설_분석계획 → 마스터 동기화 완료
+[13:14:03] [FacilityMigration] 처리시설_분석계획 테이블 준비 완료
+[13:14:03] [FacilityMigration] EnsureAnalysisRecordTables 시작
+[13:14:03] [FacilityMigration] 분석정보에서 Analyte 67개 수집
+[13:14:03] [FacilityMigration] EnsureAnalysisRecordTables 완료 — 67개 항목 처리, 67개 시도
+[13:14:03] [FacilityMigration] 마이그레이션 이미 완료됨 (wasteresult_v2) — 건너뜀
+[13:16:27] [FacilityMigration] drop_data_tables_v3 체크 시작
+[13:16:27] [FacilityMigration] drop_data_tables_v3 이미 완료됨 — 건너뜀
+[13:16:27] [FacilityMigration] 처리시설_분석계획 → 마스터 동기화 완료
+[13:16:27] [FacilityMigration] 처리시설_분석계획 테이블 준비 완료
+[13:16:27] [FacilityMigration] EnsureAnalysisRecordTables 시작
+[13:16:27] [FacilityMigration] 분석정보에서 Analyte 67개 수집
+[13:16:27] [FacilityMigration] EnsureAnalysisRecordTables 완료 — 67개 항목 처리, 67개 시도
+[13:16:27] [FacilityMigration] 마이그레이션 이미 완료됨 (wasteresult_v2) — 건너뜀
+[13:19:04] [FacilityMigration] drop_data_tables_v3 체크 시작
+[13:19:04] [FacilityMigration] drop_data_tables_v3 이미 완료됨 — 건너뜀
+[13:19:04] [FacilityMigration] 처리시설_분석계획 → 마스터 동기화 완료
+[13:19:04] [FacilityMigration] 처리시설_분석계획 테이블 준비 완료
+[13:19:04] [FacilityMigration] EnsureAnalysisRecordTables 시작
+[13:19:04] [FacilityMigration] 분석정보에서 Analyte 67개 수집
+[13:19:04] [FacilityMigration] EnsureAnalysisRecordTables 완료 — 67개 항목 처리, 67개 시도
+[13:19:04] [FacilityMigration] 마이그레이션 이미 완료됨 (wasteresult_v2) — 건너뜀
+[13:25:49] [FacilityMigration] drop_data_tables_v3 체크 시작
+[13:25:49] [FacilityMigration] drop_data_tables_v3 이미 완료됨 — 건너뜀
+[13:25:49] [FacilityMigration] 처리시설_분석계획 → 마스터 동기화 완료
+[13:25:49] [FacilityMigration] 처리시설_분석계획 테이블 준비 완료
+[13:25:49] [FacilityMigration] EnsureAnalysisRecordTables 시작
+[13:25:49] [FacilityMigration] 분석정보에서 Analyte 67개 수집
+[13:25:49] [FacilityMigration] EnsureAnalysisRecordTables 완료 — 67개 항목 처리, 67개 시도
+[13:25:49] [FacilityMigration] 마이그레이션 이미 완료됨 (wasteresult_v2) — 건너뜀
+[13:33:02] [FacilityMigration] drop_data_tables_v3 체크 시작
+[13:33:02] [FacilityMigration] drop_data_tables_v3 이미 완료됨 — 건너뜀
+[13:33:02] [FacilityMigration] 처리시설_분석계획 → 마스터 동기화 완료
+[13:33:02] [FacilityMigration] 처리시설_분석계획 테이블 준비 완료
+[13:33:02] [FacilityMigration] EnsureAnalysisRecordTables 시작
+[13:33:02] [FacilityMigration] 분석정보에서 Analyte 67개 수집
+[13:33:02] [FacilityMigration] EnsureAnalysisRecordTables 완료 — 67개 항목 처리, 67개 시도
+[13:33:02] [FacilityMigration] 마이그레이션 이미 완료됨 (wasteresult_v2) — 건너뜀

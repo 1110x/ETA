@@ -1,0 +1,301 @@
+Batch Data Path,"\\192.168.254.121\data\2026\3. 2026-03\1,4(RE 3.17.18 HS 3.18)\QuantResults\1,4.batch.bin"
+Analysis Time,2026-03-24 오전 10:53:12,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 10:53:12,Analyze Quant Version,10.2,Report Quant Version,10.2
+"1,4-Dioxane"
+Data File,,Type,RT,,Resp.,,ISTD Resp,,Final Conc.
+"1,4 ST-01.D",,Cal,2.359,,702,,1722,,0.010
+"1,4 ST-02.D",,Cal,2.354,,1238,,1605,,0.019
+"1,4 ST-03.D",,Cal,2.364,,4179,,2138,,0.049
+"1,4 ST-04.D",,Cal,2.359,,6554,,2075,,0.079
+"1,4 ST-05.D",,Cal,2.359,,8538,,2032,,0.105
+"1,4 ST-06.D",,Cal,2.353,,13379,,2104,,0.158
+BK-.D,,Blank,,,,,2011,,ND
+FBK(RE 26-03-17).D,,Blank,,,,,2170,,ND
+FBK(RE 26-03-18).D,,Blank,,,,,2112,,ND
+FBK(HS 26-03-18).D,,Blank,,,,,2112,,ND
+HS 26-03-18.D,,Sample,,,,,1815,,ND
+RE-05.D,,Sample,2.359,,0,,2176,,ND
+RE-06.D,,Sample,,,,,1629,,ND
+RE-13.D,,Sample,2.364,,0,,2640,,ND
+RE-14.D,,Sample,2.359,,0,,2185,,ND
+RE-24.D,,Sample,,,,,2009,,ND
+RE-25.D,,Sample,,,,,1672,,ND
+MBK.D,,Blank,,,,,2205,,ND
+-CCV-.D,,QC,2.353,,6882,,2151,,0.080
+Calibration,,
+"1,4-Dioxane",,
+
+Cal. Path,Type,Level,Enable,,Conc.,,Response
+"\\192.168.254.121\data\2026\3. 2026-03\1,4(RE 3.17.18 HS 3.18)\1,4 ST-01.D",Calibration,1,x,,0.200,,702
+"\\192.168.254.121\data\2026\3. 2026-03\1,4(RE 3.17.18 HS 3.18)\1,4 ST-02.D",Calibration,2,x,,0.400,,1238
+"\\192.168.254.121\data\2026\3. 2026-03\1,4(RE 3.17.18 HS 3.18)\1,4 ST-03.D",Calibration,3,x,,1.000,,4179
+"\\192.168.254.121\data\2026\3. 2026-03\1,4(RE 3.17.18 HS 3.18)\1,4 ST-04.D",Calibration,4,x,,1.600,,6554
+"\\192.168.254.121\data\2026\3. 2026-03\1,4(RE 3.17.18 HS 3.18)\-CCV-.D",QC,4,x,,1.600,,6882
+"\\192.168.254.121\data\2026\3. 2026-03\1,4(RE 3.17.18 HS 3.18)\1,4 ST-05.D",Calibration,5,x,,2.000,,8538
+"\\192.168.254.121\data\2026\3. 2026-03\1,4(RE 3.17.18 HS 3.18)\1,4 ST-06.D",Calibration,6,x,,3.200,,13379
+Batch Data Path,"\\192.168.254.121\data\2026\3. 2026-03\1,4(RE 3.17.18 HS 3.18)\QuantResults\1,4.batch.bin"
+Analysis Time,2026-03-24 오전 10:53:12,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:05:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 10:53:12,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-19 오후 2:21:39,Data File,"1,4 ST-01.D"
+Type,Cal,Name,"1,4 ST-01"
+Dil.,0.05,Acq. Method File,"VOCS(1,4)-LQ"
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,4-Dioxane",,2.359,702,1722,,0.010,mg/L
+"1,4-Dioxane"
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\3. 2026-03\1,4(RE 3.17.18 HS 3.18)\QuantResults\1,4.batch.bin"
+Analysis Time,2026-03-24 오전 10:53:12,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:05:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 10:53:12,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-19 오후 2:30:33,Data File,"1,4 ST-02.D"
+Type,Cal,Name,"1,4 ST-02"
+Dil.,0.05,Acq. Method File,"VOCS(1,4)-LQ"
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,4-Dioxane",,2.354,1238,1605,,0.019,mg/L
+"1,4-Dioxane"
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\3. 2026-03\1,4(RE 3.17.18 HS 3.18)\QuantResults\1,4.batch.bin"
+Analysis Time,2026-03-24 오전 10:53:12,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:05:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 10:53:12,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-19 오후 2:39:30,Data File,"1,4 ST-03.D"
+Type,Cal,Name,"1,4 ST-03"
+Dil.,0.05,Acq. Method File,"VOCS(1,4)-LQ"
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,4-Dioxane",,2.364,4179,2138,,0.049,mg/L
+"1,4-Dioxane"
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\3. 2026-03\1,4(RE 3.17.18 HS 3.18)\QuantResults\1,4.batch.bin"
+Analysis Time,2026-03-24 오전 10:53:12,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:05:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 10:53:12,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-19 오후 2:48:31,Data File,"1,4 ST-04.D"
+Type,Cal,Name,"1,4 ST-04"
+Dil.,0.05,Acq. Method File,"VOCS(1,4)-LQ"
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,4-Dioxane",,2.359,6554,2075,,0.079,mg/L
+"1,4-Dioxane"
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\3. 2026-03\1,4(RE 3.17.18 HS 3.18)\QuantResults\1,4.batch.bin"
+Analysis Time,2026-03-24 오전 10:53:12,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:05:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 10:53:12,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-19 오후 2:57:32,Data File,"1,4 ST-05.D"
+Type,Cal,Name,"1,4 ST-05"
+Dil.,0.05,Acq. Method File,"VOCS(1,4)-LQ"
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,4-Dioxane",,2.359,8538,2032,,0.105,mg/L
+"1,4-Dioxane"
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\3. 2026-03\1,4(RE 3.17.18 HS 3.18)\QuantResults\1,4.batch.bin"
+Analysis Time,2026-03-24 오전 10:53:12,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:05:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 10:53:12,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-19 오후 3:06:33,Data File,"1,4 ST-06.D"
+Type,Cal,Name,"1,4 ST-06"
+Dil.,0.05,Acq. Method File,"VOCS(1,4)-LQ"
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,4-Dioxane",,2.353,13379,2104,,0.158,mg/L
+"1,4-Dioxane"
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\3. 2026-03\1,4(RE 3.17.18 HS 3.18)\QuantResults\1,4.batch.bin"
+Analysis Time,2026-03-24 오전 10:53:12,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:05:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 10:53:12,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-19 오후 3:33:33,Data File,BK-.D
+Type,Blank,Name,BK-
+Dil.,0.05,Acq. Method File,"VOCS(1,4)-LQ"
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,4-Dioxane",,,,2011,,ND,mg/L
+"1,4-Dioxane"
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\3. 2026-03\1,4(RE 3.17.18 HS 3.18)\QuantResults\1,4.batch.bin"
+Analysis Time,2026-03-24 오전 10:53:12,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:05:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 10:53:12,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-19 오후 3:42:32,Data File,FBK(RE 26-03-17).D
+Type,Blank,Name,FBK(RE 26-03-17)
+Dil.,0.05,Acq. Method File,"VOCS(1,4)-LQ"
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,4-Dioxane",,,,2170,,ND,mg/L
+"1,4-Dioxane"
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\3. 2026-03\1,4(RE 3.17.18 HS 3.18)\QuantResults\1,4.batch.bin"
+Analysis Time,2026-03-24 오전 10:53:12,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:05:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 10:53:12,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-19 오후 3:51:34,Data File,FBK(RE 26-03-18).D
+Type,Blank,Name,FBK(RE 26-03-18)
+Dil.,0.05,Acq. Method File,"VOCS(1,4)-LQ"
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,4-Dioxane",,,,2112,,ND,mg/L
+"1,4-Dioxane"
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\3. 2026-03\1,4(RE 3.17.18 HS 3.18)\QuantResults\1,4.batch.bin"
+Analysis Time,2026-03-24 오전 10:53:12,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:05:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 10:53:12,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-19 오후 4:00:39,Data File,FBK(HS 26-03-18).D
+Type,Blank,Name,FBK(HS 26-03-18)
+Dil.,0.05,Acq. Method File,"VOCS(1,4)-LQ"
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,4-Dioxane",,,,2112,,ND,mg/L
+"1,4-Dioxane"
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\3. 2026-03\1,4(RE 3.17.18 HS 3.18)\QuantResults\1,4.batch.bin"
+Analysis Time,2026-03-24 오전 10:53:12,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:05:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 10:53:12,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-19 오후 4:09:37,Data File,HS 26-03-18.D
+Type,Sample,Name,HS 26-03-18
+Dil.,0.05,Acq. Method File,"VOCS(1,4)-LQ"
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,4-Dioxane",,,,1815,,ND,mg/L
+"1,4-Dioxane"
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\3. 2026-03\1,4(RE 3.17.18 HS 3.18)\QuantResults\1,4.batch.bin"
+Analysis Time,2026-03-24 오전 10:53:12,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:05:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 10:53:12,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-19 오후 4:18:41,Data File,RE-05.D
+Type,Sample,Name,RE-05
+Dil.,0.05,Acq. Method File,"VOCS(1,4)-LQ"
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,4-Dioxane",,2.359,0,2176,,ND,mg/L
+"1,4-Dioxane"
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\3. 2026-03\1,4(RE 3.17.18 HS 3.18)\QuantResults\1,4.batch.bin"
+Analysis Time,2026-03-24 오전 10:53:12,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:05:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 10:53:12,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-19 오후 4:27:44,Data File,RE-06.D
+Type,Sample,Name,RE-06
+Dil.,0.05,Acq. Method File,"VOCS(1,4)-LQ"
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,4-Dioxane",,,,1629,,ND,mg/L
+"1,4-Dioxane"
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\3. 2026-03\1,4(RE 3.17.18 HS 3.18)\QuantResults\1,4.batch.bin"
+Analysis Time,2026-03-24 오전 10:53:12,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:05:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 10:53:12,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-19 오후 4:36:43,Data File,RE-13.D
+Type,Sample,Name,RE-13
+Dil.,0.05,Acq. Method File,"VOCS(1,4)-LQ"
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,4-Dioxane",,2.364,0,2640,,ND,mg/L
+"1,4-Dioxane"
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\3. 2026-03\1,4(RE 3.17.18 HS 3.18)\QuantResults\1,4.batch.bin"
+Analysis Time,2026-03-24 오전 10:53:12,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:05:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 10:53:12,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-19 오후 4:45:43,Data File,RE-14.D
+Type,Sample,Name,RE-14
+Dil.,0.05,Acq. Method File,"VOCS(1,4)-LQ"
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,4-Dioxane",,2.359,0,2185,,ND,mg/L
+"1,4-Dioxane"
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\3. 2026-03\1,4(RE 3.17.18 HS 3.18)\QuantResults\1,4.batch.bin"
+Analysis Time,2026-03-24 오전 10:53:12,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:05:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 10:53:12,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-19 오후 4:54:46,Data File,RE-24.D
+Type,Sample,Name,RE-24
+Dil.,0.05,Acq. Method File,"VOCS(1,4)-LQ"
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,4-Dioxane",,,,2009,,ND,mg/L
+"1,4-Dioxane"
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\3. 2026-03\1,4(RE 3.17.18 HS 3.18)\QuantResults\1,4.batch.bin"
+Analysis Time,2026-03-24 오전 10:53:12,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:05:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 10:53:12,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-19 오후 5:03:45,Data File,RE-25.D
+Type,Sample,Name,RE-25
+Dil.,0.05,Acq. Method File,"VOCS(1,4)-LQ"
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,4-Dioxane",,,,1672,,ND,mg/L
+"1,4-Dioxane"
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\3. 2026-03\1,4(RE 3.17.18 HS 3.18)\QuantResults\1,4.batch.bin"
+Analysis Time,2026-03-24 오전 10:53:12,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:05:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 10:53:12,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-19 오후 5:12:47,Data File,MBK.D
+Type,Blank,Name,MBK
+Dil.,0.05,Acq. Method File,"VOCS(1,4)-LQ"
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,4-Dioxane",,,,2205,,ND,mg/L
+"1,4-Dioxane"
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\3. 2026-03\1,4(RE 3.17.18 HS 3.18)\QuantResults\1,4.batch.bin"
+Analysis Time,2026-03-24 오전 10:53:12,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:05:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 10:53:12,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-19 오후 5:30:49,Data File,-CCV-.D
+Type,QC,Name,-CCV-
+Dil.,0.05,Acq. Method File,"VOCS(1,4)-LQ"
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,4-Dioxane",,2.353,6882,2151,,0.080,mg/L
+"1,4-Dioxane"
+,,

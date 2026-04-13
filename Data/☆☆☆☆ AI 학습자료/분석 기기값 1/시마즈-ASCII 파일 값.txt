@@ -1,0 +1,49 @@
+[Header]	
+System	TOC-L +ASL-L	
+S/W Version	1.00	
+User		
+Date/Time	2026-01-21 오후 1:05:32	
+
+[System]	
+Instrument Options	TOC/ASI/IC Unit/	
+
+[Data]	
+Type	Anal.	Sample Name	Sample ID	Result(TOC)	Result(TC)	Result(IC)	Result(POC)	Result(NPOC)	Result(TN)	Unit	Vial	Date / Time	
+Standard	NPOC	ST	ST					100.0		ppm	1, 2, 2, 2, 2	2026-03-04 오전 11:41:49	
+Unknown	NPOC	DW	NPOC					1.008		ppm	3	2026-03-04 오전 11:51:30	
+Unknown	NPOC	DW	NPOC					0.4568		ppm	3	2026-03-04 오후 12:00:40	
+Unknown	NPOC	MBK	NPOC					0.4388		ppm	4	2026-03-04 오후 12:10:27	
+Unknown	NPOC	FBK	NPOC					0.5995		ppm	4	2026-03-04 오후 12:19:21	
+Unknown	NPOC	CCV	NPOC					47.32		ppm	5	2026-03-04 오후 12:29:29	
+Unknown	NPOC	중흥유량조정조	NPOC					27.11		ppm	6	2026-03-04 오후 12:39:07	
+Unknown	NPOC	중흥침전지	NPOC					8.043		ppm	7	2026-03-04 오후 12:48:45	
+Unknown	NPOC	중흥응집침전지	NPOC					8.078		ppm	8	2026-03-04 오후 12:58:23	
+Unknown	NPOC	중흥여과기	NPOC					8.420		ppm	9	2026-03-04 오후 1:08:01	
+Unknown	NPOC	중흥활성탄	NPOC					9.980		ppm	10	2026-03-04 오후 1:17:39	
+Unknown	NPOC	중흥방류	NPOC					8.032		ppm	11	2026-03-04 오후 1:27:17	
+Unknown	NPOC	월내유입	NPOC					28.42		ppm	12	2026-03-04 오후 1:36:55	
+Unknown	NPOC	월내유량조정조	NPOC					22.64		ppm	13	2026-03-04 오후 1:46:33	
+Unknown	NPOC	월내침전지	NPOC					11.42		ppm	14	2026-03-04 오후 1:56:11	
+Unknown	NPOC	월내가압부상조	NPOC					11.04		ppm	15	2026-03-04 오후 2:05:49	
+Unknown	NPOC	월내방류	NPOC					8.374		ppm	16	2026-03-04 오후 2:15:27	
+Unknown	NPOC	4단계유량조정조	NPOC					14.56		ppm	17	2026-03-04 오후 2:25:05	
+Unknown	NPOC	4단계방류	NPOC					6.268		ppm	18	2026-03-04 오후 2:34:43	
+Unknown	NPOC	CCV	NPOC					29.07		ppm	5	2026-03-04 오후 5:29:34	
+Unknown	NPOC	CCV	NPOC					29.13		ppm	5	2026-03-04 오후 2:44:29	
+Unknown	NPOC	율촌유입	NPOC					10.95		ppm	19	2026-03-04 오후 2:54:15	
+Unknown	NPOC	율촌분배조	NPOC					8.745		ppm	20	2026-03-04 오후 3:03:53	
+Unknown	NPOC	율촌고후(기존)	NPOC					9.677		ppm	21	2026-03-04 오후 3:13:31	
+Unknown	NPOC	율촌고후(증설)	NPOC					9.045		ppm	22	2026-03-04 오후 3:23:09	
+Unknown	NPOC	율촌방류	NPOC					2.233		ppm	23	2026-03-04 오후 3:32:47	
+Unknown	NPOC	세풍유입	NPOC					3.516		ppm	24	2026-03-04 오후 3:42:25	
+Unknown	NPOC	세풍분배조	NPOC					10.57		ppm	25	2026-03-04 오후 3:52:03	
+Unknown	NPOC	세풍방류	NPOC					1.615		ppm	26	2026-03-04 오후 4:01:42	
+Unknown	NPOC	24시펌프	NPOC					26.23		ppm	27	2026-03-04 오후 4:11:20	
+Unknown	NPOC	07시펌프	NPOC					23.90		ppm	28	2026-03-04 오후 4:20:59	
+Unknown	NPOC	월내낙포*5	NPOC					4.770		ppm	29	2026-03-04 오후 4:31:07	
+Unknown	NPOC	월내G라인	NPOC					52.17		ppm	30	2026-03-04 오후 4:41:16	
+Unknown	NPOC	CCV	NPOC					27.33		ppm	5	2026-03-04 오후 5:38:17	
+Unknown	NPOC	CCV	NPOC					36.38		ppm	5	2026-03-04 오후 4:51:24	
+Unknown	NPOC	DW	NPOC					0.000		ppm	1	2026-03-04 오후 4:59:36	
+Unknown	NPOC	DW	NPOC					0.000		ppm	3	2026-03-04 오후 5:07:34	
+Unknown	NPOC	DW	NPOC					0.000		ppm	4	2026-03-04 오후 5:15:32	

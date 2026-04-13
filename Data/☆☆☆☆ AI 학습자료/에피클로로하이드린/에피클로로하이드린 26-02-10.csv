@@ -1,0 +1,309 @@
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\EPIC(KD 2.4, JR 2.5)\QuantResults\EPIC.batch.bin"
+Analysis Time,2026-02-10 오후 5:04:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오후 5:04:39,Analyze Quant Version,10.2,Report Quant Version,10.2
+Epichlorohydrin,,,,
+Data File,Type,RT,Resp.,Final Conc.
+EPIC ST-01.D,Cal,6.290,6057,0.268
+EPIC ST-02.D,Cal,6.290,12333,0.512
+EPIC ST-03.D,Cal,6.290,24478,0.986
+EPIC ST-04.D,Cal,6.290,62420,2.466
+EPIC ST-05.D,Cal,6.289,127808,5.017
+BK-.D,Blank,,,ND
+FBK(KD 26-02-04).D,Blank,6.289,1819,0.000
+FBK(JR 26-02-05).D,Blank,6.290,1817,0.000
+JR-01.D,Sample,6.290,0,ND
+JR-02.D,Sample,6.289,0,ND
+JR-03.D,Sample,6.290,0,ND
+JR-04.D,Sample,6.290,0,ND
+JR-05.D,Sample,6.290,0,ND
+JR-06.D,Sample,6.290,0,ND
+JR-07.D,Sample,6.290,0,ND
+JR-08.D,Sample,6.289,0,ND
+KD-01.D,Sample,,,ND
+KD-04.D,Sample,6.290,0,ND
+MBK.D,Blank,,,ND
+CCV.D,QC,6.289,54468,2.156
+,,
+Epichlorohydrin,,
+
+Cal. Path,Type,Level,Enable,Conc.,Response
+"D:\DATA\2026년\2. 2026년 2월\EPIC(KD 2.4, JR 2.5)\EPIC ST-01.D",Calibration,1,x,0.250,6057
+"D:\DATA\2026년\2. 2026년 2월\EPIC(KD 2.4, JR 2.5)\EPIC ST-02.D",Calibration,2,x,0.500,12333
+"D:\DATA\2026년\2. 2026년 2월\EPIC(KD 2.4, JR 2.5)\EPIC ST-03.D",Calibration,3,x,1.000,24478
+"D:\DATA\2026년\2. 2026년 2월\EPIC(KD 2.4, JR 2.5)\EPIC ST-04.D",Calibration,4,x,2.500,62420
+"D:\DATA\2026년\2. 2026년 2월\EPIC(KD 2.4, JR 2.5)\CCV.D",QC,4,x,2.500,54468
+"D:\DATA\2026년\2. 2026년 2월\EPIC(KD 2.4, JR 2.5)\EPIC ST-05.D",Calibration,5,x,5.000,127808
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\EPIC(KD 2.4, JR 2.5)\QuantResults\EPIC.batch.bin"
+Analysis Time,2026-02-10 오후 5:04:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:49:18,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오후 5:04:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 1:20:25,Data File,EPIC ST-01.D
+Type,Cal,Name,EPIC ST-01
+Dil.,1,Acq. Method File,VOC(EPIC) NEW
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Epichlorohydrin,6.290,6057,0.268,mg/L
+Epichlorohydrin
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\EPIC(KD 2.4, JR 2.5)\QuantResults\EPIC.batch.bin"
+Analysis Time,2026-02-10 오후 5:04:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:49:18,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오후 5:04:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 1:30:40,Data File,EPIC ST-02.D
+Type,Cal,Name,EPIC ST-02
+Dil.,1,Acq. Method File,VOC(EPIC) NEW
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Epichlorohydrin,6.290,12333,0.512,mg/L
+Epichlorohydrin
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\EPIC(KD 2.4, JR 2.5)\QuantResults\EPIC.batch.bin"
+Analysis Time,2026-02-10 오후 5:04:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:49:18,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오후 5:04:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 1:40:57,Data File,EPIC ST-03.D
+Type,Cal,Name,EPIC ST-03
+Dil.,1,Acq. Method File,VOC(EPIC) NEW
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Epichlorohydrin,6.290,24478,0.986,mg/L
+Epichlorohydrin
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\EPIC(KD 2.4, JR 2.5)\QuantResults\EPIC.batch.bin"
+Analysis Time,2026-02-10 오후 5:04:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:49:18,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오후 5:04:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 1:51:13,Data File,EPIC ST-04.D
+Type,Cal,Name,EPIC ST-04
+Dil.,1,Acq. Method File,VOC(EPIC) NEW
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Epichlorohydrin,6.290,62420,2.466,mg/L
+Epichlorohydrin
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\EPIC(KD 2.4, JR 2.5)\QuantResults\EPIC.batch.bin"
+Analysis Time,2026-02-10 오후 5:04:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:49:18,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오후 5:04:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 2:01:29,Data File,EPIC ST-05.D
+Type,Cal,Name,EPIC ST-05
+Dil.,1,Acq. Method File,VOC(EPIC) NEW
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Epichlorohydrin,6.289,127808,5.017,mg/L
+Epichlorohydrin
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\EPIC(KD 2.4, JR 2.5)\QuantResults\EPIC.batch.bin"
+Analysis Time,2026-02-10 오후 5:04:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:49:18,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오후 5:04:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 2:21:57,Data File,BK-.D
+Type,Blank,Name,BK-
+Dil.,0.002,Acq. Method File,VOC(EPIC) NEW
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Epichlorohydrin
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\EPIC(KD 2.4, JR 2.5)\QuantResults\EPIC.batch.bin"
+Analysis Time,2026-02-10 오후 5:04:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:49:18,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오후 5:04:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 2:32:10,Data File,FBK(KD 26-02-04).D
+Type,Blank,Name,FBK(KD 26-02-04)
+Dil.,0.002,Acq. Method File,VOC(EPIC) NEW
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Epichlorohydrin
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\EPIC(KD 2.4, JR 2.5)\QuantResults\EPIC.batch.bin"
+Analysis Time,2026-02-10 오후 5:04:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:49:18,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오후 5:04:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 2:42:27,Data File,FBK(JR 26-02-05).D
+Type,Blank,Name,FBK(JR 26-02-05)
+Dil.,0.002,Acq. Method File,VOC(EPIC) NEW
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Epichlorohydrin
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\EPIC(KD 2.4, JR 2.5)\QuantResults\EPIC.batch.bin"
+Analysis Time,2026-02-10 오후 5:04:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:49:18,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오후 5:04:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 2:52:42,Data File,JR-01.D
+Type,Sample,Name,JR-01
+Dil.,0.002,Acq. Method File,VOC(EPIC) NEW
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Epichlorohydrin,6.290,0,ND,mg/L
+Epichlorohydrin
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\EPIC(KD 2.4, JR 2.5)\QuantResults\EPIC.batch.bin"
+Analysis Time,2026-02-10 오후 5:04:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:49:18,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오후 5:04:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 3:02:57,Data File,JR-02.D
+Type,Sample,Name,JR-02
+Dil.,0.002,Acq. Method File,VOC(EPIC) NEW
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Epichlorohydrin,6.289,0,ND,mg/L
+Epichlorohydrin
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\EPIC(KD 2.4, JR 2.5)\QuantResults\EPIC.batch.bin"
+Analysis Time,2026-02-10 오후 5:04:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:49:18,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오후 5:04:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 3:13:13,Data File,JR-03.D
+Type,Sample,Name,JR-03
+Dil.,0.002,Acq. Method File,VOC(EPIC) NEW
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Epichlorohydrin,6.290,0,ND,mg/L
+Epichlorohydrin
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\EPIC(KD 2.4, JR 2.5)\QuantResults\EPIC.batch.bin"
+Analysis Time,2026-02-10 오후 5:04:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:49:18,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오후 5:04:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 3:23:28,Data File,JR-04.D
+Type,Sample,Name,JR-04
+Dil.,0.002,Acq. Method File,VOC(EPIC) NEW
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Epichlorohydrin,6.290,0,ND,mg/L
+Epichlorohydrin
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\EPIC(KD 2.4, JR 2.5)\QuantResults\EPIC.batch.bin"
+Analysis Time,2026-02-10 오후 5:04:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:49:18,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오후 5:04:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 3:33:44,Data File,JR-05.D
+Type,Sample,Name,JR-05
+Dil.,0.002,Acq. Method File,VOC(EPIC) NEW
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Epichlorohydrin,6.290,0,ND,mg/L
+Epichlorohydrin
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\EPIC(KD 2.4, JR 2.5)\QuantResults\EPIC.batch.bin"
+Analysis Time,2026-02-10 오후 5:04:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:49:18,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오후 5:04:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 3:43:56,Data File,JR-06.D
+Type,Sample,Name,JR-06
+Dil.,0.002,Acq. Method File,VOC(EPIC) NEW
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Epichlorohydrin,6.290,0,ND,mg/L
+Epichlorohydrin
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\EPIC(KD 2.4, JR 2.5)\QuantResults\EPIC.batch.bin"
+Analysis Time,2026-02-10 오후 5:04:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:49:18,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오후 5:04:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 3:54:11,Data File,JR-07.D
+Type,Sample,Name,JR-07
+Dil.,0.002,Acq. Method File,VOC(EPIC) NEW
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Epichlorohydrin,6.290,0,ND,mg/L
+Epichlorohydrin
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\EPIC(KD 2.4, JR 2.5)\QuantResults\EPIC.batch.bin"
+Analysis Time,2026-02-10 오후 5:04:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:49:18,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오후 5:04:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 4:04:25,Data File,JR-08.D
+Type,Sample,Name,JR-08
+Dil.,0.002,Acq. Method File,VOC(EPIC) NEW
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Epichlorohydrin
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\EPIC(KD 2.4, JR 2.5)\QuantResults\EPIC.batch.bin"
+Analysis Time,2026-02-10 오후 5:04:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:49:18,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오후 5:04:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 4:14:40,Data File,KD-01.D
+Type,Sample,Name,KD-01
+Dil.,0.002,Acq. Method File,VOC(EPIC) NEW
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Epichlorohydrin
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\EPIC(KD 2.4, JR 2.5)\QuantResults\EPIC.batch.bin"
+Analysis Time,2026-02-10 오후 5:04:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:49:18,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오후 5:04:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 4:24:56,Data File,KD-04.D
+Type,Sample,Name,KD-04
+Dil.,0.002,Acq. Method File,VOC(EPIC) NEW
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Epichlorohydrin,6.290,0,ND,mg/L
+Epichlorohydrin
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\EPIC(KD 2.4, JR 2.5)\QuantResults\EPIC.batch.bin"
+Analysis Time,2026-02-10 오후 5:04:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:49:18,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오후 5:04:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 4:35:13,Data File,MBK.D
+Type,Blank,Name,MBK
+Dil.,0.002,Acq. Method File,VOC(EPIC) NEW
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Epichlorohydrin
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\EPIC(KD 2.4, JR 2.5)\QuantResults\EPIC.batch.bin"
+Analysis Time,2026-02-10 오후 5:04:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:49:18,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-10 오후 5:04:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 4:45:26,Data File,CCV.D
+Type,QC,Name,CCV
+Dil.,1,Acq. Method File,VOC(EPIC) NEW
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Epichlorohydrin,6.289,54468,2.156,mg/L
+Epichlorohydrin
+,,

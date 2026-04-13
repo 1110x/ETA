@@ -1,0 +1,5 @@
+"Sample ID","Type","Conc","WL650.0","Comments"
+"MBK","Unknown",-0.0011,-0.0000,""
+"FBK(0304 국도)","Unknown",-0.0007,0.0000,""
+"국도 1","Unknown",0.3360,0.0692,""
+"CCV(ST4,0.80mg/L)","Unknown",0.8299,0.1708,""

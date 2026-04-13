@@ -1,0 +1,330 @@
+Batch Data Path,"V:\2026\2026-02\DEHA(KD 2.4, JR 2.5) R\QuantResults\DEHA.batch.bin"
+Analysis Time,2026-02-12 오전 8:49:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-12 오전 8:49:47,Analyze Quant Version,10.2,Report Quant Version,10.2
+Di(2-ethylhexyl)adipate
+Data File,,Type,RT,,Resp.,,ISTD Resp,,Final Conc.
+DEHA ST-01.d,,Cal,6.928,,26131,,113725,,0.5545
+DEHA ST-02.d,,Cal,6.928,,50102,,104331,,1.0255
+DEHA ST-03.d,,Cal,6.928,,125114,,103970,,2.3855
+DEHA ST-04.d,,Cal,6.928,,259812,,99715,,5.0224
+DEHA ST-05.d,,Cal,6.928,,496207,,94358,,10.0121
+BK-.d,,Blank,,,,,98865,,ND
+FBK(KD 26-02-04).d,,Blank,,,,,97183,,ND
+FBK(JR 26-02-05).d,,Blank,,,,,95918,,ND
+KD-01.d,,Sample,,,,,94566,,ND
+KD-02.d,,Sample,,,,,90211,,ND
+KD-04.d,,Sample,,,,,90345,,ND
+JR-01.d,,Sample,,,,,86503,,ND
+JR-02.d,,Sample,,,,,87442,,ND
+JR-03.d,,Sample,,,,,87073,,ND
+JR-04.d,,Sample,,,,,84724,,ND
+JR-05.d,,Sample,,,,,85054,,ND
+JR-06.d,,Sample,,,,,83935,,ND
+JR-07.d,,Sample,,,,,81918,,ND
+JR-08.d,,Sample,,,,,82358,,ND
+MBK.d,,Blank,,,,,80869,,ND
+CCV.d,,QC,6.928,,168424,,81185,,4.0239
+Calibration,,
+Di(2-ethylhexyl)adipate,,
+
+Cal. Path,Type,Level,Enable,,Conc.,,Response
+"V:\2026\2026-02\DEHA(KD 2.4, JR 2.5) R\DEHA ST-01.d",Calibration,1,x,,0.500,,26131
+"V:\2026\2026-02\DEHA(KD 2.4, JR 2.5) R\DEHA ST-02.d",Calibration,2,x,,1.000,,50102
+"V:\2026\2026-02\DEHA(KD 2.4, JR 2.5) R\DEHA ST-03.d",Calibration,3,x,,2.500,,125114
+"V:\2026\2026-02\DEHA(KD 2.4, JR 2.5) R\DEHA ST-04.d",Calibration,4,x,,5.000,,259812
+"V:\2026\2026-02\DEHA(KD 2.4, JR 2.5) R\CCV.d",QC,4,x,,5.000,,168424
+"V:\2026\2026-02\DEHA(KD 2.4, JR 2.5) R\DEHA ST-05.d",Calibration,5,x,,10.000,,496207
+Batch Data Path,"V:\2026\2026-02\DEHA(KD 2.4, JR 2.5) R\QuantResults\DEHA.batch.bin"
+Analysis Time,2026-02-12 오전 8:49:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:03:56,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-12 오전 8:49:47,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 12:15:16,Data File,DEHA ST-01.d
+Type,Cal,Name,DEHA ST-01
+Dil.,1,Acq. Method File,ORG(DEHA) METHOD
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Di(2-ethylhexyl)adipate,,6.928,26131,113725,,0.5545,mg/L
+Di(2-ethylhexyl)adipate
+,,
+Batch Data Path,"V:\2026\2026-02\DEHA(KD 2.4, JR 2.5) R\QuantResults\DEHA.batch.bin"
+Analysis Time,2026-02-12 오전 8:49:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:03:56,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-12 오전 8:49:47,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 12:25:59,Data File,DEHA ST-02.d
+Type,Cal,Name,DEHA ST-02
+Dil.,1,Acq. Method File,ORG(DEHA) METHOD
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Di(2-ethylhexyl)adipate,,6.928,50102,104331,,1.0255,mg/L
+Di(2-ethylhexyl)adipate
+,,
+Batch Data Path,"V:\2026\2026-02\DEHA(KD 2.4, JR 2.5) R\QuantResults\DEHA.batch.bin"
+Analysis Time,2026-02-12 오전 8:49:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:03:56,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-12 오전 8:49:47,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 12:36:47,Data File,DEHA ST-03.d
+Type,Cal,Name,DEHA ST-03
+Dil.,1,Acq. Method File,ORG(DEHA) METHOD
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Di(2-ethylhexyl)adipate,,6.928,125114,103970,,2.3855,mg/L
+Di(2-ethylhexyl)adipate
+,,
+Batch Data Path,"V:\2026\2026-02\DEHA(KD 2.4, JR 2.5) R\QuantResults\DEHA.batch.bin"
+Analysis Time,2026-02-12 오전 8:49:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:03:56,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-12 오전 8:49:47,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 12:47:33,Data File,DEHA ST-04.d
+Type,Cal,Name,DEHA ST-04
+Dil.,1,Acq. Method File,ORG(DEHA) METHOD
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Di(2-ethylhexyl)adipate,,6.928,259812,99715,,5.0224,mg/L
+Di(2-ethylhexyl)adipate
+,,
+Batch Data Path,"V:\2026\2026-02\DEHA(KD 2.4, JR 2.5) R\QuantResults\DEHA.batch.bin"
+Analysis Time,2026-02-12 오전 8:49:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:03:56,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-12 오전 8:49:47,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 12:58:17,Data File,DEHA ST-05.d
+Type,Cal,Name,DEHA ST-05
+Dil.,1,Acq. Method File,ORG(DEHA) METHOD
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Di(2-ethylhexyl)adipate,,6.928,496207,94358,,10.0121,mg/L
+Di(2-ethylhexyl)adipate
+,,
+Batch Data Path,"V:\2026\2026-02\DEHA(KD 2.4, JR 2.5) R\QuantResults\DEHA.batch.bin"
+Analysis Time,2026-02-12 오전 8:49:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:03:56,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-12 오전 8:49:47,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 1:19:50,Data File,BK-.d
+Type,Blank,Name,BK-
+Dil.,0.002,Acq. Method File,ORG(DEHA) METHOD
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Di(2-ethylhexyl)adipate,,,,98865,,ND,mg/L
+Di(2-ethylhexyl)adipate
+,,
+Batch Data Path,"V:\2026\2026-02\DEHA(KD 2.4, JR 2.5) R\QuantResults\DEHA.batch.bin"
+Analysis Time,2026-02-12 오전 8:49:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:03:56,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-12 오전 8:49:47,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 1:30:37,Data File,FBK(KD 26-02-04).d
+Type,Blank,Name,FBK(KD 26-02-04)
+Dil.,0.002,Acq. Method File,ORG(DEHA) METHOD
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Di(2-ethylhexyl)adipate,,,,97183,,ND,mg/L
+Di(2-ethylhexyl)adipate
+,,
+Batch Data Path,"V:\2026\2026-02\DEHA(KD 2.4, JR 2.5) R\QuantResults\DEHA.batch.bin"
+Analysis Time,2026-02-12 오전 8:49:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:03:56,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-12 오전 8:49:47,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 1:41:22,Data File,FBK(JR 26-02-05).d
+Type,Blank,Name,FBK(JR 26-02-05)
+Dil.,0.002,Acq. Method File,ORG(DEHA) METHOD
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Di(2-ethylhexyl)adipate,,,,95918,,ND,mg/L
+Di(2-ethylhexyl)adipate
+,,
+Batch Data Path,"V:\2026\2026-02\DEHA(KD 2.4, JR 2.5) R\QuantResults\DEHA.batch.bin"
+Analysis Time,2026-02-12 오전 8:49:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:03:56,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-12 오전 8:49:47,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 1:52:05,Data File,KD-01.d
+Type,Sample,Name,KD-01
+Dil.,0.002,Acq. Method File,ORG(DEHA) METHOD
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Di(2-ethylhexyl)adipate,,,,94566,,ND,mg/L
+Di(2-ethylhexyl)adipate
+,,
+Batch Data Path,"V:\2026\2026-02\DEHA(KD 2.4, JR 2.5) R\QuantResults\DEHA.batch.bin"
+Analysis Time,2026-02-12 오전 8:49:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:03:56,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-12 오전 8:49:47,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 2:02:50,Data File,KD-02.d
+Type,Sample,Name,KD-02
+Dil.,0.002,Acq. Method File,ORG(DEHA) METHOD
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Di(2-ethylhexyl)adipate,,,,90211,,ND,mg/L
+Di(2-ethylhexyl)adipate
+,,
+Batch Data Path,"V:\2026\2026-02\DEHA(KD 2.4, JR 2.5) R\QuantResults\DEHA.batch.bin"
+Analysis Time,2026-02-12 오전 8:49:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:03:56,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-12 오전 8:49:47,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 2:13:39,Data File,KD-04.d
+Type,Sample,Name,KD-04
+Dil.,0.002,Acq. Method File,ORG(DEHA) METHOD
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Di(2-ethylhexyl)adipate,,,,90345,,ND,mg/L
+Di(2-ethylhexyl)adipate
+,,
+Batch Data Path,"V:\2026\2026-02\DEHA(KD 2.4, JR 2.5) R\QuantResults\DEHA.batch.bin"
+Analysis Time,2026-02-12 오전 8:49:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:03:56,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-12 오전 8:49:47,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 2:24:25,Data File,JR-01.d
+Type,Sample,Name,JR-01
+Dil.,0.002,Acq. Method File,ORG(DEHA) METHOD
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Di(2-ethylhexyl)adipate,,,,86503,,ND,mg/L
+Di(2-ethylhexyl)adipate
+,,
+Batch Data Path,"V:\2026\2026-02\DEHA(KD 2.4, JR 2.5) R\QuantResults\DEHA.batch.bin"
+Analysis Time,2026-02-12 오전 8:49:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:03:56,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-12 오전 8:49:47,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 2:35:08,Data File,JR-02.d
+Type,Sample,Name,JR-02
+Dil.,0.002,Acq. Method File,ORG(DEHA) METHOD
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Di(2-ethylhexyl)adipate,,,,87442,,ND,mg/L
+Di(2-ethylhexyl)adipate
+,,
+Batch Data Path,"V:\2026\2026-02\DEHA(KD 2.4, JR 2.5) R\QuantResults\DEHA.batch.bin"
+Analysis Time,2026-02-12 오전 8:49:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:03:56,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-12 오전 8:49:47,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 2:45:52,Data File,JR-03.d
+Type,Sample,Name,JR-03
+Dil.,0.002,Acq. Method File,ORG(DEHA) METHOD
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Di(2-ethylhexyl)adipate,,,,87073,,ND,mg/L
+Di(2-ethylhexyl)adipate
+,,
+Batch Data Path,"V:\2026\2026-02\DEHA(KD 2.4, JR 2.5) R\QuantResults\DEHA.batch.bin"
+Analysis Time,2026-02-12 오전 8:49:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:03:56,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-12 오전 8:49:47,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 2:56:39,Data File,JR-04.d
+Type,Sample,Name,JR-04
+Dil.,0.002,Acq. Method File,ORG(DEHA) METHOD
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Di(2-ethylhexyl)adipate,,,,84724,,ND,mg/L
+Di(2-ethylhexyl)adipate
+,,
+Batch Data Path,"V:\2026\2026-02\DEHA(KD 2.4, JR 2.5) R\QuantResults\DEHA.batch.bin"
+Analysis Time,2026-02-12 오전 8:49:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:03:56,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-12 오전 8:49:47,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 3:07:21,Data File,JR-05.d
+Type,Sample,Name,JR-05
+Dil.,0.002,Acq. Method File,ORG(DEHA) METHOD
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Di(2-ethylhexyl)adipate,,,,85054,,ND,mg/L
+Di(2-ethylhexyl)adipate
+,,
+Batch Data Path,"V:\2026\2026-02\DEHA(KD 2.4, JR 2.5) R\QuantResults\DEHA.batch.bin"
+Analysis Time,2026-02-12 오전 8:49:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:03:56,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-12 오전 8:49:47,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 3:18:06,Data File,JR-06.d
+Type,Sample,Name,JR-06
+Dil.,0.002,Acq. Method File,ORG(DEHA) METHOD
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Di(2-ethylhexyl)adipate,,,,83935,,ND,mg/L
+Di(2-ethylhexyl)adipate
+,,
+Batch Data Path,"V:\2026\2026-02\DEHA(KD 2.4, JR 2.5) R\QuantResults\DEHA.batch.bin"
+Analysis Time,2026-02-12 오전 8:49:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:03:56,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-12 오전 8:49:47,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 3:28:48,Data File,JR-07.d
+Type,Sample,Name,JR-07
+Dil.,0.002,Acq. Method File,ORG(DEHA) METHOD
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Di(2-ethylhexyl)adipate,,,,81918,,ND,mg/L
+Di(2-ethylhexyl)adipate
+,,
+Batch Data Path,"V:\2026\2026-02\DEHA(KD 2.4, JR 2.5) R\QuantResults\DEHA.batch.bin"
+Analysis Time,2026-02-12 오전 8:49:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:03:56,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-12 오전 8:49:47,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 3:39:38,Data File,JR-08.d
+Type,Sample,Name,JR-08
+Dil.,0.002,Acq. Method File,ORG(DEHA) METHOD
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Di(2-ethylhexyl)adipate,,,,82358,,ND,mg/L
+Di(2-ethylhexyl)adipate
+,,
+Batch Data Path,"V:\2026\2026-02\DEHA(KD 2.4, JR 2.5) R\QuantResults\DEHA.batch.bin"
+Analysis Time,2026-02-12 오전 8:49:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:03:56,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-12 오전 8:49:47,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 3:50:24,Data File,MBK.d
+Type,Blank,Name,MBK
+Dil.,0.002,Acq. Method File,ORG(DEHA) METHOD
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Di(2-ethylhexyl)adipate,,,,80869,,ND,mg/L
+Di(2-ethylhexyl)adipate
+,,
+Batch Data Path,"V:\2026\2026-02\DEHA(KD 2.4, JR 2.5) R\QuantResults\DEHA.batch.bin"
+Analysis Time,2026-02-12 오전 8:49:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:03:56,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-12 오전 8:49:47,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-10 오후 4:01:10,Data File,CCV.d
+Type,QC,Name,CCV
+Dil.,1,Acq. Method File,ORG(DEHA) METHOD
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Di(2-ethylhexyl)adipate,,6.928,168424,81185,,4.0239,mg/L
+Di(2-ethylhexyl)adipate
+,,

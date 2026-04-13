@@ -1,0 +1,6 @@
+"Sample ID","Type","Conc","WL650.0","Comments"
+"MBK","Unknown",-0.0165,-0.0057,""
+"FBK(0326 LG나주)","Unknown",-0.0161,-0.0056,""
+"LG 나주 1","Unknown",0.0078,0.0006,""
+"LG 나주 2","Unknown",0.0516,0.0120,""
+"CCV(ST4,0.80mg/L)","Unknown",0.8215,0.2122,""

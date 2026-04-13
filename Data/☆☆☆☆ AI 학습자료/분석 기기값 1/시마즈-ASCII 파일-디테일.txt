@@ -1,0 +1,53 @@
+[Header]	
+System	TOC-L +ASL-L	
+S/W Version	1.00	
+User		
+Date/Time	2026-01-21 오후 1:02:50	
+
+[System]	
+Instrument Options	TOC/ASI/IC Unit/	
+
+[Data]	
+Type	Anal.	Sample Name	Sample ID	Origin	Cal. Curve	Manual Dilution	Notes	Date / Time	Spl. No.	Inj. No.	Analysis(Inj.)	Area	Conc.	Result	Excluded	Inj. Vol.	
+Standard	NPOC	ST	ST	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal		1.00		2026-03-04 오전 11:00:00	1	1	NPOC	0.000	0.000	 	0	50	
+Standard	NPOC	ST	ST	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal		1.00		2026-03-04 오전 11:11:08	2	1	NPOC	28.97	5.000	 	0	50	
+Standard	NPOC	ST	ST	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal		1.00		2026-03-04 오전 11:21:09	3	1	NPOC	62.31	10.00	 	0	50	
+Standard	NPOC	ST	ST	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal		1.00		2026-03-04 오전 11:31:46	4	1	NPOC	309.6	50.00	 	0	50	
+Standard	NPOC	ST	ST	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal		1.00		2026-03-04 오전 11:41:49	5	1	NPOC	631.0	100.0	 	0	50	
+Unknown	NPOC	DW	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오전 11:51:30	1	1	NPOC	6.358	1.008	NPOC:1.008ppm	0	50	
+Unknown	NPOC	DW	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 12:00:40	1	1	NPOC	2.882	0.4568	NPOC:0.4568ppm	0	50	
+Unknown	NPOC	MBK	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 12:10:27	1	1	NPOC	2.768	0.4388	NPOC:0.4388ppm	0	50	
+Unknown	NPOC	FBK	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 12:19:21	1	1	NPOC	3.782	0.5995	NPOC:0.5995ppm	0	50	
+Unknown	NPOC	CCV	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 12:29:29	1	1	NPOC	298.5	47.32	NPOC:47.32ppm	0	50	
+Unknown	NPOC	중흥유량조정조	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 12:39:07	1	1	NPOC	171.0	27.11	NPOC:27.11ppm	0	50	
+Unknown	NPOC	중흥침전지	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 12:48:45	1	1	NPOC	50.74	8.043	NPOC:8.043ppm	0	50	
+Unknown	NPOC	중흥응집침전지	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 12:58:23	1	1	NPOC	50.96	8.078	NPOC:8.078ppm	0	50	
+Unknown	NPOC	중흥여과기	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 1:08:01	1	1	NPOC	53.12	8.420	NPOC:8.420ppm	0	50	
+Unknown	NPOC	중흥활성탄	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 1:17:39	1	1	NPOC	62.96	9.980	NPOC:9.980ppm	0	50	
+Unknown	NPOC	중흥방류	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 1:27:17	1	1	NPOC	50.67	8.032	NPOC:8.032ppm	0	50	
+Unknown	NPOC	월내유입	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 1:36:55	1	1	NPOC	179.3	28.42	NPOC:28.42ppm	0	50	
+Unknown	NPOC	월내유량조정조	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 1:46:33	1	1	NPOC	142.8	22.64	NPOC:22.64ppm	0	50	
+Unknown	NPOC	월내침전지	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 1:56:11	1	1	NPOC	72.07	11.42	NPOC:11.42ppm	0	50	
+Unknown	NPOC	월내가압부상조	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 2:05:49	1	1	NPOC	69.65	11.04	NPOC:11.04ppm	0	50	
+Unknown	NPOC	월내방류	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 2:15:27	1	1	NPOC	52.83	8.374	NPOC:8.374ppm	0	50	
+Unknown	NPOC	4단계유량조정조	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 2:25:05	1	1	NPOC	91.87	14.56	NPOC:14.56ppm	0	50	
+Unknown	NPOC	4단계방류	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 2:34:43	1	1	NPOC	39.54	6.268	NPOC:6.268ppm	0	50	
+Unknown	NPOC	CCV	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 5:29:34	1	1	NPOC	183.4	29.07	NPOC:29.07ppm	0	50	
+Unknown	NPOC	CCV	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 2:44:29	1	1	NPOC	183.8	29.13	NPOC:29.13ppm	0	50	
+Unknown	NPOC	율촌유입	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 2:54:15	1	1	NPOC	69.08	10.95	NPOC:10.95ppm	0	50	
+Unknown	NPOC	율촌분배조	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 3:03:53	1	1	NPOC	55.17	8.745	NPOC:8.745ppm	0	50	
+Unknown	NPOC	율촌고후(기존)	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 3:13:31	1	1	NPOC	61.05	9.677	NPOC:9.677ppm	0	50	
+Unknown	NPOC	율촌고후(증설)	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 3:23:09	1	1	NPOC	57.06	9.045	NPOC:9.045ppm	0	50	
+Unknown	NPOC	율촌방류	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 3:32:47	1	1	NPOC	14.09	2.233	NPOC:2.233ppm	0	50	
+Unknown	NPOC	세풍유입	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 3:42:25	1	1	NPOC	22.18	3.516	NPOC:3.516ppm	0	50	
+Unknown	NPOC	세풍분배조	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 3:52:03	1	1	NPOC	66.70	10.57	NPOC:10.57ppm	0	50	
+Unknown	NPOC	세풍방류	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 4:01:42	1	1	NPOC	10.19	1.615	NPOC:1.615ppm	0	50	
+Unknown	NPOC	24시펌프	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 4:11:20	1	1	NPOC	165.5	26.23	NPOC:26.23ppm	0	50	
+Unknown	NPOC	07시펌프	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 4:20:59	1	1	NPOC	150.8	23.90	NPOC:23.90ppm	0	50	
+Unknown	NPOC	월내낙포*5	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 4:31:07	1	1	NPOC	30.09	4.770	NPOC:4.770ppm	0	50	
+Unknown	NPOC	월내G라인	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 4:41:16	1	1	NPOC	329.1	52.17	NPOC:52.17ppm	0	50	
+Unknown	NPOC	CCV	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 5:38:17	1	1	NPOC	172.4	27.33	NPOC:27.33ppm	0	50	
+Unknown	NPOC	CCV	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 4:51:24	1	1	NPOC	229.5	36.38	NPOC:36.38ppm	0	50	
+Unknown	NPOC	DW	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 4:59:36	1	1	NPOC	0.000	0.000	NPOC:0.000ppm	0	50	
+Unknown	NPOC	DW	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 5:07:34	1	1	NPOC	0.000	0.000	NPOC:0.000ppm	0	50	
+Unknown	NPOC	DW	NPOC	C:\TOC-L\Methods\처리장 NPOC.met	C:\TOC-L\CalCurves\처리장NPOC.2026_03_04_10_52_32.cal	1.00		2026-03-04 오후 5:15:32	1	1	NPOC	0.000	0.000	NPOC:0.000ppm	0	50	

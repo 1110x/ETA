@@ -1,0 +1,8 @@
+"Sample ID","Type","Conc","WL460.0","Comments"
+"MBK","Unknown",-0.0003,0.0002,""
+"FBK(0210 GS)","Unknown",-0.0004,0.0002,""
+"GS 1","Unknown",0.0824,0.2011,""
+"GS 3","Unknown",0.0136,0.0340,""
+"GS 4","Unknown",0.0839,0.2047,""
+"GS 6","Unknown",0.0558,0.1366,""
+"CCV(ST4,0.100mg/L)","Unknown",0.0970,0.2365,""

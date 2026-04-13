@@ -1,0 +1,5 @@
+"Sample ID","Type","Conc","WL650.0","Comments"
+"MBK","Unknown",0.0045,0.0000,""
+"FBK(금호)","Unknown",0.0044,0.0000,""
+"금호1","Unknown",0.0768,0.0151,""
+"CCV(ST3, 0.8ppm)","Unknown",0.7830,0.1619,""

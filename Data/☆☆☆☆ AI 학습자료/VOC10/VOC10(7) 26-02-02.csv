@@ -1,0 +1,2395 @@
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Analyze Quant Version,10.2,Report Quant Version,10.2
+"1,1-DCE"
+Data File,,Type,RT,,Resp.,,ISTD Resp,,Final Conc.
+VOC10 ST-01.D,,Cal,4.996,,10497,,6246,,0.020
+VOC10 ST-02.D,,Cal,4.996,,27878,,5947,,0.028
+VOC10 ST-03.D,,Cal,4.996,,84632,,6549,,0.051
+VOC10 ST-04.D,,Cal,4.996,,178721,,6329,,0.093
+VOC10 ST-05.D,,Cal,4.996,,370200,,6309,,0.176
+VOC10 ST-06.D,,Cal,4.991,,826096,,5693,,0.413
+BK-.D,,Blank,,,,,9531,,ND
+FBK(HC 26-01-26).D,,Blank,,,,,8607,,ND
+FBK(YS 26-01-27).D,,Blank,,,,,8636,,ND
+FBK(YS 26-01-28).D,,Blank,,,,,9098,,ND
+FBK(HJ 26-01-28).D,,Blank,,,,,9445,,ND
+HC 26-01-26.D,,Sample,,,,,8354,,ND
+HC 26-01-27.D,,Sample,,,,,3554,,ND
+MBK-1.D,,Blank,,,,,7428,,ND
+-CCV-1.D,,QC,4.996,,248808,,4914,,0.154
+YS-01.D,,Sample,,,,,4552,,ND
+YS-02.D,,Sample,,,,,5324,,ND
+YS-03.D,,Sample,,,,,5580,,ND
+YS-04.D,,Sample,,,,,6410,,ND
+YS-05.D,,Sample,,,,,5884,,ND
+YS-06.D,,Sample,,,,,5104,,ND
+YS-07.D,,Sample,,,,,5043,,ND
+YS-08.D,,Sample,,,,,219,,ND
+YS-09.D,,Sample,,,,,4322,,ND
+YS-10.D,,Sample,,,,,4279,,ND
+YS-11.D,,Sample,,,,,3788,,ND
+YS-12.D,,Sample,,,,,3979,,ND
+YS-13.D,,Sample,,,,,3261,,ND
+YS-14.D,,Sample,,,,,3054,,ND
+YS-15.D,,Sample,,,,,2957,,ND
+YS-16.D,,Sample,,,,,2987,,ND
+YS-17.D,,Sample,,,,,3036,,ND
+YS-18.D,,Sample,,,,,2463,,ND
+MBK-2.D,,Blank,,,,,2970,,ND
+-CCV-2.D,,QC,4.991,,120680,,2061,,0.176
+HJ-01.D,,Sample,,,,,3247,,ND
+HJ-02.D,,Sample,,,,,3017,,ND
+HJ-03.D,,Sample,,,,,2795,,ND
+HJ-04.D,,Sample,,,,,2272,,ND
+HJ-05.D,,Sample,,,,,2237,,ND
+HJ-06.D,,Sample,,,,,2866,,ND
+HJ-07.D,,Sample,,,,,2952,,ND
+HJ-08.D,,Sample,,,,,3021,,ND
+HJ-09.D,,Sample,,,,,2374,,ND
+HJ-10.D,,Sample,,,,,2480,,ND
+HJ-11.D,,Sample,,,,,2289,,ND
+HJ-12.D,,Sample,,,,,2087,,ND
+HJ-13.D,,Sample,,,,,1949,,ND
+HJ-14.D,,Sample,,,,,2082,,ND
+HJ-15.D,,Sample,,,,,1878,,ND
+HJ-16.D,,Sample,,,,,2150,,ND
+HJ-17.D,,Sample,,,,,1606,,ND
+MBK-3.D,,Blank,,,,,2965,,ND
+-CCV-3.D,,QC,4.996,,144136,,2319,,0.186
+HJ-02 R.D,,Sample,,,,,3323,,ND
+MBK-4.D,,Blank,,,,,3757,,ND
+-CCV-4.D,,QC,4.991,,206594,,3435,,0.180
+Carbon Chloride
+Data File,,Type,RT,,Resp.,,ISTD Resp,,Final Conc.
+VOC10 ST-01.D,,Cal,5.922,,12787,,6246,,0.017
+VOC10 ST-02.D,,Cal,5.922,,33143,,5947,,0.025
+VOC10 ST-03.D,,Cal,5.922,,99352,,6549,,0.047
+VOC10 ST-04.D,,Cal,5.922,,205254,,6329,,0.087
+VOC10 ST-05.D,,Cal,5.922,,427992,,6309,,0.169
+VOC10 ST-06.D,,Cal,5.922,,960120,,5693,,0.403
+BK-.D,,Blank,,,,,9531,,ND
+FBK(HC 26-01-26).D,,Blank,,,,,8607,,ND
+FBK(YS 26-01-27).D,,Blank,,,,,8636,,ND
+FBK(YS 26-01-28).D,,Blank,,,,,9098,,ND
+FBK(HJ 26-01-28).D,,Blank,,,,,9445,,ND
+HC 26-01-26.D,,Sample,,,,,8354,,ND
+HC 26-01-27.D,,Sample,,,,,3554,,ND
+MBK-1.D,,Blank,,,,,7428,,ND
+-CCV-1.D,,QC,5.922,,334571,,4914,,0.170
+YS-01.D,,Sample,,,,,4552,,ND
+YS-02.D,,Sample,,,,,5324,,ND
+YS-03.D,,Sample,,,,,5580,,ND
+YS-04.D,,Sample,,,,,6410,,ND
+YS-05.D,,Sample,,,,,5884,,ND
+YS-06.D,,Sample,,,,,5104,,ND
+YS-07.D,,Sample,,,,,5043,,ND
+YS-08.D,,Sample,,,,,219,,ND
+YS-09.D,,Sample,,,,,4322,,ND
+YS-10.D,,Sample,,,,,4279,,ND
+YS-11.D,,Sample,,,,,3788,,ND
+YS-12.D,,Sample,,,,,3979,,ND
+YS-13.D,,Sample,,,,,3261,,ND
+YS-14.D,,Sample,,,,,3054,,ND
+YS-15.D,,Sample,,,,,2957,,ND
+YS-16.D,,Sample,,,,,2987,,ND
+YS-17.D,,Sample,,,,,3036,,ND
+YS-18.D,,Sample,,,,,2463,,ND
+MBK-2.D,,Blank,,,,,2970,,ND
+-CCV-2.D,,QC,5.922,,201900,,2061,,0.239
+HJ-01.D,,Sample,,,,,3247,,ND
+HJ-02.D,,Sample,,,,,3017,,ND
+HJ-03.D,,Sample,,,,,2795,,ND
+HJ-04.D,,Sample,,,,,2272,,ND
+HJ-05.D,,Sample,,,,,2237,,ND
+HJ-06.D,,Sample,,,,,2866,,ND
+HJ-07.D,,Sample,,,,,2952,,ND
+HJ-08.D,,Sample,,,,,3021,,ND
+HJ-09.D,,Sample,,,,,2374,,ND
+HJ-10.D,,Sample,,,,,2480,,ND
+HJ-11.D,,Sample,,,,,2289,,ND
+HJ-12.D,,Sample,,,,,2087,,ND
+HJ-13.D,,Sample,,,,,1949,,ND
+HJ-14.D,,Sample,,,,,2082,,ND
+HJ-15.D,,Sample,,,,,1878,,ND
+HJ-16.D,,Sample,,,,,2150,,ND
+HJ-17.D,,Sample,,,,,1606,,ND
+MBK-3.D,,Blank,,,,,2965,,ND
+-CCV-3.D,,QC,5.922,,231971,,2319,,0.244
+HJ-02 R.D,,Sample,,,,,3323,,ND
+MBK-4.D,,Blank,,,,,3757,,ND
+-CCV-4.D,,QC,5.922,,281606,,3435,,0.202
+"1,2-DCE"
+Data File,,Type,RT,,Resp.,,ISTD Resp,,Final Conc.
+VOC10 ST-01.D,,Cal,5.987,,4824,,6246,,0.018
+VOC10 ST-02.D,,Cal,5.986,,10275,,5947,,0.027
+VOC10 ST-03.D,,Cal,5.986,,26808,,6549,,0.050
+VOC10 ST-04.D,,Cal,5.986,,55458,,6329,,0.095
+VOC10 ST-05.D,,Cal,5.986,,111496,,6309,,0.181
+VOC10 ST-06.D,,Cal,5.987,,236531,,5693,,0.411
+BK-.D,,Blank,,,,,9531,,ND
+FBK(HC 26-01-26).D,,Blank,,,,,8607,,ND
+FBK(YS 26-01-27).D,,Blank,,,,,8636,,ND
+FBK(YS 26-01-28).D,,Blank,,,,,9098,,ND
+FBK(HJ 26-01-28).D,,Blank,,,,,9445,,ND
+HC 26-01-26.D,,Sample,,,,,8354,,ND
+HC 26-01-27.D,,Sample,,,,,3554,,ND
+MBK-1.D,,Blank,,,,,7428,,ND
+-CCV-1.D,,QC,5.986,,81187,,4914,,0.169
+YS-01.D,,Sample,5.973,,0,,4552,,ND
+YS-02.D,,Sample,,,,,5324,,ND
+YS-03.D,,Sample,,,,,5580,,ND
+YS-04.D,,Sample,,,,,6410,,ND
+YS-05.D,,Sample,,,,,5884,,ND
+YS-06.D,,Sample,,,,,5104,,ND
+YS-07.D,,Sample,,,,,5043,,ND
+YS-08.D,,Sample,,,,,219,,ND
+YS-09.D,,Sample,,,,,4322,,ND
+YS-10.D,,Sample,,,,,4279,,ND
+YS-11.D,,Sample,,,,,3788,,ND
+YS-12.D,,Sample,,,,,3979,,ND
+YS-13.D,,Sample,,,,,3261,,ND
+YS-14.D,,Sample,,,,,3054,,ND
+YS-15.D,,Sample,,,,,2957,,ND
+YS-16.D,,Sample,,,,,2987,,ND
+YS-17.D,,Sample,,,,,3036,,ND
+YS-18.D,,Sample,,,,,2463,,ND
+MBK-2.D,,Blank,,,,,2970,,ND
+-CCV-2.D,,QC,5.986,,43020,,2061,,0.211
+HJ-01.D,,Sample,5.961,,0,,3247,,ND
+HJ-02.D,,Sample,,,,,3017,,ND
+HJ-03.D,,Sample,,,,,2795,,ND
+HJ-04.D,,Sample,,,,,2272,,ND
+HJ-05.D,,Sample,,,,,2237,,ND
+HJ-06.D,,Sample,,,,,2866,,ND
+HJ-07.D,,Sample,5.993,,0,,2952,,ND
+HJ-08.D,,Sample,,,,,3021,,ND
+HJ-09.D,,Sample,,,,,2374,,ND
+HJ-10.D,,Sample,,,,,2480,,ND
+HJ-11.D,,Sample,,,,,2289,,ND
+HJ-12.D,,Sample,,,,,2087,,ND
+HJ-13.D,,Sample,,,,,1949,,ND
+HJ-14.D,,Sample,,,,,2082,,ND
+HJ-15.D,,Sample,,,,,1878,,ND
+HJ-16.D,,Sample,,,,,2150,,ND
+HJ-17.D,,Sample,,,,,1606,,ND
+MBK-3.D,,Blank,,,,,2965,,ND
+-CCV-3.D,,QC,5.986,,49529,,2319,,0.216
+HJ-02 R.D,,Sample,,,,,3323,,ND
+MBK-4.D,,Blank,,,,,3757,,ND
+-CCV-4.D,,QC,5.986,,107652,,3435,,0.312
+TCE
+Data File,,Type,RT,,Resp.,,ISTD Resp,,Final Conc.
+VOC10 ST-01.D,,Cal,6.238,,6145,,6246,,0.020
+VOC10 ST-02.D,,Cal,6.238,,15835,,5947,,0.028
+VOC10 ST-03.D,,Cal,6.238,,46138,,6549,,0.050
+VOC10 ST-04.D,,Cal,6.238,,97377,,6329,,0.091
+VOC10 ST-05.D,,Cal,6.238,,205893,,6309,,0.177
+VOC10 ST-06.D,,Cal,6.238,,457746,,5693,,0.413
+BK-.D,,Blank,,,,,9531,,ND
+FBK(HC 26-01-26).D,,Blank,,,,,8607,,ND
+FBK(YS 26-01-27).D,,Blank,,,,,8636,,ND
+FBK(YS 26-01-28).D,,Blank,,,,,9098,,ND
+FBK(HJ 26-01-28).D,,Blank,,,,,9445,,ND
+HC 26-01-26.D,,Sample,,,,,8354,,ND
+HC 26-01-27.D,,Sample,,,,,3554,,ND
+MBK-1.D,,Blank,,,,,7428,,ND
+-CCV-1.D,,QC,6.232,,143806,,4914,,0.160
+YS-01.D,,Sample,,,,,4552,,ND
+YS-02.D,,Sample,,,,,5324,,ND
+YS-03.D,,Sample,,,,,5580,,ND
+YS-04.D,,Sample,,,,,6410,,ND
+YS-05.D,,Sample,,,,,5884,,ND
+YS-06.D,,Sample,,,,,5104,,ND
+YS-07.D,,Sample,,,,,5043,,ND
+YS-08.D,,Sample,,,,,219,,ND
+YS-09.D,,Sample,,,,,4322,,ND
+YS-10.D,,Sample,,,,,4279,,ND
+YS-11.D,,Sample,,,,,3788,,ND
+YS-12.D,,Sample,,,,,3979,,ND
+YS-13.D,,Sample,,,,,3261,,ND
+YS-14.D,,Sample,,,,,3054,,ND
+YS-15.D,,Sample,,,,,2957,,ND
+YS-16.D,,Sample,,,,,2987,,ND
+YS-17.D,,Sample,,,,,3036,,ND
+YS-18.D,,Sample,,,,,2463,,ND
+MBK-2.D,,Blank,,,,,2970,,ND
+-CCV-2.D,,QC,6.232,,62624,,2061,,0.166
+HJ-01.D,,Sample,,,,,3247,,ND
+HJ-02.D,,Sample,,,,,3017,,ND
+HJ-03.D,,Sample,,,,,2795,,ND
+HJ-04.D,,Sample,,,,,2272,,ND
+HJ-05.D,,Sample,,,,,2237,,ND
+HJ-06.D,,Sample,,,,,2866,,ND
+HJ-07.D,,Sample,,,,,2952,,ND
+HJ-08.D,,Sample,,,,,3021,,ND
+HJ-09.D,,Sample,,,,,2374,,ND
+HJ-10.D,,Sample,,,,,2480,,ND
+HJ-11.D,,Sample,,,,,2289,,ND
+HJ-12.D,,Sample,,,,,2087,,ND
+HJ-13.D,,Sample,,,,,1949,,ND
+HJ-14.D,,Sample,,,,,2082,,ND
+HJ-15.D,,Sample,,,,,1878,,ND
+HJ-16.D,,Sample,,,,,2150,,ND
+HJ-17.D,,Sample,,,,,1606,,ND
+MBK-3.D,,Blank,,,,,2965,,ND
+-CCV-3.D,,QC,6.232,,71402,,2319,,0.168
+HJ-02 R.D,,Sample,,,,,3323,,ND
+MBK-4.D,,Blank,,,,,3757,,ND
+-CCV-4.D,,QC,6.232,,137063,,3435,,0.213
+Toluene
+Data File,,Type,RT,,Resp.,,ISTD Resp,,Final Conc.
+VOC10 ST-01.D,,Cal,6.855,,23849,,6246,,0.019
+VOC10 ST-02.D,,Cal,6.854,,59193,,5947,,0.028
+VOC10 ST-03.D,,Cal,6.854,,165630,,6549,,0.050
+VOC10 ST-04.D,,Cal,6.854,,347221,,6329,,0.093
+VOC10 ST-05.D,,Cal,6.854,,718380,,6309,,0.178
+VOC10 ST-06.D,,Cal,6.855,,1565593,,5693,,0.412
+BK-.D,,Blank,,,,,9531,,ND
+FBK(HC 26-01-26).D,,Blank,,,,,8607,,ND
+FBK(YS 26-01-27).D,,Blank,,,,,8636,,ND
+FBK(YS 26-01-28).D,,Blank,,,,,9098,,ND
+FBK(HJ 26-01-28).D,,Blank,,,,,9445,,ND
+HC 26-01-26.D,,Sample,,,,,8354,,ND
+HC 26-01-27.D,,Sample,,,,,3554,,ND
+MBK-1.D,,Blank,,,,,7428,,ND
+-CCV-1.D,,QC,6.854,,495624,,4914,,0.160
+YS-01.D,,Sample,,,,,4552,,ND
+YS-02.D,,Sample,6.854,,13235,,5324,,0.017
+YS-03.D,,Sample,,,,,5580,,ND
+YS-04.D,,Sample,,,,,6410,,ND
+YS-05.D,,Sample,,,,,5884,,ND
+YS-06.D,,Sample,,,,,5104,,ND
+YS-07.D,,Sample,,,,,5043,,ND
+YS-08.D,,Sample,,,,,219,,ND
+YS-09.D,,Sample,,,,,4322,,ND
+YS-10.D,,Sample,,,,,4279,,ND
+YS-11.D,,Sample,,,,,3788,,ND
+YS-12.D,,Sample,,,,,3979,,ND
+YS-13.D,,Sample,,,,,3261,,ND
+YS-14.D,,Sample,,,,,3054,,ND
+YS-15.D,,Sample,,,,,2957,,ND
+YS-16.D,,Sample,,,,,2987,,ND
+YS-17.D,,Sample,,,,,3036,,ND
+YS-18.D,,Sample,,,,,2463,,ND
+MBK-2.D,,Blank,,,,,2970,,ND
+-CCV-2.D,,QC,6.854,,196831,,2061,,0.152
+HJ-01.D,,Sample,,,,,3247,,ND
+HJ-02.D,,Sample,6.851,,1028029,,3017,,0.507
+HJ-03.D,,Sample,,,,,2795,,ND
+HJ-04.D,,Sample,,,,,2272,,ND
+HJ-05.D,,Sample,,,,,2237,,ND
+HJ-06.D,,Sample,6.854,,6372,,2866,,0.017
+HJ-07.D,,Sample,,,,,2952,,ND
+HJ-08.D,,Sample,,,,,3021,,ND
+HJ-09.D,,Sample,,,,,2374,,ND
+HJ-10.D,,Sample,,,,,2480,,ND
+HJ-11.D,,Sample,,,,,2289,,ND
+HJ-12.D,,Sample,,,,,2087,,ND
+HJ-13.D,,Sample,,,,,1949,,ND
+HJ-14.D,,Sample,,,,,2082,,ND
+HJ-15.D,,Sample,,,,,1878,,ND
+HJ-16.D,,Sample,,,,,2150,,ND
+HJ-17.D,,Sample,,,,,1606,,ND
+MBK-3.D,,Blank,,,,,2965,,ND
+-CCV-3.D,,QC,6.854,,225095,,2319,,0.154
+HJ-02 R.D,,Sample,6.851,,118730,,3323,,0.521
+MBK-4.D,,Blank,,,,,3757,,ND
+-CCV-4.D,,QC,6.851,,451218,,3435,,0.204
+PCE
+Data File,,Type,RT,,Resp.,,ISTD Resp,,Final Conc.
+VOC10 ST-01.D,,Cal,7.150,,6724,,6246,,0.020
+VOC10 ST-02.D,,Cal,7.150,,17879,,5947,,0.028
+VOC10 ST-03.D,,Cal,7.150,,53326,,6549,,0.050
+VOC10 ST-04.D,,Cal,7.150,,114173,,6329,,0.092
+VOC10 ST-05.D,,Cal,7.150,,238605,,6309,,0.177
+VOC10 ST-06.D,,Cal,7.150,,529114,,5693,,0.413
+BK-.D,,Blank,,,,,9531,,ND
+FBK(HC 26-01-26).D,,Blank,,,,,8607,,ND
+FBK(YS 26-01-27).D,,Blank,,,,,8636,,ND
+FBK(YS 26-01-28).D,,Blank,,,,,9098,,ND
+FBK(HJ 26-01-28).D,,Blank,,,,,9445,,ND
+HC 26-01-26.D,,Sample,,,,,8354,,ND
+HC 26-01-27.D,,Sample,,,,,3554,,ND
+MBK-1.D,,Blank,,,,,7428,,ND
+-CCV-1.D,,QC,7.150,,183207,,4914,,0.175
+YS-01.D,,Sample,,,,,4552,,ND
+YS-02.D,,Sample,,,,,5324,,ND
+YS-03.D,,Sample,,,,,5580,,ND
+YS-04.D,,Sample,,,,,6410,,ND
+YS-05.D,,Sample,,,,,5884,,ND
+YS-06.D,,Sample,,,,,5104,,ND
+YS-07.D,,Sample,,,,,5043,,ND
+YS-08.D,,Sample,,,,,219,,ND
+YS-09.D,,Sample,,,,,4322,,ND
+YS-10.D,,Sample,,,,,4279,,ND
+YS-11.D,,Sample,,,,,3788,,ND
+YS-12.D,,Sample,,,,,3979,,ND
+YS-13.D,,Sample,,,,,3261,,ND
+YS-14.D,,Sample,,,,,3054,,ND
+YS-15.D,,Sample,,,,,2957,,ND
+YS-16.D,,Sample,,,,,2987,,ND
+YS-17.D,,Sample,,,,,3036,,ND
+YS-18.D,,Sample,,,,,2463,,ND
+MBK-2.D,,Blank,,,,,2970,,ND
+-CCV-2.D,,QC,7.150,,85401,,2061,,0.192
+HJ-01.D,,Sample,,,,,3247,,ND
+HJ-02.D,,Sample,,,,,3017,,ND
+HJ-03.D,,Sample,,,,,2795,,ND
+HJ-04.D,,Sample,,,,,2272,,ND
+HJ-05.D,,Sample,,,,,2237,,ND
+HJ-06.D,,Sample,,,,,2866,,ND
+HJ-07.D,,Sample,,,,,2952,,ND
+HJ-08.D,,Sample,,,,,3021,,ND
+HJ-09.D,,Sample,,,,,2374,,ND
+HJ-10.D,,Sample,,,,,2480,,ND
+HJ-11.D,,Sample,,,,,2289,,ND
+HJ-12.D,,Sample,,,,,2087,,ND
+HJ-13.D,,Sample,,,,,1949,,ND
+HJ-14.D,,Sample,,,,,2082,,ND
+HJ-15.D,,Sample,,,,,1878,,ND
+HJ-16.D,,Sample,,,,,2150,,ND
+HJ-17.D,,Sample,,,,,1606,,ND
+MBK-3.D,,Blank,,,,,2965,,ND
+-CCV-3.D,,QC,7.150,,94627,,2319,,0.190
+HJ-02 R.D,,Sample,,,,,3323,,ND
+MBK-4.D,,Blank,,,,,3757,,ND
+-CCV-4.D,,QC,7.150,,156615,,3435,,0.210
+Xylene
+Data File,,Type,RT,,Resp.,,ISTD Resp,,Final Conc.
+VOC10 ST-01.D,,Cal,7.937,,30595,,6246,,0.019
+VOC10 ST-02.D,,Cal,7.937,,77428,,5947,,0.028
+VOC10 ST-03.D,,Cal,7.937,,216302,,6549,,0.050
+VOC10 ST-04.D,,Cal,7.937,,463349,,6329,,0.094
+VOC10 ST-05.D,,Cal,7.937,,946887,,6309,,0.178
+VOC10 ST-06.D,,Cal,7.937,,2064865,,5693,,0.412
+BK-.D,,Blank,0.000,,0,,9531,,ND
+FBK(HC 26-01-26).D,,Blank,0.000,,0,,8607,,ND
+FBK(YS 26-01-27).D,,Blank,0.000,,0,,8636,,ND
+FBK(YS 26-01-28).D,,Blank,0.000,,0,,9098,,ND
+FBK(HJ 26-01-28).D,,Blank,0.000,,0,,9445,,ND
+HC 26-01-26.D,,Sample,0.000,,0,,8354,,ND
+HC 26-01-27.D,,Sample,0.000,,0,,3554,,ND
+MBK-1.D,,Blank,0.000,,0,,7428,,ND
+-CCV-1.D,,QC,7.937,,670759,,4914,,0.163
+YS-01.D,,Sample,0.000,,0,,4552,,ND
+YS-02.D,,Sample,0.000,,0,,5324,,ND
+YS-03.D,,Sample,0.000,,0,,5580,,ND
+YS-04.D,,Sample,0.000,,0,,6410,,ND
+YS-05.D,,Sample,0.000,,0,,5884,,ND
+YS-06.D,,Sample,0.000,,0,,5104,,ND
+YS-07.D,,Sample,0.000,,0,,5043,,ND
+YS-08.D,,Sample,0.000,,0,,219,,ND
+YS-09.D,,Sample,0.000,,0,,4322,,ND
+YS-10.D,,Sample,0.000,,0,,4279,,ND
+YS-11.D,,Sample,0.000,,0,,3788,,ND
+YS-12.D,,Sample,0.000,,0,,3979,,ND
+YS-13.D,,Sample,0.000,,0,,3261,,ND
+YS-14.D,,Sample,0.000,,0,,3054,,ND
+YS-15.D,,Sample,0.000,,0,,2957,,ND
+YS-16.D,,Sample,0.000,,0,,2987,,ND
+YS-17.D,,Sample,0.000,,0,,3036,,ND
+YS-18.D,,Sample,0.000,,0,,2463,,ND
+MBK-2.D,,Blank,0.000,,0,,2970,,ND
+-CCV-2.D,,QC,7.937,,269742,,2061,,0.157
+HJ-01.D,,Sample,0.000,,0,,3247,,ND
+HJ-02.D,,Sample,0.000,,0,,3017,,ND
+HJ-03.D,,Sample,0.000,,0,,2795,,ND
+HJ-04.D,,Sample,0.000,,0,,2272,,ND
+HJ-05.D,,Sample,0.000,,0,,2237,,ND
+HJ-06.D,,Sample,0.000,,0,,2866,,ND
+HJ-07.D,,Sample,0.000,,0,,2952,,ND
+HJ-08.D,,Sample,0.000,,0,,3021,,ND
+HJ-09.D,,Sample,0.000,,0,,2374,,ND
+HJ-10.D,,Sample,0.000,,0,,2480,,ND
+HJ-11.D,,Sample,0.000,,0,,2289,,ND
+HJ-12.D,,Sample,0.000,,0,,2087,,ND
+HJ-13.D,,Sample,0.000,,0,,1949,,ND
+HJ-14.D,,Sample,0.000,,0,,2082,,ND
+HJ-15.D,,Sample,0.000,,0,,1878,,ND
+HJ-16.D,,Sample,0.000,,0,,2150,,ND
+HJ-17.D,,Sample,0.000,,0,,1606,,ND
+MBK-3.D,,Blank,0.000,,0,,2965,,ND
+-CCV-3.D,,QC,7.936,,305535,,2319,,0.158
+HJ-02 R.D,,Sample,0.000,,0,,3323,,ND
+MBK-4.D,,Blank,0.000,,0,,3757,,ND
+-CCV-4.D,,QC,7.937,,610152,,3435,,0.208
+Calibration,,
+"1,1-DCE",,
+
+Cal. Path,Type,Level,Enable,,Conc.,,Response
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-01.D",Calibration,1,x,,0.010,,10497
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-02.D",Calibration,2,x,,0.020,,27878
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-03.D",Calibration,3,x,,0.050,,84632
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-04.D",Calibration,4,x,,0.100,,178721
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-05.D",Calibration,5,x,,0.200,,370200
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\-CCV-1.D",QC,5,x,,0.200,,248808
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\-CCV-2.D",QC,5,x,,0.200,,120680
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\-CCV-3.D",QC,5,x,,0.200,,144136
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\-CCV-4.D",QC,5,x,,0.200,,206594
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-06.D",Calibration,6,x,,0.400,,826096
+Calibration,,
+Carbon Chloride,,
+
+Cal. Path,Type,Level,Enable,,Conc.,,Response
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-01.D",Calibration,1,x,,0.010,,12787
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-02.D",Calibration,2,x,,0.020,,33143
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-03.D",Calibration,3,x,,0.050,,99352
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-04.D",Calibration,4,x,,0.100,,205254
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-05.D",Calibration,5,,,0.200,,427992
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\-CCV-1.D",QC,5,x,,0.200,,334571
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\-CCV-2.D",QC,5,x,,0.200,,201900
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\-CCV-3.D",QC,5,x,,0.200,,231971
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\-CCV-4.D",QC,5,,,0.200,,281606
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-06.D",Calibration,6,x,,0.400,,960120
+Calibration,,
+"1,2-DCE",,
+
+Cal. Path,Type,Level,Enable,,Conc.,,Response
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-01.D",Calibration,1,x,,0.010,,4824
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-02.D",Calibration,2,x,,0.020,,10275
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-03.D",Calibration,3,x,,0.050,,26808
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-04.D",Calibration,4,x,,0.100,,55458
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-05.D",Calibration,5,x,,0.200,,111496
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\-CCV-1.D",QC,5,x,,0.200,,81187
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\-CCV-2.D",QC,5,x,,0.200,,43020
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\-CCV-3.D",QC,5,x,,0.200,,49529
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\-CCV-4.D",QC,5,x,,0.200,,107652
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-06.D",Calibration,6,x,,0.400,,236531
+Calibration,,
+TCE,,
+
+Cal. Path,Type,Level,Enable,,Conc.,,Response
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-01.D",Calibration,1,x,,0.010,,6145
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-02.D",Calibration,2,x,,0.020,,15835
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-03.D",Calibration,3,x,,0.050,,46138
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-04.D",Calibration,4,x,,0.100,,97377
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-05.D",Calibration,5,x,,0.200,,205893
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\-CCV-1.D",QC,5,x,,0.200,,143806
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\-CCV-2.D",QC,5,x,,0.200,,62624
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\-CCV-3.D",QC,5,x,,0.200,,71402
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\-CCV-4.D",QC,5,x,,0.200,,137063
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-06.D",Calibration,6,x,,0.400,,457746
+Calibration,,
+Toluene,,
+
+Cal. Path,Type,Level,Enable,,Conc.,,Response
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-01.D",Calibration,1,x,,0.010,,23849
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-02.D",Calibration,2,x,,0.020,,59193
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-03.D",Calibration,3,x,,0.050,,165630
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-04.D",Calibration,4,x,,0.100,,347221
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-05.D",Calibration,5,x,,0.200,,718380
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\-CCV-1.D",QC,5,x,,0.200,,495624
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\-CCV-2.D",QC,5,x,,0.200,,196831
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\-CCV-3.D",QC,5,x,,0.200,,225095
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\-CCV-4.D",QC,5,x,,0.200,,451218
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-06.D",Calibration,6,x,,0.400,,1565593
+Calibration,,
+PCE,,
+
+Cal. Path,Type,Level,Enable,,Conc.,,Response
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-01.D",Calibration,1,x,,0.010,,6724
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-02.D",Calibration,2,x,,0.020,,17879
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-03.D",Calibration,3,x,,0.050,,53326
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-04.D",Calibration,4,x,,0.100,,114173
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-05.D",Calibration,5,x,,0.200,,238605
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\-CCV-1.D",QC,5,x,,0.200,,183207
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\-CCV-2.D",QC,5,x,,0.200,,85401
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\-CCV-3.D",QC,5,x,,0.200,,94627
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\-CCV-4.D",QC,5,x,,0.200,,156615
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-06.D",Calibration,6,x,,0.400,,529114
+Calibration,,
+Xylene,,
+
+Cal. Path,Type,Level,Enable,,Conc.,,Response
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-01.D",Calibration,1,x,,0.010,,30595
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-02.D",Calibration,2,x,,0.020,,77428
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-03.D",Calibration,3,x,,0.050,,216302
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-04.D",Calibration,4,x,,0.100,,463349
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-05.D",Calibration,5,x,,0.200,,946887
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\-CCV-1.D",QC,5,x,,0.200,,670759
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\-CCV-2.D",QC,5,x,,0.200,,269742
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\-CCV-3.D",QC,5,x,,0.200,,305535
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\-CCV-4.D",QC,5,x,,0.200,,610152
+"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\VOC10 ST-06.D",Calibration,6,x,,0.400,,2064865
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오전 10:34:29,Data File,VOC10 ST-01.D
+Type,Cal,Name,VOC10 ST-01
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,4.996,10497,6246,,0.020,mg/L
+Carbon Chloride,,5.922,12787,6246,,0.017,mg/L
+"1,2-DCE",,5.987,4824,6246,,0.018,mg/L
+TCE,,6.238,6145,6246,,0.020,mg/L
+Toluene,,6.855,23849,6246,,0.019,mg/L
+PCE,,7.150,6724,6246,,0.020,mg/L
+Xylene,,7.937,30595,6246,,0.019,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오전 10:47:09,Data File,VOC10 ST-02.D
+Type,Cal,Name,VOC10 ST-02
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,4.996,27878,5947,,0.028,mg/L
+Carbon Chloride,,5.922,33143,5947,,0.025,mg/L
+"1,2-DCE",,5.986,10275,5947,,0.027,mg/L
+TCE,,6.238,15835,5947,,0.028,mg/L
+Toluene,,6.854,59193,5947,,0.028,mg/L
+PCE,,7.150,17879,5947,,0.028,mg/L
+Xylene,,7.937,77428,5947,,0.028,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오전 10:59:50,Data File,VOC10 ST-03.D
+Type,Cal,Name,VOC10 ST-03
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,4.996,84632,6549,,0.051,mg/L
+Carbon Chloride,,5.922,99352,6549,,0.047,mg/L
+"1,2-DCE",,5.986,26808,6549,,0.050,mg/L
+TCE,,6.238,46138,6549,,0.050,mg/L
+Toluene,,6.854,165630,6549,,0.050,mg/L
+PCE,,7.150,53326,6549,,0.050,mg/L
+Xylene,,7.937,216302,6549,,0.050,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오전 11:12:31,Data File,VOC10 ST-04.D
+Type,Cal,Name,VOC10 ST-04
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,4.996,178721,6329,,0.093,mg/L
+Carbon Chloride,,5.922,205254,6329,,0.087,mg/L
+"1,2-DCE",,5.986,55458,6329,,0.095,mg/L
+TCE,,6.238,97377,6329,,0.091,mg/L
+Toluene,,6.854,347221,6329,,0.093,mg/L
+PCE,,7.150,114173,6329,,0.092,mg/L
+Xylene,,7.937,463349,6329,,0.094,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오전 11:25:14,Data File,VOC10 ST-05.D
+Type,Cal,Name,VOC10 ST-05
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,4.996,370200,6309,,0.176,mg/L
+Carbon Chloride,,5.922,427992,6309,,0.169,mg/L
+"1,2-DCE",,5.986,111496,6309,,0.181,mg/L
+TCE,,6.238,205893,6309,,0.177,mg/L
+Toluene,,6.854,718380,6309,,0.178,mg/L
+PCE,,7.150,238605,6309,,0.177,mg/L
+Xylene,,7.937,946887,6309,,0.178,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오전 11:37:56,Data File,VOC10 ST-06.D
+Type,Cal,Name,VOC10 ST-06
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,4.991,826096,5693,,0.413,mg/L
+Carbon Chloride,,5.922,960120,5693,,0.403,mg/L
+"1,2-DCE",,5.987,236531,5693,,0.411,mg/L
+TCE,,6.238,457746,5693,,0.413,mg/L
+Toluene,,6.855,1565593,5693,,0.412,mg/L
+PCE,,7.150,529114,5693,,0.413,mg/L
+Xylene,,7.937,2064865,5693,,0.412,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 12:03:22,Data File,BK-.D
+Type,Blank,Name,BK-
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,9531,,ND,mg/L
+Carbon Chloride,,,,9531,,ND,mg/L
+"1,2-DCE",,,,9531,,ND,mg/L
+TCE,,,,9531,,ND,mg/L
+Toluene,,,,9531,,ND,mg/L
+PCE,,,,9531,,ND,mg/L
+Xylene,,0.000,0,9531,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 12:16:04,Data File,FBK(HC 26-01-26).D
+Type,Blank,Name,FBK(HC 26-01-26)
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,8607,,ND,mg/L
+Carbon Chloride,,,,8607,,ND,mg/L
+"1,2-DCE",,,,8607,,ND,mg/L
+TCE,,,,8607,,ND,mg/L
+Toluene,,,,8607,,ND,mg/L
+PCE,,,,8607,,ND,mg/L
+Xylene,,0.000,0,8607,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 12:28:48,Data File,FBK(YS 26-01-27).D
+Type,Blank,Name,FBK(YS 26-01-27)
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,8636,,ND,mg/L
+Carbon Chloride,,,,8636,,ND,mg/L
+"1,2-DCE",,,,8636,,ND,mg/L
+TCE,,,,8636,,ND,mg/L
+Toluene,,,,8636,,ND,mg/L
+PCE,,,,8636,,ND,mg/L
+Xylene,,0.000,0,8636,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 12:41:33,Data File,FBK(YS 26-01-28).D
+Type,Blank,Name,FBK(YS 26-01-28)
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,9098,,ND,mg/L
+Carbon Chloride,,,,9098,,ND,mg/L
+"1,2-DCE",,,,9098,,ND,mg/L
+TCE,,,,9098,,ND,mg/L
+Toluene,,,,9098,,ND,mg/L
+PCE,,,,9098,,ND,mg/L
+Xylene,,0.000,0,9098,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 12:54:16,Data File,FBK(HJ 26-01-28).D
+Type,Blank,Name,FBK(HJ 26-01-28)
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,9445,,ND,mg/L
+Carbon Chloride,,,,9445,,ND,mg/L
+"1,2-DCE",,,,9445,,ND,mg/L
+TCE,,,,9445,,ND,mg/L
+Toluene,,,,9445,,ND,mg/L
+PCE,,,,9445,,ND,mg/L
+Xylene,,0.000,0,9445,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 1:06:58,Data File,HC 26-01-26.D
+Type,Sample,Name,HC 26-01-26
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,8354,,ND,mg/L
+Carbon Chloride,,,,8354,,ND,mg/L
+"1,2-DCE",,,,8354,,ND,mg/L
+TCE,,,,8354,,ND,mg/L
+Toluene,,,,8354,,ND,mg/L
+PCE,,,,8354,,ND,mg/L
+Xylene,,0.000,0,8354,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 1:19:43,Data File,HC 26-01-27.D
+Type,Sample,Name,HC 26-01-27
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,3554,,ND,mg/L
+Carbon Chloride,,,,3554,,ND,mg/L
+"1,2-DCE",,,,3554,,ND,mg/L
+TCE,,,,3554,,ND,mg/L
+Toluene,,,,3554,,ND,mg/L
+PCE,,,,3554,,ND,mg/L
+Xylene,,0.000,0,3554,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 1:32:28,Data File,MBK-1.D
+Type,Blank,Name,MBK-1
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,7428,,ND,mg/L
+Carbon Chloride,,,,7428,,ND,mg/L
+"1,2-DCE",,,,7428,,ND,mg/L
+TCE,,,,7428,,ND,mg/L
+Toluene,,,,7428,,ND,mg/L
+PCE,,,,7428,,ND,mg/L
+Xylene,,0.000,0,7428,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 1:57:54,Data File,-CCV-1.D
+Type,QC,Name,-CCV-1
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,4.996,248808,4914,,0.154,mg/L
+Carbon Chloride,,5.922,334571,4914,,0.170,mg/L
+"1,2-DCE",,5.986,81187,4914,,0.169,mg/L
+TCE,,6.232,143806,4914,,0.160,mg/L
+Toluene,,6.854,495624,4914,,0.160,mg/L
+PCE,,7.150,183207,4914,,0.175,mg/L
+Xylene,,7.937,670759,4914,,0.163,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 2:10:38,Data File,YS-01.D
+Type,Sample,Name,YS-01
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,4552,,ND,mg/L
+Carbon Chloride,,,,4552,,ND,mg/L
+"1,2-DCE",,5.973,0,4552,,ND,mg/L
+TCE,,,,4552,,ND,mg/L
+Toluene,,,,4552,,ND,mg/L
+PCE,,,,4552,,ND,mg/L
+Xylene,,0.000,0,4552,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 2:23:22,Data File,YS-02.D
+Type,Sample,Name,YS-02
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,5324,,ND,mg/L
+Carbon Chloride,,,,5324,,ND,mg/L
+"1,2-DCE",,,,5324,,ND,mg/L
+TCE,,,,5324,,ND,mg/L
+Toluene,,6.854,13235,5324,,0.017,mg/L
+PCE,,,,5324,,ND,mg/L
+Xylene,,0.000,0,5324,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 2:36:06,Data File,YS-03.D
+Type,Sample,Name,YS-03
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,5580,,ND,mg/L
+Carbon Chloride,,,,5580,,ND,mg/L
+"1,2-DCE",,,,5580,,ND,mg/L
+TCE,,,,5580,,ND,mg/L
+Toluene,,,,5580,,ND,mg/L
+PCE,,,,5580,,ND,mg/L
+Xylene,,0.000,0,5580,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 2:48:51,Data File,YS-04.D
+Type,Sample,Name,YS-04
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,6410,,ND,mg/L
+Carbon Chloride,,,,6410,,ND,mg/L
+"1,2-DCE",,,,6410,,ND,mg/L
+TCE,,,,6410,,ND,mg/L
+Toluene,,,,6410,,ND,mg/L
+PCE,,,,6410,,ND,mg/L
+Xylene,,0.000,0,6410,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 3:01:34,Data File,YS-05.D
+Type,Sample,Name,YS-05
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,5884,,ND,mg/L
+Carbon Chloride,,,,5884,,ND,mg/L
+"1,2-DCE",,,,5884,,ND,mg/L
+TCE,,,,5884,,ND,mg/L
+Toluene,,,,5884,,ND,mg/L
+PCE,,,,5884,,ND,mg/L
+Xylene,,0.000,0,5884,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 3:14:21,Data File,YS-06.D
+Type,Sample,Name,YS-06
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,5104,,ND,mg/L
+Carbon Chloride,,,,5104,,ND,mg/L
+"1,2-DCE",,,,5104,,ND,mg/L
+TCE,,,,5104,,ND,mg/L
+Toluene,,,,5104,,ND,mg/L
+PCE,,,,5104,,ND,mg/L
+Xylene,,0.000,0,5104,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 3:27:05,Data File,YS-07.D
+Type,Sample,Name,YS-07
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,5043,,ND,mg/L
+Carbon Chloride,,,,5043,,ND,mg/L
+"1,2-DCE",,,,5043,,ND,mg/L
+TCE,,,,5043,,ND,mg/L
+Toluene,,,,5043,,ND,mg/L
+PCE,,,,5043,,ND,mg/L
+Xylene,,0.000,0,5043,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 3:39:52,Data File,YS-08.D
+Type,Sample,Name,YS-08
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,219,,ND,mg/L
+Carbon Chloride,,,,219,,ND,mg/L
+"1,2-DCE",,,,219,,ND,mg/L
+TCE,,,,219,,ND,mg/L
+Toluene,,,,219,,ND,mg/L
+PCE,,,,219,,ND,mg/L
+Xylene,,0.000,0,219,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 3:52:38,Data File,YS-09.D
+Type,Sample,Name,YS-09
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,4322,,ND,mg/L
+Carbon Chloride,,,,4322,,ND,mg/L
+"1,2-DCE",,,,4322,,ND,mg/L
+TCE,,,,4322,,ND,mg/L
+Toluene,,,,4322,,ND,mg/L
+PCE,,,,4322,,ND,mg/L
+Xylene,,0.000,0,4322,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 4:05:37,Data File,YS-10.D
+Type,Sample,Name,YS-10
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,4279,,ND,mg/L
+Carbon Chloride,,,,4279,,ND,mg/L
+"1,2-DCE",,,,4279,,ND,mg/L
+TCE,,,,4279,,ND,mg/L
+Toluene,,,,4279,,ND,mg/L
+PCE,,,,4279,,ND,mg/L
+Xylene,,0.000,0,4279,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 4:18:23,Data File,YS-11.D
+Type,Sample,Name,YS-11
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,3788,,ND,mg/L
+Carbon Chloride,,,,3788,,ND,mg/L
+"1,2-DCE",,,,3788,,ND,mg/L
+TCE,,,,3788,,ND,mg/L
+Toluene,,,,3788,,ND,mg/L
+PCE,,,,3788,,ND,mg/L
+Xylene,,0.000,0,3788,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 4:31:09,Data File,YS-12.D
+Type,Sample,Name,YS-12
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,3979,,ND,mg/L
+Carbon Chloride,,,,3979,,ND,mg/L
+"1,2-DCE",,,,3979,,ND,mg/L
+TCE,,,,3979,,ND,mg/L
+Toluene,,,,3979,,ND,mg/L
+PCE,,,,3979,,ND,mg/L
+Xylene,,0.000,0,3979,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 4:49:39,Data File,YS-13.D
+Type,Sample,Name,YS-13
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,3261,,ND,mg/L
+Carbon Chloride,,,,3261,,ND,mg/L
+"1,2-DCE",,,,3261,,ND,mg/L
+TCE,,,,3261,,ND,mg/L
+Toluene,,,,3261,,ND,mg/L
+PCE,,,,3261,,ND,mg/L
+Xylene,,0.000,0,3261,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 5:02:36,Data File,YS-14.D
+Type,Sample,Name,YS-14
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,3054,,ND,mg/L
+Carbon Chloride,,,,3054,,ND,mg/L
+"1,2-DCE",,,,3054,,ND,mg/L
+TCE,,,,3054,,ND,mg/L
+Toluene,,,,3054,,ND,mg/L
+PCE,,,,3054,,ND,mg/L
+Xylene,,0.000,0,3054,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 5:15:32,Data File,YS-15.D
+Type,Sample,Name,YS-15
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,2957,,ND,mg/L
+Carbon Chloride,,,,2957,,ND,mg/L
+"1,2-DCE",,,,2957,,ND,mg/L
+TCE,,,,2957,,ND,mg/L
+Toluene,,,,2957,,ND,mg/L
+PCE,,,,2957,,ND,mg/L
+Xylene,,0.000,0,2957,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 5:28:27,Data File,YS-16.D
+Type,Sample,Name,YS-16
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,2987,,ND,mg/L
+Carbon Chloride,,,,2987,,ND,mg/L
+"1,2-DCE",,,,2987,,ND,mg/L
+TCE,,,,2987,,ND,mg/L
+Toluene,,,,2987,,ND,mg/L
+PCE,,,,2987,,ND,mg/L
+Xylene,,0.000,0,2987,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 5:41:20,Data File,YS-17.D
+Type,Sample,Name,YS-17
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,3036,,ND,mg/L
+Carbon Chloride,,,,3036,,ND,mg/L
+"1,2-DCE",,,,3036,,ND,mg/L
+TCE,,,,3036,,ND,mg/L
+Toluene,,,,3036,,ND,mg/L
+PCE,,,,3036,,ND,mg/L
+Xylene,,0.000,0,3036,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 5:54:12,Data File,YS-18.D
+Type,Sample,Name,YS-18
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,2463,,ND,mg/L
+Carbon Chloride,,,,2463,,ND,mg/L
+"1,2-DCE",,,,2463,,ND,mg/L
+TCE,,,,2463,,ND,mg/L
+Toluene,,,,2463,,ND,mg/L
+PCE,,,,2463,,ND,mg/L
+Xylene,,0.000,0,2463,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 6:07:08,Data File,MBK-2.D
+Type,Blank,Name,MBK-2
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,2970,,ND,mg/L
+Carbon Chloride,,,,2970,,ND,mg/L
+"1,2-DCE",,,,2970,,ND,mg/L
+TCE,,,,2970,,ND,mg/L
+Toluene,,,,2970,,ND,mg/L
+PCE,,,,2970,,ND,mg/L
+Xylene,,0.000,0,2970,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 6:32:53,Data File,-CCV-2.D
+Type,QC,Name,-CCV-2
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,4.991,120680,2061,,0.176,mg/L
+Carbon Chloride,,5.922,201900,2061,,0.239,mg/L
+"1,2-DCE",,5.986,43020,2061,,0.211,mg/L
+TCE,,6.232,62624,2061,,0.166,mg/L
+Toluene,,6.854,196831,2061,,0.152,mg/L
+PCE,,7.150,85401,2061,,0.192,mg/L
+Xylene,,7.937,269742,2061,,0.157,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 6:45:44,Data File,HJ-01.D
+Type,Sample,Name,HJ-01
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,3247,,ND,mg/L
+Carbon Chloride,,,,3247,,ND,mg/L
+"1,2-DCE",,5.961,0,3247,,ND,mg/L
+TCE,,,,3247,,ND,mg/L
+Toluene,,,,3247,,ND,mg/L
+PCE,,,,3247,,ND,mg/L
+Xylene,,0.000,0,3247,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 6:58:36,Data File,HJ-02.D
+Type,Sample,Name,HJ-02
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,3017,,ND,mg/L
+Carbon Chloride,,,,3017,,ND,mg/L
+"1,2-DCE",,,,3017,,ND,mg/L
+TCE,,,,3017,,ND,mg/L
+Toluene,,6.851,1028029,3017,,0.507,mg/L
+PCE,,,,3017,,ND,mg/L
+Xylene,,0.000,0,3017,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 7:11:28,Data File,HJ-03.D
+Type,Sample,Name,HJ-03
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,2795,,ND,mg/L
+Carbon Chloride,,,,2795,,ND,mg/L
+"1,2-DCE",,,,2795,,ND,mg/L
+TCE,,,,2795,,ND,mg/L
+Toluene,,,,2795,,ND,mg/L
+PCE,,,,2795,,ND,mg/L
+Xylene,,0.000,0,2795,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 7:24:23,Data File,HJ-04.D
+Type,Sample,Name,HJ-04
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,2272,,ND,mg/L
+Carbon Chloride,,,,2272,,ND,mg/L
+"1,2-DCE",,,,2272,,ND,mg/L
+TCE,,,,2272,,ND,mg/L
+Toluene,,,,2272,,ND,mg/L
+PCE,,,,2272,,ND,mg/L
+Xylene,,0.000,0,2272,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 7:37:12,Data File,HJ-05.D
+Type,Sample,Name,HJ-05
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,2237,,ND,mg/L
+Carbon Chloride,,,,2237,,ND,mg/L
+"1,2-DCE",,,,2237,,ND,mg/L
+TCE,,,,2237,,ND,mg/L
+Toluene,,,,2237,,ND,mg/L
+PCE,,,,2237,,ND,mg/L
+Xylene,,0.000,0,2237,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 7:50:07,Data File,HJ-06.D
+Type,Sample,Name,HJ-06
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,2866,,ND,mg/L
+Carbon Chloride,,,,2866,,ND,mg/L
+"1,2-DCE",,,,2866,,ND,mg/L
+TCE,,,,2866,,ND,mg/L
+Toluene,,6.854,6372,2866,,0.017,mg/L
+PCE,,,,2866,,ND,mg/L
+Xylene,,0.000,0,2866,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 8:02:59,Data File,HJ-07.D
+Type,Sample,Name,HJ-07
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,2952,,ND,mg/L
+Carbon Chloride,,,,2952,,ND,mg/L
+"1,2-DCE",,5.993,0,2952,,ND,mg/L
+TCE,,,,2952,,ND,mg/L
+Toluene,,,,2952,,ND,mg/L
+PCE,,,,2952,,ND,mg/L
+Xylene,,0.000,0,2952,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 8:15:49,Data File,HJ-08.D
+Type,Sample,Name,HJ-08
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,3021,,ND,mg/L
+Carbon Chloride,,,,3021,,ND,mg/L
+"1,2-DCE",,,,3021,,ND,mg/L
+TCE,,,,3021,,ND,mg/L
+Toluene,,,,3021,,ND,mg/L
+PCE,,,,3021,,ND,mg/L
+Xylene,,0.000,0,3021,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 8:28:40,Data File,HJ-09.D
+Type,Sample,Name,HJ-09
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,2374,,ND,mg/L
+Carbon Chloride,,,,2374,,ND,mg/L
+"1,2-DCE",,,,2374,,ND,mg/L
+TCE,,,,2374,,ND,mg/L
+Toluene,,,,2374,,ND,mg/L
+PCE,,,,2374,,ND,mg/L
+Xylene,,0.000,0,2374,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 8:41:34,Data File,HJ-10.D
+Type,Sample,Name,HJ-10
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,2480,,ND,mg/L
+Carbon Chloride,,,,2480,,ND,mg/L
+"1,2-DCE",,,,2480,,ND,mg/L
+TCE,,,,2480,,ND,mg/L
+Toluene,,,,2480,,ND,mg/L
+PCE,,,,2480,,ND,mg/L
+Xylene,,0.000,0,2480,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 8:54:28,Data File,HJ-11.D
+Type,Sample,Name,HJ-11
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,2289,,ND,mg/L
+Carbon Chloride,,,,2289,,ND,mg/L
+"1,2-DCE",,,,2289,,ND,mg/L
+TCE,,,,2289,,ND,mg/L
+Toluene,,,,2289,,ND,mg/L
+PCE,,,,2289,,ND,mg/L
+Xylene,,0.000,0,2289,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 9:07:17,Data File,HJ-12.D
+Type,Sample,Name,HJ-12
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,2087,,ND,mg/L
+Carbon Chloride,,,,2087,,ND,mg/L
+"1,2-DCE",,,,2087,,ND,mg/L
+TCE,,,,2087,,ND,mg/L
+Toluene,,,,2087,,ND,mg/L
+PCE,,,,2087,,ND,mg/L
+Xylene,,0.000,0,2087,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 9:20:10,Data File,HJ-13.D
+Type,Sample,Name,HJ-13
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,1949,,ND,mg/L
+Carbon Chloride,,,,1949,,ND,mg/L
+"1,2-DCE",,,,1949,,ND,mg/L
+TCE,,,,1949,,ND,mg/L
+Toluene,,,,1949,,ND,mg/L
+PCE,,,,1949,,ND,mg/L
+Xylene,,0.000,0,1949,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 9:33:04,Data File,HJ-14.D
+Type,Sample,Name,HJ-14
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,2082,,ND,mg/L
+Carbon Chloride,,,,2082,,ND,mg/L
+"1,2-DCE",,,,2082,,ND,mg/L
+TCE,,,,2082,,ND,mg/L
+Toluene,,,,2082,,ND,mg/L
+PCE,,,,2082,,ND,mg/L
+Xylene,,0.000,0,2082,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 9:45:53,Data File,HJ-15.D
+Type,Sample,Name,HJ-15
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,1878,,ND,mg/L
+Carbon Chloride,,,,1878,,ND,mg/L
+"1,2-DCE",,,,1878,,ND,mg/L
+TCE,,,,1878,,ND,mg/L
+Toluene,,,,1878,,ND,mg/L
+PCE,,,,1878,,ND,mg/L
+Xylene,,0.000,0,1878,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 9:58:43,Data File,HJ-16.D
+Type,Sample,Name,HJ-16
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,2150,,ND,mg/L
+Carbon Chloride,,,,2150,,ND,mg/L
+"1,2-DCE",,,,2150,,ND,mg/L
+TCE,,,,2150,,ND,mg/L
+Toluene,,,,2150,,ND,mg/L
+PCE,,,,2150,,ND,mg/L
+Xylene,,0.000,0,2150,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 10:11:32,Data File,HJ-17.D
+Type,Sample,Name,HJ-17
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,1606,,ND,mg/L
+Carbon Chloride,,,,1606,,ND,mg/L
+"1,2-DCE",,,,1606,,ND,mg/L
+TCE,,,,1606,,ND,mg/L
+Toluene,,,,1606,,ND,mg/L
+PCE,,,,1606,,ND,mg/L
+Xylene,,0.000,0,1606,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 10:24:21,Data File,MBK-3.D
+Type,Blank,Name,MBK-3
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,2965,,ND,mg/L
+Carbon Chloride,,,,2965,,ND,mg/L
+"1,2-DCE",,,,2965,,ND,mg/L
+TCE,,,,2965,,ND,mg/L
+Toluene,,,,2965,,ND,mg/L
+PCE,,,,2965,,ND,mg/L
+Xylene,,0.000,0,2965,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 10:49:59,Data File,-CCV-3.D
+Type,QC,Name,-CCV-3
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,4.996,144136,2319,,0.186,mg/L
+Carbon Chloride,,5.922,231971,2319,,0.244,mg/L
+"1,2-DCE",,5.986,49529,2319,,0.216,mg/L
+TCE,,6.232,71402,2319,,0.168,mg/L
+Toluene,,6.854,225095,2319,,0.154,mg/L
+PCE,,7.150,94627,2319,,0.190,mg/L
+Xylene,,7.936,305535,2319,,0.158,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 11:31:36,Data File,HJ-02 R.D
+Type,Sample,Name,HJ-02 R
+Dil.,8,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,3323,,ND,mg/L
+Carbon Chloride,,,,3323,,ND,mg/L
+"1,2-DCE",,,,3323,,ND,mg/L
+TCE,,,,3323,,ND,mg/L
+Toluene,,6.851,118730,3323,,0.521,mg/L
+PCE,,,,3323,,ND,mg/L
+Xylene,,0.000,0,3323,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 11:44:25,Data File,MBK-4.D
+Type,Blank,Name,MBK-4
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,,,3757,,ND,mg/L
+Carbon Chloride,,,,3757,,ND,mg/L
+"1,2-DCE",,,,3757,,ND,mg/L
+TCE,,,,3757,,ND,mg/L
+Toluene,,,,3757,,ND,mg/L
+PCE,,,,3757,,ND,mg/L
+Xylene,,0.000,0,3757,,ND,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(HC 1.26, 1.27, YS 1.27,28, HJ 1.28)\QuantResults\VOC10.batch.bin"
+Analysis Time,2026-02-03 오후 2:44:20,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:05:30,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-03 오후 2:44:20,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-02 오후 11:57:13,Data File,-CCV-4.D
+Type,QC,Name,-CCV-4
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+"1,1-DCE",,4.991,206594,3435,,0.180,mg/L
+Carbon Chloride,,5.922,281606,3435,,0.202,mg/L
+"1,2-DCE",,5.986,107652,3435,,0.312,mg/L
+TCE,,6.232,137063,3435,,0.213,mg/L
+Toluene,,6.851,451218,3435,,0.204,mg/L
+PCE,,7.150,156615,3435,,0.210,mg/L
+Xylene,,7.937,610152,3435,,0.208,mg/L
+"1,1-DCE"
+,,
+Carbon Chloride
+,,
+"1,2-DCE"
+,,
+TCE
+,,
+Toluene
+,,
+PCE
+,,
+Xylene
+,,

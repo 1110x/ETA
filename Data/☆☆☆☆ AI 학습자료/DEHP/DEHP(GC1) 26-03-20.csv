@@ -1,0 +1,289 @@
+Batch Data Path,\\192.168.254.121\data\2026\3. 2026-03\DEHP(RE 3.17.18 HS 3.18)\QuantResults\DEHP.batch.bin
+Analysis Time,2026-03-24 오전 11:07:07,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 11:07:07,Analyze Quant Version,10.2,Report Quant Version,10.2
+Di-Phtalate,,,,
+Data File,Type,RT,Resp.,Final Conc.
+DEHP ST-01.D,Cal,9.677,41966,0.0015
+DEHP ST-02.D,Cal,9.677,90676,0.0053
+DEHP ST-03.D,Cal,9.677,123975,0.0079
+DEHP ST-04.D,Cal,9.677,159913,0.0107
+DEHP ST-05.D,Cal,9.677,220036,0.0154
+DEHP ST-06.D,Cal,9.677,270539,0.0193
+BK.D,Blank,,,ND
+FBK(RE 26-03-17).D,Blank,,,ND
+FBK(RE 26-03-18).D,Blank,,,ND
+FBK(HS 26-03-18).D,Blank,,,ND
+RE-05.D,Sample,,,ND
+RE-06.D,Sample,,,ND
+RE-13.D,Sample,,,ND
+RE-14.D,Sample,,,ND
+RE-24.D,Sample,,,ND
+RE-25.D,Sample,,,ND
+HS 26-03-18.D,Sample,,,ND
+MBK.D,Blank,,,ND
+-C-C-V-.D,QC,9.677,144583,0.0095
+,,
+Di-Phtalate,,
+
+Cal. Path,Type,Level,Enable,Conc.,Response
+\\192.168.254.121\data\2026\3. 2026-03\DEHP(RE 3.17.18 HS 3.18)\DEHP ST-01.D,Calibration,1,x,0.500,41966
+\\192.168.254.121\data\2026\3. 2026-03\DEHP(RE 3.17.18 HS 3.18)\DEHP ST-02.D,Calibration,2,x,1.000,90676
+\\192.168.254.121\data\2026\3. 2026-03\DEHP(RE 3.17.18 HS 3.18)\DEHP ST-03.D,Calibration,3,x,1.500,123975
+\\192.168.254.121\data\2026\3. 2026-03\DEHP(RE 3.17.18 HS 3.18)\DEHP ST-04.D,Calibration,4,x,2.000,159913
+\\192.168.254.121\data\2026\3. 2026-03\DEHP(RE 3.17.18 HS 3.18)\-C-C-V-.D,QC,4,x,2.000,144583
+\\192.168.254.121\data\2026\3. 2026-03\DEHP(RE 3.17.18 HS 3.18)\DEHP ST-05.D,Calibration,5,x,3.000,220036
+\\192.168.254.121\data\2026\3. 2026-03\DEHP(RE 3.17.18 HS 3.18)\DEHP ST-06.D,Calibration,6,x,4.000,270539
+Batch Data Path,\\192.168.254.121\data\2026\3. 2026-03\DEHP(RE 3.17.18 HS 3.18)\QuantResults\DEHP.batch.bin
+Analysis Time,2026-03-24 오전 11:07:07,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:57:13,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 11:07:07,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-20 오후 1:01:43,Data File,DEHP ST-01.D
+Type,Cal,Name,DEHP ST-01
+Dil.,0.005,Acq. Method File,ORG(DEHP)
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Di-Phtalate,9.677,41966,0.0015,mg/L
+Di-Phtalate
+,,
+Batch Data Path,\\192.168.254.121\data\2026\3. 2026-03\DEHP(RE 3.17.18 HS 3.18)\QuantResults\DEHP.batch.bin
+Analysis Time,2026-03-24 오전 11:07:07,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:57:13,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 11:07:07,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-20 오후 1:15:28,Data File,DEHP ST-02.D
+Type,Cal,Name,DEHP ST-02
+Dil.,0.005,Acq. Method File,ORG(DEHP)
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Di-Phtalate,9.677,90676,0.0053,mg/L
+Di-Phtalate
+,,
+Batch Data Path,\\192.168.254.121\data\2026\3. 2026-03\DEHP(RE 3.17.18 HS 3.18)\QuantResults\DEHP.batch.bin
+Analysis Time,2026-03-24 오전 11:07:07,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:57:13,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 11:07:07,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-20 오후 1:29:11,Data File,DEHP ST-03.D
+Type,Cal,Name,DEHP ST-03
+Dil.,0.005,Acq. Method File,ORG(DEHP)
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Di-Phtalate,9.677,123975,0.0079,mg/L
+Di-Phtalate
+,,
+Batch Data Path,\\192.168.254.121\data\2026\3. 2026-03\DEHP(RE 3.17.18 HS 3.18)\QuantResults\DEHP.batch.bin
+Analysis Time,2026-03-24 오전 11:07:07,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:57:13,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 11:07:07,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-20 오후 1:42:55,Data File,DEHP ST-04.D
+Type,Cal,Name,DEHP ST-04
+Dil.,0.005,Acq. Method File,ORG(DEHP)
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Di-Phtalate,9.677,159913,0.0107,mg/L
+Di-Phtalate
+,,
+Batch Data Path,\\192.168.254.121\data\2026\3. 2026-03\DEHP(RE 3.17.18 HS 3.18)\QuantResults\DEHP.batch.bin
+Analysis Time,2026-03-24 오전 11:07:07,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:57:13,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 11:07:07,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-20 오후 1:56:38,Data File,DEHP ST-05.D
+Type,Cal,Name,DEHP ST-05
+Dil.,0.005,Acq. Method File,ORG(DEHP)
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Di-Phtalate,9.677,220036,0.0154,mg/L
+Di-Phtalate
+,,
+Batch Data Path,\\192.168.254.121\data\2026\3. 2026-03\DEHP(RE 3.17.18 HS 3.18)\QuantResults\DEHP.batch.bin
+Analysis Time,2026-03-24 오전 11:07:07,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:57:13,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 11:07:07,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-20 오후 2:10:21,Data File,DEHP ST-06.D
+Type,Cal,Name,DEHP ST-06
+Dil.,0.005,Acq. Method File,ORG(DEHP)
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Di-Phtalate,9.677,270539,0.0193,mg/L
+Di-Phtalate
+,,
+Batch Data Path,\\192.168.254.121\data\2026\3. 2026-03\DEHP(RE 3.17.18 HS 3.18)\QuantResults\DEHP.batch.bin
+Analysis Time,2026-03-24 오전 11:07:07,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:57:13,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 11:07:07,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-20 오후 2:43:39,Data File,BK.D
+Type,Blank,Name,BK
+Dil.,0.005,Acq. Method File,ORG(DEHP)
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Di-Phtalate
+,,
+Batch Data Path,\\192.168.254.121\data\2026\3. 2026-03\DEHP(RE 3.17.18 HS 3.18)\QuantResults\DEHP.batch.bin
+Analysis Time,2026-03-24 오전 11:07:07,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:57:13,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 11:07:07,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-20 오후 3:44:21,Data File,FBK(RE 26-03-17).D
+Type,Blank,Name,FBK(RE 26-03-17)
+Dil.,0.005,Acq. Method File,ORG(DEHP)
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Di-Phtalate
+,,
+Batch Data Path,\\192.168.254.121\data\2026\3. 2026-03\DEHP(RE 3.17.18 HS 3.18)\QuantResults\DEHP.batch.bin
+Analysis Time,2026-03-24 오전 11:07:07,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:57:13,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 11:07:07,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-20 오후 3:58:02,Data File,FBK(RE 26-03-18).D
+Type,Blank,Name,FBK(RE 26-03-18)
+Dil.,0.005,Acq. Method File,ORG(DEHP)
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Di-Phtalate
+,,
+Batch Data Path,\\192.168.254.121\data\2026\3. 2026-03\DEHP(RE 3.17.18 HS 3.18)\QuantResults\DEHP.batch.bin
+Analysis Time,2026-03-24 오전 11:07:07,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:57:13,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 11:07:07,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-20 오후 4:11:43,Data File,FBK(HS 26-03-18).D
+Type,Blank,Name,FBK(HS 26-03-18)
+Dil.,0.005,Acq. Method File,ORG(DEHP)
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Di-Phtalate
+,,
+Batch Data Path,\\192.168.254.121\data\2026\3. 2026-03\DEHP(RE 3.17.18 HS 3.18)\QuantResults\DEHP.batch.bin
+Analysis Time,2026-03-24 오전 11:07:07,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:57:13,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 11:07:07,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-20 오후 4:25:27,Data File,RE-05.D
+Type,Sample,Name,RE-05
+Dil.,0.005,Acq. Method File,ORG(DEHP)
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Di-Phtalate
+,,
+Batch Data Path,\\192.168.254.121\data\2026\3. 2026-03\DEHP(RE 3.17.18 HS 3.18)\QuantResults\DEHP.batch.bin
+Analysis Time,2026-03-24 오전 11:07:07,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:57:13,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 11:07:07,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-20 오후 4:39:12,Data File,RE-06.D
+Type,Sample,Name,RE-06
+Dil.,0.005,Acq. Method File,ORG(DEHP)
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Di-Phtalate
+,,
+Batch Data Path,\\192.168.254.121\data\2026\3. 2026-03\DEHP(RE 3.17.18 HS 3.18)\QuantResults\DEHP.batch.bin
+Analysis Time,2026-03-24 오전 11:07:07,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:57:13,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 11:07:07,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-20 오후 4:52:57,Data File,RE-13.D
+Type,Sample,Name,RE-13
+Dil.,0.005,Acq. Method File,ORG(DEHP)
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Di-Phtalate
+,,
+Batch Data Path,\\192.168.254.121\data\2026\3. 2026-03\DEHP(RE 3.17.18 HS 3.18)\QuantResults\DEHP.batch.bin
+Analysis Time,2026-03-24 오전 11:07:07,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:57:13,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 11:07:07,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-20 오후 5:06:39,Data File,RE-14.D
+Type,Sample,Name,RE-14
+Dil.,0.005,Acq. Method File,ORG(DEHP)
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Di-Phtalate
+,,
+Batch Data Path,\\192.168.254.121\data\2026\3. 2026-03\DEHP(RE 3.17.18 HS 3.18)\QuantResults\DEHP.batch.bin
+Analysis Time,2026-03-24 오전 11:07:07,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:57:13,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 11:07:07,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-20 오후 5:20:24,Data File,RE-24.D
+Type,Sample,Name,RE-24
+Dil.,0.005,Acq. Method File,ORG(DEHP)
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Di-Phtalate
+,,
+Batch Data Path,\\192.168.254.121\data\2026\3. 2026-03\DEHP(RE 3.17.18 HS 3.18)\QuantResults\DEHP.batch.bin
+Analysis Time,2026-03-24 오전 11:07:07,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:57:13,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 11:07:07,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-20 오후 5:34:09,Data File,RE-25.D
+Type,Sample,Name,RE-25
+Dil.,0.005,Acq. Method File,ORG(DEHP)
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Di-Phtalate
+,,
+Batch Data Path,\\192.168.254.121\data\2026\3. 2026-03\DEHP(RE 3.17.18 HS 3.18)\QuantResults\DEHP.batch.bin
+Analysis Time,2026-03-24 오전 11:07:07,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:57:13,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 11:07:07,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-20 오후 5:47:54,Data File,HS 26-03-18.D
+Type,Sample,Name,HS 26-03-18
+Dil.,0.005,Acq. Method File,ORG(DEHP)
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Di-Phtalate
+,,
+Batch Data Path,\\192.168.254.121\data\2026\3. 2026-03\DEHP(RE 3.17.18 HS 3.18)\QuantResults\DEHP.batch.bin
+Analysis Time,2026-03-24 오전 11:07:07,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:57:13,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 11:07:07,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-20 오후 6:01:38,Data File,MBK.D
+Type,Blank,Name,MBK
+Dil.,0.005,Acq. Method File,ORG(DEHP)
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Di-Phtalate
+,,
+Batch Data Path,\\192.168.254.121\data\2026\3. 2026-03\DEHP(RE 3.17.18 HS 3.18)\QuantResults\DEHP.batch.bin
+Analysis Time,2026-03-24 오전 11:07:07,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:57:13,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-03-24 오전 11:07:07,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-20 오후 6:42:48,Data File,-C-C-V-.D
+Type,QC,Name,-C-C-V-
+Dil.,0.005,Acq. Method File,ORG(DEHP)
+Sample Chromatogram
+
+Name,RT,Resp.,Final Conc.,Units
+Di-Phtalate,9.677,144583,0.0095,mg/L
+Di-Phtalate
+,,

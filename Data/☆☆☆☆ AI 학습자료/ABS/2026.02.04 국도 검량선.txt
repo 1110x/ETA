@@ -1,0 +1,6 @@
+"Sample ID","Type","Conc","WL650.0","Wgt.Factor","Comments"
+"ST1","Standard",0.0000,-0.0001,1.0000,""
+"ST2","Standard",0.1000,0.0243,1.0000,""
+"ST3","Standard",0.2000,0.0429,1.0000,""
+"ST4","Standard",0.4000,0.0858,1.0000,""
+"ST5","Standard",0.8000,0.1683,1.0000,""

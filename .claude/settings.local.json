@@ -1,4 +1,18 @@
 {
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -c \"\nimport sys, re, json\ntry:\n    data = json.load(sys.stdin)\n    f = data.get('tool_input', {}).get('file_path', '')\n    if not f.endswith('.cs'): sys.exit(0)\n    lines = open(f, encoding='utf-8').readlines()\n    hits = [(i+1, line.rstrip()) for i, line in enumerate(lines) if re.search(r'[\\u4e00-\\u9fff]', line)]\n    if hits:\n        out = {'hookSpecificOutput': {'hookEventName': 'PostToolUse', 'additionalContext': '[한자경고] ' + f + ': ' + ', '.join(f'L{n}' for n,_ in hits)}}\n        import json as j; print(j.dumps(out))\nexcept: pass\n\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  },
   "permissions": {
     "allow": [
       "Bash(dotnet build:*)",
@@ -6,7 +20,8 @@
       "Bash(curl -L -o Pretendard-Regular.otf \"https://github.com/orioncactus/pretendard/raw/main/packages/pretendard/dist/public/static/Pretendard-Regular.otf\")",
       "Bash(curl -L -o Pretendard-Medium.otf \"https://github.com/orioncactus/pretendard/raw/main/packages/pretendard/dist/public/static/Pretendard-Medium.otf\")",
       "Bash(curl -L -o Pretendard-SemiBold.otf \"https://github.com/orioncactus/pretendard/raw/main/packages/pretendard/dist/public/static/Pretendard-SemiBold.otf\")",
-      "Bash(curl -L -o Pretendard-Bold.otf \"https://github.com/orioncactus/pretendard/raw/main/packages/pretendard/dist/public/static/Pretendard-Bold.otf\")"
+      "Bash(curl -L -o Pretendard-Bold.otf \"https://github.com/orioncactus/pretendard/raw/main/packages/pretendard/dist/public/static/Pretendard-Bold.otf\")",
+      "Bash(mysql -h 1110s.synology.me -P 3306 -u eta_user -p'1212xx!!AA' eta_db -e \"SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='eta_db' AND TABLE_NAME LIKE '수질분석센터_%_DATA';\")"
     ]
   }
 }

@@ -1,0 +1,330 @@
+Batch Data Path,"\\192.168.254.121\data\2026\2. 2026-02\PHENOL(KD 2.4, JR 2.5)\QuantResults\PHENOL.batch.bin"
+Analysis Time,2026-02-09 오후 3:48:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-09 오후 3:48:33,Analyze Quant Version,10.2,Report Quant Version,10.2
+Phenol
+Data File,,Type,RT,,Resp.,,ISTD Resp,,Final Conc.
+PHENOL ST-01.D,,Cal,2.075,,51026,,98819,,0.005
+PHENOL ST-02.D,,Cal,2.075,,101117,,94051,,0.010
+PHENOL ST-03.D,,Cal,2.075,,145866,,87750,,0.015
+PHENOL ST-04.D,,Cal,2.075,,213201,,90474,,0.020
+PHENOL ST-05.D,,Cal,2.075,,312111,,87516,,0.030
+BK-.D,,Blank,,,,,74502,,ND
+FBK(KD 26-02-04).D,,Blank,,,,,89459,,ND
+FBK(JR 26-02-05).D,,Blank,,,,,86669,,ND
+KD-01.D,,Sample,2.075,,0,,118348,,ND
+KD-04.D,,Sample,2.080,,0,,121492,,ND
+HJ-01.D,,Sample,2.080,,0,,112707,,ND
+HJ-02.D,,Sample,,,,,111366,,ND
+HJ-03.D,,Sample,,,,,116735,,ND
+HJ-04.D,,Sample,,,,,119931,,ND
+HJ-05.D,,Sample,,,,,99571,,ND
+HJ-06.D,,Sample,2.075,,322913,,111438,,0.025
+HJ-07.D,,Sample,2.075,,305557,,111647,,0.023
+HJ-08.D,,Sample,,,,,157438,,ND
+JR 26-02-06.D,,Sample,2.075,,130401,,103636,,0.011
+MBK.D,,Blank,,,,,146130,,ND
+C-C-V-.D,,QC,2.075,,262540,,147025,,0.016
+Calibration,,
+Phenol,,
+
+Cal. Path,Type,Level,Enable,,Conc.,,Response
+"\\192.168.254.121\data\2026\2. 2026-02\PHENOL(KD 2.4, JR 2.5)\PHENOL ST-01.D",Calibration,1,x,,2.500,,51026
+"\\192.168.254.121\data\2026\2. 2026-02\PHENOL(KD 2.4, JR 2.5)\PHENOL ST-02.D",Calibration,2,x,,5.000,,101117
+"\\192.168.254.121\data\2026\2. 2026-02\PHENOL(KD 2.4, JR 2.5)\PHENOL ST-03.D",Calibration,3,x,,7.500,,145866
+"\\192.168.254.121\data\2026\2. 2026-02\PHENOL(KD 2.4, JR 2.5)\C-C-V-.D",QC,3,x,,7.500,,262540
+"\\192.168.254.121\data\2026\2. 2026-02\PHENOL(KD 2.4, JR 2.5)\PHENOL ST-04.D",Calibration,4,x,,10.000,,213201
+"\\192.168.254.121\data\2026\2. 2026-02\PHENOL(KD 2.4, JR 2.5)\PHENOL ST-05.D",Calibration,5,x,,15.000,,312111
+Batch Data Path,"\\192.168.254.121\data\2026\2. 2026-02\PHENOL(KD 2.4, JR 2.5)\QuantResults\PHENOL.batch.bin"
+Analysis Time,2026-02-09 오후 3:48:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:14:27,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-09 오후 3:48:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-06 오후 3:25:27,Data File,PHENOL ST-01.D
+Type,Cal,Name,PHENOL ST-01
+Dil.,0.002,Acq. Method File,VOCs(Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Phenol,,2.075,51026,98819,,0.005,mg/L
+Phenol
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\2. 2026-02\PHENOL(KD 2.4, JR 2.5)\QuantResults\PHENOL.batch.bin"
+Analysis Time,2026-02-09 오후 3:48:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:14:27,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-09 오후 3:48:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-06 오후 3:33:48,Data File,PHENOL ST-02.D
+Type,Cal,Name,PHENOL ST-02
+Dil.,0.002,Acq. Method File,VOCs(Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Phenol,,2.075,101117,94051,,0.010,mg/L
+Phenol
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\2. 2026-02\PHENOL(KD 2.4, JR 2.5)\QuantResults\PHENOL.batch.bin"
+Analysis Time,2026-02-09 오후 3:48:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:14:27,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-09 오후 3:48:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-06 오후 3:42:08,Data File,PHENOL ST-03.D
+Type,Cal,Name,PHENOL ST-03
+Dil.,0.002,Acq. Method File,VOCs(Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Phenol,,2.075,145866,87750,,0.015,mg/L
+Phenol
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\2. 2026-02\PHENOL(KD 2.4, JR 2.5)\QuantResults\PHENOL.batch.bin"
+Analysis Time,2026-02-09 오후 3:48:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:14:27,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-09 오후 3:48:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-06 오후 3:50:33,Data File,PHENOL ST-04.D
+Type,Cal,Name,PHENOL ST-04
+Dil.,0.002,Acq. Method File,VOCs(Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Phenol,,2.075,213201,90474,,0.020,mg/L
+Phenol
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\2. 2026-02\PHENOL(KD 2.4, JR 2.5)\QuantResults\PHENOL.batch.bin"
+Analysis Time,2026-02-09 오후 3:48:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:14:27,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-09 오후 3:48:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-06 오후 3:58:54,Data File,PHENOL ST-05.D
+Type,Cal,Name,PHENOL ST-05
+Dil.,0.002,Acq. Method File,VOCs(Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Phenol,,2.075,312111,87516,,0.030,mg/L
+Phenol
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\2. 2026-02\PHENOL(KD 2.4, JR 2.5)\QuantResults\PHENOL.batch.bin"
+Analysis Time,2026-02-09 오후 3:48:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:14:27,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-09 오후 3:48:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-06 오후 4:17:02,Data File,BK-.D
+Type,Blank,Name,BK-
+Dil.,0.002,Acq. Method File,VOCs(Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Phenol,,,,74502,,ND,mg/L
+Phenol
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\2. 2026-02\PHENOL(KD 2.4, JR 2.5)\QuantResults\PHENOL.batch.bin"
+Analysis Time,2026-02-09 오후 3:48:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:14:27,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-09 오후 3:48:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-06 오후 4:25:23,Data File,FBK(KD 26-02-04).D
+Type,Blank,Name,FBK(KD 26-02-04)
+Dil.,0.002,Acq. Method File,VOCs(Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Phenol,,,,89459,,ND,mg/L
+Phenol
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\2. 2026-02\PHENOL(KD 2.4, JR 2.5)\QuantResults\PHENOL.batch.bin"
+Analysis Time,2026-02-09 오후 3:48:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:14:27,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-09 오후 3:48:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-06 오후 4:33:48,Data File,FBK(JR 26-02-05).D
+Type,Blank,Name,FBK(JR 26-02-05)
+Dil.,0.002,Acq. Method File,VOCs(Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Phenol,,,,86669,,ND,mg/L
+Phenol
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\2. 2026-02\PHENOL(KD 2.4, JR 2.5)\QuantResults\PHENOL.batch.bin"
+Analysis Time,2026-02-09 오후 3:48:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:14:27,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-09 오후 3:48:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-06 오후 4:42:10,Data File,KD-01.D
+Type,Sample,Name,KD-01
+Dil.,0.002,Acq. Method File,VOCs(Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Phenol,,2.075,0,118348,,ND,mg/L
+Phenol
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\2. 2026-02\PHENOL(KD 2.4, JR 2.5)\QuantResults\PHENOL.batch.bin"
+Analysis Time,2026-02-09 오후 3:48:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:14:27,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-09 오후 3:48:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-06 오후 4:50:36,Data File,KD-04.D
+Type,Sample,Name,KD-04
+Dil.,0.002,Acq. Method File,VOCs(Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Phenol,,2.080,0,121492,,ND,mg/L
+Phenol
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\2. 2026-02\PHENOL(KD 2.4, JR 2.5)\QuantResults\PHENOL.batch.bin"
+Analysis Time,2026-02-09 오후 3:48:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:14:27,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-09 오후 3:48:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-06 오후 4:58:59,Data File,HJ-01.D
+Type,Sample,Name,JR-01
+Dil.,0.002,Acq. Method File,VOCs(Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Phenol,,2.080,0,112707,,ND,mg/L
+Phenol
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\2. 2026-02\PHENOL(KD 2.4, JR 2.5)\QuantResults\PHENOL.batch.bin"
+Analysis Time,2026-02-09 오후 3:48:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:14:27,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-09 오후 3:48:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-06 오후 5:07:24,Data File,HJ-02.D
+Type,Sample,Name,JR-02
+Dil.,0.002,Acq. Method File,VOCs(Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Phenol,,,,111366,,ND,mg/L
+Phenol
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\2. 2026-02\PHENOL(KD 2.4, JR 2.5)\QuantResults\PHENOL.batch.bin"
+Analysis Time,2026-02-09 오후 3:48:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:14:27,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-09 오후 3:48:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-06 오후 5:15:45,Data File,HJ-03.D
+Type,Sample,Name,JR-03
+Dil.,0.002,Acq. Method File,VOCs(Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Phenol,,,,116735,,ND,mg/L
+Phenol
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\2. 2026-02\PHENOL(KD 2.4, JR 2.5)\QuantResults\PHENOL.batch.bin"
+Analysis Time,2026-02-09 오후 3:48:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:14:27,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-09 오후 3:48:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-06 오후 5:24:11,Data File,HJ-04.D
+Type,Sample,Name,JR-04
+Dil.,0.002,Acq. Method File,VOCs(Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Phenol,,,,119931,,ND,mg/L
+Phenol
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\2. 2026-02\PHENOL(KD 2.4, JR 2.5)\QuantResults\PHENOL.batch.bin"
+Analysis Time,2026-02-09 오후 3:48:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:14:27,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-09 오후 3:48:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-06 오후 5:32:34,Data File,HJ-05.D
+Type,Sample,Name,JR-05
+Dil.,0.002,Acq. Method File,VOCs(Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Phenol,,,,99571,,ND,mg/L
+Phenol
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\2. 2026-02\PHENOL(KD 2.4, JR 2.5)\QuantResults\PHENOL.batch.bin"
+Analysis Time,2026-02-09 오후 3:48:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:14:27,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-09 오후 3:48:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-06 오후 5:40:57,Data File,HJ-06.D
+Type,Sample,Name,JR-06
+Dil.,0.002,Acq. Method File,VOCs(Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Phenol,,2.075,322913,111438,,0.025,mg/L
+Phenol
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\2. 2026-02\PHENOL(KD 2.4, JR 2.5)\QuantResults\PHENOL.batch.bin"
+Analysis Time,2026-02-09 오후 3:48:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:14:27,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-09 오후 3:48:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-06 오후 5:49:22,Data File,HJ-07.D
+Type,Sample,Name,JR-07
+Dil.,0.002,Acq. Method File,VOCs(Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Phenol,,2.075,305557,111647,,0.023,mg/L
+Phenol
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\2. 2026-02\PHENOL(KD 2.4, JR 2.5)\QuantResults\PHENOL.batch.bin"
+Analysis Time,2026-02-09 오후 3:48:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:14:27,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-09 오후 3:48:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-06 오후 5:57:48,Data File,HJ-08.D
+Type,Sample,Name,JR-08
+Dil.,0.002,Acq. Method File,VOCs(Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Phenol,,,,157438,,ND,mg/L
+Phenol
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\2. 2026-02\PHENOL(KD 2.4, JR 2.5)\QuantResults\PHENOL.batch.bin"
+Analysis Time,2026-02-09 오후 3:48:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:14:27,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-09 오후 3:48:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-06 오후 6:06:11,Data File,JR 26-02-06.D
+Type,Sample,Name,JR 26-02-06
+Dil.,0.002,Acq. Method File,VOCs(Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Phenol,,2.075,130401,103636,,0.011,mg/L
+Phenol
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\2. 2026-02\PHENOL(KD 2.4, JR 2.5)\QuantResults\PHENOL.batch.bin"
+Analysis Time,2026-02-09 오후 3:48:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:14:27,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-09 오후 3:48:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-06 오후 6:14:35,Data File,MBK.D
+Type,Blank,Name,MBK
+Dil.,0.002,Acq. Method File,VOCs(Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Phenol,,,,146130,,ND,mg/L
+Phenol
+,,
+Batch Data Path,"\\192.168.254.121\data\2026\2. 2026-02\PHENOL(KD 2.4, JR 2.5)\QuantResults\PHENOL.batch.bin"
+Analysis Time,2026-02-09 오후 3:48:33,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 10:14:27,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-09 오후 3:48:33,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-06 오후 6:31:23,Data File,C-C-V-.D
+Type,QC,Name,C-C-V-
+Dil.,0.002,Acq. Method File,VOCs(Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Phenol,,2.075,262540,147025,,0.016,mg/L
+Phenol
+,,

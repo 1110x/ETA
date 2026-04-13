@@ -1,0 +1,5 @@
+"Sample ID","Type","Conc","WL650.0","Comments"
+"MBK","Unknown",-0.0087,-0.0021,""
+"FBK(0318 한세)","Unknown",-0.0101,-0.0024,""
+"한세","Unknown",0.0653,0.0173,""
+"CCV(ST4,0.80mg/L)","Unknown",0.7942,0.2080,""

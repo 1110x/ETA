@@ -22,7 +22,9 @@ public partial class QuotationPage : UserControl
     public event Action<Contract>? CompanySelected;
 
     // ── 내부 데이터 ───────────────────────────────────────────────────────
-    private List<Contract> _allCompanies = [];
+    private List<Contract> _allCompanies = new();
+    public List<Contract> Companies => _filteredCompanies;
+    private List<Contract> _filteredCompanies = new();
     private bool _useContractDb = false;   // false = 측정인 DB (기본), true = 계약 DB
 
     public QuotationPage()
@@ -60,9 +62,18 @@ public partial class QuotationPage : UserControl
                 (c.C_Abbreviation ?? "").Contains(kw, StringComparison.OrdinalIgnoreCase));
         }
 
-        var filtered = source.ToList();
-        lbxCompanies.ItemsSource = filtered;
-        txbCompanyCount.Text = $"{filtered.Count}개 업체";
+        _filteredCompanies = source.ToList();
+        // 기존 선택 항목 기억
+        var prevSelected = lbCompanies.SelectedItem as Contract;
+        lbCompanies.ItemsSource = _filteredCompanies;
+        txbCompanyCount.Text = $"{_filteredCompanies.Count}개 업체";
+        // 기존 선택 복원
+        if (prevSelected != null)
+        {
+            var match = _filteredCompanies.FirstOrDefault(c => c.C_CompanyName == prevSelected.C_CompanyName);
+            if (match != null)
+                lbCompanies.SelectedItem = match;
+        }
     }
 
     // ── 이벤트 핸들러 ────────────────────────────────────────────────────
@@ -78,9 +89,10 @@ public partial class QuotationPage : UserControl
         ApplyFilter(txbSearch.Text ?? "");
     }
 
-    private void LbxCompanies_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+    // ListBox SelectionChanged 핸들러
+    private void LbCompanies_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        if (lbxCompanies.SelectedItem is Contract c)
+        if (lbCompanies.SelectedItem is Contract c)
             CompanySelected?.Invoke(c);
     }
 }

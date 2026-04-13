@@ -119,6 +119,19 @@ public partial class MainPage : Window
         DataContext = new MainWindowViewModel();
         ApplyTheme(0);
 
+        // QuotationNewPanel의 ListPanelChanged → Show2.Content 연결 (분석결과입력과 동일)
+        if (_quotationNewPanel != null)
+            _quotationNewPanel.ListPanelChanged += panel => { Show2.Content = panel; LogContentChange("Show2", panel); };
+
+        // QuotationPage 회사 선택 시 Show4에 분석항목+단가 패널 표시
+        if (_quotationPage != null)
+        {
+            _quotationPage.CompanySelected += company =>
+            {
+                Show4.Content = BuildAnalytePricePanel(company.C_CompanyName);
+            };
+        }
+
         // WindowPositionManager 초기화 - 완전 비활성화 (스턱 방지)
         _positionManager = null; // new WindowPositionManager(CurrentUserManager.Instance.CurrentUserId);
 
@@ -157,6 +170,40 @@ public partial class MainPage : Window
             // 디폴트 화면: 비용부담금 > 폐수배출업소
             WasteCompany_Click(null, new Avalonia.Interactivity.RoutedEventArgs());
         };
+    }
+
+    // 분석항목+단가 패널 생성 함수
+    private Control BuildAnalytePricePanel(string companyName)
+    {
+        var analytes = AnalysisService.GetAllItems();
+        var prices = ContractService.GetContractPrices(companyName)
+            .ToDictionary(x => x.Analyte, x => x.Price);
+
+        var stack = new StackPanel { Spacing = 2, Margin = new Thickness(8) };
+        foreach (var a in analytes)
+        {
+            var row = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 12 };
+            row.Children.Add(new TextBlock
+            {
+                Text = a.Analyte,
+                Width = 120,
+                FontSize = 14,
+                Foreground = AppTheme.FgPrimary,
+            });
+            string priceStr = prices.TryGetValue(a.Analyte, out var p) && decimal.TryParse(p, out var d) && d > 0
+                ? $"{d:N0}"
+                : "—";
+            row.Children.Add(new TextBlock
+            {
+                Text = priceStr,
+                Width = 60,
+                FontSize = 14,
+                Foreground = AppTheme.FgSuccess,
+                TextAlignment = Avalonia.Media.TextAlignment.Right,
+            });
+            stack.Children.Add(row);
+        }
+        return new ScrollViewer { Content = stack, VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto };
     }
 
     // ── 글로벌 키보드 단축키 ──
@@ -4198,8 +4245,8 @@ public partial class MainPage : Window
                 _quotationDetailPanel!.ShowIssue(issue);
                 Show2.Content = _quotationDetailPanel;
                 LogContentChange("Show2", _quotationDetailPanel);
-                Show4.Content = _quotationPage;
-                LogContentChange("Show4", _quotationPage);
+                Show3.Content = _quotationPage;
+                LogContentChange("Show3", _quotationPage);
                 // 편집 대상 설정
                 _quotationCheckPanel!.CurrentIssue = issue;
             };
@@ -4208,15 +4255,15 @@ public partial class MainPage : Window
             _quotationHistoryPanel.AnalysisTabActivated += () =>
             {
                 EnsureAnalysisRequestListPanel();
-                Show4.Content = _analysisRequestListPanel;
-                LogContentChange("Show4", _analysisRequestListPanel);
+                Show3.Content = _analysisRequestListPanel;
+                LogContentChange("Show3", _analysisRequestListPanel);
             };
 
-            // 견적발행내역 탭으로 복귀 → Content4: 계약업체 목록 + TODO 패널
+            // 견적발행내역 탭으로 복귀 → Show3: 계약업체 목록
             _quotationHistoryPanel.QuotationTabActivated += () =>
             {
-                Show4.Content = _quotationPage;
-                LogContentChange("Show4", _quotationPage);
+                Show3.Content = _quotationPage;
+                LogContentChange("Show3", _quotationPage);
             };
 
             // 분석의뢰내역 노드 선택
@@ -4228,8 +4275,8 @@ public partial class MainPage : Window
                 Show2.Content = _analysisRequestDetailPanel;
                 LogContentChange("Show2", _analysisRequestDetailPanel);
                 EnsureAnalysisRequestListPanel();
-                Show4.Content = _analysisRequestListPanel;
-                LogContentChange("Show4", _analysisRequestListPanel);
+                Show3.Content = _analysisRequestListPanel;
+                LogContentChange("Show3", _analysisRequestListPanel);
                 _analysisRequestListPanel!.AddRecord(record);
                 // 편집 대상 설정
                 _quotationCheckPanel!.CurrentAnalysisRecord = record;
@@ -4240,10 +4287,10 @@ public partial class MainPage : Window
         LogContentChange("Show1", _quotationHistoryPanel);
         Show2.Content = _quotationDetailPanel;
         LogContentChange("Show2", _quotationDetailPanel);
-        Show3.Content = _quotationCheckPanel;
-        LogContentChange("Show3", _quotationCheckPanel);
-        Show4.Content = _quotationPage;
-        LogContentChange("Show4", _quotationPage);
+        Show3.Content = _quotationPage;
+        LogContentChange("Show3", _quotationPage);
+        Show4.Content = _quotationCheckPanel;
+        LogContentChange("Show4", _quotationCheckPanel);
         _bt1SaveAction = null;
 
         _quotationHistoryPanel.LoadData();
@@ -4254,10 +4301,11 @@ public partial class MainPage : Window
         SetLeftPanelWidth(430);
         // Content2(세부내역) 50% : Content4(업체목록) 50%
         // 하단(Content3 분석항목) ≈ 23%  (13 : 4 → 76% : 24%)
-        SetContentLayout(content2Star: 7, content4Star: 3, upperStar: 13, lowerStar: 4);
-        
-        // 저장된 레이아웃 복원 (Show3 항상 표시 보장)
-        RestoreModeLayout("Quotation", minLowerStar: 4);
+        // Show2(세부내역) 60% | Show4(분석항목 트리뷰) 40% / 하단 Show3(업체목록) 23%
+        SetContentLayout(content2Star: 6, content4Star: 4, upperStar: 13, lowerStar: 3);
+
+        // 저장된 레이아웃 복원
+        RestoreModeLayout("Quotation", minLowerStar: 3);
     }
 
     // ── 분석의뢰 리스트 패널 — 생성 + Show4→Show2 이벤트 1회 연결 ──────────
@@ -4271,7 +4319,7 @@ public partial class MainPage : Window
             _analysisRequestDetailPanel.CheckPanel = _quotationCheckPanel;
             _analysisRequestDetailPanel.ShowRecord(rec);
             Show2.Content = _analysisRequestDetailPanel;
-            LogContentChange("Show2 (Show4 선택)", _analysisRequestDetailPanel);
+            LogContentChange("Show2 (Show3 선택)", _analysisRequestDetailPanel);
             if (_quotationCheckPanel != null)
                 _quotationCheckPanel.CurrentAnalysisRecord = rec;
         };

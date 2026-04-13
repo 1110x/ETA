@@ -3399,3 +3399,1040 @@
 [2026-04-08 22:26:39] [Progress] 88% — 데이터 준비 완료
 [2026-04-08 22:26:39] [Progress] 96% — 시스템 준비 완료
 [2026-04-08 22:26:39] [Progress] 100% — ✓ 완료!
+[2026-04-10 19:18:08] ========== 로그인 창 시작 ==========
+[2026-04-10 19:18:11] ---------- 로그인 시도 ----------
+[2026-04-10 19:18:11] [DoLogin] 사번 입력값: '201000308'
+[2026-04-10 19:18:11] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-10 19:18:12] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-10 19:18:12] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-10 19:18:14] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-10 19:18:14] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-10 19:18:14] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-10 19:18:14] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-10 19:18:14] [DoLogin] ValidateLogin 호출
+[2026-04-10 19:18:14] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-10 19:18:14] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-10 19:18:14] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-10 19:18:14] [Lottie] 재생 시작
+[2026-04-10 19:18:14] [Progress] 0% — DB 연결 중...
+[2026-04-10 19:18:14] [Progress] 14% — DB 연결 완료
+[2026-04-10 19:18:14] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-10 19:18:14] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-10 19:18:14] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-10 19:18:15] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-10 19:18:15] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-10 19:18:15] [Progress] 56% — 사진 동기화 완료
+[2026-04-10 19:18:15] [Progress] 56% — 테이블 초기화 중...
+[2026-04-10 19:18:18] [Init] FacilityDbMigration 실패: MySqlConnector.MySqlException (0x80004005): BLOB/TEXT column '분석일' used in key specification without a key length
+   at MySqlConnector.Core.ServerSession.ReceiveReplyAsync(IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/Core/ServerSession.cs:line 1081
+   at MySqlConnector.Core.ResultSet.ReadResultSetHeaderAsync(IOBehavior ioBehavior) in /_/src/MySqlConnector/Core/ResultSet.cs:line 37
+   at MySqlConnector.MySqlDataReader.ActivateResultSet(CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlDataReader.cs:line 131
+   at MySqlConnector.MySqlDataReader.InitAsync(CommandListPosition commandListPosition, ICommandPayloadCreator payloadCreator, IDictionary`2 cachedProcedures, IMySqlCommand command, CommandBehavior behavior, Activity activity, IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlDataReader.cs:line 487
+   at MySqlConnector.Core.CommandExecutor.ExecuteReaderAsync(CommandListPosition commandListPosition, ICommandPayloadCreator payloadCreator, CommandBehavior behavior, Activity activity, IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/Core/CommandExecutor.cs:line 56
+   at MySqlConnector.MySqlCommand.ExecuteNonQueryAsync(IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlCommand.cs:line 309
+   at MySqlConnector.MySqlCommand.ExecuteNonQuery() in /_/src/MySqlConnector/MySqlCommand.cs:line 108
+   at ETA.Services.SERVICE2.FacilityDbMigration.Exec(DbConnection conn, String sql) in /Users/azrael/Documents/ETA/Services/SERVICE2/FacilityDbMigration.cs:line 2243
+   at ETA.Services.SERVICE2.FacilityDbMigration.EnsureAnalysisRecordTables(DbConnection conn) in /Users/azrael/Documents/ETA/Services/SERVICE2/FacilityDbMigration.cs:line 630
+   at ETA.Services.SERVICE2.FacilityDbMigration.EnsureTables() in /Users/azrael/Documents/ETA/Services/SERVICE2/FacilityDbMigration.cs:line 35
+   at ETA.Views.Login.<>c.<PlayLottieAndNavigate>b__9_4() in /Users/azrael/Documents/ETA/Views/Login.axaml.cs:line 220
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at ETA.Views.Login.PlayLottieAndNavigate(String empId) in /Users/azrael/Documents/ETA/Views/Login.axaml.cs:line 220
+[2026-04-10 19:18:18] [Progress] 72% — ⚠ 테이블 초기화 실패: BLOB/TEXT column '분석일' used in key specification without a key length
+[2026-04-10 19:18:18] [Progress] 72% — 견적 데이터 준비 중...
+[2026-04-10 19:18:18] [Progress] 88% — 데이터 준비 완료
+[2026-04-10 19:18:18] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-10 19:18:18] [Init] EnsureTodayMeasurementResults 실패: Table 'eta_db.처리시설_분析계획' doesn't exist
+[2026-04-10 19:18:18] [Progress] 94% — 처리시설 준비 완료
+[2026-04-10 19:18:18] [Progress] 96% — 시스템 준비 완료
+[2026-04-10 19:18:19] [Progress] 100% — ✓ 완료!
+[2026-04-10 19:23:14] ========== 로그인 창 시작 ==========
+[2026-04-10 19:23:30] ---------- 로그인 시도 ----------
+[2026-04-10 19:23:30] [DoLogin] 사번 입력값: '201000308'
+[2026-04-10 19:23:30] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-10 19:23:30] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-10 19:23:30] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-10 19:23:32] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-10 19:23:32] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-10 19:23:33] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-10 19:23:33] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-10 19:23:33] [DoLogin] ValidateLogin 호출
+[2026-04-10 19:23:33] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-10 19:23:33] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-10 19:23:33] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-10 19:23:33] [Lottie] 재생 시작
+[2026-04-10 19:23:33] [Progress] 0% — DB 연결 중...
+[2026-04-10 19:23:33] [Progress] 14% — DB 연결 완료
+[2026-04-10 19:23:33] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-10 19:23:33] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-10 19:23:33] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-10 19:23:33] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-10 19:23:33] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-10 19:23:33] [Progress] 56% — 사진 동기화 완료
+[2026-04-10 19:23:34] [Progress] 56% — 테이블 초기화 중...
+[2026-04-10 19:23:36] [Init] FacilityDbMigration 실패: MySqlConnector.MySqlException (0x80004005): BLOB/TEXT column '분석일' used in key specification without a key length
+   at MySqlConnector.Core.ServerSession.ReceiveReplyAsync(IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/Core/ServerSession.cs:line 1081
+   at MySqlConnector.Core.ResultSet.ReadResultSetHeaderAsync(IOBehavior ioBehavior) in /_/src/MySqlConnector/Core/ResultSet.cs:line 37
+   at MySqlConnector.MySqlDataReader.ActivateResultSet(CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlDataReader.cs:line 131
+   at MySqlConnector.MySqlDataReader.InitAsync(CommandListPosition commandListPosition, ICommandPayloadCreator payloadCreator, IDictionary`2 cachedProcedures, IMySqlCommand command, CommandBehavior behavior, Activity activity, IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlDataReader.cs:line 487
+   at MySqlConnector.Core.CommandExecutor.ExecuteReaderAsync(CommandListPosition commandListPosition, ICommandPayloadCreator payloadCreator, CommandBehavior behavior, Activity activity, IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/Core/CommandExecutor.cs:line 56
+   at MySqlConnector.MySqlCommand.ExecuteNonQueryAsync(IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlCommand.cs:line 309
+   at MySqlConnector.MySqlCommand.ExecuteNonQuery() in /_/src/MySqlConnector/MySqlCommand.cs:line 108
+   at ETA.Services.SERVICE2.FacilityDbMigration.Exec(DbConnection conn, String sql) in /Users/azrael/Documents/ETA/Services/SERVICE2/FacilityDbMigration.cs:line 2243
+   at ETA.Services.SERVICE2.FacilityDbMigration.EnsureAnalysisRecordTables(DbConnection conn) in /Users/azrael/Documents/ETA/Services/SERVICE2/FacilityDbMigration.cs:line 630
+   at ETA.Services.SERVICE2.FacilityDbMigration.EnsureTables() in /Users/azrael/Documents/ETA/Services/SERVICE2/FacilityDbMigration.cs:line 35
+   at ETA.Views.Login.<>c.<PlayLottieAndNavigate>b__9_4() in /Users/azrael/Documents/ETA/Views/Login.axaml.cs:line 220
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at ETA.Views.Login.PlayLottieAndNavigate(String empId) in /Users/azrael/Documents/ETA/Views/Login.axaml.cs:line 220
+[2026-04-10 19:23:36] [Progress] 72% — ⚠ 테이블 초기화 실패: BLOB/TEXT column '분석일' used in key specification without a key length
+[2026-04-10 19:23:36] [Progress] 72% — 견적 데이터 준비 중...
+[2026-04-10 19:23:36] [Progress] 88% — 데이터 준비 완료
+[2026-04-10 19:23:36] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-10 19:23:37] [Init] EnsureTodayMeasurementResults 실패: Table 'eta_db.처리시설_분析계획' doesn't exist
+[2026-04-10 19:23:37] [Progress] 94% — 처리시설 준비 완료
+[2026-04-10 19:23:37] [Progress] 96% — 시스템 준비 완료
+[2026-04-10 19:23:37] [Progress] 100% — ✓ 완료!
+[2026-04-10 19:26:13] ========== 로그인 창 시작 ==========
+[2026-04-10 19:26:28] ========== 로그인 창 시작 ==========
+[2026-04-10 19:26:43] ---------- 로그인 시도 ----------
+[2026-04-10 19:26:43] [DoLogin] 사번 입력값: '201000308'
+[2026-04-10 19:26:43] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-10 19:26:43] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-10 19:26:43] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-10 19:26:45] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-10 19:26:45] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-10 19:26:45] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-10 19:26:45] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-10 19:26:45] [DoLogin] ValidateLogin 호출
+[2026-04-10 19:26:45] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-10 19:26:45] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-10 19:26:45] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-10 19:26:46] [Lottie] 재생 시작
+[2026-04-10 19:26:46] [Progress] 0% — DB 연결 중...
+[2026-04-10 19:26:46] [Progress] 14% — DB 연결 완료
+[2026-04-10 19:26:46] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-10 19:26:46] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-10 19:26:46] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-10 19:26:46] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-10 19:26:46] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-10 19:26:46] [Progress] 56% — 사진 동기화 완료
+[2026-04-10 19:26:46] [Progress] 56% — 테이블 초기화 중...
+[2026-04-10 19:26:49] [Init] FacilityDbMigration 실패: MySqlConnector.MySqlException (0x80004005): BLOB/TEXT column '분석일' used in key specification without a key length
+   at MySqlConnector.Core.ServerSession.ReceiveReplyAsync(IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/Core/ServerSession.cs:line 1081
+   at MySqlConnector.Core.ResultSet.ReadResultSetHeaderAsync(IOBehavior ioBehavior) in /_/src/MySqlConnector/Core/ResultSet.cs:line 37
+   at MySqlConnector.MySqlDataReader.ActivateResultSet(CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlDataReader.cs:line 131
+   at MySqlConnector.MySqlDataReader.InitAsync(CommandListPosition commandListPosition, ICommandPayloadCreator payloadCreator, IDictionary`2 cachedProcedures, IMySqlCommand command, CommandBehavior behavior, Activity activity, IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlDataReader.cs:line 487
+   at MySqlConnector.Core.CommandExecutor.ExecuteReaderAsync(CommandListPosition commandListPosition, ICommandPayloadCreator payloadCreator, CommandBehavior behavior, Activity activity, IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/Core/CommandExecutor.cs:line 56
+   at MySqlConnector.MySqlCommand.ExecuteNonQueryAsync(IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlCommand.cs:line 309
+   at MySqlConnector.MySqlCommand.ExecuteNonQuery() in /_/src/MySqlConnector/MySqlCommand.cs:line 108
+   at ETA.Services.SERVICE2.FacilityDbMigration.Exec(DbConnection conn, String sql) in /Users/azrael/Documents/ETA/Services/SERVICE2/FacilityDbMigration.cs:line 2243
+   at ETA.Services.SERVICE2.FacilityDbMigration.EnsureAnalysisRecordTables(DbConnection conn) in /Users/azrael/Documents/ETA/Services/SERVICE2/FacilityDbMigration.cs:line 630
+   at ETA.Services.SERVICE2.FacilityDbMigration.EnsureTables() in /Users/azrael/Documents/ETA/Services/SERVICE2/FacilityDbMigration.cs:line 35
+   at ETA.Views.Login.<>c.<PlayLottieAndNavigate>b__9_4() in /Users/azrael/Documents/ETA/Views/Login.axaml.cs:line 220
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at ETA.Views.Login.PlayLottieAndNavigate(String empId) in /Users/azrael/Documents/ETA/Views/Login.axaml.cs:line 220
+[2026-04-10 19:26:49] [Progress] 72% — ⚠ 테이블 초기화 실패: BLOB/TEXT column '분석일' used in key specification without a key length
+[2026-04-10 19:26:49] [Progress] 72% — 견적 데이터 준비 중...
+[2026-04-10 19:26:49] [Progress] 88% — 데이터 준비 완료
+[2026-04-10 19:26:49] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-10 19:26:50] [Init] EnsureTodayMeasurementResults 실패: Table 'eta_db.처리시설_분析계획' doesn't exist
+[2026-04-10 19:26:50] [Progress] 94% — 처리시설 준비 완료
+[2026-04-10 19:26:50] [Progress] 96% — 시스템 준비 완료
+[2026-04-10 19:26:50] [Progress] 100% — ✓ 완료!
+[2026-04-10 19:29:26] ========== 로그인 창 시작 ==========
+[2026-04-10 19:29:27] ---------- 로그인 시도 ----------
+[2026-04-10 19:29:27] [DoLogin] 사번 입력값: '201000308'
+[2026-04-10 19:29:27] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-10 19:29:27] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-10 19:29:27] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-10 19:29:30] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-10 19:29:30] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-10 19:29:30] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-10 19:29:30] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-10 19:29:30] [DoLogin] ValidateLogin 호출
+[2026-04-10 19:29:30] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-10 19:29:30] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-10 19:29:30] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-10 19:29:30] [Lottie] 재생 시작
+[2026-04-10 19:29:30] [Progress] 0% — DB 연결 중...
+[2026-04-10 19:29:30] [Progress] 14% — DB 연결 완료
+[2026-04-10 19:29:30] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-10 19:29:30] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-10 19:29:30] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-10 19:29:31] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-10 19:29:31] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-10 19:29:31] [Progress] 56% — 사진 동기화 완료
+[2026-04-10 19:29:31] [Progress] 56% — 테이블 초기화 중...
+[2026-04-10 19:29:33] [Init] FacilityDbMigration 실패: MySqlConnector.MySqlException (0x80004005): BLOB/TEXT column '분석일' used in key specification without a key length
+   at MySqlConnector.Core.ServerSession.ReceiveReplyAsync(IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/Core/ServerSession.cs:line 1081
+   at MySqlConnector.Core.ResultSet.ReadResultSetHeaderAsync(IOBehavior ioBehavior) in /_/src/MySqlConnector/Core/ResultSet.cs:line 37
+   at MySqlConnector.MySqlDataReader.ActivateResultSet(CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlDataReader.cs:line 131
+   at MySqlConnector.MySqlDataReader.InitAsync(CommandListPosition commandListPosition, ICommandPayloadCreator payloadCreator, IDictionary`2 cachedProcedures, IMySqlCommand command, CommandBehavior behavior, Activity activity, IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlDataReader.cs:line 487
+   at MySqlConnector.Core.CommandExecutor.ExecuteReaderAsync(CommandListPosition commandListPosition, ICommandPayloadCreator payloadCreator, CommandBehavior behavior, Activity activity, IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/Core/CommandExecutor.cs:line 56
+   at MySqlConnector.MySqlCommand.ExecuteNonQueryAsync(IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlCommand.cs:line 309
+   at MySqlConnector.MySqlCommand.ExecuteNonQuery() in /_/src/MySqlConnector/MySqlCommand.cs:line 108
+   at ETA.Services.SERVICE2.FacilityDbMigration.Exec(DbConnection conn, String sql) in /Users/azrael/Documents/ETA/Services/SERVICE2/FacilityDbMigration.cs:line 2243
+   at ETA.Services.SERVICE2.FacilityDbMigration.EnsureAnalysisRecordTables(DbConnection conn) in /Users/azrael/Documents/ETA/Services/SERVICE2/FacilityDbMigration.cs:line 630
+   at ETA.Services.SERVICE2.FacilityDbMigration.EnsureTables() in /Users/azrael/Documents/ETA/Services/SERVICE2/FacilityDbMigration.cs:line 35
+   at ETA.Views.Login.<>c.<PlayLottieAndNavigate>b__9_4() in /Users/azrael/Documents/ETA/Views/Login.axaml.cs:line 220
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at ETA.Views.Login.PlayLottieAndNavigate(String empId) in /Users/azrael/Documents/ETA/Views/Login.axaml.cs:line 220
+[2026-04-10 19:29:33] [Progress] 72% — ⚠ 테이블 초기화 실패: BLOB/TEXT column '분석일' used in key specification without a key length
+[2026-04-10 19:29:34] [Progress] 72% — 견적 데이터 준비 중...
+[2026-04-10 19:29:34] [Progress] 88% — 데이터 준비 완료
+[2026-04-10 19:29:34] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-10 19:29:34] [Init] EnsureTodayMeasurementResults 실패: Table 'eta_db.처리시설_분析계획' doesn't exist
+[2026-04-10 19:29:34] [Progress] 94% — 처리시설 준비 완료
+[2026-04-10 19:29:34] [Progress] 96% — 시스템 준비 완료
+[2026-04-10 19:29:34] [Progress] 100% — ✓ 완료!
+[2026-04-10 19:32:28] ========== 로그인 창 시작 ==========
+[2026-04-10 19:32:30] ---------- 로그인 시도 ----------
+[2026-04-10 19:32:30] [DoLogin] 사번 입력값: '201000308'
+[2026-04-10 19:32:30] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-10 19:32:30] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-10 19:32:30] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-10 19:32:32] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-10 19:32:32] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-10 19:32:33] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-10 19:32:33] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-10 19:32:33] [DoLogin] ValidateLogin 호출
+[2026-04-10 19:32:33] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-10 19:32:33] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-10 19:32:33] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-10 19:32:33] [Lottie] 재생 시작
+[2026-04-10 19:32:33] [Progress] 0% — DB 연결 중...
+[2026-04-10 19:32:33] [Progress] 14% — DB 연결 완료
+[2026-04-10 19:32:33] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-10 19:32:33] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-10 19:32:33] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-10 19:32:33] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-10 19:32:33] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-10 19:32:33] [Progress] 56% — 사진 동기화 완료
+[2026-04-10 19:32:34] [Progress] 56% — 테이블 초기화 중...
+[2026-04-10 19:32:36] [Init] FacilityDbMigration 실패: MySqlConnector.MySqlException (0x80004005): BLOB/TEXT column '분석일' used in key specification without a key length
+   at MySqlConnector.Core.ServerSession.ReceiveReplyAsync(IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/Core/ServerSession.cs:line 1081
+   at MySqlConnector.Core.ResultSet.ReadResultSetHeaderAsync(IOBehavior ioBehavior) in /_/src/MySqlConnector/Core/ResultSet.cs:line 37
+   at MySqlConnector.MySqlDataReader.ActivateResultSet(CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlDataReader.cs:line 131
+   at MySqlConnector.MySqlDataReader.InitAsync(CommandListPosition commandListPosition, ICommandPayloadCreator payloadCreator, IDictionary`2 cachedProcedures, IMySqlCommand command, CommandBehavior behavior, Activity activity, IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlDataReader.cs:line 487
+   at MySqlConnector.Core.CommandExecutor.ExecuteReaderAsync(CommandListPosition commandListPosition, ICommandPayloadCreator payloadCreator, CommandBehavior behavior, Activity activity, IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/Core/CommandExecutor.cs:line 56
+   at MySqlConnector.MySqlCommand.ExecuteNonQueryAsync(IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlCommand.cs:line 309
+   at MySqlConnector.MySqlCommand.ExecuteNonQuery() in /_/src/MySqlConnector/MySqlCommand.cs:line 108
+   at ETA.Services.SERVICE2.FacilityDbMigration.Exec(DbConnection conn, String sql) in /Users/azrael/Documents/ETA/Services/SERVICE2/FacilityDbMigration.cs:line 2243
+   at ETA.Services.SERVICE2.FacilityDbMigration.EnsureAnalysisRecordTables(DbConnection conn) in /Users/azrael/Documents/ETA/Services/SERVICE2/FacilityDbMigration.cs:line 630
+   at ETA.Services.SERVICE2.FacilityDbMigration.EnsureTables() in /Users/azrael/Documents/ETA/Services/SERVICE2/FacilityDbMigration.cs:line 35
+   at ETA.Views.Login.<>c.<PlayLottieAndNavigate>b__9_4() in /Users/azrael/Documents/ETA/Views/Login.axaml.cs:line 220
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at ETA.Views.Login.PlayLottieAndNavigate(String empId) in /Users/azrael/Documents/ETA/Views/Login.axaml.cs:line 220
+[2026-04-10 19:32:36] [Progress] 72% — ⚠ 테이블 초기화 실패: BLOB/TEXT column '분석일' used in key specification without a key length
+[2026-04-10 19:32:36] [Progress] 72% — 견적 데이터 준비 중...
+[2026-04-10 19:32:36] [Progress] 88% — 데이터 준비 완료
+[2026-04-10 19:32:37] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-10 19:32:37] [Init] EnsureTodayMeasurementResults 실패: Table 'eta_db.처리시설_분析계획' doesn't exist
+[2026-04-10 19:32:37] [Progress] 94% — 처리시설 준비 완료
+[2026-04-10 19:32:37] [Progress] 96% — 시스템 준비 완료
+[2026-04-10 19:32:37] [Progress] 100% — ✓ 완료!
+[2026-04-10 19:47:35] ========== 로그인 창 시작 ==========
+[2026-04-10 19:47:54] ---------- 로그인 시도 ----------
+[2026-04-10 19:47:54] [DoLogin] 사번 입력값: '201000308'
+[2026-04-10 19:47:54] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-10 19:47:54] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-10 19:47:54] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-10 19:47:56] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-10 19:47:56] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-10 19:47:56] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-10 19:47:56] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-10 19:47:56] [DoLogin] ValidateLogin 호출
+[2026-04-10 19:47:56] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-10 19:47:56] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-10 19:47:56] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-10 19:47:57] [Lottie] 재생 시작
+[2026-04-10 19:47:57] [Progress] 0% — DB 연결 중...
+[2026-04-10 19:47:57] [Progress] 14% — DB 연결 완료
+[2026-04-10 19:47:57] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-10 19:47:57] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-10 19:47:57] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-10 19:47:57] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-10 19:47:57] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-10 19:47:57] [Progress] 56% — 사진 동기화 완료
+[2026-04-10 19:47:57] [Progress] 56% — 테이블 초기화 중...
+[2026-04-10 19:48:00] [Init] FacilityDbMigration 실패: MySqlConnector.MySqlException (0x80004005): BLOB/TEXT column '분석일' used in key specification without a key length
+   at MySqlConnector.Core.ServerSession.ReceiveReplyAsync(IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/Core/ServerSession.cs:line 1081
+   at MySqlConnector.Core.ResultSet.ReadResultSetHeaderAsync(IOBehavior ioBehavior) in /_/src/MySqlConnector/Core/ResultSet.cs:line 37
+   at MySqlConnector.MySqlDataReader.ActivateResultSet(CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlDataReader.cs:line 131
+   at MySqlConnector.MySqlDataReader.InitAsync(CommandListPosition commandListPosition, ICommandPayloadCreator payloadCreator, IDictionary`2 cachedProcedures, IMySqlCommand command, CommandBehavior behavior, Activity activity, IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlDataReader.cs:line 487
+   at MySqlConnector.Core.CommandExecutor.ExecuteReaderAsync(CommandListPosition commandListPosition, ICommandPayloadCreator payloadCreator, CommandBehavior behavior, Activity activity, IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/Core/CommandExecutor.cs:line 56
+   at MySqlConnector.MySqlCommand.ExecuteNonQueryAsync(IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlCommand.cs:line 309
+   at MySqlConnector.MySqlCommand.ExecuteNonQuery() in /_/src/MySqlConnector/MySqlCommand.cs:line 108
+   at ETA.Services.SERVICE2.FacilityDbMigration.Exec(DbConnection conn, String sql) in /Users/azrael/Documents/ETA/Services/SERVICE2/FacilityDbMigration.cs:line 2246
+   at ETA.Services.SERVICE2.FacilityDbMigration.EnsureAnalysisRecordTables(DbConnection conn) in /Users/azrael/Documents/ETA/Services/SERVICE2/FacilityDbMigration.cs:line 630
+   at ETA.Services.SERVICE2.FacilityDbMigration.EnsureTables() in /Users/azrael/Documents/ETA/Services/SERVICE2/FacilityDbMigration.cs:line 35
+   at ETA.Views.Login.<>c.<PlayLottieAndNavigate>b__9_4() in /Users/azrael/Documents/ETA/Views/Login.axaml.cs:line 220
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at ETA.Views.Login.PlayLottieAndNavigate(String empId) in /Users/azrael/Documents/ETA/Views/Login.axaml.cs:line 220
+[2026-04-10 19:48:00] [Progress] 72% — ⚠ 테이블 초기화 실패: BLOB/TEXT column '분석일' used in key specification without a key length
+[2026-04-10 19:48:00] [Progress] 72% — 견적 데이터 준비 중...
+[2026-04-10 19:48:00] [Progress] 88% — 데이터 준비 완료
+[2026-04-10 19:48:00] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-10 19:48:00] [Init] EnsureTodayMeasurementResults 실패: Table 'eta_db.처리시설_분析계획' doesn't exist
+[2026-04-10 19:48:00] [Progress] 94% — 처리시설 준비 완료
+[2026-04-10 19:48:01] [Progress] 96% — 시스템 준비 완료
+[2026-04-10 19:48:01] [Progress] 100% — ✓ 완료!
+[2026-04-10 19:54:41] ========== 로그인 창 시작 ==========
+[2026-04-10 19:54:44] ---------- 로그인 시도 ----------
+[2026-04-10 19:54:44] [DoLogin] 사번 입력값: '201000308'
+[2026-04-10 19:54:44] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-10 19:54:44] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-10 19:54:44] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-10 19:54:46] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-10 19:54:46] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-10 19:54:46] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-10 19:54:46] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-10 19:54:46] [DoLogin] ValidateLogin 호출
+[2026-04-10 19:54:46] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-10 19:54:46] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-10 19:54:46] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-10 19:54:47] [Lottie] 재생 시작
+[2026-04-10 19:54:47] [Progress] 0% — DB 연결 중...
+[2026-04-10 19:54:47] [Progress] 14% — DB 연결 완료
+[2026-04-10 19:54:47] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-10 19:54:47] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-10 19:54:47] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-10 19:54:47] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-10 19:54:47] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-10 19:54:47] [Progress] 56% — 사진 동기화 완료
+[2026-04-10 19:54:47] [Progress] 56% — 테이블 초기화 중...
+[2026-04-10 19:54:58] [Progress] 72% — 테이블 준비 완료
+[2026-04-10 19:54:58] [Progress] 72% — 견적 데이터 준비 중...
+[2026-04-10 19:54:58] [Progress] 88% — 데이터 준비 완료
+[2026-04-10 19:54:58] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-10 19:54:58] [Init] EnsureTodayMeasurementResults 실패: Table 'eta_db.처리시설_분析계획' doesn't exist
+[2026-04-10 19:54:58] [Progress] 94% — 처리시설 준비 완료
+[2026-04-10 19:54:58] [Progress] 96% — 시스템 준비 완료
+[2026-04-10 19:54:58] [Progress] 100% — ✓ 완료!
+[2026-04-10 20:08:02] ========== 로그인 창 시작 ==========
+[2026-04-10 20:08:05] ---------- 로그인 시도 ----------
+[2026-04-10 20:08:05] [DoLogin] 사번 입력값: '201000308'
+[2026-04-10 20:08:05] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-10 20:08:05] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-10 20:08:05] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-10 20:08:07] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-10 20:08:07] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-10 20:08:07] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-10 20:08:07] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-10 20:08:07] [DoLogin] ValidateLogin 호출
+[2026-04-10 20:08:07] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-10 20:08:07] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-10 20:08:07] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-10 20:08:07] [Lottie] 재생 시작
+[2026-04-10 20:08:07] [Progress] 0% — DB 연결 중...
+[2026-04-10 20:08:07] [Progress] 14% — DB 연결 완료
+[2026-04-10 20:08:07] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-10 20:08:07] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-10 20:08:08] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-10 20:08:08] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-10 20:08:08] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-10 20:08:08] [Progress] 56% — 사진 동기화 완료
+[2026-04-10 20:08:08] [Progress] 56% — 테이블 초기화 중...
+[2026-04-10 20:10:20] [Progress] 72% — 테이블 준비 완료
+[2026-04-10 20:10:20] [Progress] 72% — 견적 데이터 준비 중...
+[2026-04-10 20:10:20] [Progress] 88% — 데이터 준비 완료
+[2026-04-10 20:10:20] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-10 20:10:20] [Init] EnsureTodayMeasurementResults 실패: Table 'eta_db.처리시설_분析계획' doesn't exist
+[2026-04-10 20:10:20] [Progress] 94% — 처리시설 준비 완료
+[2026-04-10 20:10:20] [Progress] 96% — 시스템 준비 완료
+[2026-04-10 20:10:20] [Progress] 100% — ✓ 완료!
+[2026-04-10 20:10:54] ========== 로그인 창 시작 ==========
+[2026-04-10 20:10:57] ---------- 로그인 시도 ----------
+[2026-04-10 20:10:57] [DoLogin] 사번 입력값: '201000308'
+[2026-04-10 20:10:57] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-10 20:10:57] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-10 20:10:57] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-10 20:10:59] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-10 20:10:59] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-10 20:10:59] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-10 20:10:59] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-10 20:10:59] [DoLogin] ValidateLogin 호출
+[2026-04-10 20:10:59] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-10 20:10:59] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-10 20:10:59] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-10 20:10:59] [Lottie] 재생 시작
+[2026-04-10 20:10:59] [Progress] 0% — DB 연결 중...
+[2026-04-10 20:10:59] [Progress] 14% — DB 연결 완료
+[2026-04-10 20:11:00] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-10 20:11:00] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-10 20:11:00] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-10 20:11:00] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-10 20:11:00] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-10 20:11:00] [Progress] 56% — 사진 동기화 완료
+[2026-04-10 20:11:00] [Progress] 56% — 테이블 초기화 중...
+[2026-04-10 20:12:38] [Progress] 72% — 테이블 준비 완료
+[2026-04-10 20:12:38] [Progress] 72% — 견적 데이터 준비 중...
+[2026-04-10 20:12:38] [Progress] 88% — 데이터 준비 완료
+[2026-04-10 20:12:38] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-10 20:12:38] [Init] EnsureTodayMeasurementResults 실패: Table 'eta_db.처리시설_분析계획' doesn't exist
+[2026-04-10 20:12:38] [Progress] 94% — 처리시설 준비 완료
+[2026-04-10 20:12:38] [Progress] 96% — 시스템 준비 완료
+[2026-04-10 20:12:39] [Progress] 100% — ✓ 완료!
+[2026-04-10 20:16:34] ========== 로그인 창 시작 ==========
+[2026-04-10 20:16:37] ---------- 로그인 시도 ----------
+[2026-04-10 20:16:37] [DoLogin] 사번 입력값: '201000308'
+[2026-04-10 20:16:37] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-10 20:16:37] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-10 20:16:37] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-10 20:16:39] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-10 20:16:39] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-10 20:16:39] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-10 20:16:39] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-10 20:16:39] [DoLogin] ValidateLogin 호출
+[2026-04-10 20:16:39] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-10 20:16:39] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-10 20:16:39] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-10 20:16:39] [Lottie] 재생 시작
+[2026-04-10 20:16:39] [Progress] 0% — DB 연결 중...
+[2026-04-10 20:16:39] [Progress] 14% — DB 연결 완료
+[2026-04-10 20:16:39] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-10 20:16:39] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-10 20:16:40] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-10 20:16:40] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-10 20:16:40] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-10 20:16:40] [Progress] 56% — 사진 동기화 완료
+[2026-04-10 20:16:40] [Progress] 56% — 테이블 초기화 중...
+[2026-04-10 20:16:48] [Progress] 72% — 테이블 준비 완료
+[2026-04-10 20:16:48] [Progress] 72% — 견적 데이터 준비 중...
+[2026-04-10 20:16:48] [Progress] 88% — 데이터 준비 완료
+[2026-04-10 20:16:48] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-10 20:16:55] [Progress] 94% — 처리시설 준비 완료 (61건)
+[2026-04-10 20:16:55] [Init] EnsureTodayMeasurementResults: 61건
+[2026-04-10 20:16:55] [Progress] 96% — 시스템 준비 완료
+[2026-04-10 20:16:55] [Progress] 100% — ✓ 완료!
+[2026-04-10 20:18:47] ========== 로그인 창 시작 ==========
+[2026-04-10 20:18:49] ---------- 로그인 시도 ----------
+[2026-04-10 20:18:49] [DoLogin] 사번 입력값: '201000308'
+[2026-04-10 20:18:49] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-10 20:18:49] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-10 20:18:49] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-10 20:18:52] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-10 20:18:52] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-10 20:18:52] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-10 20:18:52] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-10 20:18:52] [DoLogin] ValidateLogin 호출
+[2026-04-10 20:18:52] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-10 20:18:52] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-10 20:18:52] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-10 20:18:52] [Lottie] 재생 시작
+[2026-04-10 20:18:52] [Progress] 0% — DB 연결 중...
+[2026-04-10 20:18:52] [Progress] 14% — DB 연결 완료
+[2026-04-10 20:18:52] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-10 20:18:52] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-10 20:18:52] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-10 20:18:52] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-10 20:18:53] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-10 20:18:53] [Progress] 56% — 사진 동기화 완료
+[2026-04-10 20:18:53] [Progress] 56% — 테이블 초기화 중...
+[2026-04-10 20:19:34] [Progress] 72% — 테이블 준비 완료
+[2026-04-10 20:19:35] [Progress] 72% — 견적 데이터 준비 중...
+[2026-04-10 20:19:35] [Progress] 88% — 데이터 준비 완료
+[2026-04-10 20:19:35] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-10 20:19:35] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-10 20:19:35] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-10 20:19:35] [Progress] 96% — 시스템 준비 완료
+[2026-04-10 20:19:35] [Progress] 100% — ✓ 완료!
+[2026-04-10 20:54:18] ========== 로그인 창 시작 ==========
+[2026-04-10 20:54:37] ---------- 로그인 시도 ----------
+[2026-04-10 20:54:37] [DoLogin] 사번 입력값: '201000308'
+[2026-04-10 20:54:37] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-10 20:54:37] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-10 20:54:37] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-10 20:54:39] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-10 20:54:39] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-10 20:54:39] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-10 20:54:39] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-10 20:54:39] [DoLogin] ValidateLogin 호출
+[2026-04-10 20:54:39] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-10 20:54:39] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-10 20:54:39] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-10 20:54:39] [Lottie] 재생 시작
+[2026-04-10 20:54:39] [Progress] 0% — DB 연결 중...
+[2026-04-10 20:54:39] [Progress] 14% — DB 연결 완료
+[2026-04-10 20:54:39] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-10 20:54:39] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-10 20:54:40] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-10 20:54:40] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-10 20:54:40] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-10 20:54:40] [Progress] 56% — 사진 동기화 완료
+[2026-04-10 20:54:40] [Progress] 56% — 테이블 초기화 중...
+[2026-04-10 20:54:44] [Progress] 72% — 테이블 준비 완료
+[2026-04-10 20:54:44] [Progress] 72% — 견적 데이터 준비 중...
+[2026-04-10 20:54:44] [Progress] 88% — 데이터 준비 완료
+[2026-04-10 20:54:44] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-10 20:54:44] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-10 20:54:44] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-10 20:54:45] [Progress] 96% — 시스템 준비 완료
+[2026-04-10 20:54:45] [Progress] 100% — ✓ 완료!
+[2026-04-11 01:30:11] ========== 로그인 창 시작 ==========
+[2026-04-11 01:30:15] ---------- 로그인 시도 ----------
+[2026-04-11 01:30:15] [DoLogin] 사번 입력값: '201000308'
+[2026-04-11 01:30:15] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-11 01:30:15] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-11 01:30:15] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-11 01:30:17] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-11 01:30:17] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-11 01:30:17] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-11 01:30:17] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-11 01:30:17] [DoLogin] ValidateLogin 호출
+[2026-04-11 01:30:17] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-11 01:30:17] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-11 01:30:17] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-11 01:30:17] [Lottie] 재생 시작
+[2026-04-11 01:30:17] [Progress] 0% — DB 연결 중...
+[2026-04-11 01:30:17] [Progress] 14% — DB 연결 완료
+[2026-04-11 01:30:18] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-11 01:30:18] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-11 01:30:18] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-11 01:30:18] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-11 01:30:18] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-11 01:30:18] [Progress] 56% — 사진 동기화 완료
+[2026-04-11 01:30:18] [Progress] 56% — 테이블 초기화 중...
+[2026-04-11 01:30:19] [Progress] 72% — 테이블 준비 완료
+[2026-04-11 01:30:19] [Progress] 72% — 견적 데이터 준비 중...
+[2026-04-11 01:30:19] [Progress] 88% — 데이터 준비 완료
+[2026-04-11 01:30:20] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-11 01:30:20] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-11 01:30:20] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-11 01:30:20] [Progress] 96% — 시스템 준비 완료
+[2026-04-11 01:30:20] [Progress] 100% — ✓ 완료!
+[2026-04-11 09:38:53] ========== 로그인 창 시작 ==========
+[2026-04-11 09:38:57] ---------- 로그인 시도 ----------
+[2026-04-11 09:38:57] [DoLogin] 사번 입력값: '201000308'
+[2026-04-11 09:38:57] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-11 09:38:57] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-11 09:38:57] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-11 09:38:59] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-11 09:38:59] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-11 09:38:59] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-11 09:38:59] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-11 09:38:59] [DoLogin] ValidateLogin 호출
+[2026-04-11 09:38:59] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-11 09:38:59] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-11 09:38:59] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-11 09:39:00] [Lottie] 재생 시작
+[2026-04-11 09:39:00] [Progress] 0% — DB 연결 중...
+[2026-04-11 09:39:00] [Progress] 14% — DB 연결 완료
+[2026-04-11 09:39:00] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-11 09:39:00] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-11 09:39:00] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-11 09:39:00] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-11 09:39:00] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-11 09:39:00] [Progress] 56% — 사진 동기화 완료
+[2026-04-11 09:39:00] [Progress] 56% — 테이블 초기화 중...
+[2026-04-11 09:39:02] [Progress] 72% — 테이블 준비 완료
+[2026-04-11 09:39:02] [Progress] 72% — 견적 데이터 준비 중...
+[2026-04-11 09:39:02] [Progress] 88% — 데이터 준비 완료
+[2026-04-11 09:39:02] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-11 09:39:02] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-11 09:39:02] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-11 09:39:02] [Progress] 96% — 시스템 준비 완료
+[2026-04-11 09:39:02] [Progress] 100% — ✓ 완료!
+[2026-04-11 09:44:59] ========== 로그인 창 시작 ==========
+[2026-04-11 09:45:02] ---------- 로그인 시도 ----------
+[2026-04-11 09:45:02] [DoLogin] 사번 입력값: '201000308'
+[2026-04-11 09:45:02] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-11 09:45:02] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-11 09:45:02] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-11 09:45:04] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-11 09:45:04] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-11 09:45:04] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-11 09:45:04] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-11 09:45:04] [DoLogin] ValidateLogin 호출
+[2026-04-11 09:45:04] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-11 09:45:04] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-11 09:45:04] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-11 09:45:04] [Lottie] 재생 시작
+[2026-04-11 09:45:04] [Progress] 0% — DB 연결 중...
+[2026-04-11 09:45:04] [Progress] 14% — DB 연결 완료
+[2026-04-11 09:45:04] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-11 09:45:04] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-11 09:45:05] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-11 09:45:05] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-11 09:45:05] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-11 09:45:05] [Progress] 56% — 사진 동기화 완료
+[2026-04-11 09:45:05] [Progress] 56% — 테이블 초기화 중...
+[2026-04-11 09:45:06] [Progress] 72% — 테이블 준비 완료
+[2026-04-11 09:45:06] [Progress] 72% — 견적 데이터 준비 중...
+[2026-04-11 09:45:06] [Progress] 88% — 데이터 준비 완료
+[2026-04-11 09:45:06] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-11 09:45:06] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-11 09:45:06] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-11 09:45:06] [Progress] 96% — 시스템 준비 완료
+[2026-04-11 09:45:07] [Progress] 100% — ✓ 완료!
+[2026-04-11 09:50:44] ========== 로그인 창 시작 ==========
+[2026-04-11 09:50:48] ---------- 로그인 시도 ----------
+[2026-04-11 09:50:48] [DoLogin] 사번 입력값: '201000308'
+[2026-04-11 09:50:48] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-11 09:50:48] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-11 09:50:48] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-11 09:50:51] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-11 09:50:51] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-11 09:50:51] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-11 09:50:51] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-11 09:50:51] [DoLogin] ValidateLogin 호출
+[2026-04-11 09:50:51] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-11 09:50:51] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-11 09:50:51] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-11 09:50:51] [Lottie] 재생 시작
+[2026-04-11 09:50:51] [Progress] 0% — DB 연결 중...
+[2026-04-11 09:50:51] [Progress] 14% — DB 연결 완료
+[2026-04-11 09:50:51] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-11 09:50:51] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-11 09:50:51] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-11 09:50:51] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-11 09:50:51] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-11 09:50:51] [Progress] 56% — 사진 동기화 완료
+[2026-04-11 09:50:52] [Progress] 56% — 테이블 초기화 중...
+[2026-04-11 09:50:53] [Progress] 72% — 테이블 준비 완료
+[2026-04-11 09:50:53] [Progress] 72% — 견적 데이터 준비 중...
+[2026-04-11 09:50:53] [Progress] 88% — 데이터 준비 완료
+[2026-04-11 09:50:53] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-11 09:50:53] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-11 09:50:53] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-11 09:50:53] [Progress] 96% — 시스템 준비 완료
+[2026-04-11 09:50:54] [Progress] 100% — ✓ 완료!
+[2026-04-11 09:59:39] ========== 로그인 창 시작 ==========
+[2026-04-11 09:59:42] ---------- 로그인 시도 ----------
+[2026-04-11 09:59:42] [DoLogin] 사번 입력값: '201000308'
+[2026-04-11 09:59:42] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-11 09:59:42] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-11 09:59:42] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-11 09:59:44] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-11 09:59:44] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-11 09:59:44] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-11 09:59:44] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-11 09:59:44] [DoLogin] ValidateLogin 호출
+[2026-04-11 09:59:44] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-11 09:59:44] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-11 09:59:44] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-11 09:59:45] [Lottie] 재생 시작
+[2026-04-11 09:59:45] [Progress] 0% — DB 연결 중...
+[2026-04-11 09:59:45] [Progress] 14% — DB 연결 완료
+[2026-04-11 09:59:45] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-11 09:59:45] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-11 09:59:45] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-11 09:59:45] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-11 09:59:45] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-11 09:59:45] [Progress] 56% — 사진 동기화 완료
+[2026-04-11 09:59:45] [Progress] 56% — 테이블 초기화 중...
+[2026-04-11 09:59:47] [Progress] 72% — 테이블 준비 완료
+[2026-04-11 09:59:47] [Progress] 72% — 견적 데이터 준비 중...
+[2026-04-11 09:59:47] [Progress] 88% — 데이터 준비 완료
+[2026-04-11 09:59:47] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-11 09:59:47] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-11 09:59:47] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-11 09:59:47] [Progress] 96% — 시스템 준비 완료
+[2026-04-11 09:59:47] [Progress] 100% — ✓ 완료!
+[2026-04-11 10:12:03] ========== 로그인 창 시작 ==========
+[2026-04-11 10:12:07] ---------- 로그인 시도 ----------
+[2026-04-11 10:12:07] [DoLogin] 사번 입력값: '201000308'
+[2026-04-11 10:12:07] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-11 10:12:07] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-11 10:12:07] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-11 10:12:09] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-11 10:12:09] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-11 10:12:09] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-11 10:12:09] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-11 10:12:09] [DoLogin] ValidateLogin 호출
+[2026-04-11 10:12:09] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-11 10:12:09] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-11 10:12:09] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-11 10:12:10] [Lottie] 재생 시작
+[2026-04-11 10:12:10] [Progress] 0% — DB 연결 중...
+[2026-04-11 10:12:10] [Progress] 14% — DB 연결 완료
+[2026-04-11 10:12:10] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-11 10:12:10] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-11 10:12:10] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-11 10:12:10] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-11 10:12:10] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-11 10:12:10] [Progress] 56% — 사진 동기화 완료
+[2026-04-11 10:12:10] [Progress] 56% — 테이블 초기화 중...
+[2026-04-11 10:12:11] [Progress] 72% — 테이블 준비 완료
+[2026-04-11 10:12:12] [Progress] 72% — 견적 데이터 준비 중...
+[2026-04-11 10:12:12] [Progress] 88% — 데이터 준비 완료
+[2026-04-11 10:12:12] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-11 10:12:12] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-11 10:12:12] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-11 10:12:12] [Progress] 96% — 시스템 준비 완료
+[2026-04-11 10:12:12] [Progress] 100% — ✓ 완료!
+[2026-04-11 10:16:52] ========== 로그인 창 시작 ==========
+[2026-04-11 10:17:11] ---------- 로그인 시도 ----------
+[2026-04-11 10:17:11] [DoLogin] 사번 입력값: '201000308'
+[2026-04-11 10:17:11] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-11 10:17:11] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-11 10:17:11] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-11 10:17:13] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-11 10:17:13] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-11 10:17:13] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-11 10:17:13] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-11 10:17:13] [DoLogin] ValidateLogin 호출
+[2026-04-11 10:17:13] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-11 10:17:13] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-11 10:17:13] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-11 10:17:13] [Lottie] 재생 시작
+[2026-04-11 10:17:13] [Progress] 0% — DB 연결 중...
+[2026-04-11 10:17:13] [Progress] 14% — DB 연결 완료
+[2026-04-11 10:17:14] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-11 10:17:14] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-11 10:17:14] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-11 10:17:14] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-11 10:17:14] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-11 10:17:14] [Progress] 56% — 사진 동기화 완료
+[2026-04-11 10:17:14] [Progress] 56% — 테이블 초기화 중...
+[2026-04-11 10:17:15] [Progress] 72% — 테이블 준비 완료
+[2026-04-11 10:17:15] [Progress] 72% — 견적 데이터 준비 중...
+[2026-04-11 10:17:15] [Progress] 88% — 데이터 준비 완료
+[2026-04-11 10:17:15] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-11 10:17:15] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-11 10:17:15] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-11 10:17:16] [Progress] 96% — 시스템 준비 완료
+[2026-04-11 10:17:16] [Progress] 100% — ✓ 완료!
+[2026-04-11 10:39:41] ========== 로그인 창 시작 ==========
+[2026-04-11 10:39:45] ---------- 로그인 시도 ----------
+[2026-04-11 10:39:45] [DoLogin] 사번 입력값: '201000308'
+[2026-04-11 10:39:45] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-11 10:39:45] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-11 10:39:45] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-11 10:39:47] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-11 10:39:47] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-11 10:39:47] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-11 10:39:47] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-11 10:39:47] [DoLogin] ValidateLogin 호출
+[2026-04-11 10:39:47] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-11 10:39:47] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-11 10:39:47] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-11 10:39:47] [Lottie] 재생 시작
+[2026-04-11 10:39:47] [Progress] 0% — DB 연결 중...
+[2026-04-11 10:39:47] [Progress] 14% — DB 연결 완료
+[2026-04-11 10:39:47] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-11 10:39:47] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-11 10:39:47] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-11 10:39:48] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-11 10:39:48] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-11 10:39:48] [Progress] 56% — 사진 동기화 완료
+[2026-04-11 10:39:48] [Progress] 56% — 테이블 초기화 중...
+[2026-04-11 10:39:49] [Progress] 72% — 테이블 준비 완료
+[2026-04-11 10:39:49] [Progress] 72% — 견적 데이터 준비 중...
+[2026-04-11 10:39:49] [Progress] 88% — 데이터 준비 완료
+[2026-04-11 10:39:49] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-11 10:39:49] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-11 10:39:49] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-11 10:39:49] [Progress] 96% — 시스템 준비 완료
+[2026-04-11 10:39:50] [Progress] 100% — ✓ 완료!
+[2026-04-11 10:46:20] ========== 로그인 창 시작 ==========
+[2026-04-11 10:46:23] ---------- 로그인 시도 ----------
+[2026-04-11 10:46:23] [DoLogin] 사번 입력값: '201000308'
+[2026-04-11 10:46:23] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-11 10:46:23] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-11 10:46:23] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-11 10:46:25] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-11 10:46:25] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-11 10:46:25] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-11 10:46:25] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-11 10:46:25] [DoLogin] ValidateLogin 호출
+[2026-04-11 10:46:25] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-11 10:46:25] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-11 10:46:25] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-11 10:46:26] [Lottie] 재생 시작
+[2026-04-11 10:46:26] [Progress] 0% — DB 연결 중...
+[2026-04-11 10:46:26] [Progress] 14% — DB 연결 완료
+[2026-04-11 10:46:26] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-11 10:46:26] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-11 10:46:26] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-11 10:46:26] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-11 10:46:26] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-11 10:46:26] [Progress] 56% — 사진 동기화 완료
+[2026-04-11 10:46:26] [Progress] 56% — 테이블 초기화 중...
+[2026-04-11 10:46:27] [Progress] 72% — 테이블 준비 완료
+[2026-04-11 10:46:27] [Progress] 72% — 견적 데이터 준비 중...
+[2026-04-11 10:46:27] [Progress] 88% — 데이터 준비 완료
+[2026-04-11 10:46:28] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-11 10:46:28] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-11 10:46:28] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-11 10:46:28] [Progress] 96% — 시스템 준비 완료
+[2026-04-11 10:46:28] [Progress] 100% — ✓ 완료!
+[2026-04-11 10:56:55] ========== 로그인 창 시작 ==========
+[2026-04-11 10:56:57] ---------- 로그인 시도 ----------
+[2026-04-11 10:56:57] [DoLogin] 사번 입력값: '201000308'
+[2026-04-11 10:56:57] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-11 10:56:57] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-11 10:56:57] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-11 10:56:59] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-11 10:56:59] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-11 10:56:59] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-11 10:56:59] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-11 10:56:59] [DoLogin] ValidateLogin 호출
+[2026-04-11 10:56:59] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-11 10:56:59] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-11 10:56:59] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-11 10:57:00] [Lottie] 재생 시작
+[2026-04-11 10:57:00] [Progress] 0% — DB 연결 중...
+[2026-04-11 10:57:00] [Progress] 14% — DB 연결 완료
+[2026-04-11 10:57:00] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-11 10:57:00] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-11 10:57:00] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-11 10:57:00] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-11 10:57:00] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-11 10:57:00] [Progress] 56% — 사진 동기화 완료
+[2026-04-11 10:57:00] [Progress] 56% — 테이블 초기화 중...
+[2026-04-11 10:57:01] [Progress] 72% — 테이블 준비 완료
+[2026-04-11 10:57:02] [Progress] 72% — 견적 데이터 준비 중...
+[2026-04-11 10:57:02] [Progress] 88% — 데이터 준비 완료
+[2026-04-11 10:57:02] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-11 10:57:02] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-11 10:57:02] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-11 10:57:02] [Progress] 96% — 시스템 준비 완료
+[2026-04-11 10:57:02] [Progress] 100% — ✓ 완료!
+[2026-04-11 11:03:19] ========== 로그인 창 시작 ==========
+[2026-04-11 11:03:47] ---------- 로그인 시도 ----------
+[2026-04-11 11:03:47] [DoLogin] 사번 입력값: '201000308'
+[2026-04-11 11:03:47] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-11 11:03:47] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-11 11:03:47] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-11 11:03:49] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-11 11:03:49] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-11 11:03:49] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-11 11:03:49] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-11 11:03:49] [DoLogin] ValidateLogin 호출
+[2026-04-11 11:03:49] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-11 11:03:49] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-11 11:03:49] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-11 11:03:49] [Lottie] 재생 시작
+[2026-04-11 11:03:49] [Progress] 0% — DB 연결 중...
+[2026-04-11 11:03:49] [Progress] 14% — DB 연결 완료
+[2026-04-11 11:03:50] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-11 11:03:50] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-11 11:03:50] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-11 11:03:50] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-11 11:03:50] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-11 11:03:50] [Progress] 56% — 사진 동기화 완료
+[2026-04-11 11:03:50] [Progress] 56% — 테이블 초기화 중...
+[2026-04-11 11:03:51] [Progress] 72% — 테이블 준비 완료
+[2026-04-11 11:03:51] [Progress] 72% — 견적 데이터 준비 중...
+[2026-04-11 11:03:51] [Progress] 88% — 데이터 준비 완료
+[2026-04-11 11:03:51] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-11 11:03:51] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-11 11:03:51] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-11 11:03:52] [Progress] 96% — 시스템 준비 완료
+[2026-04-11 11:03:52] [Progress] 100% — ✓ 완료!
+[2026-04-11 12:50:09] ========== 로그인 창 시작 ==========
+[2026-04-11 12:50:11] ---------- 로그인 시도 ----------
+[2026-04-11 12:50:11] [DoLogin] 사번 입력값: '201000308'
+[2026-04-11 12:50:11] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-11 12:50:11] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-11 12:50:11] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-11 12:50:12] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-11 12:50:12] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-11 12:50:12] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-11 12:50:12] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-11 12:50:12] [DoLogin] ValidateLogin 호출
+[2026-04-11 12:50:12] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-11 12:50:12] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-11 12:50:12] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-11 12:50:13] [Lottie] 재생 시작
+[2026-04-11 12:50:13] [Progress] 0% — DB 연결 중...
+[2026-04-11 12:50:13] [Progress] 14% — DB 연결 완료
+[2026-04-11 12:50:13] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-11 12:50:13] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-11 12:50:13] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-11 12:50:13] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-11 12:50:13] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-11 12:50:13] [Progress] 56% — 사진 동기화 완료
+[2026-04-11 12:50:13] [Progress] 56% — 테이블 초기화 중...
+[2026-04-11 12:50:14] [Progress] 72% — 테이블 준비 완료
+[2026-04-11 12:50:14] [Progress] 72% — 견적 데이터 준비 중...
+[2026-04-11 12:50:14] [Progress] 88% — 데이터 준비 완료
+[2026-04-11 12:50:14] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-11 12:50:14] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-11 12:50:14] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-11 12:50:14] [Progress] 96% — 시스템 준비 완료
+[2026-04-11 12:50:14] [Progress] 100% — ✓ 완료!
+[2026-04-11 13:13:58] ========== 로그인 창 시작 ==========
+[2026-04-11 13:14:00] ---------- 로그인 시도 ----------
+[2026-04-11 13:14:00] [DoLogin] 사번 입력값: '201000308'
+[2026-04-11 13:14:00] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-11 13:14:00] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-11 13:14:00] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-11 13:14:02] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-11 13:14:02] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-11 13:14:02] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-11 13:14:02] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-11 13:14:02] [DoLogin] ValidateLogin 호출
+[2026-04-11 13:14:02] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-11 13:14:02] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-11 13:14:02] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-11 13:14:02] [Lottie] 재생 시작
+[2026-04-11 13:14:02] [Progress] 0% — DB 연결 중...
+[2026-04-11 13:14:02] [Progress] 14% — DB 연결 완료
+[2026-04-11 13:14:02] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-11 13:14:02] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-11 13:14:02] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-11 13:14:02] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-11 13:14:02] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-11 13:14:02] [Progress] 56% — 사진 동기화 완료
+[2026-04-11 13:14:03] [Progress] 56% — 테이블 초기화 중...
+[2026-04-11 13:14:03] [Progress] 72% — 테이블 준비 완료
+[2026-04-11 13:14:03] [Progress] 72% — 견적 데이터 준비 중...
+[2026-04-11 13:14:03] [Progress] 88% — 데이터 준비 완료
+[2026-04-11 13:14:03] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-11 13:14:03] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-11 13:14:03] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-11 13:14:03] [Progress] 96% — 시스템 준비 완료
+[2026-04-11 13:14:04] [Progress] 100% — ✓ 완료!
+[2026-04-11 13:16:21] ========== 로그인 창 시작 ==========
+[2026-04-11 13:16:24] ---------- 로그인 시도 ----------
+[2026-04-11 13:16:24] [DoLogin] 사번 입력값: '201000308'
+[2026-04-11 13:16:24] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-11 13:16:24] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-11 13:16:24] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-11 13:16:26] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-11 13:16:26] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-11 13:16:26] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-11 13:16:26] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-11 13:16:26] [DoLogin] ValidateLogin 호출
+[2026-04-11 13:16:26] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-11 13:16:26] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-11 13:16:26] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-11 13:16:26] [Lottie] 재생 시작
+[2026-04-11 13:16:26] [Progress] 0% — DB 연결 중...
+[2026-04-11 13:16:26] [Progress] 14% — DB 연결 완료
+[2026-04-11 13:16:26] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-11 13:16:26] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-11 13:16:26] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-11 13:16:26] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-11 13:16:27] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-11 13:16:27] [Progress] 56% — 사진 동기화 완료
+[2026-04-11 13:16:27] [Progress] 56% — 테이블 초기화 중...
+[2026-04-11 13:16:27] [Progress] 72% — 테이블 준비 완료
+[2026-04-11 13:16:27] [Progress] 72% — 견적 데이터 준비 중...
+[2026-04-11 13:16:27] [Progress] 88% — 데이터 준비 완료
+[2026-04-11 13:16:27] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-11 13:16:27] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-11 13:16:27] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-11 13:16:27] [Progress] 96% — 시스템 준비 완료
+[2026-04-11 13:16:28] [Progress] 100% — ✓ 완료!
+[2026-04-11 13:18:59] ========== 로그인 창 시작 ==========
+[2026-04-11 13:19:01] ---------- 로그인 시도 ----------
+[2026-04-11 13:19:01] [DoLogin] 사번 입력값: '201000308'
+[2026-04-11 13:19:01] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-11 13:19:01] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-11 13:19:01] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-11 13:19:03] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-11 13:19:03] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-11 13:19:03] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-11 13:19:03] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-11 13:19:03] [DoLogin] ValidateLogin 호출
+[2026-04-11 13:19:03] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-11 13:19:03] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-11 13:19:03] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-11 13:19:03] [Lottie] 재생 시작
+[2026-04-11 13:19:03] [Progress] 0% — DB 연결 중...
+[2026-04-11 13:19:03] [Progress] 14% — DB 연결 완료
+[2026-04-11 13:19:03] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-11 13:19:03] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-11 13:19:03] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-11 13:19:03] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-11 13:19:03] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-11 13:19:03] [Progress] 56% — 사진 동기화 완료
+[2026-04-11 13:19:03] [Progress] 56% — 테이블 초기화 중...
+[2026-04-11 13:19:04] [Progress] 72% — 테이블 준비 완료
+[2026-04-11 13:19:04] [Progress] 72% — 견적 데이터 준비 중...
+[2026-04-11 13:19:04] [Progress] 88% — 데이터 준비 완료
+[2026-04-11 13:19:04] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-11 13:19:04] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-11 13:19:04] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-11 13:19:04] [Progress] 96% — 시스템 준비 완료
+[2026-04-11 13:19:04] [Progress] 100% — ✓ 완료!
+[2026-04-11 13:25:44] ========== 로그인 창 시작 ==========
+[2026-04-11 13:25:46] ---------- 로그인 시도 ----------
+[2026-04-11 13:25:46] [DoLogin] 사번 입력값: '201000308'
+[2026-04-11 13:25:46] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-11 13:25:46] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-11 13:25:46] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-11 13:25:48] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-11 13:25:48] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-11 13:25:48] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-11 13:25:48] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-11 13:25:48] [DoLogin] ValidateLogin 호출
+[2026-04-11 13:25:48] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-11 13:25:48] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-11 13:25:48] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-11 13:25:48] [Lottie] 재생 시작
+[2026-04-11 13:25:48] [Progress] 0% — DB 연결 중...
+[2026-04-11 13:25:48] [Progress] 14% — DB 연결 완료
+[2026-04-11 13:25:48] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-11 13:25:48] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-11 13:25:48] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-11 13:25:48] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-11 13:25:48] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-11 13:25:48] [Progress] 56% — 사진 동기화 완료
+[2026-04-11 13:25:49] [Progress] 56% — 테이블 초기화 중...
+[2026-04-11 13:25:49] [Progress] 72% — 테이블 준비 완료
+[2026-04-11 13:25:49] [Progress] 72% — 견적 데이터 준비 중...
+[2026-04-11 13:25:49] [Progress] 88% — 데이터 준비 완료
+[2026-04-11 13:25:49] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-11 13:25:49] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-11 13:25:49] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-11 13:25:49] [Progress] 96% — 시스템 준비 완료
+[2026-04-11 13:25:50] [Progress] 100% — ✓ 완료!
+[2026-04-11 13:32:54] ========== 로그인 창 시작 ==========
+[2026-04-11 13:32:59] ---------- 로그인 시도 ----------
+[2026-04-11 13:32:59] [DoLogin] 사번 입력값: '201000308'
+[2026-04-11 13:32:59] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-11 13:32:59] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-11 13:32:59] [DoLogin] TodoService.SyncApprovalStatusAsync 시작
+[2026-04-11 13:33:01] [DoLogin] TodoService.SyncApprovalStatusAsync 완료
+[2026-04-11 13:33:01] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-11 13:33:01] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-11 13:33:01] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-11 13:33:01] [DoLogin] ValidateLogin 호출
+[2026-04-11 13:33:01] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-11 13:33:01] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-11 13:33:01] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-11 13:33:01] [Lottie] 재생 시작
+[2026-04-11 13:33:01] [Progress] 0% — DB 연결 중...
+[2026-04-11 13:33:01] [Progress] 14% — DB 연결 완료
+[2026-04-11 13:33:01] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-11 13:33:01] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-11 13:33:01] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-11 13:33:01] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-11 13:33:02] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-11 13:33:02] [Progress] 56% — 사진 동기화 완료
+[2026-04-11 13:33:02] [Progress] 56% — 테이블 초기화 중...
+[2026-04-11 13:33:02] [Progress] 72% — 테이블 준비 완료
+[2026-04-11 13:33:02] [Progress] 72% — 견적 데이터 준비 중...
+[2026-04-11 13:33:02] [Progress] 88% — 데이터 준비 완료
+[2026-04-11 13:33:02] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-11 13:33:02] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-11 13:33:02] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-11 13:33:02] [Progress] 96% — 시스템 준비 완료
+[2026-04-11 13:33:03] [Progress] 100% — ✓ 완료!

@@ -1,0 +1,5 @@
+"Sample ID","Type","Conc","WL620.0","Comments"
+"MBK","Unknown",0.0009,-0.0001,""
+"FBK(1/15국도화학)","Unknown",0.0008,-0.0002,""
+"국도화학1","Unknown",0.0078,0.0123,""
+"CCV(ST3, 0.05mg/L)","Unknown",0.0498,0.0874,""

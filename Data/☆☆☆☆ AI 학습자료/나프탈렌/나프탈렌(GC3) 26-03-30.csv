@@ -1,0 +1,240 @@
+Batch Data Path,V:\2026\2026-03\VOC2(NJ 3.26)\QuantResults\NA.batch.bin
+Analysis Time,2026-04-01 오후 4:45:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-01 오후 4:45:39,Analyze Quant Version,10.2,Report Quant Version,10.2
+Naphthalene
+Data File,,Type,RT,,Resp.,,ISTD Resp,,Final Conc.
+NA ST-01.d,,Cal,10.826,,5488,,4144,,0.002
+NA ST-02.d,,Cal,10.822,,11484,,3549,,0.005
+NA ST-03.d,,Cal,10.822,,17371,,2469,,0.011
+NA ST-04.d,,Cal,10.818,,111460,,3705,,0.047
+NA ST-05.d,,Cal,10.819,,217311,,3395,,0.101
+BK-.d,,Blank,10.830,,833,,2936,,0.000
+FBK(NK 26-03-26).d,,Blank,10.829,,552,,3356,,0.000
+NJ-01.d,,Sample,,,,,2853,,ND
+NJ-02.d,,Sample,,,,,2604,,ND
+NJ-03.d,,Sample,,,,,2431,,ND
+NJ-04.d,,Sample,,,,,2388,,ND
+NJ-05.d,,Sample,,,,,2536,,ND
+NJ-06.d,,Sample,,,,,2127,,ND
+MBK.d,,Blank,,,,,2933,,ND
+CCV N.d,,QC,10.819,,90492,,2395,,0.060
+Calibration,,
+Naphthalene,,
+
+Cal. Path,Type,Level,Enable,,Conc.,,Response
+V:\2026\2026-03\VOC2(NJ 3.26)\NA ST-01.d,Calibration,1,x,,0.001,,5488
+V:\2026\2026-03\VOC2(NJ 3.26)\NA ST-02.d,Calibration,2,x,,0.005,,11484
+V:\2026\2026-03\VOC2(NJ 3.26)\NA ST-03.d,Calibration,3,x,,0.010,,17371
+V:\2026\2026-03\VOC2(NJ 3.26)\NA ST-04.d,Calibration,4,x,,0.050,,111460
+V:\2026\2026-03\VOC2(NJ 3.26)\CCV N.d,QC,4,x,,0.050,,90492
+V:\2026\2026-03\VOC2(NJ 3.26)\NA ST-05.d,Calibration,5,x,,0.100,,217311
+Batch Data Path,V:\2026\2026-03\VOC2(NJ 3.26)\QuantResults\NA.batch.bin
+Analysis Time,2026-04-01 오후 4:45:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:59:24,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-01 오후 4:45:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-30 오후 2:34:41,Data File,NA ST-01.d
+Type,Cal,Name,NA ST-01
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Naphthalene,,10.826,5488,4144,,0.002,mg/L
+Naphthalene
+,,
+Batch Data Path,V:\2026\2026-03\VOC2(NJ 3.26)\QuantResults\NA.batch.bin
+Analysis Time,2026-04-01 오후 4:45:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:59:24,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-01 오후 4:45:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-30 오후 2:51:38,Data File,NA ST-02.d
+Type,Cal,Name,NA ST-02
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Naphthalene,,10.822,11484,3549,,0.005,mg/L
+Naphthalene
+,,
+Batch Data Path,V:\2026\2026-03\VOC2(NJ 3.26)\QuantResults\NA.batch.bin
+Analysis Time,2026-04-01 오후 4:45:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:59:24,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-01 오후 4:45:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-30 오후 3:08:44,Data File,NA ST-03.d
+Type,Cal,Name,NA ST-03
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Naphthalene,,10.822,17371,2469,,0.011,mg/L
+Naphthalene
+,,
+Batch Data Path,V:\2026\2026-03\VOC2(NJ 3.26)\QuantResults\NA.batch.bin
+Analysis Time,2026-04-01 오후 4:45:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:59:24,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-01 오후 4:45:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-30 오후 3:25:52,Data File,NA ST-04.d
+Type,Cal,Name,NA ST-04
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Naphthalene,,10.818,111460,3705,,0.047,mg/L
+Naphthalene
+,,
+Batch Data Path,V:\2026\2026-03\VOC2(NJ 3.26)\QuantResults\NA.batch.bin
+Analysis Time,2026-04-01 오후 4:45:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:59:24,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-01 오후 4:45:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-30 오후 3:42:56,Data File,NA ST-05.d
+Type,Cal,Name,NA ST-05
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Naphthalene,,10.819,217311,3395,,0.101,mg/L
+Naphthalene
+,,
+Batch Data Path,V:\2026\2026-03\VOC2(NJ 3.26)\QuantResults\NA.batch.bin
+Analysis Time,2026-04-01 오후 4:45:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:59:24,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-01 오후 4:45:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-30 오후 5:59:19,Data File,BK-.d
+Type,Blank,Name,BK-
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Naphthalene,,10.830,833,2936,,0.000,mg/L
+Naphthalene
+,,
+Batch Data Path,V:\2026\2026-03\VOC2(NJ 3.26)\QuantResults\NA.batch.bin
+Analysis Time,2026-04-01 오후 4:45:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:59:24,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-01 오후 4:45:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-30 오후 6:16:20,Data File,FBK(NK 26-03-26).d
+Type,Blank,Name,FBK(NK 26-03-26)
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Naphthalene,,10.829,552,3356,,0.000,mg/L
+Naphthalene
+,,
+Batch Data Path,V:\2026\2026-03\VOC2(NJ 3.26)\QuantResults\NA.batch.bin
+Analysis Time,2026-04-01 오후 4:45:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:59:24,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-01 오후 4:45:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-30 오후 6:33:23,Data File,NJ-01.d
+Type,Sample,Name,NJ-01
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Naphthalene,,,,2853,,ND,mg/L
+Naphthalene
+,,
+Batch Data Path,V:\2026\2026-03\VOC2(NJ 3.26)\QuantResults\NA.batch.bin
+Analysis Time,2026-04-01 오후 4:45:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:59:24,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-01 오후 4:45:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-30 오후 6:50:26,Data File,NJ-02.d
+Type,Sample,Name,NJ-02
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Naphthalene,,,,2604,,ND,mg/L
+Naphthalene
+,,
+Batch Data Path,V:\2026\2026-03\VOC2(NJ 3.26)\QuantResults\NA.batch.bin
+Analysis Time,2026-04-01 오후 4:45:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:59:24,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-01 오후 4:45:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-30 오후 7:07:32,Data File,NJ-03.d
+Type,Sample,Name,NJ-03
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Naphthalene,,,,2431,,ND,mg/L
+Naphthalene
+,,
+Batch Data Path,V:\2026\2026-03\VOC2(NJ 3.26)\QuantResults\NA.batch.bin
+Analysis Time,2026-04-01 오후 4:45:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:59:24,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-01 오후 4:45:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-30 오후 7:24:34,Data File,NJ-04.d
+Type,Sample,Name,NJ-04
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Naphthalene,,,,2388,,ND,mg/L
+Naphthalene
+,,
+Batch Data Path,V:\2026\2026-03\VOC2(NJ 3.26)\QuantResults\NA.batch.bin
+Analysis Time,2026-04-01 오후 4:45:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:59:24,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-01 오후 4:45:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-30 오후 7:41:39,Data File,NJ-05.d
+Type,Sample,Name,NJ-05
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Naphthalene,,,,2536,,ND,mg/L
+Naphthalene
+,,
+Batch Data Path,V:\2026\2026-03\VOC2(NJ 3.26)\QuantResults\NA.batch.bin
+Analysis Time,2026-04-01 오후 4:45:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:59:24,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-01 오후 4:45:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-30 오후 7:58:51,Data File,NJ-06.d
+Type,Sample,Name,NJ-06
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Naphthalene,,,,2127,,ND,mg/L
+Naphthalene
+,,
+Batch Data Path,V:\2026\2026-03\VOC2(NJ 3.26)\QuantResults\NA.batch.bin
+Analysis Time,2026-04-01 오후 4:45:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:59:24,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-01 오후 4:45:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-30 오후 8:15:51,Data File,MBK.d
+Type,Blank,Name,MBK
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Naphthalene,,,,2933,,ND,mg/L
+Naphthalene
+,,
+Batch Data Path,V:\2026\2026-03\VOC2(NJ 3.26)\QuantResults\NA.batch.bin
+Analysis Time,2026-04-01 오후 4:45:39,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 2:59:24,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-01 오후 4:45:39,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-03-30 오후 8:32:57,Data File,CCV N.d
+Type,QC,Name,CCV N
+Dil.,1,Acq. Method File,VOC2
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Naphthalene,,10.819,90492,2395,,0.060,mg/L
+Naphthalene
+,,

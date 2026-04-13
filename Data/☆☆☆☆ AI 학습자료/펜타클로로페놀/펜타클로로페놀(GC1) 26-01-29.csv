@@ -1,0 +1,692 @@
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Analyze Quant Version,10.2,Report Quant Version,10.2
+Pentachlorophenol
+Data File,,Type,RT,,Resp.,,ISTD Resp,,Final Conc.
+PENTA ST-01.D,,Cal,8.528,,1275,,83277,,0.0012
+PENTA ST-02.D,,Cal,8.523,,4014,,107541,,0.0019
+PENTA ST-03.D,,Cal,8.523,,7146,,104604,,0.0029
+PENTA ST-04.D,,Cal,8.523,,7581,,90866,,0.0034
+PENTA ST-05.D,,Cal,8.523,,12986,,103517,,0.0048
+PENTA ST-06.D,,Cal,8.523,,16848,,100268,,0.0062
+BK-.D,,Blank,,,,,71399,,ND
+FBK(HC 25-01-22).D,,Blank,,,,,86401,,ND
+HC-01.D,,Sample,,,,,130737,,ND
+HC-02.D,,Sample,,,,,135295,,ND
+HC-03.D,,Sample,,,,,116023,,ND
+HC-04.D,,Sample,,,,,100256,,ND
+HC-05.D,,Sample,,,,,136533,,ND
+HC-06.D,,Sample,,,,,129057,,ND
+HC-07.D,,Sample,,,,,122411,,ND
+HC-08.D,,Sample,,,,,115880,,ND
+HC-09.D,,Sample,,,,,110363,,ND
+HC-11.D,,Sample,,,,,129212,,ND
+HC-12.D,,Sample,,,,,122710,,ND
+HC-13.D,,Sample,,,,,139807,,ND
+HC-14.D,,Sample,,,,,167384,,ND
+HC-15.D,,Sample,,,,,121583,,ND
+HC-16.D,,Sample,,,,,91062,,ND
+HC-17.D,,Sample,,,,,117063,,ND
+HC-18.D,,Sample,8.430,,0,,138868,,ND
+MBK-1.D,,Blank,,,,,89975,,ND
+-CCV-1.D,,QC,8.523,,10537,,128169,,0.0034
+HC-19.D,,Sample,,,,,120718,,ND
+HC-20.D,,Sample,,,,,149332,,ND
+HC-21.D,,Sample,,,,,74175,,ND
+HC-22.D,,Sample,,,,,161256,,ND
+HC-23.D,,Sample,,,,,77968,,ND
+HC-24.D,,Sample,,,,,152880,,ND
+HC-25.D,,Sample,,,,,154021,,ND
+HC-26.D,,Sample,,,,,122003,,ND
+HC-27.D,,Sample,,,,,140862,,ND
+HC-28.D,,Sample,,,,,168045,,ND
+HC-29.D,,Sample,,,,,148963,,ND
+HC-30.D,,Sample,,,,,162098,,ND
+MBK-2.D,,Blank,,,,,149665,,ND
+CCV-2.D,,QC,8.523,,8162,,155287,,0.0024
+GM-01.D,,Sample,,,,,145107,,ND
+GM-02.D,,Sample,,,,,141720,,ND
+GM-03.D,,Sample,,,,,131123,,ND
+GM-04.D,,Sample,,,,,140051,,ND
+Calibration,,
+Pentachlorophenol,,
+
+Cal. Path,Type,Level,Enable,,Conc.,,Response
+\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\PENTA ST-01.D,Calibration,1,x,,0.500,,1275
+\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\PENTA ST-02.D,Calibration,2,x,,1.000,,4014
+\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\PENTA ST-03.D,Calibration,3,x,,1.500,,7146
+\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\-CCV-1.D,QC,3,x,,1.500,,10537
+\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\CCV-2.D,QC,3,x,,1.500,,8162
+\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\PENTA ST-04.D,Calibration,4,,,2.000,,7581
+\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\PENTA ST-05.D,Calibration,5,x,,2.500,,12986
+\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\PENTA ST-06.D,Calibration,6,x,,3.000,,16848
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오전 11:58:03,Data File,PENTA ST-01.D
+Type,Cal,Name,PENTA ST-01
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,8.528,1275,83277,,0.0012,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 12:11:25,Data File,PENTA ST-02.D
+Type,Cal,Name,PENTA ST-02
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,8.523,4014,107541,,0.0019,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 12:24:49,Data File,PENTA ST-03.D
+Type,Cal,Name,PENTA ST-03
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,8.523,7146,104604,,0.0029,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 12:38:11,Data File,PENTA ST-04.D
+Type,Cal,Name,PENTA ST-04
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,8.523,7581,90866,,0.0034,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 12:51:35,Data File,PENTA ST-05.D
+Type,Cal,Name,PENTA ST-05
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,8.523,12986,103517,,0.0048,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 1:05:00,Data File,PENTA ST-06.D
+Type,Cal,Name,PENTA ST-06
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,8.523,16848,100268,,0.0062,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 1:33:10,Data File,BK-.D
+Type,Blank,Name,BK-
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,71399,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 1:46:35,Data File,FBK(HC 25-01-22).D
+Type,Blank,Name,FBK(HC 25-01-22)
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,86401,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 1:59:59,Data File,HC-01.D
+Type,Sample,Name,HC-01
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,130737,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 2:13:23,Data File,HC-02.D
+Type,Sample,Name,HC-02
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,135295,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 2:26:47,Data File,HC-03.D
+Type,Sample,Name,HC-03
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,116023,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 2:40:12,Data File,HC-04.D
+Type,Sample,Name,HC-04
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,100256,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 2:53:36,Data File,HC-05.D
+Type,Sample,Name,HC-05
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,136533,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 3:06:59,Data File,HC-06.D
+Type,Sample,Name,HC-06
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,129057,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 3:20:24,Data File,HC-07.D
+Type,Sample,Name,HC-07
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,122411,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 3:33:49,Data File,HC-08.D
+Type,Sample,Name,HC-08
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,115880,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 3:47:11,Data File,HC-09.D
+Type,Sample,Name,HC-09
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,110363,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 4:00:36,Data File,HC-11.D
+Type,Sample,Name,HC-11
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,129212,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 4:14:02,Data File,HC-12.D
+Type,Sample,Name,HC-12
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,122710,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 4:27:25,Data File,HC-13.D
+Type,Sample,Name,HC-13
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,139807,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 4:40:51,Data File,HC-14.D
+Type,Sample,Name,HC-14
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,167384,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 4:54:14,Data File,HC-15.D
+Type,Sample,Name,HC-15
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,121583,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 5:07:36,Data File,HC-16.D
+Type,Sample,Name,HC-16
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,91062,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 5:21:00,Data File,HC-17.D
+Type,Sample,Name,HC-17
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,117063,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 5:34:24,Data File,HC-18.D
+Type,Sample,Name,HC-18
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,8.430,0,138868,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 5:47:49,Data File,MBK-1.D
+Type,Blank,Name,MBK-1
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,89975,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 6:14:40,Data File,-CCV-1.D
+Type,QC,Name,-CCV-1
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,8.523,10537,128169,,0.0034,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 6:41:27,Data File,HC-19.D
+Type,Sample,Name,HC-19
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,120718,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 6:54:51,Data File,HC-20.D
+Type,Sample,Name,HC-20
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,149332,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 7:08:16,Data File,HC-21.D
+Type,Sample,Name,HC-21
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,74175,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 7:21:39,Data File,HC-22.D
+Type,Sample,Name,HC-22
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,161256,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 7:35:04,Data File,HC-23.D
+Type,Sample,Name,HC-23
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,77968,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 7:48:28,Data File,HC-24.D
+Type,Sample,Name,HC-24
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,152880,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 8:01:50,Data File,HC-25.D
+Type,Sample,Name,HC-25
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,154021,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 8:15:14,Data File,HC-26.D
+Type,Sample,Name,HC-26
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,122003,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 8:28:37,Data File,HC-27.D
+Type,Sample,Name,HC-27
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,140862,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 8:42:01,Data File,HC-28.D
+Type,Sample,Name,HC-28
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,168045,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 8:55:23,Data File,HC-29.D
+Type,Sample,Name,HC-29
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,148963,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 9:08:47,Data File,HC-30.D
+Type,Sample,Name,HC-30
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,162098,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 9:22:12,Data File,MBK-2.D
+Type,Blank,Name,MBK-2
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,149665,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 9:35:34,Data File,CCV-2.D
+Type,QC,Name,CCV-2
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,8.523,8162,155287,,0.0024,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 10:15:43,Data File,GM-01.D
+Type,Sample,Name,GM-01
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,145107,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 10:29:05,Data File,GM-02.D
+Type,Sample,Name,GM-02
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,141720,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 10:42:28,Data File,GM-03.D
+Type,Sample,Name,GM-03
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,131123,,ND,mg/L
+Pentachlorophenol
+,,
+Batch Data Path,\\192.168.254.121\data\2026\1. 2026-01\PENTA(HC 1.22)\QuantResults\PENTA.batch.bin
+Analysis Time,2026-04-10 오후 1:31:48,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오후 1:34:29,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-04-10 오후 1:31:48,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-01-29 오후 10:55:53,Data File,GM-04.D
+Type,Sample,Name,GM-04
+Dil.,0.002,Acq. Method File,VOCS(Pentacl-Phenol)
+Sample Chromatogram
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Pentachlorophenol,,,,140051,,ND,mg/L
+Pentachlorophenol
+,,

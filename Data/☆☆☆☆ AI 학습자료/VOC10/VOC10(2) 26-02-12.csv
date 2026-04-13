@@ -1,0 +1,871 @@
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Analyze Quant Version,10.2,Report Quant Version,10.2
+Benzene
+Data File,,Type,RT,,Resp.,,ISTD Resp,,Final Conc.
+VOC10 ST-01.D,,Cal,5.993,,22962,,7090,,0.010
+VOC10 ST-02.D,,Cal,5.993,,47296,,7166,,0.019
+VOC10 ST-03.D,,Cal,5.993,,131000,,7139,,0.050
+VOC10 ST-04.D,,Cal,5.993,,246487,,6432,,0.103
+VOC10 ST-05.D,,Cal,5.993,,509709,,6870,,0.199
+BK-.D,,Blank,,,,,6763,,ND
+FBK(GS 26-02-10).D,,Blank,,,,,6736,,ND
+KH 26-02-10.D,,Sample,,,,,7483,,ND
+GS-01.D,,Sample,,,,,11452,,ND
+GS-02.D,,Sample,5.993,,7571375,,6868,,2.936
+GS-03.D,,Sample,,,,,5403,,ND
+GS-04.D,,Sample,,,,,6502,,ND
+GS-05.D,,Sample,,,,,5562,,ND
+GS-06.D,,Sample,,,,,5161,,ND
+GS-07.D,,Sample,,,,,4957,,ND
+GS-08.D,,Sample,,,,,4777,,ND
+GS-09.D,,Sample,,,,,5168,,ND
+GS-10.D,,Sample,,,,,4466,,ND
+GS-11.D,,Sample,,,,,4512,,ND
+GS-12.D,,Sample,,,,,3989,,ND
+GS-13.D,,Sample,,,,,3327,,ND
+GS-14.D,,Sample,,,,,3476,,ND
+GS-15.D,,Sample,,,,,2982,,ND
+GS-16.D,,Sample,,,,,2741,,ND
+MBK-1.D,,Blank,,,,,2975,,ND
+CCV-1.D,,QC,5.993,,92293,,2224,,0.112
+GS-17.D,,Sample,,,,,2158,,ND
+GS-18.D,,Sample,,,,,2030,,ND
+GS-19.D,,Sample,,,,,2011,,ND
+GS-20.D,,Sample,,,,,1904,,ND
+GS-21.D,,Sample,,,,,2483,,ND
+GS-22.D,,Sample,,,,,2399,,ND
+GS-23.D,,Sample,,,,,2272,,ND
+GS-24.D,,Sample,,,,,2395,,ND
+MBK-2.D,,Blank,,,,,2335,,ND
+CCV-2.D,,QC,5.993,,52132,,1761,,0.080
+SOL 01.D,,Sample,,,,,2156,,ND
+SOL 02.D,,Sample,,,,,2190,,ND
+SOL 03.D,,Sample,,,,,2376,,ND
+GS-02 R.D,,Sample,5.993,,118274,,1990,,3.187
+MBK-3.D,,Blank,,,,,2232,,ND
+CCV-3.D,,QC,5.993,,47953,,1623,,0.080
+Toluene
+Data File,,Type,RT,,Resp.,,ISTD Resp,,Final Conc.
+VOC10 ST-01.D,,Cal,6.851,,27912,,7090,,0.010
+VOC10 ST-02.D,,Cal,6.851,,57136,,7166,,0.019
+VOC10 ST-03.D,,Cal,6.851,,159197,,7139,,0.050
+VOC10 ST-04.D,,Cal,6.851,,299433,,6432,,0.102
+VOC10 ST-05.D,,Cal,6.851,,625686,,6870,,0.199
+BK-.D,,Blank,,,,,6763,,ND
+FBK(GS 26-02-10).D,,Blank,,,,,6736,,ND
+KH 26-02-10.D,,Sample,6.851,,20177,,7483,,0.007
+GS-01.D,,Sample,,,,,11452,,ND
+GS-02.D,,Sample,6.851,,6982634,,6868,,2.206
+GS-03.D,,Sample,,,,,5403,,ND
+GS-04.D,,Sample,,,,,6502,,ND
+GS-05.D,,Sample,,,,,5562,,ND
+GS-06.D,,Sample,,,,,5161,,ND
+GS-07.D,,Sample,,,,,4957,,ND
+GS-08.D,,Sample,,,,,4777,,ND
+GS-09.D,,Sample,,,,,5168,,ND
+GS-10.D,,Sample,,,,,4466,,ND
+GS-11.D,,Sample,,,,,4512,,ND
+GS-12.D,,Sample,,,,,3989,,ND
+GS-13.D,,Sample,,,,,3327,,ND
+GS-14.D,,Sample,,,,,3476,,ND
+GS-15.D,,Sample,,,,,2982,,ND
+GS-16.D,,Sample,,,,,2741,,ND
+MBK-1.D,,Blank,,,,,2975,,ND
+CCV-1.D,,QC,6.851,,117799,,2224,,0.116
+GS-17.D,,Sample,,,,,2158,,ND
+GS-18.D,,Sample,,,,,2030,,ND
+GS-19.D,,Sample,,,,,2011,,ND
+GS-20.D,,Sample,,,,,1904,,ND
+GS-21.D,,Sample,,,,,2483,,ND
+GS-22.D,,Sample,,,,,2399,,ND
+GS-23.D,,Sample,,,,,2272,,ND
+GS-24.D,,Sample,,,,,2395,,ND
+MBK-2.D,,Blank,,,,,2335,,ND
+CCV-2.D,,QC,6.851,,72039,,1761,,0.090
+SOL 01.D,,Sample,,,,,2156,,ND
+SOL 02.D,,Sample,,,,,2190,,ND
+SOL 03.D,,Sample,,,,,2376,,ND
+GS-02 R.D,,Sample,6.851,,115724,,1990,,2.552
+MBK-3.D,,Blank,,,,,2232,,ND
+CCV-3.D,,QC,6.851,,63445,,1623,,0.086
+Calibration,,
+Benzene,,
+
+Cal. Path,Type,Level,Enable,,Conc.,,Response
+"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\VOC10 ST-01.D",Calibration,1,x,,0.010,,22962
+"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\VOC10 ST-02.D",Calibration,2,x,,0.020,,47296
+"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\VOC10 ST-03.D",Calibration,3,x,,0.050,,131000
+"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\VOC10 ST-04.D",Calibration,4,x,,0.100,,246487
+"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\CCV-1.D",QC,4,x,,0.100,,92293
+"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\CCV-2.D",QC,4,x,,0.100,,52132
+"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\CCV-3.D",QC,4,x,,0.100,,47953
+"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\VOC10 ST-05.D",Calibration,5,x,,0.200,,509709
+Calibration,,
+Toluene,,
+
+Cal. Path,Type,Level,Enable,,Conc.,,Response
+"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\VOC10 ST-01.D",Calibration,1,x,,0.010,,27912
+"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\VOC10 ST-02.D",Calibration,2,x,,0.020,,57136
+"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\VOC10 ST-03.D",Calibration,3,x,,0.050,,159197
+"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\VOC10 ST-04.D",Calibration,4,x,,0.100,,299433
+"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\CCV-1.D",QC,4,x,,0.100,,117799
+"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\CCV-2.D",QC,4,x,,0.100,,72039
+"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\CCV-3.D",QC,4,x,,0.100,,63445
+"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\VOC10 ST-05.D",Calibration,5,x,,0.200,,625686
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 3:40:07,Data File,VOC10 ST-01.D
+Type,Cal,Name,VOC10 ST-01
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,5.993,22962,7090,,0.010,mg/L
+Toluene,,6.851,27912,7090,,0.010,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 3:53:06,Data File,VOC10 ST-02.D
+Type,Cal,Name,VOC10 ST-02
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,5.993,47296,7166,,0.019,mg/L
+Toluene,,6.851,57136,7166,,0.019,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 4:05:53,Data File,VOC10 ST-03.D
+Type,Cal,Name,VOC10 ST-03
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,5.993,131000,7139,,0.050,mg/L
+Toluene,,6.851,159197,7139,,0.050,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 4:18:41,Data File,VOC10 ST-04.D
+Type,Cal,Name,VOC10 ST-04
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,5.993,246487,6432,,0.103,mg/L
+Toluene,,6.851,299433,6432,,0.102,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 4:31:39,Data File,VOC10 ST-05.D
+Type,Cal,Name,VOC10 ST-05
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,5.993,509709,6870,,0.199,mg/L
+Toluene,,6.851,625686,6870,,0.199,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 5:09:56,Data File,BK-.D
+Type,Blank,Name,BK-
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,,,6763,,ND,mg/L
+Toluene,,,,6763,,ND,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 5:22:41,Data File,FBK(GS 26-02-10).D
+Type,Blank,Name,FBK(GS 26-02-10)
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,,,6736,,ND,mg/L
+Toluene,,,,6736,,ND,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 5:35:27,Data File,KH 26-02-10.D
+Type,Sample,Name,KH 26-02-10
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,,,7483,,ND,mg/L
+Toluene,,6.851,20177,7483,,0.007,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 5:48:21,Data File,GS-01.D
+Type,Sample,Name,GS-01
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,,,11452,,ND,mg/L
+Toluene,,,,11452,,ND,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 6:01:06,Data File,GS-02.D
+Type,Sample,Name,GS-02
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,5.993,7571375,6868,,2.936,mg/L
+Toluene,,6.851,6982634,6868,,2.206,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 6:13:51,Data File,GS-03.D
+Type,Sample,Name,GS-03
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,,,5403,,ND,mg/L
+Toluene,,,,5403,,ND,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 6:26:34,Data File,GS-04.D
+Type,Sample,Name,GS-04
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,,,6502,,ND,mg/L
+Toluene,,,,6502,,ND,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 6:39:16,Data File,GS-05.D
+Type,Sample,Name,GS-05
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,,,5562,,ND,mg/L
+Toluene,,,,5562,,ND,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 6:51:57,Data File,GS-06.D
+Type,Sample,Name,GS-06
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,,,5161,,ND,mg/L
+Toluene,,,,5161,,ND,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 7:04:40,Data File,GS-07.D
+Type,Sample,Name,GS-07
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,,,4957,,ND,mg/L
+Toluene,,,,4957,,ND,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 7:17:23,Data File,GS-08.D
+Type,Sample,Name,GS-08
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,,,4777,,ND,mg/L
+Toluene,,,,4777,,ND,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 7:30:08,Data File,GS-09.D
+Type,Sample,Name,GS-09
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,,,5168,,ND,mg/L
+Toluene,,,,5168,,ND,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 7:42:53,Data File,GS-10.D
+Type,Sample,Name,GS-10
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,,,4466,,ND,mg/L
+Toluene,,,,4466,,ND,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 7:55:39,Data File,GS-11.D
+Type,Sample,Name,GS-11
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,,,4512,,ND,mg/L
+Toluene,,,,4512,,ND,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 8:08:23,Data File,GS-12.D
+Type,Sample,Name,GS-12
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,,,3989,,ND,mg/L
+Toluene,,,,3989,,ND,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 8:21:05,Data File,GS-13.D
+Type,Sample,Name,GS-13
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,,,3327,,ND,mg/L
+Toluene,,,,3327,,ND,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 8:33:47,Data File,GS-14.D
+Type,Sample,Name,GS-14
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,,,3476,,ND,mg/L
+Toluene,,,,3476,,ND,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 8:46:30,Data File,GS-15.D
+Type,Sample,Name,GS-15
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,,,2982,,ND,mg/L
+Toluene,,,,2982,,ND,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 8:59:13,Data File,GS-16.D
+Type,Sample,Name,GS-16
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,,,2741,,ND,mg/L
+Toluene,,,,2741,,ND,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 9:11:55,Data File,MBK-1.D
+Type,Blank,Name,MBK-1
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,,,2975,,ND,mg/L
+Toluene,,,,2975,,ND,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 9:30:03,Data File,CCV-1.D
+Type,QC,Name,CCV-1
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,5.993,92293,2224,,0.112,mg/L
+Toluene,,6.851,117799,2224,,0.116,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 9:55:52,Data File,GS-17.D
+Type,Sample,Name,GS-17
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,,,2158,,ND,mg/L
+Toluene,,,,2158,,ND,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 10:08:44,Data File,GS-18.D
+Type,Sample,Name,GS-18
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,,,2030,,ND,mg/L
+Toluene,,,,2030,,ND,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 10:21:40,Data File,GS-19.D
+Type,Sample,Name,GS-19
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,,,2011,,ND,mg/L
+Toluene,,,,2011,,ND,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 10:34:34,Data File,GS-20.D
+Type,Sample,Name,GS-20
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,,,1904,,ND,mg/L
+Toluene,,,,1904,,ND,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 10:47:26,Data File,GS-21.D
+Type,Sample,Name,GS-21
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,,,2483,,ND,mg/L
+Toluene,,,,2483,,ND,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 11:00:19,Data File,GS-22.D
+Type,Sample,Name,GS-22
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,,,2399,,ND,mg/L
+Toluene,,,,2399,,ND,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 11:13:15,Data File,GS-23.D
+Type,Sample,Name,GS-23
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,,,2272,,ND,mg/L
+Toluene,,,,2272,,ND,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 11:26:07,Data File,GS-24.D
+Type,Sample,Name,GS-24
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,,,2395,,ND,mg/L
+Toluene,,,,2395,,ND,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 11:38:59,Data File,MBK-2.D
+Type,Blank,Name,MBK-2
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,,,2335,,ND,mg/L
+Toluene,,,,2335,,ND,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-12 오후 11:51:52,Data File,CCV-2.D
+Type,QC,Name,CCV-2
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,5.993,52132,1761,,0.080,mg/L
+Toluene,,6.851,72039,1761,,0.090,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-13 오전 12:17:36,Data File,SOL 01.D
+Type,Sample,Name,SOL 01
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,,,2156,,ND,mg/L
+Toluene,,,,2156,,ND,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-13 오전 12:30:30,Data File,SOL 02.D
+Type,Sample,Name,SOL 02
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,,,2190,,ND,mg/L
+Toluene,,,,2190,,ND,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-13 오전 12:43:23,Data File,SOL 03.D
+Type,Sample,Name,SOL 03
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,,,2376,,ND,mg/L
+Toluene,,,,2376,,ND,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-13 오전 1:05:06,Data File,GS-02 R.D
+Type,Sample,Name,GS-02 R
+Dil.,20,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,5.993,118274,1990,,3.187,mg/L
+Toluene,,6.851,115724,1990,,2.552,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-13 오전 1:17:42,Data File,MBK-3.D
+Type,Blank,Name,MBK-3
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,,,2232,,ND,mg/L
+Toluene,,,,2232,,ND,mg/L
+Benzene
+,,
+Toluene
+,,
+Batch Data Path,"D:\DATA\2026년\2. 2026년 2월\VOC10(GS 2.10, KH 2.10, SOL)\QuantResults\벤젠, 톨루엔.batch.bin"
+Analysis Time,2026-02-13 오후 1:35:49,Analyst Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Report Generation Time,2026-04-10 오전 11:01:59,Report Generator Name,DESKTOP-N82KMQD\수질분석센터 GC2
+Calibration Last Update,2026-02-13 오후 1:35:49,Batch State,Processed
+Analyze Quant Version,10.2,Report Quant Version,10.2
+Acq. Date-Time,2026-02-13 오전 1:30:24,Data File,CCV-3.D
+Type,QC,Name,CCV-3
+Dil.,1,Acq. Method File,2025 VOCs(10) NEW
+Sample Chromatogram
+
+
+Name,,RT,Resp.,ISTD Resp,,Final Conc.,Units
+Benzene,,5.993,47953,1623,,0.080,mg/L
+Toluene,,6.851,63445,1623,,0.086,mg/L
+Benzene
+,,
+Toluene
+,,

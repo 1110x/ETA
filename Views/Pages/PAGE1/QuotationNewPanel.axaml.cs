@@ -1,14 +1,14 @@
 using Avalonia;
 using ETA.Views;
-using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using ETA.Models;
 using ETA.Services;
 using ETA.Services.SERVICE1;
-using ETA.Services.SERVICE2;
+using Avalonia.VisualTree;
 using ETA.Services.Common;
 using System;
 using System.Collections.Generic;
@@ -21,9 +21,16 @@ namespace ETA.Views.Pages.PAGE1;
 
 public partial class QuotationNewPanel : UserControl
 {
+    // Window Tunnel KeyDown 핸들러 등록용
+    private Window? _attachedWindow;
+    // Show2(항목 목록) 네비/인라인 편집 상태 (WasteAnalysisInputPage 참고)
+    private bool _keyNavShow2 = false; // Shift+2 네비 모드
+    private int _keyNavShow2Index = -1; // 현재 포커스 행
+    private int _selectedRowIndex = -1; // 실제 선택된 행 인덱스
+    private List<Button?> _rowQtyButtons = new(); // 각 행의 수량 버튼
+    private List<TextBox?> _rowQtyInputs = new(); // 각 행의 수량 TextBox
     private static Brush AppRes(string key, string fallback = "#888888")
     {
-        if (Application.Current?.Resources.TryGetResource(key, null, out var v) == true && v is Brush b) return b;
         return new SolidColorBrush(Color.Parse(fallback));
     }
 
@@ -116,6 +123,40 @@ public partial class QuotationNewPanel : UserControl
         AttachImeFix(txbQuotationNo);
         AttachImeFix(txbBulkQty);
         AttachImeFix(txbQty);
+
+        // Window Tunnel KeyDown 핸들러 등록 (WasteAnalysisInputPage 패턴)
+        AttachedToVisualTree += (_, _) =>
+        {
+            // Control.Parent를 타고 올라가 Window를 찾음
+            Control? v = this;
+            Window? win = null;
+            while (v != null)
+            {
+                if (v is Window w)
+                {
+                    win = w;
+                    break;
+                }
+                v = v.Parent as Control;
+            }
+            if (win != null && win != _attachedWindow)
+            {
+                if (_attachedWindow != null)
+                {
+                    _attachedWindow.RemoveHandler(InputElement.KeyDownEvent, OnNavKeyDownTunnel);
+                }
+                _attachedWindow = win;
+                win.AddHandler(InputElement.KeyDownEvent, OnNavKeyDownTunnel, Avalonia.Interactivity.RoutingStrategies.Tunnel);
+            }
+        };
+        DetachedFromVisualTree += (_, _) =>
+        {
+            if (_attachedWindow != null)
+            {
+                _attachedWindow.RemoveHandler(InputElement.KeyDownEvent, OnNavKeyDownTunnel);
+                _attachedWindow = null;
+            }
+        };
     }
 
     // ── 한글 IME 따라오기 방지 ───────────────────────────────────────────
@@ -185,6 +226,9 @@ public partial class QuotationNewPanel : UserControl
 
     public void SetSelectedAnalytes(List<AnalysisItem> items)
     {
+        // 항상 단가를 먼저 최신화 (이전 정상 동작 방식)
+        RefreshPrices();
+
         var newNames = items.Select(a => a.Analyte).ToHashSet();
 
         foreach (var key in _analyteMap.Keys.ToList())
@@ -198,11 +242,13 @@ public partial class QuotationNewPanel : UserControl
         {
             _analyteMap[item.Analyte] = item;
             if (!_itemData.ContainsKey(item.Analyte))
-                _itemData[item.Analyte] = (1, 0);
+            {
+                // 단가를 즉시 _priceMap에서 조회하여 할당
+                var price = _priceMap.TryGetValue(item.Analyte, out var p) ? p : 0m;
+                _itemData[item.Analyte] = (1, price);
+            }
         }
 
-        // 현재 선택된 적용구분으로 단가 갱신
-        RefreshPrices();
         RebuildItemList();
     }
 
@@ -324,73 +370,262 @@ public partial class QuotationNewPanel : UserControl
     // ══════════════════════════════════════════════════════════════════════
     //  항목 목록 빌드
     // ══════════════════════════════════════════════════════════════════════
+    /// <summary>Show2(항목 목록) 빌드 후 외부 패널 할당용 이벤트 (분석결과입력과 동일)</summary>
+    public event Action<Control?>? ListPanelChanged;
+
+    // Show2(항목 목록) 네비/인라인 편집 복구
     private void RebuildItemList()
     {
         spItems.Children.Clear();
+        _rowQtyButtons = new List<Button?>();
+        _rowQtyInputs = new List<TextBox?>();
         txbNoItems.IsVisible = _analyteMap.Count == 0;
         txbItemCount.Text    = $"{_analyteMap.Count}개 항목";
 
+        // 빌드 후 ListPanelChanged 이벤트 호출 (자기 자신 전달)
+        ListPanelChanged?.Invoke(this);
+
         decimal totalAmount = 0;
         bool odd = false;
-
+        int idx = 0;
         foreach (var (name, meta) in _analyteMap)
         {
             var (qty, price) = _itemData.TryGetValue(name, out var d) ? d : (1, 0m);
             decimal sub = qty * price;
             totalAmount += sub;
 
-            spItems.Children.Add(MakeItemRow(name, meta, qty, price, sub, odd));
+            var grid = new Grid
+            {
+                ColumnDefinitions = new ColumnDefinitions("*,55,75,80"),
+                Background = Brush.Parse(odd ? "#1a1a28" : "#1e1e30"),
+            };
+
+            // 항목명
+            var nameBlock = new TextBlock
+            {
+                Text      = name,
+                FontSize  = AppFonts.Base, FontFamily = Font,
+                Foreground = AppTheme.FgSecondary,
+                TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin    = new Avalonia.Thickness(8, 3),
+                Cursor    = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
+                [Grid.ColumnProperty] = 0,
+            };
+            grid.Children.Add(nameBlock);
+
+            // 수량 인라인 편집 셀
+            var qtyPanel = new Grid { [Grid.ColumnProperty] = 1 };
+            var qtyBtn = new Button
+            {
+                Content = qty.ToString(),
+                FontSize = AppFonts.Base,
+                FontFamily = Font,
+                Foreground = Brush.Parse(qty > 1 ? "#88d888" : "#888888"),
+                Background = Brushes.Transparent,
+                BorderThickness = new Thickness(0),
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                VerticalAlignment = VerticalAlignment.Center,
+                Padding = new Thickness(0),
+                Margin = new Avalonia.Thickness(0, 2, 0, 2),
+                IsVisible = true,
+            };
+            var qtyInput = new TextBox
+            {
+                Text = qty.ToString(),
+                FontSize = AppFonts.Base,
+                FontFamily = Font,
+                Foreground = AppTheme.FgSecondary,
+                Background = AppRes("InputBg"),
+                BorderBrush = AppRes("InputBorder"),
+                BorderThickness = new Thickness(1),
+                HorizontalContentAlignment = HorizontalAlignment.Center,
+                VerticalContentAlignment = VerticalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Avalonia.Thickness(0, 2, 0, 2),
+                IsVisible = false,
+            };
+            qtyPanel.Children.Add(qtyBtn);
+            qtyPanel.Children.Add(qtyInput);
+            grid.Children.Add(qtyPanel);
+
+            while (_rowQtyButtons.Count <= idx) _rowQtyButtons.Add(null);
+            while (_rowQtyInputs.Count <= idx) _rowQtyInputs.Add(null);
+            _rowQtyButtons[idx] = qtyBtn;
+            _rowQtyInputs[idx] = qtyInput;
+
+            qtyBtn.Click += (_, _) => OpenQtyInput(idx);
+            qtyBtn.IsTabStop = false;
+            qtyInput.LostFocus += (_, _) => CommitQty(idx);
+            qtyInput.AddHandler(TextBox.KeyDownEvent, (object? _, KeyEventArgs ke) =>
+            {
+                if (ke.Key == Key.Enter || ke.Key == Key.Down) { ke.Handled = true; CommitQty(idx); MoveQtyFocus(idx, +1); }
+                else if (ke.Key == Key.Up)                     { ke.Handled = true; CommitQty(idx); MoveQtyFocus(idx, -1); }
+                else if (ke.Key == Key.Escape)                 { ke.Handled = true; qtyInput.IsVisible = false; qtyBtn.IsVisible = true; }
+            }, Avalonia.Interactivity.RoutingStrategies.Tunnel);
+
+            grid.PointerPressed += (_, pe) => { SelectGridRow(idx); };
+
+            // 단가
+            grid.Children.Add(Cell(price > 0 ? $"{price:#,0}" : "—", AppFonts.Base, "#aaaaaa", 2, HorizontalAlignment.Right));
+            // 소계
+            grid.Children.Add(Cell(sub > 0 ? $"{sub:#,0}" : "—", AppFonts.Base, "#88cc88", 3, HorizontalAlignment.Right));
+
+            spItems.Children.Add(grid);
             odd = !odd;
+            idx++;
         }
 
         txbTotal.Text = _analyteMap.Count > 0
             ? $"{totalAmount:#,0} 원  ({_analyteMap.Count}항목)"
             : "—";
     }
-
-    private Border MakeItemRow(string name, AnalysisItem meta,
-                               int qty, decimal price, decimal sub, bool odd)
+    // 네비/인라인 편집 로직 복구 (Show2만)
+    private void OpenQtyInput(int idx)
     {
-        var grid = new Grid
+        if (idx < 0 || idx >= _rowQtyButtons.Count || _rowQtyButtons[idx] == null || _rowQtyInputs[idx] == null) return;
+        // 모든 행의 TextBox를 닫고 버튼을 보이게 (이전 편집 셀 원복)
+        for (int i = 0; i < _rowQtyButtons.Count; i++)
         {
-            ColumnDefinitions = new ColumnDefinitions("*,55,75,80"),
-            Background = Brush.Parse(odd ? "#1a1a28" : "#1e1e30"),
-        };
-
-        // 항목명 — 클릭 시 수량 편집
-        var nameBlock = new TextBlock
-        {
-            Text      = name,
-            FontSize  = AppFonts.Base, FontFamily = Font,
-            Foreground = AppTheme.FgSecondary,
-            TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
-            VerticalAlignment = VerticalAlignment.Center,
-            Margin    = new Avalonia.Thickness(8, 3),
-            Cursor    = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
-            [Grid.ColumnProperty] = 0,
-        };
-        Avalonia.Controls.ToolTip.SetTip(nameBlock,
-            new TextBlock
-            {
-                Text = $"클릭 → 수량 변경\nES: {meta.ES}  단위: {meta.unit}",
-                FontSize = AppFonts.Base,
-                FontFamily = Font,
-            });
-        nameBlock.PointerPressed += (_, _) => StartQtyEdit(name, qty);
-        grid.Children.Add(nameBlock);
-
-        // 수량
-        grid.Children.Add(Cell(qty.ToString(), AppFonts.Base,
-            qty > 1 ? "#88d888" : "#888888", 1, HorizontalAlignment.Right));
-        // 단가
-        grid.Children.Add(Cell(price > 0 ? $"{price:#,0}" : "—", AppFonts.SM,
-            "#888888", 2, HorizontalAlignment.Right));
-        // 소계
-        grid.Children.Add(Cell(sub > 0 ? $"{sub:#,0}" : "—", AppFonts.SM,
-            "#88cc88", 3, HorizontalAlignment.Right));
-
-        return new Border { Child = grid };
+            var btnX = _rowQtyButtons[i];
+            var tbX = _rowQtyInputs[i];
+            if (btnX != null) btnX.IsVisible = true;
+            if (tbX != null) tbX.IsVisible = false;
+        }
+        _selectedRowIndex = idx;
+        var btn = _rowQtyButtons[idx]!;
+        var tb = _rowQtyInputs[idx]!;
+        btn.IsVisible = false;
+        tb.IsVisible = true;
+        tb.Text = btn.Content?.ToString() ?? "1";
+        tb.Focus();
+        tb.SelectAll();
     }
+
+    private void CommitQty(int idx)
+    {
+        if (idx < 0 || idx >= _rowQtyInputs.Count || _rowQtyInputs[idx] == null || _rowQtyButtons[idx] == null) return;
+        var tb = _rowQtyInputs[idx]!;
+        var btn = _rowQtyButtons[idx]!;
+        if (!int.TryParse(tb.Text, out int qty) || qty < 1) qty = 1;
+        tb.Text = qty.ToString();
+        btn.Content = qty.ToString();
+        btn.IsVisible = true;
+        tb.IsVisible = false;
+        // 실제 데이터 반영
+        var key = _analyteMap.Keys.ElementAtOrDefault(idx);
+        if (key != null && _itemData.ContainsKey(key))
+            _itemData[key] = (qty, _itemData[key].Price);
+        RebuildItemList();
+        _selectedRowIndex = idx;
+    }
+
+    private void MoveQtyFocus(int idx, int delta)
+    {
+        int next = idx + delta;
+        if (next >= 0 && next < _rowQtyButtons.Count && _rowQtyButtons[next] != null)
+            OpenQtyInput(next);
+    }
+
+    private void SelectGridRow(int idx)
+    {
+        _selectedRowIndex = idx;
+        _keyNavShow2Index = idx;
+    }
+
+    // WasteAnalysisInputPage와 동일한 Tunnel KeyDown 핸들러 이식
+    private void OnNavKeyDownTunnel(object? sender, KeyEventArgs e)
+    {
+        if (e.Handled) return;
+        bool shift = e.KeyModifiers.HasFlag(KeyModifiers.Shift);
+
+        // Shift+2: 네비게이션 모드 토글
+        if (shift && e.Key == Key.D2)
+        {
+            if (_analyteMap.Count > 0)
+            {
+                _keyNavShow2 = !_keyNavShow2;
+                if (_keyNavShow2)
+                {
+                    _keyNavShow2Index = 0;
+                    _selectedRowIndex = 0;
+                    OpenQtyInput(0);
+                }
+                else
+                {
+                    _keyNavShow2Index = -1;
+                    _selectedRowIndex = -1;
+                }
+                e.Handled = true;
+            }
+            return;
+        }
+
+        // ── _keyNavShow2 모드: 방향키만 = 이동, Enter = 편집 ──
+        if (!shift && _keyNavShow2)
+        {
+            // Up/Down → 행 이동 후 자동으로 선택된 셀 열기
+            if (e.Key == Key.Up || e.Key == Key.Down)
+            {
+                e.Handled = true;
+                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                {
+                    bool up = e.Key == Key.Up;
+                    int newIdx = _selectedRowIndex + (up ? -1 : 1);
+                    SelectGridRow(newIdx);
+                    OpenQtyInput(newIdx);
+                });
+                return;
+            }
+            // Enter → TextBox 편집 중이면 내부 핸들러에 위임, 아니면 현재 셀 열기
+            if (e.Key == Key.Enter)
+            {
+                if (e.Source is TextBox) return;
+                e.Handled = true;
+                OpenQtyInput(_selectedRowIndex);
+                return;
+            }
+            // 숫자 입력 → 즉시 편집 시작 + 해당 키를 TextBox에 전달
+            if ((e.Key >= Key.D0 && e.Key <= Key.D9) || (e.Key >= Key.NumPad0 && e.Key <= Key.NumPad9))
+            {
+                e.Handled = true;
+                OpenQtyInput(_selectedRowIndex);
+                var tb = _rowQtyInputs.ElementAtOrDefault(_selectedRowIndex);
+                if (tb != null)
+                {
+                    char ch = e.Key switch
+                    {
+                        Key.D0 or Key.NumPad0 => '0', Key.D1 or Key.NumPad1 => '1',
+                        Key.D2 or Key.NumPad2 => '2', Key.D3 or Key.NumPad3 => '3',
+                        Key.D4 or Key.NumPad4 => '4', Key.D5 or Key.NumPad5 => '5',
+                        Key.D6 or Key.NumPad6 => '6', Key.D7 or Key.NumPad7 => '7',
+                        Key.D8 or Key.NumPad8 => '8', Key.D9 or Key.NumPad9 => '9',
+                        _ => '\0'
+                    };
+                    if (ch != '\0')
+                    {
+                        tb.Text = ch.ToString();
+                        tb.CaretIndex = 1;
+                    }
+                }
+                return;
+            }
+            // Escape → 네비 모드 종료
+            if (e.Key == Key.Escape)
+            {
+                e.Handled = true;
+                _keyNavShow2 = false;
+                _keyNavShow2Index = -1;
+                _selectedRowIndex = -1;
+                RebuildItemList();
+                return;
+            }
+        }
+    }
+
+    // Show3(하단) 패널: 네비/인라인 편집 관련 코드 완전 제거
+
+
 
     private static TextBlock Cell(string text, double size, string color,
                                   int col, HorizontalAlignment ha = HorizontalAlignment.Left)
@@ -407,6 +642,7 @@ public partial class QuotationNewPanel : UserControl
     }
 
     // ── DB row 에서 항목 로드 ─────────────────────────────────────────────
+    // 단가/소계 버그 보완: 오작성 수정 시에도 항상 단가 정상 로드
     private void LoadItemsFromRow(Dictionary<string, string> row)
     {
         _itemData.Clear();
@@ -422,8 +658,10 @@ public partial class QuotationNewPanel : UserControl
             "수량","단가","소계","수량2","단가3","소계4",
         };
 
-        // 업체별 계약 DB 단가 로드
-        var companyForPrices = GetCurrentCompanyName();
+        // 업체명 우선순위: _company, _editingIssue, _carrotCompanyName
+        var companyForPrices = _company?.C_CompanyName
+            ?? _editingIssue?.업체명
+            ?? (_carrotCompanyName.Length > 0 ? _carrotCompanyName : "");
         var prices = string.IsNullOrEmpty(companyForPrices)
             ? new Dictionary<string, decimal>()
             : QuotationService.GetPricesByCompany(companyForPrices);
