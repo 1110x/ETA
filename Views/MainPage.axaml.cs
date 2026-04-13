@@ -126,6 +126,12 @@ public partial class MainPage : Window
         this.Opened += MainPage_Opened;
         this.Closing += MainPage_Closing;
 
+        // 한글 IME 마지막 글자 다음 입력창 이동 버그 수정
+        // 포인터 클릭으로 포커스가 이동하기 전에 IME 조합 상태를 초기화하여
+        // 조합 중이던 마지막 글자가 다음 TextBox로 넘어가지 않게 함
+        AddHandler(InputElement.PointerPressedEvent, OnPointerPressedImeReset,
+            RoutingStrategies.Tunnel, handledEventsToo: false);
+
 
         // GridSplitter 실시간 레이아웃 저장 이벤트 연결
         this.Loaded += SetupSplitterEvents;
@@ -436,6 +442,27 @@ public partial class MainPage : Window
         Width = targetW;
         Height = targetH;
         Position = new PixelPoint((int)endX, (int)endY);
+    }
+
+    /// <summary>
+    /// 한글 IME 조합 중 포커스 이동 시 마지막 글자가 다음 입력창으로 넘어가는 버그 방지.
+    /// 포인터 클릭(Tunnel)으로 포커스가 바뀌기 전에 IME 상태를 초기화.
+    /// </summary>
+    private void OnPointerPressedImeReset(object? sender, PointerPressedEventArgs e)
+    {
+        // 현재 포커스가 TextBox이고, 클릭 대상이 다른 요소일 때만 처리
+        var focused = FocusManager?.GetFocusedElement();
+        if (focused is not TextBox) return;
+        if (e.Source is TextBox clickedBox && clickedBox == focused) return;
+
+        // IME 조합 상태 초기화 — composing 중인 글자가 다음 창으로 넘어가는 것을 방지
+        // IsInputMethodEnabled를 false→true로 토글하면 Avalonia가 IME 클라이언트를
+        // 종료(_imClient.Dispose)했다가 재생성 → 조합 중이던 글자를 현재 TextBox에서 flush
+        if (focused is TextBox tb)
+        {
+            Avalonia.Input.InputMethod.SetIsInputMethodEnabled(tb, false);
+            Avalonia.Input.InputMethod.SetIsInputMethodEnabled(tb, true);
+        }
     }
 
     private void MainPage_Opened(object? sender, EventArgs e)
