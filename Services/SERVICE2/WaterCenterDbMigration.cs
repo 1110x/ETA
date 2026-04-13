@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using ETA.Services.Common;
@@ -32,8 +31,10 @@ public static class WaterCenterDbMigration
     private static void Log(string msg)
     {
         var line = $"[{DateTime.Now:HH:mm:ss}] [WaterCenterDb] {msg}";
-        Debug.WriteLine(line);
-        try { File.AppendAllText(LogPath, line + Environment.NewLine); } catch { }
+        if (App.EnableLogging)
+        {
+            try { File.AppendAllText(LogPath, line + Environment.NewLine); } catch { }
+        }
     }
 
     private static void Exec(DbConnection conn, string sql)

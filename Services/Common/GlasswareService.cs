@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Diagnostics;
 using ETA.Models;
 
 namespace ETA.Services.Common;
@@ -71,7 +70,6 @@ public static class GlasswareService
             idCmd.CommandText = $"SELECT {DbConnectionFactory.LastInsertId}";
             item.Id = Convert.ToInt32(idCmd.ExecuteScalar());
         }
-        Debug.WriteLine($"[GlasswareService] INSERT → {item.품목명}");
         return rows > 0;
     }
 
@@ -98,7 +96,6 @@ public static class GlasswareService
         cmd.CommandText = "DELETE FROM `초자` WHERE Id=@id";
         cmd.Parameters.AddWithValue("@id", id);
         int rows = cmd.ExecuteNonQuery();
-        Debug.WriteLine($"[GlasswareService] DELETE id={id} → {rows}행");
         return rows > 0;
     }
 

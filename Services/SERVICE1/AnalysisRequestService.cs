@@ -27,8 +27,10 @@ public static class AnalysisRequestService
     private static void Log(string msg)
     {
         var line = $"[{DateTime.Now:HH:mm:ss}] [AnalysisRequestService] {msg}";
-        System.Diagnostics.Debug.WriteLine(line);
-        try { File.AppendAllText(LogPath, line + Environment.NewLine); } catch { }
+        if (App.EnableLogging)
+        {
+            try { File.AppendAllText(LogPath, line + Environment.NewLine); } catch { }
+        }
     }
 
     // =====================================================================
@@ -430,8 +432,8 @@ public static class AnalysisRequestService
     }
 
     // =====================================================================
-    //  분장표준처리 — 컬럼 순서대로 항목 목록 반환 (Show4 정렬용)
-    //    반환: (fullName, shortName) in DB column order, _id 제외
+    //  분석정보 — ES 순서대로 항목 목록 반환 (Show4 정렬용)
+    //    반환: (fullName=Analyte, shortName=약칭) ordered by ES ASC
     // =====================================================================
     public static List<(string fullName, string shortName)> GetOrderedAnalytes()
     {
@@ -440,39 +442,15 @@ public static class AnalysisRequestService
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
-            if (!DbConnectionFactory.TableExists(conn, "분장표준처리")) return result;
-
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = "SELECT * FROM `분장표준처리` LIMIT 3";
+            cmd.CommandText = "SELECT Analyte, COALESCE(`약칭`,'') FROM `분석정보` WHERE Analyte IS NOT NULL AND Analyte <> '' ORDER BY ES ASC";
             using var rdr = cmd.ExecuteReader();
-
-            int      fc       = rdr.FieldCount;
-            string[] headers  = new string[fc];
-            string[] shortArr = new string[fc];
-
-            for (int i = 0; i < fc; i++)
-                headers[i] = rdr.GetName(i).Trim();
-
             while (rdr.Read())
             {
-                string label = rdr["항목명"]?.ToString()?.Trim() ?? "";
-                if (label == "약칭")
-                {
-                    for (int i = 0; i < fc; i++)
-                    {
-                        if (headers[i].StartsWith("_") || headers[i] == "항목명") continue;
-                        shortArr[i] = rdr.IsDBNull(i) ? "" : rdr.GetValue(i)?.ToString()?.Trim() ?? "";
-                    }
-                    break;
-                }
-            }
-
-            for (int i = 0; i < fc; i++)
-            {
-                string fullName = headers[i];
-                if (string.IsNullOrWhiteSpace(fullName) || fullName.StartsWith("_") || fullName == "항목명") continue;
-                string shortName = string.IsNullOrWhiteSpace(shortArr[i]) ? fullName : shortArr[i];
-                result.Add((fullName, shortName));
+                string full  = rdr.GetString(0).Trim();
+                string alias = rdr.IsDBNull(1) ? "" : (rdr.GetString(1).Trim());
+                string sn    = string.IsNullOrWhiteSpace(alias) ? full : alias;
+                result.Add((full, sn));
             }
         }
         catch (Exception ex) { Log($"GetOrderedAnalytes 오류: {ex.Message}"); }
@@ -661,21 +639,56 @@ public static class AnalysisRequestService
             if (DateTime.TryParse(dateKey, out var dt))
                 dateKey = dt.ToString("yyyy-MM-dd");
 
-            using var cmd = conn.CreateCommand();
-            cmd.CommandText =
-                "SELECT * FROM `분장표준처리` WHERE `항목명` = @date LIMIT 1";
-            cmd.Parameters.AddWithValue("@date", dateKey);
-
-            using var rdr = cmd.ExecuteReader();
-            if (rdr.Read())
+            // 1차: 정확한 날짜 조회
+            using (var cmd = conn.CreateCommand())
             {
-                for (int i = 0; i < rdr.FieldCount; i++)
+                cmd.CommandText =
+                    "SELECT * FROM `분장표준처리` WHERE `항목명` = @date LIMIT 1";
+                cmd.Parameters.AddWithValue("@date", dateKey);
+
+                using var rdr = cmd.ExecuteReader();
+                if (rdr.Read())
                 {
-                    string colName = rdr.GetName(i).Trim();
-                    if (colName.StartsWith("_") || colName == "항목명") continue;
-                    string manager = rdr.IsDBNull(i) ? "" : rdr.GetValue(i)?.ToString()?.Trim() ?? "";
-                    if (!string.IsNullOrEmpty(colName))
-                        result[colName] = manager;
+                    for (int i = 0; i < rdr.FieldCount; i++)
+                    {
+                        string colName = rdr.GetName(i).Trim();
+                        if (colName.StartsWith("_") || colName == "항목명") continue;
+                        string manager = rdr.IsDBNull(i) ? "" : rdr.GetValue(i)?.ToString()?.Trim() ?? "";
+                        if (!string.IsNullOrEmpty(colName))
+                            result[colName] = manager;
+                    }
+                }
+            }
+
+            // 2차: 해당 날짜에 배정이 없으면 실제 배정이 있는 가장 최근 날짜로 fallback
+            bool hasAny = result.Values.Any(v => !string.IsNullOrEmpty(v));
+            if (!hasAny)
+            {
+                using var cmd2 = conn.CreateCommand();
+                cmd2.CommandText =
+                    "SELECT * FROM `분장표준처리` WHERE `항목명` <= @date AND `항목명` REGEXP '^[0-9]{4}-[0-9]{2}-[0-9]{2}$' ORDER BY `항목명` DESC";
+                cmd2.Parameters.AddWithValue("@date", dateKey);
+
+                using var rdr2 = cmd2.ExecuteReader();
+                while (rdr2.Read())
+                {
+                    string fallbackDate = rdr2.IsDBNull(0) ? "" : rdr2.GetString(0);
+                    var candidate = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                    for (int i = 0; i < rdr2.FieldCount; i++)
+                    {
+                        string colName = rdr2.GetName(i).Trim();
+                        if (colName.StartsWith("_") || colName == "항목명") continue;
+                        string manager = rdr2.IsDBNull(i) ? "" : rdr2.GetValue(i)?.ToString()?.Trim() ?? "";
+                        if (!string.IsNullOrEmpty(colName))
+                            candidate[colName] = manager;
+                    }
+                    // 실제 배정이 있는 행을 찾으면 적용 후 탈출
+                    if (candidate.Values.Any(v => !string.IsNullOrEmpty(v)))
+                    {
+                        foreach (var kv in candidate) result[kv.Key] = kv.Value;
+                        Log($"GetManagersByDate({dateKey}): 배정 없음 → {fallbackDate} 기준 적용");
+                        break;
+                    }
                 }
             }
             Log($"GetManagersByDate({dateKey}): {result.Count}개 담당자 로드");
@@ -1513,21 +1526,6 @@ public static class AnalysisRequestService
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
 
-            // 오늘 이후 날짜 행의 배정 데이터 NULL로 초기화
-            var columns = DbConnectionFactory.GetColumnNames(conn, "분장표준처리")
-                .Where(c => c != "항목명" && !c.StartsWith("_")).ToList();
-            if (columns.Count > 0)
-            {
-                progress?.Invoke(0.15, "기존 배정 초기화 중...");
-                var setClauses = string.Join(", ", columns.Select(c => $"`{c}` = NULL"));
-                using var clearCmd = conn.CreateCommand();
-                clearCmd.CommandText = $"UPDATE `분장표준처리` SET {setClauses} WHERE `항목명` >= @today";
-                clearCmd.Parameters.AddWithValue("@today", today.ToString("yyyy-MM-dd"));
-                int cleared = clearCmd.ExecuteNonQuery();
-                if (cleared > 0)
-                    Log($"AutoExtend: 오늘({today:yyyy-MM-dd}) 이후 {cleared}개 행 배정 초기화");
-            }
-
             // 이미 존재하는 날짜 행 조회
             var existingDates = new HashSet<string>();
             using (var cmd = conn.CreateCommand())
@@ -1953,5 +1951,27 @@ public static class AnalysisRequestService
             cmd.ExecuteNonQuery();
         }
         catch (Exception ex) { Log($"UpdateResultValue 오류: {ex.Message}"); }
+    }
+
+    /// <summary>생태독성 저장 후 분석의뢰및결과.생태독성 컬럼에 TU값 업데이트</summary>
+    public static void UpdateEcotoxResult(string 채취일자, string 시료명, string tuValue)
+    {
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            if (!DbConnectionFactory.TableExists(conn, "분석의뢰및결과")) return;
+            if (!DbConnectionFactory.ColumnExists(conn, "분석의뢰및결과", "생태독성")) return;
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"UPDATE `분석의뢰및결과`
+                                   SET `생태독성` = @tu
+                                 WHERE LEFT(`채취일자`, 10) = @d
+                                   AND `시료명` = @nm";
+            cmd.Parameters.AddWithValue("@tu", tuValue);
+            cmd.Parameters.AddWithValue("@d",  채취일자);
+            cmd.Parameters.AddWithValue("@nm", 시료명);
+            cmd.ExecuteNonQuery();
+        }
+        catch (Exception ex) { Log($"UpdateEcotoxResult 오류: {ex.Message}"); }
     }
 }

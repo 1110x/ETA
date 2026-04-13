@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Diagnostics;
 using System.Linq;
 
 namespace ETA.Services.Common;
@@ -35,7 +34,6 @@ public static class CompoundAliasService
         var result = Resolve(rawName);
         if (result != null) return result.Value;
 
-        Debug.WriteLine($"[CompoundAlias] 미등록 성분명: '{rawName}' — 원본명으로 처리됨. 화합물별명 테이블에 등록 필요.");
         return new CompoundInfo(rawName, rawName);
     }
 
@@ -71,12 +69,10 @@ public static class CompoundAliasService
             {
                 _cache![alias.Trim()] = new CompoundInfo(standardCode.Trim(), analyteName.Trim());
             }
-            Debug.WriteLine($"[CompoundAlias] 별칭 등록/갱신: '{alias}' → 표준코드='{standardCode}', 분석항목='{analyteName}'");
             return true;
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[CompoundAlias] 별칭 등록 실패: {ex.Message}");
             return false;
         }
     }
@@ -110,7 +106,6 @@ public static class CompoundAliasService
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[CompoundAlias] 별칭 등록 실패: {ex.Message}");
             return false;
         }
     }
@@ -129,7 +124,6 @@ public static class CompoundAliasService
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[CompoundAlias] 별칭 삭제 실패: {ex.Message}");
         }
     }
 
@@ -148,7 +142,6 @@ public static class CompoundAliasService
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[CompoundAlias] 목록 조회 실패: {ex.Message}");
         }
         return list;
     }
@@ -168,7 +161,6 @@ public static class CompoundAliasService
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[CompoundAlias] 표준코드 목록 조회 실패: {ex.Message}");
         }
         return list;
     }
@@ -201,11 +193,9 @@ public static class CompoundAliasService
                 UNIQUE(`별명`)
             )";
             cmd.ExecuteNonQuery();
-            Debug.WriteLine("[CompoundAlias] 화합물별명 테이블 생성 완료");
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[CompoundAlias] 테이블 생성 실패: {ex.Message}");
         }
     }
 
@@ -317,11 +307,7 @@ public static class CompoundAliasService
         };
 
         // 분석정보에 없는 분석항목명 경고
-        foreach (var (alias, code, analyte) in seeds)
-        {
-            if (!string.IsNullOrEmpty(analyte) && analyteSet.Count > 0 && !analyteSet.Contains(analyte))
-                Debug.WriteLine($"[CompoundAlias] Seed 경고: 분석항목 '{analyte}' 이 분석정보 테이블에 없음 (별명: '{alias}')");
-        }
+        // (항목 누락 경고 로그 제거됨)
 
         // INSERT IGNORE로 중복 안전 삽입
         var now = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
@@ -341,11 +327,9 @@ public static class CompoundAliasService
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[CompoundAlias] Seed 삽입 실패 ('{alias}'): {ex.Message}");
             }
         }
 
-        Debug.WriteLine($"[CompoundAlias] Seed 완료 — {seeds.Count}개 항목 처리");
     }
 
     // ── 내부 ────────────────────────────────────────────────────────
@@ -372,11 +356,9 @@ public static class CompoundAliasService
                     if (!string.IsNullOrEmpty(alias))
                         _cache[alias] = new CompoundInfo(code, analyte);
                 }
-                Debug.WriteLine($"[CompoundAlias] 캐시 로드 완료 — {_cache.Count}개 별칭");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[CompoundAlias] 캐시 로드 실패: {ex.Message}");
             }
         }
     }

@@ -29,6 +29,11 @@ public partial class ParserGeneratorPage : UserControl
     private ParseGenResult? _currentResult;
     private int _connectingFromCol = -1; // -1 = 연결 대기 없음
 
+    // 분석항목 컬럼 연결용 상태
+    private string? _mappingTargetAnalyte;
+    private readonly Dictionary<string, string> _columnMapping = new();
+    private string? _mappingFromHeader;
+
     // ── ETA 표준 필드 정의 ─────────────────────────────────────────────
     private static readonly (string Key, string Label)[] EtaFields =
     [
@@ -652,7 +657,284 @@ public partial class ParserGeneratorPage : UserControl
             statusTb.IsVisible = true;
         };
         root.Children.Add(saveBtn);
+
+        // 항목별 파서 컬럼 연결
+        root.Children.Add(new Border { Height = 1, Background = new SolidColorBrush(Color.Parse("#1E293B")), Margin = new Thickness(0, 12, 0, 8) });
+        root.Children.Add(SectionTitle(ff, "항목 컬럼 연결"));
+        root.Children.Add(new TextBlock
+        {
+            Text = "파싱된 컬럼명을 시험기록부 컬럼과 1:1 매핑합니다.",
+            FontFamily = ff, FontSize = AppTheme.FontXS,
+            Foreground = new SolidColorBrush(Color.Parse("#6B7280")),
+            Margin = new Thickness(0, 0, 0, 4),
+        });
+        root.Children.Add(BuildColumnMappingSection(r, ff));
         return new ScrollViewer { Content = root };
+    }
+
+    // ── 분석항목 목록 조회 ──────────────────────────────────────────────────
+    private static List<string> GetAllAnalytes()
+    {
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT `Analyte` FROM `분석정보` WHERE `Analyte` IS NOT NULL AND `Analyte` <> '' ORDER BY `Analyte`";
+            var result = new List<string>();
+            using var rdr = cmd.ExecuteReader();
+            while (rdr.Read()) result.Add(rdr.GetString(0));
+            return result;
+        }
+        catch { return new List<string>(); }
+    }
+
+    // ── 분석항목 컬럼 연결 섹션 ──────────────────────────────────────────────
+    private Control BuildColumnMappingSection(ParseGenResult r, FontFamily ff)
+    {
+        var root = new StackPanel { Spacing = 6 };
+
+        // 분석항목 선택 행
+        var analytes = GetAllAnalytes();
+        var analyte  = _mappingTargetAnalyte ?? (analytes.Count > 0 ? analytes[0] : "");
+
+        var headerRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Margin = new Thickness(0, 0, 0, 4) };
+        headerRow.Children.Add(new TextBlock
+        {
+            Text = "분석항목:", FontFamily = ff, FontSize = AppTheme.FontXS,
+            Foreground = new SolidColorBrush(Color.Parse("#9CA3AF")),
+            VerticalAlignment = VerticalAlignment.Center,
+        });
+
+        var combo = new ComboBox { FontFamily = ff, FontSize = AppTheme.FontSM, Width = 160 };
+        foreach (var a in analytes) combo.Items.Add(a);
+        combo.SelectedItem = analyte;
+        combo.SelectionChanged += (_, _) =>
+        {
+            if (combo.SelectedItem is not string sel) return;
+            _mappingTargetAnalyte = sel;
+            _mappingFromHeader    = null;
+            _columnMapping.Clear();
+            var loaded = ETA.Services.SERVICE3.AnalysisNoteService.GetParserColumnMap(sel);
+            foreach (var kv in loaded) _columnMapping[kv.Key] = kv.Value;
+            DetailPanelChanged?.Invoke(BuildParserSettingsPanel(r));
+        };
+        headerRow.Children.Add(combo);
+
+        // 분석항목이 선택된 경우에만 매핑 UI 표시
+        if (!string.IsNullOrEmpty(analyte) && _mappingTargetAnalyte == null)
+        {
+            // 최초 진입: 자동으로 첫 항목 로드
+            _mappingTargetAnalyte = analyte;
+            var loaded = ETA.Services.SERVICE3.AnalysisNoteService.GetParserColumnMap(analyte);
+            foreach (var kv in loaded) _columnMapping[kv.Key] = kv.Value;
+        }
+        root.Children.Add(headerRow);
+
+        if (string.IsNullOrEmpty(_mappingTargetAnalyte) || r.PreviewHeaders.Length == 0)
+        {
+            root.Children.Add(new TextBlock
+            {
+                Text = r.PreviewHeaders.Length == 0
+                    ? "파일을 먼저 업로드하세요."
+                    : "분석항목을 선택하세요.",
+                FontFamily = ff, FontSize = AppTheme.FontXS,
+                Foreground = new SolidColorBrush(Color.Parse("#6B7280")),
+            });
+            return root;
+        }
+
+        var noteCols = ETA.Services.SERVICE3.AnalysisNoteService.GetNoteColumns(_mappingTargetAnalyte);
+
+        if (noteCols.Count == 0)
+        {
+            root.Children.Add(new TextBlock
+            {
+                Text = "해당 항목에 설정된 노트 컬럼이 없습니다. (권한관리 → 분석항목 편집에서 설정)",
+                FontFamily = ff, FontSize = AppTheme.FontXS,
+                TextWrapping = TextWrapping.Wrap,
+                Foreground = new SolidColorBrush(Color.Parse("#EF4444")),
+            });
+            return root;
+        }
+
+        // 안내 텍스트
+        var pending = _mappingFromHeader;
+        root.Children.Add(new Border
+        {
+            Background   = new SolidColorBrush(Color.Parse(pending != null ? "#FEF3C7" : "#0F172A")),
+            CornerRadius = new CornerRadius(4),
+            Padding      = new Thickness(8, 4),
+            Child = new TextBlock
+            {
+                Text = pending != null
+                    ? $"'{pending}' 선택됨 — 오른쪽 컬럼 클릭으로 연결  (ESC 취소)"
+                    : "왼쪽 파서 컬럼 클릭 → 오른쪽 노트 컬럼 클릭으로 연결",
+                FontFamily = ff, FontSize = AppTheme.FontXS,
+                TextWrapping = TextWrapping.Wrap,
+                Foreground = new SolidColorBrush(Color.Parse(pending != null ? "#92400E" : "#94A3B8")),
+            },
+        });
+
+        // 매핑 그리드 (왼쪽: 파서 컬럼 | 오른쪽: 노트 컬럼)
+        var colGrid = new Grid { Margin = new Thickness(0, 4, 0, 0) };
+        colGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Star));
+        colGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Star));
+
+        var leftSp  = new StackPanel { Spacing = 3 };
+        var rightSp = new StackPanel { Spacing = 3 };
+
+        // 열 헤더
+        leftSp.Children.Add(new TextBlock
+        {
+            Text = "파서 출력 컬럼", FontFamily = ff, FontSize = AppTheme.FontXS,
+            FontWeight = FontWeight.SemiBold,
+            Foreground = new SolidColorBrush(Color.Parse("#94A3B8")),
+            Margin = new Thickness(0, 0, 0, 4),
+        });
+        rightSp.Children.Add(new TextBlock
+        {
+            Text = "시험기록부 컬럼", FontFamily = ff, FontSize = AppTheme.FontXS,
+            FontWeight = FontWeight.SemiBold,
+            Foreground = new SolidColorBrush(Color.Parse("#94A3B8")),
+            Margin = new Thickness(0, 0, 0, 4),
+        });
+
+        // 파서 컬럼 (왼쪽)
+        foreach (var hdr in r.PreviewHeaders)
+        {
+            var hdrLocal    = hdr;
+            bool isPending  = pending == hdrLocal;
+            bool hasMapped  = _columnMapping.TryGetValue(hdrLocal, out var mappedTo);
+            var noteTarget  = hasMapped ? mappedTo : null;
+
+            var badge = new Border
+            {
+                Background      = new SolidColorBrush(Color.Parse(isPending ? "#FEF3C7" : hasMapped ? "#0F2D1A" : "#1E293B")),
+                BorderBrush     = new SolidColorBrush(Color.Parse(isPending ? "#F59E0B" : hasMapped ? "#22C55E" : "#334155")),
+                BorderThickness = new Thickness(isPending || hasMapped ? 2 : 1),
+                CornerRadius    = new CornerRadius(4),
+                Padding         = new Thickness(8, 4),
+                Margin          = new Thickness(0, 0, 4, 0),
+                Cursor          = new Cursor(StandardCursorType.Hand),
+            };
+            var sp = new StackPanel { Spacing = 1 };
+            sp.Children.Add(new TextBlock
+            {
+                Text = hdrLocal, FontFamily = ff, FontSize = AppTheme.FontXS,
+                FontWeight = FontWeight.SemiBold,
+                Foreground = new SolidColorBrush(Color.Parse(isPending ? "#92400E" : "#E2E8F0")),
+            });
+            if (noteTarget != null)
+                sp.Children.Add(new TextBlock
+                {
+                    Text = $"→ {noteTarget}", FontFamily = ff, FontSize = 9,
+                    Foreground = new SolidColorBrush(Color.Parse("#22C55E")),
+                });
+            badge.Child = sp;
+            badge.PointerPressed += (_, e) =>
+            {
+                e.Handled = true;
+                if (isPending) { _mappingFromHeader = null; }
+                else if (hasMapped) { _columnMapping.Remove(hdrLocal); _mappingFromHeader = null; }
+                else { _mappingFromHeader = hdrLocal; }
+                DetailPanelChanged?.Invoke(BuildParserSettingsPanel(r));
+            };
+            leftSp.Children.Add(badge);
+        }
+
+        // 노트 컬럼 (오른쪽)
+        foreach (var nc in noteCols)
+        {
+            var ncLocal     = nc;
+            bool connectedTo = _columnMapping.ContainsValue(ncLocal);
+            string? connFrom = _columnMapping.FirstOrDefault(kv => kv.Value == ncLocal).Key;
+            bool canConnect  = pending != null;
+
+            var badge = new Border
+            {
+                Background      = new SolidColorBrush(Color.Parse(connectedTo ? "#0F2D1A" : canConnect ? "#0F172A" : "#1E293B")),
+                BorderBrush     = new SolidColorBrush(Color.Parse(connectedTo ? "#22C55E" : canConnect ? "#86EFAC" : "#334155")),
+                BorderThickness = new Thickness(connectedTo ? 2 : 1),
+                CornerRadius    = new CornerRadius(4),
+                Padding         = new Thickness(8, 4),
+                Cursor          = new Cursor(canConnect || connectedTo ? StandardCursorType.Hand : StandardCursorType.Arrow),
+            };
+            var sp = new StackPanel { Spacing = 1 };
+            sp.Children.Add(new TextBlock
+            {
+                Text = ncLocal, FontFamily = ff, FontSize = AppTheme.FontXS,
+                FontWeight = FontWeight.SemiBold,
+                Foreground = new SolidColorBrush(Color.Parse(connectedTo ? "#22C55E" : canConnect ? "#86EFAC" : "#94A3B8")),
+            });
+            if (connFrom != null)
+                sp.Children.Add(new TextBlock
+                {
+                    Text = $"← {connFrom}", FontFamily = ff, FontSize = 9,
+                    Foreground = new SolidColorBrush(Color.Parse("#22C55E")),
+                });
+            badge.Child = sp;
+            badge.PointerPressed += (_, e) =>
+            {
+                e.Handled = true;
+                if (pending != null)
+                {
+                    // 기존 연결 해제 후 새 연결
+                    var prev = _columnMapping.Keys.FirstOrDefault(k => _columnMapping[k] == ncLocal);
+                    if (prev != null) _columnMapping.Remove(prev);
+                    _columnMapping[pending] = ncLocal;
+                    _mappingFromHeader = null;
+                    DetailPanelChanged?.Invoke(BuildParserSettingsPanel(r));
+                }
+                else if (connectedTo)
+                {
+                    var key = _columnMapping.Keys.FirstOrDefault(k => _columnMapping[k] == ncLocal);
+                    if (key != null) _columnMapping.Remove(key);
+                    DetailPanelChanged?.Invoke(BuildParserSettingsPanel(r));
+                }
+            };
+            rightSp.Children.Add(badge);
+        }
+
+        Grid.SetColumn(leftSp, 0);
+        Grid.SetColumn(rightSp, 1);
+        colGrid.Children.Add(leftSp);
+        colGrid.Children.Add(rightSp);
+        root.Children.Add(colGrid);
+
+        // 저장 버튼
+        var statusTb = new TextBlock { FontFamily = ff, FontSize = AppTheme.FontXS, IsVisible = false, Margin = new Thickness(0, 4, 0, 0) };
+        var mapSaveBtn = new Button
+        {
+            Content = "💾 컬럼 매핑 저장",
+            FontFamily = ff, FontSize = AppTheme.FontSM,
+            Padding = new Thickness(14, 6),
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            Background = new SolidColorBrush(Color.Parse("#064E3B")),
+            Foreground = new SolidColorBrush(Color.Parse("#A7F3D0")),
+            Margin = new Thickness(0, 8, 0, 0),
+        };
+        mapSaveBtn.Click += (_, _) =>
+        {
+            if (string.IsNullOrEmpty(_mappingTargetAnalyte)) return;
+            try
+            {
+                ETA.Services.SERVICE3.AnalysisNoteService.SaveParserColumnMap(
+                    _mappingTargetAnalyte, new Dictionary<string, string>(_columnMapping));
+                statusTb.Text = $"저장 완료 — {_mappingTargetAnalyte} ({_columnMapping.Count}개 연결)";
+                statusTb.Foreground = new SolidColorBrush(Color.Parse("#059669"));
+            }
+            catch (Exception ex)
+            {
+                statusTb.Text = $"저장 실패: {ex.Message}";
+                statusTb.Foreground = new SolidColorBrush(Color.Parse("#EF4444"));
+            }
+            statusTb.IsVisible = true;
+        };
+        root.Children.Add(mapSaveBtn);
+        root.Children.Add(statusTb);
+
+        return root;
     }
 
     // ── Show4: 생성된 C# 파서 코드 ─────────────────────────────────────

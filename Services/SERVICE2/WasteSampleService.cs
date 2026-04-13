@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using ETA.Models;
@@ -154,7 +153,6 @@ public static class WasteSampleService
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"GetRecentSamples 오류: {ex.Message}");
         }
         return list;
     }
@@ -422,7 +420,6 @@ public static class WasteSampleService
             // 테이블 존재 확인
             if (!DbConnectionFactory.TableExists(conn, tableName))
             {
-                System.Diagnostics.Debug.WriteLine($"[GetRawData] 테이블 없음: {tableName}");
                 return null;
             }
 
@@ -433,7 +430,6 @@ public static class WasteSampleService
             using var reader = cmd.ExecuteReader();
             if (!reader.Read())
             {
-                System.Diagnostics.Debug.WriteLine($"[GetRawData] 데이터 없음: {tableName} 분석일={채수일} SN={sn}");
                 return null;
             }
             var dict = new Dictionary<string, string>();
@@ -443,12 +439,10 @@ public static class WasteSampleService
                 var val = reader.IsDBNull(i) ? "" : reader.GetValue(i)?.ToString() ?? "";
                 dict[name] = val;
             }
-            System.Diagnostics.Debug.WriteLine($"[GetRawData] {tableName} SN={sn}: {dict.Count}개 컬럼 로드");
             return dict;
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"[GetRawData] 오류: {tableName} - {ex.Message}");
             return null;
         }
     }
@@ -517,7 +511,6 @@ public static class WasteSampleService
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"[UpsertBodData] 오류: {ex.Message}");
         }
     }
 
@@ -560,7 +553,6 @@ public static class WasteSampleService
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"[UpsertSimpleData:{tableName}] 오류: {ex.Message}");
         }
     }
 
@@ -624,7 +616,6 @@ public static class WasteSampleService
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"[UpsertSsData] 오류: {ex.Message}");
         }
     }
 
@@ -685,7 +676,6 @@ public static class WasteSampleService
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"[UpsertNHexanData] 오류: {ex.Message}");
         }
     }
 
@@ -757,7 +747,6 @@ public static class WasteSampleService
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"[UpsertUvvisData:{tableName}] 오류: {ex.Message}");
         }
     }
 
@@ -815,7 +804,6 @@ public static class WasteSampleService
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"[UpsertTocData:{tableName}] 오류: {ex.Message}");
         }
     }
 
@@ -824,7 +812,7 @@ public static class WasteSampleService
         string tableName, string 분석일, string sn, string 업체명, string 구분,
         string 농도, string ISTD, ExcelDocInfo? 검량선정보,
         GcCompoundCalInfo? compoundCal = null,
-        string 비고 = "", string 시료명 = "")
+        string 비고 = "", string 시료명 = "", string 흡광도 = "")
     {
         try
         {
@@ -834,6 +822,12 @@ public static class WasteSampleService
             {
                 using var alt = conn.CreateCommand();
                 alt.CommandText = $"ALTER TABLE `{tableName}` ADD COLUMN `시료명` TEXT DEFAULT ''";
+                alt.ExecuteNonQuery();
+            }
+            if (!DbConnectionFactory.ColumnExists(conn, tableName, "흡광도"))
+            {
+                using var alt = conn.CreateCommand();
+                alt.CommandText = $"ALTER TABLE `{tableName}` ADD COLUMN `흡광도` TEXT DEFAULT ''";
                 alt.ExecuteNonQuery();
             }
             using var chk = conn.CreateCommand();
@@ -861,7 +855,7 @@ public static class WasteSampleService
             if (exists)
             {
                 cmd.CommandText = $@"UPDATE `{tableName}`
-                    SET 농도=@conc, ISTD=@istd,
+                    SET 농도=@conc, ISTD=@istd, 흡광도=@abs,
                         ST1_농도=@st1c, ST1_값=@st1v, ST1_ISTD=@st1i,
                         ST2_농도=@st2c, ST2_값=@st2v, ST2_ISTD=@st2i,
                         ST3_농도=@st3c, ST3_값=@st3v, ST3_ISTD=@st3i,
@@ -876,12 +870,12 @@ public static class WasteSampleService
             else
             {
                 cmd.CommandText = $@"INSERT INTO `{tableName}`
-                    (분석일, SN, 업체명, 구분, 시료명, 농도, ISTD,
+                    (분석일, SN, 업체명, 구분, 시료명, 농도, ISTD, 흡광도,
                      ST1_농도, ST1_값, ST1_ISTD, ST2_농도, ST2_값, ST2_ISTD,
                      ST3_농도, ST3_값, ST3_ISTD, ST4_농도, ST4_값, ST4_ISTD,
                      ST5_농도, ST5_값, ST5_ISTD, ST6_농도, ST6_값, ST6_ISTD,
                      ST7_농도, ST7_값, ST7_ISTD, 기울기, 절편, R값, 비고, 등록일시)
-                    VALUES (@d, @sn, @nm, @gu, @nm2, @conc, @istd,
+                    VALUES (@d, @sn, @nm, @gu, @nm2, @conc, @istd, @abs,
                             @st1c, @st1v, @st1i, @st2c, @st2v, @st2i,
                             @st3c, @st3v, @st3i, @st4c, @st4v, @st4i,
                             @st5c, @st5v, @st5i, @st6c, @st6v, @st6i,
@@ -895,6 +889,7 @@ public static class WasteSampleService
             cmd.Parameters.AddWithValue("@nm2", 시료명);
             cmd.Parameters.AddWithValue("@conc", 농도);
             cmd.Parameters.AddWithValue("@istd", ISTD);
+            cmd.Parameters.AddWithValue("@abs", 흡광도);
 
             // ST 데이터 파라미터 추가
             for (int i = 0; i < 7; i++)
@@ -913,7 +908,6 @@ public static class WasteSampleService
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"[UpsertGcData:{tableName}] 오류: {ex.Message}");
         }
     }
 
@@ -938,7 +932,6 @@ public static class WasteSampleService
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[UpdateDynamicValue:{tableName}.{columnName}] 오류: {ex.Message}");
         }
     }
 
@@ -949,7 +942,9 @@ public static class WasteSampleService
         int 대조군_생물수, int 대조군_사망수,
         double[] 농도, int[] 생물수, int[] 사망수,
         EcotoxicityService.EcotoxResult? result = null,
-        string 비고 = "")
+        string 비고 = "",
+        string 시험번호 = "", string endpoint = "", string 농도단위 = "",
+        EcotoxicityService.EcotoxResult? probitResult = null)
     {
         try
         {
@@ -967,11 +962,13 @@ public static class WasteSampleService
             if (exists)
             {
                 var setCols = new System.Text.StringBuilder();
+                setCols.Append("시험번호=@tno, endpoint=@ep, 농도단위=@cu, ");
                 setCols.Append("시료명=@nm2, 소스구분=@src, 시험종=@sp, 시험시간=@dur, 시험시간단위=@duru, ");
                 setCols.Append("대조군_생물수=@co, 대조군_사망수=@cm, ");
                 for (int i = 1; i <= 8; i++)
                     setCols.Append($"농도_{i}=@c{i}, 생물수_{i}=@o{i}, 사망수_{i}=@m{i}, ");
                 setCols.Append("LC50=@lc, LC50_하한=@lcl, LC50_상한=@lcu, TU=@tu, 분석방법=@method, trim_percent=@trim, ");
+                setCols.Append("probit_EC50=@plc, probit_하한=@plcl, probit_상한=@plcu, probit_TU=@ptu, probit_method=@pm, ");
                 setCols.Append($"결과=@result, 비고=@remark, 등록일시={DbConnectionFactory.NowExpr}");
                 cmd.CommandText = $"UPDATE `생태독성_시험기록부` SET {setCols} WHERE LEFT(분석일,10)=@d AND SN=@sn";
             }
@@ -979,15 +976,15 @@ public static class WasteSampleService
             {
                 var cols = new System.Text.StringBuilder();
                 var vals = new System.Text.StringBuilder();
-                cols.Append("분석일, SN, 업체명, 구분, 시료명, 소스구분, 시험종, 시험시간, 시험시간단위, 대조군_생물수, 대조군_사망수, ");
-                vals.Append("@d, @sn, @nm, @gu, @nm2, @src, @sp, @dur, @duru, @co, @cm, ");
+                cols.Append("분석일, SN, 업체명, 구분, 시험번호, endpoint, 농도단위, 시료명, 소스구분, 시험종, 시험시간, 시험시간단위, 대조군_생물수, 대조군_사망수, ");
+                vals.Append("@d, @sn, @nm, @gu, @tno, @ep, @cu, @nm2, @src, @sp, @dur, @duru, @co, @cm, ");
                 for (int i = 1; i <= 8; i++)
                 {
                     cols.Append($"농도_{i}, 생물수_{i}, 사망수_{i}, ");
                     vals.Append($"@c{i}, @o{i}, @m{i}, ");
                 }
-                cols.Append("LC50, LC50_하한, LC50_상한, TU, 분석방법, trim_percent, 결과, 비고, 등록일시");
-                vals.Append($"@lc, @lcl, @lcu, @tu, @method, @trim, @result, @remark, {DbConnectionFactory.NowExpr}");
+                cols.Append("LC50, LC50_하한, LC50_상한, TU, 분석방법, trim_percent, probit_EC50, probit_하한, probit_상한, probit_TU, probit_method, 결과, 비고, 등록일시");
+                vals.Append($"@lc, @lcl, @lcu, @tu, @method, @trim, @plc, @plcl, @plcu, @ptu, @pm, @result, @remark, {DbConnectionFactory.NowExpr}");
                 cmd.CommandText = $"INSERT INTO `생태독성_시험기록부` ({cols}) VALUES ({vals})";
                 cmd.Parameters.AddWithValue("@nm", 업체명);
                 cmd.Parameters.AddWithValue("@gu", 구분);
@@ -995,6 +992,9 @@ public static class WasteSampleService
 
             cmd.Parameters.AddWithValue("@d", 채수일);
             cmd.Parameters.AddWithValue("@sn", sn);
+            cmd.Parameters.AddWithValue("@tno", 시험번호);
+            cmd.Parameters.AddWithValue("@ep",  endpoint);
+            cmd.Parameters.AddWithValue("@cu",  농도단위);
             cmd.Parameters.AddWithValue("@nm2", 시료명);
             cmd.Parameters.AddWithValue("@src", 소스구분);
             cmd.Parameters.AddWithValue("@sp", 시험종);
@@ -1017,13 +1017,17 @@ public static class WasteSampleService
             cmd.Parameters.AddWithValue("@tu",     result?.TU.ToString("G") ?? "");
             cmd.Parameters.AddWithValue("@method", result?.Method ?? "");
             cmd.Parameters.AddWithValue("@trim",   result?.TrimPercent.ToString("G") ?? "");
+            cmd.Parameters.AddWithValue("@plc",    probitResult?.EC50.ToString("G") ?? "");
+            cmd.Parameters.AddWithValue("@plcl",   probitResult?.LowerCI.ToString("G") ?? "");
+            cmd.Parameters.AddWithValue("@plcu",   probitResult?.UpperCI.ToString("G") ?? "");
+            cmd.Parameters.AddWithValue("@ptu",    probitResult?.TU.ToString("G") ?? "");
+            cmd.Parameters.AddWithValue("@pm",     probitResult?.Method ?? "");
             cmd.Parameters.AddWithValue("@result", result?.TU.ToString("F1") ?? "");
             cmd.Parameters.AddWithValue("@remark", 비고);
             cmd.ExecuteNonQuery();
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[UpsertEcotoxData] 오류: {ex.Message}");
         }
     }
 

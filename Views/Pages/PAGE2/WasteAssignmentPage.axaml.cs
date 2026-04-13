@@ -10,7 +10,6 @@ using ETA.Services.SERVICE2;
 using ETA.Views;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace ETA.Views.Pages.PAGE2;
@@ -68,7 +67,6 @@ public partial class WasteAssignmentPage : UserControl
         catch (Exception ex)
         {
             SetStatus($"조회 오류: {ex.Message}", "#ee4444");
-            Debug.WriteLine($"[WasteAssignment] 조회 오류: {ex}");
         }
     }
 
@@ -150,7 +148,6 @@ public partial class WasteAssignmentPage : UserControl
         catch (Exception ex)
         {
             SetStatus($"의뢰 생성 오류: {ex.Message}", "#ee4444");
-            Debug.WriteLine($"[WasteAssignment] 의뢰 생성 오류: {ex}");
         }
     }
 

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Diagnostics;
 using System.Linq;
 
 namespace ETA.Services.Common;
@@ -61,11 +60,9 @@ public static class AccessService
                         PRIMARY KEY (`사번`, `메뉴키`)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
             cmd.ExecuteNonQuery();
-            Debug.WriteLine("[AccessService] AgentAccess 테이블 준비 완료");
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[AccessService] EnsureTable 실패: {ex.Message}");
         }
     }
 
@@ -105,7 +102,7 @@ public static class AccessService
             using var r = cmd.ExecuteReader();
             while (r.Read()) allowed.Add(r.GetString(0));
         }
-        catch (Exception ex) { Debug.WriteLine($"[AccessService] GetAllowedMenus 실패: {ex.Message}"); }
+        catch (Exception ex) { }
         _allowedCache[사번] = allowed;
         return allowed;
     }
@@ -133,7 +130,7 @@ public static class AccessService
                 if (map.ContainsKey(key)) map[key] = allow;
             }
         }
-        catch (Exception ex) { Debug.WriteLine($"[AccessService] GetAccessMap 실패: {ex.Message}"); }
+        catch (Exception ex) { }
         _mapCache[사번] = map;
         return map;
     }
@@ -155,7 +152,7 @@ public static class AccessService
             cmd.ExecuteNonQuery();
             InvalidateCache(사번);
         }
-        catch (Exception ex) { Debug.WriteLine($"[AccessService] SetAccess 실패: {ex.Message}"); }
+        catch (Exception ex) { }
     }
 
     // ── 신규 직원 기본 권한 초기화 (전체 차단) ────────────────────────────────
@@ -175,9 +172,8 @@ public static class AccessService
                 cmd.ExecuteNonQuery();
             }
             InvalidateCache(사번);
-            Debug.WriteLine($"[AccessService] 신규 직원 전체 메뉴 차단 초기화: {사번}");
         }
-        catch (Exception ex) { Debug.WriteLine($"[AccessService] InitializeAccessBlocked 실패: {ex.Message}"); }
+        catch (Exception ex) { }
     }
 
     // ── 헬퍼 ────────────────────────────────────────────────────────────────

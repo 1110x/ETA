@@ -16,6 +16,11 @@ public class WasteSample
     public string TP        { get; set; } = "";   // T-P
     public string NHexan    { get; set; } = "";   // N-Hexan
     public string Phenols   { get; set; } = "";
+    public string CN        { get; set; } = "";   // 시안
+    public string CR6       { get; set; } = "";   // 6가크롬
+    public string COLOR     { get; set; } = "";   // 색도
+    public string ABS       { get; set; } = "";   // ABS
+    public string FLUORIDE  { get; set; } = "";   // 불소
     public string 비고      { get; set; } = "";
     public string 확인자    { get; set; } = "";
 

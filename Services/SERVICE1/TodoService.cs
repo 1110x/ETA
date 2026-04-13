@@ -57,7 +57,6 @@ public static class TodoService
         _tokenExpiry = DateTime.UtcNow.AddSeconds(
             doc.RootElement.TryGetProperty("expires_in", out var ei) ? ei.GetInt32() - 60 : 3540);
 
-        Debug.WriteLine("[TodoService] Access Token 갱신 완료");
         return _accessToken;
     }
 
@@ -98,13 +97,12 @@ public static class TodoService
                 new AuthenticationHeaderValue("Bearer", token);
 
             var existing = await FindTaskByEmpIdAsync(listId, employeeId);
-            if (existing != null) { Debug.WriteLine($"[TodoService] 기존 Task 재사용: {existing}"); return existing; }
+            if (existing != null) { return existing; }
 
             var taskId = await CreateApprovalTaskAsync(listId, employeeName, employeeId);
-            Debug.WriteLine($"[TodoService] 승인 Task 생성: {taskId}");
             return taskId;
         }
-        catch (Exception ex) { Debug.WriteLine($"[TodoService] AddApprovalTaskAsync 오류: {ex.Message}"); return null; }
+        catch (Exception ex) { return null; }
     }
 
     // =====================================================================
@@ -117,7 +115,10 @@ public static class TodoService
         string logPath = Path.Combine(logDir, "Logs/eta_sync.log");
         void Log(string msg)
         {
-            try { File.AppendAllText(logPath, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] {msg}{Environment.NewLine}"); } catch { }
+            if (App.EnableLogging)
+            {
+                try { File.AppendAllText(logPath, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] {msg}{Environment.NewLine}"); } catch { }
+            }
         }
 
         Log("=== SyncApprovalStatusAsync() 시작 ===");
@@ -348,7 +349,7 @@ public static class TodoService
                     ? next.GetString() ?? "" : "";
             }
         }
-        catch (Exception ex) { Debug.WriteLine($"[TodoService] GetAllEtaTasksAsync 오류: {ex.Message}"); }
+        catch (Exception ex) { }
         return result;
     }
 
@@ -379,7 +380,6 @@ public static class TodoService
             var doc = JsonDocument.Parse(await res.Content.ReadAsStringAsync());
             return doc.RootElement.GetProperty("id").GetString();
         }
-        Debug.WriteLine($"[TodoService] 승인 Task 생성 실패: {await res.Content.ReadAsStringAsync()}");
         return null;
     }
 
@@ -473,7 +473,6 @@ public static class TodoService
             var doc = JsonDocument.Parse(await res.Content.ReadAsStringAsync());
             return doc.RootElement.GetProperty("id").GetString();
         }
-        Debug.WriteLine($"[TodoService] 중간 Task 생성 실패: {await res.Content.ReadAsStringAsync()}");
         return null;
     }
     // 중간 Task의 다음 단계(checklistItem) 추가: "(03/31) SS 김지은"
@@ -485,14 +484,16 @@ public static class TodoService
 
     private static void TodoLog(string msg)
     {
-        try
+        if (App.EnableLogging)
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(_todoLogPath)!);
-            File.AppendAllText(_todoLogPath,
-                $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] {msg}{Environment.NewLine}");
+            try
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(_todoLogPath)!);
+                File.AppendAllText(_todoLogPath,
+                    $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] {msg}{Environment.NewLine}");
+            }
+            catch { }
         }
-        catch { }
-        Debug.WriteLine($"[TODO] {msg}");
     }
 
         private static async Task AddChecklistItemAsync(
@@ -510,11 +511,9 @@ public static class TodoService
             $"https://graph.microsoft.com/v1.0/me/todo/lists/{listId}/tasks/{taskId}/checklistItems",
             new StringContent(item.ToJsonString(), Encoding.UTF8, "application/json"));
 
-        if (!res.IsSuccessStatusCode)
-            Debug.WriteLine($"[TodoService] checklistItem 추가 실패: {await res.Content.ReadAsStringAsync()}");
     }
 
-        // 영업일 계산 (토/일 건너뜀)
+    // 영업일 계산 (토/일 건너뜀)
     private static DateTime AddBusinessDays(DateTime start, int days)
     {
         var result = start;

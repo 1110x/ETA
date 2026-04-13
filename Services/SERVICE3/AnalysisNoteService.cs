@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
+using System.Text.Json;
 using ETA.Services.Common;
 
 namespace ETA.Services.SERVICE3;
@@ -23,6 +24,7 @@ public static class AnalysisNoteService
         EnsureConcentrationFormulaColumn();
         EnsureSchemaOverrideColumn();
         EnsureVolumeConstantColumn();
+        EnsureParserColumnMapColumn();
         BulkEnsureSchemaOverrides();  // 앱 시작 시 schema_override 일괄 초기화
     }
 
@@ -334,6 +336,69 @@ public static class AnalysisNoteService
         }
     }
 
+    // ── 파서-컬럼 매핑 컬럼 확보 ────────────────────────────────────────────────
+    private static void EnsureParserColumnMapColumn()
+    {
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            if (!DbConnectionFactory.ColumnExists(conn, "분석정보", "parser_column_map"))
+            {
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = "ALTER TABLE `분석정보` ADD COLUMN `parser_column_map` TEXT DEFAULT ''";
+                cmd.ExecuteNonQuery();
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[AnalysisNoteService] EnsureParserColumnMap 오류: {ex.Message}");
+        }
+    }
+
+    // ── 파서-컬럼 매핑 조회 (JSON → Dictionary) ──────────────────────────────
+    public static Dictionary<string, string> GetParserColumnMap(string analyte)
+    {
+        EnsureOnce();
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT `parser_column_map` FROM `분석정보` WHERE `Analyte` = @a LIMIT 1";
+            cmd.Parameters.AddWithValue("@a", analyte);
+            var raw = cmd.ExecuteScalar()?.ToString() ?? "";
+            if (string.IsNullOrWhiteSpace(raw)) return new Dictionary<string, string>();
+            return JsonSerializer.Deserialize<Dictionary<string, string>>(raw)
+                   ?? new Dictionary<string, string>();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[AnalysisNoteService] GetParserColumnMap 오류: {ex.Message}");
+            return new Dictionary<string, string>();
+        }
+    }
+
+    // ── 파서-컬럼 매핑 저장 (Dictionary → JSON) ──────────────────────────────
+    public static void SaveParserColumnMap(string analyte, Dictionary<string, string> map)
+    {
+        EnsureOnce();
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "UPDATE `분석정보` SET `parser_column_map` = @v WHERE `Analyte` = @a";
+            cmd.Parameters.AddWithValue("@v", map.Count > 0 ? JsonSerializer.Serialize(map) : "");
+            cmd.Parameters.AddWithValue("@a", analyte);
+            cmd.ExecuteNonQuery();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[AnalysisNoteService] SaveParserColumnMap 오류: {ex.Message}");
+        }
+    }
+
     // ── 농도 계산 공식 저장 ──────────────────────────────────────────────────
     public static void SaveFormula(string analyte, string formula)
     {
@@ -538,4 +603,17 @@ public static class AnalysisNoteService
         }
         return count;
     }
+
+    // ── 검정곡선 컬럼 판별 ───────────────────────────────────────────────────
+    // 패턴 1: ^ST\d+_ 접두사  /  패턴 2: 고정 이름 HashSet (이름 추가 시 여기만 수정)
+    private static readonly System.Collections.Generic.HashSet<string> _calColNames =
+        new(System.StringComparer.OrdinalIgnoreCase)
+        {
+            "기울기", "절편", "R값", "R^2", "검량선_a", "검량선_b",
+        };
+
+    public static bool IsCalibrationCol(string col) =>
+        System.Text.RegularExpressions.Regex.IsMatch(col, @"^ST\d+_",
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase) ||
+        _calColNames.Contains(col);
 }

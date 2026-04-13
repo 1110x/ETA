@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -30,13 +29,16 @@ public static class ShimadzuUvPdfParser
 
     private static void Log(string msg)
     {
-        try
+        if (App.EnableLogging)
         {
-            var dir = Path.GetDirectoryName(LogPath)!;
-            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
-            File.AppendAllText(LogPath, $"[{DateTime.Now:HH:mm:ss}] {msg}\n");
+            try
+            {
+                var dir = Path.GetDirectoryName(LogPath)!;
+                if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+                File.AppendAllText(LogPath, $"[{DateTime.Now:HH:mm:ss}] {msg}\n");
+            }
+            catch { }
         }
-        catch { }
     }
 
     public static ParseResult Parse(
@@ -49,9 +51,12 @@ public static class ShimadzuUvPdfParser
         string item = activeItems.FirstOrDefault() ?? "UVVIS";
 
         // 로그 초기화
-        var logDir = Path.GetDirectoryName(LogPath)!;
-        if (!Directory.Exists(logDir)) Directory.CreateDirectory(logDir);
-        File.WriteAllText(LogPath, $"=== ShimadzuUvPdf Parse Start: {Path.GetFileName(path)} ===\n");
+        if (App.EnableLogging)
+        {
+            var logDir = Path.GetDirectoryName(LogPath)!;
+            if (!Directory.Exists(logDir)) Directory.CreateDirectory(logDir);
+            File.WriteAllText(LogPath, $"=== ShimadzuUvPdf Parse Start: {Path.GetFileName(path)} ===\n");
+        }
 
         using var doc = UglyToad.PdfPig.PdfDocument.Open(path);
         var pages = doc.GetPages().ToList();

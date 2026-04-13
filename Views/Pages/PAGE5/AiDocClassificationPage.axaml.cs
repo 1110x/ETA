@@ -395,8 +395,11 @@ public partial class AiDocClassificationPage : UserControl
 
     private static void AddLog(string msg)
     {
-        try { File.AppendAllText(AddFileLog, $"[{DateTime.Now:HH:mm:ss.fff}] {msg}\n"); }
-        catch { }
+        if (App.EnableLogging)
+        {
+            try { File.AppendAllText(AddFileLog, $"[{DateTime.Now:HH:mm:ss.fff}] {msg}\n"); }
+            catch { }
+        }
     }
 
     // ── AI 학습 (서브메뉴 "학습" → MainPage에서 호출) ──────────────────
@@ -843,7 +846,7 @@ public partial class AiDocClassificationPage : UserControl
 
         foreach (var fi in onnxFiles)
         {
-            var isActive = fi.Name == "분析항목_분류.onnx";
+            var isActive = fi.Name == "분석항목_분류.onnx";
             var sizeKb   = fi.Length / 1024.0;
             var date     = fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm");
 
@@ -1000,8 +1003,11 @@ public partial class AiDocClassificationPage : UserControl
 
     private static void Log(string msg)
     {
-        try { File.AppendAllText(LogFile, $"[{DateTime.Now:HH:mm:ss}] {msg}\n"); }
-        catch { }
+        if (App.EnableLogging)
+        {
+            try { File.AppendAllText(LogFile, $"[{DateTime.Now:HH:mm:ss}] {msg}\n"); }
+            catch { }
+        }
     }
 }
 

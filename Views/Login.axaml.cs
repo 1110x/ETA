@@ -29,13 +29,15 @@ public partial class Login : Window
     private static void Log(string msg)
     {
         string line = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {msg}";
-        Debug.WriteLine(line);
-        try
+        if (App.EnableLogging)
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(LogPath)!);
-            File.AppendAllText(LogPath, line + "\n");
+            try
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(LogPath)!);
+                File.AppendAllText(LogPath, line + "\n");
+            }
+            catch { }
         }
-        catch { }
     }
 
     public Login()
@@ -97,17 +99,12 @@ public partial class Login : Window
         if (string.IsNullOrEmpty(empId))    { ShowError("사번을 입력해주세요.");    Log("[DoLogin] 중단: 사번 없음"); return; }
         if (string.IsNullOrEmpty(password)) { ShowError("비밀번호를 입력해주세요."); Log("[DoLogin] 중단: 비밀번호 없음"); return; }
 
-        // To Do 승인 동기화
-        Log("[DoLogin] TodoService.SyncApprovalStatusAsync 시작");
-        try
+        // To Do 승인 동기화 — 백그라운드 실행 (Microsoft API 지연이 로그인을 차단하지 않도록)
+        _ = Task.Run(async () =>
         {
-            await ETA.Services.SERVICE1.TodoService.SyncApprovalStatusAsync();
-            Log("[DoLogin] TodoService.SyncApprovalStatusAsync 완료");
-        }
-        catch (Exception ex)
-        {
-            Log($"[DoLogin] Sync 실패: {ex.Message}\n{ex.StackTrace}");
-        }
+            try { await ETA.Services.SERVICE1.TodoService.SyncApprovalStatusAsync(); }
+            catch { }
+        });
 
         // DB 상태 덤프
         Log("[DoLogin] DB 계정 상태 확인 시작");

@@ -11,7 +11,6 @@ using ETA.Services.SERVICE2;
 using ETA.Views;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -139,7 +138,6 @@ public partial class ProcessingFacilityPage : UserControl
         {
             tbStatus.Foreground = AppTheme.FgDanger;
             tbStatus.Text = $"조회 오류: {ex.Message}";
-            Debug.WriteLine($"[ProcessingFacility] 조회 오류: {ex}");
         }
     }
 
@@ -184,7 +182,6 @@ public partial class ProcessingFacilityPage : UserControl
         {
             tbStatus.Foreground = AppTheme.FgDanger;
             tbStatus.Text = $"저장 오류: {ex.Message}";
-            Debug.WriteLine($"[ProcessingFacility] 저장 오류: {ex}");
         }
     }
 
@@ -301,7 +298,7 @@ public partial class ProcessingFacilityPage : UserControl
                 result.Add(row);
             }
         }
-        catch (Exception ex) { Debug.WriteLine($"[FacilityImport] 파싱 오류: {ex.Message}"); }
+        catch (Exception ex) { }
         return result;
     }
 
@@ -487,4 +484,20 @@ public partial class ProcessingFacilityPage : UserControl
         "비고"   => r.비고,
         _        => "",
     };
+
+    // ── 오늘 데이터 자동 생성 ──────────────────────────────────────────
+    private void BtnGenerateToday_Click(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var count = FacilityResultService.EnsureTodayMeasurementResults();
+            tbStatus.Foreground = AppTheme.FgSuccess;
+            tbStatus.Text = $"✅ 오늘({DateTime.Today:yyyy-MM-dd}) 처리시설 측정결과 생성 완료 ({count}건)";
+        }
+        catch (Exception ex)
+        {
+            tbStatus.Foreground = AppTheme.FgDanger;
+            tbStatus.Text = $"❌ 오늘 데이터 생성 실패: {ex.Message}";
+        }
+    }
 }

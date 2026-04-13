@@ -170,7 +170,6 @@ public class SignUpWindow : Window
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"[SignUp] Todo 전송 실패: {ex.Message}");
             // Todo 실패해도 회원가입은 완료된 것으로 처리
         }
 

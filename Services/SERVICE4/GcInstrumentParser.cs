@@ -353,8 +353,8 @@ public static class GcInstrumentParser
                 // 예상 칼럼:
                 //   ISTD:  Path, Calibration, Level, Enable, , Conc, , Response   (8)
                 //   No:    Path, Calibration, Level, Enable, Conc, Response       (6)
-                // Type이 "Cal"인 것만 취함 (QC 행은 스킵)
-                if (cc.Length >= 2 && cc[1].Trim().Equals("Cal", StringComparison.OrdinalIgnoreCase))
+                // Calibration 섹션에서 Type="Calibration"인 행만 취함 (QC 행은 스킵)
+                if (cc.Length >= 2 && cc[1].Trim().Equals("Calibration", StringComparison.OrdinalIgnoreCase))
                 {
                     var pt = new GcCalibrationPoint();
                     if (int.TryParse(cc[2].Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var lvl))
@@ -362,18 +362,33 @@ public static class GcInstrumentParser
                     if (cc.Length >= 4) pt.Enable = cc[3].Trim();
                     if (istd)
                     {
-                        if (cc.Length >= 6)
+                        // ISTD 포맷: Path,Calibration,Level,Enable,,Conc.,,Response
+                        //            cc[0] cc[1]      cc[2] cc[3] cc[4] cc[5] cc[6] cc[7]
+                        if (cc.Length >= 8)
                         {
-                            pt.Conc         = cc[5].Trim(); // Final Conc.
-                            pt.Response     = cc[3].Trim(); // Resp. (main compound)
-                            pt.IstdResponse = cc[4].Trim(); // ISTD Resp
-
-                            // 디버깅 로그
-                            System.Diagnostics.Debug.WriteLine($"[GC Cal ISTD] {cc[0]}: Conc={cc[5]}, Resp={cc[3]}, ISTD={cc[4]}");
+                            pt.Conc     = cc[5].Trim(); // Conc.
+                            pt.Response = cc[7].Trim(); // Response
                         }
+                        else if (cc.Length >= 6)
+                        {
+                            pt.Conc     = cc[5].Trim();
+                            pt.Response = cc[5].Trim(); // fallback
+                        }
+                        // ISTD Resp: 검량선 테이블에 없으므로 데이터 행에서 매칭
+                        // 검량선 테이블은 풀경로, 데이터 행은 파일명만 있을 수 있어 양쪽 비교
+                        var calPath = cc[0].Trim();
+                        var calFileName = System.IO.Path.GetFileName(calPath);
+                        var calRow = compound.Rows.FirstOrDefault(r =>
+                            r.Type.Equals("Cal", StringComparison.OrdinalIgnoreCase) &&
+                            (r.RawName.Equals(calPath, StringComparison.OrdinalIgnoreCase) ||
+                             r.RawName.Equals(calFileName, StringComparison.OrdinalIgnoreCase) ||
+                             calPath.EndsWith(r.RawName, StringComparison.OrdinalIgnoreCase)));
+                        if (calRow != null) pt.IstdResponse = calRow.IstdResp;
                     }
                     else
                     {
+                        // Non-ISTD: Path,Calibration,Level,Enable,Conc.,Response
+                        //           cc[0] cc[1]      cc[2] cc[3] cc[4] cc[5]
                         if (cc.Length >= 6)
                         {
                             pt.Conc     = cc[4].Trim();
@@ -392,7 +407,7 @@ public static class GcInstrumentParser
         }
     }
 
-    private static void ComputeLinearRegression(GcCompound compound)
+    internal static void ComputeLinearRegression(GcCompound compound)
     {
         var xs = new List<double>();
         var ys = new List<double>();

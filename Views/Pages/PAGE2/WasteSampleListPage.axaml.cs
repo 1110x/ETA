@@ -6,7 +6,6 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using ETA.Models;
@@ -1318,7 +1317,9 @@ public partial class WasteSampleListPage : UserControl
     private void Log(string msg)
     {
         var line = $"[{DateTime.Now:HH:mm:ss}] [WasteSampleList] {msg}";
-        Debug.WriteLine(line);
-        try { File.AppendAllText("Logs/WasteSampleDebug.log", line + Environment.NewLine); } catch { }
+        if (App.EnableLogging)
+        {
+            try { File.AppendAllText("Logs/WasteSampleDebug.log", line + Environment.NewLine); } catch { }
+        }
     }
 }

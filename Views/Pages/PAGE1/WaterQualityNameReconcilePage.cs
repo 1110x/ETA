@@ -315,11 +315,14 @@ public sealed class WaterQualityNameReconcilePage
 
         if (errors.Count > 0)
         {
-            var logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
-                "..", "..", "..", "WaterQualityRenameError.log");
-            File.AppendAllText(logPath,
-                $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {_abbr} → {targetName}\n" +
-                string.Join("\n", errors) + "\n\n");
+            if (App.EnableLogging)
+            {
+                var logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
+                    "..", "..", "..", "WaterQualityRenameError.log");
+                File.AppendAllText(logPath,
+                    $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {_abbr} → {targetName}\n" +
+                    string.Join("\n", errors) + "\n\n");
+            }
         }
 
         _statusLabel.Foreground = errors.Count == 0

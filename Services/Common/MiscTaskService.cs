@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Diagnostics;
 using ETA.Models;
 
 namespace ETA.Services.Common;

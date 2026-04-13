@@ -5,7 +5,6 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -1309,7 +1308,9 @@ public partial class ContractPage : UserControl
     private void Log(string msg)
     {
         var line = $"[{DateTime.Now:HH:mm:ss}] [Contract] {msg}";
-        Debug.WriteLine(line);
-        try { File.AppendAllText("Logs/ContractDebug.log", line + Environment.NewLine); } catch { }
+        if (App.EnableLogging)
+        {
+            try { File.AppendAllText("Logs/ContractDebug.log", line + Environment.NewLine); } catch { }
+        }
     }
 }

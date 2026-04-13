@@ -4,7 +4,6 @@ using System.Linq;
 using System.Data;
 using System.Data.Common;
 using ETA.Models;
-using System.Diagnostics;
 using ETA.Services.Common;
 
 namespace ETA.Services.SERVICE1;
@@ -31,7 +30,6 @@ public static class TestReportService
         {
             if (!FixedColumns.Contains(col)) cols.Add(col);
         }
-        Debug.WriteLine($"[TestReport] 분석항목 {cols.Count}개");
         return cols;
     }
 
@@ -40,12 +38,11 @@ public static class TestReportService
         var list   = new List<string>();
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
-        if (!DbConnectionFactory.TableExists(conn, TableName)) { Debug.WriteLine($"[TestReport] 테이블없음"); return list; }
+        if (!DbConnectionFactory.TableExists(conn, TableName)) { return list; }
         using var cmd = conn.CreateCommand();
         cmd.CommandText = $"SELECT DISTINCT `약칭` FROM `{TableName}` WHERE `약칭` IS NOT NULL AND `약칭` <> '' ORDER BY `약칭` ASC";
         using var r = cmd.ExecuteReader();
         while (r.Read()) list.Add(r.GetString(0));
-        Debug.WriteLine($"[TestReport] 업체 {list.Count}개");
         return list;
     }
 
@@ -96,7 +93,6 @@ public static class TestReportService
             }
             list.Add(s);
         }
-        Debug.WriteLine($"[TestReport] {약칭} → {list.Count}건");
         return list;
     }
 
@@ -109,7 +105,6 @@ public static class TestReportService
         cmd.Parameters.AddWithValue("@val", string.IsNullOrEmpty(newValue) ? DBNull.Value : (object)newValue);
         cmd.Parameters.AddWithValue("@id", rowId);
         int rows = cmd.ExecuteNonQuery();
-        Debug.WriteLine($"[UPDATE] rowid={rowId} {columnName}={newValue} → {rows}행");
         return rows > 0;
     }
 
@@ -135,7 +130,6 @@ public static class TestReportService
             tx.Commit();
         }
         catch { tx.Rollback(); throw; }
-        Debug.WriteLine($"[BulkUpdate] rowid={rowId} → {count}/{analyteValues.Count}항목 저장");
         return count;
     }
 
@@ -147,7 +141,6 @@ public static class TestReportService
         cmd.CommandText = $"DELETE FROM `{TableName}` WHERE {DbConnectionFactory.RowId} = @id";
         cmd.Parameters.AddWithValue("@id", rowId);
         int rows = cmd.ExecuteNonQuery();
-        Debug.WriteLine($"[DELETE] rowid={rowId} → {rows}행");
         return rows > 0;
     }
 
@@ -164,7 +157,7 @@ public static class TestReportService
             var result = cmd.ExecuteScalar();
             return result == null || result == DBNull.Value ? null : result.ToString();
         }
-        catch (Exception ex) { Debug.WriteLine($"[GetAnalyteValue] 오류: {ex.Message}"); return null; }
+        catch (Exception ex) { return null; }
     }
 
     /// <summary>견적번호+시료명 또는 약칭+시료명으로 rowid 조회. 없으면 null</summary>
@@ -190,7 +183,7 @@ public static class TestReportService
             var result = cmd.ExecuteScalar();
             return result == null || result == DBNull.Value ? null : Convert.ToInt32(result);
         }
-        catch (Exception ex) { Debug.WriteLine($"[FindRowId] 오류: {ex.Message}"); return null; }
+        catch (Exception ex) { return null; }
     }
 
     public static Dictionary<string, AnalysisItem> GetAnalyteMeta()
@@ -208,7 +201,6 @@ public static class TestReportService
             if (!string.IsNullOrEmpty(analyte))
                 dict[analyte] = new AnalysisItem { Analyte = analyte, unit = S(r,1), Method = S(r,2), instrument = S(r,3), ES = S(r,4), Category = S(r,5) };
         }
-        Debug.WriteLine($"[TestReport] 메타 {dict.Count}개");
         return dict;
     }
 
@@ -220,7 +212,7 @@ public static class TestReportService
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
-            if (!DbConnectionFactory.TableExists(conn, "방류기준표")) { Debug.WriteLine("[방류기준] 테이블없음"); return ""; }
+            if (!DbConnectionFactory.TableExists(conn, "방류기준표")) { return ""; }
 
             var safeCol = 방류허용기준컬럼.Trim();
             var cols = DbConnectionFactory.GetColumnNames(conn, "방류기준표");
@@ -231,12 +223,9 @@ public static class TestReportService
             {
                 var norm = (string s) => s.Replace("-", "").Replace(" ", "").ToLower().Trim();
                 matchCol = cols.FirstOrDefault(col => norm(col) == norm(safeCol));
-                if (matchCol != null)
-                    Debug.WriteLine($"[방류기준] 유사매칭: '{safeCol}' → '{matchCol}'");
             }
             if (matchCol == null)
             {
-                Debug.WriteLine($"[방류기준] '{safeCol}' 컬럼없음. 전체: {string.Join(", ", cols.Take(5))}");
                 return "";
             }
             safeCol = matchCol.Trim();
@@ -246,10 +235,9 @@ public static class TestReportService
             cmd.Parameters.AddWithValue("@항목", 항목명.Trim());
             var result = cmd.ExecuteScalar();
             var val    = result == null || result == DBNull.Value ? "" : result.ToString()?.Trim() ?? "";
-            Debug.WriteLine($"[방류기준] {항목명} / {safeCol} → '{val}'");
             return val == "해당없음" ? "" : val;
         }
-        catch (Exception ex) { Debug.WriteLine($"[방류기준] 오류: {ex.Message}"); return ""; }
+        catch (Exception ex) { return ""; }
     }
 
     private static string S(DbDataReader r, int i)

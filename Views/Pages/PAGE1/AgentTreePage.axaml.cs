@@ -11,7 +11,6 @@ using Avalonia.Threading;
 using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using ETA.Models;
@@ -1701,7 +1700,6 @@ public partial class AgentTreePage : UserControl
         if (agent.담당항목목록.Count == 0) return;
         foreach (var item in agent.담당항목목록)
             AnalysisRequestService.AddAssignment(agent.사번, item, date, date);
-        Debug.WriteLine($"[AssignItemsForDate] {agent.성명} → {agent.담당항목} @ {date:yyyy-MM-dd}");
     }
 
     // =========================================================================
@@ -3533,10 +3531,14 @@ public partial class AgentTreePage : UserControl
         root.Children.Add(hdr);
         root.Children.Add(new Border { Height = 1, Background = AppTheme.BorderMuted });
 
-        // 분장표준처리 컬럼 순서대로 항목 목록
-        var analytes = AnalysisRequestService.GetOrderedAnalytes();
-        foreach (var (fullName, shortName) in analytes)
+        // 분석정보 기준 항목 목록 (약칭 포함)
+        var analyteInfos = AnalysisService.GetAllItems()
+            .Where(a => !string.IsNullOrWhiteSpace(a.Analyte))
+            .ToList();
+        foreach (var ai in analyteInfos)
         {
+            string fullName  = ai.Analyte;
+            string shortName = string.IsNullOrWhiteSpace(ai.약칭) ? ai.Analyte : ai.약칭;
             bool assigned = agent.담당항목목록.Contains(fullName);
             var (badgeBg, badgeFg) = BadgeColorHelper.GetBadgeColor(shortName);
 
@@ -3911,7 +3913,7 @@ public partial class AgentTreePage : UserControl
         _chartRangeEnd   = new DateTime(today.Year, today.Month, 1).AddMonths(2).AddDays(9); // +2개월 10일
         bool isH1 = today.Month <= 6;
 
-        var root = new Grid { RowDefinitions = new RowDefinitions("Auto,Auto,Auto,*") };
+        var root = new Grid { RowDefinitions = new RowDefinitions("Auto,Auto,*") };
         var kbFont = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
 
         // ── Row 0: 헤더 ─────────────────────────────────────────────────────
@@ -3970,19 +3972,31 @@ public partial class AgentTreePage : UserControl
         Grid.SetRow(tabBar, 1);
         root.Children.Add(tabBar);
 
-        // ── Row 2: 고정 헤더 (날짜/월 구분) ─────────────────────────────────
-        var fixedHeader = new StackPanel { Spacing = 0, Margin = new Thickness(4, 0, 4, 0) };
-        Grid.SetRow(fixedHeader, 2);
-        root.Children.Add(fixedHeader);
+        // ── Row 2: 헤더+본문 공통 래퍼 (같은 부모 → 컬럼 정렬 보장) ──────────
+        var chartWrapper = new Grid
+        {
+            Margin          = new Thickness(4, 0, 4, 4),
+            RowDefinitions  = new RowDefinitions("Auto,*"),
+        };
 
-        // ── Row 3: 스크롤 본문 ──────────────────────────────────────────────
+        var fixedHeader = new StackPanel { Spacing = 0 };
+        Grid.SetRow(fixedHeader, 0);
+        chartWrapper.Children.Add(fixedHeader);
+
         var body = new StackPanel { Spacing = 0 };
-        var scroll = new ScrollViewer {
+        var scroll = new ScrollViewer
+        {
             HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
             VerticalScrollBarVisibility   = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
-            Content = body, Margin = new Thickness(4, 0, 4, 4) };
-        Grid.SetRow(scroll, 3);
-        root.Children.Add(scroll);
+            Padding         = new Thickness(0),
+            BorderThickness = new Thickness(0),
+            Content         = body,
+        };
+        Grid.SetRow(scroll, 1);
+        chartWrapper.Children.Add(scroll);
+
+        Grid.SetRow(chartWrapper, 2);
+        root.Children.Add(chartWrapper);
 
         // 탭별 렌더링
         void RefreshBody()
@@ -5114,7 +5128,9 @@ public partial class AgentTreePage : UserControl
     private void Log(string msg)
     {
         var line = $"[{DateTime.Now:HH:mm:ss}] [AgentTree] {msg}";
-        Debug.WriteLine(line);
-        try { File.AppendAllText("Logs/AgentDebug.log", line + Environment.NewLine); } catch { }
+        if (App.EnableLogging)
+        {
+            try { File.AppendAllText("Logs/AgentDebug.log", line + Environment.NewLine); } catch { }
+        }
     }
 }

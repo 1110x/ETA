@@ -20,8 +20,10 @@ public static class MyTaskService
     private static void Log(string msg)
     {
         var line = $"[{DateTime.Now:HH:mm:ss}] [MyTaskService] {msg}";
-        System.Diagnostics.Debug.WriteLine(line);
-        try { File.AppendAllText(LogPath, line + Environment.NewLine); } catch { }
+        if (App.EnableLogging)
+        {
+            try { File.AppendAllText(LogPath, line + Environment.NewLine); } catch { }
+        }
     }
 
     // =========================================================================
@@ -186,6 +188,7 @@ public static class MyTaskService
         try
         {
             return WasteRequestService.GetFacilityItems(date)
+                .Where(i => !string.IsNullOrEmpty(i.항목목록))
                 .OrderBy(i => i.시설명)
                 .ToList();
         }
@@ -281,6 +284,352 @@ public static class MyTaskService
             Log($"GetRequestListItemsRange({fromDate}~{toDate}): {result.Count}건");
         }
         catch (Exception ex) { Log($"GetRequestListItemsRange 오류: {ex.Message}"); }
+        return result;
+    }
+
+    // =========================================================================
+    //  수질분석센터 — 날짜별 의뢰 시료 전체 목록
+    // =========================================================================
+    public record SampleRow(int RowId, string 약칭, string 시료명, string 견적번호);
+
+    public static List<SampleRow> GetSamplesForDate(string dateStr)
+    {
+        var result = new List<SampleRow>();
+        try
+        {
+            if (DateTime.TryParse(dateStr, out var dt))
+                dateStr = dt.ToString("yyyy-MM-dd");
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = $"SELECT {DbConnectionFactory.RowId}, `약칭`, `시료명`, `견적번호` FROM `분석의뢰및결과` WHERE `채취일자` = @d ORDER BY `견적번호`, `시료명`";
+            cmd.Parameters.AddWithValue("@d", dateStr);
+            using var rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+                result.Add(new SampleRow(
+                    Convert.ToInt32(rdr.GetValue(0)),
+                    rdr.IsDBNull(1) ? "" : rdr.GetString(1),
+                    rdr.IsDBNull(2) ? "" : rdr.GetString(2),
+                    rdr.IsDBNull(3) ? "" : rdr.GetString(3)));
+            Log($"GetSamplesForDate({dateStr}): {result.Count}건");
+        }
+        catch (Exception ex) { Log($"GetSamplesForDate 오류: {ex.Message}"); }
+        return result;
+    }
+
+    // =========================================================================
+    //  수질분석센터 — 특정 시료 행의 분석항목 + 담당자
+    // =========================================================================
+    public record AnalyteAssignment(string FullName, string ShortName, string AssignedAnalyst);
+
+    // =========================================================================
+    //  비용부담금 — 특정 폐수의뢰및결과 행의 분석항목 + 담당자
+    // =========================================================================
+    public static List<AnalyteAssignment> GetAnalytesForWasteRow(int id, string dateStr)
+    {
+        var result = new List<AnalyteAssignment>();
+        try
+        {
+            if (DateTime.TryParse(dateStr, out var dt))
+                dateStr = dt.ToString("yyyy-MM-dd");
+
+            var info = AnalysisRequestService.GetStandardDaysInfo();
+
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+
+            // 분장표준처리에서 해당 날짜 담당자 매핑
+            var analystMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = "SELECT * FROM `분장표준처리` WHERE `항목명` = @d";
+                cmd.Parameters.AddWithValue("@d", dateStr);
+                using var rdr = cmd.ExecuteReader();
+                if (rdr.Read())
+                    for (int i = 1; i < rdr.FieldCount; i++)
+                    {
+                        string col = rdr.GetName(i).Trim();
+                        string val = rdr.IsDBNull(i) ? "" : rdr.GetValue(i)?.ToString()?.Trim() ?? "";
+                        if (!string.IsNullOrEmpty(val))
+                            analystMap[col] = val;
+                    }
+            }
+
+            // 폐수의뢰및결과는 'O' 마커 없이 컬럼 자체가 분석항목 목록
+            // 메타데이터 컬럼 제외 후 전체 컬럼을 분석항목으로 반환
+            var metaCols = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Id", "SN", "업체명", "구분", "채수일", "확인자", "관리번호",
+                "비고", "순서", "등록일시", "등록자", "수정일시", "수정자"
+            };
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = "SELECT * FROM `폐수의뢰및결과` LIMIT 0";
+                using var rdr = cmd.ExecuteReader();
+                for (int i = 0; i < rdr.FieldCount; i++)
+                {
+                    string col = rdr.GetName(i).Trim();
+                    if (metaCols.Contains(col)) continue;
+                    string shortName = info.TryGetValue(col, out var meta) ? meta.shortName : col;
+                    string analyst = analystMap.TryGetValue(col, out var a) ? a : "";
+                    result.Add(new AnalyteAssignment(col, shortName, analyst));
+                }
+            }
+            Log($"GetAnalytesForWasteRow({id}, {dateStr}): {result.Count}항목");
+        }
+        catch (Exception ex) { Log($"GetAnalytesForWasteRow 오류: {ex.Message}"); }
+        return result;
+    }
+
+    // =========================================================================
+    //  Show4 항상표시용 — 날짜 기준 전체 분석항목 + 담당자
+    // =========================================================================
+    public static List<AnalyteAssignment> GetAllAnalytesWithAssignments(string dateStr)
+    {
+        var result = new List<AnalyteAssignment>();
+        try
+        {
+            if (DateTime.TryParse(dateStr, out var dt))
+                dateStr = dt.ToString("yyyy-MM-dd");
+
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+
+            // 분석정보 테이블에서 전체 항목 순서대로 로드
+            var analyteList = new List<string>();
+            try
+            {
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = $"SELECT `Analyte` FROM `분석정보` ORDER BY `Category`, `{DbConnectionFactory.RowId}`";
+                using var rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    string analyte = rdr.IsDBNull(0) ? "" : rdr.GetString(0).Trim();
+                    if (!string.IsNullOrEmpty(analyte))
+                        analyteList.Add(analyte);
+                }
+            }
+            catch (Exception ex2) { Log($"분석정보 쿼리 오류: {ex2.Message}"); }
+
+            // 약식명 + 날짜별 담당자
+            var info     = AnalysisRequestService.GetStandardDaysInfo();
+            var managers = AnalysisRequestService.GetManagersByDate(dateStr);
+
+            foreach (var fullName in analyteList)
+            {
+                string shortName = info.TryGetValue(fullName, out var meta) ? meta.shortName : "";
+                string analyst   = managers.TryGetValue(fullName, out var a) ? a : "";
+                result.Add(new AnalyteAssignment(fullName, shortName, analyst));
+            }
+            Log($"GetAllAnalytesWithAssignments({dateStr}): {result.Count}항목");
+        }
+        catch (Exception ex) { Log($"GetAllAnalytesWithAssignments 오류: {ex.Message}"); }
+        return result;
+    }
+
+    // =========================================================================
+    //  Show2 클릭용 — 특정 시료 행에서 'O' 표시된 항목 반환
+    // =========================================================================
+    public static HashSet<string> GetMarkedColumnsForRow(int rowId)
+    {
+        var marked = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = $"SELECT * FROM `분석의뢰및결과` WHERE {DbConnectionFactory.RowId} = @id";
+            cmd.Parameters.AddWithValue("@id", rowId);
+            using var rdr = cmd.ExecuteReader();
+            if (rdr.Read())
+            {
+                for (int i = 0; i < rdr.FieldCount; i++)
+                {
+                    string val = rdr.IsDBNull(i) ? "" : rdr.GetValue(i)?.ToString()?.Trim() ?? "";
+                    if (val.Equals("O", StringComparison.OrdinalIgnoreCase))
+                        marked.Add(rdr.GetName(i).Trim());
+                }
+            }
+            Log($"GetMarkedColumnsForRow({rowId}): {marked.Count}개");
+        }
+        catch (Exception ex) { Log($"GetMarkedColumnsForRow 오류: {ex.Message}"); }
+        return marked;
+    }
+
+    public static List<AnalyteAssignment> GetAnalytesForSampleRow(int rowId, string dateStr)
+    {
+        var result = new List<AnalyteAssignment>();
+        try
+        {
+            if (DateTime.TryParse(dateStr, out var dt))
+                dateStr = dt.ToString("yyyy-MM-dd");
+
+            var info = AnalysisRequestService.GetStandardDaysInfo();
+
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+
+            // 분장표준처리에서 해당 날짜 담당자 매핑
+            var analystMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = "SELECT * FROM `분장표준처리` WHERE `항목명` = @d";
+                cmd.Parameters.AddWithValue("@d", dateStr);
+                using var rdr = cmd.ExecuteReader();
+                if (rdr.Read())
+                    for (int i = 1; i < rdr.FieldCount; i++)
+                    {
+                        string col = rdr.GetName(i).Trim();
+                        string val = rdr.IsDBNull(i) ? "" : rdr.GetValue(i)?.ToString()?.Trim() ?? "";
+                        if (!string.IsNullOrEmpty(val))
+                            analystMap[col] = val;
+                    }
+            }
+
+            // 해당 시료 행에서 'O' 컬럼 추출
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = $"SELECT * FROM `분석의뢰및결과` WHERE {DbConnectionFactory.RowId} = @id";
+                cmd.Parameters.AddWithValue("@id", rowId);
+                using var rdr = cmd.ExecuteReader();
+                if (rdr.Read())
+                {
+                    for (int i = 0; i < rdr.FieldCount; i++)
+                    {
+                        string col = rdr.GetName(i).Trim();
+                        string val = rdr.IsDBNull(i) ? "" : rdr.GetValue(i)?.ToString()?.Trim() ?? "";
+                        if (!val.Equals("O", StringComparison.OrdinalIgnoreCase)) continue;
+                        string shortName = info.TryGetValue(col, out var meta) ? meta.shortName : col;
+                        string analyst = analystMap.TryGetValue(col, out var a) ? a : "";
+                        result.Add(new AnalyteAssignment(col, shortName, analyst));
+                    }
+                }
+            }
+            Log($"GetAnalytesForSampleRow({rowId}, {dateStr}): {result.Count}항목");
+        }
+        catch (Exception ex) { Log($"GetAnalytesForSampleRow 오류: {ex.Message}"); }
+        return result;
+    }
+
+    // =========================================================================
+    //  Show3 처리시설용 — 로그인 사용자의 해당 날짜 분장항목 (분석정보 형식)
+    // =========================================================================
+    public record UserAssignedItem(
+        string FullName, string ShortName,
+        string Category, string Unit,
+        string ES, string Method, string Instrument);
+
+    public static List<UserAssignedItem> GetUserAssignedItems(string dateStr, string employeeName)
+    {
+        var result = new List<UserAssignedItem>();
+        if (string.IsNullOrEmpty(employeeName)) return result;
+        try
+        {
+            if (DateTime.TryParse(dateStr, out var dt))
+                dateStr = dt.ToString("yyyy-MM-dd");
+
+            // 분장표준처리에서 해당 날짜 담당자 목록 → 내 이름으로 배정된 항목
+            var managers = AnalysisRequestService.GetManagersByDate(dateStr);
+            var assignedItems = managers
+                .Where(kv => kv.Value.Trim() == employeeName.Trim())
+                .Select(kv => kv.Key)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            if (assignedItems.Count == 0)
+            {
+                Log($"GetUserAssignedItems({dateStr}, {employeeName}): 배정 없음");
+                return result;
+            }
+
+            // 분장표준처리 약칭
+            var info = AnalysisRequestService.GetStandardDaysInfo();
+
+            // 분석정보 테이블에서 상세 정보 조회
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = $"SELECT `Analyte`, `Category`, `unit`, `ES`, `Method`, `instrument` FROM `분석정보` ORDER BY `Category`, `{DbConnectionFactory.RowId}`";
+            using var rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                string analyte = rdr.IsDBNull(0) ? "" : rdr.GetString(0).Trim();
+                if (string.IsNullOrEmpty(analyte) || !assignedItems.Contains(analyte)) continue;
+                string shortName = info.TryGetValue(analyte, out var meta) ? meta.shortName : analyte;
+                result.Add(new UserAssignedItem(
+                    analyte,
+                    shortName,
+                    rdr.IsDBNull(1) ? "" : rdr.GetString(1).Trim(),
+                    rdr.IsDBNull(2) ? "" : rdr.GetString(2).Trim(),
+                    rdr.IsDBNull(3) ? "" : rdr.GetString(3).Trim(),
+                    rdr.IsDBNull(4) ? "" : rdr.GetString(4).Trim(),
+                    rdr.IsDBNull(5) ? "" : rdr.GetString(5).Trim()
+                ));
+            }
+            Log($"GetUserAssignedItems({dateStr}, {employeeName}): {result.Count}항목");
+        }
+        catch (Exception ex) { Log($"GetUserAssignedItems 오류: {ex.Message}"); }
+        return result;
+    }
+
+    // =========================================================================
+    //  캘린더 툴팁용 — 월 범위 내 수질분석센터 시료 목록
+    // =========================================================================
+    public static Dictionary<DateTime, List<(string 약칭, string 시료명)>> GetSamplesByMonth(string startDate, string endDate)
+    {
+        var result = new Dictionary<DateTime, List<(string, string)>>();
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT `채취일자`, `약칭`, `시료명` FROM `분석의뢰및결과` WHERE `채취일자` BETWEEN @s AND @e ORDER BY `채취일자`, `약칭`, `시료명`";
+            cmd.Parameters.AddWithValue("@s", startDate);
+            cmd.Parameters.AddWithValue("@e", endDate);
+            using var rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                string dateStr = rdr.IsDBNull(0) ? "" : rdr.GetValue(0)?.ToString() ?? "";
+                if (!DateTime.TryParse(dateStr, out var dt)) continue;
+                var date = dt.Date;
+                if (!result.TryGetValue(date, out var list)) result[date] = list = new();
+                list.Add((
+                    rdr.IsDBNull(1) ? "" : rdr.GetString(1).Trim(),
+                    rdr.IsDBNull(2) ? "" : rdr.GetString(2).Trim()
+                ));
+            }
+        }
+        catch (Exception ex) { Log($"GetSamplesByMonth 오류: {ex.Message}"); }
+        return result;
+    }
+
+    // =========================================================================
+    //  캘린더 툴팁용 — 월 범위 내 폐수의뢰 목록
+    // =========================================================================
+    public static Dictionary<DateTime, List<(string 업체명, string 구분)>> GetWasteRequestsByMonth(string startDate, string endDate)
+    {
+        var result = new Dictionary<DateTime, List<(string, string)>>();
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT `채수일`, `업체명`, `구분` FROM `폐수의뢰및결과` WHERE `채수일` BETWEEN @s AND @e ORDER BY `채수일`, `구분`, `업체명`";
+            cmd.Parameters.AddWithValue("@s", startDate);
+            cmd.Parameters.AddWithValue("@e", endDate);
+            using var rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                string dateStr = rdr.IsDBNull(0) ? "" : rdr.GetValue(0)?.ToString() ?? "";
+                if (!DateTime.TryParse(dateStr, out var dt)) continue;
+                var date = dt.Date;
+                if (!result.TryGetValue(date, out var list)) result[date] = list = new();
+                list.Add((
+                    rdr.IsDBNull(1) ? "" : rdr.GetString(1).Trim(),
+                    rdr.IsDBNull(2) ? "" : rdr.GetString(2).Trim()
+                ));
+            }
+        }
+        catch (Exception ex) { Log($"GetWasteRequestsByMonth 오류: {ex.Message}"); }
         return result;
     }
 }

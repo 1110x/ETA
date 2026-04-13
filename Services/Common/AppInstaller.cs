@@ -258,12 +258,14 @@ public static class AppInstaller
     private static void Log(string msg)
     {
         var line = $"[{DateTime.Now:HH:mm:ss}] [Installer] {msg}";
-        Debug.WriteLine(line);
-        try
+        if (App.EnableLogging)
         {
-            var logPath = Path.Combine(AppContext.BaseDirectory, "install.log");
-            File.AppendAllText(logPath, line + Environment.NewLine);
+            try
+            {
+                var logPath = Path.Combine(AppContext.BaseDirectory, "install.log");
+                File.AppendAllText(logPath, line + Environment.NewLine);
+            }
+            catch { }
         }
-        catch { }
     }
 }

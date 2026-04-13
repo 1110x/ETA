@@ -41,8 +41,10 @@ public partial class QuotationHistoryPanel : UserControl
     private static void Log(string msg)
     {
         var line = $"[{DateTime.Now:HH:mm:ss}] {msg}";
-        System.Diagnostics.Debug.WriteLine(line);
-        try { File.AppendAllText(LogPath, line + Environment.NewLine); } catch { }
+        if (App.EnableLogging)
+        {
+            try { File.AppendAllText(LogPath, line + Environment.NewLine); } catch { }
+        }
     }
 
     private static readonly FontFamily Font =

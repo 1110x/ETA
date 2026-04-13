@@ -112,6 +112,7 @@ public partial class MainPage : Window
     private readonly Dictionary<string, List<bool[]>> _facilityPlanState = new();
     private int _analysisPlanSelectedDay = -1; // -1=전체, 0=월..6=일, -2=BASE
 
+
     public MainPage()
     {
         InitializeComponent();
@@ -124,6 +125,7 @@ public partial class MainPage : Window
         // 윈도우 이벤트 연결
         this.Opened += MainPage_Opened;
         this.Closing += MainPage_Closing;
+
 
         // GridSplitter 실시간 레이아웃 저장 이벤트 연결
         this.Loaded += SetupSplitterEvents;
@@ -452,7 +454,6 @@ public partial class MainPage : Window
         if (MenuItemAccess != null)
             MenuItemAccess.IsVisible = CurrentEmployeeId == "201000308";
 
-        System.Diagnostics.Debug.WriteLine("[MainPage] Opened 이벤트");
         RunExpandAnimation();
         _ = LoadProfileInfoAsync();
 
@@ -638,7 +639,6 @@ public partial class MainPage : Window
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[Profile] 로드 실패: {ex.Message}");
         }
     }
 
@@ -659,7 +659,6 @@ public partial class MainPage : Window
 
     private void MainPage_Closing(object? sender, WindowClosingEventArgs e)
     {
-        System.Diagnostics.Debug.WriteLine("[MainPage] Closing 이벤트 - 현재 모드 레이아웃 저장");
         if (!string.IsNullOrEmpty(_currentMode) && _currentMode != "None")
         {
             SaveCurrentModeLayout();
@@ -1361,7 +1360,6 @@ public partial class MainPage : Window
                      && a.fullName != "담당계약업체"
                      && a.fullName != "항목명")
             .ToList();
-        Debug.WriteLine($"[LoadAnalysisItems] 로드된 분석항목 수: {analytes.Count}");
 
         foreach (var (fullName, shortName) in analytes)
         {
@@ -1446,7 +1444,6 @@ public partial class MainPage : Window
                         var data = new DataObject();
                         data.Set("analyte", analyte);
                         DragDrop.DoDragDrop(e, data, DragDropEffects.Move);
-                        System.Diagnostics.Debug.WriteLine($"[DragStart] {analyte}");
                     }
                 }
             };
@@ -1824,6 +1821,16 @@ public partial class MainPage : Window
                 Show2.Content = panel;
                 LogContentChange("Show2", panel);
             };
+            _myTaskPage.EditPanelChanged += panel =>
+            {
+                Show3.Content = panel;
+                LogContentChange("Show3", panel);
+            };
+            _myTaskPage.StatsPanelChanged += panel =>
+            {
+                Show4.Content = panel;
+                LogContentChange("Show4", panel);
+            };
         }
 
         Show1.Content = _myTaskPage;
@@ -1838,7 +1845,7 @@ public partial class MainPage : Window
         _myTaskPage.LoadData();
         SetSubMenu("새로고침", "", "", "", "", "", "");
         SetLeftPanelWidth(280);
-        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 1, lowerStar: 0);
+        SetContentLayout(content2Star: 6, content4Star: 3, upperStar: 6, lowerStar: 4);
         RestoreModeLayout("MyTask");
     }
 
@@ -2848,7 +2855,7 @@ public partial class MainPage : Window
         Show1.Content = null;
         Show2.Content = null; Show3.Content = null;
         string attachLabel = inputMode == "비용부담금/처리시설" ? "파일첨부" : "";
-        SetSubMenu("새로고침", "검증", "입력", "출력", attachLabel, "AI파서", "생태독성");
+        SetSubMenu("새로고침", "검증", "입력", "출력", attachLabel, "AI파서", "");
         SetLeftPanelWidth(320);
 
         // 레이아웃: Show2 전체폭 상단, Show3+Show4 하단 병렬 (Show4 = WasteAnalysisInputPage)
@@ -3168,7 +3175,7 @@ public partial class MainPage : Window
                     Show1.Content = BuildFacilityListPanel();
                     Show2.Content = BuildAnalysisPlanPanel();
                 }
-                catch (Exception ex) { Debug.WriteLine($"[AnalysisPlan] 시설 추가 오류: {ex.Message}"); }
+                catch (Exception ex) { }
             }
         };
         root.Children.Add(addBtn);
@@ -3263,9 +3270,8 @@ public partial class MainPage : Window
                 Show1.Content = BuildFacilityListPanel();
                 Show2.Content = BuildAnalysisPlanPanel();
                 Show3.Content = BuildFacilityEditPanel(_selectedFacilityPlan);
-                Debug.WriteLine($"[AnalysisPlan] 시설 설정 적용: {facilityName} → 이름={newName}, 약칭={newAlias}");
             }
-            catch (Exception ex) { Debug.WriteLine($"[AnalysisPlan] 시설 설정 오류: {ex.Message}"); }
+            catch (Exception ex) { }
         };
         stack.Children.Add(applyBtn);
 
@@ -3396,7 +3402,7 @@ public partial class MainPage : Window
                     FacilityResultService.AddAnalysisItem(name);
                     Show4.Content = BuildAnalysisItemEditorPanel();
                 }
-                catch (Exception ex) { Debug.WriteLine($"[AnalysisItems] 추가 오류: {ex.Message}"); }
+                catch (Exception ex) { }
             }
         };
         Grid.SetColumn(addBtn, 1);
@@ -3500,12 +3506,10 @@ public partial class MainPage : Window
             });
             pb.Value = 100;
             pctText.Text = "100% 완료";
-            Debug.WriteLine($"[AnalysisPlan] 저장 완료: {facility}, day={_analysisPlanSelectedDay}");
             await Task.Delay(300);
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[AnalysisPlan] 저장 오류: {ex.Message}");
         }
         finally
         {
@@ -3717,9 +3721,8 @@ public partial class MainPage : Window
                             var list = _facilitySamples[facility].ToList();
                             list[sampleIdx] = newName;
                             _facilitySamples[facility] = list.ToArray();
-                            Debug.WriteLine($"[AnalysisPlan] 시료명 변경: {oldName} → {newName} (전체 요일)");
                         }
-                        catch (Exception ex) { Debug.WriteLine($"[AnalysisPlan] 시료명 변경 오류: {ex.Message}"); }
+                        catch (Exception ex) { }
                     }
                 };
                 nameRow.Children.Add(nameBox);
@@ -3778,7 +3781,6 @@ public partial class MainPage : Window
                 var targetFacility = facility;
                 if (string.IsNullOrEmpty(targetFacility) || _facilityNames.Length == 0)
                 {
-                    Debug.WriteLine("[AnalysisPlan] 시설이 없어서 시료 추가 불가");
                     return;
                 }
                 if (_facilityNames.Length > 1 && string.IsNullOrEmpty(_selectedFacilityPlan))
@@ -3817,9 +3819,8 @@ public partial class MainPage : Window
                         LoadAnalysisPlanFromDb(_analysisPlanSelectedDay == -2 ? -1 : _analysisPlanSelectedDay);
                         Show1.Content = BuildFacilityListPanel();
                         Show2.Content = BuildAnalysisPlanPanel();
-                        Debug.WriteLine($"[AnalysisPlan] 시료 추가 완료: {targetFacility} → {result}");
                     }
-                    catch (Exception ex) { Debug.WriteLine($"[AnalysisPlan] 시료 추가 오류: {ex.Message}"); }
+                    catch (Exception ex) { }
                 }
             };
             bodyStack.Children.Add(addSampleBtn);
@@ -3865,11 +3866,9 @@ public partial class MainPage : Window
             if (_facilityNames.Length > 0 && string.IsNullOrEmpty(_selectedFacilityPlan))
                 _selectedFacilityPlan = _facilityNames[0];
 
-            Debug.WriteLine($"[AnalysisPlan] DB 로딩 완료: 시설 {_facilityNames.Length}개, 항목 {_analysisPlanItems.Length}개, 요일={dayIdx}");
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[AnalysisPlan] DB 로딩 오류: {ex.Message}");
         }
     }
 
@@ -3888,21 +3887,17 @@ public partial class MainPage : Window
             {
                 // BASE 모드: 전체 요일에 일괄 적용
                 FacilityResultService.ApplyBaseToAllDays(facility, samples, checkRows);
-                Debug.WriteLine($"[AnalysisPlan] BASE 저장 완료: {facility} → 전체 요일 적용");
             }
             else if (_analysisPlanSelectedDay >= 0)
             {
                 FacilityResultService.SaveAnalysisPlanState(facility, samples, checkRows, _analysisPlanSelectedDay);
-                Debug.WriteLine($"[AnalysisPlan] 저장 완료: {facility}, 요일={_analysisPlanSelectedDay}");
             }
             else
             {
-                Debug.WriteLine("[AnalysisPlan] 전체 보기에서는 저장 불가");
             }
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[AnalysisPlan] 저장 오류: {ex.Message}");
         }
     }
 
@@ -3957,7 +3952,7 @@ public partial class MainPage : Window
 
         // 최초 진입 시 분석단가 컬럼 보장 (없는 컬럼 자동 추가)
         try { ContractService.EnsureContractPriceColumns(); }
-        catch (Exception ex) { Debug.WriteLine($"[Contract] EnsureContractPriceColumns 오류: {ex.Message}"); }
+        catch (Exception ex) { }
 
         Show1.Content = _contractPage;
         LogContentChange("Show1", _contractPage);
@@ -5028,7 +5023,7 @@ public partial class MainPage : Window
             case "RiskManage":      _riskPage?.DeleteSelected();        break;
             case "AnalysisPlan":    SetAnalysisPlanDay(0); break; // 월
             case "AiDocClassification": AiDocClassification_Click(null, null!); break;
-            default: Debug.WriteLine($"[{_currentMode}] BT2");   break;
+            default: break;
         }
     }
 
@@ -5045,7 +5040,7 @@ public partial class MainPage : Window
             case "WasteAnalysisInput": _ = _wasteAnalysisInputPage?.ImportData(); break;
             case "Repair":          _repairPage?.RejectSelected();           break;
             case "AnalysisPlan":    SetAnalysisPlanDay(1); break; // 화
-            default: Debug.WriteLine($"[{_currentMode}] BT3");          break;
+            default: break;
         }
     }
 
@@ -5061,7 +5056,7 @@ public partial class MainPage : Window
             case "Repair":          _repairPage?.CompleteSelected();   break;
             case "Quotation":       await ExportQuotationAsync(); break;
             case "AnalysisPlan":    SetAnalysisPlanDay(2); break; // 수
-            default: Debug.WriteLine($"[{_currentMode}] BT4"); break;
+            default: break;
         }
     }
 
@@ -5076,7 +5071,7 @@ public partial class MainPage : Window
             case "Contract":      _ = ImportContractFromExcelAsync(); break;
             case "WasteAnalysisInput": _wasteAnalysisInputPage?.AttachExcel(); break;
             case "AnalysisPlan":  SetAnalysisPlanDay(3); break; // 목
-            default: Debug.WriteLine($"[{_currentMode}] BT5");      break;
+            default: break;
         }
     }
 
@@ -5140,7 +5135,7 @@ public partial class MainPage : Window
             case "QuotationIssue":  IssueTradeStatementFromChecklist();     break;
             case "WasteAnalysisInput": _ = _wasteAnalysisInputPage?.OnAiParserButtonClick(); break;
             case "AnalysisPlan":    SetAnalysisPlanDay(4); break; // 금
-            default: Debug.WriteLine($"[{_currentMode}] BT6");             break;
+            default: break;
         }
     }
 
@@ -5682,11 +5677,7 @@ public partial class MainPage : Window
                 new MeasurerLoginWindow().Show(this);
                 break;
             case "AnalysisPlan": SetAnalysisPlanDay(5); break; // 토
-            case "WasteAnalysisInput":
-                _wasteAnalysisInputPage?.ShowEcotoxPanel();
-                break;
             default:
-                Debug.WriteLine($"[{_currentMode}] BT7");
                 break;
         }
     }
@@ -5700,7 +5691,6 @@ public partial class MainPage : Window
                 break;
             case "AnalysisPlan": SetAnalysisPlanDay(6); break; // 일
             default:
-                Debug.WriteLine($"[{_currentMode}] BT8");
                 break;
         }
     }
@@ -5711,7 +5701,6 @@ public partial class MainPage : Window
         {
             case "AnalysisPlan": SetAnalysisPlanDay(-2); break; // BASE
             default:
-                Debug.WriteLine($"[{_currentMode}] BT9");
                 break;
         }
     }
@@ -5780,7 +5769,7 @@ public partial class MainPage : Window
             System.IO.File.WriteAllText(FontScaleSettingsPath,
                 $"{{\"fontScale\":{scale.ToString(System.Globalization.CultureInfo.InvariantCulture)}}}");
         }
-        catch (Exception ex) { Debug.WriteLine($"[FontScale] 저장 실패: {ex.Message}"); }
+        catch (Exception ex) { }
     }
 
     private double LoadFontScale()
@@ -5793,7 +5782,7 @@ public partial class MainPage : Window
             if (doc.RootElement.TryGetProperty("fontScale", out var el))
                 return el.GetDouble();
         }
-        catch (Exception ex) { Debug.WriteLine($"[FontScale] 로드 실패: {ex.Message}"); }
+        catch (Exception ex) { }
         return 1.0;
     }
 
@@ -6486,7 +6475,6 @@ public partial class MainPage : Window
 
     private void LogContentChange(string contentName, object? content)
     {
-        Debug.WriteLine($"[{DateTime.Now:HH:mm:ss}] ContentChange: {contentName} = {content?.GetType().Name ?? "null"}");
 
         // 패널 내용이 세팅되면 shimmer sweep 재생
         if (content != null)
@@ -6515,14 +6503,12 @@ public partial class MainPage : Window
     {
         if (_positionManager == null || string.IsNullOrEmpty(_currentMode) || _currentMode == "None")
         {
-            System.Diagnostics.Debug.WriteLine($"[MainPage] SaveCurrentModeLayout 건너뛰기 - PositionManager: {_positionManager != null}, CurrentMode: {_currentMode}");
             return;
         }
 
         try
         {
             string modeKey = LayoutStorageModePrefix + _currentMode;
-            System.Diagnostics.Debug.WriteLine($"[MainPage] SaveCurrentModeLayout 시작 - Mode: {_currentMode}, Key: {modeKey}");
 
             var layout = new PageLayoutInfo();
 
@@ -6559,11 +6545,9 @@ public partial class MainPage : Window
 
             layout.SavedAt = DateTime.Now;
             _positionManager?.SavePageLayout(modeKey, layout); // null 체크 - WindowPositionManager 비활성화 시
-            System.Diagnostics.Debug.WriteLine($"[MainPage] 저장 완료: {modeKey} - {layout}");
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"[MainPage] 레이아웃 저장 오류: {ex.Message}");
         }
     }
 
@@ -6574,23 +6558,19 @@ public partial class MainPage : Window
     {
         if (_positionManager == null)
         {
-            System.Diagnostics.Debug.WriteLine($"[MainPage] RestoreModeLayout 건너뛰기 - PositionManager가 null");
             return;
         }
 
         try
         {
             string modeKey = LayoutStorageModePrefix + modeName;
-            System.Diagnostics.Debug.WriteLine($"[MainPage] RestoreModeLayout 시작 - Mode: {modeName}, Key: {modeKey}");
 
             var layout = _positionManager?.GetPageLayout(modeKey); // null 체크 - WindowPositionManager 비활성화 시
             if (layout == null)
             {
-                System.Diagnostics.Debug.WriteLine($"[MainPage] 복원할 레이아웃 없음: {modeKey}");
                 return;
             }
 
-            System.Diagnostics.Debug.WriteLine($"[MainPage] 레이아웃 발견, 복원 진행: {layout}");
 
             // 왼쪽 패널 너비 복원
             if (layout.LeftPanelWidth > 0)
@@ -6603,11 +6583,9 @@ public partial class MainPage : Window
                 upperStar: layout.UpperStar,
                 lowerStar: Math.Max(layout.LowerStar, minLowerStar));
 
-            System.Diagnostics.Debug.WriteLine($"[MainPage] 복원 완료: {modeKey} - {layout}");
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"[MainPage] 레이아웃 복원 오류: {ex.Message}");
         }
     }
 
@@ -6622,7 +6600,6 @@ public partial class MainPage : Window
             CurrentUserManager.Instance.SetCurrentUser(newUserId);
             // 새 사용자로 WindowPositionManager 재초기화 - 완전 비활성화 (스턱 방지)
             _positionManager = null; // new WindowPositionManager(newUserId);
-            System.Diagnostics.Debug.WriteLine($"[MainPage] 사용자 변경: {newUserId}");
         }
     }
 
@@ -6652,7 +6629,6 @@ public partial class MainPage : Window
             if (mainSplitter != null)
             {
                 mainSplitter.DragCompleted += OnSplitterMoved;
-                System.Diagnostics.Debug.WriteLine("[MainPage] MainSplitter 이벤트 연결됨");
             }
 
             // 수평 스플리터 (Show2,3 ↔ Show4)
@@ -6660,7 +6636,6 @@ public partial class MainPage : Window
             if (horizontalSplitter != null)
             {
                 horizontalSplitter.DragCompleted += OnSplitterMoved;
-                System.Diagnostics.Debug.WriteLine("[MainPage] HorizontalSplitter 이벤트 연결됨");
             }
 
             // 수직 스플리터 (Show2 ↔ Show3)
@@ -6668,12 +6643,10 @@ public partial class MainPage : Window
             if (verticalSplitter != null)
             {
                 verticalSplitter.DragCompleted += OnSplitterMoved;
-                System.Diagnostics.Debug.WriteLine("[MainPage] VerticalSplitter 이벤트 연결됨");
             }
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"[MainPage] Splitter 이벤트 연결 오류: {ex.Message}");
         }
     }
 
@@ -6692,7 +6665,6 @@ public partial class MainPage : Window
                 Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
                 {
                     SaveCurrentModeLayout();
-                    System.Diagnostics.Debug.WriteLine($"[MainPage] Splitter 이동 후 레이아웃 자동 저장: {_currentMode}");
                 });
             },
             state: null,

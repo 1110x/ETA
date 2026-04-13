@@ -27,7 +27,6 @@ public static class AgentService
             using var alter = conn.CreateCommand();
             alter.CommandText = @"ALTER TABLE `Agent` ADD COLUMN PhotoPath TEXT DEFAULT ''";
             alter.ExecuteNonQuery();
-            Debug.WriteLine("[DB] PhotoPath 컬럼 추가");
         }
     }
 
@@ -38,7 +37,7 @@ public static class AgentService
         {
             using var alter = conn.CreateCommand();
             alter.CommandText = @"ALTER TABLE `Agent` ADD COLUMN PhotoData LONGBLOB DEFAULT NULL";
-            try { alter.ExecuteNonQuery(); Debug.WriteLine("[DB] PhotoData 컬럼 추가"); } catch { }
+            try { alter.ExecuteNonQuery(); } catch { }
         }
     }
 
@@ -56,9 +55,8 @@ public static class AgentService
             cmd.Parameters.AddWithValue("@data", data);
             cmd.Parameters.AddWithValue("@id", 사번);
             cmd.ExecuteNonQuery();
-            Debug.WriteLine($"[Photo] DB에 사진 저장: {사번} ({data.Length} bytes)");
         }
-        catch (Exception ex) { Debug.WriteLine($"[Photo] DB 저장 실패: {ex.Message}"); }
+        catch (Exception ex) { }
     }
 
     // ── DB에서 사진 바이너리 로드 → 로컬 캐시 ──────────────────────────────
@@ -102,11 +100,10 @@ public static class AgentService
             {
                 Directory.CreateDirectory(dir);
                 File.WriteAllBytes(cachePath, data);
-                Debug.WriteLine($"[Photo] DB에서 로컬 캐시: {cachePath} ({data.Length} bytes)");
                 return true;
             }
         }
-        catch (Exception ex) { Debug.WriteLine($"[Photo] DB 로드 실패: {ex.Message}"); }
+        catch (Exception ex) { }
         return false;
     }
 
@@ -151,10 +148,8 @@ public static class AgentService
                 synced++;
             }
 
-            if (synced > 0)
-                Debug.WriteLine($"[Photo] 로컬→DB 일괄 동기화: {synced}건");
         }
-        catch (Exception ex) { Debug.WriteLine($"[Photo] 일괄 동기화 실패: {ex.Message}"); }
+        catch (Exception ex) { }
     }
 
     // ── 담당항목/담당업체/부서 컬럼 마이그레이션 ──────────────────────────────────
@@ -167,7 +162,7 @@ public static class AgentService
             if (existing.Contains(col)) continue;
             using var alt = conn.CreateCommand();
             alt.CommandText = $"ALTER TABLE `Agent` ADD COLUMN `{col}` TEXT DEFAULT ''";
-            try { alt.ExecuteNonQuery(); Debug.WriteLine($"[DB] {col} 컬럼 추가"); } catch { }
+            try { alt.ExecuteNonQuery(); } catch { }
         }
         _schemaMigrated = true; // 이후 호출은 즉시 리턴
     }
@@ -201,9 +196,8 @@ public static class AgentService
                 cmd.CommandText = $"ALTER TABLE `Agent` ADD COLUMN IF NOT EXISTS `{col}` {def}";
                 cmd.ExecuteNonQuery();
                 anyAdded = true;
-                Debug.WriteLine($"[AgentService] 컬럼 추가: {col}");
             }
-            catch (Exception ex) { Debug.WriteLine($"[AgentService] 컬럼 추가 실패 {col}: {ex.Message}"); }
+            catch (Exception ex) { }
         }
 
         if (!anyAdded) return; // 이미 완료된 경우 UPDATE도 불필요
@@ -214,9 +208,8 @@ public static class AgentService
             using var fix = conn.CreateCommand();
             fix.CommandText = "UPDATE `Agent` SET `상태`='approved' WHERE (`상태` IS NULL OR `상태`='') AND `사번` != ''";
             int updated = fix.ExecuteNonQuery();
-            if (updated > 0) Debug.WriteLine($"[AgentService] 기존 직원 상태 approved 설정: {updated}명");
         }
-        catch (Exception ex) { Debug.WriteLine($"[AgentService] 상태 일괄 업데이트 실패: {ex.Message}"); }
+        catch (Exception ex) { }
     }
 
     // ── 전체 조회 ─────────────────────────────────────────────────────────────
@@ -261,14 +254,13 @@ public static class AgentService
             items.Add(a);
         }
 
-        Debug.WriteLine($"[DB] 로드 {items.Count}명");
         return items;
     }
 
     // ── 수정 ─────────────────────────────────────────────────────────────────
     public static bool Update(Agent agent)
     {
-        if (string.IsNullOrEmpty(agent.Original성명)) { Debug.WriteLine("❌ Original성명 없음"); return false; }
+        if (string.IsNullOrEmpty(agent.Original성명)) { return false; }
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
@@ -288,7 +280,6 @@ public static class AgentService
         cmd.Parameters.AddWithValue("@Original성명", agent.Original성명);
 
         int rows = cmd.ExecuteNonQuery();
-        Debug.WriteLine($"[UPDATE] {rows}행 → {agent.성명}");
         if (rows > 0) { agent.Original성명 = agent.성명; return true; }
         return false;
     }
@@ -309,14 +300,13 @@ public static class AgentService
 
         SetParams(cmd, agent);
         int rows = cmd.ExecuteNonQuery();
-        Debug.WriteLine($"[INSERT] {rows}행 → {agent.성명}");
         return rows > 0;
     }
 
     // ── 삭제 ─────────────────────────────────────────────────────────────────
     public static bool Delete(Agent agent)
     {
-        if (string.IsNullOrEmpty(agent.성명)) { Debug.WriteLine("❌ 삭제 대상 없음"); return false; }
+        if (string.IsNullOrEmpty(agent.성명)) { return false; }
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
@@ -326,7 +316,6 @@ public static class AgentService
         cmd.Parameters.AddWithValue("@성명", agent.성명);
 
         int rows = cmd.ExecuteNonQuery();
-        Debug.WriteLine($"[DELETE] {rows}행 → {agent.성명}");
 
         if (rows > 0 && !string.IsNullOrEmpty(agent.PhotoPath))
         {
@@ -400,8 +389,6 @@ public static class AgentService
         var status       = r.IsDBNull(1) ? "" : r.GetString(1);
         var mustChangePw = !r.IsDBNull(2) && r.GetInt64(2) != 0;
 
-        Debug.WriteLine($"[ValidateLogin] 사번={employeeId} 상태={status} " +
-                        $"비밀번호설정={!string.IsNullOrEmpty(dbPw)} mustChange={mustChangePw}");
 
         // ★ 승인 상태 차단
         switch (status)
@@ -428,7 +415,6 @@ public static class AgentService
             fix.ExecuteNonQuery();
             dbPw         = initialHash;
             mustChangePw = true;
-            Debug.WriteLine($"[ValidateLogin] 비밀번호 없음 → 123456 자동 설정: {employeeId}");
         }
 
         var logPath = Path.Combine(
@@ -437,8 +423,10 @@ public static class AgentService
         void Log(string msg)
         {
             string line = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {msg}";
-            Debug.WriteLine(line);
-            try { File.AppendAllText(logPath, line + "\n"); } catch { }
+            if (App.EnableLogging)
+            {
+                try { File.AppendAllText(logPath, line + "\n"); } catch { }
+            }
         }
 
         var inputHash = HashPassword(password);
@@ -462,7 +450,6 @@ public static class AgentService
         cmd.Parameters.AddWithValue("@id",  employeeId);
         cmd.ExecuteNonQuery();
 
-        Debug.WriteLine($"[AgentService] todo_task_id 저장: {employeeId} → '{taskId}'");
     }
 
     // ── 비밀번호 규칙 검사 ────────────────────────────────────────────────────
@@ -492,8 +479,10 @@ public static class AgentService
         void Log(string msg)
         {
             string line = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {msg}";
-            Debug.WriteLine(line);
-            try { File.AppendAllText(logPath, line + "\n"); } catch { }
+            if (App.EnableLogging)
+            {
+                try { File.AppendAllText(logPath, line + "\n"); } catch { }
+            }
         }
 
         try
@@ -570,7 +559,6 @@ public static class AgentService
               AND (상태 = 'approved' OR 상태 = '' OR 상태 IS NULL)";
         cmd.Parameters.AddWithValue("@pw", initialHash);
         int rows = cmd.ExecuteNonQuery();
-        Debug.WriteLine($"[AgentService] 초기 비밀번호 설정 완료: {rows}명");
     }
 
     // ── 최초 비밀번호 변경 필요 여부 조회 ────────────────────────────────────
@@ -598,7 +586,6 @@ public static class AgentService
         cmd.CommandText = @"UPDATE `Agent` SET 상태='approved' WHERE 사번=@id";
         cmd.Parameters.AddWithValue("@id", employeeId);
         cmd.ExecuteNonQuery();
-        Debug.WriteLine($"[AgentService] 승인 완료: {employeeId}");
     }
 
     // ── 알 수 없는 해시가 저장된 계정 전체를 123456으로 초기화 ───────────────
@@ -614,8 +601,10 @@ public static class AgentService
         void Log(string msg)
         {
             string line = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {msg}";
-            Debug.WriteLine(line);
-            try { File.AppendAllText(logPath, line + "\n"); } catch { }
+            if (App.EnableLogging)
+            {
+                try { File.AppendAllText(logPath, line + "\n"); } catch { }
+            }
         }
 
 
@@ -647,8 +636,10 @@ public static class AgentService
         void Log(string msg)
         {
             string line = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {msg}";
-            Debug.WriteLine(line);
-            try { File.AppendAllText(logPath, line + "\n"); } catch { }
+            if (App.EnableLogging)
+            {
+                try { File.AppendAllText(logPath, line + "\n"); } catch { }
+            }
         }
 
         using var conn = DbConnectionFactory.CreateConnection();
@@ -676,7 +667,6 @@ public static class AgentService
         cmd.CommandText = @"UPDATE `Agent` SET 상태='pending' WHERE 사번=@id";
         cmd.Parameters.AddWithValue("@id", employeeId);
         int rows = cmd.ExecuteNonQuery();
-        Debug.WriteLine($"[AgentService] 승인 취소 → pending: {employeeId} ({rows}행)");
     }
 
     // ── 승인 관련 모든 계정 조회 (DB가 Master) ───────────────────────────────
@@ -762,8 +752,10 @@ public static class AgentService
         void Log(string msg)
         {
             string line = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {msg}";
-            Debug.WriteLine(line);
-            try { File.AppendAllText(logPath, line + "\n"); } catch { }
+            if (App.EnableLogging)
+            {
+                try { File.AppendAllText(logPath, line + "\n"); } catch { }
+            }
         }
 
         using var conn = DbConnectionFactory.CreateConnection();
@@ -960,7 +952,6 @@ public static class AgentService
             count += upd.ExecuteNonQuery();
         }
 
-        Debug.WriteLine($"[AgentService] UpdateMeasurerEmployeeIds: {pairs.Count}개 수집 → {count}명 업데이트");
         return count;
     }
 }

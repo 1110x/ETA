@@ -13,7 +13,6 @@ using ETA.Services.SERVICE2;
 using ETA.Services.Common;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -57,19 +56,22 @@ public class DataToMeasurerWindow : Window
 
     private static void AppendInputLog(string msg)
     {
-        try
+        if (App.EnableLogging)
         {
-            lock (LogLock)
+            try
             {
-                var dir = Path.GetDirectoryName(InputLogPath);
-                if (!string.IsNullOrEmpty(dir)) Directory.CreateDirectory(dir);
-                File.AppendAllText(
-                    InputLogPath,
-                    $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {msg}{Environment.NewLine}",
-                    Encoding.UTF8);
+                lock (LogLock)
+                {
+                    var dir = Path.GetDirectoryName(InputLogPath);
+                    if (!string.IsNullOrEmpty(dir)) Directory.CreateDirectory(dir);
+                    File.AppendAllText(
+                        InputLogPath,
+                        $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {msg}{Environment.NewLine}",
+                        Encoding.UTF8);
+                }
             }
+            catch { }
         }
-        catch { }
     }
 
     private static string Shorten(string s, int max = 120)
@@ -283,7 +285,6 @@ public class DataToMeasurerWindow : Window
     {
         _rows.Clear();
 
-        Debug.WriteLine($"[DataToMeasurer] LoadData 시작, _sourceSample={(_sourceSample == null ? "null" : _sourceSample.시료명)}");
 
         // 현재 로그인 사용자
         string analyst = CurrentUserManager.Instance.CurrentUserId;
@@ -291,9 +292,8 @@ public class DataToMeasurerWindow : Window
         // 분석정보 메타 (방법, 기기)
         List<ETA.Models.AnalysisItem> allItems;
         try   { allItems = AnalysisService.GetAllItems(); }
-        catch (Exception ex) { allItems = new(); Debug.WriteLine($"[DataToMeasurer] AnalysisService 오류: {ex.Message}"); }
+        catch (Exception ex) { allItems = new(); }
         var meta = allItems.ToDictionary(x => x.Analyte, x => x, StringComparer.OrdinalIgnoreCase);
-        Debug.WriteLine($"[DataToMeasurer] 메타 {meta.Count}개 로드");
 
         // 방류기준 (방류기준표)
         // TODO: 방류기준표 서비스 연동 — 현재 빈값으로 처리
@@ -306,12 +306,10 @@ public class DataToMeasurerWindow : Window
             return;
         }
 
-        Debug.WriteLine($"[DataToMeasurer] 분석결과 항목 수: {_sourceSample.분석결과.Count}");
 
         // 분장표준처리 — 채취일자 기준 담당자 조회
         var managers = AnalysisRequestService.GetManagersByDate(_sourceSample.채취일자);
         var stdDays  = AnalysisRequestService.GetStandardDaysInfo();
-        Debug.WriteLine($"[DataToMeasurer] managers {managers.Count}개, stdDays {stdDays.Count}개");
 
         // 분석 결과가 있는 항목만 행 생성
         foreach (var kv in _sourceSample.분석결과)
@@ -349,7 +347,6 @@ public class DataToMeasurerWindow : Window
 
         _grid.ItemsSource = _rows;
         SetStatus($"입력 항목 수: {_rows.Count}건 로드 완료 — {_sourceSample.약칭} / {_sourceSample.시료명}", "#88cc88");
-        Debug.WriteLine($"[DataToMeasurer] {_rows.Count}건 로드");
     }
 
     // ════════════════════════════════════════════════════════════════════════
@@ -445,7 +442,6 @@ public class DataToMeasurerWindow : Window
                 ? Color.Parse("#66cc88")
                 : Color.Parse("#ffaa44"));
 
-            Debug.WriteLine($"[DataToMeasurer] h2={h2Text}, 업체유사={companySim*100:F0}%, 시료유사={sampleSim*100:F0}%");
         }
         catch (Exception ex)
         {

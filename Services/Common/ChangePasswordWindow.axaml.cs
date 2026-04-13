@@ -27,13 +27,15 @@ public partial class ChangePasswordWindow : Window
     private static void Log(string msg)
     {
         string line = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {msg}";
-        Debug.WriteLine(line);
-        try
+        if (App.EnableLogging)
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(LogPath)!);
-            File.AppendAllText(LogPath, line + "\n");
+            try
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(LogPath)!);
+                File.AppendAllText(LogPath, line + "\n");
+            }
+            catch { }
         }
-        catch { }
     }
 
     /// <summary>변경 완료 여부 (부모 창에서 확인)</summary>

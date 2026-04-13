@@ -129,7 +129,7 @@ public static class IcpAaCsvParser
                 if (fields.Length < 7) continue;
                 if (fields[0] != "") continue;  // 섹션 구분자 행
 
-                string sampleId  = fields.Length > 1 ? fields[1].Trim() : "";
+                string sampleId   = fields.Length > 1 ? fields[1].Trim() : "";
                 string resultType = fields.Length > 2 ? fields[2].Trim() : "";
                 string flags      = fields.Length > 5 ? fields[5].Trim() : "";
                 string concRaw    = fields.Length > 6 ? fields[6].Trim() : "";
@@ -151,12 +151,12 @@ public static class IcpAaCsvParser
 
                 rows.Add(new ExcelRow
                 {
-                    시료명      = sampleId,
+                    시료명         = sampleId,
                     CompoundName = elementName,
-                    Result      = result,
-                    Source      = SourceType.미분류,
-                    Status      = MatchStatus.대기,
-                    IsControl   = IsQcSample(sampleId),
+                    Result       = result,
+                    Source       = SourceType.미분류,
+                    Status       = MatchStatus.대기,
+                    IsControl    = IsQcSample(sampleId),
                 });
             }
         }

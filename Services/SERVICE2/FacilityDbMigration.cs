@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -64,6 +63,37 @@ public static class FacilityDbMigration
         EnsureAnalysisPlan(conn);
         EnsureFacilityTocDataTables(conn);
         EnsureAnalysisRecordTables(conn);
+
+        // 생태독성_시험기록부 신규 컬럼 추가 마이그레이션
+        if (!IsMigrationDone(conn, "ecotox_cols_v2"))
+        {
+            try
+            {
+                if (DbConnectionFactory.TableExists(conn, "생태독성_시험기록부"))
+                {
+                    foreach (var col in new[] {
+                        ("시험번호",    "TEXT DEFAULT ''"),
+                        ("endpoint",   "TEXT DEFAULT ''"),
+                        ("농도단위",   "TEXT DEFAULT ''"),
+                        ("probit_EC50",   "TEXT DEFAULT ''"),
+                        ("probit_하한",   "TEXT DEFAULT ''"),
+                        ("probit_상한",   "TEXT DEFAULT ''"),
+                        ("probit_TU",     "TEXT DEFAULT ''"),
+                        ("probit_method", "TEXT DEFAULT ''"),
+                    })
+                    {
+                        if (!DbConnectionFactory.ColumnExists(conn, "생태독성_시험기록부", col.Item1))
+                        {
+                            try { Exec(conn, $"ALTER TABLE `생태독성_시험기록부` ADD COLUMN `{col.Item1}` {col.Item2}"); }
+                            catch { }
+                        }
+                    }
+                }
+                MarkMigrationDone(conn, "ecotox_cols_v2");
+                Log("생태독성_시험기록부 신규 컬럼 추가 완료");
+            }
+            catch (Exception ex) { Log($"ecotox_cols_v2 마이그레이션 실패: {ex.Message}"); }
+        }
 
         // 화합물 별칭 테이블 생성 + Seed
         if (!IsMigrationDone(conn, "compound_alias_v1"))
@@ -645,6 +675,14 @@ public static class FacilityDbMigration
         }
     }
 
+    // ── 공개 API: 시험기록부 테이블 일괄 생성 ─────────────────────
+    public static void EnsureAnalysisRecordTables()
+    {
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+        EnsureAnalysisRecordTables(conn);
+    }
+
     // ── *_시험기록부 통합 테이블 ──────────────────────────────────
     private static void EnsureAnalysisRecordTables(DbConnection conn)
     {
@@ -763,6 +801,9 @@ public static class FacilityDbMigration
 
         // 생태독성: 농도별 생물수/사망수 (최대 8농도) + LC50/TU 결과
         string EcotoxCols() => @"
+                시험번호     TEXT DEFAULT '',
+                endpoint     TEXT DEFAULT '',
+                농도단위     TEXT DEFAULT '',
                 시험종       TEXT DEFAULT '',
                 시험시간     TEXT DEFAULT '',
                 시험시간단위 TEXT DEFAULT '',
@@ -782,6 +823,11 @@ public static class FacilityDbMigration
                 TU         TEXT DEFAULT '',
                 분석방법   TEXT DEFAULT '',
                 trim_percent TEXT DEFAULT '',
+                probit_EC50    TEXT DEFAULT '',
+                probit_하한    TEXT DEFAULT '',
+                probit_상한    TEXT DEFAULT '',
+                probit_TU      TEXT DEFAULT '',
+                probit_method  TEXT DEFAULT '',
                 결과       TEXT DEFAULT ''";
 
         string SchemaColumns(string schema) => schema switch
@@ -2408,7 +2454,9 @@ public static class FacilityDbMigration
     private static void Log(string msg)
     {
         var line = $"[{DateTime.Now:HH:mm:ss}] [FacilityMigration] {msg}";
-        Debug.WriteLine(line);
-        try { System.IO.File.AppendAllText(LogPath, line + Environment.NewLine); } catch { }
+        if (App.EnableLogging)
+        {
+            try { System.IO.File.AppendAllText(LogPath, line + Environment.NewLine); } catch { }
+        }
     }
 }

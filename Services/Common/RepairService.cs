@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Data;
 using System.Data.Common;
@@ -125,7 +124,6 @@ public static class RepairService
             idCmd.CommandText = $"SELECT {DbConnectionFactory.LastInsertId}";
             item.Id = Convert.ToInt32(idCmd.ExecuteScalar());
         }
-        Debug.WriteLine($"[RepairService] INSERT → {item.장비명}");
         return rows > 0;
     }
 
@@ -171,7 +169,6 @@ public static class RepairService
         cmd.CommandText = @"DELETE FROM `보수요청` WHERE Id=@id";
         cmd.Parameters.AddWithValue("@id", id);
         int rows = cmd.ExecuteNonQuery();
-        Debug.WriteLine($"[RepairService] DELETE id={id} → {rows}행");
         return rows > 0;
     }
 

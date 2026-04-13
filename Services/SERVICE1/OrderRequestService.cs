@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Data;
 using System.Data.Common;
@@ -23,7 +22,7 @@ public static class OrderRequestService
             conn.Open();
             list.AddRange(DbConnectionFactory.GetColumnNames(conn, "시료명칭"));
         }
-        catch (Exception ex) { Debug.WriteLine($"[OrderRequest] 컬럼조회 오류: {ex.Message}"); }
+        catch (Exception ex) { }
         return list;
     }
 
@@ -66,7 +65,7 @@ public static class OrderRequestService
             using var r = cmd.ExecuteReader();
             while (r.Read()) list.Add(r.GetString(0));
         }
-        catch (Exception ex) { Debug.WriteLine($"[OrderRequest] 시료명조회 오류: {ex.Message}"); }
+        catch (Exception ex) { }
         return list;
     }
 
@@ -84,10 +83,9 @@ public static class OrderRequestService
             using var cmd = conn.CreateCommand();
             cmd.CommandText = $@"ALTER TABLE `시료명칭` ADD COLUMN `{companyName}` TEXT DEFAULT NULL";
             cmd.ExecuteNonQuery();
-            Debug.WriteLine($"[OrderRequest] 시료명칭 컬럼 생성: {companyName}");
             return true;
         }
-        catch (Exception ex) { Debug.WriteLine($"[OrderRequest] 컬럼생성 오류: {ex.Message}"); return false; }
+        catch (Exception ex) { return false; }
     }
 
     // ── 시료명칭 추가 ────────────────────────────────────────────────────
@@ -118,7 +116,7 @@ public static class OrderRequestService
             }
             return true;
         }
-        catch (Exception ex) { Debug.WriteLine($"[OrderRequest] 시료명추가 오류: {ex.Message}"); return false; }
+        catch (Exception ex) { return false; }
     }
 
     // ── 분석의뢰및결과 테이블 분석항목 컬럼 목록 ─────────────────────────
@@ -142,7 +140,7 @@ public static class OrderRequestService
                 if (!fixedCols.Contains(col.Trim())) list.Add(col.Trim());
             }
         }
-        catch (Exception ex) { Debug.WriteLine($"[OrderRequest] 분석컬럼 오류: {ex.Message}"); }
+        catch (Exception ex) { }
         return list;
     }
 
@@ -175,7 +173,7 @@ public static class OrderRequestService
             cmd.Parameters.AddWithValue("@sample", 시료명);
             cmd.ExecuteNonQuery();
         }
-        catch (Exception ex) { Debug.WriteLine($"[OrderRequest] 삭제 오류: {ex.Message}"); }
+        catch (Exception ex) { }
     }
 
     // ── 분석의뢰및결과 테이블에 의뢰서 INSERT ────────────────────────────
@@ -228,12 +226,10 @@ public static class OrderRequestService
             }
 
             int rows = cmd.ExecuteNonQuery();
-            Debug.WriteLine($"[OrderRequest] INSERT {rows}행 → {sampleName}");
             return rows > 0;
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[OrderRequest] INSERT 오류: {ex.Message}\n{ex.StackTrace}");
             return false;
         }
     }

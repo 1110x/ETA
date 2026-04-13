@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 using ETA.Models;
 using ETA.Services.Common;
 
@@ -17,15 +18,24 @@ public static class AnalysisService
         using var connection = DbConnectionFactory.CreateConnection();
         connection.Open();
 
+        // 약칭 컬럼 없으면 자동 추가 (마이그레이션)
+        if (!DbConnectionFactory.ColumnExists(connection, "분석정보", "약칭"))
+        {
+            using var alt = connection.CreateCommand();
+            alt.CommandText = "ALTER TABLE `분석정보` ADD COLUMN `약칭` TEXT DEFAULT ''";
+            try { alt.ExecuteNonQuery(); } catch { }
+        }
+
         using var command = connection.CreateCommand();
         command.CommandText = @"
-            SELECT Category, 
-            Analyte, 
-            Parts, 
-            DecimalPlaces, 
-            unit, 
-            ES, 
-            Method, 
+            SELECT Category,
+            Analyte,
+            COALESCE(`약칭`, '') AS `약칭`,
+            Parts,
+            DecimalPlaces,
+            unit,
+            ES,
+            Method,
             instrument
             FROM `분석정보`
             ORDER BY ES ASC";
@@ -38,6 +48,7 @@ public static class AnalysisService
             {
                 Category      = reader.GetStringOrEmpty("Category"),
                 Analyte       = reader.GetStringOrEmpty("Analyte"),
+                약칭          = reader.GetStringOrEmpty("약칭"),
                 Parts         = reader.GetStringOrEmpty("Parts"),
                 DecimalPlaces = reader.IsDBNull(reader.GetOrdinal("DecimalPlaces")) ? 0 : reader.GetInt32(reader.GetOrdinal("DecimalPlaces")),
                 unit          = reader.GetStringOrEmpty("unit"),
@@ -50,7 +61,252 @@ public static class AnalysisService
         }
 
         Console.WriteLine($"[GetAllItems] 총 아이템 수: {items.Count}");
+
+        // 분석정보 항목 → 분장표준처리 컬럼 자동 동기화
+        SyncColumnsToAssignmentTable(items);
+
         return items;
+    }
+
+    /// <summary>분석정보.Analyte 목록을 분장표준처리 컬럼에 동기화 (없는 컬럼 자동 추가)</summary>
+    public static void SyncColumnsToAssignmentTable(List<AnalysisItem>? items = null)
+    {
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            if (!DbConnectionFactory.TableExists(conn, "분장표준처리")) return;
+
+            // 분석정보 Analyte 목록 (인자로 받거나 DB에서 조회)
+            var analytes = items?.Select(a => a.Analyte).Where(a => !string.IsNullOrWhiteSpace(a)).ToList()
+                        ?? new List<string>();
+            if (analytes.Count == 0)
+            {
+                using var q = conn.CreateCommand();
+                q.CommandText = "SELECT Analyte FROM `분석정보` WHERE Analyte IS NOT NULL AND Analyte <> '' ORDER BY ES ASC";
+                using var r = q.ExecuteReader();
+                while (r.Read()) analytes.Add(r.GetString(0));
+            }
+
+            // 분장표준처리 기존 컬럼
+            var existing = new HashSet<string>(
+                DbConnectionFactory.GetColumnNames(conn, "분장표준처리"),
+                StringComparer.OrdinalIgnoreCase);
+
+            // 없는 항목 컬럼 추가
+            foreach (var analyte in analytes)
+            {
+                if (existing.Contains(analyte)) continue;
+                using var alt = conn.CreateCommand();
+                alt.CommandText = $"ALTER TABLE `분장표준처리` ADD COLUMN `{analyte.Replace("`", "")}` TEXT DEFAULT NULL";
+                try { alt.ExecuteNonQuery(); } catch { }
+            }
+        }
+        catch (Exception ex) { Console.WriteLine($"[SyncColumnsToAssignmentTable] 오류: {ex.Message}"); }
+    }
+
+    /// <summary>분석정보.Analyte 목록을 분석의뢰및결과 컬럼에 동기화 (없는 컬럼 자동 추가)</summary>
+    public static void SyncColumnsToRequestTable(List<AnalysisItem>? items = null)
+    {
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            if (!DbConnectionFactory.TableExists(conn, "분석의뢰및결과")) return;
+
+            var analytes = items?.Select(a => a.Analyte).Where(a => !string.IsNullOrWhiteSpace(a)).ToList()
+                        ?? new List<string>();
+            if (analytes.Count == 0)
+            {
+                using var q = conn.CreateCommand();
+                q.CommandText = "SELECT Analyte FROM `분석정보` WHERE Analyte IS NOT NULL AND Analyte <> '' ORDER BY ES ASC";
+                using var r = q.ExecuteReader();
+                while (r.Read()) analytes.Add(r.GetString(0));
+            }
+
+            var existing = new HashSet<string>(
+                DbConnectionFactory.GetColumnNames(conn, "분석의뢰및결과"),
+                StringComparer.OrdinalIgnoreCase);
+
+            foreach (var analyte in analytes)
+            {
+                if (existing.Contains(analyte)) continue;
+                using var alt = conn.CreateCommand();
+                alt.CommandText = $"ALTER TABLE `분석의뢰및결과` ADD COLUMN `{analyte.Replace("`", "")}` TEXT DEFAULT NULL";
+                try { alt.ExecuteNonQuery(); } catch { }
+            }
+        }
+        catch (Exception ex) { Console.WriteLine($"[SyncColumnsToRequestTable] 오류: {ex.Message}"); }
+    }
+
+    /// <summary>분석정보.Analyte 목록을 계약 DB 컬럼에 동기화 (없는 컬럼 자동 추가)</summary>
+    public static void SyncColumnsToContractTable(List<AnalysisItem>? items = null)
+    {
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            if (!DbConnectionFactory.TableExists(conn, "계약 DB")) return;
+
+            var analytes = items?.Select(a => a.Analyte).Where(a => !string.IsNullOrWhiteSpace(a)).ToList()
+                        ?? new List<string>();
+            if (analytes.Count == 0)
+            {
+                using var q = conn.CreateCommand();
+                q.CommandText = "SELECT Analyte FROM `분석정보` WHERE Analyte IS NOT NULL AND Analyte <> '' ORDER BY ES ASC";
+                using var r = q.ExecuteReader();
+                while (r.Read()) analytes.Add(r.GetString(0));
+            }
+
+            var existing = new HashSet<string>(
+                DbConnectionFactory.GetColumnNames(conn, "계약 DB"),
+                StringComparer.OrdinalIgnoreCase);
+
+            foreach (var analyte in analytes)
+            {
+                if (existing.Contains(analyte)) continue;
+                using var alt = conn.CreateCommand();
+                alt.CommandText = $"ALTER TABLE `계약 DB` ADD COLUMN `{analyte.Replace("`", "")}` TEXT DEFAULT NULL";
+                try { alt.ExecuteNonQuery(); } catch { }
+            }
+        }
+        catch (Exception ex) { Console.WriteLine($"[SyncColumnsToContractTable] 오류: {ex.Message}"); }
+    }
+
+    /// <summary>분석정보.Analyte 목록을 방류기준표 컬럼에 동기화 (없는 컬럼 자동 추가)</summary>
+    public static void SyncColumnsToDischargeTable(List<AnalysisItem>? items = null)
+    {
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            if (!DbConnectionFactory.TableExists(conn, "방류기준표")) return;
+
+            var analytes = items?.Select(a => a.Analyte).Where(a => !string.IsNullOrWhiteSpace(a)).ToList()
+                        ?? new List<string>();
+            if (analytes.Count == 0)
+            {
+                using var q = conn.CreateCommand();
+                q.CommandText = "SELECT Analyte FROM `분석정보` WHERE Analyte IS NOT NULL AND Analyte <> '' ORDER BY ES ASC";
+                using var r = q.ExecuteReader();
+                while (r.Read()) analytes.Add(r.GetString(0));
+            }
+
+            var existing = new HashSet<string>(
+                DbConnectionFactory.GetColumnNames(conn, "방류기준표"),
+                StringComparer.OrdinalIgnoreCase);
+
+            foreach (var analyte in analytes)
+            {
+                if (existing.Contains(analyte)) continue;
+                using var alt = conn.CreateCommand();
+                alt.CommandText = $"ALTER TABLE `방류기준표` ADD COLUMN `{analyte.Replace("`", "")}` TEXT DEFAULT NULL";
+                try { alt.ExecuteNonQuery(); } catch { }
+            }
+        }
+        catch (Exception ex) { Console.WriteLine($"[SyncColumnsToDischargeTable] 오류: {ex.Message}"); }
+    }
+
+    /// <summary>분석정보.Analyte 목록을 견적발행내역 컬럼에 동기화 (없는 컬럼 자동 추가)</summary>
+    public static void SyncColumnsToQuotationTable(List<AnalysisItem>? items = null)
+    {
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            if (!DbConnectionFactory.TableExists(conn, "견적발행내역")) return;
+
+            var analytes = items?.Select(a => a.Analyte).Where(a => !string.IsNullOrWhiteSpace(a)).ToList()
+                        ?? new List<string>();
+            if (analytes.Count == 0)
+            {
+                using var q = conn.CreateCommand();
+                q.CommandText = "SELECT Analyte FROM `분석정보` WHERE Analyte IS NOT NULL AND Analyte <> '' ORDER BY ES ASC";
+                using var r = q.ExecuteReader();
+                while (r.Read()) analytes.Add(r.GetString(0));
+            }
+
+            var existing = new HashSet<string>(
+                DbConnectionFactory.GetColumnNames(conn, "견적발행내역"),
+                StringComparer.OrdinalIgnoreCase);
+
+            foreach (var analyte in analytes)
+            {
+                if (existing.Contains(analyte)) continue;
+                using var alt = conn.CreateCommand();
+                alt.CommandText = $"ALTER TABLE `견적발행내역` ADD COLUMN `{analyte.Replace("`", "")}` TEXT DEFAULT NULL";
+                try { alt.ExecuteNonQuery(); } catch { }
+            }
+        }
+        catch (Exception ex) { Console.WriteLine($"[SyncColumnsToQuotationTable] 오류: {ex.Message}"); }
+    }
+
+    /// <summary>분석정보.Analyte 목록을 거래명세서발행내역 컬럼에 동기화 (없는 컬럼 자동 추가)</summary>
+    public static void SyncColumnsToStatementTable(List<AnalysisItem>? items = null)
+    {
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            if (!DbConnectionFactory.TableExists(conn, "거래명세서발행내역")) return;
+
+            var analytes = items?.Select(a => a.Analyte).Where(a => !string.IsNullOrWhiteSpace(a)).ToList()
+                        ?? new List<string>();
+            if (analytes.Count == 0)
+            {
+                using var q = conn.CreateCommand();
+                q.CommandText = "SELECT Analyte FROM `분석정보` WHERE Analyte IS NOT NULL AND Analyte <> '' ORDER BY ES ASC";
+                using var r = q.ExecuteReader();
+                while (r.Read()) analytes.Add(r.GetString(0));
+            }
+
+            var existing = new HashSet<string>(
+                DbConnectionFactory.GetColumnNames(conn, "거래명세서발행내역"),
+                StringComparer.OrdinalIgnoreCase);
+
+            foreach (var analyte in analytes)
+            {
+                if (existing.Contains(analyte)) continue;
+                using var alt = conn.CreateCommand();
+                alt.CommandText = $"ALTER TABLE `거래명세서발행내역` ADD COLUMN `{analyte.Replace("`", "")}` TEXT DEFAULT NULL";
+                try { alt.ExecuteNonQuery(); } catch { }
+            }
+        }
+        catch (Exception ex) { Console.WriteLine($"[SyncColumnsToStatementTable] 오류: {ex.Message}"); }
+    }
+
+    /// <summary>약칭(영문 ID)으로 분석정보.Analyte(한글명) 조회. 없으면 null 반환</summary>
+    /// <summary>Analyte 한글명으로 Category 조회. 없으면 null 반환</summary>
+    public static string? GetAnalyteCategory(string analyte)
+    {
+        if (string.IsNullOrWhiteSpace(analyte)) return null;
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT `Category` FROM `분석정보` WHERE `Analyte` = @a LIMIT 1";
+            cmd.Parameters.AddWithValue("@a", analyte);
+            var result = cmd.ExecuteScalar();
+            return result is string s && !string.IsNullOrWhiteSpace(s) ? s : null;
+        }
+        catch { return null; }
+    }
+
+    public static string? GetAnalyteByShortName(string shortName)
+    {
+        if (string.IsNullOrWhiteSpace(shortName)) return null;
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT `Analyte` FROM `분석정보` WHERE `약칭` = @abbrev LIMIT 1";
+            cmd.Parameters.AddWithValue("@abbrev", shortName);
+            var result = cmd.ExecuteScalar();
+            return result is string s && !string.IsNullOrWhiteSpace(s) ? s : null;
+        }
+        catch { return null; }
     }
 
     // 확장 메서드

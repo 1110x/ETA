@@ -615,25 +615,29 @@ public class RiskManagePage
             foreach (var link in links)
             {
                 int monthlyCount = ETA.Services.SERVICE1.AnalysisRequestService.GetMonthlyAnalyteCount(link.분석항목);
-                int estimate = (int)Math.Ceiling(link.시료당소요량 * monthlyCount);
+                int estimateEA  = (int)Math.Ceiling(link.시료당소요량 * monthlyCount);
+                int estimateDay = (int)Math.Ceiling(link.일일소요량 * 22);
+                int estimate    = estimateEA + estimateDay;
                 totalEstimate += estimate;
 
                 var rowGrid = new Grid
                 {
-                    ColumnDefinitions = new ColumnDefinitions("*,60,60,60,30"),
+                    ColumnDefinitions = new ColumnDefinitions("*,52,52,50,58,28"),
                     Margin = new Thickness(0, 1, 0, 1),
                 };
 
-                // 항목명 (약칭 표시)
+                // 항목명
                 AddColText(rowGrid, link.분석항목, 0, AppTheme.FgPrimary, FontWeight.Normal);
-                // 시료당 소요량
-                AddColText(rowGrid, link.시료당소요량.ToString("F1"), 1, AppTheme.FgMuted, FontWeight.Normal);
+                // g/EA
+                AddColText(rowGrid, link.시료당소요량 > 0 ? link.시료당소요량.ToString("F2") : "-", 1, AppTheme.FgMuted, FontWeight.Normal);
+                // g/Day
+                AddColText(rowGrid, link.일일소요량 > 0 ? link.일일소요량.ToString("F2") : "-", 2, AppTheme.FgMuted, FontWeight.Normal);
                 // 이번달 의뢰 건수
-                AddColText(rowGrid, monthlyCount.ToString(), 2,
+                AddColText(rowGrid, monthlyCount.ToString(), 3,
                     monthlyCount > 0 ? new SolidColorBrush(Color.Parse("#4488ff")) : AppTheme.FgMuted,
                     FontWeight.Normal);
                 // 적정사용량 산정
-                AddColText(rowGrid, estimate.ToString(), 3,
+                AddColText(rowGrid, estimate.ToString(), 4,
                     new SolidColorBrush(Color.Parse("#ccaa44")), FontWeight.SemiBold);
 
                 // 삭제 버튼
@@ -654,7 +658,7 @@ public class RiskManagePage
                     ReagentAnalyteService.Delete(capturedLink.Id);
                     UpdateAnalytePanel(capturedItem);
                 };
-                Grid.SetColumn(btnDel, 4);
+                Grid.SetColumn(btnDel, 5);
                 rowGrid.Children.Add(btnDel);
 
                 var rowBorder = new Border
@@ -686,10 +690,10 @@ public class RiskManagePage
             _analytePanel.Children.Add(new Border { Height = 1, Background = AppTheme.BorderSubtle, Margin = new Thickness(0, 8) });
             var sumGrid = new Grid
             {
-                ColumnDefinitions = new ColumnDefinitions("*,60,60,60,30"),
+                ColumnDefinitions = new ColumnDefinitions("*,52,52,50,58,28"),
             };
             AddColText(sumGrid, "합계 (적정사용량)", 0, AppTheme.FgPrimary, FontWeight.Bold);
-            AddColText(sumGrid, totalEstimate.ToString(), 3,
+            AddColText(sumGrid, totalEstimate.ToString(), 4,
                 new SolidColorBrush(Color.Parse("#ffaa44")), FontWeight.Bold);
             _analytePanel.Children.Add(sumGrid);
 
@@ -833,61 +837,101 @@ public class RiskManagePage
         {
             AddSectionHeader("분석항목 연결");
 
-            var analyteRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
-
-            // 분석항목 드롭다운
-            var cbAnalyte = new ComboBox
-            {
-                FontSize = AppTheme.FontSM, FontFamily = FontR,
-                MinWidth = 160, MaxDropDownHeight = 300,
-                PlaceholderText = "분석항목 선택",
-            };
-
-            // 분석항목 목록 로드
-            try
-            {
-                var analytes = ETA.Services.SERVICE1.AnalysisRequestService.GetOrderedAnalytes();
-                foreach (var (fullName, shortName) in analytes)
-                {
-                    string display = fullName == shortName ? fullName : $"{shortName} ({fullName})";
-                    cbAnalyte.Items.Add(new ComboBoxItem { Content = display, Tag = fullName });
-                }
-            }
+            // ── 검색 입력 ──
+            var selectedName    = new string[] { "" };
+            var ignoreTextChg   = new bool[] { false };
+            List<(string Full, string Short)> analyteList = new();
+            try { analyteList = ETA.Services.SERVICE1.AnalysisRequestService.GetOrderedAnalytes(); }
             catch { }
 
-            // 시료당 소요량 입력
-            var tbAmount = MakeTxb("시료당 소요량");
-            tbAmount.Width = 100;
-            tbAmount.Text = "0";
+            var tbSearch = MakeTxb("분석항목 검색 또는 직접 입력...");
 
-            // 단위 표시
-            var unitLabel = new TextBlock
+            var suggestSource = new System.Collections.ObjectModel.ObservableCollection<string>();
+            var suggestFullNames = new List<string>();
+
+            var lbSuggest = new ListBox
             {
-                Text = string.IsNullOrEmpty(item!.단위) ? item.규격 : item.단위,
-                FontSize = AppTheme.FontSM, FontFamily = FontR,
-                Foreground = AppTheme.FgDimmed,
-                VerticalAlignment = VerticalAlignment.Center,
+                MaxHeight = 160,
+                Background = new SolidColorBrush(Color.Parse("#1a1a2e")),
+                FontFamily = FontR, FontSize = AppTheme.FontSM,
+                ItemsSource = suggestSource,
+            };
+            var suggestBorder = new Border
+            {
+                Child = lbSuggest,
+                IsVisible = false,
+                Background = new SolidColorBrush(Color.Parse("#1a1a2e")),
+                BorderBrush = AppTheme.BorderSubtle,
+                BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(4),
+                Margin = new Thickness(0, 0, 0, 4),
             };
 
-            // 추가 버튼
+            tbSearch.TextChanged += (_, _) =>
+            {
+                if (ignoreTextChg[0]) return;
+                var q = tbSearch.Text?.Trim() ?? "";
+                selectedName[0] = q;
+                if (q.Length == 0) { suggestBorder.IsVisible = false; return; }
+                var filtered = analyteList
+                    .Where(a => a.Full.Contains(q, StringComparison.OrdinalIgnoreCase)
+                             || a.Short.Contains(q, StringComparison.OrdinalIgnoreCase))
+                    .Take(20).ToList();
+                suggestSource.Clear();
+                suggestFullNames.Clear();
+                foreach (var (full, sh) in filtered)
+                {
+                    suggestSource.Add(full == sh ? full : $"{sh} ({full})");
+                    suggestFullNames.Add(full);
+                }
+                suggestBorder.IsVisible = suggestSource.Count > 0;
+            };
+
+            lbSuggest.SelectionChanged += (_, _) =>
+            {
+                int idx = lbSuggest.SelectedIndex;
+                if (idx < 0 || idx >= suggestFullNames.Count) return;
+                selectedName[0] = suggestFullNames[idx];
+                ignoreTextChg[0] = true;
+                tbSearch.Text = suggestSource[idx];
+                ignoreTextChg[0] = false;
+                suggestBorder.IsVisible = false;
+            };
+
+            // ── g/EA + g/Day 입력 ──
+            var tbAmountEA  = new TextBox { Text = "0", Width = 70, FontFamily = FontR, FontSize = AppTheme.FontSM, Watermark = "0" };
+            var tbAmountDay = new TextBox { Text = "0", Width = 70, FontFamily = FontR, FontSize = AppTheme.FontSM, Watermark = "0" };
+            var unitTxt = string.IsNullOrEmpty(item!.단위) ? item.규격 : item.단위;
+            TextBlock MiniLbl(string t) => new TextBlock
+            {
+                Text = t, FontSize = AppTheme.FontSM, FontFamily = FontR,
+                Foreground = AppTheme.FgDimmed, VerticalAlignment = VerticalAlignment.Center,
+            };
+
+            var amountRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4 };
+            amountRow.Children.Add(MiniLbl("g/EA:"));
+            amountRow.Children.Add(tbAmountEA);
+            amountRow.Children.Add(MiniLbl("  g/Day:"));
+            amountRow.Children.Add(tbAmountDay);
+            if (!string.IsNullOrWhiteSpace(unitTxt))
+                amountRow.Children.Add(MiniLbl($"  ({unitTxt})"));
+
             var btnAdd = MakeBtn("+ 추가", "#1a2a3a", "#88aaff");
             var capturedItem = item;
             btnAdd.Click += (_, _) =>
             {
-                if (cbAnalyte.SelectedItem is not ComboBoxItem sel) return;
-                string analyteName = sel.Tag?.ToString() ?? "";
+                string analyteName = selectedName[0].Trim();
                 if (string.IsNullOrEmpty(analyteName)) return;
-                double amount = 0;
-                double.TryParse(tbAmount.Text?.Trim(), out amount);
+                double.TryParse(tbAmountEA.Text?.Trim(),  out double ea);
+                double.TryParse(tbAmountDay.Text?.Trim(), out double day);
 
-                // 중복 체크
                 var existing = ReagentAnalyteService.GetByReagentId(capturedItem.Id);
                 if (existing.Any(e => e.분석항목 == analyteName))
                 {
-                    // 이미 있으면 소요량 업데이트
-                    var ex = existing.First(e => e.분석항목 == analyteName);
-                    ex.시료당소요량 = amount;
-                    ReagentAnalyteService.Update(ex);
+                    var existingLink = existing.First(e => e.분석항목 == analyteName);
+                    existingLink.시료당소요량 = ea;
+                    existingLink.일일소요량   = day;
+                    ReagentAnalyteService.Update(existingLink);
                 }
                 else
                 {
@@ -895,17 +939,24 @@ public class RiskManagePage
                     {
                         시약Id = capturedItem.Id,
                         분석항목 = analyteName,
-                        시료당소요량 = amount,
+                        시료당소요량 = ea,
+                        일일소요량   = day,
                     });
                 }
+                ignoreTextChg[0] = true;
+                tbSearch.Text = "";
+                ignoreTextChg[0] = false;
+                selectedName[0] = "";
+                tbAmountEA.Text  = "0";
+                tbAmountDay.Text = "0";
+                suggestBorder.IsVisible = false;
                 UpdateAnalytePanel(capturedItem);
             };
+            amountRow.Children.Add(btnAdd);
 
-            analyteRow.Children.Add(cbAnalyte);
-            analyteRow.Children.Add(tbAmount);
-            analyteRow.Children.Add(unitLabel);
-            analyteRow.Children.Add(btnAdd);
-            _formPanel.Children.Add(analyteRow);
+            _formPanel.Children.Add(tbSearch);
+            _formPanel.Children.Add(suggestBorder);
+            _formPanel.Children.Add(amountRow);
         }
 
         // ── 버튼 ─────────────────────────────────────────────────────────

@@ -15,9 +15,19 @@ public static class ReagentAnalyteService
                 Id           INTEGER PRIMARY KEY {DbConnectionFactory.AutoIncrement},
                 시약Id       INTEGER NOT NULL DEFAULT 0,
                 분석항목     TEXT NOT NULL DEFAULT '',
-                시료당소요량  DOUBLE DEFAULT 0
+                시료당소요량  DOUBLE DEFAULT 0,
+                일일소요량    DOUBLE DEFAULT 0
             )";
         cmd.ExecuteNonQuery();
+
+        // 기존 테이블 마이그레이션
+        try
+        {
+            using var alter = conn.CreateCommand();
+            alter.CommandText = "ALTER TABLE `시약_분석항목` ADD COLUMN `일일소요량` DOUBLE DEFAULT 0";
+            alter.ExecuteNonQuery();
+        }
+        catch { /* 이미 존재 */ }
     }
 
     public static List<ReagentAnalyte> GetByReagentId(int reagentId)
@@ -27,7 +37,7 @@ public static class ReagentAnalyteService
         conn.Open();
         EnsureTable(conn);
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = "SELECT Id,시약Id,분석항목,시료당소요량 FROM `시약_분석항목` WHERE 시약Id=@id ORDER BY 분석항목 ASC";
+        cmd.CommandText = "SELECT Id,시약Id,분석항목,시료당소요량,일일소요량 FROM `시약_분석항목` WHERE 시약Id=@id ORDER BY 분석항목 ASC";
         cmd.Parameters.AddWithValue("@id", reagentId);
         using var r = cmd.ExecuteReader();
         while (r.Read()) list.Add(Map(r));
@@ -41,11 +51,12 @@ public static class ReagentAnalyteService
         EnsureTable(conn);
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            INSERT INTO `시약_분석항목` (시약Id,분석항목,시료당소요량)
-            VALUES (@시약Id,@분석항목,@시료당소요량)";
+            INSERT INTO `시약_분석항목` (시약Id,분석항목,시료당소요량,일일소요량)
+            VALUES (@시약Id,@분석항목,@시료당소요량,@일일소요량)";
         cmd.Parameters.AddWithValue("@시약Id", item.시약Id);
         cmd.Parameters.AddWithValue("@분석항목", item.분석항목);
         cmd.Parameters.AddWithValue("@시료당소요량", item.시료당소요량);
+        cmd.Parameters.AddWithValue("@일일소요량", item.일일소요량);
         int rows = cmd.ExecuteNonQuery();
         if (rows > 0)
         {
@@ -61,9 +72,10 @@ public static class ReagentAnalyteService
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"UPDATE `시약_분석항목` SET 분석항목=@분석항목, 시료당소요량=@시료당소요량 WHERE Id=@id";
+        cmd.CommandText = @"UPDATE `시약_분석항목` SET 분석항목=@분석항목, 시료당소요량=@시료당소요량, 일일소요량=@일일소요량 WHERE Id=@id";
         cmd.Parameters.AddWithValue("@분석항목", item.분석항목);
         cmd.Parameters.AddWithValue("@시료당소요량", item.시료당소요량);
+        cmd.Parameters.AddWithValue("@일일소요량", item.일일소요량);
         cmd.Parameters.AddWithValue("@id", item.Id);
         return cmd.ExecuteNonQuery() > 0;
     }
@@ -84,5 +96,6 @@ public static class ReagentAnalyteService
         시약Id       = r.IsDBNull(1) ? 0 : r.GetInt32(1),
         분석항목     = r.IsDBNull(2) ? "" : r.GetValue(2)?.ToString() ?? "",
         시료당소요량  = r.IsDBNull(3) ? 0 : Convert.ToDouble(r.GetValue(3)),
+        일일소요량    = r.IsDBNull(4) ? 0 : Convert.ToDouble(r.GetValue(4)),
     };
 }

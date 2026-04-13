@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Diagnostics;
 using System.IO;
 using ETA.Models;
 using ETA.Services.Common;
@@ -21,7 +20,7 @@ public static class AttachmentService
             conn.Open();
             EnsureTableOnConn(conn);
         }
-        catch (Exception ex) { Debug.WriteLine($"[Attachment] EnsureTable 오류: {ex.Message}"); }
+        catch (Exception ex) { }
     }
 
     private static void EnsureTableOnConn(DbConnection conn)
@@ -38,7 +37,6 @@ public static class AttachmentService
                     PRIMARY KEY (`_id`)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
         cmd.ExecuteNonQuery();
-        Debug.WriteLine($"[Attachment] 테이블 생성: {TableName}");
     }
 
     // ── 조회 ─────────────────────────────────────────────────────────────────
@@ -67,7 +65,7 @@ public static class AttachmentService
                     등록일시  = r.IsDBNull(4) ? "" : r.GetValue(4)?.ToString() ?? "",
                 });
         }
-        catch (Exception ex) { Debug.WriteLine($"[Attachment] GetAttachments 오류: {ex.Message}"); }
+        catch (Exception ex) { }
         return list;
     }
 
@@ -91,7 +89,7 @@ public static class AttachmentService
             cmd2.CommandText = $"SELECT {DbConnectionFactory.LastInsertId}";
             return Convert.ToInt32(cmd2.ExecuteScalar());
         }
-        catch (Exception ex) { Debug.WriteLine($"[Attachment] AddAttachment 오류: {ex.Message}"); return -1; }
+        catch (Exception ex) { return -1; }
     }
 
     // ── 삭제 ─────────────────────────────────────────────────────────────────
@@ -110,6 +108,6 @@ public static class AttachmentService
                 File.Delete(savedPath);
             return true;
         }
-        catch (Exception ex) { Debug.WriteLine($"[Attachment] DeleteAttachment 오류: {ex.Message}"); return false; }
+        catch (Exception ex) { return false; }
     }
 }

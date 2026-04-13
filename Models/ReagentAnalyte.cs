@@ -7,4 +7,5 @@ public class ReagentAnalyte
     public int    시약Id       { get; set; }
     public string 분석항목     { get; set; } = "";   // 분장표준처리 컬럼명 (fullName)
     public double 시료당소요량  { get; set; } = 0;    // 시료 1건당 소요량 (단위: 시약의 단위와 동일)
+    public double 일일소요량    { get; set; } = 0;    // 하루 고정 소요량 (시료 수와 무관)
 }

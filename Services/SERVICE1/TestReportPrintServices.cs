@@ -538,14 +538,16 @@ public static class TestReportPrintService
     private static void Log(string msg)
     {
         var line = $"[{DateTime.Now:HH:mm:ss}] [Print] {msg}";
-        Debug.WriteLine(line);
-        try
+        if (App.EnableLogging)
         {
-            var logPath = Path.GetFullPath(
-                Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "Logs/TestReportDebug.log"));
-            File.AppendAllText(logPath, line + Environment.NewLine);
+            try
+            {
+                var logPath = Path.GetFullPath(
+                    Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "Logs/TestReportDebug.log"));
+                File.AppendAllText(logPath, line + Environment.NewLine);
+            }
+            catch { }
         }
-        catch { }
     }
 
     // ══════════════════════════════════════════════════════════════════════

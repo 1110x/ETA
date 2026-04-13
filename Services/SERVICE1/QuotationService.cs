@@ -6,7 +6,6 @@ using System.Text.RegularExpressions;
 using System.Data;
 using System.Data.Common;
 using ETA.Models;
-using System.Diagnostics;
 using ETA.Services.Common;
 using ClosedXML.Excel;
 
@@ -14,22 +13,16 @@ namespace ETA.Services.SERVICE1;
 
 public static class QuotationService
 {
-    private static string GetDatabasePath()
-    {
-        var root = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", ".."));
-        var dir  = Path.Combine(root, "Data");
-        Directory.CreateDirectory(dir);
-        return Path.Combine(dir, "eta.db");
-    }
-
     private static readonly string LogPath = Path.GetFullPath(
         Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "Logs", "Quotation.log"));
 
     private static void Log(string msg)
     {
         var line = $"[{DateTime.Now:HH:mm:ss}] [QService] {msg}";
-        Debug.WriteLine(line);
-        try { File.AppendAllText(LogPath, line + Environment.NewLine); } catch { }
+        if (App.EnableLogging)
+        {
+            try { File.AppendAllText(LogPath, line + Environment.NewLine); } catch { }
+        }
     }
 
     // ── 계약업체 조회 ─────────────────────────────────────────────────────
@@ -117,7 +110,7 @@ public static class QuotationService
         if (cols.Contains("거래명세서번호")) return;
         using var cmd = conn.CreateCommand();
         cmd.CommandText = "ALTER TABLE `견적발행내역` ADD COLUMN `거래명세서번호` VARCHAR(50) NULL DEFAULT NULL";
-        try { cmd.ExecuteNonQuery(); } catch (Exception ex) { Debug.WriteLine($"[Quotation] 컬럼추가 오류: {ex.Message}"); }
+        try { cmd.ExecuteNonQuery(); } catch (Exception ex) { }
     }
 
     public static List<QuotationIssue> GetAllIssues()
@@ -279,7 +272,6 @@ public static class QuotationService
                     dict[colName] = val;
             }
         }
-        Debug.WriteLine($"[Quotation] GetIssueRow rowid={rowid} → {dict.Count}컬럼");
         return dict;
     }
 
@@ -304,7 +296,7 @@ public static class QuotationService
                 if (!string.IsNullOrWhiteSpace(v)) list.Add(v);
             }
         }
-        catch (Exception ex) { Debug.WriteLine($"[GetContractTypes] {ex.Message}"); }
+        catch (Exception ex) { }
 
         if (list.Count == 0)
             list.AddRange(new[] { "위탁", "용역", "구매", "기타" });
@@ -328,9 +320,8 @@ public static class QuotationService
                         System.Globalization.CultureInfo.InvariantCulture, out var d) && d > 0)
                     dict[analyte] = d;
             }
-            Debug.WriteLine($"[Prices] {companyName} -> {dict.Count}건");
         }
-        catch (Exception ex) { Debug.WriteLine($"[GetPricesByCompany] {ex.Message}"); }
+        catch (Exception ex) { }
         return dict;
     }
     // ── INSERT (분석항목 포함) ────────────────────────────────────────────
@@ -722,7 +713,7 @@ public static class QuotationService
             idCmd.CommandText = "SELECT LAST_INSERT_ID()";
             return Convert.ToInt32(idCmd.ExecuteScalar());
         }
-        catch (Exception ex) { Debug.WriteLine($"[거래명세서] Insert 오류: {ex.Message}"); return -1; }
+        catch (Exception ex) { return -1; }
     }
 
     /// <summary>선택된 견적 목록의 거래명세서번호를 DB에 설정</summary>
@@ -736,7 +727,7 @@ public static class QuotationService
             cmd.CommandText = $"UPDATE `견적발행내역` SET `거래명세서번호`=@no WHERE {DbConnectionFactory.RowId}=@id";
             cmd.Parameters.AddWithValue("@no", statementNo);
             cmd.Parameters.AddWithValue("@id", id);
-            try { cmd.ExecuteNonQuery(); } catch (Exception ex) { Debug.WriteLine($"[거래명세서] SetNo 오류: {ex.Message}"); }
+            try { cmd.ExecuteNonQuery(); } catch (Exception ex) { }
         }
     }
 
@@ -944,7 +935,6 @@ public static class QuotationService
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[ExportQuotation] 오류: {ex.Message}");
             return (false, ex.Message);
         }
     }
@@ -1056,7 +1046,6 @@ public static class QuotationService
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[거래명세서] Excel 생성 오류: {ex.Message}");
             return (false, ex.Message, 0, 0, 0);
         }
     }

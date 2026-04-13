@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Diagnostics;
 using ETA.Models;
 
 namespace ETA.Services.Common;
@@ -62,7 +61,6 @@ public static class ScheduleService
 
         using var r = cmd.ExecuteReader();
         while (r.Read()) list.Add(Map(r));
-        Debug.WriteLine($"[Schedule] {year}-{month} 로드 {list.Count}건");
         return list;
     }
 
@@ -120,7 +118,6 @@ public static class ScheduleService
         cmd.Parameters.AddWithValue("@등록일시", e.등록일시);
         cmd.Parameters.AddWithValue("@등록자",   e.등록자);
         cmd.ExecuteNonQuery();
-        Debug.WriteLine($"[Schedule] 삽입: {e.날짜} {e.분류} {e.업체약칭} {e.직원명}");
     }
 
     // ── 수정 ─────────────────────────────────────────────────────────────────
@@ -151,7 +148,6 @@ public static class ScheduleService
         cmd.Parameters.AddWithValue("@종료시간", e.종료시간);
         cmd.Parameters.AddWithValue("@첨부파일", e.첨부파일);
         cmd.ExecuteNonQuery();
-        Debug.WriteLine($"[Schedule] 수정: Id={e.Id} {e.날짜} {e.분류} {e.직원명}");
     }
 
     // ── 삭제 ─────────────────────────────────────────────────────────────────

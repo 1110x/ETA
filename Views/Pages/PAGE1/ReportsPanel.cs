@@ -177,7 +177,6 @@ public class ReportsPanel : UserControl
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[ReportsPanel] 로드 오류: {ex.Message}");
         }
     }
 
@@ -309,11 +308,9 @@ public class ReportsPanel : UserControl
             try { f.Delete(); ok++; }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[ReportsPanel] 삭제 오류: {f.Name} → {ex.Message}");
             }
         }
 
-        Debug.WriteLine($"[ReportsPanel] {ok}/{targets.Count}개 삭제 완료");
 
         // 삭제 후 전체 체크박스 해제
         if (_chkAll != null) _chkAll.IsChecked = false;
@@ -353,7 +350,7 @@ public class ReportsPanel : UserControl
             bool ok = await ShowDeleteConfirmAsync($"'{file.Name}'");
             if (!ok) return;
             try { file.Delete(); LoadFiles(); }
-            catch (Exception ex) { Debug.WriteLine($"[ReportsPanel] 삭제 오류: {ex.Message}"); }
+            catch (Exception ex) { }
         };
 
         menu.Items.Add(openItem);
@@ -397,7 +394,7 @@ public class ReportsPanel : UserControl
     private static void OpenFile(string path)
     {
         try { Process.Start(new ProcessStartInfo(path) { UseShellExecute = true }); }
-        catch (Exception ex) { Debug.WriteLine($"[ReportsPanel] 열기 오류: {ex.Message}"); }
+        catch (Exception ex) { }
     }
 
     private static void OpenFolder()

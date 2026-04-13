@@ -46,7 +46,6 @@ public class WindowPositionManager
         _layoutLogPath = Path.Combine(userFolder, "LAYOUT.log");
 
         LogLayout($"WindowPositionManager 초기화 - 사용자: {currentUserId}, 로그 경로: {_logFilePath}");
-        System.Diagnostics.Debug.WriteLine($"[WindowPositionManager] 사용자: {currentUserId}, 로그 경로: {_logFilePath}");
         LoadLayouts();
     }
 
@@ -93,12 +92,10 @@ public class WindowPositionManager
                 LogLayout($"  - {layout.Key}: {layout.Value}");
             }
 
-            System.Diagnostics.Debug.WriteLine($"[WindowPositionManager] 로드됨: {_layouts.Count}개 레이아웃");
         }
         catch (Exception ex)
         {
             LogLayout($"레이아웃 로드 오류: {ex.Message}");
-            System.Diagnostics.Debug.WriteLine($"[WindowPositionManager] 로드 오류: {ex.Message}");
             _layouts = new Dictionary<string, PageLayoutInfo>();
         }
     }
@@ -133,12 +130,10 @@ public class WindowPositionManager
                 File.WriteAllText(_logFilePath, json);
 
                 LogLayout($"레이아웃 저장 완료 - 파일: {_logFilePath}, 크기: {json.Length} bytes");
-                System.Diagnostics.Debug.WriteLine($"[WindowPositionManager] 저장 완료: {_logFilePath}");
             }
             catch (Exception ex)
             {
                 LogLayout($"레이아웃 저장 오류: {ex.Message}");
-                System.Diagnostics.Debug.WriteLine($"[WindowPositionManager] 저장 오류: {ex.Message}");
             }
         });
     }
@@ -155,7 +150,6 @@ public class WindowPositionManager
         SaveLayouts();
 
         LogLayout($"페이지 레이아웃 저장 완료 - {pageName}");
-        System.Diagnostics.Debug.WriteLine($"[WindowPositionManager] 저장: {pageName} - {layoutInfo}");
     }
 
     /// <summary>
@@ -168,7 +162,6 @@ public class WindowPositionManager
         if (_layouts.TryGetValue(pageName, out var layout))
         {
             LogLayout($"  레이아웃 발견: {layout}");
-            System.Diagnostics.Debug.WriteLine($"[WindowPositionManager] 조회: {pageName} - {layout}");
             return layout;
         }
 
@@ -189,7 +182,6 @@ public class WindowPositionManager
         if (_layouts.Remove(pageName))
         {
             SaveLayouts();
-            System.Diagnostics.Debug.WriteLine($"[WindowPositionManager] 삭제: {pageName}");
         }
     }
 
@@ -200,7 +192,6 @@ public class WindowPositionManager
     {
         _layouts.Clear();
         SaveLayouts();
-        System.Diagnostics.Debug.WriteLine("[WindowPositionManager] 모든 레이아웃 정보 초기화");
     }
 
     /// <summary>
@@ -221,11 +212,9 @@ public class WindowPositionManager
                 Directory.CreateDirectory(directory);
 
             File.AppendAllText(_layoutLogPath, logLine + "\n");
-            System.Diagnostics.Debug.WriteLine($"[LayoutLog] {message}");
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"[LayoutLog] 로깅 실패: {ex.Message}");
         }
     }
 }

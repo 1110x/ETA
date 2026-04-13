@@ -34,7 +34,6 @@ namespace ETA.ViewModels
                     Categories.Add(item.Category);
                 }
             }
-            System.Diagnostics.Debug.WriteLine($"로드된 항목: {AnalysisItems.Count}, 카테고리: {Categories.Count}");
         }
     }
 }

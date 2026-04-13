@@ -24,19 +24,19 @@ dotnet restore ETA.sln
 
 ## Architecture Overview
 
-### Database Architecture (Dual-DB System)
-The system supports both SQLite (local) and MariaDB (networked) through a unified connection factory:
+### Database Architecture (MariaDB)
+The system uses MariaDB through a unified connection factory:
 
 ```csharp
-// Always use this - never instantiate SqliteConnection/MySqlConnection directly
+// Always use this - never instantiate MySqlConnection directly
 using var conn = DbConnectionFactory.CreateConnection();
 conn.Open();
 ```
 
-**Critical SQL Dialect Helpers** (must use these to maintain DB compatibility):
+**Critical SQL Dialect Helpers** (must use these for consistency):
 - Auto-increment: `DbConnectionFactory.AutoIncrement` 
 - Last insert ID: `DbConnectionFactory.LastInsertId`
-- Row ID column: `DbConnectionFactory.RowId` (SQLite: "rowid", MariaDB: "_id")
+- Row ID column: `DbConnectionFactory.RowId` ("_id")
 - Date formatting: `DbConnectionFactory.DateFmt(column, format)`
 - UPSERT operations: `DbConnectionFactory.UpsertSuffix(conflictCols, updateCols)`
 
@@ -75,7 +75,7 @@ ETA/
 │   ├── MainPage.axaml   # Main application window
 │   └── Login.axaml      # Login window
 ├── Models/              # Data transfer objects (DTOs)
-├── Data/               # SQLite database + templates
+├── Data/               # Templates + exported files + Photos
 └── Docs/               # Documentation including ARCHITECTURE.md
 ```
 
@@ -154,9 +154,6 @@ Edit `appsettings.json` for MariaDB connection:
   }
 }
 ```
-
-### UI Mode Toggle
-Users can switch between SQLite/MariaDB by clicking the hidden border in the login screen (`DbModeToggle_Click`).
 
 ## Important Notes
 

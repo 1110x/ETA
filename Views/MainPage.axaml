@@ -593,6 +593,7 @@
                     </MenuItem>
 
                     <MenuItem Header="처리시설" x:Name="MenuItemFacility">
+                        <MenuItem Header="측정결과" x:Name="MenuItemProcessingFacilityResult" Click="ProcessingFacility_Click"/>
                         <MenuItem Header="분석계획" x:Name="MenuItemProcessingFacility" Click="AnalysisPlan_Click"/>
                     </MenuItem>
 

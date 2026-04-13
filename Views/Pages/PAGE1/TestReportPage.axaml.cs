@@ -2100,7 +2100,9 @@ public partial class TestReportPage : UserControl
     private void Log(string msg)
     {
         var line = $"[{DateTime.Now:HH:mm:ss}] [TestReport] {msg}";
-        Debug.WriteLine(line);
-        try { File.AppendAllText("Logs/TestReportDebug.log", line + Environment.NewLine); } catch { }
+        if (App.EnableLogging)
+        {
+            try { File.AppendAllText("Logs/TestReportDebug.log", line + Environment.NewLine); } catch { }
+        }
     }
 }

@@ -33,13 +33,16 @@ public static class AgilentCaryUvPdfParser
 
     private static void Log(string msg)
     {
-        try
+        if (App.EnableLogging)
         {
-            var dir = Path.GetDirectoryName(LogPath)!;
-            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
-            File.AppendAllText(LogPath, $"[{DateTime.Now:HH:mm:ss}] {msg}\n");
+            try
+            {
+                var dir = Path.GetDirectoryName(LogPath)!;
+                if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+                File.AppendAllText(LogPath, $"[{DateTime.Now:HH:mm:ss}] {msg}\n");
+            }
+            catch { }
         }
-        catch { }
     }
 
     /// <summary>
@@ -67,7 +70,10 @@ public static class AgilentCaryUvPdfParser
         var docInfo = new ExcelDocInfo { IsUVVIS = true };
         string item = activeItems.FirstOrDefault() ?? "UVVIS";
 
-        File.WriteAllText(LogPath, $"=== AgilentCaryUvPdf Parse Start: {Path.GetFileName(path)} ===\n");
+        if (App.EnableLogging)
+        {
+            File.WriteAllText(LogPath, $"=== AgilentCaryUvPdf Parse Start: {Path.GetFileName(path)} ===\n");
+        }
 
         using var doc = UglyToad.PdfPig.PdfDocument.Open(path);
         var pages = doc.GetPages().ToList();

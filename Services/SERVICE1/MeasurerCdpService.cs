@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -35,19 +34,21 @@ public static class MeasurerCdpService
 
     private static void Log(string msg)
     {
-        try
+        if (App.EnableLogging)
         {
-            lock (LogLock)
+            try
             {
-                var dir = Path.GetDirectoryName(LogPath);
-                if (!string.IsNullOrEmpty(dir)) Directory.CreateDirectory(dir);
-                File.AppendAllText(LogPath,
-                    $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {msg}{Environment.NewLine}",
-                    Encoding.UTF8);
+                lock (LogLock)
+                {
+                    var dir = Path.GetDirectoryName(LogPath);
+                    if (!string.IsNullOrEmpty(dir)) Directory.CreateDirectory(dir);
+                    File.AppendAllText(LogPath,
+                        $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {msg}{Environment.NewLine}",
+                        Encoding.UTF8);
+                }
             }
+            catch { }
         }
-        catch { }
-        Debug.WriteLine($"[MeasurerCDP] {msg}");
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -404,6 +405,106 @@ public static class MeasurerCdpService
         {
             Log($"AutoInput 예외: {ex}");
             return (false, ex.Message);
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    //  분석장비 스크랩 (현재 열린 측정인 페이지에서)
+    // ──────────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// 현재 브라우저에서 장비 드롭다운(rg-dropdown-list-0)을 스크랩하여 저장.
+    /// onStatus: 진행 상태 콜백 (UI 스레드에서 호출).
+    /// 반환: (저장 건수, 오류 메시지 or null)
+    /// </summary>
+    public static async Task<(int saved, string? error)> ScrapeEquipmentsAsync(
+        Action<string> onStatus)
+    {
+        const int port = 9222;
+        const string script = @"(function(){
+            function isVisible(el) {
+                if (!el) return false;
+                var st = getComputedStyle(el);
+                return el.offsetParent !== null && st.display !== 'none' && st.visibility !== 'hidden';
+            }
+            var lists = Array.from(document.querySelectorAll('div.rg-dropdownlist#rg-dropdown-list-0'));
+            var list = lists.find(isVisible) || lists[lists.length - 1] || null;
+            if (!list) return '[]';
+            var opts = Array.from(list.querySelectorAll('.rg-dropdown-item[role=""option""]'));
+            var out = [];
+            for (var i = 0; i < opts.length; i++) {
+                var o = opts[i];
+                var labelEl = o.querySelector('.rg-dropdown-label') || o;
+                var name = (labelEl.innerText || labelEl.textContent || '').replace(/\u00a0/g,' ').replace(/\s+/g,' ').trim();
+                if (!name) continue;
+                var code = (o.id || '').trim();
+                if (!code) code = name;
+                out.push({name:name, code:code});
+            }
+            var seen={}, dedup=[];
+            for (var j=0;j<out.length;j++){
+                if(seen[out[j].code]) continue;
+                seen[out[j].code]=true; dedup.push(out[j]);
+            }
+            return JSON.stringify(dedup);
+        })()";
+
+        try
+        {
+            onStatus("브라우저 연결 중...");
+            using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(4) };
+            string cdpJson = await http.GetStringAsync($"http://localhost:{port}/json");
+            string? wsUrl = FindWsUrl(cdpJson);
+            if (wsUrl == null)
+                return (0, "측정인 탭을 찾지 못했습니다. 브라우저에서 측정인.kr을 열어주세요.");
+
+            onStatus("페이지에서 장비 목록 읽는 중...");
+            using var socket = new ClientWebSocket();
+            using var cts    = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            await socket.ConnectAsync(new Uri(wsUrl), cts.Token);
+
+            var cmdObj = JsonSerializer.Serialize(new
+            {
+                id = 1, method = "Runtime.evaluate",
+                @params = new { expression = script, returnByValue = true }
+            });
+            await socket.SendAsync(Encoding.UTF8.GetBytes(cmdObj), WebSocketMessageType.Text, true, cts.Token);
+
+            var buf = new byte[131072];
+            var recv = await socket.ReceiveAsync(buf, cts.Token);
+            string raw = Encoding.UTF8.GetString(buf, 0, recv.Count);
+
+            // 결과 JSON 추출
+            string json = "";
+            using (var doc = JsonDocument.Parse(raw))
+            {
+                if (doc.RootElement.TryGetProperty("result", out var r1) &&
+                    r1.TryGetProperty("result", out var r2) &&
+                    r2.TryGetProperty("value", out var v))
+                    json = v.GetString() ?? "";
+            }
+
+            if (string.IsNullOrWhiteSpace(json) || json == "[]")
+                return (0, "장비 목록을 찾지 못했습니다.\n장비 드롭다운을 먼저 열어놓은 상태에서 시도하세요.");
+
+            var items = new List<(string 장비명, string 코드값)>();
+            using (var doc = JsonDocument.Parse(json))
+                foreach (var item in doc.RootElement.EnumerateArray())
+                {
+                    string n = item.GetProperty("name").GetString() ?? "";
+                    string c = item.GetProperty("code").GetString() ?? "";
+                    if (!string.IsNullOrWhiteSpace(n)) items.Add((n, c));
+                }
+
+            onStatus($"{items.Count}개 파싱 완료 — DB 저장 중...");
+            int saved = MeasurerService.SaveEquipments(items);
+            Log($"[ScrapeEquipments] {saved}/{items.Count}개 저장");
+            return (saved, null);
+        }
+        catch (Exception ex)
+        {
+            Log($"[ScrapeEquipments] 오류: {ex.Message}");
+            return (0, ex.Message);
         }
     }
 

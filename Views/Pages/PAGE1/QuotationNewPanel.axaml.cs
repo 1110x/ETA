@@ -672,8 +672,10 @@ public partial class QuotationNewPanel : UserControl
     private static void Log(string msg)
     {
         var line = $"[{DateTime.Now:HH:mm:ss}] [NewPanel] {msg}";
-        Debug.WriteLine(line);
-        try { File.AppendAllText(LogPath, line + Environment.NewLine); } catch { }
+        if (App.EnableLogging)
+        {
+            try { File.AppendAllText(LogPath, line + Environment.NewLine); } catch { }
+        }
     }
 
     // ── 담당자 확인창 ─────────────────────────────────────────────────────

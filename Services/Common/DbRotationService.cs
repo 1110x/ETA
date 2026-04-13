@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using MySqlConnector;
 
 namespace ETA.Services.Common;
@@ -25,7 +24,6 @@ public static class DbRotationService
     private static void Log(string msg)
     {
         string line = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [DbRotation] {msg}";
-        Debug.WriteLine(line);
     }
 
     // ── 기간 계산 ─────────────────────────────────────────────────────────────

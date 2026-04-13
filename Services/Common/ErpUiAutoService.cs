@@ -25,13 +25,15 @@ public static class ErpUiAutoService
     public static void Log(string msg)
     {
         var line = $"[{DateTime.Now:HH:mm:ss}] {msg}";
-        System.Diagnostics.Debug.WriteLine(line);
-        try
+        if (App.EnableLogging)
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(LogPath)!);
-            File.AppendAllText(LogPath, line + Environment.NewLine);
+            try
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(LogPath)!);
+                File.AppendAllText(LogPath, line + Environment.NewLine);
+            }
+            catch { }
         }
-        catch { }
     }
 
     // ── Win32 P/Invoke ──────────────────────────────────────────────────────

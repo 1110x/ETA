@@ -40,7 +40,6 @@ public class CurrentUserManager
         {
             _currentUserId = userId;
             _currentDept   = FetchDepartment(userId);
-            System.Diagnostics.Debug.WriteLine($"[CurrentUserManager] 사용자 설정: {_currentUserId} / 부서: {_currentDept}");
         }
     }
 
@@ -61,6 +60,5 @@ public class CurrentUserManager
     public void ResetToWindowsUser()
     {
         _currentUserId = Environment.UserName ?? "DefaultUser";
-        System.Diagnostics.Debug.WriteLine($"[CurrentUserManager] Windows 사용자로 초기화: {_currentUserId}");
     }
 }

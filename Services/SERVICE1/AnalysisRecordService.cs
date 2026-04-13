@@ -3,7 +3,6 @@ using System.Data;
 using System.Data.Common;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using ETA.Services.Common;
@@ -50,7 +49,7 @@ public static class AnalysisRecordService
                     groups[col].Add(row);
                 }
         }
-        catch (Exception ex) { Log($"GetAnalysisGroups 오류: {ex.Message}"); }
+        catch (Exception ex) { }
         return groups;
     }
 
@@ -78,7 +77,7 @@ public static class AnalysisRecordService
                 }
             }
         }
-        catch (Exception ex) { Log($"GetIncompleteItems 오류: {ex.Message}"); }
+        catch (Exception ex) { }
         return result;
     }
 
@@ -100,7 +99,7 @@ public static class AnalysisRecordService
         DateTime targetDate)
     {
         var results = new List<(string, string)>();
-        if (!File.Exists(TemplatePath)) { Log($"템플릿 없음: {TemplatePath}"); return results; }
+        if (!File.Exists(TemplatePath)) { return results; }
 
         // 1) 분석자별로 그룹 재구성
         var byAssignee = new Dictionary<string, Dictionary<string, List<Dictionary<string, string>>>>(
@@ -151,10 +150,9 @@ public static class AnalysisRecordService
                 }
 
                 wb.SaveAs(filePath);
-                Log($"생성: {fileName} ({analyteMap.Count}개 시트)");
                 results.Add((assignee, filePath));
             }
-            catch (Exception ex) { Log($"GenerateByAssignee 오류 ({assignee}): {ex.Message}"); }
+            catch (Exception ex) { }
         }
         return results;
     }
@@ -179,7 +177,7 @@ public static class AnalysisRecordService
                 return string.IsNullOrEmpty(val) ? null : val;
             }
         }
-        catch (Exception ex) { Log($"GetAssigneeForAnalyte 오류: {ex.Message}"); }
+        catch (Exception ex) { }
         return null;
     }
 
@@ -255,9 +253,8 @@ public static class AnalysisRecordService
                     });
                 }
             }
-            Log($"ReadResultsFromFile: {list.Count}행 읽음 ({wb.Worksheets.Count}시트)");
         }
-        catch (Exception ex) { Log($"ReadResultsFromFile 오류: {ex.Message}"); }
+        catch (Exception ex) { }
         return list;
     }
 
@@ -281,7 +278,7 @@ public static class AnalysisRecordService
                 result.Add(row);
             }
         }
-        catch (Exception ex) { Log($"GetOrderRows 오류: {ex.Message}"); }
+        catch (Exception ex) { }
         return result;
     }
 
@@ -310,12 +307,10 @@ public static class AnalysisRecordService
                 map[구분] = inner;
             }
         }
-        catch (Exception ex) { Log($"방류기준표 오류: {ex.Message}"); }
+        catch (Exception ex) { }
         return map;
     }
 
-    private static void Log(string msg)
-        => Debug.WriteLine($"[{DateTime.Now:HH:mm:ss}] [AnalysisRecord] {msg}");
 }
 
 /// <summary>분석기록부 Excel 파일에서 읽어온 결과 1행</summary>

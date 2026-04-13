@@ -2,7 +2,6 @@ using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -58,7 +57,6 @@ public static class AiParserClassifier
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[AiParserClassifier] Predict 오류: {ex.Message}");
             return null;
         }
     }
@@ -97,7 +95,6 @@ public static class AiParserClassifier
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[AiParserClassifier] PredictTopK 오류: {ex.Message}");
         }
 
         return result;
@@ -113,11 +110,9 @@ public static class AiParserClassifier
             try
             {
                 _session = new InferenceSession(OnnxPath);
-                Debug.WriteLine($"[AiParserClassifier] 모델 로드 완료: {OnnxPath}");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[AiParserClassifier] 모델 로드 실패: {ex.Message}");
             }
         }
         return _session;

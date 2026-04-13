@@ -1,7 +1,6 @@
 using ETA.Services.Common;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text.Json;
 
@@ -82,7 +81,7 @@ public static class SignatureClassifier
             }
             _ensured = true;
         }
-        catch (Exception ex) { Debug.WriteLine($"[SignatureClassifier] EnsureTable: {ex.Message}"); }
+        catch (Exception ex) { }
     }
 
     // ── 저장 (같은 파서키면 덮어씀) ──────────────────────────────────
@@ -117,7 +116,6 @@ public static class SignatureClassifier
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[SignatureClassifier] Save 오류: {ex.Message}");
             throw;
         }
     }
@@ -152,7 +150,7 @@ public static class SignatureClassifier
                     RegisteredDate  = r.IsDBNull(9) ? ""  : r.GetString(9),
                 });
         }
-        catch (Exception ex) { Debug.WriteLine($"[SignatureClassifier] LoadAll: {ex.Message}"); }
+        catch (Exception ex) { }
         return list;
     }
 
@@ -239,7 +237,6 @@ public static class SignatureClassifier
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[SignatureClassifier] BuildFromTrainingData: {ex.Message}");
             return (0, 0);
         }
 

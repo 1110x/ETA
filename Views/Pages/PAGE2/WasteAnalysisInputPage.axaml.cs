@@ -322,7 +322,7 @@ public partial class WasteAnalysisInputPage : UserControl
 
     // ── 키보드 단축키 네비게이션 ──────────────────────────────────────────
     private bool _keyNavShow1 = false;  // Shift+R: Show1 매칭패널 W/S 모드
-    private bool _keyNavShow2 = false;  // Shift+F: Show2 그리드 W/S 모드
+    private bool _keyNavShow2 = false;  // Shift+2: Show2 그리드 방향키 네비 모드
     private bool _shiftQHeld = false;  // Shift+Q 누르고 있는 동안 QC 클릭 모드
     private TreeViewItem? _keyNavTreeFocused = null; // (미사용 - 하위호환)
     private int _keyNavShow1Index = -1;             // 현재 포커스된 Show1 아이템 인덱스
@@ -5312,7 +5312,7 @@ public partial class WasteAnalysisInputPage : UserControl
     // 키보드 단축키 네비게이션  (Shift+R = Show1 트리, Shift+F = Show2 그리드)
     // =========================================================================
 
-    /// <summary>Tunnel 핸들러: _keyNavShow2 활성 시 방향키(↑↓←→)로만 행·열 이동 — WASD 완전 제거로 한글 IME 방지</summary>
+    /// <summary>Tunnel 핸들러: _keyNavShow2 활성 시 방향키(↑↓←→)로 행·열 이동 및 자동 입력창 오픈</summary>
     private void OnNavKeyDownTunnel(object? sender, KeyEventArgs e)
     {
         if (e.Handled) return;
@@ -5321,7 +5321,7 @@ public partial class WasteAnalysisInputPage : UserControl
         // ── _keyNavShow2 모드: 방향키만 = 이동 (WASD 제거 — IME 방지), Enter = 편집 ──
         if (!shift && _keyNavShow2)
         {
-            // Up/Down → 행 이동 (편집 중이면 LostFocus로 커밋 후 이동)
+            // Up/Down → 행 이동 후 자동으로 선택된 셀 열기
             if (e.Key == Key.Up || e.Key == Key.Down)
             {
                 e.Handled = true;
@@ -5329,14 +5329,16 @@ public partial class WasteAnalysisInputPage : UserControl
                 bool up = e.Key == Key.Up;
                 int newIdx = _selectedRowIndex + (up ? -1 : 1);
                 SelectGridRow(newIdx);
+                Avalonia.Threading.Dispatcher.UIThread.Post(() => OpenNavEditCell(newIdx));
                 return;
             }
-            // Left/Right → 열 전환만 (입력창은 열지 않음 — 순수 방향키)
+            // Left/Right → 열 전환 후 자동으로 선택된 셀 열기
             if (e.Key == Key.Left || e.Key == Key.Right)
             {
                 e.Handled = true;
                 TopLevel.GetTopLevel(this)?.FocusManager?.ClearFocus(); // 편집 중이면 LostFocus → 커밋
                 _navEditDil = e.Key == Key.Right;
+                Avalonia.Threading.Dispatcher.UIThread.Post(() => OpenNavEditCell(_selectedRowIndex));
                 return;
             }
             // Enter → TextBox 편집 중이면 내부 핸들러(MoveDilFocus)에 위임, 아니면 현재 셀 열기
@@ -5397,7 +5399,7 @@ public partial class WasteAnalysisInputPage : UserControl
             return;
         }
 
-        // ── Shift+2: Show2(그리드) W/S 모드 토글 ────────────────────────
+        // ── Shift+2: Show2(그리드) 방향키 네비 모드 토글 ──────────────────
         if (shift && e.Key == Key.D2)
         {
             e.Handled = true;
@@ -5447,15 +5449,17 @@ public partial class WasteAnalysisInputPage : UserControl
                 bool up = e.Key == Key.Up;
                 int newIdx = _selectedRowIndex + (up ? -1 : 1);
                 SelectGridRow(newIdx);
+                Avalonia.Threading.Dispatcher.UIThread.Post(() => OpenNavEditCell(newIdx));
                 return;
             }
         }
 
-        // ── Left / Right: Shift+2 모드에서 희석배수 ↔ 시료량 전환 ──────────
+        // ── Left / Right: Shift+2 모드에서 희석배수 ↔ 시료량 전환 후 자동 열기 ──────────
         if (!shift && _keyNavShow2 && (e.Key == Key.Left || e.Key == Key.Right))
         {
             e.Handled = true;
             _navEditDil = e.Key == Key.Right; // Left=시료량, Right=희석배수
+            Avalonia.Threading.Dispatcher.UIThread.Post(() => OpenNavEditCell(_selectedRowIndex));
             return;
         }
     }
@@ -6974,6 +6978,18 @@ public partial class WasteAnalysisInputPage : UserControl
         }
     }
 
+    // EnableLogging 여부와 무관하게 항상 기록 (입력 버튼 진단용)
+    private static void LogInput(string msg)
+    {
+        try
+        {
+            var dir = System.IO.Path.GetDirectoryName(ImportLogPath)!;
+            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+            File.AppendAllText(ImportLogPath, $"[{DateTime.Now:HH:mm:ss}] {msg}\n");
+        }
+        catch { }
+    }
+
     private void SaveRawData(ExcelRow row, WasteSample? s, string 소스구분 = "폐수배출업소")
     {
         if (string.IsNullOrWhiteSpace(row.Result))
@@ -7189,10 +7205,11 @@ public partial class WasteAnalysisInputPage : UserControl
                     tableName,
                     분석일, sn, 업체명, 소스구분,
                     농도: row.Result,
-                    ISTD: row.D2 ?? "",  // 시료별 ISTD 응답값
+                    ISTD: row.D2 ?? "",
                     검량선정보: docInfo,
                     compoundCal: compoundCal,
-                    비고: remark, 시료명: 시료명Full);
+                    비고: remark, 시료명: 시료명Full,
+                    흡광도: row.D1 ?? "");
                 break;
             }
 
@@ -7366,10 +7383,16 @@ public partial class WasteAnalysisInputPage : UserControl
                 double calcConc, result;
                 string analyteKey = GetActiveAnalyteKey();
                 string formulaStr = ETA.Services.SERVICE3.AnalysisNoteService.GetFormula(analyteKey);
+                double.TryParse(exRow?.D2?.Replace(",", "."),
+                    System.Globalization.NumberStyles.Float,
+                    System.Globalization.CultureInfo.InvariantCulture, out var istdVal);
                 var evaluated = ETA.Services.SERVICE3.AnalysisNoteService.EvaluateFormula(formulaStr,
                     new System.Collections.Generic.Dictionary<string, double>
                     {
                         ["흡광도"]  = abs,
+                        ["Area"]   = abs,
+                        ["Resp"]   = abs,
+                        ["ISTD"]   = istdVal,
                         ["절편"]   = intercept,
                         ["기울기"]  = slope,
                         ["시료량"]  = vol > 0 ? vol : 1.0,
@@ -8630,10 +8653,7 @@ public partial class WasteAnalysisInputPage : UserControl
         if (!_categoryExcelData.TryGetValue(_activeCategory, out var rows))
         { ShowMessage("먼저 파일을 첨부하세요.", true); return; }
 
-        if (App.EnableLogging)
-        {
-            try { File.WriteAllText(ImportLogPath, $"=== ImportData 시작: {DateTime.Now:yyyy-MM-dd HH:mm:ss} cat={_activeCategory} rows={rows.Count} ===\n"); } catch { }
-        }
+        try { File.WriteAllText(ImportLogPath, $"=== ImportData 시작: {DateTime.Now:yyyy-MM-dd HH:mm:ss} cat={_activeCategory} rows={rows.Count} ===\n"); } catch { }
 
         // 진행 오버레이 표시
         if (_importOverlay != null) _importOverlay.IsVisible = true;
@@ -8653,35 +8673,35 @@ public partial class WasteAnalysisInputPage : UserControl
         {
         foreach (var row in rows)
         {
-            if (string.IsNullOrWhiteSpace(row.Result)) { LogImport($"SKIP(빈결과): [{processed}] {row.시료명}"); processed++; continue; }
-            if (!row.Enabled) { LogImport($"SKIP(비활성): [{processed}] {row.시료명}"); disabled++; processed++; continue; }
+            if (string.IsNullOrWhiteSpace(row.Result)) { LogInput($"SKIP(빈결과): [{processed}] SN={row.SN} 시료명={row.시료명}"); processed++; continue; }
+            if (!row.Enabled) { LogInput($"SKIP(비활성): [{processed}] SN={row.SN} Source={row.Source} Matched={row.Matched != null}"); disabled++; processed++; continue; }
 
             try
             {
                 switch (row.Source)
                 {
                     case SourceType.폐수배출업소 when row.Matched != null:
-                        LogImport($"[{processed}] 폐수배출업소: {row.시료명} SN={row.SN}");
+                        LogInput($"[{processed}] 폐수배출업소: {row.시료명} SN={row.SN}");
                         try { SaveRawData(row, row.Matched, "폐수배출업소"); }
-                        catch (Exception ex) { LogImport($"  오류: {ex.Message}"); }
+                        catch (Exception ex) { LogInput($"  오류: {ex.Message}"); }
                         UpdateWasteSampleValues(row);
                         modifiedDates.Add(row.Matched.채수일);
                         imported++;
                         break;
 
                     case SourceType.수질분석센터 when row.MatchedAnalysis != null:
-                        LogImport($"[{processed}] 수질분석센터: {row.시료명} SN={row.SN}");
+                        LogInput($"[{processed}] 수질분석센터: {row.시료명} SN={row.SN}");
                         try { SaveRawData(row, row.Matched, "수질분석센터"); }
-                        catch (Exception ex) { LogImport($"  오류: {ex.Message}"); }
+                        catch (Exception ex) { LogInput($"  오류: {ex.Message}"); }
                         ImportAnalysisRequest(row);
                         if (row.Matched != null) modifiedDates.Add(row.Matched.채수일);
                         imported++;
                         break;
 
                     case SourceType.처리시설 when row.MatchedFacilityName != null:
-                        LogImport($"[{processed}] 처리시설: {row.시료명} SN={row.SN} 시설={row.MatchedFacilityName}");
+                        LogInput($"[{processed}] 처리시설: {row.시료명} SN={row.SN} 시설={row.MatchedFacilityName}");
                         try { SaveRawData(row, null, "처리시설"); }
-                        catch (Exception ex) { LogImport($"  오류: {ex.Message}"); }
+                        catch (Exception ex) { LogInput($"  오류: {ex.Message}"); }
                         ImportFacilityResult(row);
                         docDates.TryGetValue(category, out var fd);
                         if (!string.IsNullOrEmpty(fd)) modifiedDates.Add(fd);
@@ -8695,14 +8715,14 @@ public partial class WasteAnalysisInputPage : UserControl
                             : row.Source == SourceType.수질분석센터 ? "수질분석센터"
                             : row.Source == SourceType.처리시설     ? "처리시설"
                             : "미분류";
-                        LogImport($"[{processed}] {srcTag}: {row.시료명} Source={row.Source} Matched={row.Matched != null} MatchedAnalysis={row.MatchedAnalysis != null} FacilityName={row.MatchedFacilityName}");
+                        LogInput($"[{processed}] {srcTag}: {row.시료명} Source={row.Source} Matched={row.Matched != null} MatchedAnalysis={row.MatchedAnalysis != null} FacilityName={row.MatchedFacilityName}");
                         try { SaveRawData(row, row.Matched, srcTag); }
-                        catch (Exception ex) { LogImport($"  오류: {ex.Message}"); }
+                        catch (Exception ex) { LogInput($"  오류: {ex.Message}"); }
                         imported++;
                         break;
                 }
             }
-            catch { skipped++; }
+            catch (Exception ex) { LogInput($"  [{processed}] 예외: {ex.Message}"); skipped++; }
             finally
             {
                 int p = ++processed;
@@ -8743,6 +8763,7 @@ public partial class WasteAnalysisInputPage : UserControl
         { /* LoadVerifiedGrid 제거됨 */ }
         BuildStatsPanel();
         RefreshDateNodes(modifiedDates);
+        LogInput($"=== ImportData 완료: {imported}건 저장, {disabled}건 비활성(토글OFF), {skipped}건 오류 ===");
         string msg = $"✅ {imported}건 입력" +
             (disabled > 0 ? $" / {disabled}건 체크해제" : "") +
             (skipped > 0 ? $" / {skipped}건 제외" : "");

@@ -72,9 +72,13 @@ public static class DbPathHelper
         if (!string.IsNullOrEmpty(sharedPhoto))
         {
             SharedPhotoDirectory = sharedPhoto;
+            // NAS 디렉토리 생성은 백그라운드에서 — 연결 지연 시 앱 구동 차단 방지
             if (OperatingSystem.IsWindows())
             {
-                try { Directory.CreateDirectory(SharedPhotoDirectory); } catch { }
+                System.Threading.Tasks.Task.Run(() =>
+                {
+                    try { Directory.CreateDirectory(SharedPhotoDirectory); } catch { }
+                });
             }
         }
     }

@@ -11,7 +11,6 @@ using ETA.Services.SERVICE2;
 using ETA.Services.Common;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -39,8 +38,10 @@ public partial class QuotationDetailPanel : UserControl
     private static void Log(string msg)
     {
         var line = $"[{DateTime.Now:HH:mm:ss}] {msg}";
-        System.Diagnostics.Debug.WriteLine(line);
-        try { File.AppendAllText(LogPath, line + Environment.NewLine); } catch { }
+        if (App.EnableLogging)
+        {
+            try { File.AppendAllText(LogPath, line + Environment.NewLine); } catch { }
+        }
     }
 
     // ── 고정 컬럼 (항목 순회 제외) — Trim 된 실제 컬럼명 기준 ────────────

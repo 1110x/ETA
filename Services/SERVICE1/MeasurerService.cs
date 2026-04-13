@@ -2,7 +2,6 @@ using System.Data;
 using System.Data.Common;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using ETA.Services.Common;
 
@@ -63,7 +62,7 @@ public static class MeasurerService
             CREATE TABLE IF NOT EXISTS 측정인_분석장비 (
                 Id       INTEGER PRIMARY KEY {DbConnectionFactory.AutoIncrement},
                 장비명   TEXT NOT NULL,
-                코드값   TEXT NOT NULL,
+                코드값   VARCHAR(191) NOT NULL,
                 UNIQUE(코드값)
             );";
         cmd.ExecuteNonQuery();
@@ -91,9 +90,8 @@ public static class MeasurerService
                 count += cmd.ExecuteNonQuery();
             }
             txn.Commit();
-            Debug.WriteLine($"[MeasurerService] SaveEquipments: {count}/{items.Count}개 저장");
         }
-        catch (Exception ex) { txn.Rollback(); Debug.WriteLine($"[MeasurerService] SaveEquipments 오류: {ex.Message}"); throw; }
+        catch (Exception ex) { txn.Rollback(); throw; }
         return count;
     }
 
@@ -110,6 +108,39 @@ public static class MeasurerService
         while (r.Read())
             list.Add((r.GetString(0), r.GetString(1)));
         return list;
+    }
+
+    // -- 분석장비 단건 저장 (UPSERT)
+    public static void SaveEquipment(string 장비명, string 코드값, string? old코드값 = null)
+    {
+        EnsureEquipmentTable();
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+        if (!string.IsNullOrWhiteSpace(old코드값) && old코드값 != 코드값)
+        {
+            using var del = conn.CreateCommand();
+            del.CommandText = "DELETE FROM `측정인_분석장비` WHERE `코드값` = @old";
+            del.Parameters.AddWithValue("@old", old코드값);
+            del.ExecuteNonQuery();
+        }
+        var upsert = DbConnectionFactory.UpsertSuffix(new[] { "코드값" }, new[] { "장비명" });
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = $"INSERT INTO `측정인_분석장비` (장비명, 코드값) VALUES (@name, @code) {upsert}";
+        cmd.Parameters.AddWithValue("@name", 장비명.Trim());
+        cmd.Parameters.AddWithValue("@code", 코드값.Trim());
+        cmd.ExecuteNonQuery();
+    }
+
+    // -- 분석장비 삭제
+    public static void DeleteEquipment(string 코드값)
+    {
+        EnsureEquipmentTable();
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "DELETE FROM `측정인_분석장비` WHERE `코드값` = @code";
+        cmd.Parameters.AddWithValue("@code", 코드값);
+        cmd.ExecuteNonQuery();
     }
 
     // ── 분석항목 테이블 생성 / 마이그레이션 ─────────────────────────────────
@@ -167,12 +198,10 @@ public static class MeasurerService
                 count += cmd.ExecuteNonQuery();
             }
             txn.Commit();
-            Debug.WriteLine($"[MeasurerService] SaveAnalysisItems: {{count}}/{{items.Count}}개 저장");
         }
         catch (Exception ex)
         {
             txn.Rollback();
-            Debug.WriteLine($"[MeasurerService] SaveAnalysisItems 오류: {{ex.Message}}");
             throw;
         }
         return count;
@@ -249,7 +278,6 @@ public static class MeasurerService
         catch (Exception ex)
         {
             txn.Rollback();
-            Debug.WriteLine($"[MeasurerService] 저장 오류: {ex.Message}");
             throw;
         }
     }

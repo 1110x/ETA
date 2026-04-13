@@ -5,7 +5,6 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -564,7 +563,9 @@ public partial class WasteCompanyPage : UserControl
     private void Log(string msg)
     {
         var line = $"[{DateTime.Now:HH:mm:ss}] [WasteCompany] {msg}";
-        Debug.WriteLine(line);
-        try { File.AppendAllText("Logs/WasteCompanyDebug.log", line + Environment.NewLine); } catch { }
+        if (App.EnableLogging)
+        {
+            try { File.AppendAllText("Logs/WasteCompanyDebug.log", line + Environment.NewLine); } catch { }
+        }
     }
 }

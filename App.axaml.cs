@@ -9,6 +9,9 @@ namespace ETA;
 
 public partial class App : Application
 {
+    /// <summary>로깅 활성화 플래그 - false로 설정하면 모든 로그 파일 생성이 중단됨</summary>
+    public static bool EnableLogging = false;
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);

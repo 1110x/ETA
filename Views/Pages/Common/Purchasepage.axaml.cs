@@ -525,7 +525,6 @@ public class PurchasePage
         row.Background     = new SolidColorBrush(Color.Parse("#4a4a70"));
         _selectedRowBorder = row;
         _selectedItem      = item;
-        Debug.WriteLine($"[Purchase] ✅ 행 선택: {item.품목} (Id={item.Id})");
 
         // ── 폼에 선택된 항목 데이터 로드 (수정 모드) ──────────────────────
         LoadToForm(item);
@@ -551,7 +550,6 @@ public class PurchasePage
         _saveBtn.Content = "✏️  수정 저장";
         _saveBtn.Background = new SolidColorBrush(Color.Parse("#2a4a5a"));
 
-        Debug.WriteLine($"[Purchase] 폼 로드: {item.품목} (Id={item.Id})");
     }
 
     /// <summary>폼 초기화 (신규 모드로 전환)</summary>
@@ -608,9 +606,8 @@ public class PurchasePage
                 FileName        = file,
                 UseShellExecute = true
             });
-            Debug.WriteLine($"[Export] {file}");
         }
-        catch (Exception ex) { Debug.WriteLine($"[Export 오류] {ex.Message}"); }
+        catch (Exception ex) { }
     }
 
     /// BT3 — 승인
@@ -625,11 +622,9 @@ public class PurchasePage
     /// BT6 — 삭제
     public void DeleteSelected()
     {
-        Debug.WriteLine($"[Purchase] DeleteSelected 호출, 선택={_selectedItem?.품목 ?? "없음"}");
         if (_selectedItem == null) return;
 
         bool ok = PurchaseService.Delete(_selectedItem.Id);
-        Debug.WriteLine(ok ? $"[Purchase] 삭제: {_selectedItem.품목}" : "[Purchase] 삭제 실패");
 
         if (ok)
         {
@@ -643,15 +638,12 @@ public class PurchasePage
     // ── 상태 변경 공통 ────────────────────────────────────────────────────────
     private void ChangeStatus(string status)
     {
-        Debug.WriteLine($"[Purchase] ChangeStatus 호출: {status}, 선택={_selectedItem?.품목 ?? "없음"}");
         if (_selectedItem == null)
         {
-            Debug.WriteLine("[Purchase] ❌ 선택된 항목 없음 — 리스트에서 행을 먼저 클릭하세요");
             return;
         }
 
         bool ok = PurchaseService.UpdateStatus(_selectedItem.Id, status);
-        Debug.WriteLine(ok ? $"[Purchase] ✅ {status}: {_selectedItem.품목}" : $"[Purchase] ❌ {status} 실패");
 
         if (ok)
         {
@@ -686,7 +678,6 @@ public class PurchasePage
                 _selectedItem.구분, _selectedItem.품목, _selectedItem.수량,
                 _selectedItem.요청자, _selectedItem.비고);
 
-            Debug.WriteLine(ok ? $"[Purchase] ✅ 수정: {_selectedItem.품목}" : "[Purchase] ❌ 수정 실패");
             if (ok) { ClearForm(); RefreshTree(); LoadListByMonth(_filterYear, _filterMonth); }
             return;
         }

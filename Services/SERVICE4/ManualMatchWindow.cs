@@ -66,7 +66,6 @@ public class ManualMatchWindow : Window
         _facilityMasters = facilityMasters;
         _wasteSamples    = wasteSamples;
         _targetName      = 시료명;
-        System.Diagnostics.Debug.WriteLine($"[ManualMatch] targetName='{시료명}', facilityMasters={facilityMasters.Count}개");
         try { _masterNotes = FacilityResultService.GetMasterNotes(); }
         catch { _masterNotes = new(); }
 
@@ -544,7 +543,6 @@ public class ManualMatchWindow : Window
             .ThenBy(g => g.Key)
             .ToList();
         foreach (var g in byFacility)
-            System.Diagnostics.Debug.WriteLine($"[ManualMatch] col: {g.Key} → order={FacilityOrder(g.Key)}, groupScore={GroupScore(g)}");
 
         if (byFacility.Count == 0)
         {

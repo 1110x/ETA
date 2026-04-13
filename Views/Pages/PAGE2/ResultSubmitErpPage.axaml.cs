@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
@@ -138,7 +137,7 @@ public partial class ResultSubmitErpPage : UserControl
                 {
                     MakeCell("",     24, "#778899", FontWeight.SemiBold),
                     MakeCell("번호", 36, "#778899", FontWeight.SemiBold),
-                    MakeCell("S/N",  72, "#778899", FontWeight.SemiBold),
+                    MakeCell("S/N",  100, "#778899", FontWeight.SemiBold),
                     MakeCell("시료명", 200, "#778899", FontWeight.SemiBold),
                     MakeCell("BOD",  44, "#778899", FontWeight.SemiBold),
                     MakeCell("TOC",  44, "#778899", FontWeight.SemiBold),

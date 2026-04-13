@@ -105,28 +105,45 @@
                         Foreground="{DynamicResource FgMuted}"
                         BorderThickness="1"
                         BorderBrush="{DynamicResource InputBorder}"/>
-                <Button x:Name="BtnRequestList"
-                        Content="📋 의뢰목록"
-                        Click="CategoryBtn_Click"
-                        Tag="의뢰목록"
-                        FontSize="{DynamicResource FontSizeSM}"
-                        FontFamily="avares://ETA/Assets/Fonts#Pretendard"
-                        Padding="8,3"
-                        CornerRadius="10"
-                        Background="{DynamicResource SubBtnBg}"
-                        Foreground="{DynamicResource FgMuted}"
-                        BorderThickness="1"
-                        BorderBrush="{DynamicResource InputBorder}"/>
             </StackPanel>
         </Border>
 
-        <!-- Row 3: 트리뷰 -->
-        <TreeView Grid.Row="3"
-                  x:Name="TaskTreeView"
-                  Margin="5"
-                  HorizontalAlignment="Stretch"
-                  VerticalAlignment="Stretch"
-                  SelectionChanged="TaskTreeView_SelectionChanged"/>
+        <!-- Row 3: 전체선택 버튼 + 트리뷰 -->
+        <Grid Grid.Row="3" RowDefinitions="Auto,*">
+            <Border Grid.Row="0"
+                    x:Name="SelectAllBar"
+                    IsVisible="False"
+                    Background="{DynamicResource PanelInnerBg}"
+                    Padding="6,3">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <Button x:Name="BtnSelectAll"
+                            Content="전체선택"
+                            FontSize="{DynamicResource FontSizeSM}"
+                            FontFamily="avares://ETA/Assets/Fonts#Pretendard"
+                            Padding="8,2"
+                            Background="Transparent"
+                            BorderThickness="1"
+                            BorderBrush="{DynamicResource InputBorder}"
+                            Foreground="{DynamicResource FgMuted}"/>
+                    <Button x:Name="BtnSendToShow2"
+                            Content="Show2 전송"
+                            IsVisible="False"
+                            FontSize="{DynamicResource FontSizeSM}"
+                            FontFamily="avares://ETA/Assets/Fonts#Pretendard"
+                            Padding="8,2"
+                            Background="Transparent"
+                            BorderThickness="1"
+                            BorderBrush="{DynamicResource InputBorder}"
+                            Foreground="{DynamicResource FgMuted}"/>
+                </StackPanel>
+            </Border>
+            <TreeView Grid.Row="1"
+                      x:Name="TaskTreeView"
+                      Margin="5"
+                      HorizontalAlignment="Stretch"
+                      VerticalAlignment="Stretch"
+                      SelectionChanged="TaskTreeView_SelectionChanged"/>
+        </Grid>
 
     </Grid>
 </UserControl>

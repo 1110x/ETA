@@ -5,7 +5,6 @@ using System.Linq;
 using System.Data;
 using System.Data.Common;
 using ETA.Models;
-using System.Diagnostics;
 using ETA.Services.Common;
 using ClosedXML.Excel;
 
@@ -62,7 +61,6 @@ public static class ContractService
             list.Add(c);
         }
 
-        Debug.WriteLine($"[Contract] 로드 {list.Count}건");
         return list;
     }
 
@@ -71,7 +69,6 @@ public static class ContractService
     {
         if (string.IsNullOrEmpty(contract.OriginalCompanyName))
         {
-            Debug.WriteLine("❌ OriginalCompanyName 없음"); return false;
         }
 
         using var conn = DbConnectionFactory.CreateConnection();
@@ -92,7 +89,6 @@ public static class ContractService
         cmd.Parameters.AddWithValue("@original", contract.OriginalCompanyName);
 
         int rows = cmd.ExecuteNonQuery();
-        Debug.WriteLine($"[Contract UPDATE] {rows}행 → {contract.C_CompanyName}");
         if (rows > 0) { contract.OriginalCompanyName = contract.C_CompanyName; return true; }
         return false;
     }
@@ -116,7 +112,6 @@ public static class ContractService
 
         SetParams(cmd, contract);
         int rows = cmd.ExecuteNonQuery();
-        Debug.WriteLine($"[Contract INSERT] {rows}행 → {contract.C_CompanyName}");
         return rows > 0;
     }
 
@@ -145,7 +140,6 @@ public static class ContractService
         cmd.Parameters.AddWithValue("@name", contract.C_CompanyName);
 
         int rows = cmd.ExecuteNonQuery();
-        Debug.WriteLine($"[Contract DELETE] {rows}행 → {contract.C_CompanyName}");
         return rows > 0;
     }
 
@@ -169,7 +163,7 @@ public static class ContractService
                 if (!string.IsNullOrWhiteSpace(v)) result.Add(v);
             }
         }
-        catch (Exception ex) { Debug.WriteLine($"[Contract] GetAnalysisItems 오류: {ex.Message}"); }
+        catch (Exception ex) { }
 
         return result;
     }
@@ -197,8 +191,8 @@ public static class ContractService
             using var cmd = conn.CreateCommand();
             cmd.CommandText = $"ALTER TABLE `계약 DB` ADD COLUMN IF NOT EXISTS `{item}` DECIMAL(15,2) NULL DEFAULT NULL";
 
-            try { cmd.ExecuteNonQuery(); Debug.WriteLine($"[Contract] 컬럼 추가: {item}"); }
-            catch (Exception ex) { Debug.WriteLine($"[Contract] 컬럼 추가 실패({item}): {ex.Message}"); }
+            try { cmd.ExecuteNonQuery(); }
+            catch (Exception ex) { }
         }
     }
 
@@ -215,7 +209,7 @@ public static class ContractService
         int ok = 0, err = 0;
 
         if (!File.Exists(filePath))
-        { Debug.WriteLine($"[Contract] Excel 파일 없음: {filePath}"); return (0, 0); }
+        { return (0, 0); }
 
         List<string>                  headers;
         List<List<string>>            rows;
@@ -265,7 +259,6 @@ public static class ContractService
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[Contract] Excel 읽기 오류: {ex.Message}");
             return (0, -1);
         }
 
@@ -371,12 +364,10 @@ public static class ContractService
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[Contract] Import 오류 ({companyName}): {ex.Message}");
                 err++;
             }
         }
 
-        Debug.WriteLine($"[Contract] ImportFromExcel 완료 → 성공:{ok} 오류:{err}");
         return (ok, err);
     }
 
@@ -471,7 +462,7 @@ public static class ContractService
                     result.Add((col, ""));
             }
         }
-        catch (Exception ex) { Debug.WriteLine($"[Contract] GetContractPrices 오류: {ex.Message}"); }
+        catch (Exception ex) { }
 
         return result;
     }
@@ -506,10 +497,9 @@ public static class ContractService
         try
         {
             int rows = cmd.ExecuteNonQuery();
-            Debug.WriteLine($"[Contract] UpdateContractPrices {rows}행 → {companyName}");
             return rows > 0;
         }
-        catch (Exception ex) { Debug.WriteLine($"[Contract] UpdateContractPrices 오류: {ex.Message}"); return false; }
+        catch (Exception ex) { return false; }
     }
 
     // ── 공통 파라미터 ─────────────────────────────────────────────────────────

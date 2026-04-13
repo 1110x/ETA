@@ -10,7 +10,6 @@ using ETA.Services.SERVICE2;
 using ETA.Services.Common;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using ETA.Views;
 
@@ -347,9 +346,6 @@ public class RepairPage
             ? RepairService.Insert(item)
             : RepairService.Update(item);
 
-        Debug.WriteLine(ok
-            ? $"[Repair] {(_editingItem == null ? "신규" : "수정")} 완료 → {item.장비명}"
-            : "[Repair] 저장 실패");
 
         if (ok) { ClearForm(); Refresh(); }
     }

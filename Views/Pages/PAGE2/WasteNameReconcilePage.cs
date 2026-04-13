@@ -384,12 +384,15 @@ public sealed class WasteNameReconcilePage
 
         if (errors.Count > 0)
         {
-            var logPath = Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory,
-                "..", "..", "..", "Logs", "WasteRenameError.log");
-            File.AppendAllText(logPath,
-                $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {_officialName}\n" +
-                string.Join("\n", errors) + "\n\n");
+            if (App.EnableLogging)
+            {
+                var logPath = Path.Combine(
+                    AppDomain.CurrentDomain.BaseDirectory,
+                    "..", "..", "..", "Logs", "WasteRenameError.log");
+                File.AppendAllText(logPath,
+                    $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {_officialName}\n" +
+                    string.Join("\n", errors) + "\n\n");
+            }
         }
 
         _statusLabel.Foreground = errors.Count == 0

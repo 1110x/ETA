@@ -1,6 +1,5 @@
 using System;
 using System.Data.Common;
-using System.Diagnostics;
 using ETA.Services.Common;
 
 namespace ETA.Services.SERVICE1;
@@ -57,19 +56,15 @@ public static class CompanyRenameService
                 alterCmd.CommandText =
                     $"ALTER TABLE `시료명칭` CHANGE COLUMN `{EscapeBacktick(oldName)}` `{EscapeBacktick(newName)}` TEXT";
                 alterCmd.ExecuteNonQuery();
-                Debug.WriteLine($"[CompanyRename] 시료명칭 컬럼 변경: {oldName} → {newName}");
             }
             else
             {
-                Debug.WriteLine($"[CompanyRename] 시료명칭에 컬럼 '{oldName}' 없음 — 건너뜀");
             }
 
-            Debug.WriteLine($"[CompanyRename] 완료: {total}행 변경, {oldName} → {newName}");
             return (total, "");
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[CompanyRename] 오류: {ex.Message}");
             return (total, ex.Message);
         }
     }
@@ -85,12 +80,10 @@ public static class CompanyRenameService
             cmd.Parameters.AddWithValue("@oldName", oldName);
             cmd.Parameters.AddWithValue("@newName", newName);
             int rows = cmd.ExecuteNonQuery();
-            Debug.WriteLine($"[CompanyRename] {sql.Split('`')[1]}: {rows}행");
             return rows;
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[CompanyRename] UPDATE 실패: {ex.Message}");
             throw;
         }
     }

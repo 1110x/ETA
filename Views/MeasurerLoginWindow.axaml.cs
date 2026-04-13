@@ -661,7 +661,7 @@ public partial class MeasurerLoginWindow : Window
                 }
             }
             catch (OperationCanceledException) { break; }
-            catch (Exception ex) { Debug.WriteLine($"[Poll] {ex.Message}"); }
+            catch (Exception ex) { }
         }
     }
 
@@ -1938,27 +1938,32 @@ public partial class MeasurerLoginWindow : Window
     // ── 파일 로그 ─────────────────────────────────────────────────────────────
     private static void Log(string msg)
     {
-        try
+        if (App.EnableLogging)
         {
-            File.AppendAllText(LogPath,
-                $"[{DateTime.Now:HH:mm:ss.fff}] {msg}{Environment.NewLine}");
-            Debug.WriteLine($"[측정인] {msg}");
+            try
+            {
+                File.AppendAllText(LogPath,
+                    $"[{DateTime.Now:HH:mm:ss.fff}] {msg}{Environment.NewLine}");
+            }
+            catch { }
         }
-        catch { }
     }
 
     // 세션 시작 시 로그 헤더 기록
     private static void LogSessionStart()
     {
-        try
+        if (App.EnableLogging)
         {
-            File.AppendAllText(LogPath,
-                $"{Environment.NewLine}{'=',60}{Environment.NewLine}" +
-                $"  세션 시작: {DateTime.Now:yyyy-MM-dd HH:mm:ss}{Environment.NewLine}" +
-                $"  로그 경로: {LogPath}{Environment.NewLine}" +
-                $"{'=',60}{Environment.NewLine}");
+            try
+            {
+                File.AppendAllText(LogPath,
+                    $"{Environment.NewLine}{'=',60}{Environment.NewLine}" +
+                    $"  세션 시작: {DateTime.Now:yyyy-MM-dd HH:mm:ss}{Environment.NewLine}" +
+                    $"  로그 경로: {LogPath}{Environment.NewLine}" +
+                    $"{'=',60}{Environment.NewLine}");
+            }
+            catch { }
         }
-        catch { }
     }
 
     private void SetStatus(string text, string hexColor)

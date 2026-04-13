@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -244,12 +243,15 @@ public static class TocInstrumentParser
             try
             {
                 // 디렉토리 자동 생성
-                var logDir = System.IO.Path.GetDirectoryName(logPath);
-                if (!Directory.Exists(logDir))
-                    Directory.CreateDirectory(logDir);
+                if (App.EnableLogging)
+                {
+                    var logDir = System.IO.Path.GetDirectoryName(logPath);
+                    if (!Directory.Exists(logDir))
+                        Directory.CreateDirectory(logDir);
 
-                string logLine = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] [ParseSkalar] {message}";
-                File.AppendAllText(logPath, logLine + "\n");
+                    string logLine = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] [ParseSkalar] {message}";
+                    File.AppendAllText(logPath, logLine + "\n");
+                }
             }
             catch { }
         }
@@ -466,7 +468,7 @@ public static class TocInstrumentParser
                 WriteLog($"검정곡선 생성 실패: 표준품 {wsNomConcs.Count}개점 (최소 2개 필요)");
             }
         }
-        catch (Exception ex) { Debug.WriteLine($"[TocParser/Skalar] {ex.Message}"); }
+        catch (Exception ex) { }
         return result;
     }
 
@@ -564,7 +566,7 @@ public static class TocInstrumentParser
                 };
             }
         }
-        catch (Exception ex) { Debug.WriteLine($"[TocParser/ShimadzuSimple] {ex.Message}"); }
+        catch (Exception ex) { }
         return result;
     }
 
@@ -808,7 +810,7 @@ public static class TocInstrumentParser
             }
             cal = calData;
         }
-        catch (Exception ex) { Debug.WriteLine($"[TocParser/ShimadzuDetail] {ex.Message}"); }
+        catch (Exception ex) { }
         return result;
     }
 
@@ -825,7 +827,7 @@ public static class TocInstrumentParser
         TocCalibrationData? cal = null;
 
         string logPath = Path.Combine(Directory.GetCurrentDirectory(), "Logs", "ShimadzuTocPdfDebug.log");
-        void Log(string msg) { try { File.AppendAllText(logPath, $"{DateTime.Now:HH:mm:ss} {msg}\n"); } catch { } }
+        void Log(string msg) { if (App.EnableLogging) { try { File.AppendAllText(logPath, $"{DateTime.Now:HH:mm:ss} {msg}\n"); } catch { } } }
 
         try
         {
@@ -1285,7 +1287,7 @@ public static class TocInstrumentParser
             // 시료 행 메서드 업데이트
             foreach (var r in rows) r.Method = cal.Method;
         }
-        catch (Exception ex) { Debug.WriteLine($"[TocParser/Jena] {ex.Message}"); }
+        catch (Exception ex) { }
         return (rows, cal);
     }
 
@@ -1432,11 +1434,9 @@ public static class TocInstrumentParser
                 };
             }
 
-            Debug.WriteLine($"[TocParser/TcicXlsxNote] 파싱 완료: rows={rows.Count}, cal={cal?.Method}");
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[TocParser/TcicXlsxNote] 파싱 오류: {ex.Message}");
         }
         return (rows, cal);
     }
@@ -1642,7 +1642,10 @@ public static class TocInstrumentParser
         string logPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Logs", "JenaPdfDebug.log");
         void Log(string msg)
         {
-            try { File.AppendAllText(logPath, $"{DateTime.Now:HH:mm:ss} {msg}\n"); } catch { }
+            if (App.EnableLogging)
+            {
+                try { File.AppendAllText(logPath, $"{DateTime.Now:HH:mm:ss} {msg}\n"); } catch { }
+            }
         }
 
         try
@@ -2015,11 +2018,9 @@ public static class TocInstrumentParser
                 }
             }
 
-            Debug.WriteLine($"[SkalarNpocPdf] 시료 {rows.Count}건, 검량선={cal?.Slope_TC}");
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[SkalarNpocPdf] 오류: {ex.Message}");
         }
         return rows;
     }
@@ -2057,11 +2058,9 @@ public static class TocInstrumentParser
             var allText = string.Join("\n", doc.GetPages().Select(p => p.Text));
             var (_, calData) = ParseSkalarCalibrationPdf_Text(allText);
             cal = calData;
-            Debug.WriteLine($"[SkalarCalPdf] 채널={(cal?.Slope_IC != "" ? "IC" : "TC")}, a={cal?.Slope_TC ?? cal?.Slope_IC}");
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[SkalarCalPdf] 파싱 오류: {ex.Message}");
         }
         return (rows, cal);
     }

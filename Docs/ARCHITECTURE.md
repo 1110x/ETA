@@ -14,8 +14,7 @@
 | UI | Avalonia 11.3.12 (FluentTheme, Dark 기본) |
 | 폰트 | KBIZ한마음고딕 M (avares://ETA/Assets/Fonts#KBIZ한마음고딕 M) |
 | ORM | 없음 — 순수 ADO.NET (DbConnection/DbCommand 직접) |
-| SQLite 드라이버 | Microsoft.Data.Sqlite 10.0.5 |
-| MariaDB 드라이버 | MySqlConnector 2.4.0 |
+| DB 드라이버 | MySqlConnector 2.4.0 (MariaDB 전용) |
 | Excel | ClosedXML 0.105.0 |
 | 애니메이션 | Avalonia.Labs.Lottie |
 | MVVM | CommunityToolkit.Mvvm 8.3.0 (부분 사용) |
@@ -33,7 +32,7 @@ ETA/
 │   └── Pages/         메뉴별 페이지 UserControl
 ├── Styles/            공용 AXAML 스타일 (DataGridCommonStyles)
 ├── Assets/            폰트/아이콘/Lottie/동영상
-├── Data/              eta.db (SQLite) + 템플릿/Export/Photos
+├── Data/              템플릿/Export/Photos
 ├── appsettings.json   MariaDB 연결 정보 (gitignore 권장)
 ├── ARCHITECTURE.md    ← 이 파일 (AI 코딩 레퍼런스)
 └── MASTERBOOK.md      사용자 매뉴얼
@@ -41,34 +40,27 @@ ETA/
 
 ---
 
-## 3. DB 이중화 패턴 — 핵심 규칙
+## 3. DB 패턴 — 핵심 규칙 (MariaDB 전용)
 
-### 3-1. 전환 플래그
-
-```csharp
-DbConnectionFactory.UseMariaDb   // true = MariaDB, false = SQLite(기본)
-```
-Login 화면 왼쪽 상단 숨겨진 Border(`DbModeToggle_Click`)를 클릭하면 전환된다.
-
-### 3-2. 연결 생성
+### 3-1. 연결 생성
 
 ```csharp
 using var conn = DbConnectionFactory.CreateConnection();
 conn.Open();
 ```
-반드시 `DbConnectionFactory.CreateConnection()`만 사용. `SqliteConnection` / `MySqlConnection`을 직접 new하면 안 된다.
+반드시 `DbConnectionFactory.CreateConnection()`만 사용. `MySqlConnection`을 직접 new하면 안 된다.
 
-### 3-3. SQL 방언 헬퍼 — 반드시 사용
+### 3-2. SQL 헬퍼 — 반드시 사용
 
-| 용도 | 절대 하드코딩 금지 | 올바른 사용법 |
-|------|-------------------|-------------|
-| PK 자동증분 DDL | `AUTOINCREMENT` / `AUTO_INCREMENT` | `{DbConnectionFactory.AutoIncrement}` |
-| 마지막 삽입 ID | `last_insert_rowid()` / `LAST_INSERT_ID()` | `{DbConnectionFactory.LastInsertId}` |
-| 행 ID 컬럼 | `rowid` / `_id` | `{DbConnectionFactory.RowId}` |
-| 날짜 포맷 | `strftime(...)` / `DATE_FORMAT(...)` | `DbConnectionFactory.DateFmt(col, fmt)` |
-| UPSERT 절 | 방언별 상이 | `DbConnectionFactory.UpsertSuffix(conflictCols, updateCols)` |
+| 용도 | 하드코딩 금지 | 올바른 사용법 |
+|------|-------------|-------------|
+| PK 자동증분 DDL | `AUTO_INCREMENT` | `{DbConnectionFactory.AutoIncrement}` |
+| 마지막 삽입 ID | `LAST_INSERT_ID()` | `{DbConnectionFactory.LastInsertId}` |
+| 행 ID 컬럼 (`_id`) | `_id` 직접 기재 | `{DbConnectionFactory.RowId}` |
+| 날짜 포맷 | `DATE_FORMAT(...)` | `DbConnectionFactory.DateFmt(col, fmt)` |
+| UPSERT 절 | 직접 작성 | `DbConnectionFactory.UpsertSuffix(conflictCols, updateCols)` |
 
-### 3-4. 스키마 헬퍼
+### 3-3. 스키마 헬퍼
 
 ```csharp
 DbConnectionFactory.GetColumnNames(conn, "테이블명")   // 컬럼 목록
@@ -76,10 +68,9 @@ DbConnectionFactory.ColumnExists(conn, "테이블", "컬럼")
 DbConnectionFactory.TableExists(conn, "테이블명")
 ```
 
-### 3-5. MariaDB 테이블 구조
+### 3-4. 테이블 구조
 
-재마이그레이션(2026-03-27) 이후 모든 테이블에 `_id INT AUTO_INCREMENT PRIMARY KEY` 추가됨.  
-SQLite 원본에는 `_id` 컬럼이 없으므로 행 ID는 반드시 `DbConnectionFactory.RowId`로 참조.
+모든 테이블에 `_id INT AUTO_INCREMENT PRIMARY KEY` 존재. 행 ID는 반드시 `DbConnectionFactory.RowId`로 참조.
 
 ---
 
@@ -225,7 +216,7 @@ SetSubMenu("새로고침", "CSV 저장", "삭제", "엑셀 출력", "PDF 출력"
 | 증상 | 원인 | 해결 |
 |------|------|------|
 | `Unknown column 'rowid'` | MariaDB에 rowid 없음 | `RowId` 헬퍼로 교체 |
-| `Unknown column '_id'` | SQLite에 _id 없음 | `RowId` 헬퍼로 교체 |
+| `Unknown column '_id'` | 하드코딩 제거 | `RowId` 헬퍼로 교체 |
 | `strftime(...)` 오류 | MariaDB에서 미지원 | `DateFmt()` 헬퍼로 교체 |
 | `AUTOINCREMENT` 오류 | MariaDB에서 미지원 | `AutoIncrement` 헬퍼로 교체 |
 | 포트 3307 연결 불가 | 방화벽 / 포트 오설정 | appsettings.json Port → 3306 |
@@ -265,7 +256,7 @@ SetSubMenu("새로고침", "CSV 저장", "삭제", "엑셀 출력", "PDF 출력"
 - ContractPage `ActivePageContent3`(구명) 분석단가 테이블 표시 코드 제거
 
 ### 2026-03-27~28
-- `DbConnectionFactory.RowId` 속성 추가 (`MariaDB: "_id"`, `SQLite: "rowid"`)
+- `DbConnectionFactory.RowId` 속성 추가 (`"_id"`)
 - 전체 서비스 `_id` 하드코딩 → `{DbConnectionFactory.RowId}` 교체
   - 대상: QuotationService, Testreportservice, AnalysisRequestService, OrderRequestService, AnalysisService
 - SQLite→MariaDB 전체 재마이그레이션 — 모든 테이블에 `_id AUTO_INCREMENT` 추가

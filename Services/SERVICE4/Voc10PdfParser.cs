@@ -46,6 +46,16 @@ public static class Voc10PdfParser
         @"^(Quantitative Analysis Results|Batch Data Path|Analysis Time|Calibration Last|Page \d+ of \d+|Analyst Name|Report Generator|Analyze Quant|Report Quant)",
         RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
+    // Quant Calibration Report 섹션 — 공식/R² 파싱용
+    // "y = 366.446256 * x + 1.841816"  또는  "{name} = 366.446256 * x - 0.123"
+    private static readonly Regex FormulaRx = new(
+        @"(-?[\d]+(?:[.,][\d]+)?(?:[Ee][+\-]?\d+)?)\s*\*\s*x\s*([+\-]\s*[\d]+(?:[.,][\d]+)?(?:[Ee][+\-]?\d+)?)?",
+        RegexOptions.Compiled);
+    // "R^2 = 0.997"  또는  "R²= 0.997"
+    private static readonly Regex R2Rx = new(
+        @"R\^?2\s*=\s*([\d.]+)",
+        RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
     /// <summary>VOC10 Agilent PDF 여부 확인</summary>
     public static bool IsVoc10Pdf(string path)
     {
@@ -181,7 +191,7 @@ public static class Voc10PdfParser
         }
 
         Done:
-        // 배치 날짜는 AnalysisTime에서 추출되어 있으므로 별도 처리 없음
+        ParseCalibrationFormulas(path, file);
         return file;
     }
 
@@ -215,19 +225,17 @@ public static class Voc10PdfParser
 
         compound.Rows.Add(row);
 
-        // 검정곡선 표준점 수집 (Cal 행)
+        // Cal 행: Calibration 포인트 생성 (Conc는 빈값 — nominal 농도는 ParseCalibrationFormulas에서 설정)
         if (isCal)
         {
             var lm = CalibLevelRx.Match(rawName);
             int level = lm.Success ? int.Parse(lm.Groups[1].Value) : compound.Calibration.Count + 1;
-
-            // Final Conc = 표준 공칭농도
             compound.Calibration.Add(new GcCalibrationPoint
             {
-                Level       = level,
-                Enable      = "x",
-                Conc        = final,
-                Response    = resp,
+                Level        = level,
+                Enable       = "x",
+                Conc         = "",   // nominal 농도는 Quant Calibration Report에서 채워짐
+                Response     = resp,
                 IstdResponse = istd,
             });
         }
@@ -240,6 +248,101 @@ public static class Voc10PdfParser
             if (TypeKeywords.Contains(tokens[i]))
                 return i;
         return -1;
+    }
+
+    // ── Quant Calibration Report 파싱 ────────────────────────────────────
+    // Agilent이 계산한 기울기/절편/R² 값을 PDF 텍스트에서 직접 추출하여
+    // ComputeLinearRegression(back-calculated Conc + raw Resp 사용)의 오차를 방지
+    private static void ParseCalibrationFormulas(string path, GcInstrumentFile file)
+    {
+        bool inCal = false;
+        GcCompound? cur = null;
+
+        try
+        {
+            using var doc = UglyToad.PdfPig.PdfDocument.Open(path);
+            foreach (var page in doc.GetPages())
+            {
+                foreach (var line in ExtractLines(page))
+                {
+                    if (string.IsNullOrWhiteSpace(line)) continue;
+
+                    if (!inCal)
+                    {
+                        if (line.Contains("Quant Calibration Report", StringComparison.OrdinalIgnoreCase))
+                            inCal = true;
+                        continue;
+                    }
+
+                    var t = line.Trim();
+
+                    // 성분명 줄 인식 (기존에 파싱된 이름과 일치)
+                    var matched = file.Compounds.FirstOrDefault(c =>
+                        t.Equals(c.Name, StringComparison.OrdinalIgnoreCase) ||
+                        t.StartsWith(c.Name + " ", StringComparison.OrdinalIgnoreCase));
+                    if (matched != null) { cur = matched; continue; }
+
+                    // 공식 줄: slope * x ± intercept
+                    var fm = FormulaRx.Match(line);
+                    if (fm.Success && cur != null)
+                    {
+                        var slopeStr = fm.Groups[1].Value.Replace(',', '.');
+                        if (double.TryParse(slopeStr, NumberStyles.Float,
+                                CultureInfo.InvariantCulture, out var slope))
+                            cur.SlopeA = slope;
+
+                        if (fm.Groups[2].Success)
+                        {
+                            var intStr = fm.Groups[2].Value.Replace(" ", "").Replace(',', '.');
+                            if (double.TryParse(intStr, NumberStyles.Float,
+                                    CultureInfo.InvariantCulture, out var intercept))
+                                cur.Intercept = intercept;
+                        }
+                        continue;
+                    }
+
+                    // R² 줄
+                    var r2m = R2Rx.Match(line);
+                    if (r2m.Success && cur != null)
+                    {
+                        if (double.TryParse(r2m.Groups[1].Value, NumberStyles.Float,
+                                CultureInfo.InvariantCulture, out var r2))
+                            cur.R = Math.Sqrt(Math.Max(0, r2));
+                        continue;
+                    }
+
+                    // 검량선 테이블 행: Calibration {level} x {nominal_conc} {response}
+                    // (파일경로와 Calibration 셀이 별도 줄로 추출될 수 있어 .D 조건 제거)
+                    if (cur != null)
+                    {
+                        var toks = t.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
+                        int ci = -1;
+                        for (int i = 0; i < toks.Length; i++)
+                            if (toks[i].Equals("Calibration", StringComparison.OrdinalIgnoreCase))
+                            { ci = i; break; }
+
+                        if (ci >= 0 && ci + 3 < toks.Length &&
+                            int.TryParse(toks[ci + 1], out var lvl))
+                        {
+                            var concStr = toks[ci + 3].Replace(',', '.');
+                            if (double.TryParse(concStr, NumberStyles.Float,
+                                    CultureInfo.InvariantCulture, out var nomConc))
+                            {
+                                var cp = cur.Calibration.FirstOrDefault(p => p.Level == lvl);
+                                if (cp != null)
+                                    cp.Conc = nomConc.ToString(CultureInfo.InvariantCulture);
+                            }
+                        }
+                        continue;
+                    }
+                }
+            }
+        }
+        catch { }
+
+        // 칼리브레이션 리포트에서 값을 못 찾은 성분은 기존 회귀로 폴백
+        foreach (var c in file.Compounds.Where(c => c.SlopeA == null))
+            GcInstrumentParser.ComputeLinearRegression(c);
     }
 
     // ── PdfPig 줄 추출 (Y ±5pt 그룹핑) ────────────────────────────────────

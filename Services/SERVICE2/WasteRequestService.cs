@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Diagnostics;
 using ETA.Models;
 using ETA.Services.Common;
 
@@ -154,7 +153,7 @@ public static class WasteRequestService
                 if (!string.IsNullOrWhiteSpace(ym)) list.Add(ym);
             }
         }
-        catch (Exception ex) { Debug.WriteLine($"[WasteRequestService.GetMonths] {ex.Message}"); }
+        catch (Exception ex) { }
         return list;
     }
 
@@ -181,7 +180,7 @@ public static class WasteRequestService
                 if (!string.IsNullOrWhiteSpace(d)) list.Add(d);
             }
         }
-        catch (Exception ex) { Debug.WriteLine($"[WasteRequestService.GetDatesByMonth] {ex.Message}"); }
+        catch (Exception ex) { }
         return list;
     }
 
@@ -220,7 +219,7 @@ public static class WasteRequestService
                         set.Add(keys[i]);
             }
         }
-        catch (Exception ex) { Debug.WriteLine($"[WasteRequestService.GetRequestedItemSetByDate] {ex.Message}"); }
+        catch (Exception ex) { }
         return set;
     }
 
@@ -273,59 +272,107 @@ public static class WasteRequestService
     }
 
     // =========================================================================
-    // 처리시설 작업 항목 (요일별 스케줄 매핑 + INSERT OR IGNORE)
+    // 처리시설 작업 항목 (처리시설_측정결과 기반 — 해당 날짜에 행이 있으면 작업 표시)
+    // 항목목록은 처리시설_분석계획에서 읽음 (마스터 컬럼 플래그 아님)
     // =========================================================================
     public static List<FacilityWorkItem> GetFacilityItems(string date)
     {
         var result = new List<FacilityWorkItem>();
-        DateTime dt = DateTime.Parse(date);
-        DayOfWeek dow = dt.DayOfWeek;
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
-        // 1. 마스터 전체 조회
-        var masters = new List<(int id, string 시설명, string 시료명, string 비고,
-            string BOD, string TOC, string SS, string TN, string TP,
-            string 총대장균군, string COD, string 염소이온, string 영양염류,
-            string 함수율, string 중금속)>();
-
+        // 1. 마스터 조회 (id → 시설명/시료명/비고 매핑)
+        var masterById = new Dictionary<int, (string 시설명, string 시료명, string 비고)>();
         using (var cmd = conn.CreateCommand())
         {
-            cmd.CommandText = @"
-                SELECT id, 시설명, 시료명, 비고,
-                       BOD, TOC, SS, `T-N`, `T-P`,
-                       총대장균군, COD, 염소이온, 영양염류, 함수율, 중금속
-                FROM `처리시설_마스터`
-                ORDER BY id";
+            cmd.CommandText = "SELECT id, 시설명, 시료명, 비고 FROM `처리시설_마스터` ORDER BY id";
             using var rdr = cmd.ExecuteReader();
             while (rdr.Read())
-                masters.Add((rdr.GetInt32(0), S(rdr,1), S(rdr,2), S(rdr,3),
-                    S(rdr,4), S(rdr,5), S(rdr,6), S(rdr,7), S(rdr,8),
-                    S(rdr,9), S(rdr,10), S(rdr,11), S(rdr,12), S(rdr,13), S(rdr,14)));
+                masterById[rdr.GetInt32(0)] = (S(rdr,1), S(rdr,2), S(rdr,3));
         }
 
-        // 2. 요일에 해당하는 행만 INSERT OR IGNORE → 작업 목록 생성
-        foreach (var m in masters)
+
+        // 2. 분석계획에서 오늘 요일에 해당하는 (시설명,시료명) → 항목목록만 수집
+        DateTime dt = DateTime.Parse(date);
+        int planDay = ((int)dt.DayOfWeek + 6) % 7; // 월=0..일=6
+
+        var planItems = new Dictionary<(string, string), string>();
+        if (DbConnectionFactory.TableExists(conn, "처리시설_분석계획"))
         {
-            if (!IsScheduledFor(m.비고, dow)) continue;
-
-            var 항목목록 = BuildActiveList(m.BOD, m.TOC, m.SS, m.TN, m.TP,
-                m.총대장균군, m.COD, m.염소이온, m.영양염류, m.함수율, m.중금속);
-            if (string.IsNullOrEmpty(항목목록)) continue;
-
-            // INSERT OR IGNORE (UNIQUE on 마스터_id, 채취일자)
-            using var ins = conn.CreateCommand();
-            ins.CommandText = @"INSERT IGNORE INTO `처리시설_작업`
-                       (마스터_id, 채취일자, 시설명, 시료명, 항목목록, 상태)
-                    VALUES (@mid, @d, @f, @s, @h, '미담')";
-            ins.Parameters.AddWithValue("@mid", m.id);
-            ins.Parameters.AddWithValue("@d",   date);
-            ins.Parameters.AddWithValue("@f",   m.시설명);
-            ins.Parameters.AddWithValue("@s",   m.시료명);
-            ins.Parameters.AddWithValue("@h",   항목목록);
-            ins.ExecuteNonQuery();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"
+                SELECT 시설명, 시료명,
+                       BOD, TOC, SS, `T-N`, `T-P`,
+                       총대장균군, COD, 염소이온, 영양염류, 함수율, 중금속
+                FROM `처리시설_분석계획`
+                WHERE 요일 = @day
+                ORDER BY id";
+            cmd.Parameters.AddWithValue("@day", planDay);
+            using var rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                string 시설명 = S(rdr, 0), 시료명 = S(rdr, 1);
+                string V(int i) { try { return rdr.IsDBNull(i) ? "" : rdr.GetString(i); } catch { return ""; } }
+                var parts = new System.Collections.Generic.List<string>();
+                if (V(2).StartsWith("O", StringComparison.OrdinalIgnoreCase)) parts.Add("BOD");
+                if (V(3).StartsWith("O", StringComparison.OrdinalIgnoreCase)) parts.Add("TOC");
+                if (V(4).StartsWith("O", StringComparison.OrdinalIgnoreCase)) parts.Add("SS");
+                if (V(5).StartsWith("O", StringComparison.OrdinalIgnoreCase)) parts.Add("T-N");
+                if (V(6).StartsWith("O", StringComparison.OrdinalIgnoreCase)) parts.Add("T-P");
+                if (V(7).StartsWith("O", StringComparison.OrdinalIgnoreCase)) parts.Add("총대장균군");
+                if (V(8).StartsWith("O", StringComparison.OrdinalIgnoreCase)) parts.Add("COD");
+                if (V(9).StartsWith("O", StringComparison.OrdinalIgnoreCase)) parts.Add("염소이온");
+                if (V(10).StartsWith("O", StringComparison.OrdinalIgnoreCase)) parts.Add("영양염류");
+                if (V(11).StartsWith("O", StringComparison.OrdinalIgnoreCase)) parts.Add("함수율");
+                if (V(12).StartsWith("O", StringComparison.OrdinalIgnoreCase)) parts.Add("중금속");
+                if (parts.Count == 0) continue;
+                planItems[(시설명, 시료명)] = string.Join(", ", parts);
+            }
         }
+
+
+        // 오늘 미담 행 전체 삭제 후 재삽입 (정합성 보장)
+        using (var del = conn.CreateCommand())
+        {
+            del.CommandText = "DELETE FROM `처리시설_작업` WHERE 채취일자 = @d AND 상태 = '미담'";
+            del.Parameters.AddWithValue("@d", date);
+            del.ExecuteNonQuery();
+        }
+
+        // 3. 처리시설_측정결과에 오늘 행이 있고 + 오늘 분석계획에도 있는 시설만 작업 등록
+        if (planItems.Count > 0 && DbConnectionFactory.TableExists(conn, "처리시설_측정결과"))
+        {
+            var measuredRows = new List<(int 마스터Id, string 시설명, string 시료명)>();
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = "SELECT DISTINCT 마스터_id, 시설명, 시료명 FROM `처리시설_측정결과` WHERE LEFT(채취일자,10) = @d";
+                cmd.Parameters.AddWithValue("@d", date);
+                using var rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    measuredRows.Add((Convert.ToInt32(rdr.GetValue(0)), S(rdr,1), S(rdr,2)));
+            }
+
+            foreach (var (mid, 시설명, 시료명) in measuredRows)
+            {
+                // 오늘 요일 분석계획에 없는 시설/시료는 제외
+                if (!planItems.TryGetValue((시설명, 시료명), out var 항목목록)) continue;
+
+                using var ins = conn.CreateCommand();
+                ins.CommandText = @"INSERT IGNORE INTO `처리시설_작업`
+                           (마스터_id, 채취일자, 시설명, 시료명, 항목목록, 상태)
+                        VALUES (@mid, @d, @f, @s, @h, '미담')";
+                ins.Parameters.AddWithValue("@mid", mid);
+                ins.Parameters.AddWithValue("@d",   date);
+                ins.Parameters.AddWithValue("@f",   시설명);
+                ins.Parameters.AddWithValue("@s",   시료명);
+                ins.Parameters.AddWithValue("@h",   항목목록);
+                ins.ExecuteNonQuery();
+            }
+        }
+
+        // 마스터 목록도 유지 (비고마스터용)
+        var masters = masterById;
 
         // 3. 현재 상태 조회
         using (var cmd = conn.CreateCommand())
@@ -354,7 +401,7 @@ public static class WasteRequestService
                     완료일시  = S(rdr, 9),
                 };
                 // 비고 마스터 붙이기
-                var master = masters.Find(x => x.id == item.마스터Id);
+                masters.TryGetValue(item.마스터Id, out var master);
                 item.비고마스터 = master.비고;
                 result.Add(item);
             }

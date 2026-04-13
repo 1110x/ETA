@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using ETA.Models;
-using System.Diagnostics;
 using ETA.Services.Common;
 
 namespace ETA.Services.Common;
 
 public static class PurchaseService
 {
-    // ── DB 경로 (AgentService 와 동일한 eta.db) ───────────────────────────────
-
     // ── 테이블 자동 생성 ──────────────────────────────────────────────────────
     private static void EnsureTable(DbConnection conn)
     {
@@ -62,7 +59,6 @@ public static class PurchaseService
             list.Add(item);
         }
 
-        Debug.WriteLine($"[Purchase] 로드 {list.Count}건");
         return list;
     }
 
@@ -162,7 +158,6 @@ public static class PurchaseService
             item.Id = Convert.ToInt32(idCmd.ExecuteScalar());
         }
 
-        Debug.WriteLine($"[Purchase INSERT] {rows}행 → {item.품목}");
         return rows > 0;
     }
 
@@ -189,7 +184,6 @@ public static class PurchaseService
         cmd.Parameters.AddWithValue("@id",     id);
 
         int rows = cmd.ExecuteNonQuery();
-        Debug.WriteLine($"[Purchase UPDATE] id={id} → {rows}행");
         return rows > 0;
     }
 
@@ -204,7 +198,6 @@ public static class PurchaseService
         cmd.Parameters.AddWithValue("@id",   id);
 
         int rows = cmd.ExecuteNonQuery();
-        Debug.WriteLine($"[Purchase UpdateStatus] id={id} → {status}");
         return rows > 0;
     }
 
@@ -219,7 +212,6 @@ public static class PurchaseService
         cmd.Parameters.AddWithValue("@id", id);
 
         int rows = cmd.ExecuteNonQuery();
-        Debug.WriteLine($"[Purchase DELETE] id={id} → {rows}행");
         return rows > 0;
     }
 

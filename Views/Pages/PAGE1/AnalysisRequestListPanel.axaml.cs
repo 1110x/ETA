@@ -314,7 +314,6 @@ public class AnalysisRequestListPanel : UserControl
         {
             var msg = ex.Message.Length > 50 ? ex.Message[..50] + "…" : ex.Message;
             SetStatus($"❌ 전송 실패: {msg}");
-            Debug.WriteLine($"[BtnTodo_Click] 오류: {ex}");
         }
     }
 
@@ -818,7 +817,6 @@ public class AnalysisRequestListPanel : UserControl
         {
             var msg = ex.Message.Length > 60 ? ex.Message[..60] + "…" : ex.Message;
             SetStatus($"❌ 전달 실패: {msg}");
-            Debug.WriteLine($"[BtnMeasurer] {ex}");
         }
         finally { _btnMeasurer.IsEnabled = true; }
     }
@@ -939,7 +937,6 @@ public class AnalysisRequestListPanel : UserControl
         for (int ri = 0; ri < records.Count; ri++)
         {
             var rec = records[ri];
-            Debug.WriteLine($"[BtnMeasurer] ── 레코드 {ri + 1}/{records.Count}: {rec.sample} ({rec.company}) ──");
 
             // ── 이 레코드의 분석항목 코드 매핑 (자기 자식만) ──
             var analyteCodes = new List<string>();
@@ -954,7 +951,6 @@ public class AnalysisRequestListPanel : UserControl
                 if (!string.IsNullOrEmpty(mi.코드값))
                     analyteCodes.Add(mi.코드값);
             }
-            Debug.WriteLine($"[BtnMeasurer] 분석항목 코드 {analyteCodes.Count}건 매칭 (항목: {string.Join(", ", rec.analytes)})");
 
             // ── 이 레코드의 인력 매핑 ──
             // 각 레코드마다 다이얼로그 선택 우선, fallback: 시료채취자 DB 조회
@@ -986,7 +982,6 @@ public class AnalysisRequestListPanel : UserControl
                     if (ag != null) empIds.Add(ag.측정인고유번호);
                 }
             }
-            Debug.WriteLine($"[BtnMeasurer] 인력 고유번호 {empIds.Count}건");
 
             // ── 모달 열기 (addFieldPlan 클릭) ──
             string openScript = $$"""
@@ -1022,7 +1017,6 @@ public class AnalysisRequestListPanel : UserControl
                 })()", cts.Token));
                 modalReady = chk == "YES";
             }
-            Debug.WriteLine($"[BtnMeasurer] 모달 대기 결과: {modalReady}");
             if (!modalReady) continue;
 
             // ── A. 근거계약 선택 — 측정인_채취지점 DB 기준 매칭 ─────────────
@@ -1064,7 +1058,6 @@ public class AnalysisRequestListPanel : UserControl
                     if (!string.IsNullOrEmpty(wPt) && t.Contains(wPt)) sc += 180;
                     if (sc > bestScore) { bestScore = sc; chosenContVal = v; }
                 }
-                Debug.WriteLine($"[BtnMeasurer] 계약 매칭: score={bestScore}, contractNo={wNo}, point={wPt}");
             }
 
             // VBA: option.selected=true → option.click() → change + select2 trigger
@@ -1090,7 +1083,6 @@ public class AnalysisRequestListPanel : UserControl
                     }}
                     return 'OK';
                 }})()";
-                Debug.WriteLine($"[BtnMeasurer] 계약: {ExtractCdpValue(await CdpEvalAsync(socket, selScript, cts.Token))}");
 
                 // 현장 목록 로딩 대기 (최대 5초)
                 for (int w = 0; w < 5000; w += 400)
@@ -1128,7 +1120,6 @@ public class AnalysisRequestListPanel : UserControl
                     }}
                     return 'NO_MATCH';
                 }})()";
-                Debug.WriteLine($"[BtnMeasurer] 현장: {ExtractCdpValue(await CdpEvalAsync(socket, plcScript, cts.Token))}");
 
                 // 채취지점 로딩 대기
                 for (int w = 0; w < 5000; w += 400)
@@ -1196,7 +1187,6 @@ public class AnalysisRequestListPanel : UserControl
                     }}
                     return 'OK';
                 }})()", cts.Token);
-                Debug.WriteLine($"[BtnMeasurer] 계획번호: {measNo}");
             }
 
             // ── H. 차량 선택 — edit_meas_car_no / add_meas_car_no → 1000004880 ──
@@ -1222,7 +1212,6 @@ public class AnalysisRequestListPanel : UserControl
                     }
                     return carOpt ? 'OK' : 'NO_OPT';
                 })()", cts.Token);
-                Debug.WriteLine($"[BtnMeasurer] 차량 선택 완료");
             }
 
             // ── E. 분석항목 선택 — 이 레코드의 자식노드만 (VBA CommandButton6) ──
@@ -1246,7 +1235,6 @@ public class AnalysisRequestListPanel : UserControl
                     }}
                     return 'ITEMS:' + found + '/' + codes.length;
                 }})()";
-                Debug.WriteLine($"[BtnMeasurer] 분석항목: {ExtractCdpValue(await CdpEvalAsync(socket, itemScript, cts.Token))}");
             }
 
             // ── F. 인력 선택 (VBA CommandButton9: 기존 해제 → 다중 option.selected + change) ──
@@ -1273,7 +1261,6 @@ public class AnalysisRequestListPanel : UserControl
                     sel.dispatchEvent(new Event('change', {{bubbles:true}}));
                     return 'EMP:' + found + '/' + ids.length;
                 }})()";
-                Debug.WriteLine($"[BtnMeasurer] 인력: {ExtractCdpValue(await CdpEvalAsync(socket, empScript, cts.Token))}");
             }
 
             // ── G. 측정목적 — 레코드별 다이얼로그 선택값 사용 ──
@@ -1291,7 +1278,6 @@ public class AnalysisRequestListPanel : UserControl
                 }})()", cts.Token);
             }
 
-            Debug.WriteLine($"[BtnMeasurer] 레코드 {ri + 1}/{records.Count} 폼 입력 완료");
 
             // ── 저장 버튼 클릭 → 모달 닫힘 대기 (마지막 레코드 포함 전체) ──
             string saveResult = ExtractCdpValue(await CdpEvalAsync(socket, @"(function(){
@@ -1299,7 +1285,6 @@ public class AnalysisRequestListPanel : UserControl
                 if (btn) { btn.click(); return 'SAVE'; }
                 return 'NO_BTN';
             })()", cts.Token));
-            Debug.WriteLine($"[BtnMeasurer] 저장: {saveResult}");
 
             // 모달 닫힘 대기 (add_meas_cont_no 사라질 때까지 최대 5초)
             for (int w = 0; w < 5000; w += 400)
@@ -1347,7 +1332,7 @@ public class AnalysisRequestListPanel : UserControl
 
     private static HashSet<string> FixedColsForAnalyte() =>
         new(StringComparer.OrdinalIgnoreCase)
-        {            // 내부 키 컬럼 (MariaDB: _id, SQLite: rowid)
+        {            // 내부 키 컬럼
             "_id","rowid",            "약칭","시료명","접수번호","의뢰일","업체명","대표자",
             "담당자","연락처","이메일","견적번호","비고",
             "채취일자","채취시간","의뢰사업장","입회자",

@@ -412,29 +412,54 @@ public partial class EcotoxicityPage : UserControl
             }
         }
 
-        void DoCalc()
+        (List<double> vc, List<int> vo, List<int> vm) CollectValid()
         {
             CollectInputs();
-            var validConc = new List<double>();
-            var validOrg = new List<int>();
-            var validMort = new List<int>();
+            var vc2 = new List<double>(); var vo2 = new List<int>(); var vm2 = new List<int>();
             for (int i = 0; i < _numConcentrations; i++)
-            {
-                if (_concentrations[i] > 0)
-                {
-                    validConc.Add(_concentrations[i]);
-                    validOrg.Add(_organisms[i]);
-                    validMort.Add(_mortalities[i]);
-                }
-            }
-            if (validConc.Count < 2) { resultTb.Text = "최소 2개 유효 농도가 필요합니다."; return; }
+                if (_concentrations[i] > 0) { vc2.Add(_concentrations[i]); vo2.Add(_organisms[i]); vm2.Add(_mortalities[i]); }
+            return (vc2, vo2, vm2);
+        }
 
+        void DoCalcTSK()
+        {
+            var (vc, vo, vm) = CollectValid();
+            if (vc.Count < 2) { resultTb.Text = "최소 2개 유효 농도가 필요합니다."; return; }
             try
             {
-                _tskResult = EcotoxicityService.CalculateTSK(
-                    validConc.ToArray(), validOrg.ToArray(), validMort.ToArray(),
-                    _controlOrganisms, _controlMortalities);
-                resultTb.Text = $"TSK  {_endpoint}:  {_tskResult.EC50}     TU = {_tskResult.TU}";
+                _tskResult = EcotoxicityService.CalculateTSK(vc.ToArray(), vo.ToArray(), vm.ToArray(), _controlOrganisms, _controlMortalities);
+                resultTb.Text = $"TSK  {_endpoint}:  {_tskResult.EC50}     TU = {_tskResult.TU}  (100/{_tskResult.EC50})";
+                detailTb.Text = $"95% CI: {_tskResult.LowerCI} ~ {_tskResult.UpperCI}  |  Trim: {_tskResult.TrimPercent}%"
+                    + (_tskResult.Smoothed ? "  |  단조보정 적용" : "")
+                    + (string.IsNullOrEmpty(_tskResult.Warning) ? "" : $"\n⚠ {_tskResult.Warning}");
+                compareTb.Text = "";
+            }
+            catch (Exception ex) { resultTb.Text = $"TSK 오류: {ex.Message}"; }
+        }
+
+        void DoCalcProbit()
+        {
+            var (vc, vo, vm) = CollectValid();
+            if (vc.Count < 2) { resultTb.Text = "최소 2개 유효 농도가 필요합니다."; return; }
+            try
+            {
+                _probitResult = EcotoxicityService.CalculateProbit(vc.ToArray(), vo.ToArray(), vm.ToArray(), _controlOrganisms, _controlMortalities);
+                resultTb.Text = $"Probit  {_endpoint}:  {_probitResult.EC50}     TU = {_probitResult.TU}  (100/{_probitResult.EC50})";
+                detailTb.Text = $"95% CI: {_probitResult.LowerCI} ~ {_probitResult.UpperCI}"
+                    + (string.IsNullOrEmpty(_probitResult.Warning) ? "" : $"\n⚠ {_probitResult.Warning}");
+                compareTb.Text = "";
+            }
+            catch (Exception ex) { resultTb.Text = $"Probit 오류: {ex.Message}"; }
+        }
+
+        void DoCalcBoth()
+        {
+            var (vc, vo, vm) = CollectValid();
+            if (vc.Count < 2) { resultTb.Text = "최소 2개 유효 농도가 필요합니다."; return; }
+            try
+            {
+                _tskResult = EcotoxicityService.CalculateTSK(vc.ToArray(), vo.ToArray(), vm.ToArray(), _controlOrganisms, _controlMortalities);
+                resultTb.Text = $"TSK  {_endpoint}:  {_tskResult.EC50}     TU = {_tskResult.TU}  (100/{_tskResult.EC50})";
                 detailTb.Text = $"95% CI: {_tskResult.LowerCI} ~ {_tskResult.UpperCI}  |  Trim: {_tskResult.TrimPercent}%"
                     + (_tskResult.Smoothed ? "  |  단조보정 적용" : "")
                     + (string.IsNullOrEmpty(_tskResult.Warning) ? "" : $"\n⚠ {_tskResult.Warning}");
@@ -443,56 +468,91 @@ public partial class EcotoxicityPage : UserControl
 
             try
             {
-                _probitResult = EcotoxicityService.CalculateProbit(
-                    validConc.ToArray(), validOrg.ToArray(), validMort.ToArray(),
-                    _controlOrganisms, _controlMortalities);
-                compareTb.Text = $"Probit  {_endpoint}:  {_probitResult.EC50}     TU = {_probitResult.TU}  |  95% CI: {_probitResult.LowerCI} ~ {_probitResult.UpperCI}";
+                _probitResult = EcotoxicityService.CalculateProbit(vc.ToArray(), vo.ToArray(), vm.ToArray(), _controlOrganisms, _controlMortalities);
+                compareTb.Text = $"Probit  {_endpoint}:  {_probitResult.EC50}     TU = {_probitResult.TU}  (100/{_probitResult.EC50})  |  95% CI: {_probitResult.LowerCI} ~ {_probitResult.UpperCI}";
             }
             catch (Exception ex) { compareTb.Text = $"Probit 오류: {ex.Message}"; }
         }
 
-        var btnPanel = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 12 };
-        var calcBtn = new Button
+        var btnPanel = new WrapPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 0, 0, 4) };
+
+        var tskBtn = new Button
         {
-            Content = "계산 (TSK + Probit)", FontFamily = Font,
+            Content = "TSK 계산", FontFamily = Font,
             Background = AppRes("BtnPrimaryBg"), Foreground = Brushes.White,
-            Padding = new Thickness(20, 8), CornerRadius = new CornerRadius(4),
-            FontWeight = FontWeight.Bold,
+            Padding = new Thickness(16, 8), CornerRadius = new CornerRadius(4),
+            FontWeight = FontWeight.Bold, Margin = new Thickness(0, 0, 8, 4),
         };
-        calcBtn.Click += (_, _) => DoCalc();
+        tskBtn.Click += (_, _) => DoCalcTSK();
+
+        var probitBtn = new Button
+        {
+            Content = "Probit 계산", FontFamily = Font,
+            Background = AppRes("ThemeFgInfo"), Foreground = Brushes.White,
+            Padding = new Thickness(16, 8), CornerRadius = new CornerRadius(4),
+            FontWeight = FontWeight.Bold, Margin = new Thickness(0, 0, 8, 4),
+        };
+        probitBtn.Click += (_, _) => DoCalcProbit();
+
+        var bothBtn = new Button
+        {
+            Content = "TSK + Probit", FontFamily = Font,
+            Background = new SolidColorBrush(Color.Parse("#2E7D32")), Foreground = Brushes.White,
+            Padding = new Thickness(16, 8), CornerRadius = new CornerRadius(4),
+            Margin = new Thickness(0, 0, 8, 4),
+        };
+        bothBtn.Click += (_, _) => DoCalcBoth();
 
         var saveBtn = new Button
         {
             Content = "DB 저장", FontFamily = Font,
             Background = AppRes("ThemeFgSuccess"), Foreground = Brushes.White,
             Padding = new Thickness(16, 8), CornerRadius = new CornerRadius(4),
+            Margin = new Thickness(0, 0, 8, 4),
         };
         saveBtn.Click += (_, _) =>
         {
-            if (_tskResult == null) { DoCalc(); }
+            if (_tskResult == null) { DoCalcTSK(); }
             if (_tskResult == null) return;
             CollectInputs();
             try
             {
+                int validCnt = _concentrations.Count(c => c > 0);
                 WasteSampleService.UpsertEcotoxData(
                     _testDate, _toxicant, "", "", _species, "생태독성",
                     _species, _duration, _durUnit,
                     _controlOrganisms, _controlMortalities,
                     _concentrations.Where(c => c > 0).ToArray(),
-                    _organisms.Take(_concentrations.Count(c => c > 0)).ToArray(),
-                    _mortalities.Take(_concentrations.Count(c => c > 0)).ToArray(),
-                    _tskResult, 비고: $"Probit LC50={_probitResult?.EC50}");
+                    _organisms.Take(validCnt).ToArray(),
+                    _mortalities.Take(validCnt).ToArray(),
+                    result: _tskResult,
+                    비고: "",
+                    시험번호: _testNumber,
+                    endpoint: _endpoint,
+                    농도단위: _concUnit,
+                    probitResult: _probitResult);
+
+                // 분석의뢰및결과.생태독성 컨럼 업데이트 (트리 Show1 새로고침 대비)
+                try
+                {
+                    ETA.Services.SERVICE1.AnalysisRequestService.UpdateEcotoxResult(
+                        _testDate, _toxicant, _tskResult.TU.ToString("F1"));
+                }
+                catch { }
 
                 // 이력 추가
                 _records.Insert(0, new TestRecord(
                     _testDate, _testNumber, _species, _toxicant, _toxicant,
                     _tskResult, _probitResult,
                     _concentrations.Where(c => c > 0).ToArray(),
-                    _organisms.Take(_concentrations.Count(c => c > 0)).ToArray(),
-                    _mortalities.Take(_concentrations.Count(c => c > 0)).ToArray(),
+                    _organisms.Take(validCnt).ToArray(),
+                    _mortalities.Take(validCnt).ToArray(),
                     _controlOrganisms, _controlMortalities));
                 ShowHistoryPanel();
                 detailTb.Text += "  ✅ DB 저장 완료";
+
+                // Show1 트리 새로고침
+                BuildRequestTree();
             }
             catch (Exception ex) { detailTb.Text = $"저장 오류: {ex.Message}"; }
         };
@@ -503,6 +563,7 @@ public partial class EcotoxicityPage : UserControl
             Background = Brushes.Transparent, Foreground = AppRes("ThemeFgDanger"),
             BorderBrush = AppRes("ThemeFgDanger"), BorderThickness = new Thickness(1),
             Padding = new Thickness(16, 8), CornerRadius = new CornerRadius(4),
+            Margin = new Thickness(0, 0, 0, 4),
         };
         clearBtn.Click += (_, _) =>
         {
@@ -516,7 +577,9 @@ public partial class EcotoxicityPage : UserControl
             ShowInputForm();
         };
 
-        btnPanel.Children.Add(calcBtn);
+        btnPanel.Children.Add(tskBtn);
+        btnPanel.Children.Add(probitBtn);
+        btnPanel.Children.Add(bothBtn);
         btnPanel.Children.Add(saveBtn);
         btnPanel.Children.Add(clearBtn);
         root.Children.Add(btnPanel);
@@ -629,7 +692,7 @@ public partial class EcotoxicityPage : UserControl
             Foreground = AppRes("InputFg"), Background = AppRes("InputBg"),
             BorderBrush = AppRes("InputBorder"), BorderThickness = new Thickness(1),
             CornerRadius = new CornerRadius(4), Padding = new Thickness(6, 3),
-            MinWidth = 60,
+            MinWidth = 20,
         });
         if (onChange != null)
             tb.LostFocus += (_, _) => onChange(tb.Text ?? "");

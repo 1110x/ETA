@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using ETA.Models;
-using System.Diagnostics;
 using ETA.Services.Common;
 
 namespace ETA.Services.SERVICE2;
@@ -148,7 +147,6 @@ public static class WasteCompanyService
             }
         }
 
-        Debug.WriteLine($"📊 로드 완료: {items.Count}개 업체");
         _itemsCache = items;
         return items;
     }
@@ -205,7 +203,6 @@ public static class WasteCompanyService
     {
         if (string.IsNullOrEmpty(wasteCompany.Original업체명))
         {
-            Debug.WriteLine("❌ Original업체명 없음 → 저장 스킵");
             return false;
         }
 
@@ -217,7 +214,6 @@ public static class WasteCompanyService
         {
             if (!DbConnectionFactory.TableExists(conn, "여수_폐수배출업소"))
             {
-                Debug.WriteLine("❌ 여수_폐수배출업소 테이블 없음");
                 return false;
             }
             EnsureYeosuAbbrevColumn(conn);
@@ -234,7 +230,6 @@ public static class WasteCompanyService
             BindExtraParams(cmd, wasteCompany);
             cmd.Parameters.AddWithValue("@Original업체명", wasteCompany.Original업체명);
             int rows = cmd.ExecuteNonQuery();
-            Debug.WriteLine($"[UPDATE 여수] {rows}행 업데이트 (업체명: {wasteCompany.Original업체명})");
             if (rows > 0)
                 wasteCompany.Original업체명 = wasteCompany.업체명 ?? "";
             return rows > 0;
@@ -263,7 +258,6 @@ public static class WasteCompanyService
         cmd2.Parameters.AddWithValue("@Original업체명", wasteCompany.Original업체명);
 
         int rows2 = cmd2.ExecuteNonQuery();
-        Debug.WriteLine($"[UPDATE] {rows2}행 업데이트 (업체명: {wasteCompany.Original업체명})");
 
         if (rows2 > 0)
         {
@@ -294,7 +288,6 @@ public static class WasteCompanyService
             cmd.Parameters.AddWithValue("@업체명", c.업체명 ?? "");
             BindExtraParams(cmd, c);
             int r = cmd.ExecuteNonQuery();
-            Debug.WriteLine($"[INSERT 여수] {r}행: {c.업체명}");
             return r > 0;
         }
 
@@ -315,7 +308,6 @@ public static class WasteCompanyService
         cmd2.Parameters.AddWithValue("@사업자번호", 사번);
         BindExtraParams(cmd2, c);
         int r2 = cmd2.ExecuteNonQuery();
-        Debug.WriteLine($"[INSERT] {r2}행: {c.업체명}");
         return r2 > 0;
     }
 

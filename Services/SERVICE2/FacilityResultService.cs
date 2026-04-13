@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using ETA.Models;
@@ -296,7 +295,6 @@ public static class FacilityResultService
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[FacilityResultService.UpsertFacilityRawData:{tableName}] 오류: {ex.Message}");
         }
     }
 
@@ -344,11 +342,9 @@ public static class FacilityResultService
                         using var alter = conn.CreateCommand();
                         alter.CommandText = $"ALTER TABLE `{table}` ADD COLUMN {qcol} TEXT DEFAULT ''";
                         alter.ExecuteNonQuery();
-                        Debug.WriteLine($"[FacilityResultService] {table}.{col} 컬럼 추가");
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine($"[FacilityResultService] {table}.{col} 컬럼 추가 실패: {ex.Message}");
                     }
                 }
             }
@@ -356,7 +352,6 @@ public static class FacilityResultService
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[FacilityResultService] 컬럼 동기화 오류: {ex.Message}");
         }
     }
 
@@ -418,7 +413,7 @@ public static class FacilityResultService
                         r.GetInt32(0), r.GetString(1), r.GetString(2),
                         Convert.ToInt32(r.GetValue(3)), Convert.ToInt32(r.GetValue(4)) != 0));
             }
-            catch (Exception ex) { Debug.WriteLine($"[AnalysisItems] 로딩 오류: {ex.Message}"); }
+            catch (Exception ex) { }
         }
         return activeOnly
             ? _analysisItemsCache.Where(i => i.활성).ToList()
@@ -961,21 +956,18 @@ public static class FacilityResultService
             }
         }
 
-        Debug.WriteLine($"[AnalysisPlan] 처리시설_작업 일괄 생성 완료: {startDate:yyyy-MM-dd} ~ {endDate:yyyy-MM-dd}, {count}건");
         return count;
     }
 
-    // ── 오늘 분석계획 기반 처리시설_측정결과 빈 행 자동 생성 ─────────────
+    // ── 분석계획 기반 처리시설_측정결과 빈 행 자동 생성 (누락 날짜 소급 포함) ─────
     /// <summary>
-    /// 오늘 요일의 분석계획에 따라 처리시설_측정결과에 빈 행을 생성합니다.
-    /// 이미 해당 (마스터_id, 채취일자) 행이 있으면 스킵합니다.
+    /// 처리시설_측정결과의 마지막 날짜 다음 날부터 오늘까지
+    /// 분석계획에 맞는 빈 행을 생성합니다. 이미 있는 행은 스킵합니다.
+    /// 프로그램을 며칠 만에 켜도 그동안 누락된 날짜가 모두 채워집니다.
     /// </summary>
     public static int EnsureTodayMeasurementResults()
     {
         var today = DateTime.Today;
-        string dateStr = today.ToString("yyyy-MM-dd");
-        // C# DayOfWeek: Sunday=0, Monday=1 → 분석계획: 월=0, 화=1, ..., 일=6
-        int planDay = ((int)today.DayOfWeek + 6) % 7;
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
@@ -989,64 +981,76 @@ public static class FacilityResultService
             while (r.Read())
                 masterMap[(r.GetString(1), r.GetString(2))] = Convert.ToInt32(r.GetValue(0));
         }
-        if (masterMap.Count == 0)
-        {
-            Debug.WriteLine("[EnsureToday] 처리시설_마스터 비어있음 — 스킵");
-            return 0;
-        }
+        if (masterMap.Count == 0) return 0;
 
-        // 2. 오늘 요일의 분석계획 로딩
-        var todayPlan = new List<(string 시설명, string 시료명)>();
+        // 2. 분석계획 전체 로딩 (요일 → 시료 목록)
+        var planByDay = new Dictionary<int, List<(string 시설명, string 시료명)>>();
         using (var cmd = conn.CreateCommand())
         {
-            cmd.CommandText = @"
-                SELECT 시설명, 시료명
-                FROM `처리시설_분석계획`
-                WHERE 요일 = @day ORDER BY id";
-            cmd.Parameters.AddWithValue("@day", planDay);
+            cmd.CommandText = "SELECT 요일, 시설명, 시료명 FROM `처리시설_분석계획` ORDER BY id";
             using var r = cmd.ExecuteReader();
             while (r.Read())
-                todayPlan.Add((r.GetString(0), r.GetString(1)));
+            {
+                int day = Convert.ToInt32(r.GetValue(0));
+                if (!planByDay.ContainsKey(day))
+                    planByDay[day] = new List<(string, string)>();
+                planByDay[day].Add((r.GetString(1), r.GetString(2)));
+            }
         }
-        if (todayPlan.Count == 0)
-        {
-            Debug.WriteLine($"[EnsureToday] {dateStr} (요일코드={planDay}) 분석계획 없음 — 스킵");
-            return 0;
-        }
+        if (planByDay.Count == 0) return 0;
 
-        // 3. 이미 존재하는 (마스터_id, 채취일자) 조회
-        var existing = new HashSet<int>();
+        // 3. 마지막 생성 날짜 조회 → 그 다음 날부터 오늘까지 처리
+        DateTime startDate;
         using (var cmd = conn.CreateCommand())
         {
-            cmd.CommandText = "SELECT 마스터_id FROM `처리시설_측정결과` WHERE 채취일자 = @d";
-            cmd.Parameters.AddWithValue("@d", dateStr);
-            using var r = cmd.ExecuteReader();
-            while (r.Read())
-                existing.Add(Convert.ToInt32(r.GetValue(0)));
+            cmd.CommandText = "SELECT MAX(채취일자) FROM `처리시설_측정결과`";
+            var val = cmd.ExecuteScalar();
+            if (val != null && val != DBNull.Value &&
+                DateTime.TryParse(val.ToString(), out var lastDate))
+                startDate = lastDate.AddDays(1); // 마지막 날 다음 날부터
+            else
+                startDate = today; // 데이터 없으면 오늘만
         }
 
-        // 4. 없는 행만 삽입
-        int count = 0;
-        foreach (var (시설명, 시료명) in todayPlan)
+        // 4. 날짜별로 없는 행만 삽입
+        int totalCount = 0;
+        for (var date = startDate; date <= today; date = date.AddDays(1))
         {
-            if (!masterMap.TryGetValue((시설명, 시료명), out var masterId)) continue;
-            if (existing.Contains(masterId)) continue;
+            string dateStr = date.ToString("yyyy-MM-dd");
+            int planDay = ((int)date.DayOfWeek + 6) % 7; // 월=0..일=6
 
-            using var ins = conn.CreateCommand();
-            ins.CommandText = @"INSERT INTO `처리시설_측정결과`
-                (마스터_id, 시설명, 시료명, 채취일자)
-                VALUES (@mid, @f, @s, @d)";
-            ins.Parameters.AddWithValue("@mid", masterId);
-            ins.Parameters.AddWithValue("@f", 시설명);
-            ins.Parameters.AddWithValue("@s", 시료명);
-            ins.Parameters.AddWithValue("@d", dateStr);
-            ins.ExecuteNonQuery();
-            existing.Add(masterId); // 중복 방지
-            count++;
+            if (!planByDay.TryGetValue(planDay, out var plan)) continue;
+
+            var existing = new HashSet<int>();
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = "SELECT 마스터_id FROM `처리시설_측정결과` WHERE 채취일자 = @d";
+                cmd.Parameters.AddWithValue("@d", dateStr);
+                using var r = cmd.ExecuteReader();
+                while (r.Read())
+                    existing.Add(Convert.ToInt32(r.GetValue(0)));
+            }
+
+            foreach (var (시설명, 시료명) in plan)
+            {
+                if (!masterMap.TryGetValue((시설명, 시료명), out var masterId)) continue;
+                if (existing.Contains(masterId)) continue;
+
+                using var ins = conn.CreateCommand();
+                ins.CommandText = @"INSERT INTO `처리시설_측정결과`
+                    (마스터_id, 시설명, 시료명, 채취일자)
+                    VALUES (@mid, @f, @s, @d)";
+                ins.Parameters.AddWithValue("@mid", masterId);
+                ins.Parameters.AddWithValue("@f", 시설명);
+                ins.Parameters.AddWithValue("@s", 시료명);
+                ins.Parameters.AddWithValue("@d", dateStr);
+                ins.ExecuteNonQuery();
+                existing.Add(masterId);
+                totalCount++;
+            }
         }
 
-        Debug.WriteLine($"[EnsureToday] {dateStr} 처리시설_측정결과 자동 생성: {count}건");
-        return count;
+        return totalCount;
     }
 
     // ── 시료명으로 시설 검색 (부분일치) ──────────────────────────────────

@@ -364,8 +364,10 @@ public partial class QuotationCheckPanel : UserControl
     private static void Log(string msg)
     {
         var line = $"[{DateTime.Now:HH:mm:ss}] [CheckPanel] {msg}";
-        System.Diagnostics.Debug.WriteLine(line);
-        try { File.AppendAllText(LogPath, line + Environment.NewLine); } catch { }
+        if (App.EnableLogging)
+        {
+            try { File.AppendAllText(LogPath, line + Environment.NewLine); } catch { }
+        }
     }
 
     // ══════════════════════════════════════════════════════════════════════
