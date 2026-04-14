@@ -716,6 +716,8 @@ public class SchedulePage
         {
             ColumnDefinitions = new ColumnDefinitions("*,*,*,*,*,*,*"),
             RowDefinitions    = new RowDefinitions("Auto,Auto,Auto,Auto,Auto,Auto"),
+            ColumnSpacing     = 0,  // Grid spacing 명시 (column은 붙어있음)
+            RowSpacing        = 0,  // Row도 붙어있음
         };
         Grid.SetRow(_calGrid, 1);
         calOuter.Children.Add(_calGrid);
@@ -872,13 +874,12 @@ public class SchedulePage
                         : isToday   ? Brush.Parse("#226622")
                         : AppRes("InputBorder"),
             BorderThickness = new Thickness(isFocused || selected ? 2 : 0.5),
-            Margin    = new Thickness(0),  // ← 제거 (grid spacing 불필요)
-            Padding   = new Thickness(4, 2),  // ← 1(margin) + 3(기존 sp margin) = 4로 통합
+            Margin    = new Thickness(1),  // ← 원래대로 복구 (cell 간 간격)
             MinHeight = 94,
             Cursor    = valid ? new Cursor(StandardCursorType.Hand) : Cursor.Default,
         };
 
-        var sp = new StackPanel { Margin = new Thickness(0), Spacing = 1 };  // Margin 0
+        var sp = new StackPanel { Margin = new Thickness(3, 2), Spacing = 1 };  // ← 원래 구조 복구
 
         if (valid)
         {
@@ -1002,9 +1003,9 @@ public class SchedulePage
             };
             var margin = pos switch
             {
-                SpanPos.Start  => new Thickness(0, 0, -4, 0),  // Cell padding(4) 극복
-                SpanPos.Middle => new Thickness(-4, 0, -4, 0),
-                SpanPos.End    => new Thickness(-4, 0, 0, 0),
+                SpanPos.Start  => new Thickness(0, 0, -5, 0),  // (W-4) + 5 = W+1로 정확히 정렬
+                SpanPos.Middle => new Thickness(-5, 0, -5, 0),
+                SpanPos.End    => new Thickness(-5, 0, 0, 0),
                 _              => new Thickness(0),
             };
 
