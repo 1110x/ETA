@@ -254,7 +254,7 @@ public partial class ContractPage : UserControl
         // ① 계약정보 패널 즉시 표시 (DB 없음 — 빠름)
         var (root, scroll, priceContainer) = BuildInfoPanel(contract);
         _detailPanel = root;
-        DetailPanelChanged?.Invoke(scroll);
+        DetailPanelChanged?.Invoke(scroll);  // Show2에 업체정보 표시
 
         // ② 단가/계약수량/처리수량 백그라운드 로드
         var captured = contract;

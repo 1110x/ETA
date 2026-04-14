@@ -195,47 +195,53 @@ public static class QuotationService
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
-            if (!TableExists(conn, "견적발행내역")) return list;
 
-            using var cmd = conn.CreateCommand();
-            cmd.CommandText = @"
-                SELECT DISTINCT `담당자`
-                FROM `견적발행내역`
-                WHERE `업체명` = @company
-                  AND `담당자` IS NOT NULL
-                  AND TRIM(`담당자`) != ''
-                ORDER BY `담당자` ASC";
-            cmd.Parameters.AddWithValue("@company", companyName);
-            using var r = cmd.ExecuteReader();
-            while (r.Read()) list.Add(S(r, 0));
+            // 견적요청담당 컬럼에서 담당자 조회
+            if (TableExists(conn, "견적발행내역"))
+            {
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = @"
+                    SELECT DISTINCT `견적요청담당`
+                    FROM `견적발행내역`
+                    WHERE `업체명` = @company
+                      AND `견적요청담당` IS NOT NULL
+                      AND TRIM(`견적요청담당`) != ''
+                    ORDER BY `견적요청담당` ASC";
+                cmd.Parameters.AddWithValue("@company", companyName);
+                using var r = cmd.ExecuteReader();
+                while (r.Read()) list.Add(S(r, 0));
+            }
         }
         catch { }
         return list;
     }
 
-    // ── 업체+담당자명으로 연락처/이메일 조회 (최신 발행건 기준) ────────────
+    // ── 업체+담당자명으로 연락처/이메일 조회 (견적요청담당 기준) ────────────
     public static (string Phone, string Email) GetManagerContactInfo(string companyName, string managerName)
     {
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
-            if (!TableExists(conn, "견적발행내역")) return ("", "");
 
-            using var cmd = conn.CreateCommand();
-            cmd.CommandText = @"
-                SELECT `담당자연락처`, `담당자 e-Mail`
-                FROM `견적발행내역`
-                WHERE `업체명` = @company
-                  AND `담당자` = @manager
-                  AND (`담당자연락처` IS NOT NULL AND TRIM(`담당자연락처`) != ''
-                    OR `담당자 e-Mail` IS NOT NULL AND TRIM(`담당자 e-Mail`) != '')
-                ORDER BY `견적발행일자` DESC
-                LIMIT 1";
-            cmd.Parameters.AddWithValue("@company", companyName);
-            cmd.Parameters.AddWithValue("@manager", managerName);
-            using var r = cmd.ExecuteReader();
-            if (r.Read()) return (S(r, 0), S(r, 1));
+            // 견적요청담당으로 담당자연락처/담당자 e-Mail 조회
+            if (TableExists(conn, "견적발행내역"))
+            {
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = @"
+                    SELECT `담당자연락처`, `담당자 e-Mail`
+                    FROM `견적발행내역`
+                    WHERE `업체명` = @company
+                      AND `견적요청담당` = @manager
+                      AND (`담당자연락처` IS NOT NULL AND TRIM(`담당자연락처`) != ''
+                        OR `담당자 e-Mail` IS NOT NULL AND TRIM(`담당자 e-Mail`) != '')
+                    ORDER BY `견적발행일자` DESC
+                    LIMIT 1";
+                cmd.Parameters.AddWithValue("@company", companyName);
+                cmd.Parameters.AddWithValue("@manager", managerName);
+                using var r = cmd.ExecuteReader();
+                if (r.Read()) return (S(r, 0), S(r, 1));
+            }
         }
         catch { }
         return ("", "");
@@ -506,6 +512,19 @@ public static class QuotationService
     }
 
     // ── 견적 메타정보 수정 (업체명, 약칭, 시료명, 견적번호, 발행일, 적용구분)
+    public static HashSet<string> GetIssueTableColumns()
+    {
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            if (!TableExists(conn, "견적발행내역")) return new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var cols = DbConnectionFactory.GetColumnNames(conn, "견적발행내역");
+            return new HashSet<string>(cols, StringComparer.OrdinalIgnoreCase);
+        }
+        catch { return new HashSet<string>(StringComparer.OrdinalIgnoreCase); }
+    }
+
     public static bool UpdateIssueMetadata(int issueId, Dictionary<string, object> updates)
     {
         if (updates.Count == 0) return false;

@@ -4580,6 +4580,15 @@ public partial class MainPage : Window
                 LogContentChange("Show2", _quotationNewPanel);
             };
 
+            // 💾 저장 완료 → Show1 트리뷰 리프레시
+            _quotationDetailPanel.SaveCompleted += () =>
+            {
+                _quotationHistoryPanel?.LoadData();
+                Show1.Content = null;
+                Show1.Content = _quotationHistoryPanel;
+                LogContentChange("Show1", _quotationHistoryPanel);
+            };
+
             // ✏️ 오작성 수정: DetailPanel에서 직접 편집 (더 이상 NewPanel로 이동 안 함)
 
             // ESC 취소 → DetailPanel 복귀 + 마지막 issue 재표시

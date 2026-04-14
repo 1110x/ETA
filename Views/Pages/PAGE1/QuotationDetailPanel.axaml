@@ -109,7 +109,8 @@
                                          Padding="6,4"
                                          Margin="0,4,0,0"
                                          IsEditable="True"
-                                         SelectionChanged="CmbManagerName_SelectionChanged" />
+                                         SelectionChanged="CmbManagerName_SelectionChanged"
+                                         KeyUp="CmbManagerName_KeyUp" />
 
                                 <!-- 연락처 -->
                                 <TextBlock Grid.Row="0" Grid.Column="1" Classes="lbl" Text="연락처" />
@@ -125,7 +126,7 @@
 
                             <!-- 3줄: 시료명 -->
                             <Grid ColumnDefinitions="*" RowDefinitions="Auto,Auto">
-                                <TextBlock Grid.Row="0" Grid.Column="0" Classes="lbl" Text="시료명" />
+                                <TextBlock Grid.Row="0" Grid.Column="0" Classes="lbl" Text="견적명" />
                                 <TextBox Grid.Row="1" Grid.Column="0" Classes="val" x:Name="txbSampleName" Margin="0,4,0,0"/>
                             </Grid>
 
