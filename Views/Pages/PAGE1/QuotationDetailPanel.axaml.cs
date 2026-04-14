@@ -133,8 +133,12 @@ public partial class QuotationDetailPanel : UserControl
 
         BuildItemLines(row);
 
+        // CheckPanel 동기화: ShowIssue 호출 시 CurrentIssue 자동 설정
         if (CheckPanel != null)
+        {
+            CheckPanel.CurrentIssue = issue;
             ApplyCheckStates(row);
+        }
         else
             Log("WARNING: CheckPanel == null");
     }
