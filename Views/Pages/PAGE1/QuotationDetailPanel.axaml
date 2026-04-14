@@ -97,12 +97,19 @@
 
                             <!-- 2줄: 담당자 / 연락처 / 이메일 -->
                             <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto">
-                                <!-- 담당자 (검색 가능) -->
+                                <!-- 담당자 (검색 + 드롭박스 선택) -->
                                 <TextBlock Grid.Row="0" Grid.Column="0" Classes="lbl" Text="담당자" />
-                                <TextBox Grid.Row="1" Grid.Column="0" x:Name="txbManagerName"
-                                        Classes="val"
-                                        Margin="0,4,0,0"
-                                        TextChanged="TxbManagerName_TextChanged" />
+                                <AutoCompleteBox Grid.Row="1" Grid.Column="0" x:Name="acbManagerName"
+                                                FontSize="{DynamicResource FontSizeMD}"
+                                                Foreground="{DynamicResource AppFg}"
+                                                FontFamily="avares://ETA/Assets/Fonts#Pretendard"
+                                                BorderThickness="1"
+                                                Background="Transparent"
+                                                CornerRadius="3"
+                                                Padding="6,4"
+                                                Margin="0,4,0,0"
+                                                MinimumPrefixLength="1"
+                                                SelectionChanged="AcbManagerName_SelectionChanged" />
 
                                 <!-- 연락처 -->
                                 <TextBlock Grid.Row="0" Grid.Column="1" Classes="lbl" Text="연락처" />

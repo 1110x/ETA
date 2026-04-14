@@ -159,7 +159,8 @@ public partial class QuotationDetailPanel : UserControl
         spItems.Children.Clear();
         _currentCompany = "";
         _availableManagers.Clear();
-        txbManagerName.Text = "";
+        acbManagerName.Text = "";
+        acbManagerName.ItemsSource = null;
         txbManagerPhone.Text = "";
         txbManagerEmail.Text = "";
     }
@@ -175,9 +176,12 @@ public partial class QuotationDetailPanel : UserControl
             var managers = await Task.Run(() => QuotationService.GetDistinctManagersForCompany(companyName));
             _availableManagers = managers;
 
+            // AutoCompleteBox에 항목 설정
+            acbManagerName.ItemsSource = managers;
+
             // 현재 담당자 설정
             _settingManagerName = true;
-            txbManagerName.Text = _current?.담당자 ?? "";
+            acbManagerName.Text = _current?.담당자 ?? "";
             _settingManagerName = false;
 
             Log($"담당자 로드: {companyName} ({managers.Count}명)");
@@ -189,20 +193,16 @@ public partial class QuotationDetailPanel : UserControl
     }
 
     // ══════════════════════════════════════════════════════════════════════
-    //  담당자 검색 (TextBox TextChanged)
+    //  담당자 선택 (AutoCompleteBox SelectionChanged)
     // ══════════════════════════════════════════════════════════════════════
-    private async void TxbManagerName_TextChanged(object? sender, TextChangedEventArgs e)
+    private async void AcbManagerName_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         if (_settingManagerName) return;
 
-        var text = txbManagerName.Text ?? "";
+        var selectedName = acbManagerName.SelectedItem as string;
+        if (string.IsNullOrEmpty(selectedName)) return;
 
-        // 정확한 일치 확인
-        if (!string.IsNullOrEmpty(text) && _availableManagers.Contains(text, StringComparer.OrdinalIgnoreCase))
-        {
-            // 정확한 담당자 선택됨 → 연락처/이메일 로드
-            await OnManagerSelected(text);
-        }
+        await OnManagerSelected(selectedName);
     }
 
     // ══════════════════════════════════════════════════════════════════════
