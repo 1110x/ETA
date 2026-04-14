@@ -1001,13 +1001,8 @@ public class SchedulePage
                 SpanPos.End    => new CornerRadius(0, 3, 3, 0),
                 _              => new CornerRadius(3),
             };
-            var margin = pos switch
-            {
-                SpanPos.Start  => new Thickness(0, 0, -5, 0),  // (W-4) + 5 = W+1로 정확히 정렬
-                SpanPos.Middle => new Thickness(-5, 0, -5, 0),
-                SpanPos.End    => new Thickness(-5, 0, 0, 0),
-                _              => new Thickness(0),
-            };
+            // 음수 마진 제거 - bar는 cell 내부에만 머물도록
+            var margin = new Thickness(0);
 
             col.Children.Add(new Border
             {
@@ -1021,6 +1016,7 @@ public class SchedulePage
                 CornerRadius    = radius,
                 Padding         = new Thickness(3, 0),
                 Margin          = margin,
+                HorizontalAlignment = HorizontalAlignment.Stretch,  // Cell 너비에 맞춤
                 Child = new TextBlock
                 {
                     Text = chipText, FontFamily = Font,
