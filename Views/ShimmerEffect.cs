@@ -71,7 +71,7 @@ public static class TextShimmer
             {
                 var cur = brushes[i].GradientStops[0].Color;
                 brushes[i].GradientStops[1] = new GradientStop(cur, a);
-                brushes[i].GradientStops[2] = new GradientStop(Color.Parse("#a8d0f0"), b);
+                brushes[i].GradientStops[2] = new GradientStop(Color.Parse("#ffffff"), b);
                 brushes[i].GradientStops[3] = new GradientStop(cur, c);
             }
         };
@@ -160,7 +160,7 @@ public static class TextShimmer
             {
                 var cur = brushes[i].GradientStops[0].Color;
                 brushes[i].GradientStops[1] = new GradientStop(cur, a);
-                brushes[i].GradientStops[2] = new GradientStop(Color.Parse("#a8d0f0"), b);
+                brushes[i].GradientStops[2] = new GradientStop(Color.Parse("#ffffff"), b);
                 brushes[i].GradientStops[3] = new GradientStop(cur, c);
             }
         };
