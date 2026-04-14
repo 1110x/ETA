@@ -890,30 +890,6 @@ public static class FacilityDbMigration
             created++;
         }
 
-        // ── 3. 화합물별명 표준코드 기반 시험기록부 테이블 추가 생성 ────────
-        // GCMS SaveRawData는 표준코드(예: "DCM")로 테이블 접근 → 해당 테이블도 보장
-        try
-        {
-            var aliasCodes = CompoundAliasService.GetDistinctStandardCodes();
-            foreach (var (code, analyte) in aliasCodes)
-            {
-                var codeSafe = WaterCenterDbMigration.SafeName(code);
-                var codeTable = $"{codeSafe}_시험기록부";
-                if (DbConnectionFactory.TableExists(conn, codeTable)) continue;
-
-                // 분석정보에서 해당 analyte의 카테고리/메서드 찾기
-                var match = items.FirstOrDefault(i =>
-                    i.Analyte.Equals(analyte, StringComparison.OrdinalIgnoreCase));
-                var codeSchema = match.Analyte != null
-                    ? WaterCenterDbMigration.DetermineSchema(match.Analyte, match.Category, match.Method, match.Instrument)
-                    : "VOC";
-                var codeCols = SchemaColumns(codeSchema);
-                TryCreate(codeTable, $@"CREATE TABLE `{codeTable}` ({BaseColumns()}, {codeCols}, UNIQUE KEY uk_ana (분석일(20), SN(100)))");
-                created++;
-            }
-        }
-        catch (Exception ex) { Log($"화합물별명 표준코드 테이블 생성 실패: {ex.Message}"); }
-
         Log($"EnsureAnalysisRecordTables 완료 — {items.Count}개 항목 처리, {created}개 시도");
     }
 
