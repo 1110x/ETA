@@ -31,6 +31,9 @@ public partial class QuotationDetailPanel : UserControl
 
     private bool _isEditMode = false;
     private string _currentCompany = "";  // 현재 선택된 업체명
+    private List<string> _availableManagers = new();  // 업체별 담당자 목록
+    private bool _settingManagerName = false;  // 프로그래매틱 설정 중 이벤트 방지
+    private bool _isInitializing = false;  // 초기 로드 중인지 플래그
 
     private static readonly FontFamily Font =
         new("avares://ETA/Assets/Fonts#Pretendard");
@@ -66,6 +69,7 @@ public partial class QuotationDetailPanel : UserControl
     // ══════════════════════════════════════════════════════════════════════
     public void ShowIssue(QuotationIssue issue)
     {
+        _isInitializing = true;  // 초기 로드 플래그 설정
         _current = issue;
         _currentCompany = issue.업체명;
         txbEmpty.IsVisible  = false;
@@ -127,7 +131,7 @@ public partial class QuotationDetailPanel : UserControl
         _cachedRow = row;
 
         // 담당자 정보 설정
-        cmbManagerName.SelectedItem = issue.담당자;
+        // (LoadCompanyManagers에서 자동 설정됨)
         txbManagerPhone.Text = row.TryGetValue("담당자연락처",  out var ph) ? ph : issue.담당자연락처;
         txbManagerEmail.Text = row.TryGetValue("담당자 e-Mail", out var em) ? em : issue.담당자이메일;
 
@@ -141,6 +145,8 @@ public partial class QuotationDetailPanel : UserControl
         }
         else
             Log("WARNING: CheckPanel == null");
+
+        _isInitializing = false;  // 초기 로드 완료
     }
 
     public void Clear()
@@ -152,7 +158,8 @@ public partial class QuotationDetailPanel : UserControl
         spButtons.IsVisible = false;
         spItems.Children.Clear();
         _currentCompany = "";
-        cmbManagerName.SelectedItem = null;
+        _availableManagers.Clear();
+        txbManagerName.Text = "";
         txbManagerPhone.Text = "";
         txbManagerEmail.Text = "";
     }
@@ -166,14 +173,12 @@ public partial class QuotationDetailPanel : UserControl
         {
             // 비동기로 담당자 목록 로드
             var managers = await Task.Run(() => QuotationService.GetDistinctManagersForCompany(companyName));
+            _availableManagers = managers;
 
-            // UI 업데이트
-            cmbManagerName.Items.Clear();
-            foreach (var manager in managers)
-                cmbManagerName.Items.Add(manager);
-
-            // 현재 담당자 선택
-            cmbManagerName.SelectedItem = _current?.담당자;
+            // 현재 담당자 설정
+            _settingManagerName = true;
+            txbManagerName.Text = _current?.담당자 ?? "";
+            _settingManagerName = false;
 
             Log($"담당자 로드: {companyName} ({managers.Count}명)");
         }
@@ -184,33 +189,49 @@ public partial class QuotationDetailPanel : UserControl
     }
 
     // ══════════════════════════════════════════════════════════════════════
-    //  담당자 선택 이벤트
+    //  담당자 검색 (TextBox TextChanged)
     // ══════════════════════════════════════════════════════════════════════
-    private async void CmbManagerName_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+    private async void TxbManagerName_TextChanged(object? sender, TextChangedEventArgs e)
     {
-        if (cmbManagerName.SelectedItem is string selectedName && !string.IsNullOrEmpty(_currentCompany))
-        {
-            try
-            {
-                // DB에서 업체+담당자로 연락처/이메일 조회
-                var (phone, email) = await Task.Run(() =>
-                    QuotationService.GetManagerContactInfo(_currentCompany, selectedName));
+        if (_settingManagerName) return;
 
-                txbManagerPhone.Text = phone ?? "";
-                txbManagerEmail.Text = email ?? "";
-                Log($"담당자 선택: {selectedName} ({_currentCompany})");
-            }
-            catch (Exception ex)
-            {
-                Log($"담당자 정보 로드 오류: {ex.Message}");
-            }
+        var text = txbManagerName.Text ?? "";
+
+        // 정확한 일치 확인
+        if (!string.IsNullOrEmpty(text) && _availableManagers.Contains(text, StringComparer.OrdinalIgnoreCase))
+        {
+            // 정확한 담당자 선택됨 → 연락처/이메일 로드
+            await OnManagerSelected(text);
+        }
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  담당자 선택 시 연락처/이메일 로드
+    // ══════════════════════════════════════════════════════════════════════
+    private async Task OnManagerSelected(string selectedName)
+    {
+        if (string.IsNullOrEmpty(selectedName) || string.IsNullOrEmpty(_currentCompany)) return;
+
+        try
+        {
+            // DB에서 업체+담당자로 연락처/이메일 조회
+            var (phone, email) = await Task.Run(() =>
+                QuotationService.GetManagerContactInfo(_currentCompany, selectedName));
+
+            txbManagerPhone.Text = phone ?? "";
+            txbManagerEmail.Text = email ?? "";
+            Log($"담당자 선택: {selectedName} ({_currentCompany})");
+        }
+        catch (Exception ex)
+        {
+            Log($"담당자 정보 로드 오류: {ex.Message}");
         }
     }
 
     /// <summary>체크박스 변경 실시간 반영 — 캐시된 행 기반으로 체크된 항목만 표시</summary>
     public void PreviewCheckedItems(IEnumerable<string> checkedAnalyteNames)
     {
-        if (_cachedRow.Count == 0) return;
+        if (_cachedRow.Count == 0 || _isInitializing) return;  // 초기화 중에는 무시
         var checkedSet = new HashSet<string>(checkedAnalyteNames, StringComparer.OrdinalIgnoreCase);
         // 캐시 복사 후 체크 해제된 메인 항목 컬럼값을 빈값으로 설정
         var preview = new Dictionary<string, string>(_cachedRow, StringComparer.OrdinalIgnoreCase);
