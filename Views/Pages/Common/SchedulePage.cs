@@ -1001,9 +1001,9 @@ public class SchedulePage
             };
             var margin = pos switch
             {
-                SpanPos.Start  => new Thickness(0, 0, -4, 0),
-                SpanPos.Middle => new Thickness(-4, 0, -4, 0),
-                SpanPos.End    => new Thickness(-4, 0, 0, 0),
+                SpanPos.Start  => new Thickness(0, 0, -3, 0),
+                SpanPos.Middle => new Thickness(-3, 0, -3, 0),
+                SpanPos.End    => new Thickness(-3, 0, 0, 0),
                 _              => new Thickness(0),
             };
 
