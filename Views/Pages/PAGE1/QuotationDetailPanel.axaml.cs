@@ -30,7 +30,7 @@ public partial class QuotationDetailPanel : UserControl
     public event Action<QuotationIssue>? CorrectRequested;
 
     private bool _isEditMode = false;
-    private Dictionary<string, Agent> _managerCache = new(StringComparer.OrdinalIgnoreCase);
+    private string _currentCompany = "";  // 현재 선택된 업체명
 
     private static readonly FontFamily Font =
         new("avares://ETA/Assets/Fonts#Pretendard");
@@ -59,39 +59,7 @@ public partial class QuotationDetailPanel : UserControl
             "수량","단가","소계","수량2","단가3","소계4",
         };
 
-    public QuotationDetailPanel()
-    {
-        InitializeComponent();
-        // 담당자 목록 로드
-        LoadManagerList();
-    }
-
-    private async void LoadManagerList()
-    {
-        try
-        {
-            var agents = await Task.Run(() => AgentService.GetAllItems());
-            _managerCache.Clear();
-            foreach (var agent in agents)
-                _managerCache[agent.성명] = agent;
-
-            var names = agents.Select(a => a.성명).Distinct(StringComparer.OrdinalIgnoreCase)
-                              .Where(n => !string.IsNullOrEmpty(n))
-                              .OrderBy(n => n).ToList();
-
-            // UI 업데이트
-            if (cmbManagerName != null)
-            {
-                cmbManagerName.Items.Clear();
-                foreach (var name in names)
-                    cmbManagerName.Items.Add(name);
-            }
-        }
-        catch (Exception ex)
-        {
-            Log($"담당자 목록 로드 오류: {ex.Message}");
-        }
-    }
+    public QuotationDetailPanel() => InitializeComponent();
 
     // ══════════════════════════════════════════════════════════════════════
     //  외부 연동
@@ -99,6 +67,7 @@ public partial class QuotationDetailPanel : UserControl
     public void ShowIssue(QuotationIssue issue)
     {
         _current = issue;
+        _currentCompany = issue.업체명;
         txbEmpty.IsVisible  = false;
         spContent.IsVisible = true;
         spButtons.IsVisible = true;
@@ -130,6 +99,9 @@ public partial class QuotationDetailPanel : UserControl
         // 읽기 전용 모드로 설정 (편집 불가)
         _isEditMode = false;
         SetEditMode(false);
+
+        // 업체별 담당자 목록 로드
+        LoadCompanyManagers(issue.업체명);
 
         Log($"=== ShowIssue rowid={issue.Id}  {issue.업체명}  {issue.시료명} ===");
 
@@ -175,23 +147,59 @@ public partial class QuotationDetailPanel : UserControl
         spContent.IsVisible = false;
         spButtons.IsVisible = false;
         spItems.Children.Clear();
+        _currentCompany = "";
         cmbManagerName.SelectedItem = null;
         txbManagerPhone.Text = "";
         txbManagerEmail.Text = "";
     }
 
     // ══════════════════════════════════════════════════════════════════════
+    //  업체별 담당자 목록 로드 (견적요청담당)
+    // ══════════════════════════════════════════════════════════════════════
+    private async void LoadCompanyManagers(string companyName)
+    {
+        try
+        {
+            // 비동기로 담당자 목록 로드
+            var managers = await Task.Run(() => QuotationService.GetDistinctManagersForCompany(companyName));
+
+            // UI 업데이트
+            cmbManagerName.Items.Clear();
+            foreach (var manager in managers)
+                cmbManagerName.Items.Add(manager);
+
+            // 현재 담당자 선택
+            cmbManagerName.SelectedItem = _current?.담당자;
+
+            Log($"담당자 로드: {companyName} ({managers.Count}명)");
+        }
+        catch (Exception ex)
+        {
+            Log($"담당자 목록 로드 오류: {ex.Message}");
+        }
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
     //  담당자 선택 이벤트
     // ══════════════════════════════════════════════════════════════════════
-    private void CmbManagerName_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+    private async void CmbManagerName_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        if (cmbManagerName.SelectedItem is string selectedName &&
-            _managerCache.TryGetValue(selectedName, out var agent))
+        if (cmbManagerName.SelectedItem is string selectedName && !string.IsNullOrEmpty(_currentCompany))
         {
-            // 이메일 자동 입력 (연락처는 Agent에 없음)
-            txbManagerPhone.Text = agent.기타 ?? "";  // 기타 필드를 임시로 사용
-            txbManagerEmail.Text = agent.Email ?? "";
-            Log($"담당자 선택: {selectedName}");
+            try
+            {
+                // DB에서 업체+담당자로 연락처/이메일 조회
+                var (phone, email) = await Task.Run(() =>
+                    QuotationService.GetManagerContactInfo(_currentCompany, selectedName));
+
+                txbManagerPhone.Text = phone ?? "";
+                txbManagerEmail.Text = email ?? "";
+                Log($"담당자 선택: {selectedName} ({_currentCompany})");
+            }
+            catch (Exception ex)
+            {
+                Log($"담당자 정보 로드 오류: {ex.Message}");
+            }
         }
     }
 
@@ -227,6 +235,9 @@ public partial class QuotationDetailPanel : UserControl
         _selectedItemIndex = -1;
         bool odd = false;
 
+        // 항목명 → 약칭 매핑 로드
+        var aliasMap = FacilityResultService.GetAnalyteAliasMap();
+
         foreach (var kv in row)
         {
             var col = kv.Key;   // 이미 Trim된 상태 (GetIssueRow에서 Trim)
@@ -248,8 +259,10 @@ public partial class QuotationDetailPanel : UserControl
             };
             odd = !odd;
 
-            // 컬럼 0: 항목명
-            grid.Children.Add(Cell(col, AppFonts.MD, "#cccccc", 0, HorizontalAlignment.Left));
+            // 컬럼 0: 항목명 + 약칭 뱃지 (수평 배치)
+            var itemNamePanel = BuildItemNameWithBadge(col, aliasMap);
+            Grid.SetColumn(itemNamePanel, 0);
+            grid.Children.Add(itemNamePanel);
 
             // 컬럼 1: 수량 (TextBox, 편집 가능)
             var quantityBox = new TextBox
@@ -261,9 +274,10 @@ public partial class QuotationDetailPanel : UserControl
                 Background          = Brush.Parse("Transparent"),
                 BorderThickness     = new Thickness(0),
                 Margin              = new Avalonia.Thickness(0, 3),
-                HorizontalAlignment = HorizontalAlignment.Right,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment   = VerticalAlignment.Center,
-                Padding             = new Thickness(0),
+                Padding             = new Thickness(4, 0),
+                TextAlignment       = Avalonia.Media.TextAlignment.Right,
             };
 
             int rowIdx = _itemRows.Count;
@@ -386,6 +400,58 @@ public partial class QuotationDetailPanel : UserControl
         grid.Background = Brush.Parse("#2a4a3a");
         quantityBox.Focus();
         quantityBox.SelectAll();
+    }
+
+    private StackPanel BuildItemNameWithBadge(string itemName, Dictionary<string, string> aliasMap)
+    {
+        var panel = new StackPanel
+        {
+            Orientation = Avalonia.Layout.Orientation.Horizontal,
+            Spacing = 6,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+
+        // 약칭 뱃지
+        var alias = aliasMap.TryGetValue(itemName, out var a) ? a : itemName;
+        if (!string.IsNullOrEmpty(alias))
+        {
+            try
+            {
+                var badgeColor = BadgeColorHelper.GetBadgeColor(alias);
+                var badge = new Border
+                {
+                    Height = 20,
+                    CornerRadius = new CornerRadius(3),
+                    Padding = new Thickness(5, 2),
+                    Background = new SolidColorBrush(Color.Parse(badgeColor.Bg)),
+                    Child = new TextBlock
+                    {
+                        Text = alias,
+                        FontSize = AppFonts.XS,
+                        FontWeight = FontWeight.Bold,
+                        Foreground = new SolidColorBrush(Color.Parse(badgeColor.Fg)),
+                        FontFamily = Font,
+                        VerticalAlignment = VerticalAlignment.Center,
+                    }
+                };
+                panel.Children.Add(badge);
+            }
+            catch { }
+        }
+
+        // 항목명
+        var itemLabel = new TextBlock
+        {
+            Text = itemName,
+            FontSize = AppFonts.MD,
+            Foreground = Brush.Parse("#cccccc"),
+            FontFamily = Font,
+            VerticalAlignment = VerticalAlignment.Center,
+            TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
+        };
+        panel.Children.Add(itemLabel);
+
+        return panel;
     }
 
     private TextBlock Cell(string text, double size, string color,
