@@ -342,3 +342,6 @@
 [00:36:19] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
 [00:36:23] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
 [00:36:23] [AnalysisRequestService] GetAssignmentChartData(2026-03-21~2026-06-10): 64개 구간
+[00:40:36] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[00:40:46] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[00:40:46] [AnalysisRequestService] GetAssignmentChartData(2026-03-21~2026-06-10): 64개 구간

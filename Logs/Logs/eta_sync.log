@@ -5650,3 +5650,51 @@
 [2026-04-15 00:36:18] [Init] EnsureTodayMeasurementResults: 0건
 [2026-04-15 00:36:19] [Progress] 96% — 시스템 준비 완료
 [2026-04-15 00:36:19] [Progress] 100% — ✓ 완료!
+[2026-04-15 00:40:23] ========== 로그인 창 시작 ==========
+[2026-04-15 00:40:34] ---------- 로그인 시도 ----------
+[2026-04-15 00:40:34] [DoLogin] 사번 입력값: '201000308'
+[2026-04-15 00:40:34] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-15 00:40:34] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-15 00:40:34] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-15 00:40:34] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-15 00:40:34] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-15 00:40:34] [DoLogin] ValidateLogin 호출
+[2026-04-15 00:40:34] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-15 00:40:34] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-15 00:40:34] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-15 00:40:35] [Lottie] 재생 시작
+[2026-04-15 00:40:35] [Progress] 0% — DB 연결 중...
+[2026-04-15 00:40:35] [Progress] 14% — DB 연결 완료
+[2026-04-15 00:40:35] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-15 00:40:35] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-15 00:40:35] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-15 00:40:35] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-15 00:40:35] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-15 00:40:35] [Progress] 56% — 사진 동기화 완료
+[2026-04-15 00:40:35] [Progress] 56% — 테이블 초기화 중...
+[2026-04-15 00:40:35] [Init] FacilityDbMigration 실패: MySqlConnector.MySqlException (0x80004005): BLOB/TEXT column '분석일' used in key specification without a key length
+   at MySqlConnector.Core.ServerSession.ReceiveReplyAsync(IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/Core/ServerSession.cs:line 1081
+   at MySqlConnector.Core.ResultSet.ReadResultSetHeaderAsync(IOBehavior ioBehavior) in /_/src/MySqlConnector/Core/ResultSet.cs:line 37
+   at MySqlConnector.MySqlDataReader.ActivateResultSet(CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlDataReader.cs:line 131
+   at MySqlConnector.MySqlDataReader.InitAsync(CommandListPosition commandListPosition, ICommandPayloadCreator payloadCreator, IDictionary`2 cachedProcedures, IMySqlCommand command, CommandBehavior behavior, Activity activity, IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlDataReader.cs:line 487
+   at MySqlConnector.Core.CommandExecutor.ExecuteReaderAsync(CommandListPosition commandListPosition, ICommandPayloadCreator payloadCreator, CommandBehavior behavior, Activity activity, IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/Core/CommandExecutor.cs:line 56
+   at MySqlConnector.MySqlCommand.ExecuteNonQueryAsync(IOBehavior ioBehavior, CancellationToken cancellationToken) in /_/src/MySqlConnector/MySqlCommand.cs:line 309
+   at MySqlConnector.MySqlCommand.ExecuteNonQuery() in /_/src/MySqlConnector/MySqlCommand.cs:line 108
+   at ETA.Services.SERVICE2.FacilityDbMigration.Exec(DbConnection conn, String sql) in /Users/azrael/Documents/ETA/Services/SERVICE2/FacilityDbMigration.cs:line 2278
+   at ETA.Services.SERVICE2.FacilityDbMigration.EnsureAnalysisDataTables(DbConnection conn) in /Users/azrael/Documents/ETA/Services/SERVICE2/FacilityDbMigration.cs:line 180
+   at ETA.Services.SERVICE2.FacilityDbMigration.EnsureTables() in /Users/azrael/Documents/ETA/Services/SERVICE2/FacilityDbMigration.cs:line 28
+   at ETA.Views.Login.<>c.<PlayLottieAndNavigate>b__9_4() in /Users/azrael/Documents/ETA/Views/Login.axaml.cs:line 217
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at ETA.Views.Login.PlayLottieAndNavigate(String empId) in /Users/azrael/Documents/ETA/Views/Login.axaml.cs:line 217
+[2026-04-15 00:40:35] [Progress] 72% — ⚠ 테이블 초기화 실패: BLOB/TEXT column '분석일' used in key specification without a key length
+[2026-04-15 00:40:35] [Progress] 72% — 견적 데이터 준비 중...
+[2026-04-15 00:40:36] [Progress] 88% — 데이터 준비 완료
+[2026-04-15 00:40:36] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-15 00:40:36] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-15 00:40:36] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-15 00:40:36] [Progress] 96% — 시스템 준비 완료
+[2026-04-15 00:40:36] [Progress] 100% — ✓ 완료!

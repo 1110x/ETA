@@ -716,8 +716,8 @@ public class SchedulePage
         {
             ColumnDefinitions = new ColumnDefinitions("*,*,*,*,*,*,*"),
             RowDefinitions    = new RowDefinitions("Auto,Auto,Auto,Auto,Auto,Auto"),
-            ColumnSpacing     = 0,  // Grid spacing 명시 (column은 붙어있음)
-            RowSpacing        = 0,  // Row도 붙어있음
+            ColumnSpacing     = 1,  // ← Grid 수준에서 column 간격 설정
+            RowSpacing        = 1,  // Row도 간격 설정
         };
         Grid.SetRow(_calGrid, 1);
         calOuter.Children.Add(_calGrid);
@@ -874,13 +874,13 @@ public class SchedulePage
                         : isToday   ? Brush.Parse("#226622")
                         : AppRes("InputBorder"),
             BorderThickness = new Thickness(isFocused || selected ? 2 : 0.5),
-            Margin    = new Thickness(0),  // ← Cell이 column 너비와 정확히 일치
-            Padding   = new Thickness(1),  // 간격은 padding으로 처리
+            Margin    = new Thickness(0),  // ← Grid spacing으로 처리
+            Padding   = new Thickness(0),  // ← Padding 제거 (bar가 cell 전체를 차지)
             MinHeight = 94,
             Cursor    = valid ? new Cursor(StandardCursorType.Hand) : Cursor.Default,
         };
 
-        var sp = new StackPanel { Margin = new Thickness(0), Spacing = 1 };  // ← Margin 제거, cell.padding으로 처리
+        var sp = new StackPanel { Margin = new Thickness(3, 2), Spacing = 1 };  // ← Content inset
 
         if (valid)
         {
