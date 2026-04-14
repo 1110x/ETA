@@ -138,8 +138,10 @@ public static class FacilityDbMigration
         }
 
         // COD / 페놀류 다중 방법 컬럼 추가 마이그레이션
+        Log("multi_method_cols_v2 마이그레이션 체크 시작");
         if (!IsMigrationDone(conn, "multi_method_cols_v2"))
         {
+            Log("multi_method_cols_v2 마이그레이션 실행 중...");
             try
             {
                 // 화학적_산소요구량_시험기록부 마이그레이션
@@ -208,8 +210,13 @@ public static class FacilityDbMigration
                 }
 
                 MarkMigrationDone(conn, "multi_method_cols_v2");
+                Log("multi_method_cols_v2 마이그레이션 완료 표시됨");
             }
             catch (Exception ex) { Log($"multi_method_cols_v2 마이그레이션 실패: {ex.Message}"); }
+        }
+        else
+        {
+            Log("multi_method_cols_v2 이미 완료됨 — 건너뜀");
         }
 
         // 화합물 별칭 테이블 생성 + Seed
