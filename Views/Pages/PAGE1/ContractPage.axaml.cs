@@ -182,13 +182,6 @@ public partial class ContractPage : UserControl
                         VerticalAlignment = VerticalAlignment.Center,
                         Children =
                         {
-                            new TextBlock
-                            {
-                                Text       = contract.C_CompanyName,
-                                FontSize   = AppTheme.FontLG,
-                                FontFamily = Font,
-                                Foreground = AppRes("AppFg"),
-                            },
                             string.IsNullOrEmpty(contract.C_Abbreviation)
                                 ? (Control)new TextBlock()
                                 : new Border
@@ -203,7 +196,14 @@ public partial class ContractPage : UserControl
                                         FontSize   = AppTheme.FontXS, FontFamily = Font,
                                         Foreground = Brush.Parse(BadgeColorHelper.GetBadgeColor(contract.C_Abbreviation).Fg),
                                     }
-                                }
+                                },
+                            new TextBlock
+                            {
+                                Text       = contract.C_CompanyName,
+                                FontSize   = AppTheme.FontLG,
+                                FontFamily = Font,
+                                Foreground = AppRes("AppFg"),
+                            }
                         }
                     }
                 }

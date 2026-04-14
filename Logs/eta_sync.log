@@ -115,3 +115,6 @@
 [2026-04-15 00:01:44.276] === SyncApprovalStatusAsync() 시작 ===
 [2026-04-15 00:01:46.019] To Do ETA Task: 19개  DB 계정: 14개
 [2026-04-15 00:01:46.019] === Sync 완료 approved=0 pending=0 재생성=0 ===
+[2026-04-15 00:04:53.401] === SyncApprovalStatusAsync() 시작 ===
+[2026-04-15 00:04:55.230] To Do ETA Task: 19개  DB 계정: 14개
+[2026-04-15 00:04:55.231] === Sync 완료 approved=0 pending=0 재생성=0 ===
