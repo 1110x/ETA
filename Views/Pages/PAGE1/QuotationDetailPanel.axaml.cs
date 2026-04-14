@@ -485,9 +485,11 @@ public partial class QuotationDetailPanel : UserControl
                 FontFamily = Font,
                 Foreground = Brush.Parse("#88cc88"),
                 VerticalAlignment = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Right,
                 TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
                 MinWidth = 60,
                 TextAlignment = Avalonia.Media.TextAlignment.Right,
+                Margin = new Thickness(0, 0, 8, 0),
             };
             _subtotalBlocks.Add(subtotalBlock);
 
@@ -526,7 +528,7 @@ public partial class QuotationDetailPanel : UserControl
             // 항목 정보 Grid: [배지] [항목명] [수량] [단가] [소계]
             var contentGrid = new Grid
             {
-                ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto,Auto,Auto"),
+                ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto,Auto,70"),
                 Margin = new Thickness(0),
                 VerticalAlignment = VerticalAlignment.Center,
             };
