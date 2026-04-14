@@ -873,11 +873,12 @@ public class SchedulePage
                         : AppRes("InputBorder"),
             BorderThickness = new Thickness(isFocused || selected ? 2 : 0.5),
             Margin    = new Thickness(1),
+            Padding   = new Thickness(3, 2),  // Grid spacing이 아닌 content inset용
             MinHeight = 94,
             Cursor    = valid ? new Cursor(StandardCursorType.Hand) : Cursor.Default,
         };
 
-        var sp = new StackPanel { Margin = new Thickness(3, 2), Spacing = 1 };
+        var sp = new StackPanel { Margin = new Thickness(0), Spacing = 1 };  // Margin 제거 - cell.Padding으로 처리
 
         if (valid)
         {
@@ -1001,9 +1002,9 @@ public class SchedulePage
             };
             var margin = pos switch
             {
-                SpanPos.Start  => new Thickness(0, 0, -3, 0),
-                SpanPos.Middle => new Thickness(-3, 0, -3, 0),
-                SpanPos.End    => new Thickness(-3, 0, 0, 0),
+                SpanPos.Start  => new Thickness(0, 0, -4, 0),  // Cell padding(3) + Cell margin(1) 극복
+                SpanPos.Middle => new Thickness(-4, 0, -4, 0),
+                SpanPos.End    => new Thickness(-4, 0, 0, 0),
                 _              => new Thickness(0),
             };
 
