@@ -31,54 +31,38 @@
                    FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                    Margin="0,0,0,6"/>
 
-        <!-- ToggleSwitch (측정인 DB / 계약 DB) -->
-        <ToggleSwitch Grid.Row="1"
-                      x:Name="tglActiveOnly"
-                      IsChecked="True"
-                      OnContent="📋 계약 DB"
-                      OffContent="📍 측정인 DB"
-                      FontFamily="avares://ETA/Assets/Fonts#Pretendard"
-                      FontSize="{DynamicResource FontSizeBase}"
-                      HorizontalAlignment="Left"
-                      Margin="8,2,0,6"
-                      IsCheckedChanged="TglActiveOnly_Changed" />
-
-        <!-- 검색 + 건수 -->
-        <StackPanel Grid.Row="2" Spacing="4" Margin="0,0,0,6">
+        <!-- ToggleSwitch + 검색 (한 줄) -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8" Margin="8,2,0,6">
+            <ToggleSwitch x:Name="tglActiveOnly"
+                          IsChecked="True"
+                          OnContent="📋 계약 DB"
+                          OffContent="📍 측정인 DB"
+                          FontFamily="avares://ETA/Assets/Fonts#Pretendard"
+                          FontSize="{DynamicResource FontSizeBase}"
+                          HorizontalAlignment="Left"
+                          IsCheckedChanged="TglActiveOnly_Changed" />
             <TextBox x:Name="txbSearch"
                      Watermark="업체명 검색..."
                      Height="26" FontSize="{DynamicResource FontSizeBase}"
                      Background="{DynamicResource InputBg}" Foreground="{DynamicResource InputFg}"
                      BorderBrush="{DynamicResource InputBorder}" Padding="8,0" CornerRadius="4"
                      FontFamily="avares://ETA/Assets/Fonts#Pretendard"
+                     Width="200"
                      TextChanged="TxbSearch_TextChanged" />
-            <TextBlock x:Name="txbCompanyCount"
-                       Text="0개 업체"
-                       FontSize="{DynamicResource FontSizeBase}" Foreground="{DynamicResource FgMuted}"
-                       Margin="2,0,0,0"
-                       FontFamily="avares://ETA/Assets/Fonts#Pretendard" />
         </StackPanel>
 
-        <!-- 업체 목록 (ListBox) -->
-        <ListBox Grid.Row="3"
-                 x:Name="lbCompanies"
-                 SelectionChanged="LbCompanies_SelectionChanged"
-                 Background="Transparent"
-                 BorderThickness="0"
-                 HorizontalAlignment="Stretch"
-                 VerticalAlignment="Stretch">
-            <ListBox.ItemTemplate>
-                <DataTemplate DataType="models:Contract">
-                    <Grid ColumnDefinitions="2*,*,*,*,*">
-                        <TextBlock Grid.Column="0" Text="{Binding C_CompanyName}" Margin="6,2"/>
-                        <TextBlock Grid.Column="1" Text="{Binding C_Abbreviation}" Margin="6,2"/>
-                        <TextBlock Grid.Column="2" Text="{Binding C_ContractStartStr}" Margin="6,2"/>
-                        <TextBlock Grid.Column="3" Text="{Binding C_ContractEndStr}" Margin="6,2"/>
-                        <TextBlock Grid.Column="4" Text="{Binding DaysLeftText}" HorizontalAlignment="Right" Margin="6,2"/>
-                    </Grid>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+        <!-- 건수 표시 -->
+        <TextBlock Grid.Row="2"
+                   x:Name="txbCompanyCount"
+                   Text="0개 업체"
+                   FontSize="{DynamicResource FontSizeBase}" Foreground="{DynamicResource FgMuted}"
+                   Margin="8,0,0,6"
+                   FontFamily="avares://ETA/Assets/Fonts#Pretendard" />
+
+        <!-- 업체 목록 (2컬럼 그리드) -->
+        <ScrollViewer Grid.Row="3" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <StackPanel x:Name="spCompanies" Spacing="4" Margin="4"/>
+        </ScrollViewer>
 
     </Grid>
 </UserControl>
