@@ -29,8 +29,8 @@ public static class FacilityDbMigration
         EnsureMigrationTable(conn);
 
         // 수질분석센터 + 처리시설 DATA 테이블 DROP (일회성)
-        Log("drop_data_tables_v3 체크 시작");
-        if (!IsMigrationDone(conn, "drop_data_tables_v3"))
+        Log("drop_data_tables_v4 체크 시작");
+        if (!IsMigrationDone(conn, "drop_data_tables_v4"))
         {
             try
             {
@@ -45,17 +45,21 @@ public static class FacilityDbMigration
                 Log($"DROP 대상: {dropList.Count}개 테이블");
                 foreach (var tbl in dropList)
                 {
-                    Exec(conn, $"DROP TABLE `{tbl}`");
-                    Log($"  DROP: {tbl}");
+                    try
+                    {
+                        Exec(conn, $"DROP TABLE IF EXISTS `{tbl}`");
+                        Log($"  DROP: {tbl}");
+                    }
+                    catch (Exception ex) { Log($"  DROP 실패: {tbl} — {ex.Message}"); }
                 }
                 Log($"DATA 테이블 {dropList.Count}개 DROP 완료");
-                MarkMigrationDone(conn, "drop_data_tables_v3");
+                MarkMigrationDone(conn, "drop_data_tables_v4");
             }
             catch (Exception ex) { Log($"DATA 테이블 DROP 실패: {ex.Message}"); }
         }
         else
         {
-            Log("drop_data_tables_v3 이미 완료됨 — 건너뜀");
+            Log("drop_data_tables_v4 이미 완료됨 — 건너뜀");
         }
 
         EnsureAnalysisItems(conn);
