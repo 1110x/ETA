@@ -39,7 +39,7 @@ public static class TextShimmer
         for (int i = 0; i < textBlocks.Length; i++)
         {
             origBrushes[i] = textBlocks[i].Foreground;  // 원본 저장
-            var cur = (textBlocks[i].Foreground as ISolidColorBrush)?.Color ?? Color.Parse("#d8d8e0");
+            var cur = (textBlocks[i].Foreground as ISolidColorBrush)?.Color ?? Color.Parse("#a0a0b0");
             brushes[i] = new LinearGradientBrush
             {
                 StartPoint = new RelativePoint(0, 0.5, RelativeUnit.Relative),
@@ -48,7 +48,7 @@ public static class TextShimmer
                 {
                     new GradientStop(cur, 0.0),
                     new GradientStop(cur, 0.0),
-                    new GradientStop(Color.Parse("#a8d0f0"), 0.0),
+                    new GradientStop(Color.Parse("#ffffff"), 0.0),
                     new GradientStop(cur, 0.0),
                     new GradientStop(cur, 1.0),
                 }
@@ -128,7 +128,7 @@ public static class TextShimmer
         for (int i = 0; i < textBlocks.Length; i++)
         {
             origBrushes[i] = textBlocks[i].Foreground;  // 원본 저장
-            var cur = (textBlocks[i].Foreground as ISolidColorBrush)?.Color ?? Color.Parse("#d8d8e0");
+            var cur = (textBlocks[i].Foreground as ISolidColorBrush)?.Color ?? Color.Parse("#a0a0b0");
             brushes[i] = new LinearGradientBrush
             {
                 StartPoint = new RelativePoint(0, 0.5, RelativeUnit.Relative),
@@ -137,7 +137,7 @@ public static class TextShimmer
                 {
                     new GradientStop(cur, 0.0),
                     new GradientStop(cur, 0.0),
-                    new GradientStop(Color.Parse("#a8d0f0"), 0.0),
+                    new GradientStop(Color.Parse("#ffffff"), 0.0),
                     new GradientStop(cur, 0.0),
                     new GradientStop(cur, 1.0),
                 }

@@ -278,3 +278,8 @@
 [00:19:05] 견적 발행건수=937
 [00:19:05] LoadData() 완료 — 루트노드=6
 [00:19:06] 견적 선택: 적량 원폐수(sample) 5 [20260305-135056]
+[00:20:27] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[00:20:33] QuotationHistoryPanel 초기화 완료
+[00:20:33] LoadData() 시작
+[00:20:33] 견적 발행건수=937
+[00:20:33] LoadData() 완료 — 루트노드=6
