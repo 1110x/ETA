@@ -880,7 +880,7 @@ public class SchedulePage
             Cursor    = valid ? new Cursor(StandardCursorType.Hand) : Cursor.Default,
         };
 
-        var sp = new StackPanel { Margin = new Thickness(3, 2), Spacing = 1 };  // ← 원래 구조 복구
+        var sp = new StackPanel { Margin = new Thickness(0), Spacing = 1 };  // ← Margin 제거, cell.padding으로 처리
 
         if (valid)
         {
