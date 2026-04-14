@@ -548,9 +548,9 @@ public partial class QuotationDetailPanel : UserControl
             contentGrid.Children.Add(itemNameTb);
             Grid.SetColumn(itemNameTb, 1);
 
-            // 수량 (TextBox만 표시)
-            quantityBox.Margin = new Thickness(12, 0, 0, 0);
-            quantityBox.HorizontalAlignment = HorizontalAlignment.Left;
+            // 수량 (TextBox만 표시, 우측 정렬)
+            quantityBox.HorizontalAlignment = HorizontalAlignment.Right;
+            quantityBox.Width = double.NaN;  // 자동 너비
             contentGrid.Children.Add(quantityBox);
             Grid.SetColumn(quantityBox, 2);
 
