@@ -548,25 +548,11 @@ public partial class QuotationDetailPanel : UserControl
             contentGrid.Children.Add(itemNameTb);
             Grid.SetColumn(itemNameTb, 1);
 
-            // 수량 (자동 감싸기)
-            var qtyLabel = new TextBlock
-            {
-                Text = "수량:",
-                FontSize = AppFonts.XS,
-                Foreground = Brush.Parse("#777777"),
-                VerticalAlignment = VerticalAlignment.Center,
-                Margin = new Thickness(12, 0, 4, 0),
-            };
-            var qtyPanel = new StackPanel
-            {
-                Orientation = Orientation.Horizontal,
-                Spacing = 2,
-                VerticalAlignment = VerticalAlignment.Center,
-            };
-            qtyPanel.Children.Add(qtyLabel);
-            qtyPanel.Children.Add(quantityBox);
-            contentGrid.Children.Add(qtyPanel);
-            Grid.SetColumn(qtyPanel, 2);
+            // 수량 (TextBox만 표시)
+            quantityBox.Margin = new Thickness(12, 0, 0, 0);
+            quantityBox.HorizontalAlignment = HorizontalAlignment.Left;
+            contentGrid.Children.Add(quantityBox);
+            Grid.SetColumn(quantityBox, 2);
 
             // 단가 정보
             var priceLabel = new TextBlock
