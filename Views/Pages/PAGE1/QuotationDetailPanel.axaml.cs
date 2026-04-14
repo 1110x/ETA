@@ -159,8 +159,8 @@ public partial class QuotationDetailPanel : UserControl
         spItems.Children.Clear();
         _currentCompany = "";
         _availableManagers.Clear();
-        acbManagerName.Text = "";
-        acbManagerName.ItemsSource = null;
+        cmbManagerName.Items.Clear();
+        cmbManagerName.Text = "";
         txbManagerPhone.Text = "";
         txbManagerEmail.Text = "";
     }
@@ -176,12 +176,14 @@ public partial class QuotationDetailPanel : UserControl
             var managers = await Task.Run(() => QuotationService.GetDistinctManagersForCompany(companyName));
             _availableManagers = managers;
 
-            // AutoCompleteBox에 항목 설정
-            acbManagerName.ItemsSource = managers;
+            // ComboBox에 항목 설정
+            cmbManagerName.Items.Clear();
+            foreach (var manager in managers)
+                cmbManagerName.Items.Add(manager);
 
             // 현재 담당자 설정
             _settingManagerName = true;
-            acbManagerName.Text = _current?.담당자 ?? "";
+            cmbManagerName.Text = _current?.담당자 ?? "";
             _settingManagerName = false;
 
             Log($"담당자 로드: {companyName} ({managers.Count}명)");
@@ -193,13 +195,13 @@ public partial class QuotationDetailPanel : UserControl
     }
 
     // ══════════════════════════════════════════════════════════════════════
-    //  담당자 선택 (AutoCompleteBox SelectionChanged)
+    //  담당자 선택 (ComboBox SelectionChanged)
     // ══════════════════════════════════════════════════════════════════════
-    private async void AcbManagerName_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+    private async void CmbManagerName_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         if (_settingManagerName) return;
 
-        var selectedName = acbManagerName.SelectedItem as string;
+        var selectedName = cmbManagerName.SelectedItem as string ?? cmbManagerName.Text;
         if (string.IsNullOrEmpty(selectedName)) return;
 
         await OnManagerSelected(selectedName);
@@ -232,16 +234,27 @@ public partial class QuotationDetailPanel : UserControl
     public void PreviewCheckedItems(IEnumerable<string> checkedAnalyteNames)
     {
         if (_cachedRow.Count == 0 || _isInitializing) return;  // 초기화 중에는 무시
-        var checkedSet = new HashSet<string>(checkedAnalyteNames, StringComparer.OrdinalIgnoreCase);
+
+        var checkedList = checkedAnalyteNames.ToList();
+        Log($"🔍 PreviewCheckedItems: {checkedList.Count}개 항목 체크됨");
+
+        var checkedSet = new HashSet<string>(checkedList, StringComparer.OrdinalIgnoreCase);
         // 캐시 복사 후 체크 해제된 메인 항목 컬럼값을 빈값으로 설정
         var preview = new Dictionary<string, string>(_cachedRow, StringComparer.OrdinalIgnoreCase);
+
+        int hiddenCount = 0;
         foreach (var key in preview.Keys.ToList())
         {
             if (FixedCols.Contains(key)) continue;
             if (key.EndsWith("단가") || key.EndsWith("소계")) continue;
             if (!checkedSet.Contains(key))
+            {
                 preview[key] = "";  // HasNonZeroStr → false → 행 미표시
+                hiddenCount++;
+            }
         }
+
+        Log($"   → {hiddenCount}개 항목 숨김");
         BuildItemLines(preview);
     }
 
