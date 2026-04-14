@@ -260,6 +260,13 @@ public partial class QuotationNewPanel : UserControl
         _carrotCompanyName = issue.업체명;
         _carrotAbbr        = issue.약칭;
 
+        // ── 네비게이션 상태 초기화 ──────────────────────────────────────────
+        _keyNavShow2      = false;
+        _keyNavShow2Index = -1;
+        _selectedRowIndex = -1;
+        _rowQtyButtons.Clear();
+        _rowQtyInputs.Clear();
+
         txbTitle.Text       = "🔄  ReCyle (재활용)";
         txbMode.Text        = "재활용 모드";
         ShowCompanyBadge(issue.업체명, issue.약칭);
@@ -270,6 +277,8 @@ public partial class QuotationNewPanel : UserControl
         pnlContactInfo.IsVisible = false;
         txbManagerPhone.Text = "";
         txbManagerEmail.Text = "";
+        pnlQtyEdit.IsVisible = false;
+        _editingAnalyte      = null;
 
         var row = QuotationService.GetIssueRow(issue.Id);
         LoadItemsFromRow(row);
@@ -284,6 +293,13 @@ public partial class QuotationNewPanel : UserControl
         _company           = null;
         _carrotCompanyName = "";
         _carrotAbbr        = "";
+
+        // ── 네비게이션 상태 초기화 ──────────────────────────────────────────
+        _keyNavShow2      = false;
+        _keyNavShow2Index = -1;
+        _selectedRowIndex = -1;
+        _rowQtyButtons.Clear();
+        _rowQtyInputs.Clear();
 
         // _allIssues 갱신 후 자기 자신 제외하므로 중복 오류 안 남
         _allIssues = QuotationService.GetAllIssues();
@@ -303,6 +319,8 @@ public partial class QuotationNewPanel : UserControl
         txbManagerPhone.Text = !string.IsNullOrEmpty(dbPhone) ? dbPhone : issue.담당자연락처;
         txbManagerEmail.Text = !string.IsNullOrEmpty(dbEmail) ? dbEmail : issue.담당자이메일;
         pnlContactInfo.IsVisible = !string.IsNullOrEmpty(issue.담당자);
+        pnlQtyEdit.IsVisible = false;
+        _editingAnalyte      = null;
 
         var row = QuotationService.GetIssueRow(issue.Id);
         LoadItemsFromRow(row);
@@ -323,6 +341,13 @@ public partial class QuotationNewPanel : UserControl
         _priceMap.Clear();
         _sampleDuplicated = false;
 
+        // ── 네비게이션 상태 초기화 ──────────────────────────────────────────
+        _keyNavShow2      = false;
+        _keyNavShow2Index = -1;
+        _selectedRowIndex = -1;
+        _rowQtyButtons.Clear();
+        _rowQtyInputs.Clear();
+
         txbTitle.Text       = "📝  신규 견적 작성";
         txbMode.Text        = "";
         txbCompany.Text     = "— 오른쪽에서 업체를 선택하세요 —";
@@ -340,6 +365,8 @@ public partial class QuotationNewPanel : UserControl
         txbTotal.Text        = "—";
         txbWarning.IsVisible = false;
         txbItemCount.Text    = "";
+        pnlQtyEdit.IsVisible = false;
+        _editingAnalyte      = null;
         UpdateSaveButton();
 
         _allIssues = QuotationService.GetAllIssues();
@@ -459,7 +486,14 @@ public partial class QuotationNewPanel : UserControl
             qtyInput.LostFocus += (_, _) => CommitQty(idx);
             qtyInput.AddHandler(TextBox.KeyDownEvent, (object? _, KeyEventArgs ke) =>
             {
-                if (ke.Key == Key.Enter || ke.Key == Key.Down) { ke.Handled = true; CommitQty(idx); MoveQtyFocus(idx, +1); }
+                if (ke.Key == Key.Enter || ke.Key == Key.Down)
+                {
+                    ke.Handled = true;
+                    CommitQty(idx);
+                    // 마지막 행이 아니면 다음 행으로 이동, 마지막 행이면 TextBox 닫기
+                    if (idx < _rowQtyButtons.Count - 1)
+                        MoveQtyFocus(idx, +1);
+                }
                 else if (ke.Key == Key.Up)                     { ke.Handled = true; CommitQty(idx); MoveQtyFocus(idx, -1); }
                 else if (ke.Key == Key.Escape)                 { ke.Handled = true; qtyInput.IsVisible = false; qtyBtn.IsVisible = true; }
             }, Avalonia.Interactivity.RoutingStrategies.Tunnel);
@@ -564,12 +598,16 @@ public partial class QuotationNewPanel : UserControl
         // ── _keyNavShow2 모드: 방향키만 = 이동, Enter = 편집 ──
         if (!shift && _keyNavShow2)
         {
-            // Up/Down → 행 이동 후 자동으로 선택된 셀 열기
+            // Up/Down → 현재 셀 저장 후 행 이동 + 자동으로 선택된 셀 열기
             if (e.Key == Key.Up || e.Key == Key.Down)
             {
                 e.Handled = true;
                 Avalonia.Threading.Dispatcher.UIThread.Post(() =>
                 {
+                    // 현재 셀 편집 내용 저장
+                    if (_selectedRowIndex >= 0)
+                        CommitQty(_selectedRowIndex);
+
                     bool up = e.Key == Key.Up;
                     int newIdx = _selectedRowIndex + (up ? -1 : 1);
                     SelectGridRow(newIdx);
@@ -585,10 +623,14 @@ public partial class QuotationNewPanel : UserControl
                 OpenQtyInput(_selectedRowIndex);
                 return;
             }
-            // 숫자 입력 → 즉시 편집 시작 + 해당 키를 TextBox에 전달
+            // 숫자 입력 → 먼저 현재 셀 저장 후 즉시 편집 시작 + 해당 키를 TextBox에 전달
             if ((e.Key >= Key.D0 && e.Key <= Key.D9) || (e.Key >= Key.NumPad0 && e.Key <= Key.NumPad9))
             {
                 e.Handled = true;
+                // 현재 셀 편집 내용 저장
+                if (_selectedRowIndex >= 0 && _rowQtyInputs.ElementAtOrDefault(_selectedRowIndex)?.IsVisible == true)
+                    CommitQty(_selectedRowIndex);
+
                 OpenQtyInput(_selectedRowIndex);
                 var tb = _rowQtyInputs.ElementAtOrDefault(_selectedRowIndex);
                 if (tb != null)

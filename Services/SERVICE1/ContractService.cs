@@ -145,6 +145,37 @@ public static class ContractService
 
     // ── 분석정보 항목 목록 조회 ───────────────────────────────────────────────
     /// <summary>분석정보 테이블 Analyte 컬럼(=C컬럼) 항목명 목록을 순서대로 반환합니다.</summary>
+
+    // ── 분석정보 Analyte → 약칭 맵 조회 ───────────────────────────────
+    /// <summary>분석정보 테이블에서 Analyte → 약칭 Dictionary를 반환합니다.</summary>
+    public static Dictionary<string, string> GetAnalyteAliasMap()
+    {
+        var map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            // 약칭 컬럼 없으면 자동 추가
+            if (!DbConnectionFactory.ColumnExists(conn, "분석정보", "약칭"))
+            {
+                using var alt = conn.CreateCommand();
+                try { alt.CommandText = "ALTER TABLE `분석정보` ADD COLUMN `약칭` TEXT DEFAULT ''"; alt.ExecuteNonQuery(); } catch { }
+            }
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT `Analyte`, COALESCE(`약칭`, '') FROM `분석정보` WHERE `Analyte` IS NOT NULL AND `Analyte` <> '' ORDER BY ES ASC";
+            using var r = cmd.ExecuteReader();
+            while (r.Read())
+            {
+                var analyte = r.IsDBNull(0) ? "" : r.GetString(0);
+                var alias   = r.IsDBNull(1) ? "" : r.GetString(1) ?? "";
+                if (!string.IsNullOrWhiteSpace(analyte))
+                    map[analyte] = alias;
+            }
+        }
+        catch { }
+        return map;
+    }
+
     public static List<string> GetAnalysisItems()
     {
         var result = new List<string>();
@@ -153,7 +184,7 @@ public static class ContractService
         conn.Open();
 
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = "SELECT Analyte FROM `분석정보` ORDER BY id ASC";
+        cmd.CommandText = "SELECT `Analyte` FROM `분석정보` WHERE `Analyte` IS NOT NULL AND `Analyte` <> '' ORDER BY ES ASC";
         try
         {
             using var r = cmd.ExecuteReader();
@@ -411,7 +442,7 @@ public static class ContractService
         return null;
     }
 
-    // 계약 DB의 기본 컬럼 목록 (단가 컬럼 제외용)
+    // 계약 DB의 기본 컬럼 목록 (단가/수량 컬럼 제외용)
     private static readonly HashSet<string> _basicContractCols = new(StringComparer.OrdinalIgnoreCase)
     {
         "id", "C_CompanyName", "C_ContractStart", "C_ContractEnd", "C_ContractDays",
@@ -419,6 +450,8 @@ public static class ContractService
         "C_Representative", "C_FacilityType", "C_CategoryType", "C_MainProduct",
         "C_ContactPerson", "C_PhoneNumber", "C_Email", "OriginalCompanyName"
     };
+
+    private const string QuantityPrefix = "수량_";
 
     // ── 업체별 분석단가 조회 ──────────────────────────────────────────────────
     /// <summary>
@@ -432,10 +465,11 @@ public static class ContractService
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
-        // 계약 DB의 전체 컬럼 중 기본 컬럼 제외 = 단가 컬럼
+        // 계약 DB의 전체 컬럼 중 기본 컬럼·수량 컬럼 제외 = 단가 컬럼
         var allCols  = DbConnectionFactory.GetColumnNames(conn, "계약 DB");
         var priceCols = allCols
-            .Where(c => !_basicContractCols.Contains(c) && !c.StartsWith('_'))
+            .Where(c => !_basicContractCols.Contains(c) && !c.StartsWith('_')
+                        && !c.StartsWith(QuantityPrefix, StringComparison.OrdinalIgnoreCase))
             .ToList();
         if (priceCols.Count == 0) return result;
 
@@ -500,6 +534,145 @@ public static class ContractService
             return rows > 0;
         }
         catch (Exception ex) { return false; }
+    }
+
+    // ── 업체별 계약수량 컬럼 보장 ─────────────────────────────────────────────
+    /// <summary>분석항목 목록에 대해 `수량_{항목명}` INT 컬럼을 보장합니다.</summary>
+    public static void EnsureContractQuantityColumns()
+    {
+        var items = GetAnalysisItems();
+        if (items.Count == 0) return;
+
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+        var existing = DbConnectionFactory.GetColumnNames(conn, "계약 DB");
+
+        foreach (var item in items)
+        {
+            var col = QuantityPrefix + item;
+            if (existing.Contains(col)) continue;
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = $"ALTER TABLE `계약 DB` ADD COLUMN IF NOT EXISTS `{col}` INT NULL DEFAULT NULL";
+            try { cmd.ExecuteNonQuery(); }
+            catch { }
+        }
+    }
+
+    // ── 업체별 계약수량 조회 ──────────────────────────────────────────────────
+    /// <summary>업체의 항목별 계약수량을 반환합니다. 키: 항목명(수량_ 제거), 값: 수량 문자열</summary>
+    public static Dictionary<string, string> GetContractQuantities(string companyName)
+    {
+        var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+
+        var allCols = DbConnectionFactory.GetColumnNames(conn, "계약 DB");
+        var qtyCols = allCols
+            .Where(c => c.StartsWith(QuantityPrefix, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+        if (qtyCols.Count == 0) return result;
+
+        var colList = string.Join(", ", qtyCols.Select(c => $"`{c}`"));
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = $"SELECT {colList} FROM `계약 DB` WHERE C_CompanyName=@name LIMIT 1";
+        cmd.Parameters.AddWithValue("@name", companyName);
+        try
+        {
+            using var r = cmd.ExecuteReader();
+            if (r.Read())
+            {
+                for (int i = 0; i < qtyCols.Count; i++)
+                {
+                    var analyte = qtyCols[i].Substring(QuantityPrefix.Length);
+                    result[analyte] = r.IsDBNull(i) ? "" : r.GetValue(i)?.ToString() ?? "";
+                }
+            }
+        }
+        catch { }
+        return result;
+    }
+
+    // ── 업체별 계약수량 저장 ──────────────────────────────────────────────────
+    /// <summary>항목별 계약수량을 일괄 UPDATE합니다. 키: 항목명, 값: 수량 문자열</summary>
+    public static bool UpdateContractQuantities(string companyName, IEnumerable<(string Analyte, string Qty)> quantities)
+    {
+        var list = quantities.ToList();
+        if (list.Count == 0) return false;
+
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+        var existing = DbConnectionFactory.GetColumnNames(conn, "계약 DB");
+
+        var valid = list
+            .Where(q => existing.Contains(QuantityPrefix + q.Analyte))
+            .ToList();
+        if (valid.Count == 0) return false;
+
+        var sets = string.Join(", ", valid.Select((q, i) => $"`{QuantityPrefix}{q.Analyte}`=@q{i}"));
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = $"UPDATE `계약 DB` SET {sets} WHERE C_CompanyName=@name";
+        cmd.Parameters.AddWithValue("@name", companyName);
+        for (int i = 0; i < valid.Count; i++)
+        {
+            var v = valid[i].Qty?.Trim() ?? "";
+            if (int.TryParse(v.Replace(",", ""), out var n))
+                cmd.Parameters.AddWithValue($"@q{i}", n);
+            else
+                cmd.Parameters.AddWithValue($"@q{i}", DBNull.Value);
+        }
+        try { return cmd.ExecuteNonQuery() > 0; }
+        catch { return false; }
+    }
+
+    // ── 업체별 처리수량 조회 (계약기간 내) ──────────────────────────────────
+    /// <summary>분석의뢰및결과 테이블에서 해당 업체의 항목별 처리수량(O 마크)을 조회합니다. 계약기간 내만 집계.</summary>
+    public static Dictionary<string, int> GetProcessedQuantities(string companyName, DateTime? contractStart, DateTime? contractEnd)
+    {
+        var result = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        if (string.IsNullOrWhiteSpace(companyName)) return result;
+
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+
+            // 분석정보의 항목 목록 (Analyte)
+            var analytes = GetAnalysisItems();
+            if (analytes.Count == 0) return result;
+
+            // 각 항목에 대해 의뢰사업장 컬럼에서 "O" 마크 개수 세기
+            foreach (var analyte in analytes)
+            {
+                result[analyte] = 0;
+                try
+                {
+                    // 분석의뢰및결과 테이블에서 해당 업체와 항목의 "O" 마크 개수 조회 (계약기간 필터링)
+                    using var cmd = conn.CreateCommand();
+                    var whereClause = "의뢰사업장=@company AND `" + analyte + "`='O'";
+
+                    // 계약기간이 지정된 경우 날짜 필터 추가
+                    if (contractStart.HasValue)
+                        whereClause += " AND 채수일 >= @start";
+                    if (contractEnd.HasValue)
+                        whereClause += " AND 채수일 <= @end";
+
+                    cmd.CommandText = $"SELECT COUNT(*) FROM `분석의뢰및결과` WHERE {whereClause}";
+                    cmd.Parameters.AddWithValue("@company", companyName);
+                    if (contractStart.HasValue)
+                        cmd.Parameters.AddWithValue("@start", contractStart.Value.ToString("yyyy-MM-dd"));
+                    if (contractEnd.HasValue)
+                        cmd.Parameters.AddWithValue("@end", contractEnd.Value.ToString("yyyy-MM-dd"));
+
+                    var count = cmd.ExecuteScalar();
+                    if (count != null && int.TryParse(count.ToString(), out int c))
+                        result[analyte] = c;
+                }
+                catch { }
+            }
+        }
+        catch { }
+
+        return result;
     }
 
     // ── 공통 파라미터 ─────────────────────────────────────────────────────────

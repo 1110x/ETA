@@ -505,6 +505,41 @@ public static class QuotationService
         catch (Exception ex) { Log($"UpdateIssueAnalytes 오류: {ex.Message}"); return false; }
     }
 
+    // ── 견적 메타정보 수정 (업체명, 약칭, 시료명, 견적번호, 발행일, 적용구분)
+    public static bool UpdateIssueMetadata(int issueId, Dictionary<string, object> updates)
+    {
+        if (updates.Count == 0) return false;
+
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+
+            var setParts = new List<string>();
+            var pvals = new List<(string name, object? value)>();
+            int idx = 0;
+
+            foreach (var (key, value) in updates)
+            {
+                setParts.Add($"`{key}` = @p{idx}");
+                pvals.Add(($"@p{idx}", value));
+                idx++;
+            }
+
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = $"UPDATE `견적발행내역` SET {string.Join(", ", setParts)} WHERE {DbConnectionFactory.RowId} = @id";
+
+            foreach (var (pname, pval) in pvals)
+                cmd.Parameters.AddWithValue(pname, pval ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@id", issueId);
+
+            int rows = cmd.ExecuteNonQuery();
+            Log($"UpdateIssueMetadata issueId={issueId} → {updates.Count} fields, {rows} rows");
+            return rows > 0;
+        }
+        catch (Exception ex) { Log($"UpdateIssueMetadata 오류: {ex.Message}"); return false; }
+    }
+
     private static bool IsNonZero(string? val)
     {
         if (string.IsNullOrWhiteSpace(val)) return false;

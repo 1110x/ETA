@@ -34,7 +34,7 @@
         <!-- ToggleSwitch (측정인 DB / 계약 DB) -->
         <ToggleSwitch Grid.Row="1"
                       x:Name="tglActiveOnly"
-                      IsChecked="False"
+                      IsChecked="True"
                       OnContent="📋 계약 DB"
                       OffContent="📍 측정인 DB"
                       FontFamily="avares://ETA/Assets/Fonts#Pretendard"

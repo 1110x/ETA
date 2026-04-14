@@ -72,25 +72,34 @@
                     <Border Background="{DynamicResource PanelInnerBg}" CornerRadius="5" Padding="12,8">
                         <Grid ColumnDefinitions="*,Auto,*">
 
-                            <!-- 좌: 견적 정보 -->
-                            <Grid Grid.Column="0" ColumnDefinitions="68,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
+                            <!-- 좌: 견적 정보 (편집 가능) -->
+                            <Grid Grid.Column="0" ColumnDefinitions="68,*" RowDefinitions="Auto,Auto,Auto,Auto">
+                                <!-- 업체명 + 약칭 뱃지 (한 줄) -->
                                 <TextBlock Grid.Row="0" Grid.Column="0" Classes="lbl" Text="업체명" />
-                                <TextBlock Grid.Row="0" Grid.Column="1" Classes="val" x:Name="txbCompany" />
+                                <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Spacing="6"
+                                           VerticalAlignment="Center">
+                                    <!-- 약칭 뱃지 (code-behind에서 생성) -->
+                                    <Border x:Name="badgeAbbr" Height="22" CornerRadius="3" Padding="6,2"
+                                           Background="#2a4a4a" BorderThickness="0">
+                                        <TextBlock x:Name="txbAbbr" FontSize="11" FontWeight="Bold"
+                                                  Foreground="#aef0ae" VerticalAlignment="Center"
+                                                  FontFamily="avares://ETA/Assets/Fonts#Pretendard" />
+                                    </Border>
+                                    <!-- 업체명 -->
+                                    <TextBlock x:Name="txbCompany" Classes="val" VerticalAlignment="Center" />
+                                </StackPanel>
 
-                                <TextBlock Grid.Row="1" Grid.Column="0" Classes="lbl" Text="약칭" Margin="0,4,0,0"/>
-                                <TextBlock Grid.Row="1" Grid.Column="1" Classes="val" x:Name="txbAbbr" Margin="0,4,0,0"/>
+                                <!-- 시료명 -->
+                                <TextBlock Grid.Row="1" Grid.Column="0" Classes="lbl" Text="시료명" Margin="0,4,0,0"/>
+                                <TextBox Grid.Row="1" Grid.Column="1" Classes="val" x:Name="txbSampleName" Margin="0,4,0,0"/>
 
-                                <TextBlock Grid.Row="2" Grid.Column="0" Classes="lbl" Text="시료명" Margin="0,4,0,0"/>
-                                <TextBlock Grid.Row="2" Grid.Column="1" Classes="val" x:Name="txbSampleName" Margin="0,4,0,0"/>
+                                <!-- 견적번호 -->
+                                <TextBlock Grid.Row="2" Grid.Column="0" Classes="lbl" Text="견적번호" Margin="0,4,0,0"/>
+                                <TextBox Grid.Row="2" Grid.Column="1" Classes="val" x:Name="txbNo" Margin="0,4,0,0"/>
 
-                                <TextBlock Grid.Row="3" Grid.Column="0" Classes="lbl" Text="견적번호" Margin="0,4,0,0"/>
-                                <TextBlock Grid.Row="3" Grid.Column="1" Classes="val" x:Name="txbNo" Margin="0,4,0,0"/>
-
-                                <TextBlock Grid.Row="4" Grid.Column="0" Classes="lbl" Text="발행일" Margin="0,4,0,0"/>
-                                <TextBlock Grid.Row="4" Grid.Column="1" Classes="val" x:Name="txbDate" Margin="0,4,0,0"/>
-
-                                <TextBlock Grid.Row="5" Grid.Column="0" Classes="lbl" Text="적용구분" Margin="0,4,0,0"/>
-                                <TextBlock Grid.Row="5" Grid.Column="1" Classes="val" x:Name="txbType" Margin="0,4,0,0"/>
+                                <!-- 발행일 -->
+                                <TextBlock Grid.Row="3" Grid.Column="0" Classes="lbl" Text="발행일" Margin="0,4,0,0"/>
+                                <TextBox Grid.Row="3" Grid.Column="1" Classes="val" x:Name="txbDate" Margin="0,4,0,0"/>
                             </Grid>
 
                             <!-- 구분선 -->
@@ -105,11 +114,18 @@
                                            FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                                            Margin="0,0,0,6"/>
 
-                                <!-- 이름 -->
+                                <!-- 이름 (검색 가능한 ComboBox) -->
                                 <Grid ColumnDefinitions="52,*" Margin="0,0,0,4">
                                     <TextBlock Grid.Column="0" Classes="lbl" Text="이름" VerticalAlignment="Center"/>
-                                    <TextBlock Grid.Column="1" Classes="val" x:Name="txbManagerName"
-                                               FontWeight="SemiBold" Foreground="{DynamicResource AppFg}"/>
+                                    <ComboBox Grid.Column="1" x:Name="cmbManagerName"
+                                             FontSize="{DynamicResource FontSizeMD}"
+                                             Foreground="{DynamicResource AppFg}"
+                                             FontFamily="avares://ETA/Assets/Fonts#Pretendard"
+                                             BorderThickness="1"
+                                             Background="Transparent"
+                                             CornerRadius="3"
+                                             Padding="6,4"
+                                             SelectionChanged="CmbManagerName_SelectionChanged" />
                                 </Grid>
 
                                 <!-- 연락처 -->
@@ -169,8 +185,9 @@
         <StackPanel Grid.Row="3" x:Name="spButtons"
                     Orientation="Horizontal" Spacing="8"
                     Margin="0,6,0,0" IsVisible="False">
+            <Button Classes="action-btn" Content="💾  저장"        Click="BtnSave_Click"   ToolTip.Tip="변경 사항 저장" />
             <Button Classes="action-btn" Content="🔄  ReCyle"     Click="BtnCarrot_Click"  ToolTip.Tip="이 건을 재활용해서 신규 작성" />
-            <Button Classes="action-btn" Content="✏️  오작성 수정" Click="BtnCorrect_Click" ToolTip.Tip="시료명·견적번호·발행일·적용구분·업체명 등 잘못된 항목 수정" />
+            <Button Classes="action-btn" Content="✏️  오작성 수정" Click="BtnCorrect_Click" ToolTip.Tip="시료명·견적번호·발행일·업체명 등 잘못된 항목 수정" />
             <Button Classes="action-btn" Content="📋  의뢰서 작성" Click="BtnOrderRequest_Click" ToolTip.Tip="분석 의뢰서 작성" />
             <Button Classes="action-btn" Content="🖨  인쇄"        Click="BtnPrint_Click" />
         </StackPanel>

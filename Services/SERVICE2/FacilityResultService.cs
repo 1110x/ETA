@@ -391,7 +391,7 @@ public static class FacilityResultService
 
     // ── 분석항목 (DB 기반 동적 관리) ────────────────────────────────────
 
-    public record AnalysisItemInfo(int Id, string 항목명, string 컬럼명, int 순서, bool 활성);
+    public record AnalysisItemInfo(int Id, string 항목명, string 컬럼명, int 순서, bool 활성, string AnalyteAlias = "");
 
     private static List<AnalysisItemInfo>? _analysisItemsCache;
 
@@ -405,15 +405,19 @@ public static class FacilityResultService
             {
                 using var conn = DbConnectionFactory.CreateConnection();
                 conn.Open();
+                bool hasAlias = DbConnectionFactory.ColumnExists(conn, "처리시설_분석항목", "analyte_alias");
                 using var cmd = conn.CreateCommand();
-                cmd.CommandText = "SELECT id, 항목명, 컬럼명, 순서, 활성 FROM `처리시설_분석항목` ORDER BY 순서";
+                cmd.CommandText = hasAlias
+                    ? "SELECT id, 항목명, 컬럼명, 순서, 활성, COALESCE(analyte_alias,'') FROM `처리시설_분석항목` ORDER BY 순서"
+                    : "SELECT id, 항목명, 컬럼명, 순서, 활성 FROM `처리시설_분석항목` ORDER BY 순서";
                 using var r = cmd.ExecuteReader();
                 while (r.Read())
                     _analysisItemsCache.Add(new AnalysisItemInfo(
                         r.GetInt32(0), r.GetString(1), r.GetString(2),
-                        Convert.ToInt32(r.GetValue(3)), Convert.ToInt32(r.GetValue(4)) != 0));
+                        Convert.ToInt32(r.GetValue(3)), Convert.ToInt32(r.GetValue(4)) != 0,
+                        hasAlias ? r.GetString(5) : ""));
             }
-            catch (Exception ex) { }
+            catch (Exception ex) { Console.Error.WriteLine($"[GetAnalysisItems] {ex.Message}: {ex}"); }
         }
         return activeOnly
             ? _analysisItemsCache.Where(i => i.활성).ToList()
@@ -500,6 +504,50 @@ public static class FacilityResultService
         SetItemActive(id, false);
     }
 
+    /// <summary>분석항목 이름 변경</summary>
+    public static void RenameAnalysisItem(int id, string newName)
+    {
+        if (string.IsNullOrWhiteSpace(newName)) return;
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "UPDATE `처리시설_분석항목` SET 항목명=@n WHERE id=@id";
+        cmd.Parameters.AddWithValue("@n", newName.Trim());
+        cmd.Parameters.AddWithValue("@id", id);
+        cmd.ExecuteNonQuery();
+        InvalidateItemsCache();
+    }
+
+    /// <summary>분석항목의 파싱 키(analyte_alias) 저장</summary>
+    public static void SaveAnalyteAlias(int id, string alias)
+    {
+        if (string.IsNullOrWhiteSpace(alias)) return;
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "UPDATE `처리시설_분석항목` SET analyte_alias=@a WHERE id=@id";
+            cmd.Parameters.AddWithValue("@a", alias.Trim());
+            cmd.Parameters.AddWithValue("@id", id);
+            var rows = cmd.ExecuteNonQuery();
+            InvalidateItemsCache();
+        }
+        catch (Exception ex) { Console.Error.WriteLine($"[SaveAnalyteAlias] ERROR: {ex.Message}"); }
+    }
+
+    /// <summary>analyte_alias -> 컬럼명(백틱 제거) 딕셔너리 반환 (파싱 저장용)</summary>
+    public static Dictionary<string, string> GetAnalyteAliasMap()
+    {
+        var map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var item in GetAnalysisItems(activeOnly: false))
+        {
+            if (!string.IsNullOrWhiteSpace(item.AnalyteAlias))
+                map[item.AnalyteAlias] = item.컬럼명.Trim('`');
+        }
+        return map;
+    }
+
     /// <summary>분석계획 구조 로딩 (시설 목록 + 시설별 시료 목록, 설정 순서 반영)</summary>
     public static (string[] facilities, Dictionary<string, string[]> samples)
         GetAnalysisPlanStructure()
@@ -540,6 +588,9 @@ public static class FacilityResultService
     {
         var state = new Dictionary<string, List<bool[]>>();
 
+        var cols = PlanDbCols;
+        if (cols.Length == 0) return state;
+
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
@@ -547,7 +598,7 @@ public static class FacilityResultService
         if (dayIdx >= 0)
         {
             cmd.CommandText = $@"
-                SELECT p.시설명, p.시료명, {string.Join(", ", PlanDbCols.Select(c => "p." + c))}
+                SELECT p.시설명, p.시료명, {string.Join(", ", cols.Select(c => "p." + c))}
                 FROM `처리시설_분석계획` p
                 LEFT JOIN `처리시설_설정` s ON s.시설명 = p.시설명
                 WHERE p.요일 = @day
@@ -559,7 +610,7 @@ public static class FacilityResultService
             // 전체: 모든 요일 OR 합산 — MAX로 'O'가 하나라도 있으면 'O'
             cmd.CommandText = $@"
                 SELECT p.시설명, p.시료명,
-                    {string.Join(", ", PlanDbCols.Select(c => $"MAX(p.{c})"))}
+                    {string.Join(", ", cols.Select(c => $"MAX(p.{c})"))}
                 FROM `처리시설_분석계획` p
                 LEFT JOIN `처리시설_설정` s ON s.시설명 = p.시설명
                 GROUP BY p.시설명, p.시료명, s.순서

@@ -25,7 +25,7 @@ public partial class QuotationPage : UserControl
     private List<Contract> _allCompanies = new();
     public List<Contract> Companies => _filteredCompanies;
     private List<Contract> _filteredCompanies = new();
-    private bool _useContractDb = false;   // false = 측정인 DB (기본), true = 계약 DB
+    private bool _useContractDb = true;   // false = 측정인 DB, true = 계약 DB (기본)
 
     public QuotationPage()
     {

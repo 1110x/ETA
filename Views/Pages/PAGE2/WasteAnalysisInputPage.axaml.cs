@@ -282,6 +282,7 @@ public partial class WasteAnalysisInputPage : UserControl
 
     private string? _selectedDate;
     private WasteSample? _selectedSample;
+    private WasteSample? _currentEditSample;  // 현재 편집 중인 샘플
     private List<WasteSample> _currentSamples = new();
 
     // 수동 매칭 팝업용 캐시 (LoadVerifiedGrid에서 설정)
@@ -303,8 +304,10 @@ public partial class WasteAnalysisInputPage : UserControl
     }
 
     private StackPanel? _gridPanel;
+    private StackPanel? _sampleGridPanel;        // LoadSampleGrid의 그리드 패널
     private Dictionary<string, TextBox> _inputBoxes = new();
-    private int _selectedRowIndex = -1;
+    private int _selectedRowIndex = -1;          // Excel 행 인덱스
+    private int _selectedSampleIndex = -1;       // Sample 행 인덱스 (Show2용)
     private List<ExcelRow>? _currentExcelRows;
     private List<Border> _rowIcons = new();
     private List<(Border Track, Border Knob)> _rowToggles = new();
@@ -2261,20 +2264,23 @@ public partial class WasteAnalysisInputPage : UserControl
         var fileName = System.IO.Path.GetFileNameWithoutExtension(path).ToUpperInvariant();
         var detectedKey = fileName switch
         {
-            var n when n.Contains("NHEXAN") || n.Contains("N-HEXAN") || n.Contains("NHEX") => "NHEX",
-            var n when n.Contains("PHENOL") || n.Contains("페놀")                          => "PHENOLS",
+            var n when n.Contains("NHEXAN") || n.Contains("N-HEXAN") || n.Contains("NHEX")
+                    || n.Contains("노말헥산")                                                => "NHEX",
+            var n when n.Contains("PHENOL") || n.Contains("페놀류")                        => "PHENOLS",
             var n when n.Contains("시안") || n.Contains("CN")                               => "CN",
             var n when n.Contains("6가크롬") || n.Contains("CR6") || n.Contains("크롬")     => "CR6",
             var n when n.Contains("색도") || n.Contains("COLOR")                            => "COLOR",
-            var n when n.Contains("ABS") || n.Contains("흡광도")                           => "ABS",
-            var n when n.Contains("불소") || n.Contains("FLUORIDE") || n.Contains("FL")    => "FLUORIDE",
+            var n when n.Contains("ABS") || n.Contains("흡광도") || n.Contains("음이온계면활성제") => "ABS",
+            var n when n.Contains("불소") || n.Contains("FLUORIDE")                        => "FLUORIDE",
             var n when n.Contains("과불화") || n.Contains("PFAS") || n.Contains("PFOA") || n.Contains("PFOS") => "PFAS",
             var n when n.Contains("ECOLI") || n.Contains("대장균")                          => "ECOLI",
-            var n when n.Contains("BOD")                                                     => "BOD",
-            var n when n.Contains("TOC")                                                     => "TOC",
-            var n when n.Contains("SS")                                                      => "SS",
-            var n when n.Contains("T-N") || n.Contains("TN")                                => "TN",
-            var n when n.Contains("T-P") || n.Contains("TP")                                => "TP",
+            var n when n.Contains("생물화학적") || n.Contains("BOD")                        => "BOD",
+            var n when n.Contains("총유기탄소") || n.Contains("총_유기탄소") || n.Contains("유기탄소") || n.Contains("TOC") => "TOC",
+            var n when n.Contains("부유물질") || n.Contains("SS")                           => "SS",
+            var n when n.Contains("총질소") || n.Contains("T-N") || n.Contains("TN")       => "TN",
+            var n when n.Contains("총인") || n.Contains("T-P") || n.Contains("TP")         => "TP",
+            var n when n.Contains("화학적_산소") || n.Contains("화학적산소") || n.Contains("COD") => "COD",
+            var n when n.Contains("수소이온") || n.Contains("PH")                           => "PH",
             var n when n.Contains("GCMS")                                                   => "GCMS",
             var n when n.Contains("ICP")                                                    => "ICP",
             var n when n.Contains("LCMS")                                                   => "LCMS",
@@ -5327,9 +5333,19 @@ public partial class WasteAnalysisInputPage : UserControl
                 e.Handled = true;
                 TopLevel.GetTopLevel(this)?.FocusManager?.ClearFocus(); // 편집 중이면 LostFocus → 커밋
                 bool up = e.Key == Key.Up;
-                int newIdx = _selectedRowIndex + (up ? -1 : 1);
-                SelectGridRow(newIdx);
-                Avalonia.Threading.Dispatcher.UIThread.Post(() => OpenNavEditCell(newIdx));
+
+                // Sample 그리드 모드 (Show2 샘플 데이터)
+                if (_selectedSampleIndex >= 0 || (_currentSamples?.Count > 0 && _selectedRowIndex < 0))
+                {
+                    int newIdx = _selectedSampleIndex + (up ? -1 : 1);
+                    SelectSampleRow(newIdx);
+                    return;
+                }
+
+                // Excel 그리드 모드 (Show2 파서 데이터)
+                int excelIdx = _selectedRowIndex + (up ? -1 : 1);
+                SelectGridRow(excelIdx);
+                Avalonia.Threading.Dispatcher.UIThread.Post(() => OpenNavEditCell(excelIdx));
                 return;
             }
             // Left/Right → 열 전환 후 자동으로 선택된 셀 열기
@@ -5341,12 +5357,14 @@ public partial class WasteAnalysisInputPage : UserControl
                 Avalonia.Threading.Dispatcher.UIThread.Post(() => OpenNavEditCell(_selectedRowIndex));
                 return;
             }
-            // Enter → TextBox 편집 중이면 내부 핸들러(MoveDilFocus)에 위임, 아니면 현재 셀 열기
+            // Enter → TextBox 편집 중이면 내부 핸들러에 위임, 아니면 현재 셀 열기
             if (e.Key == Key.Enter)
             {
                 if (e.Source is TextBox) return; // 내부 Tunnel 핸들러가 다음 행으로 이동 처리
                 e.Handled = true;
-                OpenNavEditCell(_selectedRowIndex);
+                // Excel 그리드: OpenNavEditCell (Sample 그리드는 SelectSampleRow에서 이미 ShowEditForm 호출)
+                if (_selectedRowIndex >= 0)
+                    OpenNavEditCell(_selectedRowIndex);
                 return;
             }
             // 숫자/소수점 → 즉시 편집 시작 + 해당 키를 TextBox에 전달
@@ -5405,9 +5423,16 @@ public partial class WasteAnalysisInputPage : UserControl
             e.Handled = true;
             if (_keyNavShow1) { _keyNavShow1 = false; ClearShow1Focus(); }
             _keyNavShow2 = !_keyNavShow2;
-            if (_keyNavShow2 && _selectedRowIndex < 0 && _currentExcelRows?.Count > 0)
-                SelectGridRow(0);
-            else if (!_keyNavShow2)
+            if (_keyNavShow2)
+            {
+                // Sample 그리드 모드
+                if (_selectedSampleIndex < 0 && _currentSamples?.Count > 0)
+                    SelectSampleRow(0);
+                // Excel 그리드 모드
+                else if (_selectedRowIndex < 0 && _currentExcelRows?.Count > 0)
+                    SelectGridRow(0);
+            }
+            else
                 ClearShow2Focus();
             return;
         }
@@ -5514,12 +5539,29 @@ public partial class WasteAnalysisInputPage : UserControl
 
     private void ClearShow2Focus()
     {
-        // SelectGridRow의 gold shimmer는 다음 SelectGridRow 호출 때 자동 해제됨
-        // 모드 해제 시 현재 선택된 행의 shimmer만 제거
+        // Excel 그리드 선택 해제
         if (_selectedRowIndex >= 0 && _gridPanel != null
             && _selectedRowIndex < _gridPanel.Children.Count
             && _gridPanel.Children[_selectedRowIndex] is Border b)
+        {
             TextShimmer.StopFocus(b);
+            b.Background = null;
+            b.BorderBrush = AppRes("ThemeBorderSubtle");
+            b.BorderThickness = new Thickness(0, 0, 0, 1);
+        }
+        _selectedRowIndex = -1;
+
+        // Sample 그리드 선택 해제
+        if (_selectedSampleIndex >= 0 && _sampleGridPanel != null
+            && _selectedSampleIndex < _sampleGridPanel.Children.Count
+            && _sampleGridPanel.Children[_selectedSampleIndex] is Border sb)
+        {
+            TextShimmer.StopFocus(sb);
+            sb.Background = null;
+            sb.BorderBrush = AppRes("ThemeBorderSubtle");
+            sb.BorderThickness = new Thickness(0, 0, 0, 1);
+        }
+        _selectedSampleIndex = -1;
     }
 
     // ── Shift+R 모드: Show2 행 클릭 시 포커스된 Show1 아이템 적용 ────────
@@ -5658,7 +5700,8 @@ public partial class WasteAnalysisInputPage : UserControl
         Grid.SetRow(header, 0);
         root.Children.Add(header);
 
-        _gridPanel = new StackPanel { Spacing = 0 };
+        _sampleGridPanel = _gridPanel = new StackPanel { Spacing = 0 };
+        _selectedSampleIndex = -1;  // 새로운 그리드 로드 시 선택 초기화
 
         // 엑셀과 동일한 컬럼 헤더 (Detail 모드)
         string[] hLabels;
@@ -5864,7 +5907,8 @@ public partial class WasteAnalysisInputPage : UserControl
                 Child = rGrid, Cursor = new Cursor(StandardCursorType.Hand),
                 BorderBrush = AppRes("ThemeBorderSubtle"), BorderThickness = new Thickness(0,0,0,1),
             };
-            border.PointerPressed += (_, _) => { _selectedSample = s; ShowEditForm(s); };
+            int capturedIdx = i;
+            border.PointerPressed += (_, _) => { SelectSampleRow(capturedIdx); };
             TextShimmer.AttachHover(border);
             _gridPanel.Children.Add(border);
         }
@@ -5874,6 +5918,124 @@ public partial class WasteAnalysisInputPage : UserControl
         Grid.SetRow(scroll, 1);
         root.Children.Add(scroll);
         ListPanelChanged?.Invoke(root);
+    }
+
+    /// <summary>편집 중인 샘플의 입력값을 _selectedSample에 저장</summary>
+    private void CommitSampleEdit()
+    {
+        if (_selectedSample == null || _inputBoxes.Count == 0) return;
+
+        // TextBox 값들을 _selectedSample에 복사
+        foreach (var (key, textBox) in _inputBoxes)
+        {
+            var val = textBox.Text ?? "";
+            // WasteSample 프로퍼티에 값 할당
+            switch (key.ToLower())
+            {
+                case "bod": _selectedSample.BOD = val; break;
+                case "toc": _selectedSample.TOC = val; break;
+                case "ss": _selectedSample.SS = val; break;
+                case "t-n": _selectedSample.TN = val; break;
+                case "t-p": _selectedSample.TP = val; break;
+                case "n-hexan": _selectedSample.NHexan = val; break;
+                case "phenols": _selectedSample.Phenols = val; break;
+                case "시안": _selectedSample.CN = val; break;
+                case "6가크롬": _selectedSample.CR6 = val; break;
+                case "색도": _selectedSample.COLOR = val; break;
+                case "abs": _selectedSample.ABS = val; break;
+                case "불소": _selectedSample.FLUORIDE = val; break;
+            }
+        }
+
+        // DB에 저장
+        try
+        {
+            string colName = GetColumnNameFromCategory();
+            if (!string.IsNullOrEmpty(colName))
+                WasteSampleService.UpdateDynamicValue("폐수의뢰및결과", _selectedSample.Id, colName, GetResultValue());
+        }
+        catch { }
+    }
+
+    /// <summary>현재 카테고리의 결과값 반환</summary>
+    private string GetResultValue()
+    {
+        if (_selectedSample == null) return "";
+        return _activeCategory switch
+        {
+            "BOD" => _selectedSample.BOD,
+            "TOC" => _selectedSample.TOC,
+            "SS" => _selectedSample.SS,
+            "TN" => _selectedSample.TN,
+            "TP" => _selectedSample.TP,
+            "NHEX" => _selectedSample.NHexan,
+            "PHENOLS" => _selectedSample.Phenols,
+            "CN" => _selectedSample.CN,
+            "CR6" => _selectedSample.CR6,
+            "COLOR" => _selectedSample.COLOR,
+            "ABS" => _selectedSample.ABS,
+            "FLUORIDE" => _selectedSample.FLUORIDE,
+            _ => ""
+        };
+    }
+
+    /// <summary>현재 카테고리의 컬럼명 반환</summary>
+    private string GetColumnNameFromCategory()
+    {
+        return _activeCategory switch
+        {
+            "BOD" => "BOD",
+            "TOC" => "`TOC`",
+            "SS" => "SS",
+            "TN" => "`T-N`",
+            "TP" => "`T-P`",
+            "NHEX" => "`N-Hexan`",
+            "PHENOLS" => "Phenols",
+            "CN" => "`시안`",
+            "CR6" => "`6가크롬`",
+            "COLOR" => "`색도`",
+            "ABS" => "`ABS`",
+            "FLUORIDE" => "`불소`",
+            _ => ""
+        };
+    }
+
+    /// <summary>Show2 샘플 그리드에서 행을 선택하고 ShowEditForm 열기</summary>
+    private void SelectSampleRow(int index)
+    {
+        if (_sampleGridPanel == null || _currentSamples == null) return;
+        if (index < 0 || index >= _currentSamples.Count) return;
+
+        // 이전 행의 편집 내용 커밋
+        CommitSampleEdit();
+
+        // 이전 선택 하이라이트 해제
+        if (_selectedSampleIndex >= 0 && _selectedSampleIndex < _sampleGridPanel.Children.Count)
+        {
+            if (_sampleGridPanel.Children[_selectedSampleIndex] is Border prevBorder)
+            {
+                prevBorder.Background = null;
+                prevBorder.BorderBrush = AppRes("ThemeBorderSubtle");
+                prevBorder.BorderThickness = new Thickness(0, 0, 0, 1);
+                if (_keyNavShow2) TextShimmer.StopFocus(prevBorder);
+            }
+        }
+
+        _selectedSampleIndex = index;
+
+        // 새 행 하이라이트
+        if (index < _sampleGridPanel.Children.Count && _sampleGridPanel.Children[index] is Border border)
+        {
+            border.Background = AppRes("ThemeBorderActive");
+            border.BorderBrush = AppRes("BtnPrimaryBg");
+            border.BorderThickness = new Thickness(3, 0, 0, 1);
+            border.BringIntoView();
+            if (_keyNavShow2) TextShimmer.StartFocus(border);
+        }
+
+        var sample = _currentSamples[index];
+        _selectedSample = sample;
+        ShowEditForm(sample);
     }
 
     private static string GetSampleValue(WasteSample s, string item) => item switch
@@ -6009,6 +6171,7 @@ public partial class WasteAnalysisInputPage : UserControl
     {
         _inputBoxes.Clear();
         _currentEditExcelRow = exRow;
+        _currentEditSample = sample;  // WasteSample 편집 추적
         var root = new StackPanel { Spacing = 10, Margin = new Thickness(12) };
 
         var catLabel = Categories.FirstOrDefault(c => c.Key == _activeCategory).Label ?? _activeCategory;
@@ -6936,6 +7099,55 @@ public partial class WasteAnalysisInputPage : UserControl
                 Padding = new Thickness(0, 6, 0, 0),
             });
         }
+        else if (exRow == null && _selectedSample != null)
+        {
+            // ── WasteSample 편집 (Show2 샘플 그리드) ──
+            var resultVal = GetResultValue();
+            var resultInput = FsBase(new TextBox
+            {
+                Text = resultVal, FontFamily = Font,
+                Foreground = AppRes("InputFg"), Background = AppRes("InputBg"),
+                BorderBrush = AppRes("InputBorder"), BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(4), Padding = new Thickness(6, 4),
+                HorizontalAlignment = HorizontalAlignment.Stretch, Watermark = "0.00",
+            });
+
+            resultInput.TextChanged += (_, _) =>
+            {
+                _inputBoxes["Result"] = resultInput;
+            };
+
+            resultInput.KeyDown += (_, e) =>
+            {
+                if (e.Key == Key.Enter)
+                {
+                    e.Handled = true;
+                    CommitSampleEdit();
+                    // 다음 행으로 이동
+                    if (_selectedSampleIndex >= 0 && _selectedSampleIndex < _currentSamples.Count - 1)
+                        SelectSampleRow(_selectedSampleIndex + 1);
+                }
+                else if (e.Key == Key.Up)
+                {
+                    e.Handled = true;
+                    CommitSampleEdit();
+                    if (_selectedSampleIndex > 0)
+                        SelectSampleRow(_selectedSampleIndex - 1);
+                }
+                else if (e.Key == Key.Down)
+                {
+                    e.Handled = true;
+                    CommitSampleEdit();
+                    if (_selectedSampleIndex < _currentSamples.Count - 1)
+                        SelectSampleRow(_selectedSampleIndex + 1);
+                }
+            };
+
+            _inputBoxes["Result"] = resultInput;
+            var colName = Categories.FirstOrDefault(c => c.Key == _activeCategory).Label ?? _activeCategory;
+            root.Children.Add(MakeRow(colName, resultInput, ""));
+            root.Children.Add(new Border { Height = 1, Background = AppRes("ThemeBorderSubtle"), Margin = new Thickness(0, 6) });
+        }
         else
         {
             root.Children.Add(new Border { Height = 1, Background = AppRes("ThemeBorderSubtle"), Margin = new Thickness(0, 6) });
@@ -6950,9 +7162,16 @@ public partial class WasteAnalysisInputPage : UserControl
     /// <summary>Show3 저장 버튼 — ExcelRow만 업데이트, Show2 그리드 갱신 (서버 저장 안함)</summary>
     private void SaveCurrentSample()
     {
-        if (_currentEditExcelRow == null) return;
+        // WasteSample 저장 (Show2 샘플 그리드에서 호출)
+        if (_selectedSample != null && _currentEditExcelRow == null)
+        {
+            CommitSampleEdit();
+            ShowMessage("✅ 저장 완료", false);
+            return;
+        }
 
-        // Show2 그리드 갱신
+        // ExcelRow 저장 (기존 로직)
+        if (_currentEditExcelRow == null) return;
         if (_categoryExcelData.ContainsKey(_activeCategory))
             { /* LoadVerifiedGrid 제거됨 */ }
         BuildStatsPanel();
@@ -8787,7 +9006,8 @@ public partial class WasteAnalysisInputPage : UserControl
 
         if (_activeItems.Length > 0)
         {
-            switch (_activeItems[0])
+            var activeItem = _activeItems[0];
+            switch (activeItem)
             {
                 case "BOD": s.BOD = row.Result; break;
                 case "TOC": s.TOC = row.Result; break;
@@ -8797,7 +9017,7 @@ public partial class WasteAnalysisInputPage : UserControl
                 case "N-Hexan": s.NHexan = row.Result; break;
                 case "Phenols": s.Phenols = row.Result; break;
                 case "시안": s.CN = row.Result; break;
-                case "6가크롬": s.CR6 = row.Result; break;
+                case "6가크롱": s.CR6 = row.Result; break;
                 case "색도": s.COLOR = row.Result; break;
                 case "ABS": s.ABS = row.Result; break;
                 case "불소": s.FLUORIDE = row.Result; break;
@@ -8856,151 +9076,35 @@ public partial class WasteAnalysisInputPage : UserControl
         }
         else if (_activeItems.Length > 0)
         {
-            switch (_activeItems[0])
+            var activeItem = _activeItems[0];
+            var aliasMap = FacilityResultService.GetAnalyteAliasMap();
+            if (aliasMap.TryGetValue(activeItem, out var mappedCol))
             {
-                case "BOD": target.BOD = row.Result; break;
-                case "TOC": target.TOC = row.Result; break;
-                case "SS":  target.SS  = row.Result; break;
-                case "T-N": target.TN  = row.Result; break;
-                case "T-P": target.TP  = row.Result; break;
-                case "N-Hexan": target["N-Hexan"] = row.Result; break;
-                case "Phenols": target["Phenols"] = row.Result; break;
-                case "시안": target["시안"] = row.Result; break;
-                case "6가크롬": target["6가크롬"] = row.Result; break;
-                case "색도": target["색도"] = row.Result; break;
-                case "ABS": target["ABS"] = row.Result; break;
-                case "불소": target["불소"] = row.Result; break;
+                target[mappedCol] = row.Result;
+            }
+            else
+            {
+                switch (activeItem)
+                {
+                    case "BOD": target.BOD = row.Result; break;
+                    case "TOC": target.TOC = row.Result; break;
+                    case "SS":  target.SS  = row.Result; break;
+                    case "T-N": target.TN  = row.Result; break;
+                    case "T-P": target.TP  = row.Result; break;
+                    case "N-Hexan": target["N-Hexan"] = row.Result; break;
+                    case "Phenols": target["Phenols"] = row.Result; break;
+                    case "시안": target["시안"] = row.Result; break;
+                    case "6가크롬": target["6가크롬"] = row.Result; break;
+                    case "색도": target["색도"] = row.Result; break;
+                    case "ABS": target["ABS"] = row.Result; break;
+                    case "불소": target["불소"] = row.Result; break;
+                }
             }
         }
         string user = ETA.Services.Common.CurrentUserManager.Instance.CurrentUserId ?? "";
         FacilityResultService.SaveRows(row.MatchedFacilityName!, docDate, new List<FacilityResultRow> { target }, user);
 
         // 원자료 저장은 ImportData에서 SaveRawData("처리시설") 로 통합
-    }
-
-    private void SaveFacilityRawData(ExcelRow row, FacilityResultRow target, string docDate)
-    {
-        if (string.IsNullOrWhiteSpace(row.Result)) return;
-
-        _categoryDocInfo.TryGetValue(_activeCategory, out var docInfo);
-        string remark = row.원본시료명 ?? "";
-        string mid = target.마스터Id.ToString();
-        string facility = row.MatchedFacilityName ?? "";
-        string sampleName = row.시료명;
-
-        void Upsert(string tableName, Dictionary<string, string> extra) =>
-            FacilityResultService.UpsertFacilityRawData(
-                tableName, target.마스터Id, docDate, facility, sampleName, extra, remark);
-
-        switch (_activeCategory)
-        {
-            case "TOC":
-            {
-                bool isTcic = string.Equals(_tocInstrumentMethod, "TCIC", StringComparison.OrdinalIgnoreCase);
-                string tbl = isTcic ? "처리시설_TOC_TCIC_DATA" : "처리시설_TOC_NPOC_DATA";
-                var tocDict = new Dictionary<string, string>
-                {
-                    ["흡광도"]   = row.D1 ?? "",
-                    ["희석배수"] = string.IsNullOrEmpty(row.P) ? "1" : row.P,
-                    ["검량선_a"] = docInfo?.TocSlope_TC ?? "",
-                    ["농도"]     = row.Fxy ?? "",
-                    ["결과"]     = row.Result,
-                };
-                if (!isTcic) tocDict["시료량"] = ""; // NPOC만 시료량 컬럼 보유
-                Upsert(tbl, tocDict);
-                break;
-            }
-
-            case "BOD":
-                Upsert("처리시설_BOD_DATA", new Dictionary<string, string>
-                {
-                    ["시료량"]    = row.시료량 ?? "",
-                    ["D1"]        = row.D1 ?? "",
-                    ["D2"]        = row.D2 ?? "",
-                    ["희석배수"]  = row.P ?? "",
-                    ["결과"]      = row.Result,
-                    ["식종시료량"] = docInfo?.식종수_시료량 ?? "",
-                    ["식종D1"]    = docInfo?.식종수_D1     ?? "",
-                    ["식종D2"]    = docInfo?.식종수_D2     ?? "",
-                    ["식종BOD"]   = docInfo?.식종수_Result ?? "",
-                    ["식종함유량"] = docInfo?.식종수_Remark ?? "",
-                });
-                break;
-
-            case "SS":
-                Upsert("처리시설_SS_DATA", new Dictionary<string, string>
-                {
-                    ["시료량"]   = row.시료량 ?? "",
-                    ["전무게"]   = row.D1 ?? "",
-                    ["후무게"]   = row.D2 ?? "",
-                    ["무게차"]   = row.Fxy ?? "",
-                    ["희석배수"] = row.P ?? "",
-                    ["결과"]     = row.Result,
-                });
-                break;
-
-            case "TN":
-                Upsert("처리시설_TN_DATA", new Dictionary<string, string>
-                {
-                    ["ST01_mgL"]  = docInfo?.Standard_Points?.ElementAtOrDefault(0) ?? "",
-                    ["ST02_mgL"]  = docInfo?.Standard_Points?.ElementAtOrDefault(1) ?? "",
-                    ["ST03_mgL"]  = docInfo?.Standard_Points?.ElementAtOrDefault(2) ?? "",
-                    ["ST04_mgL"]  = docInfo?.Standard_Points?.ElementAtOrDefault(3) ?? "",
-                    ["ST01_abs"]  = docInfo?.Abs_Values?.ElementAtOrDefault(0) ?? "",
-                    ["ST02_abs"]  = docInfo?.Abs_Values?.ElementAtOrDefault(1) ?? "",
-                    ["ST03_abs"]  = docInfo?.Abs_Values?.ElementAtOrDefault(2) ?? "",
-                    ["ST04_abs"]  = docInfo?.Abs_Values?.ElementAtOrDefault(3) ?? "",
-                    ["기울기"]    = docInfo?.Standard_Slope ?? "",
-                    ["절편"]      = docInfo?.Standard_Intercept ?? "",
-                    ["R2"]        = docInfo?.Abs_R2 ?? "",
-                    ["시료량"]    = row.시료량 ?? "",
-                    ["흡광도"]    = row.D1 ?? "",
-                    ["희석배수"]  = row.D2 ?? "",
-                    ["검량선_a"]  = docInfo?.Standard_Slope ?? "",
-                    ["농도"]      = row.Fxy ?? "",
-                    ["결과"]      = row.Result,
-                });
-                break;
-
-            case "TP":
-                Upsert("처리시설_TP_DATA", new Dictionary<string, string>
-                {
-                    ["ST01_mgL"]  = docInfo?.Standard_Points?.ElementAtOrDefault(0) ?? "",
-                    ["ST02_mgL"]  = docInfo?.Standard_Points?.ElementAtOrDefault(1) ?? "",
-                    ["ST03_mgL"]  = docInfo?.Standard_Points?.ElementAtOrDefault(2) ?? "",
-                    ["ST04_mgL"]  = docInfo?.Standard_Points?.ElementAtOrDefault(3) ?? "",
-                    ["ST01_abs"]  = docInfo?.Abs_Values?.ElementAtOrDefault(0) ?? "",
-                    ["ST02_abs"]  = docInfo?.Abs_Values?.ElementAtOrDefault(1) ?? "",
-                    ["ST03_abs"]  = docInfo?.Abs_Values?.ElementAtOrDefault(2) ?? "",
-                    ["ST04_abs"]  = docInfo?.Abs_Values?.ElementAtOrDefault(3) ?? "",
-                    ["기울기"]    = docInfo?.Standard_Slope ?? "",
-                    ["절편"]      = docInfo?.Standard_Intercept ?? "",
-                    ["R2"]        = docInfo?.Abs_R2 ?? "",
-                    ["시료량"]    = row.시료량 ?? "",
-                    ["흡광도"]    = row.D1 ?? "",
-                    ["희석배수"]  = row.D2 ?? "",
-                    ["검량선_a"]  = docInfo?.Standard_Slope ?? "",
-                    ["농도"]      = row.Fxy ?? "",
-                    ["결과"]      = row.Result,
-                });
-                break;
-
-            case "ECOLI":
-                Upsert("처리시설_총대장균군_DATA", new Dictionary<string, string>
-                {
-                    ["결과"] = row.Result,
-                });
-                break;
-
-            default:
-                // 온도/수소이온농도 등 동적 항목: 항목명 → 처리시설_{항목}_DATA
-                if (!string.IsNullOrEmpty(_activeCategory))
-                {
-                    string tbl = $"처리시설_{_activeCategory}_DATA";
-                    Upsert(tbl, new Dictionary<string, string> { ["결과"] = row.Result });
-                }
-                break;
-        }
     }
 
     /// <summary>서브메뉴 "출력" — 클립보드 복사</summary>

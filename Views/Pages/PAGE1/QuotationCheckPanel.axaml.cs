@@ -11,7 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Linq;
 using ETA.Views;
 
 namespace ETA.Views.Pages.PAGE1;
@@ -36,6 +35,7 @@ public partial class QuotationCheckPanel : UserControl
     // ── 편집 대상 (둘 중 하나만 non-null) ───────────────────────────────
     private AnalysisRequestRecord? _currentAnalysisRecord;
     private QuotationIssue?        _currentIssue;
+    private Contract?              _selectedCompany;  // Show3에서 선택한 업체
 
     public AnalysisRequestRecord? CurrentAnalysisRecord
     {
@@ -56,6 +56,17 @@ public partial class QuotationCheckPanel : UserControl
             _currentIssue          = value;
             _currentAnalysisRecord = null;
             RefreshSaveBar();
+        }
+    }
+
+    /// <summary>Show3에서 선택한 업체</summary>
+    public Contract? SelectedCompany
+    {
+        get => _selectedCompany;
+        set
+        {
+            _selectedCompany = value;
+            LoadData();  // 업체 변경 시 데이터 다시 로드
         }
     }
 
@@ -199,11 +210,82 @@ public partial class QuotationCheckPanel : UserControl
             var itemsStack = new StackPanel { Spacing = 0 };
             itemsPanel.Child = itemsStack;
 
+            // 금액 캐시 (선택된 업체가 있을 경우)
+            var priceDict = new Dictionary<string, decimal>();
+            if (_selectedCompany != null)
+            {
+                try
+                {
+                    priceDict = QuotationService.GetPricesByCompany(_selectedCompany.C_CompanyName);
+                }
+                catch { }
+            }
+
             foreach (var item in group.OrderBy(a => a.ES))
             {
+                // 배지 (약칭 표시 - BadgeHelper.Abbr() 스타일)
+                var (bgColor, fgColor) = BadgeColorHelper.GetBadgeColor(item.약칭);
+                var badge = new Border
+                {
+                    Background = new SolidColorBrush(Color.Parse(bgColor)),
+                    BorderBrush = new SolidColorBrush(Color.Parse(fgColor)),
+                    BorderThickness = new Avalonia.Thickness(1),
+                    CornerRadius = new Avalonia.CornerRadius(10),
+                    Padding = new Avalonia.Thickness(6, 1, 8, 1),
+                    Margin = new Avalonia.Thickness(0, 0, 4, 0),
+                    VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                    Child = new TextBlock
+                    {
+                        Text = string.IsNullOrEmpty(item.약칭) ? "✓" : item.약칭,
+                        FontSize = AppFonts.SM,
+                        FontWeight = FontWeight.Medium,
+                        FontFamily = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+                        Foreground = new SolidColorBrush(Color.Parse(fgColor)),
+                        VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                    }
+                };
+
+                // 금액 조회
+                var priceText = "";
+                if (priceDict.TryGetValue(item.Analyte, out var p))
+                    priceText = $"{p:N0}원";
+
+                // 레이아웃: [배지] 항목명 금액
+                var contentGrid = new Grid
+                {
+                    ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto"),
+                    Margin = new Avalonia.Thickness(0),
+                    VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                };
+
+                var itemNameTb = new TextBlock
+                {
+                    Text = item.Analyte,
+                    FontSize = AppFonts.SM,
+                    Foreground = AppTheme.FgPrimary,
+                    VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                    TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
+                };
+                Grid.SetColumn(itemNameTb, 1);
+
+                var priceTb = new TextBlock
+                {
+                    Text = priceText,
+                    FontSize = AppFonts.XS,
+                    Foreground = AppTheme.FgMuted,
+                    Margin = new Avalonia.Thickness(8, 0, 0, 0),
+                    VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                };
+                Grid.SetColumn(priceTb, 2);
+
+                contentGrid.Children.Add(badge);
+                Grid.SetColumn(badge, 0);
+                contentGrid.Children.Add(itemNameTb);
+                contentGrid.Children.Add(priceTb);
+
                 var cb = new CheckBox
                 {
-                    Content = item.Analyte,
+                    Content = contentGrid,
                     IsChecked = false,
                     Tag = item,
                     FontSize = AppFonts.SM,

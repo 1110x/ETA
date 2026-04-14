@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Input;
 using ETA.Models;
 using ETA.Services;
 using ETA.Services.SERVICE1;
@@ -25,8 +26,11 @@ public partial class QuotationDetailPanel : UserControl
     public  QuotationCheckPanel?  CheckPanel    { get; set; }
     /// <summary>🥕 당근 — 이 건을 재활용해서 신규 작성 (항목 복사, 번호·날짜 신규)</summary>
     public event Action<QuotationIssue>? CarrotRequested;
-    /// <summary>✏️ 오작성 수정 — 시료명·견적번호·발행일·적용구분·업체명 등 메타 수정</summary>
+    /// <summary>✏️ 오작성 수정 — 시료명·견적번호·발행일·적용구분·업체명 등 메타 수정 (더 이상 사용 안 함)</summary>
     public event Action<QuotationIssue>? CorrectRequested;
+
+    private bool _isEditMode = false;
+    private Dictionary<string, Agent> _managerCache = new(StringComparer.OrdinalIgnoreCase);
 
     private static readonly FontFamily Font =
         new("avares://ETA/Assets/Fonts#Pretendard");
@@ -55,7 +59,39 @@ public partial class QuotationDetailPanel : UserControl
             "수량","단가","소계","수량2","단가3","소계4",
         };
 
-    public QuotationDetailPanel() => InitializeComponent();
+    public QuotationDetailPanel()
+    {
+        InitializeComponent();
+        // 담당자 목록 로드
+        LoadManagerList();
+    }
+
+    private async void LoadManagerList()
+    {
+        try
+        {
+            var agents = await Task.Run(() => AgentService.GetAllItems());
+            _managerCache.Clear();
+            foreach (var agent in agents)
+                _managerCache[agent.성명] = agent;
+
+            var names = agents.Select(a => a.성명).Distinct(StringComparer.OrdinalIgnoreCase)
+                              .Where(n => !string.IsNullOrEmpty(n))
+                              .OrderBy(n => n).ToList();
+
+            // UI 업데이트
+            if (cmbManagerName != null)
+            {
+                cmbManagerName.Items.Clear();
+                foreach (var name in names)
+                    cmbManagerName.Items.Add(name);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log($"담당자 목록 로드 오류: {ex.Message}");
+        }
+    }
 
     // ══════════════════════════════════════════════════════════════════════
     //  외부 연동
@@ -67,13 +103,33 @@ public partial class QuotationDetailPanel : UserControl
         spContent.IsVisible = true;
         spButtons.IsVisible = true;
 
-        txbCompany.Text    = issue.업체명;
-        txbAbbr.Text       = issue.약칭;
+        // 업체명/약칭은 읽기 전용 (선택된 업체 정보 반영)
+        if (txbCompany is TextBlock tb1) tb1.Text = issue.업체명;
+        if (txbAbbr is TextBlock tb2)
+        {
+            tb2.Text = issue.약칭;
+            // 약칭 뱃지 배경색을 초성헬퍼로 설정
+            try
+            {
+                var badgeColor = BadgeColorHelper.GetBadgeColor(issue.약칭);
+                if (badgeAbbr is Border b)
+                    b.Background = new SolidColorBrush(Color.Parse(badgeColor.Bg));
+                if (tb2 is TextBlock)
+                    tb2.Foreground = new SolidColorBrush(Color.Parse(badgeColor.Fg));
+            }
+            catch { }
+        }
         txbSampleName.Text = issue.시료명;
         txbNo.Text         = issue.견적번호;
         txbDate.Text       = issue.발행일;
-        txbType.Text       = issue.견적구분;
+
+        // 적용구분은 더 이상 사용하지 않음
+
         txbAmount.Text     = issue.총금액 > 0 ? $"{issue.총금액:#,0} 원" : "—";
+
+        // 읽기 전용 모드로 설정 (편집 불가)
+        _isEditMode = false;
+        SetEditMode(false);
 
         Log($"=== ShowIssue rowid={issue.Id}  {issue.업체명}  {issue.시료명} ===");
 
@@ -98,8 +154,8 @@ public partial class QuotationDetailPanel : UserControl
 
         _cachedRow = row;
 
-        // 담당자 정보
-        txbManagerName.Text  = issue.담당자;
+        // 담당자 정보 설정
+        cmbManagerName.SelectedItem = issue.담당자;
         txbManagerPhone.Text = row.TryGetValue("담당자연락처",  out var ph) ? ph : issue.담당자연락처;
         txbManagerEmail.Text = row.TryGetValue("담당자 e-Mail", out var em) ? em : issue.담당자이메일;
 
@@ -119,9 +175,24 @@ public partial class QuotationDetailPanel : UserControl
         spContent.IsVisible = false;
         spButtons.IsVisible = false;
         spItems.Children.Clear();
-        txbManagerName.Text  = "";
+        cmbManagerName.SelectedItem = null;
         txbManagerPhone.Text = "";
         txbManagerEmail.Text = "";
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  담당자 선택 이벤트
+    // ══════════════════════════════════════════════════════════════════════
+    private void CmbManagerName_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (cmbManagerName.SelectedItem is string selectedName &&
+            _managerCache.TryGetValue(selectedName, out var agent))
+        {
+            // 이메일 자동 입력 (연락처는 Agent에 없음)
+            txbManagerPhone.Text = agent.기타 ?? "";  // 기타 필드를 임시로 사용
+            txbManagerEmail.Text = agent.Email ?? "";
+            Log($"담당자 선택: {selectedName}");
+        }
     }
 
     /// <summary>체크박스 변경 실시간 반영 — 캐시된 행 기반으로 체크된 항목만 표시</summary>
@@ -144,9 +215,16 @@ public partial class QuotationDetailPanel : UserControl
     // ══════════════════════════════════════════════════════════════════════
     //  항목 라인 빌드
     // ══════════════════════════════════════════════════════════════════════
+    private int _selectedItemIndex = -1;
+    private List<(Grid Grid, TextBox QuantityBox)> _itemRows = new();
+    private List<TextBlock> _subtotalBlocks = new();  // 모든 소계 블록 추적
+
     private void BuildItemLines(Dictionary<string, string> row)
     {
         spItems.Children.Clear();
+        _itemRows.Clear();
+        _subtotalBlocks.Clear();
+        _selectedItemIndex = -1;
         bool odd = false;
 
         foreach (var kv in row)
@@ -162,18 +240,103 @@ public partial class QuotationDetailPanel : UserControl
 
             var grid = new Grid
             {
-                ColumnDefinitions = new ColumnDefinitions("*,55,75,80"),
+                ColumnDefinitions = new ColumnDefinitions("*,60,80,80"),  // XAML 헤더와 동일하게
                 Background        = Brush.Parse(odd ? "#1a1a28" : "#1e1e30"),
+                Cursor            = new Cursor(Avalonia.Input.StandardCursorType.Hand),
+                RowDefinitions    = new RowDefinitions("Auto"),
+                Margin            = new Avalonia.Thickness(12, 2, 12, 2),
             };
             odd = !odd;
 
-            grid.Children.Add(Cell(col,             AppFonts.MD,   "#cccccc", 0));
-            grid.Children.Add(Cell(kv.Value,        AppFonts.Base, "#aaaaaa", 1, HorizontalAlignment.Right));
-            grid.Children.Add(Cell(FmtNum(priceStr),AppFonts.Base, "#aaaaaa", 2, HorizontalAlignment.Right));
-            grid.Children.Add(Cell(FmtNum(subStr),  AppFonts.Base, "#88cc88", 3, HorizontalAlignment.Right));
+            // 컬럼 0: 항목명
+            grid.Children.Add(Cell(col, AppFonts.MD, "#cccccc", 0, HorizontalAlignment.Left));
+
+            // 컬럼 1: 수량 (TextBox, 편집 가능)
+            var quantityBox = new TextBox
+            {
+                Text                = kv.Value ?? "",
+                FontSize            = AppFonts.Base,
+                FontFamily          = Font,
+                Foreground          = Brush.Parse("#aaaaaa"),
+                Background          = Brush.Parse("Transparent"),
+                BorderThickness     = new Thickness(0),
+                Margin              = new Avalonia.Thickness(0, 3),
+                HorizontalAlignment = HorizontalAlignment.Right,
+                VerticalAlignment   = VerticalAlignment.Center,
+                Padding             = new Thickness(0),
+            };
+
+            int rowIdx = _itemRows.Count;
+
+            // 컬럼 3: 소계 (동적으로 업데이트되는 TextBlock)
+            var subtotalBlock = new TextBlock
+            {
+                Text                = FmtNum(subStr),
+                FontSize            = AppFonts.Base,
+                FontFamily          = Font,
+                Foreground          = Brush.Parse("#88cc88"),
+                Margin              = new Avalonia.Thickness(0, 3),
+                HorizontalAlignment = HorizontalAlignment.Right,
+                VerticalAlignment   = VerticalAlignment.Center,
+                TextTrimming        = Avalonia.Media.TextTrimming.CharacterEllipsis,
+            };
+            Grid.SetColumn(subtotalBlock, 3);
+
+            // 수량 변경 이벤트: 수량 × 단가 = 소계 자동 계산
+            quantityBox.TextChanged += (_, _) =>
+            {
+                if (int.TryParse(quantityBox.Text, out int qty) &&
+                    decimal.TryParse((priceStr ?? "0").Replace(",", ""), out decimal price))
+                {
+                    // 소계 계산
+                    decimal subtotal = qty * price;
+                    // UI 업데이트
+                    subtotalBlock.Text = subtotal == 0 ? "" : $"{subtotal:#,0}";
+                    // 캐시 업데이트 (나중에 저장할 때 반영)
+                    _cachedRow[col] = qty.ToString();
+                    _cachedRow[col + "소계"] = subtotal.ToString("F0");
+                }
+                else
+                {
+                    subtotalBlock.Text = "";
+                }
+                // 합계 금액 다시 계산
+                UpdateTotalAmount();
+            };
+
+            quantityBox.KeyDown += (_, e) =>
+            {
+                if (e.Key == Avalonia.Input.Key.Up)
+                {
+                    e.Handled = true;
+                    if (rowIdx > 0) SelectItemRow(rowIdx - 1);
+                }
+                else if (e.Key == Avalonia.Input.Key.Down || e.Key == Avalonia.Input.Key.Enter)
+                {
+                    e.Handled = true;
+                    if (rowIdx < _itemRows.Count - 1) SelectItemRow(rowIdx + 1);
+                }
+            };
+
+            Grid.SetColumn(quantityBox, 1);
+            grid.Children.Add(quantityBox);
+
+            // 컬럼 2: 단가
+            grid.Children.Add(Cell(FmtNum(priceStr), AppFonts.Base, "#aaaaaa", 2, HorizontalAlignment.Right));
+
+            // 컬럼 3: 소계 (동적)
+            grid.Children.Add(subtotalBlock);
+            _subtotalBlocks.Add(subtotalBlock);
+
+            int capturedIdx = rowIdx;
+            grid.PointerPressed += (_, _) => SelectItemRow(capturedIdx);
 
             spItems.Children.Add(grid);
+            _itemRows.Add((grid, quantityBox));
         }
+
+        // 초기 합계 금액 계산
+        UpdateTotalAmount();
 
         int cnt = spItems.Children.Count;
         Log($"BuildItemLines → {cnt}행");
@@ -191,6 +354,40 @@ public partial class QuotationDetailPanel : UserControl
         }
     }
 
+    private void UpdateTotalAmount()
+    {
+        decimal total = 0;
+        foreach (var block in _subtotalBlocks)
+        {
+            var text = block.Text ?? "";
+            text = text.Replace("₩", "").Replace(",", "").Trim();
+            if (decimal.TryParse(text, NumberStyles.Any, CultureInfo.InvariantCulture, out var amt))
+                total += amt;
+        }
+        // txbAmount는 XAML의 합계 금액 TextBlock
+        txbAmount.Text = total == 0 ? "" : $"₩{total:#,0}";
+    }
+
+    private void SelectItemRow(int index)
+    {
+        if (index < 0 || index >= _itemRows.Count) return;
+
+        // 이전 선택 해제
+        if (_selectedItemIndex >= 0 && _selectedItemIndex < _itemRows.Count)
+        {
+            var (prevGrid, _) = _itemRows[_selectedItemIndex];
+            prevGrid.Background = Brush.Parse(_selectedItemIndex % 2 == 0 ? "#1a1a28" : "#1e1e30");
+        }
+
+        _selectedItemIndex = index;
+        var (grid, quantityBox) = _itemRows[index];
+
+        // 새 선택 하이라이트
+        grid.Background = Brush.Parse("#2a4a3a");
+        quantityBox.Focus();
+        quantityBox.SelectAll();
+    }
+
     private TextBlock Cell(string text, double size, string color,
                            int col, HorizontalAlignment ha = HorizontalAlignment.Left)
     {
@@ -200,7 +397,7 @@ public partial class QuotationDetailPanel : UserControl
             FontSize            = size,
             FontFamily          = Font,
             Foreground          = Brush.Parse(color),
-            Margin              = new Avalonia.Thickness(10, 3),
+            Margin              = new Avalonia.Thickness(0, 3),
             HorizontalAlignment = ha,
             VerticalAlignment   = VerticalAlignment.Center,
             TextTrimming        = Avalonia.Media.TextTrimming.CharacterEllipsis,
@@ -277,11 +474,59 @@ public partial class QuotationDetailPanel : UserControl
         CarrotRequested?.Invoke(_current);
     }
 
-    // ✏️ 오작성 수정: 시료명·견적번호·발행일·적용구분·업체명 수정
+    // ✏️ 오작성 수정: 직접 편집 or 저장
     private void BtnCorrect_Click(object? sender, RoutedEventArgs e)
     {
         if (_current == null) return;
-        CorrectRequested?.Invoke(_current);
+
+        if (!_isEditMode)
+        {
+            // 편집 모드 활성화
+            _isEditMode = true;
+            SetEditMode(true);
+        }
+        else
+        {
+            // 편집 완료 → DB 저장
+            try
+            {
+                // 업체명/약칭은 업체 정보에서 자동 설정되므로 수정하지 않음
+                _current.시료명 = txbSampleName.Text ?? "";
+                _current.견적번호 = txbNo.Text ?? "";
+                _current.발행일 = txbDate.Text ?? "";
+
+                // DB 업데이트
+                bool ok = QuotationService.UpdateIssueMetadata(_current.Id, new Dictionary<string, object>
+                {
+                    { "시료명", _current.시료명 },
+                    { "견적번호", _current.견적번호 },
+                    { "견적발행일자", _current.발행일 },  // DB 컬럼명
+                });
+
+                if (ok)
+                {
+                    Log($"✅ 오작성 수정: {_current.견적번호}");
+                    _isEditMode = false;
+                    SetEditMode(false);
+                }
+                else
+                {
+                    Log($"❌ 오작성 수정 실패: {_current.견적번호}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Log($"❌ 오작성 수정 오류: {ex.Message}");
+            }
+        }
+    }
+
+    private void SetEditMode(bool enable)
+    {
+        // 업체명/약칭은 TextBlock이므로 항상 읽기 전용
+        txbSampleName.IsReadOnly = !enable;
+        txbNo.IsReadOnly = !enable;
+        txbDate.IsReadOnly = !enable;
     }
 
     /// <summary>의뢰서 편집 패널 전환 요청 — MainPage가 구독</summary>
@@ -318,6 +563,60 @@ public partial class QuotationDetailPanel : UserControl
 
         // MainPage에 편집 패널 전환 요청
         OrderRequestEditRequested?.Invoke(_current, popup.SelectedSamples, quotedItems);
+    }
+
+    // 💾 저장: 수량 및 메타 정보 변경사항 저장
+    private async void BtnSave_Click(object? sender, RoutedEventArgs e)
+    {
+        if (_current == null || _cachedRow.Count == 0) return;
+
+        try
+        {
+            // 현재 rows와 XAML 필드에서 변경사항 수집
+            var updates = new Dictionary<string, object>();
+
+            // 편집된 시료명, 견적번호, 발행일 (필요시)
+            if (_current.시료명 != txbSampleName.Text)
+                updates["시료명"] = txbSampleName.Text ?? "";
+            if (_current.견적번호 != txbNo.Text)
+                updates["견적번호"] = txbNo.Text ?? "";
+            if (_current.발행일 != txbDate.Text)
+                updates["견적발행일자"] = txbDate.Text ?? "";
+
+            // 항목별 수량 저장
+            foreach (var kv in _cachedRow)
+            {
+                var col = kv.Key;
+                if (FixedCols.Contains(col) || col.EndsWith("단가") || col.EndsWith("소계")) continue;
+                updates[col] = kv.Value ?? "";
+                if (_cachedRow.TryGetValue(col + "소계", out var subtotal))
+                    updates[col + "소계"] = subtotal ?? "";
+            }
+
+            if (updates.Count == 0)
+            {
+                Log("💾 변경 사항이 없습니다.");
+                return;
+            }
+
+            bool ok = QuotationService.UpdateIssueMetadata(_current.Id, updates);
+            if (ok)
+            {
+                Log($"✅ 저장 완료: {_current.견적번호} ({updates.Count}개 필드)");
+                // UI 업데이트
+                _current.시료명 = txbSampleName.Text ?? "";
+                _current.견적번호 = txbNo.Text ?? "";
+                _current.발행일 = txbDate.Text ?? "";
+            }
+            else
+            {
+                Log($"❌ 저장 실패: {_current.견적번호}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Log($"❌ 저장 오류: {ex.Message}");
+        }
     }
 
     private void BtnPrint_Click(object? sender, RoutedEventArgs e)

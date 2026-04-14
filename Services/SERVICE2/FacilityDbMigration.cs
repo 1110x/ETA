@@ -61,7 +61,6 @@ public static class FacilityDbMigration
         EnsureAnalysisItems(conn);
         EnsureFacilitySettings(conn);
         EnsureAnalysisPlan(conn);
-        EnsureFacilityTocDataTables(conn);
         EnsureAnalysisRecordTables(conn);
 
         // 생태독성_시험기록부 신규 컬럼 추가 마이그레이션
@@ -152,6 +151,21 @@ public static class FacilityDbMigration
         else
         {
             Log("마이그레이션 이미 완료됨 (wasteresult_v2) — 건너뜀");
+        }
+
+        // analyte_alias 컬럼 추가 (처리시설_분석항목 파싱 키 매핑)
+        if (!IsMigrationDone(conn, "analysis_item_analyte_alias_v1"))
+        {
+            try
+            {
+                if (!DbConnectionFactory.ColumnExists(conn, "처리시설_분석항목", "analyte_alias"))
+                {
+                    Exec(conn, "ALTER TABLE `처리시설_분석항목` ADD COLUMN `analyte_alias` VARCHAR(100) DEFAULT ''");
+                    Log("처리시설_분석항목 analyte_alias 컬럼 추가");
+                }
+                MarkMigrationDone(conn, "analysis_item_analyte_alias_v1");
+            }
+            catch (Exception ex) { Log($"analyte_alias 마이그레이션 실패: {ex.Message}"); }
         }
     }
 
@@ -516,163 +530,6 @@ public static class FacilityDbMigration
             )");
 
         Log("처리시설_측정결과 테이블 생성");
-    }
-
-    // ── 처리시설 *_DATA 원자료 테이블들 ────────────────────────────────────
-    // 기본 키: UNIQUE(마스터_id, 분석일). 배출업소 DATA 테이블과 구조 유사.
-    private static void EnsureFacilityTocDataTables(DbConnection conn)
-    {
-        var ai = DbConnectionFactory.AutoIncrement;
-
-        // 공통 컬럼 블록 생성 헬퍼
-        string Common() => $@"
-            id         INTEGER PRIMARY KEY {ai},
-            마스터_id  INTEGER NOT NULL,
-            분석일     VARCHAR(20) NOT NULL,
-            시설명     VARCHAR(191) DEFAULT '',
-            시료명     VARCHAR(191) DEFAULT '',";
-
-        // 처리시설_BOD_DATA (BOD_DATA 미러)
-        if (!DbConnectionFactory.TableExists(conn, "처리시설_BOD_DATA"))
-        {
-            Exec(conn, $@"
-                CREATE TABLE `처리시설_BOD_DATA` (
-                    {Common()}
-                    시료량      TEXT DEFAULT '',
-                    D1          TEXT DEFAULT '',
-                    D2          TEXT DEFAULT '',
-                    희석배수    TEXT DEFAULT '',
-                    결과        TEXT DEFAULT '',
-                    식종시료량  TEXT DEFAULT '',
-                    식종D1      TEXT DEFAULT '',
-                    식종D2      TEXT DEFAULT '',
-                    식종BOD     TEXT DEFAULT '',
-                    식종함유량  TEXT DEFAULT '',
-                    비고        TEXT DEFAULT '',
-                    등록일시    TEXT DEFAULT '',
-                    UNIQUE(마스터_id, 분석일)
-                )");
-            Log("처리시설_BOD_DATA 테이블 생성");
-        }
-
-        // 처리시설_SS_DATA (SS_DATA 미러)
-        if (!DbConnectionFactory.TableExists(conn, "처리시설_SS_DATA"))
-        {
-            Exec(conn, $@"
-                CREATE TABLE `처리시설_SS_DATA` (
-                    {Common()}
-                    시료량    TEXT DEFAULT '',
-                    전무게    TEXT DEFAULT '',
-                    후무게    TEXT DEFAULT '',
-                    무게차    TEXT DEFAULT '',
-                    희석배수  TEXT DEFAULT '',
-                    결과      TEXT DEFAULT '',
-                    비고      TEXT DEFAULT '',
-                    등록일시  TEXT DEFAULT '',
-                    UNIQUE(마스터_id, 분석일)
-                )");
-            Log("처리시설_SS_DATA 테이블 생성");
-        }
-
-        // 처리시설_TN_DATA / TP_DATA — UvVis 형식 (흡광도/검량선_a/농도)
-        foreach (var tbl in new[] { "처리시설_TN_DATA", "처리시설_TP_DATA" })
-        {
-            if (!DbConnectionFactory.TableExists(conn, tbl))
-            {
-                Exec(conn, $@"
-                    CREATE TABLE `{tbl}` (
-                        {Common()}
-                        ST01_mgL TEXT DEFAULT '', ST02_mgL TEXT DEFAULT '', ST03_mgL TEXT DEFAULT '',
-                        ST04_mgL TEXT DEFAULT '', ST05_mgL TEXT DEFAULT '',
-                        ST01_abs TEXT DEFAULT '', ST02_abs TEXT DEFAULT '', ST03_abs TEXT DEFAULT '',
-                        ST04_abs TEXT DEFAULT '', ST05_abs TEXT DEFAULT '',
-                        기울기   TEXT DEFAULT '',
-                        절편     TEXT DEFAULT '',
-                        R2       TEXT DEFAULT '',
-                        시료량    TEXT DEFAULT '',
-                        흡광도    TEXT DEFAULT '',
-                        희석배수  TEXT DEFAULT '',
-                        검량선_a  TEXT DEFAULT '',
-                        농도      TEXT DEFAULT '',
-                        결과      TEXT DEFAULT '',
-                        비고      TEXT DEFAULT '',
-                        등록일시  TEXT DEFAULT '',
-                        UNIQUE(마스터_id, 분석일)
-                    )");
-                Log($"{tbl} 테이블 생성");
-            }
-            else
-            {
-                // 기존 테이블에 검정곡선 컬럼 추가
-                foreach (var col in new[] {
-                    "ST01_mgL", "ST02_mgL", "ST03_mgL", "ST04_mgL", "ST05_mgL",
-                    "ST01_abs", "ST02_abs", "ST03_abs", "ST04_abs", "ST05_abs",
-                    "기울기", "절편", "R2" })
-                {
-                    if (!DbConnectionFactory.ColumnExists(conn, tbl, col))
-                        try { Exec(conn, $"ALTER TABLE `{tbl}` ADD COLUMN `{col}` TEXT DEFAULT ''"); }
-                        catch { }
-                }
-            }
-        }
-
-        // 처리시설_TOC_NPOC_DATA — UvVis 형식 (시료량 포함)
-        if (!DbConnectionFactory.TableExists(conn, "처리시설_TOC_NPOC_DATA"))
-        {
-            Exec(conn, $@"
-                CREATE TABLE `처리시설_TOC_NPOC_DATA` (
-                    {Common()}
-                    시료량    TEXT DEFAULT '',
-                    흡광도    TEXT DEFAULT '',
-                    희석배수  TEXT DEFAULT '',
-                    검량선_a  TEXT DEFAULT '',
-                    농도      TEXT DEFAULT '',
-                    결과      TEXT DEFAULT '',
-                    비고      TEXT DEFAULT '',
-                    등록일시  TEXT DEFAULT '',
-                    UNIQUE(마스터_id, 분석일)
-                )");
-            Log("처리시설_TOC_NPOC_DATA 테이블 생성");
-        }
-
-        // 처리시설_TOC_TCIC_DATA — TocTcic 형식 (시료량 제외, TC/IC 검량선 컬럼)
-        if (!DbConnectionFactory.TableExists(conn, "처리시설_TOC_TCIC_DATA"))
-        {
-            Exec(conn, $@"
-                CREATE TABLE `처리시설_TOC_TCIC_DATA` (
-                    {Common()}
-                    흡광도    TEXT DEFAULT '',
-                    희석배수  TEXT DEFAULT '',
-                    검량선_a  TEXT DEFAULT '',
-                    농도      TEXT DEFAULT '',
-                    TCAU      TEXT DEFAULT '',
-                    TCcon     TEXT DEFAULT '',
-                    ICAU      TEXT DEFAULT '',
-                    ICcon     TEXT DEFAULT '',
-                    결과      TEXT DEFAULT '',
-                    비고      TEXT DEFAULT '',
-                    등록일시  TEXT DEFAULT '',
-                    UNIQUE(마스터_id, 분석일)
-                )");
-            Log("처리시설_TOC_TCIC_DATA 테이블 생성");
-        }
-
-        // 처리시설_총대장균군_DATA / 온도_DATA / 수소이온농도_DATA — 단순 결과값
-        foreach (var tbl in new[] { "처리시설_총대장균군_DATA", "처리시설_온도_DATA", "처리시설_수소이온농도_DATA" })
-        {
-            if (!DbConnectionFactory.TableExists(conn, tbl))
-            {
-                Exec(conn, $@"
-                    CREATE TABLE `{tbl}` (
-                        {Common()}
-                        결과      TEXT DEFAULT '',
-                        비고      TEXT DEFAULT '',
-                        등록일시  TEXT DEFAULT '',
-                        UNIQUE(마스터_id, 분석일)
-                    )");
-                Log($"{tbl} 테이블 생성");
-            }
-        }
     }
 
     // ── 공개 API: 시험기록부 테이블 일괄 생성 ─────────────────────
@@ -2233,11 +2090,12 @@ public static class FacilityDbMigration
         {
             Exec(conn, $@"
                 CREATE TABLE `처리시설_분석항목` (
-                    id      INTEGER PRIMARY KEY {DbConnectionFactory.AutoIncrement},
-                    항목명  VARCHAR(50) NOT NULL UNIQUE,
-                    컬럼명  VARCHAR(50) NOT NULL,
-                    순서    INTEGER DEFAULT 0,
-                    활성    TINYINT DEFAULT 1
+                    id             INTEGER PRIMARY KEY {DbConnectionFactory.AutoIncrement},
+                    항목명         VARCHAR(50) NOT NULL UNIQUE,
+                    컬럼명         VARCHAR(50) NOT NULL,
+                    순서           INTEGER DEFAULT 0,
+                    활성           TINYINT DEFAULT 1,
+                    analyte_alias  VARCHAR(100) DEFAULT ''
                 )");
             Log("처리시설_분석항목 테이블 생성");
 

@@ -9,6 +9,7 @@ using Avalonia.Threading;
 using Avalonia.VisualTree;
 using ETA.Models;
 using ETA.Services.Common;
+using ETA.Services.SERVICE2;
 using ETA.Services.SERVICE3;
 using ETA.Views;
 using ClosedXML.Excel;
@@ -684,8 +685,49 @@ public partial class MyTaskPage : UserControl
             return;
         }
 
-        // 시설명별 그룹화
-        var byFacility = items.GroupBy(i => i.시설명).OrderBy(g => g.Key);
+        _userAssigned = MyTaskService.GetUserAssignedItems(dateStr, _employeeName);
+        _selectedAnalytesForNote.Clear();
+        foreach (var a in _userAssigned) _selectedAnalytesForNote.Add(a.FullName);
+        foreach (var b in _borrowedAnalytes) _selectedAnalytesForNote.Add(b);
+
+        // 처리시설 분석계획 기준으로 시설/시료 순서를 맞춤
+        var facilityOrder = new Dictionary<string, int>(StringComparer.Ordinal);
+        var sampleOrderByFacility = new Dictionary<string, Dictionary<string, int>>(StringComparer.Ordinal);
+        try
+        {
+            var (facilities, samples) = FacilityResultService.GetAnalysisPlanStructure();
+            for (int i = 0; i < facilities.Length; i++)
+                facilityOrder[facilities[i]] = i;
+
+            foreach (var kv in samples)
+            {
+                sampleOrderByFacility[kv.Key] = kv.Value
+                    .Select((name, idx) => new { name, idx })
+                    .ToDictionary(x => x.name, x => x.idx, StringComparer.Ordinal);
+            }
+        }
+        catch { }
+
+        // Show3 하단에 표시된 내 담당항목 기준으로 표시할 샘플 목록 필터
+        var assignedAnalytes = _userAssigned.Select(x => x.FullName)
+            .Concat(_borrowedAnalytes)
+            .Concat(_myExtraItems)
+            .Where(x => !string.IsNullOrEmpty(x))
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        if (assignedAnalytes.Count == 0)
+        {
+            items = new List<FacilityWorkItem>();
+        }
+        else
+        {
+            var validKeys = GetFacilitySamplesForAssignedAnalytes(dateStr, assignedAnalytes);
+            items = items.Where(i => validKeys.Contains((i.시설명, i.시료명))).ToList();
+        }
+
+        var byFacility = items.GroupBy(i => i.시설명)
+            .OrderBy(g => facilityOrder.TryGetValue(g.Key, out var idx) ? idx : int.MaxValue)
+            .ThenBy(g => g.Key);
 
         foreach (var grp in byFacility)
         {
@@ -704,18 +746,67 @@ public partial class MyTaskPage : UserControl
             });
             var grpNode = new TreeViewItem { Header = grpHeader, IsExpanded = true };
 
-            foreach (var fi in grp)
+            var orderMap = sampleOrderByFacility.TryGetValue(grp.Key, out var map) ? map : null;
+            foreach (var fi in grp.OrderBy(fi => orderMap != null && orderMap.TryGetValue(fi.시료명, out var idx) ? idx : int.MaxValue)
+                .ThenBy(fi => fi.시료명))
+            {
                 grpNode.Items.Add(MakeFacilityNode(fi));
+            }
 
             TaskTreeView.Items.Add(grpNode);
         }
 
-        // Show3 — 담당항목 체크리스트 초기화
-        _userAssigned = MyTaskService.GetUserAssignedItems(dateStr, _employeeName);
-        _selectedAnalytesForNote.Clear();
-        foreach (var a in _userAssigned) _selectedAnalytesForNote.Add(a.FullName);
-        foreach (var b in _borrowedAnalytes) _selectedAnalytesForNote.Add(b);
         EditPanelChanged?.Invoke(BuildUserAssignedPanel());
+    }
+
+    private HashSet<(string 시설명, string 시료명)> GetFacilitySamplesForAssignedAnalytes(string dateStr, HashSet<string> assignedAnalytes)
+    {
+        var result = new HashSet<(string 시설명, string 시료명)>();
+        if (assignedAnalytes.Count == 0) return result;
+
+        if (!DateTime.TryParse(dateStr, out var dt)) return result;
+        int planDay = ((int)dt.DayOfWeek + 6) % 7; // 월=0..일=6
+
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            var cols = FacilityResultService.PlanDbCols.Select(c => c.Trim()).ToArray();
+            var colList = string.Join(", ", cols.Select(c => $"p.`{c.Replace("`", "")}`"));
+            cmd.CommandText = $@"
+                SELECT p.시설명, p.시료명, {colList}
+                FROM `처리시설_분석계획` p
+                WHERE p.요일 = @day";
+            cmd.Parameters.AddWithValue("@day", planDay);
+
+            using var rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                string facility = rdr.IsDBNull(0) ? "" : rdr.GetString(0);
+                string sample   = rdr.IsDBNull(1) ? "" : rdr.GetString(1);
+                if (string.IsNullOrEmpty(facility) || string.IsNullOrEmpty(sample)) continue;
+
+                for (int i = 0; i < cols.Length; i++)
+                {
+                    var colName = cols[i];
+                    if (string.IsNullOrEmpty(colName)) continue;
+                    int ordinal = i + 2;
+                    if (ordinal >= rdr.FieldCount) continue;
+                    if (rdr.IsDBNull(ordinal)) continue;
+                    string val = rdr.GetValue(ordinal)?.ToString()?.Trim() ?? "";
+                    if (!val.StartsWith("O", StringComparison.OrdinalIgnoreCase)) continue;
+                    if (assignedAnalytes.Contains(colName))
+                    {
+                        result.Add((facility, sample));
+                        break;
+                    }
+                }
+            }
+        }
+        catch { }
+
+        return result;
     }
 
     private TreeViewItem MakeFacilityNode(FacilityWorkItem fi)
@@ -1055,8 +1146,16 @@ public partial class MyTaskPage : UserControl
                 };
                 removeBtn.Click += (_, _) =>
                 {
-                    if (isExtra) _myExtraItems.Remove(aLocal.FullName);
-                    else _removedBaseItems.Add(aLocal.FullName);
+                    if (isExtra)
+                    {
+                        _myExtraItems.Remove(aLocal.FullName);
+                        if (_activeCategory == "처리시설")
+                            RefreshTree();
+                    }
+                    else
+                    {
+                        _removedBaseItems.Add(aLocal.FullName);
+                    }
                     EditPanelChanged?.Invoke(BuildMyItemsPanel());
                     StatsPanelChanged?.Invoke(BuildOthersItemsPanel());
                 };
@@ -1144,6 +1243,8 @@ public partial class MyTaskPage : UserControl
                     _myExtraItems.Add(aLocal.FullName);
                     EditPanelChanged?.Invoke(BuildMyItemsPanel());
                     StatsPanelChanged?.Invoke(BuildOthersItemsPanel());
+                    if (_activeCategory == "처리시설")
+                        RefreshTree();
                 };
                 row2.Children.Add(addBtn);
             }
@@ -1584,6 +1685,8 @@ public partial class MyTaskPage : UserControl
                     _selectedAnalytesForNote.Add(aName);
                     StatsPanelChanged?.Invoke(BuildAnalyteListPanel());
                     EditPanelChanged?.Invoke(BuildUserAssignedPanel());
+                    if (_activeCategory == "처리시설")
+                        RefreshTree();
                 };
             }
         }

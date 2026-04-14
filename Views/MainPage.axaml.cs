@@ -111,7 +111,9 @@ public partial class MainPage : Window
     // facility → bool[sampleCount][itemCount]
     private readonly Dictionary<string, List<bool[]>> _facilityPlanState = new();
     private int _analysisPlanSelectedDay = -1; // -1=전체, 0=월..6=일, -2=BASE
-
+    private string? _selectedAnalysisInfoForMapping;
+    private int _pendingMappingItemIndex = -1;
+    private string _pendingMappingItemName = "";
 
     public MainPage()
     {
@@ -3070,13 +3072,13 @@ public partial class MainPage : Window
         else
             Show3.Content = null;
         LogContentChange("Show3", Show3.Content as Control);
-        Show4.Content = null;
-        LogContentChange("Show4", null);
+        Show4.Content = BuildAnalysisInfoMappingPanel();
+        LogContentChange("Show4", Show4.Content as Control);
 
         _bt1SaveAction = SaveAnalysisPlanWithProgress;
         SetSubMenu("저장", "월", "화", "수", "목", "금", "토", "일", "BASE");
         SetLeftPanelWidth(200);
-        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 8, lowerStar: 2);
+        SetContentLayout(content2Star: 1, content4Star: 1, upperStar: 8, lowerStar: 2);
         RestoreModeLayout("AnalysisPlan");
     }
 
@@ -3360,6 +3362,123 @@ public partial class MainPage : Window
 
     // ── 저장 (프로그레스바 포함) ─────────────────────────────────────────
     // ── Show4: 분석항목 편집 패널 ─────────────────────────────────────────
+    // ── DB 분석정보에서 분석항목 조회 ────────────────────────────────────────
+    private List<string> GetDbAnalysisItems()
+    {
+        var items = new List<string>();
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT `Analyte` FROM `분석정보` WHERE `Analyte` IS NOT NULL AND `Analyte` <> '' ORDER BY `Category`, `_id`";
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                var analyte = reader[0]?.ToString();
+                if (!string.IsNullOrWhiteSpace(analyte))
+                    items.Add(analyte);
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[분석정보 조회 오류] {ex.Message}");
+        }
+        return items;
+    }
+
+    // ── Show4: DB 분석정보 매칭 패널 ───────────────────────────────────────
+    private Control BuildDbAnalysisInfoPanel()
+    {
+        var font = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
+        var dbItems = GetDbAnalysisItems();
+
+        var stack = new StackPanel { Spacing = 8, Margin = new Thickness(16) };
+        stack.Children.Add(new TextBlock
+        {
+            Text = "분석정보 관리", FontFamily = font, FontWeight = FontWeight.SemiBold,
+            Foreground = AppTheme.FgPrimary, FontSize = 15,
+        });
+
+        // ── DB 분석항목 리스트 (클릭하면 매칭) ────────────────────────────
+        var listStack = new StackPanel { Spacing = 2 };
+        var listScroll = new ScrollViewer
+        {
+            Content = listStack, MaxHeight = 400,
+            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+        };
+
+        foreach (var analyte in dbItems)
+        {
+            var border = new Border
+            {
+                Background = (!string.IsNullOrEmpty(_selectedAnalysisInfoForMapping) && analyte == _selectedAnalysisInfoForMapping)
+                    ? AppTheme.BgActiveBlue
+                    : AppTheme.BgCard,
+                BorderBrush = AppTheme.BorderSubtle,
+                BorderThickness = new Thickness(1),
+                Padding = new Thickness(8, 6),
+                MinHeight = 32,
+                Cursor = new Cursor(StandardCursorType.Hand),
+                Tag = analyte,
+            };
+
+            var tb = new TextBlock
+            {
+                Text = analyte, FontFamily = font,
+                Foreground = string.IsNullOrEmpty(_selectedAnalysisInfoForMapping)
+                    ? AppTheme.FgPrimary
+                    : (analyte == _selectedAnalysisInfoForMapping ? AppTheme.FgSuccess : AppTheme.FgPrimary),
+                VerticalAlignment = VerticalAlignment.Center,
+            };
+            border.Child = tb;
+
+            var capturedAnalyte = analyte;
+            var capturedBorder = border;
+            border.PointerPressed += (_, _) =>
+            {
+                if (_pendingMappingItemIndex >= 0)
+                {
+                    SaveAliasByIndex(_pendingMappingItemIndex, capturedAnalyte);
+                    _selectedAnalysisInfoForMapping = null;
+                    _pendingMappingItemIndex = -1;
+                    Show4.Content = null;
+                    return;
+                }
+                _selectedAnalysisInfoForMapping = capturedAnalyte;
+                Show4.Content = BuildDbAnalysisInfoPanel();
+            };
+
+            listStack.Children.Add(border);
+        }
+        stack.Children.Add(listScroll);
+
+        // ── 상태 표시 ────────────────────────────────────────────────────
+        var statusRow = new Border
+        {
+            Background = AppTheme.BgInput,
+            BorderBrush = AppTheme.BorderDefault,
+            BorderThickness = new Thickness(1),
+            Padding = new Thickness(8, 6),
+            Margin = new Thickness(0, 8, 0, 0),
+        };
+
+        var statusTb = new TextBlock
+        {
+            Text = string.IsNullOrEmpty(_selectedAnalysisInfoForMapping)
+                ? "분석항목을 선택하세요"
+                : $"선택됨: {_selectedAnalysisInfoForMapping}",
+            FontFamily = font,
+            Foreground = AppTheme.FgSecondary,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        statusRow.Child = statusTb;
+        stack.Children.Add(statusRow);
+
+        return stack;
+    }
+
+    // ── 기존 분석항목 편집 패널 (비활성) ──────────────────────────────────────
     private Control BuildAnalysisItemEditorPanel()
     {
         var font = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
@@ -3368,8 +3487,8 @@ public partial class MainPage : Window
         var stack = new StackPanel { Spacing = 8, Margin = new Thickness(16) };
         stack.Children.Add(new TextBlock
         {
-            Text = "분석항목 관리", FontFamily = font, FontWeight = FontWeight.SemiBold,
-            Foreground = AppTheme.FgPrimary, FontSize = 15,
+            Text = "분석항목 관리 (비활성)", FontFamily = font, FontWeight = FontWeight.SemiBold,
+            Foreground = AppTheme.FgDimmed, FontSize = 15,
         });
 
         // ── 항목 리스트 (체크박스 + 이름 + 순서 버튼) ──────────────────
@@ -3610,7 +3729,9 @@ public partial class MainPage : Window
         // 컬럼 정의: 시료명(160) + 항목 12개(각 58)
         const int firstColW = 160;
         const int itemColW  = 58;
-        string colDef = firstColW + "," + string.Join(",", Enumerable.Repeat(itemColW, _analysisPlanItems.Length));
+        string colDef = _analysisPlanItems.Length > 0
+            ? firstColW + "," + string.Join(",", Enumerable.Repeat(itemColW, _analysisPlanItems.Length))
+            : firstColW.ToString();
 
         var root = new Grid { RowDefinitions = new RowDefinitions("Auto,*") };
 
@@ -3640,9 +3761,35 @@ public partial class MainPage : Window
                     Margin = new Thickness(2, 4),
                 }.BindXS(),
             };
+            DragDrop.SetAllowDrop(hdrBorder, true);
+            hdrBorder.AddHandler(DragDrop.DragOverEvent, (object? s, DragEventArgs e) =>
+            {
+                e.DragEffects = e.Data?.Contains("analysisinfo-item") == true ? DragDropEffects.Move : DragDropEffects.None;
+                e.Handled = true;
+            });
+            hdrBorder.AddHandler(DragDrop.DropEvent, (object? s, DragEventArgs e) =>
+            {
+                if (e.Data?.Contains("analysisinfo-item") != true) return;
+                var analysisInfo = e.Data.Get("analysisinfo-item") as string;
+                if (!string.IsNullOrWhiteSpace(analysisInfo))
+                    MapAnalysisPlanItemToAnalysisInfo(i, analysisInfo);
+                _selectedAnalysisInfoForMapping = null;
+                e.Handled = true;
+            });
             hdrBorder.PointerPressed += (_, _) =>
             {
-                Show4.Content = BuildAnalysisItemEditorPanel();
+                if (!string.IsNullOrEmpty(_selectedAnalysisInfoForMapping))
+                {
+                    SaveAliasByIndex(_pendingMappingItemIndex, _selectedAnalysisInfoForMapping);
+                    _selectedAnalysisInfoForMapping = null;
+                    _pendingMappingItemIndex = -1;
+                    Show4.Content = null;
+                    return;
+                }
+
+                _pendingMappingItemIndex = i;
+                _pendingMappingItemName = itemName;
+                Show4.Content = BuildDbAnalysisInfoPanel();
                 LogContentChange("Show4", Show4.Content as Control);
                 SetContentLayout(content2Star: 1, content4Star: 1, upperStar: 6, lowerStar: 4);
             };
@@ -3770,6 +3917,37 @@ public partial class MainPage : Window
                     };
                     handle.PointerReleased += (_, _) => { pressPos = null; dragStarted = false; };
                     nameRow.Children.Add(handle);
+
+                    // ✕ 삭제 버튼 (전체 뷰에서만)
+                    var deleteBtn = new Button
+                    {
+                        Content = "✕",
+                        FontSize = 14,
+                        Foreground = AppTheme.FgMuted,
+                        Background = Brushes.Transparent,
+                        BorderThickness = new Thickness(0),
+                        Padding = new Thickness(4, 0),
+                        VerticalAlignment = VerticalAlignment.Center,
+                        Cursor = new Cursor(StandardCursorType.Hand),
+                    };
+                    deleteBtn.Click += (_, _) =>
+                    {
+                        try
+                        {
+                            using var conn = DbConnectionFactory.CreateConnection();
+                            conn.Open();
+                            using var cmd = conn.CreateCommand();
+                            cmd.CommandText = $"DELETE FROM `처리시설_분석계획` WHERE 시설명=@f AND 시료명=@s";
+                            cmd.Parameters.AddWithValue("@f", facility);
+                            cmd.Parameters.AddWithValue("@s", sampleName);
+                            cmd.ExecuteNonQuery();
+                            // UI 새로고침
+                            Show2.Content = BuildAnalysisPlanPanel();
+                            LogContentChange("Show2", Show2.Content as Control);
+                        }
+                        catch (Exception ex) { Debug.WriteLine($"시료명 삭제 실패: {ex.Message}"); }
+                    };
+                    nameRow.Children.Add(deleteBtn);
                 }
 
                 // 시료명 편집 TextBox
@@ -3827,7 +4005,24 @@ public partial class MainPage : Window
                     HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment   = VerticalAlignment.Center,
                 };
-                cb.IsCheckedChanged += (_, _) => checks[itemIdx] = cb.IsChecked == true;
+                cb.IsCheckedChanged += (_, _) =>
+                {
+                    checks[itemIdx] = cb.IsChecked == true;
+                    if (isBaseMode)
+                    {
+                        try
+                        {
+                            FacilityResultService.ApplyBaseToAllDays(facility, new[] { sampleName }, new List<bool[]> { checks });
+                            // BASE 모드에서는 즉시 DB 반영 후 UI를 다시 그려서 일괄 변경이 확실히 보이도록 함
+                            Show2.Content = BuildAnalysisPlanPanel();
+                            LogContentChange("Show2", Show2.Content as Control);
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine($"BASE 모드 즉시 반영 실패: {ex.Message}");
+                        }
+                    }
+                };
                 Grid.SetColumn(cb, itemIdx + 1);
                 rowGrid.Children.Add(cb);
             }
@@ -3943,7 +4138,193 @@ public partial class MainPage : Window
         }
         catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"[LoadAnalysisPlanFromDb] {ex.Message}");
         }
+    }
+
+    private void MapAnalysisPlanItemToAnalysisInfo(int itemIndex, string analysisInfoName)
+    {
+        var items = FacilityResultService.GetAnalysisItems(activeOnly: true);
+        if (itemIndex < 0 || itemIndex >= items.Count) return;
+
+        var targetItem = items[itemIndex];
+        if (targetItem.항목명 == analysisInfoName) return;
+
+        FacilityResultService.RenameAnalysisItem(targetItem.Id, analysisInfoName);
+        _analysisPlanItems = FacilityResultService.AnalysisPlanItemNames;
+        Show2.Content = BuildAnalysisPlanPanel();
+        Show4.Content = BuildAnalysisInfoMappingPanel();
+        LogContentChange("Show2", Show2.Content as Control);
+        LogContentChange("Show4", Show4.Content as Control);
+    }
+
+    private void SaveAliasByIndex(int itemIndex, string analyteAlias)
+    {
+        var targetName = !string.IsNullOrEmpty(_pendingMappingItemName)
+            ? _pendingMappingItemName
+            : (itemIndex >= 0 && itemIndex < _analysisPlanItems.Length ? _analysisPlanItems[itemIndex] : null);
+        if (string.IsNullOrEmpty(targetName)) return;
+        var allItems = FacilityResultService.GetAnalysisItems(activeOnly: false);
+        var item = allItems.FirstOrDefault(x => x.항목명 == targetName);
+        if (item == null) return;
+        FacilityResultService.SaveAnalyteAlias(item.Id, analyteAlias);
+    }
+
+    private Control BuildAnalysisInfoMappingPanel()
+    {
+        var font = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
+        var analytes = AnalysisRequestService.GetOrderedAnalytes();
+
+        var stack = new StackPanel { Spacing = 10, Margin = new Thickness(16) };
+        stack.Children.Add(new TextBlock
+        {
+            Text = "분석정보 항목 매핑",
+            FontFamily = font,
+            FontWeight = FontWeight.SemiBold,
+            Foreground = AppTheme.FgPrimary,
+            FontSize = 16,
+        });
+        stack.Children.Add(new TextBlock
+        {
+            Text = "Show2의 처리시설 분석계획 컬럼 헤더에 분석정보 항목을 드래그하여 매핑하세요."
+                 + " 컬럼명은 유지되며 표시명은 분석정보 기준으로 갱신됩니다.",
+            FontFamily = font,
+            Foreground = AppTheme.FgMuted,
+            TextWrapping = TextWrapping.Wrap,
+        });
+
+        var searchBox = new TextBox
+        {
+            Watermark = "분석정보 항목 검색...",
+            FontFamily = font,
+            Height = 32,
+            Margin = new Thickness(0, 6, 0, 0),
+            BorderThickness = new Thickness(1),
+            BorderBrush = AppTheme.BorderDefault,
+            Background = AppTheme.BgPrimary,
+            Foreground = AppTheme.FgPrimary,
+        };
+
+        var listStack = new StackPanel { Spacing = 2 };
+        void RefreshList()
+        {
+            listStack.Children.Clear();
+            var query = searchBox.Text?.Trim().ToLower() ?? "";
+            foreach (var (fullName, alias) in analytes)
+            {
+                if (!string.IsNullOrEmpty(query) && !fullName.ToLower().Contains(query) && !alias.ToLower().Contains(query))
+                    continue;
+
+                var label = fullName;
+                if (!string.IsNullOrWhiteSpace(alias) && alias != fullName)
+                    label += $" ({alias})";
+
+                var row = new Border
+                {
+                    Background = AppTheme.BgSecondary,
+                    CornerRadius = new CornerRadius(6),
+                    Padding = new Thickness(10, 8),
+                    Cursor = new Cursor(StandardCursorType.Hand),
+                };
+                var rowText = new TextBlock
+                {
+                    Text = label,
+                    FontFamily = font,
+                    Foreground = AppTheme.FgPrimary,
+                    TextWrapping = TextWrapping.Wrap,
+                };
+                row.Child = rowText;
+                row.Tag = fullName;
+
+                Point? pressPos = null;
+                bool dragStarted = false;
+                row.PointerPressed += (_, e) =>
+                {
+                    if (!e.GetCurrentPoint(row).Properties.IsLeftButtonPressed) return;
+                    pressPos = e.GetCurrentPoint(row).Position;
+                    _selectedAnalysisInfoForMapping = fullName;
+                    RefreshSelectionVisuals();
+                    e.Handled = true;
+                };
+
+                row.PointerMoved += async (_, e) =>
+                {
+                    if (pressPos == null || dragStarted) return;
+                    if (!e.GetCurrentPoint(row).Properties.IsLeftButtonPressed) { pressPos = null; return; }
+                    var diff = e.GetCurrentPoint(row).Position - pressPos.Value;
+                    if (Math.Abs(diff.X) > 8 || Math.Abs(diff.Y) > 8)
+                    {
+                        dragStarted = true;
+                        pressPos = null;
+                        var data = new DataObject();
+                        data.Set("analysisinfo-item", fullName);
+                        await DragDrop.DoDragDrop(e, data, DragDropEffects.Move);
+                        dragStarted = false;
+                    }
+                };
+                row.PointerReleased += (_, _) => { pressPos = null; dragStarted = false; };
+                row.PointerPressed += (_, e) => pressPos = e.GetCurrentPoint(row).Position;
+
+                listStack.Children.Add(row);
+            }
+        }
+
+        var selectedInfoText = new TextBlock
+        {
+            Text = "선택된 항목: 없음",
+            FontFamily = font,
+            Foreground = AppTheme.FgMuted,
+            Margin = new Thickness(0, 8, 0, 0),
+            TextWrapping = TextWrapping.Wrap,
+        };
+
+        void UpdateSelectedInfoText()
+        {
+            selectedInfoText.Text = string.IsNullOrEmpty(_selectedAnalysisInfoForMapping)
+                ? "선택된 항목: 없음"
+                : $"선택된 항목: {_selectedAnalysisInfoForMapping} (헤더 클릭 시 매핑)";
+        }
+
+        void RefreshSelectionVisuals()
+        {
+            foreach (var child in listStack.Children.OfType<Border>())
+            {
+                if (child.Tag is string tag && tag == _selectedAnalysisInfoForMapping)
+                {
+                    child.Background = AppTheme.BgActiveBlue;
+                }
+                else
+                {
+                    child.Background = AppTheme.BgCard;
+                }
+            }
+            UpdateSelectedInfoText();
+        }
+
+        searchBox.TextChanged += (_, _) => RefreshList();
+        RefreshList();
+
+        stack.Children.Add(searchBox);
+        stack.Children.Add(selectedInfoText);
+
+        UpdateSelectedInfoText();
+
+        stack.Children.Add(new ScrollViewer
+        {
+            Content = listStack,
+            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+            MaxHeight = 520,
+        });
+
+        RefreshSelectionVisuals();
+
+        return new Border
+        {
+            Background = AppTheme.BgPrimary,
+            BorderBrush = AppTheme.BorderSubtle,
+            BorderThickness = new Thickness(0, 0, 0, 1),
+            Child = stack,
+        };
     }
 
     /// <summary>현재 선택된 시설의 체크 상태를 DB에 저장</summary>
@@ -4017,15 +4398,27 @@ public partial class MainPage : Window
                 Show2.Content = panel;
                 LogContentChange("Show2", panel);
             };
-            _contractPage.PricePanelChanged += panel =>
+            _contractPage.DetailPanelChanged += panel =>
+            {
+                Show2.Content = panel;
+                LogContentChange("Show2", panel);
+            };
+            _contractPage.EditPanelChanged += panel =>
             {
                 Show3.Content = panel;
                 LogContentChange("Show3", panel);
             };
+            _contractPage.StatsPanelChanged += panel =>
+            {
+                Show4.Content = panel;
+                LogContentChange("Show4", panel);
+            };
         }
 
-        // 최초 진입 시 분석단가 컬럼 보장 (없는 컬럼 자동 추가)
+        // 최초 진입 시 단가·수량 컬럼 보장 (없는 컬럼 자동 추가)
         try { ContractService.EnsureContractPriceColumns(); }
+        catch (Exception ex) { }
+        try { ContractService.EnsureContractQuantityColumns(); }
         catch (Exception ex) { }
 
         Show1.Content = _contractPage;
@@ -4041,8 +4434,8 @@ public partial class MainPage : Window
 
         SetSubMenu("저장", "새로고침", "업체 추가", "선택 삭제", "Excel 가져오기", "인쇄", "설정");
         SetLeftPanelWidth(350);
-        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 7, lowerStar: 3);
-        // Show3: 단가 항목 편집 폼 영역 (계약 선택 후 항목 클릭 시 로드)
+        SetContentLayout(content2Star: 1, content4Star: 1, upperStar: 7, lowerStar: 3);
+        // Show3: 단가표, Show4: 단가 편집폼
         
         // 저장된 레이아웃 복원
         RestoreModeLayout("Contract");
@@ -4187,16 +4580,7 @@ public partial class MainPage : Window
                 LogContentChange("Show2", _quotationNewPanel);
             };
 
-            // ✏️ 오작성 수정: 기존 Id 덮어쓰기 — 메타 수정
-            _quotationDetailPanel.CorrectRequested += issue =>
-            {
-                var target = issue ?? _lastShownIssue;
-                if (target == null) return;
-                _lastShownIssue = target;
-                _quotationNewPanel!.LoadFromIssueCorrect(target);
-                Show2.Content = _quotationNewPanel;
-                LogContentChange("Show2", _quotationNewPanel);
-            };
+            // ✏️ 오작성 수정: DetailPanel에서 직접 편집 (더 이상 NewPanel로 이동 안 함)
 
             // ESC 취소 → DetailPanel 복귀 + 마지막 issue 재표시
             _quotationNewPanel!.EscapeCancelled += () =>
@@ -6546,7 +6930,12 @@ public partial class MainPage : Window
     }
 
     private void OnCompanySelected(ETA.Models.Contract company)
-        => _quotationNewPanel?.SetCompany(company);
+    {
+        _quotationNewPanel?.SetCompany(company);
+        // Show4 분석항목에 선택된 업체 정보 전달 (금액 표시용)
+        if (_quotationCheckPanel != null)
+            _quotationCheckPanel.SelectedCompany = company;
+    }
 
     private void LogContentChange(string contentName, object? content)
     {

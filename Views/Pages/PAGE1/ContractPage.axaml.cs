@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
@@ -33,7 +34,9 @@ public partial class ContractPage : UserControl
 
     // ── 외부(MainPage) 연결 ──────────────────────────────────────────────────
     public event Action<Control?>? DetailPanelChanged;
-    public event Action<Control?>? PricePanelChanged;  // Show3 (현재 미사용)
+    public event Action<Control?>? EditPanelChanged;   // Show3 (진행상황 프로그래스바)
+    public event Action<Control?>? PricePanelChanged;  // Show2 (단가 테이블)
+    public event Action<Control?>? StatsPanelChanged;  // Show4 (단가 정보)
 
     // ── 상태 ────────────────────────────────────────────────────────────────
     private Contract?   _selectedContract;
@@ -46,6 +49,11 @@ public partial class ContractPage : UserControl
     private readonly Dictionary<string, string>    _pendingPrices       = new();
     // Show2 단가 표시용 TextBlock 참조 (항목명 → 표시 TextBlock)
     private readonly Dictionary<string, TextBlock> _priceDisplayBlocks  = new();
+
+    // Show4 수량 편집 모드
+    private bool                                   _show4EditMode       = false;
+    private readonly Dictionary<string, TextBox>   _show4QtyTextBoxes   = new();
+    private readonly Dictionary<string, string>    _pendingQuantities   = new();
 
     // 계약구분 ComboBox 참조 (저장 시 값 읽기용)
     private ComboBox? _contractTypeComboBox;
@@ -63,6 +71,40 @@ public partial class ContractPage : UserControl
     public ContractPage()
     {
         InitializeComponent();
+        this.AttachedToVisualTree += (s, e) =>
+        {
+            var window = this.FindAncestorOfType<Window>();
+            if (window != null)
+                window.KeyDown += OnWindowKeyDown;
+        };
+    }
+
+    private void OnWindowKeyDown(object? sender, KeyEventArgs e)
+    {
+        // Shift+2: Show4 수량 편집 모드 토글
+        if (e.KeyModifiers.HasFlag(KeyModifiers.Shift) && e.Key == Key.D2)
+        {
+            _show4EditMode = !_show4EditMode;
+
+            foreach (var (analyte, textBox) in _show4QtyTextBoxes)
+            {
+                var display = textBox.Parent as StackPanel;
+                if (display?.Children.Count > 1)
+                {
+                    var displayBlock = display.Children[1];
+                    textBox.IsVisible = _show4EditMode;
+                    if (displayBlock is TextBlock tb)
+                        tb.IsVisible = !_show4EditMode;
+
+                    if (_show4EditMode)
+                    {
+                        textBox.Text = _pendingQuantities.TryGetValue(analyte, out var q) ? q : "";
+                    }
+                }
+            }
+
+            e.Handled = true;
+        }
     }
 
     // =========================================================================
@@ -205,24 +247,43 @@ public partial class ContractPage : UserControl
         _isAddMode        = false;
         _pendingPrices.Clear();
         _priceDisplayBlocks.Clear();
-        PricePanelChanged?.Invoke(null);
+        _show4EditMode    = false;
+        _show4QtyTextBoxes.Clear();
+        _pendingQuantities.Clear();
 
         // ① 계약정보 패널 즉시 표시 (DB 없음 — 빠름)
         var (root, scroll, priceContainer) = BuildInfoPanel(contract);
         _detailPanel = root;
         DetailPanelChanged?.Invoke(scroll);
 
-        // ② 단가 데이터 백그라운드 로드 후 UI append
+        // ② 단가/계약수량/처리수량 백그라운드 로드
         var captured = contract;
-        _ = Task.Run(() => ContractService.GetContractPrices(captured.C_CompanyName))
+        _ = Task.Run(() =>
+                {
+                    var prices = ContractService.GetContractPrices(captured.C_CompanyName);
+                    var contractQtys = ContractService.GetContractQuantities(captured.C_CompanyName);
+                    var processedQtys = ContractService.GetProcessedQuantities(captured.C_CompanyName,
+                        captured.C_ContractStart, captured.C_ContractEnd);
+                    return (prices, contractQtys, processedQtys);
+                })
                 .ContinueWith(t =>
                 {
-                    if (t.Exception != null) { Log("단가 로드 오류: " + t.Exception.Message); return; }
-                    var prices = t.Result;
+                    if (t.Exception != null) { Log("데이터 로드 오류: " + t.Exception.Message); return; }
+                    var (prices, contractQtys, processedQtys) = t.Result;
                     Avalonia.Threading.Dispatcher.UIThread.Post(() =>
                     {
                         if (_selectedContract?.C_CompanyName != captured.C_CompanyName) return;
-                        AppendPriceTable(priceContainer, captured.C_CompanyName, prices);
+
+                        // Show2: 아무것도 표시 안 함 (계약정보만 표시)
+                        // PricePanelChanged?.Invoke(null);
+
+                        // Show3: 진행상황 프로그래스바
+                        var progressPanel = BuildProgressPanel(captured.C_CompanyName, contractQtys, processedQtys);
+                        EditPanelChanged?.Invoke(progressPanel);
+
+                        // Show4: 단가 정보 + 계약수량
+                        var priceInfoPanel = BuildPriceInfoPanel(prices, contractQtys);
+                        StatsPanelChanged?.Invoke(priceInfoPanel);
                     });
                 }, TaskContinuationOptions.None);
 
@@ -256,7 +317,27 @@ public partial class ContractPage : UserControl
         {
             SaveEdit();
             SavePendingPrices();
+            SavePendingQuantities();
         }
+    }
+
+    private void SavePendingQuantities()
+    {
+        if (_selectedContract == null || _pendingQuantities.Count == 0) return;
+
+        try
+        {
+            var quantities = _pendingQuantities.Select(kv => (Analyte: kv.Key, Qty: kv.Value)).ToList();
+            bool ok = ContractService.UpdateContractQuantities(_selectedContract.C_CompanyName, quantities);
+            if (ok)
+            {
+                Log($"✅ 계약수량 저장: {_selectedContract.C_CompanyName} ({_pendingQuantities.Count}항목)");
+                _pendingQuantities.Clear();
+            }
+            else
+                Log($"❌ 계약수량 저장 실패: {_selectedContract.C_CompanyName}");
+        }
+        catch (Exception ex) { Log($"❌ 계약수량 저장 오류: {ex.Message}"); }
     }
 
     // =========================================================================
@@ -471,6 +552,407 @@ public partial class ContractPage : UserControl
         }
 
         priceContainer.Children.Add(priceGrid);
+    }
+
+    // =========================================================================
+    // Show4 — 단가 정보 + 계약수량 (뱃지+초성헬퍼 포함)
+    // =========================================================================
+    private Control BuildPriceInfoPanel(List<(string Analyte, string Price)> prices,
+                                        Dictionary<string, string> contractQtys)
+    {
+        var scrollViewer = new ScrollViewer();
+
+        var root = new StackPanel { Spacing = 8, Margin = new Thickness(8) };
+        scrollViewer.Content = root;
+
+        if (prices.Count == 0)
+        {
+            root.Children.Add(new TextBlock
+            {
+                Text       = "단가 정보 없음",
+                FontSize   = AppTheme.FontBase, FontFamily = Font,
+                Foreground = AppTheme.FgMuted,
+            });
+            return scrollViewer;
+        }
+
+        root.Children.Add(new TextBlock
+        {
+            Text       = "💰  단가 및 계약수량",
+            FontSize   = AppTheme.FontLG, FontFamily = Font, FontWeight = FontWeight.SemiBold,
+            Foreground = AppTheme.FgSuccess,
+        });
+        root.Children.Add(new Border { Height = 1, Background = AppTheme.BorderMuted });
+
+        // 뱃지 색상 맵
+        var aliasMap = ContractService.GetAnalyteAliasMap();
+
+        // 단가 목록
+        foreach (var (analyte, price) in prices)
+        {
+            if (string.IsNullOrWhiteSpace(price)) continue;
+
+            var itemContainer = new Border
+            {
+                Background = AppTheme.BgPrimary,
+                CornerRadius = new CornerRadius(3),
+                Padding = new Thickness(8, 6),
+                Margin = new Thickness(0, 2),
+                BorderBrush = AppTheme.BorderSubtle,
+                BorderThickness = new Thickness(1),
+            };
+
+            var itemContent = new StackPanel
+            {
+                Orientation = Orientation.Vertical,
+                Spacing = 4,
+            };
+
+            // 상단: 뱃지 + 항목명
+            var topLine = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Spacing = 8,
+                VerticalAlignment = VerticalAlignment.Center,
+            };
+
+            // 뱃지 (약칭)
+            var alias = aliasMap.TryGetValue(analyte, out var a) ? a : "";
+            if (!string.IsNullOrEmpty(alias))
+            {
+                var badgeColor = BadgeColorHelper.GetBadgeColor(analyte);  // 한글 항목명으로 색상 생성
+                var badge = new Border
+                {
+                    Background = new SolidColorBrush(Color.Parse(badgeColor.Bg)),
+                    CornerRadius = new CornerRadius(3),
+                    Padding = new Thickness(6, 2),
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Child = new TextBlock
+                    {
+                        Text = alias,
+                        FontSize = AppTheme.FontXS,
+                        FontFamily = Font,
+                        FontWeight = FontWeight.Bold,
+                        Foreground = new SolidColorBrush(Color.Parse(badgeColor.Fg)),
+                    }
+                };
+                topLine.Children.Add(badge);
+            }
+
+            // 항목명
+            topLine.Children.Add(new TextBlock
+            {
+                Text = analyte,
+                FontSize = AppTheme.FontBase,
+                FontFamily = Font,
+                FontWeight = FontWeight.SemiBold,
+                Foreground = AppTheme.FgPrimary,
+                VerticalAlignment = VerticalAlignment.Center,
+            });
+
+            itemContent.Children.Add(topLine);
+
+            // 하단: 단가 + 계약수량
+            var bottomLine = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Spacing = 16,
+                VerticalAlignment = VerticalAlignment.Center,
+            };
+
+            // 단가
+            bottomLine.Children.Add(new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Spacing = 4,
+                VerticalAlignment = VerticalAlignment.Center,
+                Children =
+                {
+                    new TextBlock
+                    {
+                        Text = "단가:",
+                        FontSize = AppTheme.FontXS,
+                        FontFamily = Font,
+                        Foreground = AppTheme.FgMuted,
+                    },
+                    new TextBlock
+                    {
+                        Text = FormatPrice(price),
+                        FontSize = AppTheme.FontBase,
+                        FontFamily = Font,
+                        Foreground = AppTheme.FgSuccess,
+                        FontWeight = FontWeight.SemiBold,
+                    }
+                }
+            });
+
+            // 계약수량
+            string contractQtyStr = (contractQtys.TryGetValue(analyte, out var cq) ? cq : "0") ?? "0";
+            int contractQty = int.TryParse(contractQtyStr, out int c) ? c : 0;
+
+            var qtyLabel = new TextBlock
+            {
+                Text = "수량:",
+                FontSize = AppTheme.FontXS,
+                FontFamily = Font,
+                Foreground = AppTheme.FgMuted,
+            };
+
+            var qtyTextBox = new TextBox
+            {
+                Text = contractQty > 0 ? contractQty.ToString() : "",
+                FontSize = AppTheme.FontBase,
+                FontFamily = Font,
+                IsVisible = false,  // 처음엔 숨김
+                Width = 60,
+                Padding = new Thickness(4, 2),
+            };
+            _show4QtyTextBoxes[analyte] = qtyTextBox;
+
+            var qtyDisplay = new TextBlock
+            {
+                Text = contractQty > 0 ? contractQty.ToString() : "-",
+                FontSize = AppTheme.FontBase,
+                FontFamily = Font,
+                Foreground = contractQty > 0 ? AppTheme.FgInfo : AppTheme.FgMuted,
+                FontWeight = FontWeight.SemiBold,
+            };
+
+            var qtyPanel = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Spacing = 4,
+                VerticalAlignment = VerticalAlignment.Center,
+                Children = { qtyLabel, qtyDisplay, qtyTextBox }
+            };
+
+            // TextBox 키 입력 처리
+            qtyTextBox.KeyDown += (s, e) =>
+            {
+                if (e.Key == Key.Enter)
+                {
+                    _pendingQuantities[analyte] = qtyTextBox.Text ?? "";
+                    qtyDisplay.Text = string.IsNullOrEmpty(qtyTextBox.Text) ? "-" : qtyTextBox.Text;
+                    qtyTextBox.IsVisible = false;
+                    qtyDisplay.IsVisible = true;
+                }
+                else if (e.Key == Key.Escape)
+                {
+                    qtyTextBox.IsVisible = false;
+                    qtyDisplay.IsVisible = true;
+                }
+            };
+
+            bottomLine.Children.Add(qtyPanel);
+
+            itemContent.Children.Add(bottomLine);
+
+            itemContainer.Child = itemContent;
+            root.Children.Add(itemContainer);
+        }
+
+        return scrollViewer;
+    }
+
+    // =========================================================================
+    // Show3 — 항목별 계약수량 vs 처리수량 진행상황 (휠스크롤 가능)
+    // =========================================================================
+    private Control BuildProgressPanel(string companyName,
+                                       Dictionary<string, string> contractQtys,
+                                       Dictionary<string, int> processedQtys)
+    {
+        var scrollViewer = new ScrollViewer();
+
+        var root = new StackPanel { Spacing = 8, Margin = new Thickness(8) };
+        scrollViewer.Content = root;
+
+        var items = ContractService.GetAnalysisItems();
+        if (items.Count == 0)
+        {
+            root.Children.Add(new TextBlock
+            {
+                Text       = "분석 항목이 없습니다.",
+                FontSize   = AppTheme.FontBase, FontFamily = Font,
+                Foreground = AppTheme.FgMuted,
+            });
+            return scrollViewer;
+        }
+
+        // ── 헤더: 총계값 표시 ──
+        var headerPanel = new StackPanel { Spacing = 8, Margin = new Thickness(0, 0, 0, 8) };
+
+        // 계약수량 합계, 처리수량 합계, 진행률 합계
+        int totalContractQty = 0;
+        int totalProcessedQty = 0;
+        foreach (var item in items)
+        {
+            string contractQtyStr = (contractQtys.TryGetValue(item, out var cq) ? cq : "0") ?? "0";
+            int contractQty = int.TryParse(contractQtyStr, out int c) ? c : 0;
+            totalContractQty += contractQty;
+
+            int processedQty = (processedQtys.TryGetValue(item, out var pq) ? pq : 0);
+            totalProcessedQty += processedQty;
+        }
+
+        double totalProgress = totalContractQty > 0 ? (double)totalProcessedQty / totalContractQty * 100 : 0;
+
+        var summaryLine = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 12 };
+        summaryLine.Children.Add(new TextBlock
+        {
+            Text       = "📊  총계",
+            FontSize   = AppTheme.FontMD, FontFamily = Font, FontWeight = FontWeight.SemiBold,
+            Foreground = AppTheme.FgMuted,
+            VerticalAlignment = VerticalAlignment.Center,
+        });
+        summaryLine.Children.Add(new TextBlock
+        {
+            Text       = $"계약수량: {totalContractQty}",
+            FontSize   = AppTheme.FontBase, FontFamily = Font,
+            Foreground = AppTheme.FgInfo,
+            VerticalAlignment = VerticalAlignment.Center,
+        });
+        summaryLine.Children.Add(new TextBlock
+        {
+            Text       = $"처리수량: {totalProcessedQty}",
+            FontSize   = AppTheme.FontBase, FontFamily = Font,
+            Foreground = AppTheme.FgSuccess,
+            VerticalAlignment = VerticalAlignment.Center,
+        });
+        summaryLine.Children.Add(new TextBlock
+        {
+            Text       = $"진행률: {totalProgress:F1}%",
+            FontSize   = AppTheme.FontBase, FontFamily = Font, FontWeight = FontWeight.SemiBold,
+            Foreground = totalProgress >= 100 ? AppTheme.FgSuccess : AppTheme.FgWarn,
+            VerticalAlignment = VerticalAlignment.Center,
+        });
+        headerPanel.Children.Add(summaryLine);
+        headerPanel.Children.Add(new Border { Height = 1, Background = AppTheme.BorderMuted });
+
+        root.Children.Add(headerPanel);
+
+        // ── 항목별 진행상황 그리드 (5컬럼) ──
+        const int COLS = 5;
+        var grid = new Grid
+        {
+            ColumnDefinitions = new ColumnDefinitions("2*,1*,1*,1*,2*"),  // 항목명, 계약수량, 처리수량, 진행률, 프로그래스바
+            ColumnSpacing     = 6,
+            RowSpacing        = 4,
+        };
+
+        // 헤더 행
+        var headerCols = new[] { "항목명", "계약수량", "처리수량", "진행률", "프로그래스바" };
+        for (int i = 0; i < COLS; i++)
+        {
+            var header = new TextBlock
+            {
+                Text              = headerCols[i],
+                FontSize          = AppTheme.FontXS, FontFamily = Font, FontWeight = FontWeight.SemiBold,
+                Foreground        = AppTheme.FgMuted,
+                VerticalAlignment = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center,
+            };
+            Grid.SetColumn(header, i);
+            Grid.SetRow(header, 0);
+            grid.Children.Add(header);
+        }
+
+        // 행 정의 (헤더 1 + 항목들)
+        grid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+        for (int i = 0; i < items.Count; i++)
+            grid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+
+        // 데이터 행들
+        for (int i = 0; i < items.Count; i++)
+        {
+            var item = items[i];
+            string contractQtyStr = (contractQtys.TryGetValue(item, out var cq) ? cq : "0") ?? "0";
+            int contractQty = int.TryParse(contractQtyStr, out int c) ? c : 0;
+
+            int processedQty = (processedQtys.TryGetValue(item, out var pq) ? pq : 0);
+            double progress = contractQty > 0 ? (double)processedQty / contractQty * 100 : 0;
+
+            int row = i + 1;
+
+            // 항목명
+            var itemName = new TextBlock
+            {
+                Text              = item,
+                FontSize          = AppTheme.FontXS, FontFamily = Font,
+                Foreground        = AppTheme.FgPrimary,
+                VerticalAlignment = VerticalAlignment.Center,
+                TextTrimming      = Avalonia.Media.TextTrimming.CharacterEllipsis,
+            };
+            Grid.SetColumn(itemName, 0);
+            Grid.SetRow(itemName, row);
+            grid.Children.Add(itemName);
+
+            // 계약수량
+            var contractQtyBlock = new TextBlock
+            {
+                Text              = contractQty.ToString(),
+                FontSize          = AppTheme.FontXS, FontFamily = Font,
+                Foreground        = AppTheme.FgInfo,
+                VerticalAlignment = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Right,
+            };
+            Grid.SetColumn(contractQtyBlock, 1);
+            Grid.SetRow(contractQtyBlock, row);
+            grid.Children.Add(contractQtyBlock);
+
+            // 처리수량
+            var processedQtyBlock = new TextBlock
+            {
+                Text              = processedQty.ToString(),
+                FontSize          = AppTheme.FontXS, FontFamily = Font,
+                Foreground        = AppTheme.FgSuccess,
+                VerticalAlignment = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Right,
+            };
+            Grid.SetColumn(processedQtyBlock, 2);
+            Grid.SetRow(processedQtyBlock, row);
+            grid.Children.Add(processedQtyBlock);
+
+            // 진행률 (%)
+            var progressPercentBlock = new TextBlock
+            {
+                Text              = $"{progress:F1}%",
+                FontSize          = AppTheme.FontXS, FontFamily = Font, FontWeight = FontWeight.SemiBold,
+                Foreground        = progress >= 100 ? AppTheme.FgSuccess : (progress >= 50 ? AppTheme.FgWarn : AppTheme.FgDanger),
+                VerticalAlignment = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center,
+            };
+            Grid.SetColumn(progressPercentBlock, 3);
+            Grid.SetRow(progressPercentBlock, row);
+            grid.Children.Add(progressPercentBlock);
+
+            // 프로그래스바
+            var progressBar = new ProgressBar
+            {
+                Value   = progress,
+                Minimum = 0,
+                Maximum = 100,
+                Height  = 18,
+                Foreground = progress >= 100 ? new SolidColorBrush(Color.Parse("#22C55E"))  // 완료 (초록)
+                           : progress >= 50  ? new SolidColorBrush(Color.Parse("#F59E0B"))  // 진행중 (주황)
+                                             : new SolidColorBrush(Color.Parse("#EF4444")), // 미진행 (빨강)
+                Background = AppTheme.BgSecondary,
+            };
+            var progressBarContainer = new Border
+            {
+                Child = progressBar,
+                VerticalAlignment = VerticalAlignment.Center,
+                Height = 24,
+                Background = AppTheme.BgSecondary,
+                CornerRadius = new CornerRadius(3),
+                Padding = new Thickness(2),
+            };
+            Grid.SetColumn(progressBarContainer, 4);
+            Grid.SetRow(progressBarContainer, row);
+            grid.Children.Add(progressBarContainer);
+        }
+
+        root.Children.Add(grid);
+        return scrollViewer;
     }
 
     // =========================================================================
