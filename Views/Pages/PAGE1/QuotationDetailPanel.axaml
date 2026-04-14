@@ -174,7 +174,6 @@
                     Margin="0,6,0,0" IsVisible="False">
             <Button Classes="action-btn" Content="💾  저장"        Click="BtnSave_Click"   ToolTip.Tip="변경 사항 저장" />
             <Button Classes="action-btn" Content="🔄  ReCyle"     Click="BtnCarrot_Click"  ToolTip.Tip="이 건을 재활용해서 신규 작성" />
-            <Button Classes="action-btn" Content="✏️  오작성 수정" Click="BtnCorrect_Click" ToolTip.Tip="시료명·견적번호·발행일·업체명 등 잘못된 항목 수정" />
             <Button Classes="action-btn" Content="📋  의뢰서 작성" Click="BtnOrderRequest_Click" ToolTip.Tip="분석 의뢰서 작성" />
             <Button Classes="action-btn" Content="🖨  인쇄"        Click="BtnPrint_Click" />
         </StackPanel>

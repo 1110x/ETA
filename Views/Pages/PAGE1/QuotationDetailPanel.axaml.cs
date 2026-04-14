@@ -26,8 +26,6 @@ public partial class QuotationDetailPanel : UserControl
     public  QuotationCheckPanel?  CheckPanel    { get; set; }
     /// <summary>🥕 당근 — 이 건을 재활용해서 신규 작성 (항목 복사, 번호·날짜 신규)</summary>
     public event Action<QuotationIssue>? CarrotRequested;
-    /// <summary>✏️ 오작성 수정 — 시료명·견적번호·발행일·적용구분·업체명 등 메타 수정 (더 이상 사용 안 함)</summary>
-    public event Action<QuotationIssue>? CorrectRequested;
     /// <summary>💾 저장 완료 후 Show1 트리뷰 리프레시 요청</summary>
     public event Action? SaveCompleted;
 
@@ -805,53 +803,6 @@ public partial class QuotationDetailPanel : UserControl
     {
         if (_current == null) return;
         CarrotRequested?.Invoke(_current);
-    }
-
-    // ✏️ 오작성 수정: 직접 편집 or 저장
-    private void BtnCorrect_Click(object? sender, RoutedEventArgs e)
-    {
-        if (_current == null) return;
-
-        if (!_isEditMode)
-        {
-            // 편집 모드 활성화
-            _isEditMode = true;
-            SetEditMode(true);
-        }
-        else
-        {
-            // 편집 완료 → DB 저장
-            try
-            {
-                // 업체명/약칭은 업체 정보에서 자동 설정되므로 수정하지 않음
-                _current.시료명 = txbSampleName.Text ?? "";
-                _current.견적번호 = txbNo.Text ?? "";
-                _current.발행일 = txbDate.Text ?? "";
-
-                // DB 업데이트
-                bool ok = QuotationService.UpdateIssueMetadata(_current.Id, new Dictionary<string, object>
-                {
-                    { "시료명", _current.시료명 },
-                    { "견적번호", _current.견적번호 },
-                    { "견적발행일자", _current.발행일 },  // DB 컬럼명
-                });
-
-                if (ok)
-                {
-                    Log($"✅ 오작성 수정: {_current.견적번호}");
-                    _isEditMode = false;
-                    SetEditMode(false);
-                }
-                else
-                {
-                    Log($"❌ 오작성 수정 실패: {_current.견적번호}");
-                }
-            }
-            catch (Exception ex)
-            {
-                Log($"❌ 오작성 수정 오류: {ex.Message}");
-            }
-        }
     }
 
     private void SetEditMode(bool enable)
