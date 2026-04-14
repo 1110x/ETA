@@ -1009,15 +1009,11 @@ public class SchedulePage
             {
                 Background      = Brush.Parse(cs.Bg),
                 BorderBrush     = Brush.Parse(cs.Bd),
-                BorderThickness = new Thickness(
-                    pos is SpanPos.Middle or SpanPos.End ? 0 : 1,
-                    1,
-                    pos is SpanPos.Start or SpanPos.Middle ? 0 : 1,
-                    1),
+                BorderThickness = new Thickness(1),  // ← 모든 side에 일관된 border (너비 정확성 보장)
                 CornerRadius    = radius,
                 Padding         = new Thickness(3, 0),
                 Margin          = margin,
-                HorizontalAlignment = HorizontalAlignment.Stretch,  // Cell 너비에 맞춤
+                HorizontalAlignment = HorizontalAlignment.Stretch,
                 Child = new TextBlock
                 {
                     Text = chipText, FontFamily = Font,
