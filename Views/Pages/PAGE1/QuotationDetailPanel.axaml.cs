@@ -435,64 +435,70 @@ public partial class QuotationDetailPanel : UserControl
 
             Log($"   ✓ '{col}' 표시 (수량: {kv.Value}, 단가: {FmtNum(priceStr)}, 소계: {FmtNum(subStr)})");
 
-            var grid = new Grid
+            // ── 배지 기반 레이아웃 (Show4 스타일) ──────────────────────────
+            int rowIdx = _itemRows.Count;
+            int capturedIdx = rowIdx;
+            string capturedColName = col;
+
+            // 약칭 배지
+            var alias = aliasMap.TryGetValue(col, out var a) ? a : col;
+            var (bgColor, fgColor) = BadgeColorHelper.GetBadgeColor(alias);
+            var badge = new Border
             {
-                ColumnDefinitions = new ColumnDefinitions("*,60,80,80"),  // XAML 헤더와 동일하게
-                Background        = Brush.Parse(odd ? "#1a1a28" : "#1e1e30"),
-                Cursor            = new Cursor(Avalonia.Input.StandardCursorType.Hand),
-                RowDefinitions    = new RowDefinitions("Auto"),
-                Margin            = new Avalonia.Thickness(12, 2, 12, 2),
+                Background = new SolidColorBrush(Color.Parse(bgColor)),
+                BorderBrush = new SolidColorBrush(Color.Parse(fgColor)),
+                BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(10),
+                Padding = new Thickness(6, 1, 8, 1),
+                VerticalAlignment = VerticalAlignment.Center,
+                Child = new TextBlock
+                {
+                    Text = alias,
+                    FontSize = AppFonts.SM,
+                    FontWeight = FontWeight.Medium,
+                    FontFamily = Font,
+                    Foreground = new SolidColorBrush(Color.Parse(fgColor)),
+                    VerticalAlignment = VerticalAlignment.Center,
+                }
             };
-            odd = !odd;
 
-            // 컬럼 0: 항목명 + 약칭 뱃지 (수평 배치)
-            var itemNamePanel = BuildItemNameWithBadge(col, aliasMap);
-            Grid.SetColumn(itemNamePanel, 0);
-            grid.Children.Add(itemNamePanel);
-
-            // 컬럼 1: 수량 (TextBox, 편집 가능)
+            // 수량 입력 박스
             var quantityBox = new TextBox
             {
-                Text                = kv.Value ?? "",
-                FontSize            = AppFonts.Base,
-                FontFamily          = Font,
-                Foreground          = Brush.Parse("#aaaaaa"),
-                Background          = Brush.Parse("Transparent"),
-                BorderThickness     = new Thickness(0),
-                Margin              = new Avalonia.Thickness(0, 3),
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-                VerticalAlignment   = VerticalAlignment.Center,
-                Padding             = new Thickness(4, 0),
-                TextAlignment       = Avalonia.Media.TextAlignment.Right,
+                Text = kv.Value ?? "",
+                Width = 50,
+                FontSize = AppFonts.SM,
+                FontFamily = Font,
+                Foreground = Brush.Parse("#aaaaaa"),
+                Background = Brush.Parse("Transparent"),
+                BorderThickness = new Thickness(0),
+                Padding = new Thickness(2, 0),
+                TextAlignment = Avalonia.Media.TextAlignment.Right,
+                VerticalAlignment = VerticalAlignment.Center,
             };
 
-            int rowIdx = _itemRows.Count;
-
-            // 컬럼 3: 소계 (동적으로 업데이트되는 TextBlock)
+            // 소계 표시 (동적 업데이트)
             var subtotalBlock = new TextBlock
             {
-                Text                = FmtNum(subStr),
-                FontSize            = AppFonts.Base,
-                FontFamily          = Font,
-                Foreground          = Brush.Parse("#88cc88"),
-                Margin              = new Avalonia.Thickness(0, 3),
-                HorizontalAlignment = HorizontalAlignment.Right,
-                VerticalAlignment   = VerticalAlignment.Center,
-                TextTrimming        = Avalonia.Media.TextTrimming.CharacterEllipsis,
+                Text = FmtNum(subStr),
+                FontSize = AppFonts.SM,
+                FontFamily = Font,
+                Foreground = Brush.Parse("#88cc88"),
+                VerticalAlignment = VerticalAlignment.Center,
+                TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
+                MinWidth = 60,
+                TextAlignment = Avalonia.Media.TextAlignment.Right,
             };
-            Grid.SetColumn(subtotalBlock, 3);
+            _subtotalBlocks.Add(subtotalBlock);
 
-            // 수량 변경 이벤트: 수량 × 단가 = 소계 자동 계산
+            // 수량 변경 이벤트
             quantityBox.TextChanged += (_, _) =>
             {
                 if (int.TryParse(quantityBox.Text, out int qty) &&
                     decimal.TryParse((priceStr ?? "0").Replace(",", ""), out decimal price))
                 {
-                    // 소계 계산
                     decimal subtotal = qty * price;
-                    // UI 업데이트
                     subtotalBlock.Text = subtotal == 0 ? "" : $"{subtotal:#,0}";
-                    // 캐시 업데이트 (나중에 저장할 때 반영)
                     _cachedRow[col] = qty.ToString();
                     _cachedRow[col + "소계"] = subtotal.ToString("F0");
                 }
@@ -500,7 +506,6 @@ public partial class QuotationDetailPanel : UserControl
                 {
                     subtotalBlock.Text = "";
                 }
-                // 합계 금액 다시 계산
                 UpdateTotalAmount();
             };
 
@@ -518,24 +523,82 @@ public partial class QuotationDetailPanel : UserControl
                 }
             };
 
-            Grid.SetColumn(quantityBox, 1);
-            grid.Children.Add(quantityBox);
+            // 항목 정보 Grid: [배지] [항목명] [수량] [단가] [소계]
+            var contentGrid = new Grid
+            {
+                ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto,Auto,Auto"),
+                Margin = new Thickness(0),
+                VerticalAlignment = VerticalAlignment.Center,
+            };
 
-            // 컬럼 2: 단가
-            grid.Children.Add(Cell(FmtNum(priceStr), AppFonts.Base, "#aaaaaa", 2, HorizontalAlignment.Right));
+            // 배지
+            contentGrid.Children.Add(badge);
+            Grid.SetColumn(badge, 0);
 
-            // 컬럼 3: 소계 (동적)
-            grid.Children.Add(subtotalBlock);
-            _subtotalBlocks.Add(subtotalBlock);
+            // 항목명
+            var itemNameTb = new TextBlock
+            {
+                Text = col,
+                FontSize = AppFonts.SM,
+                Foreground = Brush.Parse("#cccccc"),
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(8, 0, 0, 0),
+                TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
+            };
+            contentGrid.Children.Add(itemNameTb);
+            Grid.SetColumn(itemNameTb, 1);
 
-            int capturedIdx = rowIdx;
-            string capturedColName = col;
+            // 수량 (자동 감싸기)
+            var qtyLabel = new TextBlock
+            {
+                Text = "수량:",
+                FontSize = AppFonts.XS,
+                Foreground = Brush.Parse("#777777"),
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(12, 0, 4, 0),
+            };
+            var qtyPanel = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Spacing = 2,
+                VerticalAlignment = VerticalAlignment.Center,
+            };
+            qtyPanel.Children.Add(qtyLabel);
+            qtyPanel.Children.Add(quantityBox);
+            contentGrid.Children.Add(qtyPanel);
+            Grid.SetColumn(qtyPanel, 2);
 
-            // 싱글 클릭: 행 선택
-            grid.PointerPressed += (_, _) => SelectItemRow(capturedIdx);
+            // 단가 정보
+            var priceLabel = new TextBlock
+            {
+                Text = FmtNum(priceStr),
+                FontSize = AppFonts.XS,
+                Foreground = Brush.Parse("#888888"),
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(12, 0, 0, 0),
+            };
+            contentGrid.Children.Add(priceLabel);
+            Grid.SetColumn(priceLabel, 3);
 
-            // 더블 클릭: Show4 체크 헤제
-            grid.DoubleTapped += (_, _) =>
+            // 소계
+            contentGrid.Children.Add(subtotalBlock);
+            Grid.SetColumn(subtotalBlock, 4);
+
+            // 감싸기 Border
+            var itemBorder = new Border
+            {
+                Background = Brush.Parse(odd ? "#1a1a28" : "#1e1e30"),
+                Padding = new Thickness(12, 8),
+                Margin = new Thickness(0, 2),
+                CornerRadius = new CornerRadius(4),
+                Cursor = new Cursor(Avalonia.Input.StandardCursorType.Hand),
+                Child = contentGrid,
+            };
+            odd = !odd;
+
+            // 이벤트 처리 (더미 grid 대신 border에 적용)
+            itemBorder.PointerPressed += (_, _) => SelectItemRow(capturedIdx);
+            itemBorder.DoubleTapped += (_, _) =>
             {
                 if (CheckPanel != null)
                 {
@@ -544,8 +607,8 @@ public partial class QuotationDetailPanel : UserControl
                 }
             };
 
-            spItems.Children.Add(grid);
-            _itemRows.Add((grid, quantityBox));
+            spItems.Children.Add(itemBorder);
+            _itemRows.Add((contentGrid, quantityBox));
         }
 
         // 초기 합계 금액 계산
