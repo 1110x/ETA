@@ -138,7 +138,7 @@ public static class FacilityDbMigration
         }
 
         // COD / 페놀류 다중 방법 컬럼 추가 마이그레이션
-        if (!IsMigrationDone(conn, "multi_method_cols_v1"))
+        if (!IsMigrationDone(conn, "multi_method_cols_v2"))
         {
             try
             {
@@ -207,9 +207,9 @@ public static class FacilityDbMigration
                     Log("페놀류_시험기록부 다중 방법 컬럼 추가 완료");
                 }
 
-                MarkMigrationDone(conn, "multi_method_cols_v1");
+                MarkMigrationDone(conn, "multi_method_cols_v2");
             }
-            catch (Exception ex) { Log($"multi_method_cols_v1 마이그레이션 실패: {ex.Message}"); }
+            catch (Exception ex) { Log($"multi_method_cols_v2 마이그레이션 실패: {ex.Message}"); }
         }
 
         // 화합물 별칭 테이블 생성 + Seed
