@@ -244,6 +244,62 @@ public static class FacilityDbMigration
             catch (Exception ex) { Log($"toc_unify_record_v1 마이그레이션 실패: {ex.Message}"); }
         }
 
+        // ★ 불필요한 약칭 기반 시험기록부 테이블 드랍 마이그레이션 (v6)
+        Log("drop_alias_test_tables_v6 체크 시작");
+        if (!IsMigrationDone(conn, "drop_alias_test_tables_v6"))
+        {
+            try
+            {
+                // 분석정보에서 유효한 Analyte 목록 수집
+                var validAnalytes = new HashSet<string>();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT DISTINCT Analyte FROM `분석정보` WHERE Analyte IS NOT NULL AND Analyte <> ''";
+                    using var r = cmd.ExecuteReader();
+                    while (r.Read())
+                    {
+                        var safeName = WaterCenterDbMigration.SafeName(r.GetString(0).Trim());
+                        validAnalytes.Add($"{safeName}_시험기록부");
+                    }
+                }
+
+                // 기본 테이블들
+                validAnalytes.Add("TOC_시험기록부");
+                validAnalytes.Add("TOC_NPOC_시험기록부");
+                validAnalytes.Add("TOC_TCIC_시험기록부");
+
+                // DB의 모든 _시험기록부 테이블 조회
+                var tablesToDrop = new List<string>();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"SELECT table_name FROM information_schema.tables
+                        WHERE table_schema = DATABASE() AND table_name LIKE '%_시험기록부'";
+                    using var r = cmd.ExecuteReader();
+                    while (r.Read())
+                    {
+                        var tbl = r.GetString(0);
+                        if (!validAnalytes.Contains(tbl))
+                            tablesToDrop.Add(tbl);
+                    }
+                }
+
+                // 불필요한 테이블 드랍
+                foreach (var tbl in tablesToDrop)
+                {
+                    try
+                    {
+                        Exec(conn, $"DROP TABLE IF EXISTS `{tbl}`");
+                        Log($"  ✓ DROP: {tbl}");
+                    }
+                    catch (Exception ex) { Log($"  ✗ DROP 실패: {tbl} — {ex.Message}"); }
+                }
+
+                MarkMigrationDone(conn, "drop_alias_test_tables_v6");
+                Log("✓ drop_alias_test_tables_v6 완료");
+            }
+            catch (Exception ex) { Log($"drop_alias_test_tables_v6 실패: {ex.Message}"); }
+        }
+
         // 화합물 별칭 테이블 생성 + Seed
         if (!IsMigrationDone(conn, "compound_alias_v1"))
         {
