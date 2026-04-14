@@ -19,73 +19,10 @@
     </UserControl.Styles>
 
     <!-- 메인 컨테이너 -->
-    <Grid RowDefinitions="Auto,Auto,Auto,*">
-
-        <!-- 헤더: 제목 + 전체선택/해제 + 저장 영역 -->
-        <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto,Auto" Margin="0,0,0,6">
-            <TextBlock Grid.Column="0"
-                       Text="분석 항목"
-                       FontSize="{DynamicResource FontSizeLG}" FontWeight="Bold"
-                       Foreground="{DynamicResource AppFg}"
-                       VerticalAlignment="Center"
-                       FontFamily="avares://ETA/Assets/Fonts#Pretendard" />
-            <Button Grid.Column="1"
-                    Content="전체 선택"
-                    Height="24" Padding="10,0" FontSize="{DynamicResource FontSizeSM}"
-                    Background="{DynamicResource SubBtnBg}" Foreground="{DynamicResource FgMuted}"
-                    BorderThickness="0" CornerRadius="3"
-                    Click="BtnSelectAll_Click"
-                    Margin="0,0,4,0" />
-            <Button Grid.Column="2"
-                    Content="전체 해제"
-                    Height="24" Padding="10,0" FontSize="{DynamicResource FontSizeSM}"
-                    Background="{DynamicResource SubBtnBg}" Foreground="{DynamicResource FgMuted}"
-                    BorderThickness="0" CornerRadius="3"
-                    Click="BtnClearAll_Click"
-                    Margin="0,0,4,0" />
-
-            <!-- 저장 영역 (편집 모드일 때만 표시) -->
-            <Border Grid.Column="3" x:Name="saveBorder" IsVisible="False"
-                    Background="{DynamicResource ThemeBgActiveGreen}" CornerRadius="4"
-                    Padding="8,2">
-                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                    <TextBlock x:Name="txbDirty"
-                               Text="● 변경사항 있음" IsVisible="False"
-                               FontSize="{DynamicResource FontSizeBase}"
-                               Foreground="{DynamicResource ThemeFgWarn}"
-                               VerticalAlignment="Center"
-                               FontFamily="avares://ETA/Assets/Fonts#Pretendard"/>
-                    <Button x:Name="btnCancelEdit"
-                            Content="취소"
-                            Height="24" Padding="10,0"
-                            FontSize="{DynamicResource FontSizeBase}"
-                            Background="{DynamicResource ThemeBgDanger}" Foreground="{DynamicResource AppFg}"
-                            BorderThickness="0" CornerRadius="4"
-                            Click="BtnCancelEdit_Click"/>
-                    <Button x:Name="btnSaveAnalytes"
-                            Content="💾 저장"
-                            Height="24" Padding="10,0"
-                            FontSize="{DynamicResource FontSizeBase}"
-                            Background="{DynamicResource ThemeBgActiveGreen}" Foreground="{DynamicResource AppFg}"
-                            BorderThickness="0" CornerRadius="4"
-                            Click="BtnSaveAnalytes_Click"/>
-                </StackPanel>
-            </Border>
-        </Grid>
-
-        <!-- 구분선 -->
-        <Border Grid.Row="1" Height="1" Background="{DynamicResource InputBorder}" Margin="0,0,0,6" />
-
-        <!-- 선택 카운트 -->
-        <TextBlock Grid.Row="2"
-                   x:Name="txbCount"
-                   Text="선택 0개 / 전체 0개"
-                   FontSize="{DynamicResource FontSizeBase}" Foreground="{DynamicResource FgMuted}"
-                   Margin="2,0,0,6"
-                   FontFamily="avares://ETA/Assets/Fonts#Pretendard" />
+    <Grid RowDefinitions="*">
 
         <!-- 분석항목 트리뷰 (카테고리별 Expander, 코드비하인드에서 동적 생성) -->
-        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel x:Name="ItemsContainer" Spacing="0" Margin="0"/>
         </ScrollViewer>
 

@@ -5477,7 +5477,6 @@ public partial class MainPage : Window
             case "Quotation":
                 // BT2 = 신규 작성 → Content2 를 NewPanel 로 교체
                 _quotationNewPanel?.Clear();
-                _quotationCheckPanel?.ClearAll();
                 if (_quotationCheckPanel != null)
                 {
                     _quotationCheckPanel.CurrentAnalysisRecord = null;

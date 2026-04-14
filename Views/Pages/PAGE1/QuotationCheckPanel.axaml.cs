@@ -82,17 +82,11 @@ public partial class QuotationCheckPanel : UserControl
     private void RefreshSaveBar()
     {
         _isDirty = false;
-        var border = this.FindControl<Border>("saveBorder");
-        var dirty  = this.FindControl<TextBlock>("txbDirty");
-        if (border != null) border.IsVisible = _currentAnalysisRecord != null || _currentIssue != null;
-        if (dirty  != null) dirty.IsVisible  = false;
     }
 
     private void SetDirty()
     {
         _isDirty = true;
-        var dirty = this.FindControl<TextBlock>("txbDirty");
-        if (dirty != null) dirty.IsVisible = true;
     }
 
     public QuotationCheckPanel()
@@ -398,25 +392,6 @@ public partial class QuotationCheckPanel : UserControl
             .ToList();
 
     // ── 전체 선택 / 해제 버튼 ────────────────────────────────────────────
-    private void BtnSelectAll_Click(object? sender, RoutedEventArgs e)
-    {
-        _suspendEvents = true;
-        foreach (var cb in _cbMap.Values) cb.IsChecked = true;
-        _suspendEvents = false;
-        SyncAllCategories();
-        SelectionChanged?.Invoke(GetSelected());
-    }
-
-    public void ClearAll()
-    {
-        _suspendEvents = true;
-        foreach (var cb in _cbMap.Values) cb.IsChecked = false;
-        _suspendEvents = false;
-        SyncAllCategories();
-        SelectionChanged?.Invoke(GetSelected());
-    }
-
-    private void BtnClearAll_Click(object? sender, RoutedEventArgs e) => ClearAll();
 
     // ── 헬퍼 ─────────────────────────────────────────────────────────────
     private static void SyncCategory(CheckBox cat, List<CheckBox> children)
@@ -427,8 +402,7 @@ public partial class QuotationCheckPanel : UserControl
 
     private void UpdateCount()
     {
-        int sel = _cbMap.Values.Count(c => c.IsChecked == true);
-        txbCount.Text = $"선택 {sel}개 / 전체 {_allItems.Count}개";
+        // txbCount 제거됨
     }
 
     // ── 로그 ─────────────────────────────────────────────────────────────
@@ -447,49 +421,4 @@ public partial class QuotationCheckPanel : UserControl
     // ══════════════════════════════════════════════════════════════════════
     //  저장 / 취소 버튼
     // ══════════════════════════════════════════════════════════════════════
-    private async void BtnSaveAnalytes_Click(object? sender, RoutedEventArgs e)
-    {
-        var allNames     = _cbMap.Keys.ToList();
-        var checkedNames = GetSelected().Select(a => a.Analyte).ToList();
-
-        Log($"저장 클릭 — rec={_currentAnalysisRecord?.Id.ToString() ?? "null"}  issue={_currentIssue?.Id.ToString() ?? "null"}  allNames={allNames.Count}  checked={checkedNames.Count}");
-
-        bool ok = false;
-        if (_currentAnalysisRecord != null)
-        {
-            var rec = _currentAnalysisRecord;
-            ok = await System.Threading.Tasks.Task.Run(() =>
-                AnalysisRequestService.UpdateAnalyteValues(rec.Id, allNames, checkedNames));
-            if (ok) AnalysisRecordSaved?.Invoke(rec);
-        }
-        else if (_currentIssue != null)
-        {
-            var issue = _currentIssue;
-            ok = await System.Threading.Tasks.Task.Run(() =>
-                QuotationService.UpdateIssueAnalytes(issue.Id, allNames, checkedNames));
-            if (ok) IssueSaved?.Invoke(issue);
-        }
-
-        Log($"저장 완료 — ok={ok}");
-
-        if (ok)
-        {
-            _isDirty = false;
-            var dirty = this.FindControl<TextBlock>("txbDirty");
-            if (dirty != null) dirty.IsVisible = false;
-        }
-    }
-
-    private void BtnCancelEdit_Click(object? sender, RoutedEventArgs e)
-    {
-        // 체크 상태를 DB에서 다시 불러오도록 이벤트 발생
-        if (_currentAnalysisRecord != null)
-            AnalysisRecordSaved?.Invoke(_currentAnalysisRecord);
-        else if (_currentIssue != null)
-            IssueSaved?.Invoke(_currentIssue);
-
-        _isDirty = false;
-        var dirty = this.FindControl<TextBlock>("txbDirty");
-        if (dirty != null) dirty.IsVisible = false;
-    }
 }
