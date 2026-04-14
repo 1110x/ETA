@@ -94,6 +94,45 @@ public static class FacilityDbMigration
             catch (Exception ex) { Log($"ecotox_cols_v2 마이그레이션 실패: {ex.Message}"); }
         }
 
+        // TOC 시험기록부 테이블 통합 마이그레이션
+        if (!IsMigrationDone(conn, "toc_unify_record_v1"))
+        {
+            try
+            {
+                // TOC_NPOC_시험기록부 → TOC_시험기록부 마이그레이션 (방법='NPOC')
+                if (DbConnectionFactory.TableExists(conn, "TOC_NPOC_시험기록부") && DbConnectionFactory.TableExists(conn, "TOC_시험기록부"))
+                {
+                    using var cmd = conn.CreateCommand();
+                    cmd.CommandText = $@"
+                        INSERT INTO `TOC_시험기록부`
+                        (분석일, SN, 업체명, 시료명, 구분, 소스구분, 비고, 등록일시, 방법, 시료량_NPOC, 흡광도_NPOC, 희석배수_NPOC, 검량선_a_NPOC, 농도, 결과)
+                        SELECT 분석일, SN, 업체명, 시료명, 구분, 소스구분, 비고, 등록일시, 'NPOC', 시료량, 흡광도, 희석배수, 검량선_a, 농도, 결과
+                        FROM `TOC_NPOC_시험기록부`
+                        WHERE SN NOT IN (SELECT SN FROM `TOC_시험기록부` WHERE 방법='NPOC')";
+                    try { cmd.ExecuteNonQuery(); Log("TOC_NPOC_시험기록부 → TOC_시험기록부 마이그레이션 완료"); }
+                    catch { }
+                }
+
+                // TOC_TCIC_시험기록부 → TOC_시험기록부 마이그레이션 (방법='TCIC')
+                if (DbConnectionFactory.TableExists(conn, "TOC_TCIC_시험기록부") && DbConnectionFactory.TableExists(conn, "TOC_시험기록부"))
+                {
+                    using var cmd = conn.CreateCommand();
+                    cmd.CommandText = $@"
+                        INSERT INTO `TOC_시험기록부`
+                        (분석일, SN, 업체명, 시료명, 구분, 소스구분, 비고, 등록일시, 방법, 흡광도_TCIC, 희석배수_TCIC, 검량선_a_TCIC, TCAU, TCcon, ICAU, ICcon, 농도, 결과)
+                        SELECT 분석일, SN, 업체명, 시료명, 구분, 소스구분, 비고, 등록일시, 'TCIC', 흡광도, 희석배수, 검량선_a, TCAU, TCcon, ICAU, ICcon, 농도, 결과
+                        FROM `TOC_TCIC_시험기록부`
+                        WHERE SN NOT IN (SELECT SN FROM `TOC_시험기록부` WHERE 방법='TCIC')";
+                    try { cmd.ExecuteNonQuery(); Log("TOC_TCIC_시험기록부 → TOC_시험기록부 마이그레이션 완료"); }
+                    catch { }
+                }
+
+                MarkMigrationDone(conn, "toc_unify_record_v1");
+                Log("TOC_시험기록부 통합 마이그레이션 완료");
+            }
+            catch (Exception ex) { Log($"toc_unify_record_v1 마이그레이션 실패: {ex.Message}"); }
+        }
+
         // COD / 페놀류 다중 방법 컬럼 추가 마이그레이션
         if (!IsMigrationDone(conn, "multi_method_cols_v1"))
         {
@@ -366,73 +405,6 @@ public static class FacilityDbMigration
             }
         }
 
-        // TOC_NPOC_DATA — UvVis 형식 (시료량 포함)
-        if (!DbConnectionFactory.TableExists(conn, "TOC_NPOC_DATA"))
-        {
-            Exec(conn, $@"
-                CREATE TABLE `TOC_NPOC_DATA` (
-                    id      INTEGER PRIMARY KEY {ai},
-                    분석일  TEXT NOT NULL,
-                    SN      TEXT NOT NULL,
-                    업체명  TEXT DEFAULT '',
-                    구분    TEXT DEFAULT '',
-                    시료량  TEXT DEFAULT '',
-                    흡광도  TEXT DEFAULT '',
-                    희석배수 TEXT DEFAULT '',
-                    검량선_a TEXT DEFAULT '',
-                    농도    TEXT DEFAULT '',
-                    등록일시 TEXT DEFAULT '',
-                    UNIQUE(분석일, SN)
-                )");
-            Log("TOC_NPOC_DATA 테이블 생성");
-        }
-
-        // TOC_TCIC_DATA — TocTcic 형식 (시료량 제외, TC/IC 검량선 컬럼 추가)
-        if (!DbConnectionFactory.TableExists(conn, "TOC_TCIC_DATA"))
-        {
-            Exec(conn, $@"
-                CREATE TABLE `TOC_TCIC_DATA` (
-                    id      INTEGER PRIMARY KEY {ai},
-                    분석일  TEXT NOT NULL,
-                    SN      TEXT NOT NULL,
-                    업체명  TEXT DEFAULT '',
-                    구분    TEXT DEFAULT '',
-                    흡광도  TEXT DEFAULT '',
-                    희석배수 TEXT DEFAULT '',
-                    검량선_a TEXT DEFAULT '',
-                    농도    TEXT DEFAULT '',
-                    TCAU    TEXT DEFAULT '',
-                    TCcon   TEXT DEFAULT '',
-                    ICAU    TEXT DEFAULT '',
-                    ICcon   TEXT DEFAULT '',
-                    등록일시 TEXT DEFAULT '',
-                    UNIQUE(분석일, SN)
-                )");
-            Log("TOC_TCIC_DATA 테이블 생성");
-        }
-
-        // COD_DATA — 적정법 기반 (Mn법 / OH법 공통)
-        if (!DbConnectionFactory.TableExists(conn, "COD_DATA"))
-        {
-            Exec(conn, $@"
-                CREATE TABLE `COD_DATA` (
-                    id       INTEGER PRIMARY KEY {ai},
-                    분석일   TEXT NOT NULL,
-                    SN       TEXT NOT NULL,
-                    업체명   TEXT DEFAULT '',
-                    구분     TEXT DEFAULT '',
-                    방법     TEXT DEFAULT '',
-                    공시험적정량 TEXT DEFAULT '',
-                    시료적정량 TEXT DEFAULT '',
-                    농도계수 TEXT DEFAULT '',
-                    시료량   TEXT DEFAULT '',
-                    희석배수 TEXT DEFAULT '',
-                    농도     TEXT DEFAULT '',
-                    등록일시 TEXT DEFAULT '',
-                    UNIQUE(분석일, SN)
-                )");
-            Log("COD_DATA 테이블 생성");
-        }
 
         // *_DATA 비고 컬럼 추가 (원본시료명 보존용)
         foreach (var tbl in new[] { "BOD_DATA", "SS_DATA", "NHexan_DATA", "TN_DATA", "TP_DATA", "Phenols_DATA", "TOC_TCIC_DATA", "TOC_NPOC_DATA" })
@@ -738,6 +710,18 @@ public static class FacilityDbMigration
                 ICcon    TEXT DEFAULT '',
                 결과     TEXT DEFAULT ''";
 
+        // TOC: NPOC법 + TCIC법 이중 컬럼
+        string TocCols() => @"
+                방법     TEXT DEFAULT 'NPOC',
+                시료량_NPOC TEXT DEFAULT '', 흡광도_NPOC TEXT DEFAULT '', 희석배수_NPOC TEXT DEFAULT '', 검량선_a_NPOC TEXT DEFAULT '',
+                흡광도_TCIC TEXT DEFAULT '', 희석배수_TCIC TEXT DEFAULT '', 검량선_a_TCIC TEXT DEFAULT '',
+                TCAU     TEXT DEFAULT '',
+                TCcon    TEXT DEFAULT '',
+                ICAU     TEXT DEFAULT '',
+                ICcon    TEXT DEFAULT '',
+                농도     TEXT DEFAULT '',
+                결과     TEXT DEFAULT ''";
+
         // VOC/유기물질: ST1~ST7 + ISTD
         string VocCols() => @"
                 농도     TEXT DEFAULT '',
@@ -852,14 +836,12 @@ public static class FacilityDbMigration
         int created = 0;
         foreach (var (analyte, category, method, instrument) in items)
         {
-            // TOC 특수: NPOC / TCIC 2개 테이블
+            // TOC 특수: NPOC / TCIC 통합 1개 테이블
             if (analyte.Equals("TOC", StringComparison.OrdinalIgnoreCase))
             {
-                var npoc = "TOC_NPOC_시험기록부";
-                TryCreate(npoc, $@"CREATE TABLE `{npoc}` ({BaseColumns()}, {TocNpocCols()}, UNIQUE(분석일, SN))");
-                var tcic = "TOC_TCIC_시험기록부";
-                TryCreate(tcic, $@"CREATE TABLE `{tcic}` ({BaseColumns()}, {TocTcicCols()}, UNIQUE(분석일, SN))");
-                created += 2;
+                var unified = "TOC_시험기록부";
+                TryCreate(unified, $@"CREATE TABLE `{unified}` ({BaseColumns()}, {TocCols()}, UNIQUE(분석일, SN))");
+                created += 1;
                 continue;
             }
 
