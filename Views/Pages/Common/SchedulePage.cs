@@ -872,13 +872,13 @@ public class SchedulePage
                         : isToday   ? Brush.Parse("#226622")
                         : AppRes("InputBorder"),
             BorderThickness = new Thickness(isFocused || selected ? 2 : 0.5),
-            Margin    = new Thickness(1),
-            Padding   = new Thickness(3, 2),  // Grid spacing이 아닌 content inset용
+            Margin    = new Thickness(0),  // ← 제거 (grid spacing 불필요)
+            Padding   = new Thickness(4, 2),  // ← 1(margin) + 3(기존 sp margin) = 4로 통합
             MinHeight = 94,
             Cursor    = valid ? new Cursor(StandardCursorType.Hand) : Cursor.Default,
         };
 
-        var sp = new StackPanel { Margin = new Thickness(0), Spacing = 1 };  // Margin 제거 - cell.Padding으로 처리
+        var sp = new StackPanel { Margin = new Thickness(0), Spacing = 1 };  // Margin 0
 
         if (valid)
         {
@@ -1002,7 +1002,7 @@ public class SchedulePage
             };
             var margin = pos switch
             {
-                SpanPos.Start  => new Thickness(0, 0, -4, 0),  // Cell padding(3) + Cell margin(1) 극복
+                SpanPos.Start  => new Thickness(0, 0, -4, 0),  // Cell padding(4) 극복
                 SpanPos.Middle => new Thickness(-4, 0, -4, 0),
                 SpanPos.End    => new Thickness(-4, 0, 0, 0),
                 _              => new Thickness(0),
