@@ -154,7 +154,6 @@ public partial class ContractPage : UserControl
     {
         string icon = contract.C_ContractType switch
         {
-            "위탁" => "🤝",
             "용역" => "📋",
             "구매" => "🛒",
             _     => "🏢"
@@ -178,8 +177,8 @@ public partial class ContractPage : UserControl
                     },
                     new StackPanel
                     {
-                        Orientation = Orientation.Vertical,
-                        Spacing     = 1,
+                        Orientation = Orientation.Horizontal,
+                        Spacing     = 6,
                         VerticalAlignment = VerticalAlignment.Center,
                         Children =
                         {
@@ -190,35 +189,21 @@ public partial class ContractPage : UserControl
                                 FontFamily = Font,
                                 Foreground = AppRes("AppFg"),
                             },
-                            new StackPanel
-                            {
-                                Orientation = Orientation.Horizontal, Spacing = 4,
-                                Children =
+                            string.IsNullOrEmpty(contract.C_Abbreviation)
+                                ? (Control)new TextBlock()
+                                : new Border
                                 {
-                                    string.IsNullOrEmpty(contract.C_Abbreviation)
-                                        ? (Control)new TextBlock()
-                                        : new Border
-                                        {
-                                            Background   = Brush.Parse(BadgeColorHelper.GetBadgeColor(contract.C_Abbreviation).Bg),
-                                            CornerRadius = new CornerRadius(3),
-                                            Padding      = new Thickness(4, 1),
-                                            VerticalAlignment = VerticalAlignment.Center,
-                                            Child = new TextBlock
-                                            {
-                                                Text       = contract.C_Abbreviation,
-                                                FontSize   = AppTheme.FontXS, FontFamily = Font,
-                                                Foreground = Brush.Parse(BadgeColorHelper.GetBadgeColor(contract.C_Abbreviation).Fg),
-                                            }
-                                        },
-                                    new TextBlock
+                                    Background   = Brush.Parse(BadgeColorHelper.GetBadgeColor(contract.C_Abbreviation).Bg),
+                                    CornerRadius = new CornerRadius(3),
+                                    Padding      = new Thickness(4, 1),
+                                    VerticalAlignment = VerticalAlignment.Center,
+                                    Child = new TextBlock
                                     {
-                                        Text       = contract.C_ContractType,
-                                        FontSize   = AppTheme.FontSM, FontFamily = Font,
-                                        Foreground = AppTheme.FgMuted,
-                                        VerticalAlignment = VerticalAlignment.Center,
+                                        Text       = contract.C_Abbreviation,
+                                        FontSize   = AppTheme.FontXS, FontFamily = Font,
+                                        Foreground = Brush.Parse(BadgeColorHelper.GetBadgeColor(contract.C_Abbreviation).Fg),
                                     }
                                 }
-                            }
                         }
                     }
                 }
@@ -1225,7 +1210,7 @@ public partial class ContractPage : UserControl
         }
         catch
         {
-            columns = new List<string> { "위탁", "용역", "구매", "기타" };
+            columns = new List<string> { "용역", "구매", "기타" };
         }
 
         var comboBox = new ComboBox

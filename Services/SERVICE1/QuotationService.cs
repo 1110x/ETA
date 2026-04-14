@@ -293,7 +293,7 @@ public static class QuotationService
             conn.Open();
             using var cmd = conn.CreateCommand();
             cmd.CommandText = "SELECT DISTINCT C_ContractType FROM `계약 DB` " +
-                              "WHERE C_ContractType IS NOT NULL AND C_ContractType <> '' " +
+                              "WHERE C_ContractType IS NOT NULL AND C_ContractType <> '' AND C_ContractType <> '위탁' " +
                               "ORDER BY C_ContractType ASC";
             using var dr = cmd.ExecuteReader();
             while (dr.Read())
