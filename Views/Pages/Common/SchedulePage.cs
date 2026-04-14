@@ -874,7 +874,8 @@ public class SchedulePage
                         : isToday   ? Brush.Parse("#226622")
                         : AppRes("InputBorder"),
             BorderThickness = new Thickness(isFocused || selected ? 2 : 0.5),
-            Margin    = new Thickness(1),  // ← 원래대로 복구 (cell 간 간격)
+            Margin    = new Thickness(0),  // ← Cell이 column 너비와 정확히 일치
+            Padding   = new Thickness(1),  // 간격은 padding으로 처리
             MinHeight = 94,
             Cursor    = valid ? new Cursor(StandardCursorType.Hand) : Cursor.Default,
         };
