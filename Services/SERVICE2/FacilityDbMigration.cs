@@ -94,6 +94,81 @@ public static class FacilityDbMigration
             catch (Exception ex) { Log($"ecotox_cols_v2 마이그레이션 실패: {ex.Message}"); }
         }
 
+        // COD / 페놀류 다중 방법 컬럼 추가 마이그레이션
+        if (!IsMigrationDone(conn, "multi_method_cols_v1"))
+        {
+            try
+            {
+                // 화학적_산소요구량_시험기록부 마이그레이션
+                if (DbConnectionFactory.TableExists(conn, "화학적_산소요구량_시험기록부"))
+                {
+                    var codCols = new[] {
+                        ("방법",          "TEXT DEFAULT 'Mn'"),
+                        ("시료량_Mn",     "TEXT DEFAULT ''"),
+                        ("공시험적정량_Mn", "TEXT DEFAULT ''"),
+                        ("시료적정량_Mn",   "TEXT DEFAULT ''"),
+                        ("농도계수_Mn",    "TEXT DEFAULT ''"),
+                        ("희석배수_Mn",    "TEXT DEFAULT ''"),
+                        ("시료량_OH",     "TEXT DEFAULT ''"),
+                        ("공시험적정량_OH", "TEXT DEFAULT ''"),
+                        ("시료적정량_OH",   "TEXT DEFAULT ''"),
+                        ("농도계수_OH",    "TEXT DEFAULT ''"),
+                        ("희석배수_OH",    "TEXT DEFAULT ''"),
+                    };
+                    foreach (var (colName, colDef) in codCols)
+                    {
+                        if (!DbConnectionFactory.ColumnExists(conn, "화학적_산소요구량_시험기록부", colName))
+                        {
+                            try { Exec(conn, $"ALTER TABLE `화학적_산소요구량_시험기록부` ADD COLUMN `{colName}` {colDef}"); }
+                            catch { }
+                        }
+                    }
+                    Log("화학적_산소요구량_시험기록부 다중 방법 컬럼 추가 완료");
+                }
+
+                // 페놀류_시험기록부 마이그레이션
+                if (DbConnectionFactory.TableExists(conn, "페놀류_시험기록부"))
+                {
+                    var phenolCols = new[] {
+                        ("방법",          "TEXT DEFAULT '직접'"),
+                        ("측정파장",      "TEXT DEFAULT ''"),
+                        ("ST01_mgL_직접", "TEXT DEFAULT ''"), ("ST02_mgL_직접", "TEXT DEFAULT ''"),
+                        ("ST03_mgL_직접", "TEXT DEFAULT ''"), ("ST04_mgL_직접", "TEXT DEFAULT ''"),
+                        ("ST05_mgL_직접", "TEXT DEFAULT ''"),
+                        ("ST01_abs_직접", "TEXT DEFAULT ''"), ("ST02_abs_직접", "TEXT DEFAULT ''"),
+                        ("ST03_abs_직접", "TEXT DEFAULT ''"), ("ST04_abs_직접", "TEXT DEFAULT ''"),
+                        ("ST05_abs_직접", "TEXT DEFAULT ''"),
+                        ("기울기_직접",    "TEXT DEFAULT ''"), ("절편_직접",    "TEXT DEFAULT ''"),
+                        ("R2_직접",       "TEXT DEFAULT ''"),
+                        ("시료량_직접",    "TEXT DEFAULT ''"), ("흡광도_직접",    "TEXT DEFAULT ''"),
+                        ("희석배수_직접",  "TEXT DEFAULT ''"),
+                        ("ST01_mgL_추출", "TEXT DEFAULT ''"), ("ST02_mgL_추출", "TEXT DEFAULT ''"),
+                        ("ST03_mgL_추출", "TEXT DEFAULT ''"), ("ST04_mgL_추출", "TEXT DEFAULT ''"),
+                        ("ST05_mgL_추출", "TEXT DEFAULT ''"),
+                        ("ST01_abs_추출", "TEXT DEFAULT ''"), ("ST02_abs_추출", "TEXT DEFAULT ''"),
+                        ("ST03_abs_추출", "TEXT DEFAULT ''"), ("ST04_abs_추출", "TEXT DEFAULT ''"),
+                        ("ST05_abs_추출", "TEXT DEFAULT ''"),
+                        ("기울기_추출",    "TEXT DEFAULT ''"), ("절편_추출",    "TEXT DEFAULT ''"),
+                        ("R2_추출",       "TEXT DEFAULT ''"),
+                        ("시료량_추출",    "TEXT DEFAULT ''"), ("흡광도_추출",    "TEXT DEFAULT ''"),
+                        ("희석배수_추출",  "TEXT DEFAULT ''"),
+                    };
+                    foreach (var (colName, colDef) in phenolCols)
+                    {
+                        if (!DbConnectionFactory.ColumnExists(conn, "페놀류_시험기록부", colName))
+                        {
+                            try { Exec(conn, $"ALTER TABLE `페놀류_시험기록부` ADD COLUMN `{colName}` {colDef}"); }
+                            catch { }
+                        }
+                    }
+                    Log("페놀류_시험기록부 다중 방법 컬럼 추가 완료");
+                }
+
+                MarkMigrationDone(conn, "multi_method_cols_v1");
+            }
+            catch (Exception ex) { Log($"multi_method_cols_v1 마이그레이션 실패: {ex.Message}"); }
+        }
+
         // 화합물 별칭 테이블 생성 + Seed
         if (!IsMigrationDone(conn, "compound_alias_v1"))
         {
@@ -334,6 +409,29 @@ public static class FacilityDbMigration
                     UNIQUE(분석일, SN)
                 )");
             Log("TOC_TCIC_DATA 테이블 생성");
+        }
+
+        // COD_DATA — 적정법 기반 (Mn법 / OH법 공통)
+        if (!DbConnectionFactory.TableExists(conn, "COD_DATA"))
+        {
+            Exec(conn, $@"
+                CREATE TABLE `COD_DATA` (
+                    id       INTEGER PRIMARY KEY {ai},
+                    분석일   TEXT NOT NULL,
+                    SN       TEXT NOT NULL,
+                    업체명   TEXT DEFAULT '',
+                    구분     TEXT DEFAULT '',
+                    방법     TEXT DEFAULT '',
+                    공시험적정량 TEXT DEFAULT '',
+                    시료적정량 TEXT DEFAULT '',
+                    농도계수 TEXT DEFAULT '',
+                    시료량   TEXT DEFAULT '',
+                    희석배수 TEXT DEFAULT '',
+                    농도     TEXT DEFAULT '',
+                    등록일시 TEXT DEFAULT '',
+                    UNIQUE(분석일, SN)
+                )");
+            Log("COD_DATA 테이블 생성");
         }
 
         // *_DATA 비고 컬럼 추가 (원본시료명 보존용)
@@ -687,6 +785,29 @@ public static class FacilityDbMigration
                 probit_method  TEXT DEFAULT '',
                 결과       TEXT DEFAULT ''";
 
+        // COD: Mn법(산성법) + OH법(알칼리성법) 이중 컬럼
+        string CodCols() => @"
+                방법       TEXT DEFAULT 'Mn',
+                시료량_Mn  TEXT DEFAULT '', 공시험적정량_Mn TEXT DEFAULT '', 시료적정량_Mn TEXT DEFAULT '', 농도계수_Mn TEXT DEFAULT '', 희석배수_Mn TEXT DEFAULT '',
+                시료량_OH  TEXT DEFAULT '', 공시험적정량_OH TEXT DEFAULT '', 시료적정량_OH TEXT DEFAULT '', 농도계수_OH TEXT DEFAULT '', 희석배수_OH TEXT DEFAULT '',
+                농도       TEXT DEFAULT '',
+                결과       TEXT DEFAULT ''";
+
+        // 페놀류: 직접법(510nm) + 추출법(460nm) 이중 컬럼
+        string PhenolCols() => @"
+                방법       TEXT DEFAULT '직접',
+                측정파장   TEXT DEFAULT '',
+                ST01_mgL_직접 TEXT DEFAULT '', ST02_mgL_직접 TEXT DEFAULT '', ST03_mgL_직접 TEXT DEFAULT '', ST04_mgL_직접 TEXT DEFAULT '', ST05_mgL_직접 TEXT DEFAULT '',
+                ST01_abs_직접 TEXT DEFAULT '', ST02_abs_직접 TEXT DEFAULT '', ST03_abs_직접 TEXT DEFAULT '', ST04_abs_직접 TEXT DEFAULT '', ST05_abs_직접 TEXT DEFAULT '',
+                기울기_직접 TEXT DEFAULT '', 절편_직접 TEXT DEFAULT '', R2_직접 TEXT DEFAULT '',
+                시료량_직접 TEXT DEFAULT '', 흡광도_직접 TEXT DEFAULT '', 희석배수_직접 TEXT DEFAULT '',
+                ST01_mgL_추출 TEXT DEFAULT '', ST02_mgL_추출 TEXT DEFAULT '', ST03_mgL_추출 TEXT DEFAULT '', ST04_mgL_추출 TEXT DEFAULT '', ST05_mgL_추출 TEXT DEFAULT '',
+                ST01_abs_추출 TEXT DEFAULT '', ST02_abs_추출 TEXT DEFAULT '', ST03_abs_추출 TEXT DEFAULT '', ST04_abs_추출 TEXT DEFAULT '', ST05_abs_추출 TEXT DEFAULT '',
+                기울기_추출 TEXT DEFAULT '', 절편_추출 TEXT DEFAULT '', R2_추출 TEXT DEFAULT '',
+                시료량_추출 TEXT DEFAULT '', 흡광도_추출 TEXT DEFAULT '', 희석배수_추출 TEXT DEFAULT '',
+                농도       TEXT DEFAULT '',
+                결과       TEXT DEFAULT ''";
+
         string SchemaColumns(string schema) => schema switch
         {
             "BOD"     => BodCols(),
@@ -698,6 +819,8 @@ public static class FacilityDbMigration
             "GcLc"    => UvVisCols(),
             "VOC"     => VocCols(),
             "Ecotox"  => EcotoxCols(),
+            "Cod"     => CodCols(),
+            "Phenol"  => PhenolCols(),
             _         => NHexanCols(),
         };
 

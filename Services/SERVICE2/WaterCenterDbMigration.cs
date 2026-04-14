@@ -192,6 +192,8 @@ public static class WaterCenterDbMigration
         if (analyte.Equals("BOD", StringComparison.OrdinalIgnoreCase)) return "BOD";
         if (analyte.Equals("SS", StringComparison.OrdinalIgnoreCase) ||
             analyte.Contains("부유물질")) return "SS";
+        if (analyte.Contains("화학적 산소요구량") || analyte.Contains("COD")) return "Cod";
+        if (analyte.Contains("페놀류") || analyte.Contains("페놀")) return "Phenol";
         if (analyte.Equals("N-Hexan", StringComparison.OrdinalIgnoreCase) ||
             analyte.Contains("노말헥산") || analyte.Contains("노르말헥산")) return "NHexan";
 
