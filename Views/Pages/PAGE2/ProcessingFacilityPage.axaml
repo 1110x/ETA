@@ -62,8 +62,8 @@
                                     FontSize="{DynamicResource FontSizeBase}" Height="30"
                                     FontFamily="avares://ETA/Assets/Fonts#Pretendard"/>
 
-                <!-- 조회 + 파일첨부 + 생성 버튼 -->
-                <Grid ColumnDefinitions="*,8,*,8,*">
+                <!-- 조회 + 파일첨부 + 생성 + 삭제 버튼 -->
+                <Grid ColumnDefinitions="*,8,*,8,*,8,*">
                     <Button Grid.Column="0"
                             x:Name="btnLoad"
                             Content="조회"
@@ -91,6 +91,15 @@
                             BorderThickness="0" CornerRadius="4"
                             HorizontalAlignment="Stretch"
                             Click="BtnGenerateToday_Click"/>
+                    <Button Grid.Column="6"
+                            x:Name="btnDelete"
+                            Content="🗑️ 삭제"
+                            Height="30" FontSize="{DynamicResource FontSizeBase}"
+                            FontFamily="avares://ETA/Assets/Fonts#Pretendard"
+                            Background="{DynamicResource ThemeBgDanger}" Foreground="{DynamicResource ThemeFgDanger}"
+                            BorderThickness="0" CornerRadius="4"
+                            HorizontalAlignment="Stretch"
+                            Click="BtnDelete_Click"/>
                 </Grid>
 
                 <!-- 상태 텍스트 -->

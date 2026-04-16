@@ -19,7 +19,7 @@ namespace ETA.Views.Pages.PAGE1;
 /// DB Migration — Show2: 시료명 매핑 테이블
 /// 기존 시료명 | 새 시료명(채취지점) 2열 구조
 /// Show4에서 채취지점을 클릭하면 선택된 행에 채취지점명이 채워짐
-/// 저장 시 분석의뢰및결과.시료명 을 일괄 UPDATE
+/// 저장 시 수질분석센터_결과.시료명 을 일괄 UPDATE
 /// </summary>
 public partial class DbMigrationMappingPanel : UserControl
 {

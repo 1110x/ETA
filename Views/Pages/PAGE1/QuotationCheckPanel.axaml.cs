@@ -30,7 +30,7 @@ public partial class QuotationCheckPanel : UserControl
     private Dictionary<string, List<CheckBox>>        _catChildren = new(StringComparer.OrdinalIgnoreCase);
 
     private bool _suspendEvents = false;
-    private bool _isDirty       = false;
+    private bool _isDirty;
 
     // ── 편집 대상 (둘 중 하나만 non-null) ───────────────────────────────
     private AnalysisRequestRecord? _currentAnalysisRecord;
@@ -75,18 +75,15 @@ public partial class QuotationCheckPanel : UserControl
     {
         _currentAnalysisRecord = null;
         _currentIssue          = null;
-        _isDirty               = false;
         RefreshSaveBar();
     }
 
     private void RefreshSaveBar()
     {
-        _isDirty = false;
     }
 
     private void SetDirty()
     {
-        _isDirty = true;
     }
 
     public QuotationCheckPanel()

@@ -7,7 +7,7 @@ namespace ETA.Services.SERVICE2;
 
 /// <summary>
 /// 배출업소 시험성적서 서비스
-/// — 폐수의뢰및결과 테이블에서 날짜별 결과 조회
+/// — 비용부담금_결과 테이블에서 날짜별 결과 조회
 /// — 이전 N회 평균 대비 추세 계산 (단계별: ▲ ▲▲ ↑)
 /// </summary>
 public static class WasteTestReportService
@@ -21,12 +21,12 @@ public static class WasteTestReportService
         using var cmd = conn.CreateCommand();
         if (groups.Count == 0)
         {
-            cmd.CommandText = "SELECT DISTINCT 채수일 FROM `폐수의뢰및결과` ORDER BY 채수일 DESC";
+            cmd.CommandText = "SELECT DISTINCT 채수일 FROM `비용부담금_결과` ORDER BY 채수일 DESC";
         }
         else
         {
             var placeholders = string.Join(",", groups.Select((_, i) => $"@g{i}"));
-            cmd.CommandText = $"SELECT DISTINCT 채수일 FROM `폐수의뢰및결과` WHERE 구분 IN ({placeholders}) ORDER BY 채수일 DESC";
+            cmd.CommandText = $"SELECT DISTINCT 채수일 FROM `비용부담금_결과` WHERE 구분 IN ({placeholders}) ORDER BY 채수일 DESC";
             for (int i = 0; i < groups.Count; i++)
                 cmd.Parameters.AddWithValue($"@g{i}", groups[i]);
         }
@@ -47,7 +47,7 @@ public static class WasteTestReportService
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = "SELECT 채수일, 구분, COUNT(*) FROM `폐수의뢰및결과` GROUP BY 채수일, 구분";
+        cmd.CommandText = "SELECT 채수일, 구분, COUNT(*) FROM `비용부담금_결과` GROUP BY 채수일, 구분";
         using var r = cmd.ExecuteReader();
         while (r.Read())
         {
@@ -102,7 +102,7 @@ public static class WasteTestReportService
         cmd.CommandText = $@"
             SELECT Id, 순서, SN, 업체명, 관리번호, 구분,
                    BOD, `TOC`, SS, `T-N`, `T-P`, `N-Hexan`, Phenols, 비고, 확인자
-            FROM `폐수의뢰및결과`
+            FROM `비용부담금_결과`
             WHERE {where}
             ORDER BY 구분, 순서, 업체명";
         cmd.Parameters.AddWithValue("@d", 채수일);

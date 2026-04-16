@@ -42,9 +42,9 @@ public static class CompanyRenameService
                 "UPDATE `계약 DB` SET `C_CompanyName` = @newName WHERE `C_CompanyName` = @oldName",
                 oldName, newName);
 
-            // ── 4. 분석의뢰및결과.의뢰사업장 ────────────────────────────────
+            // ── 4. 수질분석센터_결과.의뢰사업장 ────────────────────────────────
             total += ExecUpdate(conn,
-                "UPDATE `분석의뢰및결과` SET `의뢰사업장` = @newName WHERE `의뢰사업장` = @oldName",
+                "UPDATE `수질분석센터_결과` SET `의뢰사업장` = @newName WHERE `의뢰사업장` = @oldName",
                 oldName, newName);
 
             // ── 5. 시료명칭 컬럼명 변경 ─────────────────────────────────────

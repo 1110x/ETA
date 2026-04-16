@@ -9,7 +9,7 @@ namespace ETA.Services.SERVICE2;
 
 public static class WasteDataService
 {
-    // ── 업체명으로 전 항목 분석결과 조회 (폐수의뢰및결과 테이블, 날짜 오름차순) ──
+    // ── 업체명으로 전 항목 분석결과 조회 (비용부담금_결과 테이블, 날짜 오름차순) ──
     public static List<WasteAnalysisResult> GetResults(string 업체명)
     {
         var list = new List<WasteAnalysisResult>();
@@ -18,7 +18,7 @@ public static class WasteDataService
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
             SELECT 채수일, BOD, `TOC`, SS, `T-N`, `T-P`, `N-Hexan`, Phenols
-            FROM `폐수의뢰및결과`
+            FROM `비용부담금_결과`
             WHERE 업체명 = @n
             ORDER BY 채수일 ASC";
         cmd.Parameters.AddWithValue("@n", 업체명);

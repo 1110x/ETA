@@ -129,7 +129,7 @@ public static class WasteRequestService
 
     // =========================================================================
     // 날짜 트리뷰 소스 (비용부담금 모드)
-    //   - 폐수의뢰및결과.채수일 기준
+    //   - 비용부담금_결과.채수일 기준
     // =========================================================================
     public static List<string> GetMonths()
     {
@@ -138,11 +138,11 @@ public static class WasteRequestService
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
-            if (!DbConnectionFactory.TableExists(conn, "폐수의뢰및결과")) return list;
+            if (!DbConnectionFactory.TableExists(conn, "비용부담금_결과")) return list;
             using var cmd = conn.CreateCommand();
             cmd.CommandText = @"
                 SELECT DISTINCT SUBSTR(채수일, 1, 7) AS ym
-                FROM `폐수의뢰및결과`
+                FROM `비용부담금_결과`
                 WHERE 채수일 IS NOT NULL AND 채수일 <> ''
                 ORDER BY ym DESC";
             using var r = cmd.ExecuteReader();
@@ -164,11 +164,11 @@ public static class WasteRequestService
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
-            if (!DbConnectionFactory.TableExists(conn, "폐수의뢰및결과")) return list;
+            if (!DbConnectionFactory.TableExists(conn, "비용부담금_결과")) return list;
             using var cmd = conn.CreateCommand();
             cmd.CommandText = @"
                 SELECT DISTINCT 채수일
-                FROM `폐수의뢰및결과`
+                FROM `비용부담금_결과`
                 WHERE SUBSTR(채수일, 1, 7) = @ym
                 ORDER BY 채수일 DESC";
             cmd.Parameters.AddWithValue("@ym", yearMonth);
@@ -186,7 +186,7 @@ public static class WasteRequestService
 
     // =========================================================================
     // 날짜별 의뢰 항목 키 집합 (배지 필터링용)
-    //   - 폐수의뢰및결과 에서 해당 날짜에 값이 있는 항목 컬럼 반환
+    //   - 비용부담금_결과 에서 해당 날짜에 값이 있는 항목 컬럼 반환
     //   - 비용부담금 모드 트리뷰 배지가 결과가 있는 항목만 표시하도록 사용
     // =========================================================================
     public static HashSet<string> GetRequestedItemSetByDate(string date)
@@ -207,7 +207,7 @@ public static class WasteRequestService
                     MAX(CASE WHEN `T-P`     IS NOT NULL AND `T-P`     <> '' THEN 1 ELSE 0 END),
                     MAX(CASE WHEN Phenols   IS NOT NULL AND Phenols   <> '' THEN 1 ELSE 0 END),
                     MAX(CASE WHEN `N-Hexan` IS NOT NULL AND `N-Hexan` <> '' THEN 1 ELSE 0 END)
-                FROM `폐수의뢰및결과`
+                FROM `비용부담금_결과`
                 WHERE 채수일 = @d";
             cmd.Parameters.AddWithValue("@d", date);
             using var rdr = cmd.ExecuteReader();
@@ -272,7 +272,7 @@ public static class WasteRequestService
     }
 
     // =========================================================================
-    // 처리시설 작업 항목 (처리시설_측정결과 기반 — 해당 날짜에 행이 있으면 작업 표시)
+    // 처리시설 작업 항목 (처리시설_결과 기반 — 해당 날짜에 행이 있으면 작업 표시)
     // 항목목록은 처리시설_분석계획에서 읽음 (마스터 컬럼 플래그 아님)
     // =========================================================================
     public static List<FacilityWorkItem> GetFacilityItems(string date)
@@ -340,13 +340,13 @@ public static class WasteRequestService
             del.ExecuteNonQuery();
         }
 
-        // 3. 처리시설_측정결과에 오늘 행이 있고 + 오늘 분석계획에도 있는 시설만 작업 등록
-        if (planItems.Count > 0 && DbConnectionFactory.TableExists(conn, "처리시설_측정결과"))
+        // 3. 처리시설_결과에 오늘 행이 있고 + 오늘 분석계획에도 있는 시설만 작업 등록
+        if (planItems.Count > 0 && DbConnectionFactory.TableExists(conn, "처리시설_결과"))
         {
             var measuredRows = new List<(int 마스터Id, string 시설명, string 시료명)>();
             using (var cmd = conn.CreateCommand())
             {
-                cmd.CommandText = "SELECT DISTINCT 마스터_id, 시설명, 시료명 FROM `처리시설_측정결과` WHERE LEFT(채취일자,10) = @d";
+                cmd.CommandText = "SELECT DISTINCT 마스터_id, 시설명, 시료명 FROM `처리시설_결과` WHERE LEFT(채취일자,10) = @d";
                 cmd.Parameters.AddWithValue("@d", date);
                 using var rdr = cmd.ExecuteReader();
                 while (rdr.Read())

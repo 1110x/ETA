@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using ETA.Models;
@@ -449,71 +450,140 @@ public static class WasteSampleService
 
     // ── *_DATA 원시 측정값 UPSERT ─────────────────────────────────────────────
 
-    /// <summary>BOD_DATA에 원시 측정값 UPSERT (분석일+SN 기준)</summary>
+    /// <summary>BOD_DATA에 원시 측정값 UPSERT (SN+업체명 기준)</summary>
     public static void UpsertBodData(
+        string tableName,
         string 채수일, string sn, string 업체명, string 구분,
         string 시료량, string d1, string d2, string 희석배수, string 결과,
         string 소스구분 = "폐수배출업소", string 식종시료량 = "", string 식종D1 = "", string 식종D2 = "",
-        string 식종BOD = "", string 식종함유량 = "", string 비고 = "", string 시료명 = "")
+        string 식종BOD = "", string 식종함유량 = "", string 비고 = "", string 시료명 = "",
+        string 분석자1 = "", string 분석자2 = "", string minDO = "", string dayDO = "", string 희석수시료량 = "")
     {
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
-            if (!DbConnectionFactory.ColumnExists(conn, "BOD_시험기록부", "시료명"))
-            {
-                using var alt = conn.CreateCommand();
-                alt.CommandText = "ALTER TABLE `BOD_시험기록부` ADD COLUMN `시료명` TEXT DEFAULT ''";
-                alt.ExecuteNonQuery();
-            }
+
             using var chk = conn.CreateCommand();
-            chk.CommandText = "SELECT COUNT(*) FROM `BOD_시험기록부` WHERE LEFT(분석일,10)=@d AND SN=@sn AND 시료명=@nm2";
-            chk.Parameters.AddWithValue("@d",  채수일);
+            chk.CommandText = $"SELECT COUNT(*) FROM `{tableName}` WHERE SN=@sn AND 업체명=@nm";
             chk.Parameters.AddWithValue("@sn", sn);
-            chk.Parameters.AddWithValue("@nm2", 시료명);
+            chk.Parameters.AddWithValue("@nm", 업체명);
             bool exists = Convert.ToInt32(chk.ExecuteScalar()) > 0;
 
             using var cmd = conn.CreateCommand();
             if (exists)
             {
-                cmd.CommandText = $@"UPDATE `BOD_시험기록부`
-                    SET 시료량=@vol, D1=@d1, D2=@d2, 희석배수=@dil, 결과=@r,
+                cmd.CommandText = $@"UPDATE `{tableName}`
+                    SET 분석일=@d, 시료량=@vol, D1=@d1, D2=@d2, 희석배수=@dil, 결과=@r,
                         식종시료량=@sv, 식종D1=@sd1, 식종D2=@sd2, 식종BOD=@sbod, 식종함유량=@spct,
+                        분석자1=@a1, 분석자2=@a2, `15min_DO`=@mdo, `5Day_DO`=@ddo, 희석수시료량=@hsv,
                         비고=@remark, 등록일시={DbConnectionFactory.NowExpr}
-                    WHERE LEFT(분석일,10)=@d AND SN=@sn AND 시료명=@nm2";
+                    WHERE SN=@sn AND 업체명=@nm";
             }
             else
             {
-                cmd.CommandText = $@"INSERT INTO `BOD_시험기록부`
+                cmd.CommandText = $@"INSERT INTO `{tableName}`
                     (분석일, SN, 업체명, 구분, 소스구분, 시료명, 시료량, D1, D2, 희석배수, 결과,
-                     식종시료량, 식종D1, 식종D2, 식종BOD, 식종함유량, 비고, 등록일시)
+                     식종시료량, 식종D1, 식종D2, 식종BOD, 식종함유량,
+                     분석자1, 분석자2, `15min_DO`, `5Day_DO`, 희석수시료량, 비고, 등록일시)
                     VALUES (@d, @sn, @nm, @gu, @src, @nm2, @vol, @d1, @d2, @dil, @r,
-                            @sv, @sd1, @sd2, @sbod, @spct, @remark, {DbConnectionFactory.NowExpr})";
-                cmd.Parameters.AddWithValue("@nm", 업체명);
-                cmd.Parameters.AddWithValue("@gu", 구분);
+                            @sv, @sd1, @sd2, @sbod, @spct,
+                            @a1, @a2, @mdo, @ddo, @hsv, @remark, {DbConnectionFactory.NowExpr})";
+                cmd.Parameters.AddWithValue("@gu",  구분);
                 cmd.Parameters.AddWithValue("@src", 소스구분);
+                cmd.Parameters.AddWithValue("@nm2", 시료명);
             }
-            cmd.Parameters.AddWithValue("@d",    채수일);
-            cmd.Parameters.AddWithValue("@sn",   sn);
-            cmd.Parameters.AddWithValue("@nm2",  시료명);
-            cmd.Parameters.AddWithValue("@vol",  시료량);
-            cmd.Parameters.AddWithValue("@d1",   d1);
-            cmd.Parameters.AddWithValue("@d2",   d2);
-            cmd.Parameters.AddWithValue("@dil",  희석배수);
-            cmd.Parameters.AddWithValue("@r",    결과);
-            cmd.Parameters.AddWithValue("@sv",   식종시료량);
-            cmd.Parameters.AddWithValue("@sd1",  식종D1);
-            cmd.Parameters.AddWithValue("@sd2",  식종D2);
-            cmd.Parameters.AddWithValue("@sbod", 식종BOD);
-            cmd.Parameters.AddWithValue("@spct", 식종함유량);
+            cmd.Parameters.AddWithValue("@d",     채수일);
+            cmd.Parameters.AddWithValue("@sn",    sn);
+            cmd.Parameters.AddWithValue("@nm",    업체명);
+            cmd.Parameters.AddWithValue("@vol",   시료량);
+            cmd.Parameters.AddWithValue("@d1",    d1);
+            cmd.Parameters.AddWithValue("@d2",    d2);
+            cmd.Parameters.AddWithValue("@dil",   희석배수);
+            cmd.Parameters.AddWithValue("@r",     결과);
+            cmd.Parameters.AddWithValue("@sv",    식종시료량);
+            cmd.Parameters.AddWithValue("@sd1",   식종D1);
+            cmd.Parameters.AddWithValue("@sd2",   식종D2);
+            cmd.Parameters.AddWithValue("@sbod",  식종BOD);
+            cmd.Parameters.AddWithValue("@spct",  식종함유량);
+            cmd.Parameters.AddWithValue("@a1",    분석자1);
+            cmd.Parameters.AddWithValue("@a2",    분석자2);
+            cmd.Parameters.AddWithValue("@mdo",   minDO);
+            cmd.Parameters.AddWithValue("@ddo",   dayDO);
+            cmd.Parameters.AddWithValue("@hsv",   희석수시료량);
             cmd.Parameters.AddWithValue("@remark", 비고);
             cmd.ExecuteNonQuery();
         }
         catch (Exception ex)
         {
+            Debug.WriteLine($"[UpsertBodData] {ex.Message}");
         }
     }
 
+    /// <summary>비용부담금_결과 테이블에 결과값 UPDATE (채수일+SN 기준)</summary>
+    /// <summary>
+    /// 분석일(BOD-DATA의 실제 분석 날짜) + SN으로 비용부담금_결과를 찾아 결과값 UPDATE.
+    /// SN 형식 MM-DD-NN 에서 채수월을 추출하고,
+    /// 채수일은 분석일 기준 -40일 ~ 분석일 범위 내에서 SN 매칭.
+    /// 12월 채수 시료는 다음 해 1월 분석일도 포함.
+    /// </summary>
+    public static void UpdateWasteResult(string 분석일, string SN, string 시료명,
+        string BOD = "", string TOC = "", string SS = "", string TN = "", string TP = "",
+        string NHexan = "", string Phenols = "")
+    {
+        try
+        {
+            // 분석일에서 연도와 날짜 파싱
+            if (!DateTime.TryParse(분석일, out var 분석dt)) return;
+
+            // SN에서 채수월 추출 (MM-DD-NN → parts[0] = MM)
+            var snParts = SN.Split('-');
+            int 채수월 = (snParts.Length >= 1 && int.TryParse(snParts[0], out var m)) ? m : 0;
+
+            // 채수일 검색 범위: 분석일 기준 -40일 ~ 분석일
+            var rangeEnd   = 분석dt.ToString("yyyy-MM-dd");
+            var rangeStart = 분석dt.AddDays(-40).ToString("yyyy-MM-dd");
+
+            // 12월 채수의 경우 분석일이 다음 해 1~2월일 수 있으므로 연도 후보 추가
+            // → rangeStart/rangeEnd로 이미 커버됨 (날짜 범위로 조회)
+
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var chk = conn.CreateCommand();
+            chk.CommandText = @"SELECT Id FROM `비용부담금_결과`
+                WHERE SN=@sn
+                  AND 채수일 BETWEEN @start AND @end
+                LIMIT 1";
+            chk.Parameters.AddWithValue("@sn",    SN);
+            chk.Parameters.AddWithValue("@start", rangeStart);
+            chk.Parameters.AddWithValue("@end",   rangeEnd);
+            var id = chk.ExecuteScalar();
+            if (id == null) return;
+
+            var setCols = new System.Collections.Generic.List<string>();
+            if (!string.IsNullOrEmpty(BOD))     setCols.Add("BOD=@bod");
+            if (!string.IsNullOrEmpty(TOC))     setCols.Add("`TOC`=@toc");
+            if (!string.IsNullOrEmpty(SS))      setCols.Add("SS=@ss");
+            if (!string.IsNullOrEmpty(TN))      setCols.Add("`T-N`=@tn");
+            if (!string.IsNullOrEmpty(TP))      setCols.Add("`T-P`=@tp");
+            if (!string.IsNullOrEmpty(NHexan))  setCols.Add("`N-Hexan`=@nh");
+            if (!string.IsNullOrEmpty(Phenols)) setCols.Add("Phenols=@ph");
+            if (setCols.Count == 0) return;
+
+            using var upd = conn.CreateCommand();
+            upd.CommandText = $"UPDATE `비용부담금_결과` SET {string.Join(", ", setCols)} WHERE Id=@id";
+            upd.Parameters.AddWithValue("@id", id);
+            if (!string.IsNullOrEmpty(BOD))     upd.Parameters.AddWithValue("@bod", BOD);
+            if (!string.IsNullOrEmpty(TOC))     upd.Parameters.AddWithValue("@toc", TOC);
+            if (!string.IsNullOrEmpty(SS))      upd.Parameters.AddWithValue("@ss",  SS);
+            if (!string.IsNullOrEmpty(TN))      upd.Parameters.AddWithValue("@tn",  TN);
+            if (!string.IsNullOrEmpty(TP))      upd.Parameters.AddWithValue("@tp",  TP);
+            if (!string.IsNullOrEmpty(NHexan))  upd.Parameters.AddWithValue("@nh",  NHexan);
+            if (!string.IsNullOrEmpty(Phenols)) upd.Parameters.AddWithValue("@ph",  Phenols);
+            upd.ExecuteNonQuery();
+        }
+        catch { }
+    }
     /// <summary>SS_DATA / NHexan_DATA 등 단순 결과값 테이블 UPSERT</summary>
     public static void UpsertSimpleData(string tableName, string resultCol,
         string 채수일, string sn, string 업체명, string 구분,

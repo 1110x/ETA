@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git mv:*)"
+      "Bash(git mv:*)",
+      "Bash(awk '/^    private static void EnsureAnalysisRecordTables\\\\\\(DbConnection conn\\\\\\)/{start=NR} start && /^    \\\\}$/{if\\(NR>start\\) {print NR\": \" $0; exit}}' /Users/azrael/Documents/ETA/Services/SERVICE2/FacilityDbMigration.cs)"
     ]
   }
 }

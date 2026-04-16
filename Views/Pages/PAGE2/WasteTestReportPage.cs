@@ -606,15 +606,8 @@ public class WasteTestReportPage : UserControl
         }
         else if (tier == 3)
         {
-            // 굵은 큰 화살표
-            symbol = new TextBlock
-            {
-                Text = isUp ? "⬆" : "⬇",
-                FontSize = AppTheme.FontMD + 4,
-                Foreground = color,
-                VerticalAlignment = VerticalAlignment.Center,
-                Margin = new Thickness(0, -2, 2, -2),
-            };
+            // 삼각형 3개 포개기 (최고 강도)
+            symbol = BuildOverlapTriangles3(isUp, color);
         }
         else
         {
@@ -675,6 +668,26 @@ public class WasteTestReportPage : UserControl
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Thickness(0, 0, 1, 0),
             Children = { top, bottom },
+        };
+    }
+
+    /// <summary>포개진 삼각형 3개 (최고 강도 tier 3)</summary>
+    private static Control BuildOverlapTriangles3(bool isUp, IBrush color)
+    {
+        string ch = isUp ? "▲" : "▼";
+        double sz = AppTheme.FontMD * 0.6;
+        double overlap = -4;
+
+        var t1 = new TextBlock { Text = ch, FontSize = sz, FontFamily = Font, Foreground = color, HorizontalAlignment = HorizontalAlignment.Center, Margin = isUp ? new Thickness(0, 0, 0, overlap) : new Thickness(0) };
+        var t2 = new TextBlock { Text = ch, FontSize = sz, FontFamily = Font, Foreground = color, HorizontalAlignment = HorizontalAlignment.Center, Margin = isUp ? new Thickness(0, 0, 0, overlap) : new Thickness(0, overlap, 0, 0) };
+        var t3 = new TextBlock { Text = ch, FontSize = sz, FontFamily = Font, Foreground = color, HorizontalAlignment = HorizontalAlignment.Center, Margin = isUp ? new Thickness(0) : new Thickness(0, overlap, 0, 0) };
+
+        return new StackPanel
+        {
+            Orientation = Orientation.Vertical,
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin = new Thickness(0, 0, 1, 0),
+            Children = { t1, t2, t3 },
         };
     }
 

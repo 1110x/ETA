@@ -5,6 +5,7 @@ using System.Data.Common;
 using System.Linq;
 using ETA.Models;
 using ETA.Services.Common;
+using ETA.Services.SERVICE2;
 
 namespace ETA.Services.SERVICE1;
 
@@ -25,12 +26,20 @@ public static class AnalysisService
             alt.CommandText = "ALTER TABLE `분석정보` ADD COLUMN `약칭` TEXT DEFAULT ''";
             try { alt.ExecuteNonQuery(); } catch { }
         }
+        // AliasX 컬럼 없으면 자동 추가 (파서 키워드 자동 매핑용, 쉼표 구분)
+        if (!DbConnectionFactory.ColumnExists(connection, "분석정보", "AliasX"))
+        {
+            using var alt = connection.CreateCommand();
+            alt.CommandText = "ALTER TABLE `분석정보` ADD COLUMN `AliasX` TEXT DEFAULT ''";
+            try { alt.ExecuteNonQuery(); } catch { }
+        }
 
         using var command = connection.CreateCommand();
         command.CommandText = @"
             SELECT Category,
             Analyte,
             COALESCE(`약칭`, '') AS `약칭`,
+            COALESCE(`AliasX`, '') AS `AliasX`,
             Parts,
             DecimalPlaces,
             unit,
@@ -54,7 +63,8 @@ public static class AnalysisService
                 unit          = reader.GetStringOrEmpty("unit"),
                 ES            = reader.GetStringOrEmpty("ES"),
                 Method        = reader.GetStringOrEmpty("Method"),
-                instrument    = reader.GetStringOrEmpty("instrument")
+                instrument    = reader.GetStringOrEmpty("instrument"),
+                AliasX        = reader.GetStringOrEmpty("AliasX")
             };
             items.Add(item);
             Console.WriteLine($"[GetAllItems] 아이템: {item.Analyte} ({item.Category})");
@@ -105,14 +115,14 @@ public static class AnalysisService
         catch (Exception ex) { Console.WriteLine($"[SyncColumnsToAssignmentTable] 오류: {ex.Message}"); }
     }
 
-    /// <summary>분석정보.Analyte 목록을 분석의뢰및결과 컬럼에 동기화 (없는 컬럼 자동 추가)</summary>
+    /// <summary>분석정보.Analyte 목록을 수질분석센터_결과 컬럼에 동기화 (없는 컬럼 자동 추가)</summary>
     public static void SyncColumnsToRequestTable(List<AnalysisItem>? items = null)
     {
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
-            if (!DbConnectionFactory.TableExists(conn, "분석의뢰및결과")) return;
+            if (!DbConnectionFactory.TableExists(conn, "수질분석센터_결과")) return;
 
             var analytes = items?.Select(a => a.Analyte).Where(a => !string.IsNullOrWhiteSpace(a)).ToList()
                         ?? new List<string>();
@@ -125,14 +135,14 @@ public static class AnalysisService
             }
 
             var existing = new HashSet<string>(
-                DbConnectionFactory.GetColumnNames(conn, "분석의뢰및결과"),
+                DbConnectionFactory.GetColumnNames(conn, "수질분석센터_결과"),
                 StringComparer.OrdinalIgnoreCase);
 
             foreach (var analyte in analytes)
             {
                 if (existing.Contains(analyte)) continue;
                 using var alt = conn.CreateCommand();
-                alt.CommandText = $"ALTER TABLE `분석의뢰및결과` ADD COLUMN `{analyte.Replace("`", "")}` TEXT DEFAULT NULL";
+                alt.CommandText = $"ALTER TABLE `수질분석센터_결과` ADD COLUMN `{analyte.Replace("`", "")}` TEXT DEFAULT NULL";
                 try { alt.ExecuteNonQuery(); } catch { }
             }
         }
@@ -305,6 +315,79 @@ public static class AnalysisService
             cmd.Parameters.AddWithValue("@abbrev", shortName);
             var result = cmd.ExecuteScalar();
             return result is string s && !string.IsNullOrWhiteSpace(s) ? s : null;
+        }
+        catch { return null; }
+    }
+
+    // 약칭 또는 항목명 → 실제 시험기록부 테이블명 (분석정보 Analyte 기반)
+    // 검색 우선순위: Analyte 직접 일치 → 약칭 일치 → AliasX 포함
+    private static readonly Dictionary<string, string> _recordTableCache = new(StringComparer.OrdinalIgnoreCase);
+
+    public static string? GetRecordTableName(string itemOrAbbr)
+    {
+        if (string.IsNullOrWhiteSpace(itemOrAbbr)) return null;
+        if (_recordTableCache.TryGetValue(itemOrAbbr, out var cached)) return cached;
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"SELECT `Analyte` FROM `분석정보`
+                WHERE `Analyte` = @v OR `약칭` = @v
+                   OR FIND_IN_SET(@v, REPLACE(COALESCE(`AliasX`,''), ' ', '')) > 0
+                LIMIT 1";
+            cmd.Parameters.AddWithValue("@v", itemOrAbbr);
+            var analyte = cmd.ExecuteScalar() as string;
+            if (string.IsNullOrEmpty(analyte)) return null;
+            var tableName = WaterCenterDbMigration.SafeName(analyte) + "_시험기록부";
+            _recordTableCache[itemOrAbbr] = tableName;
+            return tableName;
+        }
+        catch { return null; }
+    }
+
+    // AliasX에 새 키워드 append — 이미 있으면 skip, 추가 시 캐시 무효화
+    public static void AppendAliasX(string analyte, string keyword)
+    {
+        if (string.IsNullOrWhiteSpace(analyte) || string.IsNullOrWhiteSpace(keyword)) return;
+        keyword = keyword.Trim();
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT COALESCE(`AliasX`, '') FROM `분석정보` WHERE `Analyte` = @a LIMIT 1";
+            cmd.Parameters.AddWithValue("@a", analyte);
+            var current = cmd.ExecuteScalar() as string ?? "";
+            var aliases = current.Split(',', System.StringSplitOptions.RemoveEmptyEntries)
+                                 .Select(x => x.Trim()).ToList();
+            if (aliases.Any(x => string.Equals(x, keyword, System.StringComparison.OrdinalIgnoreCase))) return;
+            aliases.Add(keyword);
+            using var upd = conn.CreateCommand();
+            upd.CommandText = "UPDATE `분석정보` SET `AliasX` = @v WHERE `Analyte` = @a";
+            upd.Parameters.AddWithValue("@v", string.Join(",", aliases));
+            upd.Parameters.AddWithValue("@a", analyte);
+            upd.ExecuteNonQuery();
+            _recordTableCache.Remove(keyword);  // 캐시 무효화
+        }
+        catch { }
+    }
+
+    // 파서 키워드로 Analyte 조회 (약칭 + AliasX 검색)
+    public static string? FindAnalyteByKeyword(string keyword)
+    {
+        if (string.IsNullOrWhiteSpace(keyword)) return null;
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"SELECT `Analyte` FROM `분석정보`
+                WHERE `Analyte` = @v OR `약칭` = @v
+                   OR FIND_IN_SET(@v, REPLACE(COALESCE(`AliasX`,''), ' ', '')) > 0
+                LIMIT 1";
+            cmd.Parameters.AddWithValue("@v", keyword);
+            return cmd.ExecuteScalar() as string;
         }
         catch { return null; }
     }

@@ -2,7 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
 using System;
-using System.Reactive.Linq;
+using System;
 
 namespace ETA.Services.Common;
 
@@ -38,7 +38,7 @@ public static class AppFonts
     /// 슬라이더를 움직이면 이 Observable 이 새 값을 방출한다.</summary>
     public static IObservable<object?> Obs(string key)
         => Application.Current?.GetResourceObservable(key)
-           ?? Observable.Return<object?>(Get(key, BaseBase));
+           ?? new SingleValueObservable<object?>(Get(key, BaseBase));
 
     // ── TextBlock FontSize 반응형 바인딩 헬퍼 ────────────────────────────
     public static TextBlock BindXS(this TextBlock tb)
@@ -77,5 +77,21 @@ public static class AppFonts
             && v is double d)
             return d;
         return fallback;
+    }
+
+    private sealed class SingleValueObservable<T>(T value) : IObservable<T>
+    {
+        public IDisposable Subscribe(IObserver<T> observer)
+        {
+            observer.OnNext(value);
+            observer.OnCompleted();
+            return NullDisposable.Instance;
+        }
+    }
+
+    private sealed class NullDisposable : IDisposable
+    {
+        public static readonly NullDisposable Instance = new();
+        public void Dispose() { }
     }
 }

@@ -10,7 +10,7 @@ namespace ETA.Services.SERVICE1;
 
 public static class TestReportService
 {
-    private const string TableName = "분석의뢰및결과";
+    private const string TableName = "수질분석센터_결과";
 
 
     private static readonly HashSet<string> FixedColumns =

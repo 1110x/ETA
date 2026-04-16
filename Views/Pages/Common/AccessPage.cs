@@ -459,6 +459,7 @@ public class AccessPage
 
         var tbAnalyte  = MkTb(item?.Analyte ?? "",                    "항목명 (예: 생물학적산소요구량)");
         var tbAlias    = MkTb(item?.약칭 ?? "",                        "약칭 (예: BOD)");
+        var tbAliasX   = MkTb(item?.AliasX ?? "",                     "파서 키워드 별칭 — 쉼표 구분 (예: T-N,TN,총 질소)");
         var tbCategory = MkTb(item?.Category ?? "",                    "카테고리 (예: 유기물류)");
         var tbUnit     = MkTb(item?.unit ?? "",                        "단위 (예: mg/L)");
         var tbDP       = MkTb((item?.DecimalPlaces ?? 0).ToString(),   "소수점 자리 (예: 1)");
@@ -531,6 +532,7 @@ public class AccessPage
         var form = new StackPanel { Spacing = 2, Margin = new Thickness(0, 6) };
         form.Children.Add(Labeled("항목명 (Analyte)", tbAnalyte));
         form.Children.Add(TwoCol(Labeled("약칭", tbAlias), Labeled("카테고리", tbCategory)));
+        form.Children.Add(Labeled("파서 별칭 (AliasX) — 쉼표 구분, 파서 키워드 자동 매핑에 사용", tbAliasX));
         form.Children.Add(TwoCol(Labeled("단위", tbUnit), Labeled("소수점 자리", tbDP)));
         form.Children.Add(TwoCol(Labeled("정렬번호 (ES)", tbES), Labeled("구성 (Parts)", tbParts)));
         form.Children.Add(Labeled("시험방법", tbMethod));
@@ -545,6 +547,7 @@ public class AccessPage
                 Category      = tbCategory.Text?.Trim() ?? "",
                 Analyte       = tbAnalyte.Text?.Trim() ?? "",
                 약칭           = tbAlias.Text?.Trim() ?? "",
+                AliasX        = tbAliasX.Text?.Trim() ?? "",
                 Parts         = tbParts.Text?.Trim() ?? "",
                 DecimalPlaces = int.TryParse(tbDP.Text?.Trim(), out var dp) ? dp : 0,
                 unit          = tbUnit.Text?.Trim() ?? "",
@@ -1334,7 +1337,7 @@ public class AccessPage
         };
         Grid.SetColumn(scrapeBtn, 1);
         var addBtn = new Button { Content = "+ 추가", FontSize = AppTheme.FontSM, FontFamily = Font, Padding = new Thickness(8, 4), Margin = new Thickness(4), Background = new SolidColorBrush(Color.Parse("#1a6e2e")), Foreground = Brushes.White, CornerRadius = new CornerRadius(4) };
-        addBtn.Click += (_, _) => { _selectedEquipment = null; _show2Content.Content = BuildEquipmentEditPanel(null, null, isNew: true); };
+        addBtn.Click += (_, _) => { _show2Content.Content = BuildEquipmentEditPanel(null, null, isNew: true); };
         Grid.SetColumn(addBtn, 2);
         hdrGrid.Children.Add(hdrTitle); hdrGrid.Children.Add(scrapeBtn); hdrGrid.Children.Add(addBtn);
         var hdrOuter = new StackPanel { Spacing = 0 };
@@ -1397,7 +1400,6 @@ public class AccessPage
         };
         border.PointerPressed += (_, _) =>
         {
-            _selectedEquipment = (name, code);
             _show2Content.Content = BuildEquipmentEditPanel(name, code, isNew: false);
         };
         border.PointerEntered += (_, _) => border.Background = AppTheme.BgSecondary;
@@ -1446,7 +1448,6 @@ public class AccessPage
             {
                 MeasurerService.SaveEquipment(n, c, isNew ? null : origCode);
                 LoadEquipmentList();
-                _selectedEquipment = (n, c);
                 _show2Content.Content = BuildEquipmentEditPanel(n, c, isNew: false);
             }
             catch (Exception ex) { statusTb.Text = $"오류: {ex.Message}"; statusTb.Foreground = Brushes.Red; statusTb.IsVisible = true; }
@@ -1456,7 +1457,7 @@ public class AccessPage
         btnDelete.Click += (_, _) =>
         {
             if (string.IsNullOrWhiteSpace(origCode)) return;
-            try { MeasurerService.DeleteEquipment(origCode); LoadEquipmentList(); _selectedEquipment = null; _show2Content.Content = BuildEquipmentHint(); }
+            try { MeasurerService.DeleteEquipment(origCode); LoadEquipmentList(); _show2Content.Content = BuildEquipmentHint(); }
             catch (Exception ex) { statusTb.Text = $"오류: {ex.Message}"; statusTb.Foreground = Brushes.Red; statusTb.IsVisible = true; }
         };
 
@@ -1496,23 +1497,23 @@ public class AccessPage
                 if (!string.Equals(originalAnalyte, item.Analyte, StringComparison.Ordinal))
                     RenameTestRecordTable(conn, originalAnalyte!, item.Analyte);
                 using var cmd = conn.CreateCommand();
-                cmd.CommandText = "UPDATE `분석정보` SET Category=@cat, Analyte=@ana, `약칭`=@alias, Parts=@parts, DecimalPlaces=@dp, unit=@unit, ES=@es, Method=@meth, instrument=@inst WHERE Analyte=@orig";
+                cmd.CommandText = "UPDATE `분석정보` SET Category=@cat, Analyte=@ana, `약칭`=@alias, `AliasX`=@aliasx, Parts=@parts, DecimalPlaces=@dp, unit=@unit, ES=@es, Method=@meth, instrument=@inst WHERE Analyte=@orig";
                 cmd.Parameters.AddWithValue("@cat",  item.Category);    cmd.Parameters.AddWithValue("@ana",  item.Analyte);
-                cmd.Parameters.AddWithValue("@alias",item.약칭);          cmd.Parameters.AddWithValue("@parts",item.Parts);
-                cmd.Parameters.AddWithValue("@dp",   item.DecimalPlaces); cmd.Parameters.AddWithValue("@unit", item.unit);
-                cmd.Parameters.AddWithValue("@es",   item.ES);           cmd.Parameters.AddWithValue("@meth", item.Method);
-                cmd.Parameters.AddWithValue("@inst", item.instrument);   cmd.Parameters.AddWithValue("@orig", originalAnalyte);
-                cmd.ExecuteNonQuery();
+                cmd.Parameters.AddWithValue("@alias",item.약칭);          cmd.Parameters.AddWithValue("@aliasx", item.AliasX);
+                cmd.Parameters.AddWithValue("@parts",item.Parts);        cmd.Parameters.AddWithValue("@dp",   item.DecimalPlaces);
+                cmd.Parameters.AddWithValue("@unit", item.unit);         cmd.Parameters.AddWithValue("@es",   item.ES);
+                cmd.Parameters.AddWithValue("@meth", item.Method);       cmd.Parameters.AddWithValue("@inst", item.instrument);
+                cmd.Parameters.AddWithValue("@orig", originalAnalyte);
             }
             else
             {
                 using var cmd = conn.CreateCommand();
-                cmd.CommandText = "INSERT INTO `분석정보` (Category, Analyte, `약칭`, Parts, DecimalPlaces, unit, ES, Method, instrument) VALUES (@cat, @ana, @alias, @parts, @dp, @unit, @es, @meth, @inst)";
+                cmd.CommandText = "INSERT INTO `분석정보` (Category, Analyte, `약칭`, `AliasX`, Parts, DecimalPlaces, unit, ES, Method, instrument) VALUES (@cat, @ana, @alias, @aliasx, @parts, @dp, @unit, @es, @meth, @inst)";
                 cmd.Parameters.AddWithValue("@cat",  item.Category);    cmd.Parameters.AddWithValue("@ana",  item.Analyte);
-                cmd.Parameters.AddWithValue("@alias",item.약칭);          cmd.Parameters.AddWithValue("@parts",item.Parts);
-                cmd.Parameters.AddWithValue("@dp",   item.DecimalPlaces); cmd.Parameters.AddWithValue("@unit", item.unit);
-                cmd.Parameters.AddWithValue("@es",   item.ES);           cmd.Parameters.AddWithValue("@meth", item.Method);
-                cmd.Parameters.AddWithValue("@inst", item.instrument);
+                cmd.Parameters.AddWithValue("@alias",item.약칭);          cmd.Parameters.AddWithValue("@aliasx", item.AliasX);
+                cmd.Parameters.AddWithValue("@parts",item.Parts);        cmd.Parameters.AddWithValue("@dp",   item.DecimalPlaces);
+                cmd.Parameters.AddWithValue("@unit", item.unit);         cmd.Parameters.AddWithValue("@es",   item.ES);
+                cmd.Parameters.AddWithValue("@meth", item.Method);       cmd.Parameters.AddWithValue("@inst", item.instrument);
                 cmd.ExecuteNonQuery();
             }
             AnalysisService.SyncColumnsToAssignmentTable();

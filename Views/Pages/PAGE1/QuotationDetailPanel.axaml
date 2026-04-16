@@ -148,15 +148,17 @@
                     <Border Background="{DynamicResource PanelInnerBg}" CornerRadius="5" Padding="0">
                         <StackPanel>
                             <!-- 컬럼 헤더 -->
-                            <Grid ColumnDefinitions="*,60,80,80"
-                                  Margin="12,6,12,4">
-                                <TextBlock Grid.Column="0" Classes="lbl" Text="항목" />
-                                <TextBlock Grid.Column="1" Classes="lbl" Text="수량"
+                            <Grid ColumnDefinitions="Auto,*,Auto,Auto,70"
+                                  Margin="12,6,12,4"
+                                  VerticalAlignment="Center">
+                                <TextBlock Grid.Column="0" Classes="lbl" Text="" />
+                                <TextBlock Grid.Column="1" Classes="lbl" Text="항목" Margin="8,0,0,0"/>
+                                <TextBlock Grid.Column="2" Classes="lbl" Text="수량"
                                            HorizontalAlignment="Right"/>
-                                <TextBlock Grid.Column="2" Classes="lbl" Text="단가"
+                                <TextBlock Grid.Column="3" Classes="lbl" Text="단가"
                                            HorizontalAlignment="Right"/>
-                                <TextBlock Grid.Column="3" Classes="lbl" Text="소계"
-                                           HorizontalAlignment="Right"/>
+                                <TextBlock Grid.Column="4" Classes="lbl" Text="소계"
+                                           HorizontalAlignment="Right" Margin="0,0,8,0"/>
                             </Grid>
                             <Border Height="1" Background="{DynamicResource InputBorder}" Margin="8,0"/>
                             <!-- 항목 행 컨테이너 -->

@@ -12,6 +12,9 @@ public partial class App : Application
     /// <summary>로깅 활성화 플래그 - false로 설정하면 모든 로그 파일 생성이 중단됨</summary>
     public static bool EnableLogging = true;
 
+    /// <summary>애니메이션 활성화 플래그 - false로 설정하면 전환/전환 애니메이션 비활성화</summary>
+    public static bool AnimationsEnabled = true;
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);

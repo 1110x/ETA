@@ -119,7 +119,7 @@ public static class OrderRequestService
         catch (Exception ex) { return false; }
     }
 
-    // ── 분석의뢰및결과 테이블 분석항목 컬럼 목록 ─────────────────────────
+    // ── 수질분석센터_결과 테이블 분석항목 컬럼 목록 ─────────────────────────
     public static List<string> GetAnalysisColumns()
     {
         var fixedCols = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
@@ -135,7 +135,7 @@ public static class OrderRequestService
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
-            foreach (var col in DbConnectionFactory.GetColumnNames(conn, "분석의뢰및결과"))
+            foreach (var col in DbConnectionFactory.GetColumnNames(conn, "수질분석센터_결과"))
             {
                 if (!fixedCols.Contains(col.Trim())) list.Add(col.Trim());
             }
@@ -152,7 +152,7 @@ public static class OrderRequestService
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = @"SELECT COUNT(*) FROM `분석의뢰및결과` WHERE `견적번호`=@no AND `시료명`=@sample";
+            cmd.CommandText = @"SELECT COUNT(*) FROM `수질분석센터_결과` WHERE `견적번호`=@no AND `시료명`=@sample";
             cmd.Parameters.AddWithValue("@no",     견적번호);
             cmd.Parameters.AddWithValue("@sample", 시료명);
             return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
@@ -168,7 +168,7 @@ public static class OrderRequestService
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = @"DELETE FROM `분석의뢰및결과` WHERE `견적번호`=@no AND `시료명`=@sample";
+            cmd.CommandText = @"DELETE FROM `수질분석센터_결과` WHERE `견적번호`=@no AND `시료명`=@sample";
             cmd.Parameters.AddWithValue("@no",     견적번호);
             cmd.Parameters.AddWithValue("@sample", 시료명);
             cmd.ExecuteNonQuery();
@@ -176,7 +176,7 @@ public static class OrderRequestService
         catch (Exception ex) { }
     }
 
-    // ── 분석의뢰및결과 테이블에 의뢰서 INSERT ────────────────────────────
+    // ── 수질분석센터_결과 테이블에 의뢰서 INSERT ────────────────────────────
     public static bool InsertOrderRequest(
         string sampleName,
         QuotationIssue issue,
@@ -187,7 +187,7 @@ public static class OrderRequestService
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
 
-            var tableCols = DbConnectionFactory.GetColumnNames(conn, "분석의뢰및결과");
+            var tableCols = DbConnectionFactory.GetColumnNames(conn, "수질분석센터_결과");
 
             var fixedCols = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
@@ -210,7 +210,7 @@ public static class OrderRequestService
             }
 
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = $@"INSERT INTO `분석의뢰및결과` ({string.Join(",", colList)}) VALUES ({string.Join(",", paramList)})";
+            cmd.CommandText = $@"INSERT INTO `수질분석센터_결과` ({string.Join(",", colList)}) VALUES ({string.Join(",", paramList)})";
 
             cmd.Parameters.AddWithValue("@company", issue.업체명   ?? "");
             cmd.Parameters.AddWithValue("@abbr",    issue.약칭     ?? "");

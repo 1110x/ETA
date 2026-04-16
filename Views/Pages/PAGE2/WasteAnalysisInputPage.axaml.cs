@@ -327,7 +327,7 @@ public partial class WasteAnalysisInputPage : UserControl
     private bool _keyNavShow1 = false;  // Shift+R: Show1 매칭패널 W/S 모드
     private bool _keyNavShow2 = false;  // Shift+2: Show2 그리드 방향키 네비 모드
     private bool _shiftQHeld = false;  // Shift+Q 누르고 있는 동안 QC 클릭 모드
-    private TreeViewItem? _keyNavTreeFocused = null; // (미사용 - 하위호환)
+    private TreeViewItem? _keyNavTreeFocused; // (미사용 - 하위호환)
     private int _keyNavShow1Index = -1;             // 현재 포커스된 Show1 아이템 인덱스
     private List<(Border Item, string Name, object? Data)> _matchItems = new(); // Show1 의뢰시료 목록
     private string _show1BrowseMode = ""; // Show1 전용 모드 (기본: _inputMode 따라감, "분석항목" 등 독립 모드)
@@ -2402,9 +2402,9 @@ public partial class WasteAnalysisInputPage : UserControl
         try
         {
             // 모드별 월 소스
-            //   수질분석센터 → 분석의뢰및결과
+            //   수질분석센터 → 수질분석센터_결과
             //   처리시설     → 처리시설_작업
-            //   비용부담금   → 폐수의뢰및결과
+            //   비용부담금   → 비용부담금_결과
             bool isWaterCenterLD = IsWaterCenterMode;
             bool isFacilityLD    = IsFacilityMode;
             _allMonths = await System.Threading.Tasks.Task.Run(() =>
@@ -2470,9 +2470,9 @@ public partial class WasteAnalysisInputPage : UserControl
         try
         {
             // 모드별 날짜 소스
-            //   수질분석센터 → 분석의뢰및결과.채취일자
+            //   수질분석센터 → 수질분석센터_결과.채취일자
             //   처리시설     → 처리시설_작업.채취일자
-            //   비용부담금   → 폐수의뢰및결과.채수일
+            //   비용부담금   → 비용부담금_결과.채수일
             bool isWaterCenter = IsWaterCenterMode;
             bool isFacility    = IsFacilityMode;
             bool isBilling     = IsBillingMode;
@@ -2497,8 +2497,8 @@ public partial class WasteAnalysisInputPage : UserControl
                 {
                     var s = WasteSampleService.GetByDate(dateStr);
                     var f = isFacility
-                        ? FacilityResultService.GetFillStatusForDate(dateStr)
-                        : new Dictionary<string, bool>();
+                        ? FacilityResultService.GetFillRatioForDate(dateStr)
+                        : new Dictionary<string, double>();
                     // 수질분석센터: Category 기반 의뢰/결과 상태
                     var r = isWaterCenter
                         ? AnalysisRequestService.GetRequestedCategoriesByDate(dateStr)
@@ -2597,7 +2597,7 @@ public partial class WasteAnalysisInputPage : UserControl
     }
 
     private TreeViewItem MakeDateNode(string dateStr, List<WasteSample> samples,
-        Dictionary<string, bool>? facilityStatus = null,
+        Dictionary<string, double>? facilityStatus = null,
         Dictionary<string, bool>? requestedCategories = null,
         HashSet<string>? scheduledItems = null,
         HashSet<string>? billingRequestedItems = null)
@@ -2618,18 +2618,38 @@ public partial class WasteAnalysisInputPage : UserControl
 
             // 라벨 달린 원형 뱃지 (클릭 가능)
             // isFacility=true 이면 처리시설 데이터 뷰로, false 이면 배출업소 샘플 그리드로 라우팅
-            Border Dot(bool filled, string letter, bool clickable = true, bool isFacility = false) {
-                var border = new Border
+            // ratio: 0=미입력(회색), 0<r<1=진행중(연녹→진녹), 1=완료(파랑)
+            Border Dot(double ratio, string letter, bool clickable = true, bool isFacility = false) {
+                Color bg;
+                Color fg;
+                Color border;
+                if (ratio <= 0)
+                {
+                    bg = Colors.Transparent;
+                    fg = Color.Parse("#888888");
+                    border = Color.Parse("#888888");
+                }
+                else if (ratio >= 1.0)
+                {
+                    bg = Color.Parse("#3b82f6"); // 완료 — 파랑
+                    fg = Colors.White;
+                    border = Colors.Transparent;
+                }
+                else
+                {
+                    // 진행중: 초록 명도 ratio 비례 (10%~90%)
+                    byte g = (byte)(34 + (byte)(ratio * 188)); // 34(#22) ~ 222
+                    bg = Color.FromRgb(30, g, 70);
+                    fg = Colors.White;
+                    border = Colors.Transparent;
+                }
+                var dotBorder = new Border
                 {
                     Width = 14, Height = 14,
                     Margin = new Thickness(1, 0),
                     CornerRadius = new CornerRadius(7),
-                    Background = filled
-                        ? new SolidColorBrush(Color.Parse("#22c55e"))
-                        : new SolidColorBrush(Colors.Transparent),
-                    BorderBrush = filled
-                        ? new SolidColorBrush(Colors.Transparent)
-                        : new SolidColorBrush(Color.Parse("#888888")),
+                    Background = new SolidColorBrush(bg),
+                    BorderBrush = new SolidColorBrush(border),
                     BorderThickness = new Thickness(1),
                     VerticalAlignment = VerticalAlignment.Center,
                     Child = new TextBlock
@@ -2638,17 +2658,15 @@ public partial class WasteAnalysisInputPage : UserControl
                         FontSize = 8,
                         FontWeight = FontWeight.Bold,
                         FontFamily = Font,
-                        Foreground = filled
-                            ? new SolidColorBrush(Colors.White)
-                            : new SolidColorBrush(Color.Parse("#888888")),
+                        Foreground = new SolidColorBrush(fg),
                         HorizontalAlignment = HorizontalAlignment.Center,
                         VerticalAlignment = VerticalAlignment.Center,
                     }
                 };
                 if (clickable)
                 {
-                    border.Cursor = new Cursor(StandardCursorType.Hand);
-                    border.PointerPressed += (_, e) =>
+                    dotBorder.Cursor = new Cursor(StandardCursorType.Hand);
+                    dotBorder.PointerPressed += (_, e) =>
                     {
                         e.Handled = true; // TreeView 선택 이벤트 방지
                         var catKey = LetterToKey(letter);
@@ -2666,16 +2684,16 @@ public partial class WasteAnalysisInputPage : UserControl
                             LoadSampleGrid(dateStr);
                         EditPanelChanged?.Invoke(null);
                     };
-                    border.PointerEntered += (_, _) =>
+                    dotBorder.PointerEntered += (_, _) =>
                     {
-                        border.Opacity = 0.7;
+                        dotBorder.Opacity = 0.7;
                     };
-                    border.PointerExited += (_, _) =>
+                    dotBorder.PointerExited += (_, _) =>
                     {
-                        border.Opacity = 1.0;
+                        dotBorder.Opacity = 1.0;
                     };
                 }
-                return border;
+                return dotBorder;
             }
 
             var dotsRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 1, VerticalAlignment = VerticalAlignment.Center };
@@ -2685,14 +2703,22 @@ public partial class WasteAnalysisInputPage : UserControl
             if (IsFacilityMode)
             {
                 // 처리시설:
-                //   배지 표시 여부 = scheduledItems (처리시설_작업.항목목록 — 의뢰)
-                //   배지 채움색   = facilityStatus (처리시설_측정결과 입력 여부)
+                //   배지 표시 여부 = scheduledItems
+                //   ratio = 해당 항목의 처리시설_결과 입력 수 / 의뢰 수
                 bool FsScheduled(string col) => scheduledItems != null && scheduledItems.Contains(col);
-                bool FsFilled(string col)    => facilityStatus != null && facilityStatus.TryGetValue(col, out var v) && v;
+                // 처리시설: facilityStatus[col]=true 이면 1개 이상 입력 → ratio=filled/total
+                // total = scheduledItems Count(해당 col), filled = facilityStatus 기반
+                int totalFac = scheduledItems?.Count ?? 0;
+                int filledFac = facilityStatus?.Count(kvp => kvp.Value > 0) ?? 0;
+                double FacRatio(string col)
+                {
+                    if (facilityStatus == null) return 0.0;
+                    return facilityStatus.TryGetValue(col, out var v) ? v : 0.0;
+                }
                 void AddFac(string col, string letter)
                 {
                     if (FsScheduled(col))
-                        dotsRow.Children.Add(Dot(FsFilled(col), letter, isFacility: true));
+                        dotsRow.Children.Add(Dot(FacRatio(col), letter, isFacility: true));
                 }
                 AddFac("BOD",        "B");
                 AddFac("TOC",        "T");
@@ -2704,16 +2730,20 @@ public partial class WasteAnalysisInputPage : UserControl
             else if (IsBillingMode)
             {
                 // 비용부담금:
-                //   배지 표시 여부 = 해당 항목이 폐수의뢰및결과에 값이 있음
-                //   배지 채움색   = 폐수의뢰및결과에 결과값이 입력됨
+                //   배지 표시 여부 = 해당 항목이 비용부담금_결과에 의뢰됨
+                //   ratio = 의뢰 항목 중 결과 입력 수 / 의뢰 총 수
                 bool BlReq(string key) =>
                     billingRequestedItems != null && billingRequestedItems.Contains(key);
-                bool hasSamples = samples.Count > 0;
+                int blTotal = 0, blFilled = 0;
                 void AddBl(string letter, string key, Func<WasteSample, string> getter)
                 {
                     if (!BlReq(key)) return;
-                    bool filled = hasSamples && samples.Any(s => !string.IsNullOrWhiteSpace(getter(s)));
-                    dotsRow.Children.Add(Dot(filled, letter));
+                    blTotal++;
+                    int filled = samples.Count(s => !string.IsNullOrWhiteSpace(getter(s)));
+                    int total  = samples.Count;
+                    double ratio = total == 0 ? 0.0 : (double)filled / total;
+                    blFilled += filled > 0 ? 1 : 0;
+                    dotsRow.Children.Add(Dot(ratio, letter));
                 }
                 AddBl("B", "BOD",     s => s.BOD);
                 AddBl("T", "TOC",     s => s.TOC);
@@ -2726,25 +2756,32 @@ public partial class WasteAnalysisInputPage : UserControl
             else
             {
                 // 수질분석센터: 분석정보.Category 기준 (5개 카테고리)
-                //   배지 표시 여부 = 해당 카테고리에 의뢰가 있음
-                //   배지 채움색   = 카테고리 내 어떤 항목이라도 결과값 입력됨
+                //   ratio = 카테고리 내 결과 입력 항목 수 / 의뢰 항목 수
+                double CatRatio(params string[] catKeywords)
+                {
+                    if (requestedCategories == null) return 0.0;
+                    var catItems = requestedCategories
+                        .Where(kvp => catKeywords.Any(kw =>
+                            kvp.Key.Contains(kw, StringComparison.OrdinalIgnoreCase)))
+                        .ToList();
+                    if (catItems.Count == 0) return -1.0; // 의뢰 없음
+                    int filled = catItems.Count(kvp => kvp.Value);
+                    return (double)filled / catItems.Count;
+                }
                 bool CatReq(params string[] catKeywords) =>
                     requestedCategories != null &&
                     requestedCategories.Keys.Any(k => catKeywords.Any(kw =>
                         k.Contains(kw, StringComparison.OrdinalIgnoreCase)));
-                bool CatFilled(params string[] catKeywords) =>
-                    requestedCategories != null &&
-                    requestedCategories.Any(kvp =>
-                        catKeywords.Any(kw => kvp.Key.Contains(kw, StringComparison.OrdinalIgnoreCase)) &&
-                        kvp.Value);
                 void AddCat(string letter, params string[] catKeywords)
                 {
-                    if (CatReq(catKeywords))
-                        dotsRow.Children.Add(Dot(CatFilled(catKeywords), letter, clickable: false));
+                    if (!CatReq(catKeywords)) return;
+                    var r = CatRatio(catKeywords);
+                    if (r < 0) return;
+                    dotsRow.Children.Add(Dot(r, letter, clickable: false));
                 }
                 // 일=일반항목 / 유=유기물(질) / 휘=휘발성유기화합물 / 금=금속류 / 이=이온류
                 AddCat("일", "일반");
-                AddCat("유", "유기물");          // "유기물" / "유기물질" 모두 매칭
+                AddCat("유", "유기물");
                 AddCat("휘", "휘발성");
                 AddCat("금", "금속");
                 AddCat("이", "이온");
@@ -3071,6 +3108,88 @@ public partial class WasteAnalysisInputPage : UserControl
             FontFamily = Font, Foreground = AppRes("AppFg"),
             VerticalAlignment = VerticalAlignment.Center,
         }));
+
+        // ── 항목 라우팅 표시 + 드롭다운 변경 ──────────────────────────────
+        // 다성분(GC/ICP) 제외, 단일 항목 카테고리에서만 표시
+        if (!IsMultiCompoundCategory(_activeCategory))
+        {
+            var currentKeyword = _activeItems.FirstOrDefault() ?? _activeCategory;
+            var currentAnalyte = AnalysisService.FindAnalyteByKeyword(currentKeyword);
+            var currentTable   = string.IsNullOrEmpty(currentAnalyte) ? null
+                : WaterCenterDbMigration.SafeName(currentAnalyte) + "_시험기록부";
+
+            // 저장테이블 레이블
+            var routeLabel = FsXS(new TextBlock
+            {
+                Text = string.IsNullOrEmpty(currentTable)
+                    ? $"→ 저장테이블 미매칭 ({currentKeyword})"
+                    : $"→ {currentTable}",
+                Foreground = string.IsNullOrEmpty(currentTable)
+                    ? AppRes("ThemeFgDanger") : AppRes("ThemeFgSecondary"),
+                VerticalAlignment = VerticalAlignment.Center,
+                FontFamily = Font,
+            });
+            headerInfoPanel.Children.Add(routeLabel);
+
+            // 드롭다운 변경 버튼
+            var changeBtn = FsXS(new Button
+            {
+                Content = "변경▼",
+                Background = Brushes.Transparent,
+                BorderThickness = new Thickness(0),
+                Foreground = AppRes("ThemeFgAccent"),
+                FontFamily = Font,
+                Padding = new Thickness(4, 0),
+                Cursor = new Cursor(StandardCursorType.Hand),
+                VerticalAlignment = VerticalAlignment.Center,
+            });
+
+            // 항목 선택 ComboBox (분석정보 전체 항목 목록)
+            var allAnalytes = AnalysisRequestService.GetOrderedAnalytes();
+            var combo = new ComboBox
+            {
+                MinWidth = 220, MaxHeight = 300,
+                Background = AppRes("ThemeBgCard"),
+                FontFamily = Font,
+                IsVisible = false,
+            };
+            FsXS(combo);
+            foreach (var item in allAnalytes)
+            {
+                string iFull = item.fullName, iAbbr = item.shortName;
+                var iTbl = WaterCenterDbMigration.SafeName(iFull) + "_시험기록부";
+                combo.Items.Add(new ComboBoxItem
+                {
+                    Content = $"{iFull}  ({iAbbr})  →  {iTbl}",
+                    Tag = (full: iFull, abbr: iAbbr),
+                });
+            }
+            combo.SelectionChanged += (_, _) =>
+            {
+                if (combo.SelectedItem is ComboBoxItem ci && ci.Tag is ValueTuple<string,string> t)
+                {
+                    var (selAnalyte, selAbbr) = t;
+                    combo.IsVisible = false;
+                    var selTable = WaterCenterDbMigration.SafeName(selAnalyte) + "_시험기록부";
+                    // AliasX에 현재 키워드 append → 다음 파싱 시 자동 매칭
+                    AnalysisService.AppendAliasX(selAnalyte, currentKeyword);
+                    // _activeItems 업데이트 (약칭 기준)
+                    _activeItems = new[] { selAbbr };
+                    // 라우팅 레이블 갱신
+                    routeLabel.Text = $"→ {selTable}";
+                    routeLabel.Foreground = AppRes("ThemeFgSecondary");
+                }
+            };
+            changeBtn.Click += (_, _) =>
+            {
+                combo.IsVisible = !combo.IsVisible;
+                if (combo.IsVisible) combo.IsDropDownOpen = true;
+            };
+            headerInfoPanel.Children.Add(changeBtn);
+            headerInfoPanel.Children.Add(combo);
+        }
+        // ─────────────────────────────────────────────────────────────────
+
         headerContent.Children.Add(headerInfoPanel);
         // 문서 헤더 — 식종수/SCF 또는 검량곡선 테이블
         bool isUVVISMode = false;
@@ -5457,13 +5576,13 @@ public partial class WasteAnalysisInputPage : UserControl
             return;
         }
 
-        // ── Up / Down: 활성 모드에서 위/아래 ────────────────────────────────
-        if (!shift && (e.Key == Key.Up || e.Key == Key.Down))
+        // ── W/S 또는 Up/Down: 활성 모드에서 위/아래 ────────────────────────
+        if (!shift && ((e.Key == Key.W || e.Key == Key.S) || (e.Key == Key.Up || e.Key == Key.Down)))
         {
             if (_keyNavShow1 && _matchItems.Count > 0)
             {
                 e.Handled = true;
-                bool up = e.Key == Key.Up;
+                bool up = (e.Key == Key.W || e.Key == Key.Up);
                 int next = Math.Clamp(_keyNavShow1Index + (up ? -1 : 1), 0, _matchItems.Count - 1);
                 NavShow1(next);
                 return;
@@ -5471,7 +5590,7 @@ public partial class WasteAnalysisInputPage : UserControl
             else if (_keyNavShow2)
             {
                 e.Handled = true;
-                bool up = e.Key == Key.Up;
+                bool up = (e.Key == Key.W || e.Key == Key.Up);
                 int newIdx = _selectedRowIndex + (up ? -1 : 1);
                 SelectGridRow(newIdx);
                 Avalonia.Threading.Dispatcher.UIThread.Post(() => OpenNavEditCell(newIdx));
@@ -5601,31 +5720,17 @@ public partial class WasteAnalysisInputPage : UserControl
     // =========================================================================
     private bool _detailMode = false;
 
-    /// <summary>카테고리 키 → *_DATA 테이블명</summary>
+    /// <summary>카테고리 키 → 시험기록부 테이블명 (분석정보 Analyte 기반)</summary>
     private string? GetDataTableName(string catKey)
     {
-        if (catKey == "TOC")
+        // _activeItems 첫 항목 또는 카테고리 키로 분석정보 조회
+        var item = _activeItems.FirstOrDefault();
+        if (!string.IsNullOrEmpty(item))
         {
-            // NPOC vs TCIC: docInfo에서 판별
-            if (_categoryDocInfo.TryGetValue("TOC", out var di) && di.IsTocTCIC)
-                return "TOC_TCIC_DATA";
-            return "TOC_NPOC_DATA";
+            var tbl = AnalysisService.GetRecordTableName(item);
+            if (!string.IsNullOrEmpty(tbl)) return tbl;
         }
-        return catKey switch
-        {
-            "BOD" => "BOD_DATA",
-            "SS" => "SS_DATA",
-            "NHEX" => "NHexan_DATA",
-            "TN" => "TN_DATA",
-            "TP" => "TP_DATA",
-            "PHENOLS" => "Phenols_DATA",
-            "CN" => "CN_DATA",
-            "CR6" => "CR6_DATA",
-            "COLOR" => "COLOR_DATA",
-            "ABS" => "ABS_DATA",
-            "FLUORIDE" => "FLUORIDE_DATA",
-            _ => null
-        };
+        return AnalysisService.GetRecordTableName(catKey);
     }
 
     /// <summary>카테고리별 Detail 컬럼 정의</summary>
@@ -5952,7 +6057,7 @@ public partial class WasteAnalysisInputPage : UserControl
         {
             string colName = GetColumnNameFromCategory();
             if (!string.IsNullOrEmpty(colName))
-                WasteSampleService.UpdateDynamicValue("폐수의뢰및결과", _selectedSample.Id, colName, GetResultValue());
+                WasteSampleService.UpdateDynamicValue("비용부담금_결과", _selectedSample.Id, colName, GetResultValue());
         }
         catch { }
     }
@@ -6051,33 +6156,33 @@ public partial class WasteAnalysisInputPage : UserControl
     // =========================================================================
     private void LoadFacilityGrid(string date)
     {
-        var root = new Grid { RowDefinitions = new RowDefinitions("Auto,*") };
-
         DateTime.TryParse(date, out var d);
-        var catLabel = Categories.FirstOrDefault(c => c.Key == _activeCategory).Label ?? _activeCategory;
-        // 처리시설 테이블 컬럼명 매핑: _activeItems[0] 이 실제 DB 컬럼명 (T-N, 총대장균군 등)
+        var catLabel  = Categories.FirstOrDefault(c => c.Key == _activeCategory).Label ?? _activeCategory;
         string facColumn = _activeItems.FirstOrDefault() ?? _activeCategory;
 
-        // 시설 목록 수집
+        // 시험기록부 테이블이 있으면 우선 표시
+        var recordTable = FacilityResultService.GetRecordTableName(facColumn);
+        if (recordTable != null)
+        {
+            LoadFacilityRecordTable(date, d, catLabel, recordTable);
+            return;
+        }
+
+        // 시험기록부 없는 항목(총대장균군 등)은 기존 처리시설_결과 그리드 표시
+        var root = new Grid { RowDefinitions = new RowDefinitions("Auto,*") };
+
         var facilities = FacilityResultService.GetFacilityNames();
         var allRows = new List<(string facility, FacilityResultRow row)>();
         foreach (var fac in facilities)
-        {
             foreach (var r in FacilityResultService.GetRows(fac, date))
-            {
-                // 해당 항목이 이 시료에 활성화된 경우만 표시
                 if (r.IsActive(facColumn))
                     allRows.Add((fac, r));
-            }
-        }
 
-        // 헤더
         var headerPanel = new Grid { ColumnDefinitions = new ColumnDefinitions("*") };
         headerPanel.Children.Add(FsSM(new TextBlock
         {
             Text = $"🏭 {d:yyyy-MM-dd}  [처리시설 · {catLabel}]  —  {allRows.Count}건",
-            FontWeight = FontWeight.SemiBold,
-            FontFamily = Font, Foreground = AppRes("AppFg"),
+            FontWeight = FontWeight.SemiBold, FontFamily = Font, Foreground = AppRes("AppFg"),
             VerticalAlignment = VerticalAlignment.Center,
         }));
         var header = new Border
@@ -6090,78 +6195,212 @@ public partial class WasteAnalysisInputPage : UserControl
 
         _gridPanel = new StackPanel { Spacing = 0 };
 
-        // 컬럼 헤더: 시설명 / 시료명 / 결과값 / 비고
         string[] hLabels = { "시설명", "시료명", catLabel, "비고" };
         string sgColDefs = "120,180,100,*";
-        var hGrid = new Grid
-        {
-            ColumnDefinitions = new ColumnDefinitions(sgColDefs),
-            MinHeight = 26, Background = AppRes("GridHeaderBg"),
-        };
+        var hGrid = new Grid { ColumnDefinitions = new ColumnDefinitions(sgColDefs), MinHeight = 26, Background = AppRes("GridHeaderBg") };
         for (int c = 0; c < hLabels.Length; c++)
         {
-            var tb = FsSM(new TextBlock
-            {
-                Text = hLabels[c], FontWeight = FontWeight.SemiBold,
-                FontFamily = Font, Foreground = AppRes("FgMuted"),
-                VerticalAlignment = VerticalAlignment.Center,
-                HorizontalAlignment = c == 2 ? HorizontalAlignment.Center : HorizontalAlignment.Left,
-                Margin = new Thickness(c == 0 ? 6 : 2, 0),
-            });
+            var tb = FsSM(new TextBlock { Text = hLabels[c], FontWeight = FontWeight.SemiBold, FontFamily = Font, Foreground = AppRes("FgMuted"), VerticalAlignment = VerticalAlignment.Center, HorizontalAlignment = c == 2 ? HorizontalAlignment.Center : HorizontalAlignment.Left, Margin = new Thickness(c == 0 ? 6 : 2, 0) });
             Grid.SetColumn(tb, c); hGrid.Children.Add(tb);
         }
         _gridPanel.Children.Add(new Border { Child = hGrid, BorderBrush = AppRes("ThemeBorderSubtle"), BorderThickness = new Thickness(0,0,0,1) });
 
-        // 데이터 행
         for (int i = 0; i < allRows.Count; i++)
         {
             var (fac, r) = allRows[i];
-            var rGrid = new Grid
-            {
-                ColumnDefinitions = new ColumnDefinitions(sgColDefs),
-                MinHeight = 30,
-                Background = i % 2 == 0 ? AppRes("GridRowBg") : AppRes("GridRowAltBg"),
-            };
-
+            var rGrid = new Grid { ColumnDefinitions = new ColumnDefinitions(sgColDefs), MinHeight = 30, Background = i % 2 == 0 ? AppRes("GridRowBg") : AppRes("GridRowAltBg") };
             string resultVal = r[facColumn];
             bool hasResult = !string.IsNullOrWhiteSpace(resultVal);
-
             string[] fv = { fac, r.시료명, hasResult ? resultVal : "—", r.비고마스터 };
             for (int c = 0; c < fv.Length; c++)
             {
-                IBrush fg;
-                if (c == 2)
-                    fg = hasResult ? AppRes("ThemeFgSuccess") : AppRes("ThemeFgDimmed");
-                else if (c == 3)
-                    fg = AppRes("FgMuted");
-                else
-                    fg = AppRes("AppFg");
-
-                var tb = FsSM(new TextBlock
-                {
-                    Text = fv[c], FontFamily = Font, Foreground = fg,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    HorizontalAlignment = c == 2 ? HorizontalAlignment.Center : HorizontalAlignment.Left,
-                    Margin = new Thickness(c == 0 ? 6 : 2, 0),
-                    TextTrimming = TextTrimming.CharacterEllipsis,
-                });
+                IBrush fg = c == 2 ? (hasResult ? AppRes("ThemeFgSuccess") : AppRes("ThemeFgDimmed")) : c == 3 ? AppRes("FgMuted") : AppRes("AppFg");
+                var tb = FsSM(new TextBlock { Text = fv[c], FontFamily = Font, Foreground = fg, VerticalAlignment = VerticalAlignment.Center, HorizontalAlignment = c == 2 ? HorizontalAlignment.Center : HorizontalAlignment.Left, Margin = new Thickness(c == 0 ? 6 : 2, 0), TextTrimming = TextTrimming.CharacterEllipsis });
                 Grid.SetColumn(tb, c); rGrid.Children.Add(tb);
             }
-
-            var border = new Border
-            {
-                Child = rGrid, Cursor = new Cursor(StandardCursorType.Hand),
-                BorderBrush = AppRes("ThemeBorderSubtle"), BorderThickness = new Thickness(0,0,0,1),
-            };
+            var border = new Border { Child = rGrid, Cursor = new Cursor(StandardCursorType.Hand), BorderBrush = AppRes("ThemeBorderSubtle"), BorderThickness = new Thickness(0,0,0,1) };
             TextShimmer.AttachHover(border);
             _gridPanel.Children.Add(border);
         }
 
-        var scroll = new ScrollViewer { Content = _gridPanel,
-            HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto };
+        var scroll = new ScrollViewer { Content = _gridPanel, HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto };
         Grid.SetRow(scroll, 1);
         root.Children.Add(scroll);
         ListPanelChanged?.Invoke(root);
+    }
+
+    /// <summary>처리시설 항목 클릭 시 해당 시험기록부를 입력 그리드 형식 그대로 Show2에 표시
+    /// DB 행 → ExcelRow 변환 후 _categoryExcelData 주입 → LoadVerifiedGrid() 재사용</summary>
+    private void LoadFacilityRecordTable(string date, DateTime d, string catLabel, string tableName)
+    {
+        var (columns, rows) = FacilityResultService.GetRecordTableRows(tableName, date);
+
+        // ── DB 행 → ExcelRow 변환 ─────────────────────────────────────────────
+        // 시험기록부 컬럼을 ExcelRow 속성에 매핑하여 LoadVerifiedGrid()를 그대로 재사용
+        string G(Dictionary<string, string> r, string key)
+            => r.TryGetValue(key, out var v) ? v : "";
+
+        var excelRows = rows.Select(r =>
+        {
+            // 시료명 복원:
+            // 1) "원본\n↳ 매칭명" 형태로 저장된 경우 분리
+            // 2) 비고에 원본시료명이 저장된 경우 (SaveRawData에서 비고=원본시료명)
+            // 3) SN ≠ 시료명이면 SN=원본, 시료명=매칭명
+            var rawName = G(r, "시료명");
+            var remark  = G(r, "비고");
+            var snVal   = G(r, "SN");
+            string displayName, origName;
+            if (rawName.Contains('\n'))
+            {
+                var parts = rawName.Split('\n', 2);
+                origName    = parts[0].Trim();
+                displayName = parts[1].TrimStart('↳').Trim();
+            }
+            else if (!string.IsNullOrEmpty(remark) && remark != rawName)
+            {
+                origName    = remark;
+                displayName = rawName;
+            }
+            else if (!string.IsNullOrEmpty(snVal) && snVal != rawName)
+            {
+                // SN이 원본시료명, 시료명이 매칭된 시료명
+                origName    = snVal;
+                displayName = rawName;
+            }
+            else
+            {
+                origName    = "";
+                displayName = rawName;
+            }
+            return new ExcelRow
+            {
+                SN          = G(r, "SN"),
+                시료명       = displayName,
+                원본시료명   = origName,
+                시료량       = G(r, "시료량"),
+                D1          = G(r, "흡광도"),
+                Fxy         = G(r, "검량선_a"),
+                D2          = G(r, "D2") is { Length: > 0 } d2 ? d2 : G(r, "D1_2"),
+                P           = G(r, "희석배수") is { Length: > 0 } p ? p : "1",
+                Result      = G(r, "농도") is { Length: > 0 } nr ? nr : G(r, "결과"),
+                Source      = SourceType.처리시설,
+                Status      = MatchStatus.입력가능,
+                Enabled     = true,
+            };
+        }).ToList();
+
+        // ── _categoryDocInfo 복원 (카테고리별 플래그 세팅) ───────────────────
+        bool hasUvCol   = columns.Contains("흡광도", StringComparer.OrdinalIgnoreCase);
+        bool hasBodCols = columns.Contains("D1",   StringComparer.OrdinalIgnoreCase)
+                       && columns.Contains("D2",   StringComparer.OrdinalIgnoreCase)
+                       && !hasUvCol;
+        bool hasSsCols  = columns.Contains("전무게", StringComparer.OrdinalIgnoreCase)
+                       || columns.Contains("후무게", StringComparer.OrdinalIgnoreCase);
+        bool hasNhexCol = columns.Contains("건조전무게", StringComparer.OrdinalIgnoreCase);
+
+        // 검량선 정보는 첫 번째 행에서 복원
+        var firstRow = rows.FirstOrDefault();
+
+        // ST01~ST05 표준점 / 흡광도 배열 복원
+        var stMgl  = new List<string>();
+        var stAbs  = new List<string>();
+        if (firstRow != null && hasUvCol)
+        {
+            for (int si = 1; si <= 5; si++)
+            {
+                var mgL = G(firstRow, $"ST0{si}_mgL");
+                var abs = G(firstRow, $"ST0{si}_abs");
+                if (!string.IsNullOrEmpty(mgL) || !string.IsNullOrEmpty(abs))
+                {
+                    stMgl.Add(mgL);
+                    stAbs.Add(abs);
+                }
+            }
+        }
+
+        var docInfo = new ExcelDocInfo
+        {
+            IsUVVIS  = hasUvCol && !hasBodCols,
+            IsSS     = hasSsCols,
+            IsNHEX   = hasNhexCol,
+            Standard_Slope     = firstRow != null ? G(firstRow, "기울기") : "",
+            Standard_Intercept = firstRow != null ? G(firstRow, "절편")   : "",
+            Abs_R2             = firstRow != null ? G(firstRow, "R2")     : "",
+            Standard_Points    = stMgl.Count > 0 ? stMgl.ToArray() : Array.Empty<string>(),
+            Abs_Values         = stAbs.Count > 0 ? stAbs.ToArray() : Array.Empty<string>(),
+        };
+
+        // Standard_Points / Abs_Values 둘 다 비었지만 기울기/절편이 있으면
+        // 검량선 행 한 줄이라도 표시되도록 더미 1점 추가
+        if (docInfo.Standard_Points.Length == 0 && docInfo.Abs_Values.Length == 0
+            && (!string.IsNullOrEmpty(docInfo.Standard_Slope) || !string.IsNullOrEmpty(docInfo.Abs_R2)))
+        {
+            docInfo.Standard_Points = new[] { "" };
+            docInfo.Abs_Values      = new[] { "" };
+        }
+
+        // SS 모드: D1=전무게, D2=후무게로 재매핑
+        if (hasSsCols)
+        {
+            foreach (var (er, r) in excelRows.Zip(rows))
+            {
+                er.D1 = G(r, "전무게");
+                er.D2 = G(r, "후무게");
+                er.Fxy = G(r, "무게차");
+            }
+        }
+        // NHexan 모드: D1=건조전무게, D2=건조후무게
+        else if (hasNhexCol)
+        {
+            foreach (var (er, r) in excelRows.Zip(rows))
+            {
+                er.D1 = G(r, "건조전무게");
+                er.D2 = G(r, "건조후무게");
+                er.Fxy = G(r, "무게차");
+                docInfo.IsNHEX = true;
+            }
+        }
+        // BOD 모드: D2 복원
+        else if (hasBodCols)
+        {
+            foreach (var (er, r) in excelRows.Zip(rows))
+            {
+                er.D1 = G(r, "D1");
+                er.D2 = G(r, "D2");
+            }
+        }
+
+        // _categoryExcelData / _categoryDocInfo / _categoryDocDates 주입
+        _categoryExcelData[_activeCategory] = excelRows;
+        _categoryDocInfo[_activeCategory]   = docInfo;
+        _categoryDocDates[_activeCategory]  = date;
+
+        // 데이터가 없으면 빈 안내 패널 표시
+        if (excelRows.Count == 0)
+        {
+            var root = new Grid { RowDefinitions = new RowDefinitions("Auto,*") };
+            var hdr = new Border
+            {
+                Background = AppRes("PanelBg"), CornerRadius = new CornerRadius(6, 6, 0, 0),
+                Padding = new Thickness(10, 6),
+                Child = FsSM(new TextBlock
+                {
+                    Text = $"📋 {d:yyyy-MM-dd}  [{catLabel} 시험기록부]  —  0건",
+                    FontWeight = FontWeight.SemiBold, FontFamily = Font, Foreground = AppRes("AppFg"),
+                }),
+            };
+            Grid.SetRow(hdr, 0); root.Children.Add(hdr);
+            var empty = FsXS(new TextBlock { Text = "해당 날짜의 시험기록부 데이터가 없습니다.", FontFamily = Font, Foreground = AppRes("FgMuted"), Margin = new Thickness(12) });
+            Grid.SetRow(empty, 1); root.Children.Add(empty);
+            ListPanelChanged?.Invoke(root);
+            return;
+        }
+
+        // ── 입력 그리드 그대로 재사용 ─────────────────────────────────────────
+        // LoadVerifiedGrid()는 _categoryExcelData[_activeCategory] 를 읽어 그리드를 구성
+        // 매칭은 처리시설 소스이므로 _matchingFacilityMasters를 로드하여 자동 매칭
+        try { _matchingFacilityMasters = FacilityResultService.GetAllMasterSamples(); } catch { }
+        LoadVerifiedGrid();
     }
 
     // =========================================================================
@@ -7295,7 +7534,7 @@ public partial class WasteAnalysisInputPage : UserControl
             {
                 _categoryDocInfo.TryGetValue("TOC", out var tocInfo);
                 WasteSampleService.UpsertTocData(
-                    _tocInstrumentMethod, 분석일, sn, 업체명, 구분,
+                    AnalysisService.GetRecordTableName("TOC") ?? "총유기탄소_시험기록부", 분석일, sn, 업체명, 구분,
                     row.D1, row.P, tocInfo?.TocSlope_TC ?? "", row.Fxy, row.Result,
                     소스구분: 소스구분, 비고: remark, 시료명: 시료명Full);
                 break;
@@ -7303,6 +7542,7 @@ public partial class WasteAnalysisInputPage : UserControl
 
             case "BOD":
                 WasteSampleService.UpsertBodData(
+                    AnalysisService.GetRecordTableName("BOD") ?? "생물학적_산소요구량_시험기록부",
                     분석일, sn, 업체명, 구분,
                     시료량: row.시료량, d1: row.D1, d2: row.D2,
                     희석배수: row.P, 결과: row.Result,
@@ -7334,13 +7574,8 @@ public partial class WasteAnalysisInputPage : UserControl
             case "PHENOLS" when isUV:
                 foreach (var item in _activeItems)
                 {
-                    string tblName = item switch
-                    {
-                        "T-N"     => "TN_시험기록부",
-                        "T-P"     => "TP_시험기록부",
-                        "Phenols" => "Phenols_시험기록부",
-                        _         => ""
-                    };
+                    string? tblName = AnalysisService.GetRecordTableName(item);
+                    LogImport($"  → GetRecordTableName({item}) = {tblName ?? "null(skip)"}");
                     if (string.IsNullOrEmpty(tblName)) continue;
                     WasteSampleService.UpsertUvvisData(
                         tblName,
@@ -7439,15 +7674,7 @@ public partial class WasteAnalysisInputPage : UserControl
             case "FLUORIDE" when isUV:
                 foreach (var item in _activeItems)
                 {
-                    string tblName = item switch
-                    {
-                        "시안"     => "시안_시험기록부",
-                        "6가크롬"  => "6가크롬_시험기록부",
-                        "색도"     => "색도_시험기록부",
-                        "ABS"      => "ABS_시험기록부",
-                        "불소"     => "불소_시험기록부",
-                        _          => ""
-                    };
+                    string? tblName = AnalysisService.GetRecordTableName(item);
                     if (string.IsNullOrEmpty(tblName)) continue;
                     WasteSampleService.UpsertUvvisData(
                         tblName,
@@ -7862,17 +8089,17 @@ public partial class WasteAnalysisInputPage : UserControl
         {
             Background = isActive ? AppRes("ThemeBgSecondary") : AppRes("ThemeBgCard"),
             BorderBrush = isActive ? AppRes("ThemeAccent") : AppRes("ThemeBorderSubtle"),
-            BorderThickness = new Thickness(2),
-            CornerRadius = new CornerRadius(20),
-            Padding = new Thickness(16, 8),
+            BorderThickness = new Thickness(1),
+            CornerRadius = new CornerRadius(10),
+            Padding = new Thickness(8, 3),
             Cursor = new Cursor(StandardCursorType.Hand),
             Child = new StackPanel
             {
                 Orientation = Orientation.Horizontal,
-                Spacing = 6,
+                Spacing = 4,
                 Children =
                 {
-                    FsSM(new TextBlock
+                    FsXS(new TextBlock
                     {
                         Text = icon,
                         VerticalAlignment = VerticalAlignment.Center
@@ -8417,7 +8644,7 @@ public partial class WasteAnalysisInputPage : UserControl
         // 모드별 현황 표시
         if (IsWaterCenterMode)
         {
-            // 수질분석센터: 분석의뢰및결과에서 항목별 완료 여부
+            // 수질분석센터: 수질분석센터_결과에서 항목별 완료 여부
             summary.Children.Add(FsXS(new TextBlock
             {
                 Text = "🧪 수질분석센터 현황",
@@ -8437,7 +8664,7 @@ public partial class WasteAnalysisInputPage : UserControl
         }
         else if (IsBillingMode)
         {
-            // 비용부담금: 폐수의뢰및결과 BOD~Phenols 입력 현황
+            // 비용부담금: 비용부담금_결과 BOD~Phenols 입력 현황
             summary.Children.Add(FsXS(new TextBlock
             {
                 Text = "💰 비용부담금 현황",
@@ -8893,7 +9120,126 @@ public partial class WasteAnalysisInputPage : UserControl
         foreach (var row in rows)
         {
             if (string.IsNullOrWhiteSpace(row.Result)) { LogInput($"SKIP(빈결과): [{processed}] SN={row.SN} 시료명={row.시료명}"); processed++; continue; }
-            if (!row.Enabled) { LogInput($"SKIP(비활성): [{processed}] SN={row.SN} Source={row.Source} Matched={row.Matched != null}"); disabled++; processed++; continue; }
+            if (!row.Enabled)
+            {
+                LogInput($"SKIP(비활성): [{processed}] SN={row.SN} Source={row.Source} Matched={row.Matched != null}");
+                // 조회 모드에서 토글 OFF된 처리시설 행 → 시험기록부 + 처리시설_결과 양쪽 삭제
+                if (row.Source == SourceType.처리시설)
+                {
+                    docDates.TryGetValue(category, out var delDate);
+                    if (string.IsNullOrEmpty(delDate)) _categoryDocDates.TryGetValue(category, out delDate);
+                    string facItem = _activeItems.FirstOrDefault() ?? category;
+                    string? recTbl = AnalysisService.GetRecordTableName(facItem);
+                    string 시료명Del = row.시료명;
+                    string snDel    = row.SN;
+                    if (!string.IsNullOrEmpty(delDate))
+                    try
+                    {
+                        using var delConn = DbConnectionFactory.CreateConnection();
+                        delConn.Open();
+                        // 1) 시험기록부 행 삭제
+                        if (!string.IsNullOrEmpty(recTbl) && DbConnectionFactory.TableExists(delConn, recTbl))
+                        {
+                            using var dc = delConn.CreateCommand();
+                            dc.CommandText = $"DELETE FROM `{recTbl}` WHERE LEFT(분석일,10)=@d AND 소스구분='처리시설' AND (시료명=@nm OR SN=@sn)";
+                            dc.Parameters.AddWithValue("@d",  delDate);
+                            dc.Parameters.AddWithValue("@nm", 시료명Del);
+                            dc.Parameters.AddWithValue("@sn", snDel);
+                            dc.ExecuteNonQuery();
+                        }
+                        // 2) 처리시설_결과 항목값 비우기
+                        string qcol = facItem.Contains('-') || facItem.Contains(' ') ? $"`{facItem}`" : facItem;
+                        using var uc = delConn.CreateCommand();
+                        uc.CommandText = $"UPDATE `처리시설_결과` SET {qcol}='' WHERE 채취일자=@d AND 시료명=@nm";
+                        uc.Parameters.AddWithValue("@d",  delDate);
+                        uc.Parameters.AddWithValue("@nm", 시료명Del);
+                        uc.ExecuteNonQuery();
+                        if (!string.IsNullOrEmpty(delDate)) modifiedDates.Add(delDate);
+                        LogInput($"  → 처리시설 삭제: {시료명Del} ({recTbl}, 처리시설_결과.{facItem})");
+                    }
+                    catch (Exception ex) { LogInput($"  → 처리시설 삭제 오류: {ex.Message}"); }
+                }
+                else if (row.Source == SourceType.수질분석센터 && row.MatchedAnalysis != null)
+                {
+                    string facItem2 = _activeItems.FirstOrDefault() ?? category;
+                    string? recTbl2 = AnalysisService.GetRecordTableName(facItem2);
+                    try
+                    {
+                        using var delConn2 = DbConnectionFactory.CreateConnection();
+                        delConn2.Open();
+                        // 1) 시험기록부 행 삭제
+                        if (!string.IsNullOrEmpty(recTbl2) && DbConnectionFactory.TableExists(delConn2, recTbl2))
+                        {
+                            using var dc2 = delConn2.CreateCommand();
+                            docDates.TryGetValue(category, out var delDate2);
+                            if (string.IsNullOrEmpty(delDate2)) _categoryDocDates.TryGetValue(category, out delDate2);
+                            dc2.CommandText = $"DELETE FROM `{recTbl2}` WHERE LEFT(분석일,10)=@d AND 소스구분='수질분석센터' AND (시료명=@nm OR SN=@sn)";
+                            dc2.Parameters.AddWithValue("@d",  delDate2 ?? "");
+                            dc2.Parameters.AddWithValue("@nm", row.시료명);
+                            dc2.Parameters.AddWithValue("@sn", row.SN);
+                            dc2.ExecuteNonQuery();
+                        }
+                        // 2) 수질분석센터_결과 해당 항목 칼럼값 비우기
+                        var shortNames = AnalysisRequestService.GetShortNames();
+                        foreach (var item in _activeItems)
+                        {
+                            var colName = shortNames.FirstOrDefault(kv =>
+                                kv.Value.Equals(item, StringComparison.OrdinalIgnoreCase)).Key;
+                            if (!string.IsNullOrEmpty(colName))
+                                AnalysisRequestService.UpdateResultValue(row.MatchedAnalysis.Id, colName, "");
+                        }
+                        LogInput($"  → 수질분석센터 삭제: {row.시료명} (수질분석센터_결과 id={row.MatchedAnalysis.Id})");
+                    }
+                    catch (Exception ex) { LogInput($"  → 수질분석센터 삭제 오류: {ex.Message}"); }
+                }
+                else if (row.Source == SourceType.폐수배출업소 && row.Matched != null)
+                {
+                    string facItem3 = _activeItems.FirstOrDefault() ?? category;
+                    string? recTbl3 = AnalysisService.GetRecordTableName(facItem3);
+                    try
+                    {
+                        using var delConn3 = DbConnectionFactory.CreateConnection();
+                        delConn3.Open();
+                        // 1) 시험기록부 행 삭제
+                        if (!string.IsNullOrEmpty(recTbl3) && DbConnectionFactory.TableExists(delConn3, recTbl3))
+                        {
+                            using var dc3 = delConn3.CreateCommand();
+                            docDates.TryGetValue(category, out var delDate3);
+                            if (string.IsNullOrEmpty(delDate3)) _categoryDocDates.TryGetValue(category, out delDate3);
+                            dc3.CommandText = $"DELETE FROM `{recTbl3}` WHERE LEFT(분석일,10)=@d AND 소스구분='폐수배출업소' AND (시료명=@nm OR SN=@sn)";
+                            dc3.Parameters.AddWithValue("@d",  delDate3 ?? "");
+                            dc3.Parameters.AddWithValue("@nm", row.시료명);
+                            dc3.Parameters.AddWithValue("@sn", row.SN);
+                            dc3.ExecuteNonQuery();
+                        }
+                        // 2) 비용부담금_결과 해당 항목 칼럼값 비우기
+                        var s = row.Matched;
+                        if (_activeItems.Length > 0)
+                        {
+                            switch (_activeItems[0])
+                            {
+                                case "BOD":     s.BOD     = ""; break;
+                                case "TOC":     s.TOC     = ""; break;
+                                case "SS":      s.SS      = ""; break;
+                                case "T-N":     s.TN      = ""; break;
+                                case "T-P":     s.TP      = ""; break;
+                                case "N-Hexan": s.NHexan  = ""; break;
+                                case "Phenols": s.Phenols = ""; break;
+                                case "시안":    s.CN      = ""; break;
+                                case "6가크롬": s.CR6     = ""; break;
+                                case "색도":    s.COLOR   = ""; break;
+                                case "ABS":     s.ABS     = ""; break;
+                                case "불소":    s.FLUORIDE = ""; break;
+                            }
+                        }
+                        WasteSampleService.UpdateValues(s.Id, s.BOD, s.TOC, s.SS, s.TN, s.TP,
+                            s.NHexan, s.Phenols, s.CN, s.CR6, s.COLOR, s.ABS, s.FLUORIDE);
+                        LogInput($"  → 폐수배출업소 삭제: {row.시료명} (비용부담금_결과 id={s.Id})");
+                    }
+                    catch (Exception ex) { LogInput($"  → 폐수배출업소 삭제 오류: {ex.Message}"); }
+                }
+                disabled++; processed++; continue;
+            }
 
             try
             {
@@ -8923,6 +9269,9 @@ public partial class WasteAnalysisInputPage : UserControl
                         catch (Exception ex) { LogInput($"  오류: {ex.Message}"); }
                         ImportFacilityResult(row);
                         docDates.TryGetValue(category, out var fd);
+                        // docDate가 비어있는 경우 ImportFacilityResult에서 사용하는 날짜를 직접 가져옴
+                        if (string.IsNullOrEmpty(fd))
+                            _categoryDocDates.TryGetValue(category, out fd);
                         if (!string.IsNullOrEmpty(fd)) modifiedDates.Add(fd);
                         imported++;
                         break;
@@ -8968,7 +9317,7 @@ public partial class WasteAnalysisInputPage : UserControl
                 try
                 {
                     WasteSampleService.UpsertSimpleData(
-                        "NHexan_시험기록부", "결과",
+                        AnalysisService.GetRecordTableName("N-Hexan") ?? "노말헥산추출물질_시험기록부", "결과",
                         nhexDate, "바탕시료", "바탕시료", "",
                         nhexDocInfo.바탕시료_시료량, nhexDocInfo.바탕시료_결과);
                 }
@@ -8989,7 +9338,7 @@ public partial class WasteAnalysisInputPage : UserControl
         ShowMessage(msg, false);
     }
 
-    // 매칭된 폐수배출업소 시료의 요약 결과값을 폐수의뢰및결과 테이블에 갱신.
+    // 매칭된 폐수배출업소 시료의 요약 결과값을 비용부담금_결과 테이블에 갱신.
     // *_*_DATA 저장은 ImportData() 루프 앞단에서 별도로 처리되므로 여기서는 요약만.
     private void UpdateWasteSampleValues(ExcelRow row)
     {
@@ -9000,7 +9349,7 @@ public partial class WasteAnalysisInputPage : UserControl
         {
             var resolved = CompoundAliasService.ResolveOrFallback(row.CompoundName);
             if (!string.IsNullOrEmpty(resolved.분석항목))
-                WasteSampleService.UpdateDynamicValue("폐수의뢰및결과", s.Id, resolved.분석항목, row.Result);
+                WasteSampleService.UpdateDynamicValue("비용부담금_결과", s.Id, resolved.분석항목, row.Result);
             return;
         }
 
@@ -9199,7 +9548,7 @@ public partial class WasteAnalysisInputPage : UserControl
             var (samples, facilityStatus, reqItems, schedItems, billingItems) = await System.Threading.Tasks.Task.Run(() =>
             {
                 var s = WasteSampleService.GetByDate(dateStr);
-                var f = isFacility ? FacilityResultService.GetFillStatusForDate(dateStr) : new Dictionary<string, bool>();
+                var f = isFacility ? FacilityResultService.GetFillRatioForDate(dateStr) : new Dictionary<string, double>();
                 var r = isWaterCenter ? AnalysisRequestService.GetRequestedCategoriesByDate(dateStr) : new Dictionary<string, bool>();
                 var sc = isFacility ? FacilityResultService.GetScheduledItemsByDate(dateStr) : new HashSet<string>();
                 var bi = isBilling ? WasteRequestService.GetRequestedItemSetByDate(dateStr) : new HashSet<string>(StringComparer.OrdinalIgnoreCase);

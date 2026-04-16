@@ -202,7 +202,7 @@ public partial class MyTaskPage : UserControl
         Dispatcher.UIThread.Post(StyleCalendarDayButtons, DispatcherPriority.Loaded);
     }
 
-    // 파란색: 분석의뢰및결과, 붉은색: 폐수의뢰및결과, 보라색: 둘 다
+    // 파란색: 수질분석센터_결과, 붉은색: 비용부담금_결과, 보라색: 둘 다
     private static readonly IBrush BrushAnalysis = new SolidColorBrush(Color.Parse("#664d7fb3")); // 스틸블루 40%
     private static readonly IBrush BrushWaste    = new SolidColorBrush(Color.Parse("#66b35555")); // 로즈브라운 40%
     private static readonly IBrush BrushBoth     = new SolidColorBrush(Color.Parse("#66755aaa")); // 슬레이트바이올릿 40%
@@ -445,7 +445,7 @@ public partial class MyTaskPage : UserControl
         return item;
     }
 
-    // ── 비용부담금 트리 (여수+율촌+세풍 통합, 폐수의뢰및결과 기반) ──────────
+    // ── 비용부담금 트리 (여수+율촌+세풍 통합, 비용부담금_결과 기반) ──────────
     private void LoadAllWasteTree(string dateStr)
     {
         var items = MyTaskService.GetRequestListItems(dateStr);

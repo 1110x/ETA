@@ -3,6 +3,7 @@ using Avalonia.Animation;
 using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Controls.Presenters;
+using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
@@ -48,7 +49,6 @@ public partial class MainPage : Window
     private AgentTreePage?     _agentTreePage;
     private MyTaskPage?        _myTaskPage;
     private WasteCompanyPage?      _wasteCompanyPage;
-    private WasteDataQueryPage?      _wasteDataQueryPage;
     private WasteNameReconcilePage?            _wasteNameReconcilePage;
     private WaterQualityNameReconcilePage?     _waterQualityNameReconcilePage;
     private WasteSampleListPage?         _wasteSampleListPage;
@@ -121,6 +121,24 @@ public partial class MainPage : Window
         DataContext = new MainWindowViewModel();
         ApplyTheme(0);
 
+        // 애니메이션 토글 버튼 초기 상태 설정 & 비활성화 처리
+        Dispatcher.UIThread.Post(() =>
+        {
+            var btn = this.FindControl<Control>("btnAnimations");
+            if (btn != null)
+            {
+                var prop = btn.GetType().GetProperty("IsChecked");
+                if (prop != null)
+                    prop.SetValue(btn, App.AnimationsEnabled);
+            }
+
+            // 애니메이션 비활성화 (활성화되지 않은 경우)
+            if (!App.AnimationsEnabled)
+            {
+                DisableTransitionsRecursive(this);
+            }
+        }, DispatcherPriority.Loaded);
+
         // QuotationNewPanel의 ListPanelChanged → Show2.Content 연결 (분석결과입력과 동일)
         if (_quotationNewPanel != null)
             _quotationNewPanel.ListPanelChanged += panel => { Show2.Content = panel; LogContentChange("Show2", panel); };
@@ -142,9 +160,11 @@ public partial class MainPage : Window
         this.Closing += MainPage_Closing;
 
         // 한글 IME 마지막 글자 다음 입력창 이동 버그 수정
-        // 포인터 클릭으로 포커스가 이동하기 전에 IME 조합 상태를 초기화하여
+        // 포인터 클릭/Tab/Enter로 포커스가 이동하기 전에 IME 조합 상태를 초기화하여
         // 조합 중이던 마지막 글자가 다음 TextBox로 넘어가지 않게 함
         AddHandler(InputElement.PointerPressedEvent, OnPointerPressedImeReset,
+            RoutingStrategies.Tunnel, handledEventsToo: false);
+        AddHandler(InputElement.KeyDownEvent, OnKeyDownImeReset,
             RoutingStrategies.Tunnel, handledEventsToo: false);
 
 
@@ -494,24 +514,48 @@ public partial class MainPage : Window
     }
 
     /// <summary>
+    /// <summary>
     /// 한글 IME 조합 중 포커스 이동 시 마지막 글자가 다음 입력창으로 넘어가는 버그 방지.
-    /// 포인터 클릭(Tunnel)으로 포커스가 바뀌기 전에 IME 상태를 초기화.
+    /// 포인터 클릭/Tab/Enter 등 모든 포커스 변경 전에 IME 상태를 초기화.
     /// </summary>
     private void OnPointerPressedImeReset(object? sender, PointerPressedEventArgs e)
     {
-        // 현재 포커스가 TextBox이고, 클릭 대상이 다른 요소일 때만 처리
         var focused = FocusManager?.GetFocusedElement();
         if (focused is not TextBox) return;
         if (e.Source is TextBox clickedBox && clickedBox == focused) return;
 
-        // IME 조합 상태 초기화 — composing 중인 글자가 다음 창으로 넘어가는 것을 방지
-        // IsInputMethodEnabled를 false→true로 토글하면 Avalonia가 IME 클라이언트를
-        // 종료(_imClient.Dispose)했다가 재생성 → 조합 중이던 글자를 현재 TextBox에서 flush
-        if (focused is TextBox tb)
+        ResetImeComposition(focused as TextBox);
+    }
+
+    /// <summary>Tab/Enter 키로 포커스가 이동할 때 IME 조합 상태 초기화</summary>
+    private void OnKeyDownImeReset(object? sender, KeyEventArgs e)
+    {
+        // Tab, Shift+Tab, Enter 키만 처리
+        if (e.Key != Key.Tab && e.Key != Key.Return) return;
+
+        var focused = FocusManager?.GetFocusedElement() as TextBox;
+        if (focused == null) return;
+
+        // 포커스 이동 직전에 IME를 리셋하되, 키 입력 처리 직후에 포커스 이동이 일어나도록
+        // PreviewKeyDown(Tunnel) → KeyDown(Bubble) 순서를 이용
+        ResetImeComposition(focused);
+    }
+
+    /// <summary>IME 조합 상태를 강제로 초기화 (한글 입력 안정화)</summary>
+    private static void ResetImeComposition(TextBox? tb)
+    {
+        if (tb == null) return;
+
+        try
         {
+            // IME 클라이언트를 종료했다가 재생성 → 조합 중이던 글자를 현재 TextBox에서 flush
             Avalonia.Input.InputMethod.SetIsInputMethodEnabled(tb, false);
-            Avalonia.Input.InputMethod.SetIsInputMethodEnabled(tb, true);
+            // 약간의 딜레이 후 재활성화 (Avalonia의 버그 우회)
+            Dispatcher.UIThread.Post(() =>
+                Avalonia.Input.InputMethod.SetIsInputMethodEnabled(tb, true),
+                DispatcherPriority.Input);
         }
+        catch { }
     }
 
     private void MainPage_Opened(object? sender, EventArgs e)
@@ -2728,56 +2772,6 @@ public partial class MainPage : Window
         };
     }
 
-    private void WasteDataQuery_Click(object? sender, RoutedEventArgs e)
-    {
-        _currentMode = "WasteDataQuery";
-
-        if (_wasteDataQueryPage == null)
-        {
-            _wasteDataQueryPage = new WasteDataQueryPage();
-            _wasteDataQueryPage.CompanySelected += company =>
-            {
-                List<ETA.Models.WasteAnalysisResult> results;
-                try { results = ETA.Services.SERVICE2.WasteDataService.GetResults(company.업체명); }
-                catch (Exception ex)
-                {
-                    Show3.Content = new TextBlock
-                    {
-                        Text = $"조회 오류: {ex.Message}",
-                        FontSize = AppTheme.FontBase, FontFamily = _wasteFont,
-                        Foreground = AppTheme.FgDanger,
-                        Margin = new Thickness(12),
-                    };
-                    return;
-                }
-
-                // Show2 = Bar/Line 차트 (최근 10건)
-                Show2.Content = BuildWasteBarLinePanel(company.업체명, results);
-                LogContentChange("Show2", Show2.Content as Control);
-
-                Show3.Content = BuildDataListPanel(company.업체명, results, company.약칭);
-                LogContentChange("Show3", Show3.Content as Control);
-            };
-        }
-
-        Show1.Content = _wasteDataQueryPage;
-        LogContentChange("Show1", _wasteDataQueryPage);
-        Show2.Content = null;
-        LogContentChange("Show2", null);
-        Show3.Content = null;
-        LogContentChange("Show3", null);
-        Show4.Content = BuildOrderHistoryPanel();
-        LogContentChange("Show4", Show4.Content as Control);
-        _wasteDataQueryPage.LoadData();
-        _bt1SaveAction = null;
-
-        SetSubMenu("새로고침", "", "", "", "", "", "설정");
-        SetLeftPanelWidth(300);
-        SetContentLayout(content2Star: 1, content4Star: 1, upperStar: 6, lowerStar: 4);
-
-        RestoreModeLayout("WasteDataQuery");
-    }
-
     private void WasteNameReconcile_Click(object? sender, RoutedEventArgs e)
     {
         _currentMode = "WasteNameReconcile";
@@ -2970,7 +2964,7 @@ public partial class MainPage : Window
 
         Show1.Content = null;
         Show2.Content = null; Show3.Content = null; Show4.Content = null;
-        SetSubMenu("새로고침", "", "", "", "", "", "");
+        SetSubMenu("새로고침", "시험기록부 출력", "", "", "", "", "");
         SetLeftPanelWidth(250);
         SetContentLayout(content2Star: 6, content4Star: 4, upperStar: 9, lowerStar: 1);
         RestoreModeLayout("Ecotoxicity");
@@ -3200,10 +3194,42 @@ public partial class MainPage : Window
                 Child = rowPanel,
             };
 
-            // 클릭 → 선택 + Show3 편집
+            // 우클릭 → 컨텍스트 메뉴 (Flyout 사용)
+            var deleteMenuItem = new MenuItem { Header = "🗑️ 삭제" };
+            deleteMenuItem.Click += (_, _) =>
+            {
+                try
+                {
+                    FacilityResultService.DeleteFacility(facilityName);
+                    _facilityNames = _facilityNames.Where(f => f != facilityName).ToArray();
+                    _selectedFacilityPlan = _facilityNames.Length > 0 ? _facilityNames[0] : "";
+                    Show1.Content = BuildFacilityListPanel();
+                    LogContentChange("Show1", Show1.Content as Control);
+                    Show2.Content = BuildAnalysisPlanPanel();
+                    LogContentChange("Show2", Show2.Content as Control);
+                    Debug.WriteLine($"✅ 처리시설 '{facilityName}' 삭제 완료");
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"❌ 처리시설 삭제 실패: {ex.Message}");
+                }
+            };
+            var contextFlyout = new MenuFlyout { Items = { deleteMenuItem } };
+            FlyoutBase.SetAttachedFlyout(item, contextFlyout);
+
             item.PointerPressed += (_, e) =>
             {
                 if (_facilityDragStarted) return;
+
+                // 우클릭 (오른쪽 마우스 버튼)
+                if (e.GetCurrentPoint(item).Properties.IsRightButtonPressed)
+                {
+                    e.Handled = true;
+                    FlyoutBase.ShowAttachedFlyout(item);
+                    return;
+                }
+
+                // 좌클릭 (왼쪽 마우스 버튼)
                 _selectedFacilityPlan = facilityName;
                 Show1.Content = BuildFacilityListPanel();
                 LogContentChange("Show1", Show1.Content as Control);
@@ -3874,6 +3900,44 @@ public partial class MainPage : Window
                 Tag        = sampleName, // 드래그 식별용
             };
 
+            // 우클릭 → 컨텍스트 메뉴 (Flyout 사용)
+            var deleteSampleMenuItem = new MenuItem { Header = "🗑️ 삭제" };
+            deleteSampleMenuItem.Click += (_, _) =>
+            {
+                try
+                {
+                    FacilityResultService.DeleteSample(facility, sampleName);
+                    if (_facilitySamples.TryGetValue(facility, out var curSamples))
+                    {
+                        _facilitySamples[facility] = curSamples.Where(s => s != sampleName).ToArray();
+                    }
+                    if (_facilityPlanState.TryGetValue(facility, out var stRows))
+                    {
+                        var newState = stRows.Where((_, i) => i != sampleIdx).ToList();
+                        _facilityPlanState[facility] = newState;
+                    }
+                    Show2.Content = BuildAnalysisPlanPanel();
+                    LogContentChange("Show2", Show2.Content as Control);
+                    Debug.WriteLine($"✅ 시료 '{sampleName}' 삭제 완료");
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"❌ 시료 삭제 실패: {ex.Message}");
+                }
+            };
+            var sampleContextFlyout = new MenuFlyout { Items = { deleteSampleMenuItem } };
+            FlyoutBase.SetAttachedFlyout(rowGrid, sampleContextFlyout);
+
+            rowGrid.PointerPressed += (_, e) =>
+            {
+                // 우클릭 (오른쪽 마우스 버튼)
+                if (e.GetCurrentPoint(rowGrid).Properties.IsRightButtonPressed)
+                {
+                    e.Handled = true;
+                    FlyoutBase.ShowAttachedFlyout(rowGrid);
+                }
+            };
+
             bool isMainView = _analysisPlanSelectedDay == -1; // 전체 뷰
 
             if (isMainView || isBaseMode)
@@ -4398,11 +4462,6 @@ public partial class MainPage : Window
                 Show2.Content = panel;
                 LogContentChange("Show2", panel);
             };
-            _contractPage.DetailPanelChanged += panel =>
-            {
-                Show2.Content = panel;
-                LogContentChange("Show2", panel);
-            };
             _contractPage.EditPanelChanged += panel =>
             {
                 Show3.Content = panel;
@@ -4603,22 +4662,25 @@ public partial class MainPage : Window
             // 📋 의뢰서 작성: 편집 패널로 전환
             _quotationDetailPanel.OrderRequestEditRequested += (issue, samples, quotedItems) =>
             {
-                _orderRequestEditPanel ??= new OrderRequestEditPanel();
-                _orderRequestEditPanel.SubmitCompleted += () =>
+                if (_orderRequestEditPanel == null)
                 {
-                    // 업데이트 완료 → Show1 갱신 후 세부내역으로 복귀
-                    _quotationHistoryPanel?.LoadData();
-                    Show1.Content = null;
-                    Show1.Content = _quotationHistoryPanel;
-                    LogContentChange("Show1", _quotationHistoryPanel);
-                    Show2.Content = _quotationDetailPanel;
-                    LogContentChange("Show2", _quotationDetailPanel);
-                };
-                _orderRequestEditPanel.Cancelled += () =>
-                {
-                    Show2.Content = _quotationDetailPanel;
-                    LogContentChange("Show2", _quotationDetailPanel);
-                };
+                    _orderRequestEditPanel = new OrderRequestEditPanel();
+                    _orderRequestEditPanel.SubmitCompleted += () =>
+                    {
+                        // 업데이트 완료 → Show1 갱신 후 세부내역으로 복귀
+                        _quotationHistoryPanel?.LoadData();
+                        Show1.Content = null;
+                        Show1.Content = _quotationHistoryPanel;
+                        LogContentChange("Show1", _quotationHistoryPanel);
+                        Show2.Content = _quotationDetailPanel;
+                        LogContentChange("Show2", _quotationDetailPanel);
+                    };
+                    _orderRequestEditPanel.Cancelled += () =>
+                    {
+                        Show2.Content = _quotationDetailPanel;
+                        LogContentChange("Show2", _quotationDetailPanel);
+                    };
+                }
                 _orderRequestEditPanel.Load(issue, samples, quotedItems);
                 Show2.Content = _orderRequestEditPanel;
                 LogContentChange("Show2", _orderRequestEditPanel);
@@ -5240,7 +5302,7 @@ public partial class MainPage : Window
                 },
                 new TextBlock
                 {
-                    Text       = "  • 견적발행내역\n  • 거래명세서발행내역\n  • 계약 DB\n  • 분석의뢰및결과\n  • 시료명칭(컬럼명)",
+                    Text       = "  • 견적발행내역\n  • 거래명세서발행내역\n  • 계약 DB\n  • 수질분석센터_결과\n  • 시료명칭(컬럼명)",
                     FontSize   = AppTheme.FontMD, FontFamily = fontR,
                     Foreground = AppTheme.FgSecondary,
                     LineHeight = 20,
@@ -5369,7 +5431,6 @@ public partial class MainPage : Window
         ["Quotation"]                = ("견적관리", "견적/발행"),
         ["QuotationIssue"]           = ("견적관리", "분석의뢰"),
         ["WasteCompany"]             = ("폐수관리", "배출업소"),
-        ["WasteDataQuery"]           = ("폐수관리", "데이터조회"),
         ["WasteNameReconcile"]       = ("폐수관리", "약칭매칭(폐수)"),
         ["WaterQualityNameReconcile"]= ("폐수관리", "약칭매칭(수질)"),
         ["WasteSampleList"]          = ("폐수관리", "시료관리"),
@@ -5468,7 +5529,6 @@ public partial class MainPage : Window
         {
             case "Agent":        _agentTreePage?.LoadData();      break;
             case "WasteCompany":      _ = _wasteCompanyPage?.LoadDataAsync();    break;
-            case "WasteDataQuery":    _wasteDataQueryPage?.LoadData(); break;
             case "WasteNameReconcile": _wasteNameReconcilePage?.Reload(); break;
             case "Schedule":     _schedulePage?.LoadData();        break;
             case "Contract":     _contractPage?.LoadData();       break;
@@ -5490,6 +5550,7 @@ public partial class MainPage : Window
             case "RiskManage":      _riskPage?.DeleteSelected();        break;
             case "AnalysisPlan":    SetAnalysisPlanDay(0); break; // 월
             case "AiDocClassification": AiDocClassification_Click(null, null!); break;
+            case "Ecotoxicity":     _ = _ecotoxicityPage?.ExportTestReportAsync(); break;
             default: break;
         }
     }
@@ -7145,4 +7206,59 @@ public partial class MainPage : Window
     }
 
     private void TEST_Click(object? sender, RoutedEventArgs e) { }
+
+    // ── 애니메이션 토글 ────────────────────────────────────────────────────────
+    /// <summary>모든 컨트롤의 Transitions 제거 (재귀)</summary>
+    private void DisableTransitionsRecursive(Control? control)
+    {
+        if (control == null) return;
+
+        // Transitions 제거
+        if (control.Transitions != null && control.Transitions.Count > 0)
+        {
+            control.Transitions.Clear();
+        }
+
+        // 자식 컨트롤 재귀 처리
+        foreach (var child in control.GetVisualChildren().OfType<Control>())
+        {
+            DisableTransitionsRecursive(child);
+        }
+    }
+
+    /// <summary>애니메이션 토글</summary>
+    public void ToggleAnimations()
+    {
+        App.AnimationsEnabled = !App.AnimationsEnabled;
+
+        if (App.AnimationsEnabled)
+        {
+            Debug.WriteLine("🎬 애니메이션 활성화");
+        }
+        else
+        {
+            Debug.WriteLine("⏸️ 애니메이션 비활성화 중...");
+            // Show1~4의 Transitions 제거
+            foreach (var show in new[] { Show1, Show2, Show3, Show4 })
+            {
+                if (show != null && show.Transitions != null)
+                    show.Transitions.Clear();
+            }
+            DisableTransitionsRecursive(this);
+        }
+
+        // UI 업데이트 - 리플렉션으로 IsChecked 설정
+        var btn = this.FindControl<Control>("btnAnimations");
+        if (btn != null)
+        {
+            var prop = btn.GetType().GetProperty("IsChecked");
+            if (prop != null)
+                prop.SetValue(btn, App.AnimationsEnabled);
+        }
+    }
+
+    private void BtnAnimations_Click(object? sender, RoutedEventArgs e)
+    {
+        ToggleAnimations();
+    }
 }

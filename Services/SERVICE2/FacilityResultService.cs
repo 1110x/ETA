@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using ETA.Models;
 using ETA.Services.Common;
+using ETA.Services.SERVICE1;
 
 namespace ETA.Services.SERVICE2;
 
@@ -94,7 +95,7 @@ public static class FacilityResultService
         cmd.CommandText = $@"
             SELECT {string.Join(", ", selectParts)}
             FROM `처리시설_마스터` m
-            LEFT JOIN `처리시설_측정결과` r
+            LEFT JOIN `처리시설_결과` r
                 ON r.마스터_id = m.id AND r.채취일자 = @date
             WHERE m.시설명 = @facility
             ORDER BY m.id";
@@ -135,9 +136,51 @@ public static class FacilityResultService
         EnsureFacilityColumnsSync();
 
         var items = GetAnalysisItems(activeOnly: false);
-        // 데이터 컬럼: 분석항목 + 비고
-        var dataCols = items.Select(i => i.컬럼명.Trim('`')).Concat(new[] { "비고" }).ToList();
         string Q(string c) => c.Contains('-') || c.Contains(' ') ? $"`{c}`" : c;
+
+        // 데이터 컬럼: 분석항목 + row.Values에 실제 값이 있는 추가 컬럼 + 비고
+        // 처리시설_분석항목에 미등록된 항목(T-P 등)도 저장 가능하도록 합집합 사용
+        var registeredCols = items.Select(i => i.컬럼명.Trim('`')).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var extraCols = rows
+            .SelectMany(r => r.Values.Keys.Where(k => !string.IsNullOrEmpty(r.Values[k])))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Where(k => !registeredCols.Contains(k))
+            .ToList();
+        var dataCols = registeredCols.Concat(extraCols).Concat(new[] { "비고" }).ToList();
+
+        // extraCols에 해당하는 컬럼이 테이블에 없으면 자동 추가
+        if (extraCols.Count > 0)
+        {
+            try
+            {
+                using var connExtra = DbConnectionFactory.CreateConnection();
+                connExtra.Open();
+                foreach (var table in new[] { "처리시설_분석계획", "처리시설_마스터", "처리시설_결과" })
+                {
+                    var existingCols = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                    using (var cmdE = connExtra.CreateCommand())
+                    {
+                        cmdE.CommandText = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME=@t";
+                        cmdE.Parameters.AddWithValue("@t", table);
+                        using var rE = cmdE.ExecuteReader();
+                        while (rE.Read()) existingCols.Add(rE.GetString(0));
+                    }
+                    foreach (var col in extraCols)
+                    {
+                        if (existingCols.Contains(col)) continue;
+                        try
+                        {
+                            using var alt = connExtra.CreateCommand();
+                            alt.CommandText = $"ALTER TABLE `{table}` ADD COLUMN {Q(col)} TEXT DEFAULT ''";
+                            alt.ExecuteNonQuery();
+                        }
+                        catch { }
+                    }
+                }
+                _columnsSynced = false; // 컬럼 추가됐으므로 다음 sync 재실행
+            }
+            catch { }
+        }
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
@@ -152,7 +195,7 @@ public static class FacilityResultService
                 var paramList = string.Join(",", dataCols.Select((c, i) => $"@v{i}"));
                 using var cmd = conn.CreateCommand();
                 cmd.CommandText = $@"
-                    INSERT INTO `처리시설_측정결과`
+                    INSERT INTO `처리시설_결과`
                         (마스터_id, 시설명, 시료명, 채취일자, {colList}, 입력자, 입력일시)
                     VALUES
                         (@mid, @시설명, @시료명, @date, {paramList}, @user, @now)";
@@ -176,7 +219,7 @@ public static class FacilityResultService
                 var setList = string.Join(",", dataCols.Select((c, i) => $"{Q(c)}=@v{i}"));
                 using var cmd = conn.CreateCommand();
                 cmd.CommandText = $@"
-                    UPDATE `처리시설_측정결과` SET
+                    UPDATE `처리시설_결과` SET
                         {setList}, 입력일시=@now
                     WHERE id=@id";
                 cmd.Parameters.AddWithValue("@id", r.Id);
@@ -198,7 +241,7 @@ public static class FacilityResultService
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = "SELECT COUNT(*) FROM `처리시설_측정결과` WHERE 채취일자=@d";
+        cmd.CommandText = "SELECT COUNT(*) FROM `처리시설_결과` WHERE 채취일자=@d";
         cmd.Parameters.AddWithValue("@d", date);
         var val = cmd.ExecuteScalar();
         return Convert.ToInt64(val ?? 0L) > 0;
@@ -218,12 +261,14 @@ public static class FacilityResultService
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
+
+        // 1. 처리시설_결과 기반 채움 여부
         using var cmd = conn.CreateCommand();
         var selectParts = items.Select((i, idx) =>
             $"SUM(CASE WHEN COALESCE({Q(i.컬럼명.Trim('`'))},'') <> '' THEN 1 ELSE 0 END) AS c{idx}").ToList();
         cmd.CommandText = $@"
             SELECT {string.Join(", ", selectParts)}
-            FROM `처리시설_측정결과`
+            FROM `처리시설_결과`
             WHERE 채취일자=@d";
         cmd.Parameters.AddWithValue("@d", date);
         using var reader = cmd.ExecuteReader();
@@ -236,6 +281,68 @@ public static class FacilityResultService
                 result[key] = v is not DBNull && Convert.ToInt64(v) > 0;
             }
         }
+        reader.Close();
+
+        // 2. 시험기록부 테이블에 처리시설 소스 데이터가 있으면 해당 항목도 true로 보완
+        // (처리시설_결과에 아직 반영 안 된 경우 커버)
+        foreach (var col in result.Keys.ToList())
+        {
+            if (result[col]) continue; // 이미 true면 스킵
+            var tbl = AnalysisService.GetRecordTableName(col);
+            if (string.IsNullOrEmpty(tbl) || !DbConnectionFactory.TableExists(conn, tbl)) continue;
+            using var chk = conn.CreateCommand();
+            chk.CommandText = $"SELECT COUNT(*) FROM `{tbl}` WHERE LEFT(분석일,10)=@d AND 소스구분='처리시설'";
+            chk.Parameters.AddWithValue("@d", date);
+            var cnt = Convert.ToInt64(chk.ExecuteScalar() ?? 0L);
+            if (cnt > 0) result[col] = true;
+        }
+
+        return result;
+    }
+
+    // ── 해당 일자 처리시설 항목별 입력 비율 (filled_rows / total_rows) ─────────
+    /// <summary>지정 날짜 처리시설 항목별 ratio. (컬럼명 → 0.0~1.0)</summary>
+    public static Dictionary<string, double> GetFillRatioForDate(string date)
+    {
+        EnsureFacilityColumnsSync();
+
+        var items = GetAnalysisItems(activeOnly: true);
+        var result = new Dictionary<string, double>();
+        if (items.Count == 0) return result;
+
+        string Q(string c) => c.Contains('-') || c.Contains(' ') ? $"`{c}`" : c;
+
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+
+        // total rows for the date
+        using var totalCmd = conn.CreateCommand();
+        totalCmd.CommandText = "SELECT COUNT(*) FROM `처리시설_결과` WHERE 채취일자=@d";
+        totalCmd.Parameters.AddWithValue("@d", date);
+        long totalRows = Convert.ToInt64(totalCmd.ExecuteScalar() ?? 0L);
+        if (totalRows == 0) return result;
+
+        // filled rows per column
+        using var cmd = conn.CreateCommand();
+        var selectParts = items.Select((i, idx) =>
+            $"SUM(CASE WHEN COALESCE({Q(i.컬럼명.Trim('`'))},'') <> '' THEN 1 ELSE 0 END) AS c{idx}").ToList();
+        cmd.CommandText = $@"
+            SELECT {string.Join(", ", selectParts)}
+            FROM `처리시설_결과`
+            WHERE 채취일자=@d";
+        cmd.Parameters.AddWithValue("@d", date);
+        using var reader = cmd.ExecuteReader();
+        if (reader.Read())
+        {
+            for (int i = 0; i < items.Count; i++)
+            {
+                var v = reader[$"c{i}"];
+                var key = items[i].컬럼명.Trim('`');
+                long filled = v is not DBNull ? Convert.ToInt64(v) : 0L;
+                result[key] = (double)filled / totalRows;
+            }
+        }
+        reader.Close();
         return result;
     }
 
@@ -319,7 +426,7 @@ public static class FacilityResultService
                 while (r.Read()) items.Add(r.GetString(0).Trim('`'));
             }
 
-            foreach (var table in new[] { "처리시설_분석계획", "처리시설_마스터", "처리시설_측정결과" })
+            foreach (var table in new[] { "처리시설_분석계획", "처리시설_마스터", "처리시설_결과" })
             {
                 // 현재 컬럼 목록 조회
                 var existing = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -471,7 +578,7 @@ public static class FacilityResultService
         conn.Open();
 
         // 3개 테이블 모두에 컬럼 추가 (이미 존재하면 무시)
-        foreach (var table in new[] { "처리시설_분석계획", "처리시설_마스터", "처리시설_측정결과" })
+        foreach (var table in new[] { "처리시설_분석계획", "처리시설_마스터", "처리시설_결과" })
         {
             try
             {
@@ -847,8 +954,51 @@ public static class FacilityResultService
         cmd2.ExecuteNonQuery();
     }
 
+    // ── 처리시설 항목별 시험기록부 테이블명 매핑 ──────────────────────
+    /// <summary>처리시설 항목 컬럼명 → 시험기록부 테이블명 반환 (분석정보 Analyte 기반). 없으면 null.</summary>
+    public static string? GetRecordTableName(string facilityColumn)
+        => AnalysisService.GetRecordTableName(facilityColumn);
+
+    /// <summary>지정 시험기록부 테이블에서 날짜 기준 처리시설 소스구분 행만 조회.
+    /// 반환: 컬럼명 목록 + 행 데이터 목록(딕셔너리)</summary>
+    public static (List<string> Columns, List<Dictionary<string, string>> Rows)
+        GetRecordTableRows(string tableName, string date)
+    {
+        var columns = new List<string>();
+        var rows    = new List<Dictionary<string, string>>();
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            if (!DbConnectionFactory.TableExists(conn, tableName))
+                return (columns, rows);
+
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = $@"
+                SELECT * FROM `{tableName}`
+                WHERE LEFT(분석일, 10) = @d
+                  AND 소스구분 = '처리시설'
+                ORDER BY 시료명, SN";
+            cmd.Parameters.AddWithValue("@d", date);
+            using var r = cmd.ExecuteReader();
+
+            for (int i = 0; i < r.FieldCount; i++)
+                columns.Add(r.GetName(i));
+
+            while (r.Read())
+            {
+                var row = new Dictionary<string, string>();
+                for (int i = 0; i < r.FieldCount; i++)
+                    row[columns[i]] = r.IsDBNull(i) ? "" : r.GetValue(i)?.ToString() ?? "";
+                rows.Add(row);
+            }
+        }
+        catch { }
+        return (columns, rows);
+    }
+
     // ── 월/날짜 목록 (처리시설 모드 트리뷰용) ─────────────────────────
-    /// <summary>처리시설_작업에 의뢰가 존재하는 월 목록 (yyyy-MM)</summary>
+    /// <summary>처리시설_결과에 데이터가 존재하는 월 목록 (yyyy-MM)</summary>
     public static List<string> GetMonths()
     {
         var list = new List<string>();
@@ -856,11 +1006,10 @@ public static class FacilityResultService
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
-            if (!DbConnectionFactory.TableExists(conn, "처리시설_작업")) return list;
             using var cmd = conn.CreateCommand();
             cmd.CommandText = @"
                 SELECT DISTINCT SUBSTR(채취일자, 1, 7) AS ym
-                FROM `처리시설_작업`
+                FROM `처리시설_결과`
                 WHERE 채취일자 IS NOT NULL AND 채취일자 <> ''
                 ORDER BY ym DESC";
             using var r = cmd.ExecuteReader();
@@ -875,7 +1024,7 @@ public static class FacilityResultService
         return list;
     }
 
-    /// <summary>분석결과입력 트리뷰용 — 처리시설 모드에서 의뢰가 존재하는 일자 목록</summary>
+    /// <summary>분석결과입력 트리뷰용 — 처리시설 모드에서 데이터가 존재하는 일자 목록</summary>
     public static List<string> GetDatesByMonth(string yearMonth)
     {
         var list = new List<string>();
@@ -886,7 +1035,7 @@ public static class FacilityResultService
             using var cmd = conn.CreateCommand();
             cmd.CommandText = @"
                 SELECT DISTINCT 채취일자
-                FROM `처리시설_작업`
+                FROM `처리시설_결과`
                 WHERE SUBSTR(채취일자, 1, 7) = @ym
                 ORDER BY 채취일자 DESC";
             cmd.Parameters.AddWithValue("@ym", yearMonth);
@@ -903,23 +1052,27 @@ public static class FacilityResultService
     }
 
     // ── 특정 일자에 의뢰된(예정) 처리시설 항목 집합 ───────────────────
-    /// <summary>처리시설_작업 항목목록 파싱 → 해당 일자의 의뢰 항목 집합</summary>
+    /// <summary>처리시설_결과에 존재하는 일자의 분석항목 집합 (뱃지 표시 기준)</summary>
     public static HashSet<string> GetScheduledItemsByDate(string date)
     {
+        // 처리시설_결과에 해당 날짜 행이 존재하면 기본 항목(BOD/TOC/SS/T-N/T-P/총대장균군) 전체를 반환
         var set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = "SELECT 항목목록 FROM `처리시설_작업` WHERE 채취일자=@d";
+            cmd.CommandText = "SELECT COUNT(*) FROM `처리시설_결과` WHERE 채취일자=@d";
             cmd.Parameters.AddWithValue("@d", date);
-            using var r = cmd.ExecuteReader();
-            while (r.Read())
+            var cnt = Convert.ToInt32(cmd.ExecuteScalar());
+            if (cnt > 0)
             {
-                if (r.IsDBNull(0)) continue;
-                foreach (var it in r.GetString(0).Split(',', StringSplitOptions.RemoveEmptyEntries))
-                    set.Add(it.Trim());
+                set.Add("BOD");
+                set.Add("TOC");
+                set.Add("SS");
+                set.Add("T-N");
+                set.Add("T-P");
+                set.Add("총대장균군");
             }
         }
         catch { }
@@ -1010,9 +1163,9 @@ public static class FacilityResultService
         return count;
     }
 
-    // ── 분석계획 기반 처리시설_측정결과 빈 행 자동 생성 (누락 날짜 소급 포함) ─────
+    // ── 분석계획 기반 처리시설_결과 빈 행 자동 생성 (누락 날짜 소급 포함) ─────
     /// <summary>
-    /// 처리시설_측정결과의 마지막 날짜 다음 날부터 오늘까지
+    /// 처리시설_결과의 마지막 날짜 다음 날부터 오늘까지
     /// 분석계획에 맞는 빈 행을 생성합니다. 이미 있는 행은 스킵합니다.
     /// 프로그램을 며칠 만에 켜도 그동안 누락된 날짜가 모두 채워집니다.
     /// </summary>
@@ -1054,7 +1207,7 @@ public static class FacilityResultService
         DateTime startDate;
         using (var cmd = conn.CreateCommand())
         {
-            cmd.CommandText = "SELECT MAX(채취일자) FROM `처리시설_측정결과`";
+            cmd.CommandText = "SELECT MAX(채취일자) FROM `처리시설_결과`";
             var val = cmd.ExecuteScalar();
             if (val != null && val != DBNull.Value &&
                 DateTime.TryParse(val.ToString(), out var lastDate))
@@ -1075,7 +1228,7 @@ public static class FacilityResultService
             var existing = new HashSet<int>();
             using (var cmd = conn.CreateCommand())
             {
-                cmd.CommandText = "SELECT 마스터_id FROM `처리시설_측정결과` WHERE 채취일자 = @d";
+                cmd.CommandText = "SELECT 마스터_id FROM `처리시설_결과` WHERE 채취일자 = @d";
                 cmd.Parameters.AddWithValue("@d", dateStr);
                 using var r = cmd.ExecuteReader();
                 while (r.Read())
@@ -1088,7 +1241,7 @@ public static class FacilityResultService
                 if (existing.Contains(masterId)) continue;
 
                 using var ins = conn.CreateCommand();
-                ins.CommandText = @"INSERT INTO `처리시설_측정결과`
+                ins.CommandText = @"INSERT INTO `처리시설_결과`
                     (마스터_id, 시설명, 시료명, 채취일자)
                     VALUES (@mid, @f, @s, @d)";
                 ins.Parameters.AddWithValue("@mid", masterId);
@@ -1114,5 +1267,106 @@ public static class FacilityResultService
             sampleName.Contains(m.시료명) || m.시료명.Contains(sampleName));
         if (partial != default) return (partial.시설명, partial.마스터Id);
         return null;
+    }
+
+    // ── 측정결과 삭제 ────────────────────────────────────────────────────────
+    /// <summary>측정결과 행 삭제 (ID로)</summary>
+    public static void DeleteResult(int id)
+    {
+        if (id <= 0) return;
+
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "DELETE FROM `처리시설_결과` WHERE id = @Id";
+        cmd.Parameters.AddWithValue("@Id", id);
+        cmd.ExecuteNonQuery();
+    }
+
+    /// <summary>시설 및 날짜별로 모든 측정결과 삭제</summary>
+    public static void DeleteResultsByFacilityAndDate(string facility, string date)
+    {
+        if (string.IsNullOrEmpty(facility) || string.IsNullOrEmpty(date)) return;
+
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "DELETE FROM `처리시설_결과` WHERE 시설명 = @Facility AND DATE(채취일자) = @Date";
+        cmd.Parameters.AddWithValue("@Facility", facility);
+        cmd.Parameters.AddWithValue("@Date", date);
+        cmd.ExecuteNonQuery();
+    }
+
+    /// <summary>처리시설 삭제 (처리시설_마스터 + 분석계획)</summary>
+    public static void DeleteFacility(string facilityName)
+    {
+        if (string.IsNullOrEmpty(facilityName)) return;
+
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+
+        // 1. 처리시설_결과에서 해당 시설 데이터 삭제
+        using (var cmd = conn.CreateCommand())
+        {
+            cmd.CommandText = "DELETE FROM `처리시설_결과` WHERE 시설명 = @Facility";
+            cmd.Parameters.AddWithValue("@Facility", facilityName);
+            cmd.ExecuteNonQuery();
+        }
+
+        // 2. 처리시설_분석계획에서 해당 시설 데이터 삭제
+        using (var cmd = conn.CreateCommand())
+        {
+            cmd.CommandText = "DELETE FROM `처리시설_분석계획` WHERE 시설명 = @Facility";
+            cmd.Parameters.AddWithValue("@Facility", facilityName);
+            cmd.ExecuteNonQuery();
+        }
+
+        // 3. 처리시설_마스터에서 해당 시설의 모든 시료 삭제
+        using (var cmd = conn.CreateCommand())
+        {
+            cmd.CommandText = "DELETE FROM `처리시설_마스터` WHERE 시설명 = @Facility";
+            cmd.Parameters.AddWithValue("@Facility", facilityName);
+            cmd.ExecuteNonQuery();
+        }
+
+        InvalidateCache();
+    }
+
+    /// <summary>시료 삭제 (처리시설_마스터 + 분석계획)</summary>
+    public static void DeleteSample(string facilityName, string sampleName)
+    {
+        if (string.IsNullOrEmpty(facilityName) || string.IsNullOrEmpty(sampleName)) return;
+
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+
+        // 1. 처리시설_결과에서 해당 시료 데이터 삭제
+        using (var cmd = conn.CreateCommand())
+        {
+            cmd.CommandText = "DELETE FROM `처리시설_결과` WHERE 시설명 = @Facility AND 시료명 = @Sample";
+            cmd.Parameters.AddWithValue("@Facility", facilityName);
+            cmd.Parameters.AddWithValue("@Sample", sampleName);
+            cmd.ExecuteNonQuery();
+        }
+
+        // 2. 처리시설_분석계획에서 해당 시료 데이터 삭제
+        using (var cmd = conn.CreateCommand())
+        {
+            cmd.CommandText = "DELETE FROM `처리시설_분석계획` WHERE 시설명 = @Facility AND 시료명 = @Sample";
+            cmd.Parameters.AddWithValue("@Facility", facilityName);
+            cmd.Parameters.AddWithValue("@Sample", sampleName);
+            cmd.ExecuteNonQuery();
+        }
+
+        // 3. 처리시설_마스터에서 해당 시료 삭제
+        using (var cmd = conn.CreateCommand())
+        {
+            cmd.CommandText = "DELETE FROM `처리시설_마스터` WHERE 시설명 = @Facility AND 시료명 = @Sample";
+            cmd.Parameters.AddWithValue("@Facility", facilityName);
+            cmd.Parameters.AddWithValue("@Sample", sampleName);
+            cmd.ExecuteNonQuery();
+        }
+
+        InvalidateCache();
     }
 }

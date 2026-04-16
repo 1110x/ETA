@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
+using ClosedXML.Excel;
 using ETA.Services.Common;
 using ETA.Services.SERVICE2;
 using static ETA.Services.Common.AppFonts;
@@ -49,8 +52,8 @@ public partial class EcotoxicityPage : UserControl
     // ── 입력 데이터 ─────────────────────────────────────────────────────────
     private string _testDate = DateTime.Today.ToString("yyyy-MM-dd");
     private string _testNumber = "1";
-    private string _endpoint = "LC50";    // LC50 or EC50
-    private string _species = "물벼룩";
+    private string _endpoint = "EC50";    // EC50 (기본값)
+    private string _species = "물벼룩(Daphnia magna)";
     private string _toxicant = "방류수";
     private string _concUnit = "%";
     private string _durUnit = "H";
@@ -65,6 +68,21 @@ public partial class EcotoxicityPage : UserControl
     private int _organismsPerConc = 20;
     private TextBlock? _selectedTreeNameTb;  // Show1 선택된 시료명 TextBlock
 
+    // ── 추가 시험조건 데이터 (ES 04704.1c 기준) ────────────────────────────
+    private double _testTemperature = 20.0;  // (20±2)°C
+    private double _testPH = 7.8;            // 7.6~8.0
+    private double _sampleTemperature = 20.0;
+    private double _samplePH = 7.0;
+    private double _sampleDO = 8.0;          // 용존산소 (mg/L)
+    private string? _testOrganism;
+    private string? _culledOrganism;
+    private string _ecCalculationMethod = "Probit";  // Probit 또는 Trimmed Spearman-Karber
+    private string _analysisObservations = "";
+    private string _analystName = "";
+
+    // QA/QC 참고물질 시험 결과
+    private double? _qcReferenceEC50;        // 표준물질(K₂Cr₂O₇) EC50 값
+
     // ── 결과 ────────────────────────────────────────────────────────────────
     private EcotoxicityService.EcotoxResult? _tskResult;
     private EcotoxicityService.EcotoxResult? _probitResult;
@@ -76,7 +94,9 @@ public partial class EcotoxicityPage : UserControl
         string Date, string TestNo, string Species, string Toxicant,
         string SampleName, EcotoxicityService.EcotoxResult TskResult,
         EcotoxicityService.EcotoxResult? ProbitResult,
-        double[] Conc, int[] Org, int[] Mort, int CtrlOrg, int CtrlMort);
+        double[] Conc, int[] Org, int[] Mort, int CtrlOrg, int CtrlMort,
+        double TestTemperature, double TestPH, double SampleTemperature, double SamplePH, double SampleDO,
+        string Duration, string EcCalculationMethod, string Observations, string AnalystName);
 
     public EcotoxicityPage()
     {
@@ -315,7 +335,7 @@ public partial class EcotoxicityPage : UserControl
 
         var dataGrid = new Grid { Margin = new Thickness(0, 4) };
         dataGrid.ColumnDefinitions.Add(new ColumnDefinition(30, GridUnitType.Pixel));
-        dataGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Star));
+        dataGrid.ColumnDefinitions.Add(new ColumnDefinition(70, GridUnitType.Pixel));
         dataGrid.ColumnDefinitions.Add(new ColumnDefinition(70, GridUnitType.Pixel));
         dataGrid.ColumnDefinitions.Add(new ColumnDefinition(70, GridUnitType.Pixel));
 
@@ -532,7 +552,7 @@ public partial class EcotoxicityPage : UserControl
                     농도단위: _concUnit,
                     probitResult: _probitResult);
 
-                // 분석의뢰및결과.생태독성 컨럼 업데이트 (트리 Show1 새로고침 대비)
+                // 수질분석센터_결과.생태독성 컨럼 업데이트 (트리 Show1 새로고침 대비)
                 try
                 {
                     ETA.Services.SERVICE1.AnalysisRequestService.UpdateEcotoxResult(
@@ -547,7 +567,9 @@ public partial class EcotoxicityPage : UserControl
                     _concentrations.Where(c => c > 0).ToArray(),
                     _organisms.Take(validCnt).ToArray(),
                     _mortalities.Take(validCnt).ToArray(),
-                    _controlOrganisms, _controlMortalities));
+                    _controlOrganisms, _controlMortalities,
+                    _testTemperature, _testPH, _sampleTemperature, _samplePH, _sampleDO,
+                    $"{_duration} {_durUnit}", _ecCalculationMethod, _analysisObservations, _analystName));
                 ShowHistoryPanel();
                 detailTb.Text += "  ✅ DB 저장 완료";
 
@@ -697,5 +719,271 @@ public partial class EcotoxicityPage : UserControl
         if (onChange != null)
             tb.LostFocus += (_, _) => onChange(tb.Text ?? "");
         return tb;
+    }
+
+    // ══════════════════════════════════════════════════════════════════════════
+    //  시험기록부 출력 (Excel)
+    // ══════════════════════════════════════════════════════════════════════════
+    public async Task ExportTestReportAsync()
+    {
+        // 저장된 기록이 없으면 현재 입력된 데이터로 임시 기록 생성
+        if (!_records.Any())
+        {
+            if (_tskResult == null && _probitResult == null)
+            {
+                System.Diagnostics.Debug.WriteLine("[시험기록부 출력] 저장된 시험 기록이 없습니다. 먼저 계산을 수행하세요.");
+                return;
+            }
+
+            // 현재 입력된 데이터를 임시 기록으로 생성
+            var validCnt = _concentrations.Count(c => c > 0);
+            _records.Insert(0, new TestRecord(
+                _testDate, _testNumber, _species, _toxicant, _selectedTreeNameTb?.Text ?? "미지정",
+                _tskResult ?? new EcotoxicityService.EcotoxResult(0, 0, 0, 0, "TSK", -1, false, "계산 결과 없음"),
+                _probitResult,
+                _concentrations.Where(c => c > 0).ToArray(),
+                _organisms.Take(validCnt).ToArray(),
+                _mortalities.Take(validCnt).ToArray(),
+                _controlOrganisms, _controlMortalities,
+                _testTemperature, _testPH, _sampleTemperature, _samplePH, _sampleDO,
+                $"{_duration} {_durUnit}", _ecCalculationMethod, _analysisObservations, _analystName));
+        }
+
+        try
+        {
+            var wb = new XLWorkbook();
+            var ws = wb.Worksheets.Add("시험기록부");
+
+            ws.Columns().Width = 14;
+            int row = 1;
+
+            // ── 제목 ────────────────────────────────────────────────────────────
+            var titleCell = ws.Cell(row, 1);
+            titleCell.Value = "물벼룩을 이용한 급성 독성 시험 기록부";
+            titleCell.Style.Font.Bold = true;
+            titleCell.Style.Font.FontSize = 14;
+            ws.Range(row, 1, row, 8).Merge();
+            ws.Row(row).Height = 24;
+            row++;
+
+            var stdCell = ws.Cell(row, 1);
+            stdCell.Value = "ES 04704.1c (수질오염공정시험기준, 2023)";
+            stdCell.Style.Font.Italic = true;
+            ws.Range(row, 1, row, 8).Merge();
+            row += 2;
+
+            // ── 각 시험 기록 ─────────────────────────────────────────────────────
+            foreach (var rec in _records)
+            {
+                // ─ 시험 기본 정보 ─
+                ws.Cell(row, 1).Value = "시험기본정보";
+                ws.Cell(row, 1).Style.Font.Bold = true;
+                row++;
+
+                ws.Cell(row, 1).Value = "시험일자";
+                ws.Cell(row, 2).Value = rec.Date;
+                ws.Cell(row, 3).Value = "시험번호";
+                ws.Cell(row, 4).Value = rec.TestNo;
+                ws.Cell(row, 5).Value = "시험생물";
+                ws.Cell(row, 6).Value = "Daphnia magna Straus";
+                ws.Cell(row, 7).Value = "시험기간";
+                ws.Cell(row, 8).Value = rec.Duration;
+                row++;
+
+                ws.Cell(row, 1).Value = "시료명";
+                ws.Cell(row, 2).Value = rec.SampleName;
+                ws.Cell(row, 3).Value = "오염물질";
+                ws.Cell(row, 4).Value = rec.Toxicant;
+                row++;
+
+                // ─ 시험 조건 (ES 04704.1c 기준) ─
+                row++;
+                ws.Cell(row, 1).Value = "시험조건";
+                ws.Cell(row, 1).Style.Font.Bold = true;
+                row++;
+
+                ws.Cell(row, 1).Value = "시험온도(°C)";
+                ws.Cell(row, 2).Value = rec.TestTemperature;
+                ws.Cell(row, 3).Value = "(기준: 20±2)";
+                ws.Cell(row, 4).Value = "시험 pH";
+                ws.Cell(row, 5).Value = rec.TestPH;
+                ws.Cell(row, 6).Value = "(기준: 7.6~8.0)";
+                row++;
+
+                ws.Cell(row, 1).Value = "시료온도(°C)";
+                ws.Cell(row, 2).Value = rec.SampleTemperature;
+                ws.Cell(row, 3).Value = "시료 pH";
+                ws.Cell(row, 4).Value = rec.SamplePH;
+                ws.Cell(row, 5).Value = "용존산소(mg/L)";
+                ws.Cell(row, 6).Value = rec.SampleDO;
+                row++;
+
+                ws.Cell(row, 1).Value = "EC50 계산방법";
+                ws.Cell(row, 2).Value = rec.EcCalculationMethod;
+                row++;
+
+                // ─ 대조군 정보 ─
+                row++;
+                ws.Cell(row, 1).Value = "대조군 정보";
+                ws.Cell(row, 1).Style.Font.Bold = true;
+                row++;
+
+                ws.Cell(row, 1).Value = "대조생물수";
+                ws.Cell(row, 2).Value = rec.CtrlOrg;
+                ws.Cell(row, 3).Value = "대조 치사수";
+                ws.Cell(row, 4).Value = rec.CtrlMort;
+                var ctrlMortalityRate = rec.CtrlOrg > 0 ? (rec.CtrlMort * 100.0 / rec.CtrlOrg) : 0;
+                ws.Cell(row, 5).Value = "치사율(%)";
+                ws.Cell(row, 6).Value = ctrlMortalityRate.ToString("F1");
+                if (ctrlMortalityRate > 15) ws.Cell(row, 6).Style.Fill.BackgroundColor = XLColor.LightCoral;
+                row++;
+
+                // ─ 농도별 데이터 ─
+                row++;
+                ws.Cell(row, 1).Value = "농도별 독성 시험 데이터";
+                ws.Cell(row, 1).Style.Font.Bold = true;
+                row++;
+
+                const int dataColStart = 1;
+                ws.Cell(row, dataColStart).Value = "농도";
+                ws.Cell(row, dataColStart + 1).Value = "단위";
+                ws.Cell(row, dataColStart + 2).Value = "생물수";
+                ws.Cell(row, dataColStart + 3).Value = "사망수";
+                ws.Cell(row, dataColStart + 4).Value = "치사율(%)";
+                for (int c = dataColStart; c <= dataColStart + 4; c++)
+                    ws.Cell(row, c).Style.Font.Bold = true;
+                row++;
+
+                for (int i = 0; i < rec.Conc.Length; i++)
+                {
+                    var conc = rec.Conc[i];
+                    var org = i < rec.Org.Length ? rec.Org[i] : 0;
+                    var mort = i < rec.Mort.Length ? rec.Mort[i] : 0;
+                    var mortRate = org > 0 ? (mort * 100.0 / org) : 0;
+
+                    ws.Cell(row, dataColStart).Value = conc;
+                    ws.Cell(row, dataColStart + 1).Value = "%";
+                    ws.Cell(row, dataColStart + 2).Value = org;
+                    ws.Cell(row, dataColStart + 3).Value = mort;
+                    ws.Cell(row, dataColStart + 4).Value = mortRate.ToString("F1");
+                    row++;
+                }
+                row++;
+
+                // ─ 분석 결과 ─
+                ws.Cell(row, 1).Value = "독성 분석 결과";
+                ws.Cell(row, 1).Style.Font.Bold = true;
+                row++;
+
+                if (rec.TskResult != null)
+                {
+                    var tsk = rec.TskResult;
+                    ws.Cell(row, 1).Value = "TSK 분석";
+                    ws.Cell(row, 1).Style.Font.Bold = true;
+                    row++;
+
+                    ws.Cell(row, 1).Value = "EC50";
+                    ws.Cell(row, 2).Value = tsk.EC50;
+                    ws.Cell(row, 3).Value = "TU (Toxic Units)";
+                    ws.Cell(row, 4).Value = tsk.TU;
+                    row++;
+
+                    ws.Cell(row, 1).Value = "95% 신뢰구간 (하한)";
+                    ws.Cell(row, 2).Value = tsk.LowerCI;
+                    ws.Cell(row, 3).Value = "95% 신뢰구간 (상한)";
+                    ws.Cell(row, 4).Value = tsk.UpperCI;
+                    row++;
+
+                    if (tsk.TrimPercent >= 0)
+                    {
+                        ws.Cell(row, 1).Value = "Trim %";
+                        ws.Cell(row, 2).Value = tsk.TrimPercent;
+                        row++;
+                    }
+
+                    if (!string.IsNullOrEmpty(tsk.Warning))
+                    {
+                        ws.Cell(row, 1).Value = "⚠ 주의사항";
+                        ws.Cell(row, 2).Value = tsk.Warning;
+                        ws.Row(row).Style.Fill.BackgroundColor = XLColor.LightYellow;
+                        row++;
+                    }
+                    row++;
+                }
+
+                if (rec.ProbitResult != null)
+                {
+                    var probit = rec.ProbitResult;
+                    ws.Cell(row, 1).Value = "Probit 분석";
+                    ws.Cell(row, 1).Style.Font.Bold = true;
+                    row++;
+
+                    ws.Cell(row, 1).Value = "EC50";
+                    ws.Cell(row, 2).Value = probit.EC50;
+                    ws.Cell(row, 3).Value = "TU (Toxic Units)";
+                    ws.Cell(row, 4).Value = probit.TU;
+                    row++;
+
+                    ws.Cell(row, 1).Value = "95% 신뢰구간 (하한)";
+                    ws.Cell(row, 2).Value = probit.LowerCI;
+                    ws.Cell(row, 3).Value = "95% 신뢰구간 (상한)";
+                    ws.Cell(row, 4).Value = probit.UpperCI;
+                    row++;
+
+                    if (!string.IsNullOrEmpty(probit.Warning))
+                    {
+                        ws.Cell(row, 1).Value = "⚠ 주의사항";
+                        ws.Cell(row, 2).Value = probit.Warning;
+                        ws.Row(row).Style.Fill.BackgroundColor = XLColor.LightYellow;
+                        row++;
+                    }
+                    row++;
+                }
+
+                // ─ 독성 분류 ─
+                if (rec.TskResult != null)
+                {
+                    var tu = rec.TskResult.TU;
+                    string classification = tu > 16 ? "높은 독성" : tu > 8 ? "중간 독성" : tu > 1 ? "낮은 독성" : "매우 낮은 독성";
+
+                    ws.Cell(row, 1).Value = "독성 분류 (TU 기준)";
+                    ws.Cell(row, 2).Value = classification;
+                    if (tu > 16) ws.Cell(row, 2).Style.Fill.BackgroundColor = XLColor.LightCoral;
+                    else if (tu > 8) ws.Cell(row, 2).Style.Fill.BackgroundColor = XLColor.LightYellow;
+                    row += 2;
+                }
+
+                // ─ 비고 ─
+                if (!string.IsNullOrEmpty(rec.Observations))
+                {
+                    ws.Cell(row, 1).Value = "시험 중 관찰사항";
+                    ws.Cell(row, 2).Value = rec.Observations;
+                    row++;
+                }
+
+                if (!string.IsNullOrEmpty(rec.AnalystName))
+                {
+                    ws.Cell(row, 1).Value = "분석자";
+                    ws.Cell(row, 2).Value = rec.AnalystName;
+                    row++;
+                }
+
+                row += 3;
+            }
+
+            // 저장
+            string filename = $"생태독성_시험기록부_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
+            string savePath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                filename);
+
+            wb.SaveAs(savePath);
+            System.Diagnostics.Debug.WriteLine($"시험기록부 저장: {savePath}");
+            await Task.CompletedTask;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"시험기록부 출력 오류: {ex.Message}");
+        }
     }
 }

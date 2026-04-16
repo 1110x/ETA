@@ -426,7 +426,7 @@ public static class WaterCenterDbMigration
     //   처리시설_TN_DATA / 처리시설_TP_DATA 네이밍과 통일:
     //   · 하이픈 제거 (T-N → TN, T-P → TP, N-Hexan → NHexan)
     //   · 공백/특수문자 치환
-    internal static string SafeName(string analyte)
+    public static string SafeName(string analyte)
     {
         var result = analyte
             .Replace("-", "")      // 하이픈 제거 (T-N → TN)

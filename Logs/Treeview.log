@@ -345,3 +345,389 @@
 [00:40:36] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
 [00:40:46] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
 [00:40:46] [AnalysisRequestService] GetAssignmentChartData(2026-03-21~2026-06-10): 64개 구간
+[00:43:02] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[00:43:06] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[00:43:06] [AnalysisRequestService] GetAssignmentChartData(2026-03-21~2026-06-10): 64개 구간
+[00:45:01] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[00:45:01] [AnalysisRequestService] GetAssignmentChartData(2026-02-21~2026-05-10): 64개 구간
+[00:45:03] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[00:45:03] [AnalysisRequestService] GetAssignmentChartData(2026-01-21~2026-04-10): 115개 구간
+[00:45:05] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[00:45:05] [AnalysisRequestService] GetAssignmentChartData(2025-12-21~2026-03-10): 115개 구간
+[00:45:07] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[00:45:07] [AnalysisRequestService] GetAssignmentChartData(2025-11-21~2026-02-10): 115개 구간
+[00:45:08] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[00:45:08] [AnalysisRequestService] GetAssignmentChartData(2025-10-21~2026-01-10): 64개 구간
+[00:45:09] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[00:45:09] [AnalysisRequestService] GetAssignmentChartData(2025-09-21~2025-12-10): 70개 구간
+[00:45:10] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[00:45:10] [AnalysisRequestService] GetAssignmentChartData(2025-08-21~2025-11-10): 70개 구간
+[00:45:11] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[00:45:11] [AnalysisRequestService] GetAssignmentChartData(2025-07-21~2025-10-10): 79개 구간
+[00:45:11] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[00:45:11] [AnalysisRequestService] GetAssignmentChartData(2025-06-21~2025-09-10): 73개 구간
+[00:45:12] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[00:45:12] [AnalysisRequestService] GetAssignmentChartData(2025-05-21~2025-08-10): 73개 구간
+[00:46:02] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[00:46:02] [AnalysisRequestService] GetAssignmentChartData(2025-06-21~2025-09-10): 73개 구간
+[00:46:05] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[00:46:05] [AnalysisRequestService] GetAssignmentChartData(2025-07-21~2025-10-10): 79개 구간
+[00:46:05] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[00:46:05] [AnalysisRequestService] GetAssignmentChartData(2025-08-21~2025-11-10): 70개 구간
+[00:46:06] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[00:46:06] [AnalysisRequestService] GetAssignmentChartData(2025-09-21~2025-12-10): 70개 구간
+[00:46:07] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[00:46:07] [AnalysisRequestService] GetAssignmentChartData(2025-10-21~2026-01-10): 64개 구간
+[00:46:07] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[00:46:07] [AnalysisRequestService] GetAssignmentChartData(2025-11-21~2026-02-10): 115개 구간
+[00:46:07] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[00:46:07] [AnalysisRequestService] GetAssignmentChartData(2025-12-21~2026-03-10): 115개 구간
+[00:46:09] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[00:46:09] [AnalysisRequestService] GetAssignmentChartData(2026-01-21~2026-04-10): 115개 구간
+[00:46:10] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[00:46:10] [AnalysisRequestService] GetAssignmentChartData(2026-02-21~2026-05-10): 64개 구간
+[00:49:15] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[00:49:20] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[00:49:20] [AnalysisRequestService] GetAssignmentChartData(2026-03-21~2026-06-10): 64개 구간
+[00:49:38] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[00:49:38] [AnalysisRequestService] GetAssignmentChartData(2026-02-21~2026-05-10): 64개 구간
+[00:49:42] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[00:49:42] [AnalysisRequestService] GetAssignmentChartData(2026-03-21~2026-06-10): 64개 구간
+[00:58:01] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[01:00:02] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[01:02:15] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[01:19:47] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[01:28:35] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[01:33:46] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[01:37:02] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[01:38:31] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[01:40:47] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[01:41:48] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[01:43:10] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[01:43:47] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[01:44:12] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[01:45:06] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[01:45:52] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[01:46:45] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[01:56:21] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[01:58:13] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[01:59:20] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[02:03:07] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[02:04:03] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[02:09:40] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[02:12:14] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[02:15:14] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[10:23:26] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[10:23:39] QuotationHistoryPanel 초기화 완료
+[10:23:39] LoadData() 시작
+[10:23:40] 견적 발행건수=937
+[10:23:40] LoadData() 완료 — 루트노드=6
+[10:23:41] 견적 선택: LG나주 테스트 견적서 테스 [20260413-193351]
+[10:26:04] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[10:28:51] QuotationHistoryPanel 초기화 완료
+[10:28:51] LoadData() 시작
+[10:28:51] 견적 발행건수=937
+[10:28:51] LoadData() 완료 — 루트노드=6
+[10:28:52] 견적 선택: LG나주 테스트 견적서 테스 [20260413-193351]
+[10:28:55] 견적 선택: 적량  [20260413-185419]
+[10:28:57] 견적 선택: 적량 원폐수(sample) 5 [20260305-135056]
+[10:29:05] 견적 선택: 머티리얼즈  [202600305-142154]
+[10:29:05] 견적 선택: 국도화학 3/4 국도화학(주) 익산지점 3EA 견적서 [20260303-155028]
+[10:29:06] 견적 선택: 보임 (주)보임열병합발전 2026년 견적서 [20260303-113022]
+[10:29:08] QuotationHistoryPanel 초기화 완료
+[10:29:08] LoadData() 시작
+[10:29:08] 견적 발행건수=937
+[10:29:09] LoadData() 완료 — 루트노드=6
+[10:29:10] 견적 선택: LG나주 테스트 견적서 테스 [20260413-193351]
+[10:30:28] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[10:32:16] QuotationHistoryPanel 초기화 완료
+[10:32:16] LoadData() 시작
+[10:32:16] 견적 발행건수=937
+[10:32:17] LoadData() 완료 — 루트노드=6
+[10:32:44] LoadData() 시작
+[10:32:44] 견적 발행건수=937
+[10:32:44] LoadData() 완료 — 루트노드=6
+[10:38:10] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[10:38:13] QuotationHistoryPanel 초기화 완료
+[10:38:13] LoadData() 시작
+[10:38:13] 견적 발행건수=937
+[10:38:13] LoadData() 완료 — 루트노드=6
+[10:42:27] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[10:42:36] QuotationHistoryPanel 초기화 완료
+[10:42:36] LoadData() 시작
+[10:42:36] 견적 발행건수=937
+[10:42:36] LoadData() 완료 — 루트노드=6
+[10:47:05] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[10:50:00] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[10:59:07] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[11:02:27] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[11:02:30] QuotationHistoryPanel 초기화 완료
+[11:02:30] LoadData() 시작
+[11:02:30] 견적 발행건수=937
+[11:02:30] LoadData() 완료 — 루트노드=6
+[11:05:14] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[11:05:59] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[11:06:02] QuotationHistoryPanel 초기화 완료
+[11:06:02] LoadData() 시작
+[11:06:02] 견적 발행건수=937
+[11:06:02] LoadData() 완료 — 루트노드=6
+[11:08:40] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[11:19:49] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[11:22:54] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[11:22:58] QuotationHistoryPanel 초기화 완료
+[11:22:58] LoadData() 시작
+[11:22:58] 견적 발행건수=937
+[11:22:58] LoadData() 완료 — 루트노드=6
+[11:26:18] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[11:38:18] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[11:44:10] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[11:49:22] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[11:49:32] QuotationHistoryPanel 초기화 완료
+[11:49:32] LoadData() 시작
+[11:49:32] 견적 발행건수=937
+[11:49:32] LoadData() 완료 — 루트노드=6
+[11:52:35] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[11:54:40] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[11:56:25] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[11:57:45] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[12:00:00] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[12:02:20] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[12:02:24] QuotationHistoryPanel 초기화 완료
+[12:02:24] LoadData() 시작
+[12:02:24] 견적 발행건수=937
+[12:02:24] LoadData() 완료 — 루트노드=6
+[12:03:33] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[12:11:10] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[12:19:30] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[12:20:16] QuotationHistoryPanel 초기화 완료
+[12:20:16] LoadData() 시작
+[12:20:16] 견적 발행건수=937
+[12:20:16] LoadData() 완료 — 루트노드=6
+[12:22:51] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[12:24:23] QuotationHistoryPanel 초기화 완료
+[12:24:23] LoadData() 시작
+[12:24:23] 견적 발행건수=937
+[12:24:23] LoadData() 완료 — 루트노드=6
+[12:25:57] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[12:29:28] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[12:29:32] QuotationHistoryPanel 초기화 완료
+[12:29:32] LoadData() 시작
+[12:29:32] 견적 발행건수=937
+[12:29:32] LoadData() 완료 — 루트노드=6
+[12:33:06] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[12:33:09] QuotationHistoryPanel 초기화 완료
+[12:33:09] LoadData() 시작
+[12:33:09] 견적 발행건수=937
+[12:33:09] LoadData() 완료 — 루트노드=6
+[12:34:12] [AnalysisRequestService] GetShortNames: 0개 로드
+[12:45:44] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[13:32:15] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[13:34:54] QuotationHistoryPanel 초기화 완료
+[13:34:54] LoadData() 시작
+[13:34:54] 견적 발행건수=937
+[13:34:55] LoadData() 완료 — 루트노드=6
+[13:36:11] LoadData() 시작
+[13:36:11] 견적 발행건수=937
+[13:36:12] LoadData() 완료 — 루트노드=6
+[13:36:59] 견적 선택: LG나주 테스트 견적서 테스 [20260413-193351]
+[13:37:00] 견적 선택: LG나주 테스트 견적서 테스 [20260413-193351]
+[14:15:37] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[14:16:15] [AnalysisRequestService] GetShortNames: 0개 로드
+[14:45:10] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[14:45:24] [AnalysisRequestService] GetShortNames: 0개 로드
+[14:48:43] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[14:49:57] [AnalysisRequestService] GetShortNames: 0개 로드
+[14:54:18] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[15:03:50] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[15:04:07] [AnalysisRequestService] GetShortNames: 0개 로드
+[15:32:25] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[15:41:38] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[15:41:58] [AnalysisRequestService] GetShortNames: 0개 로드
+[15:44:48] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[15:45:08] [AnalysisRequestService] GetShortNames: 0개 로드
+[15:47:31] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[15:47:43] [AnalysisRequestService] GetShortNames: 0개 로드
+[15:51:20] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[15:51:35] [AnalysisRequestService] GetShortNames: 0개 로드
+[19:06:22] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[19:07:34] [AnalysisRequestService] GetShortNames: 0개 로드
+[19:07:34] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[19:07:34] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[19:07:34] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[19:07:34] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[19:07:34] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[19:07:34] [AnalysisRequestService] GetShortNames: 0개 로드
+[19:07:34] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[19:07:34] [AnalysisRequestService] GetAssignmentCalendar(201101234, 2026-04-15~2026-04-15): 5개 항목
+[19:07:35] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[19:07:35] [AnalysisRequestService] GetShortNames: 0개 로드
+[19:07:35] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[19:07:35] [AnalysisRequestService] GetAssignmentCalendar(202106024, 2026-04-15~2026-04-15): 7개 항목
+[19:07:36] [AnalysisRequestService] GetShortNames: 0개 로드
+[19:07:36] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[19:07:36] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[19:07:36] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[19:07:36] [AnalysisRequestService] GetShortNames: 0개 로드
+[19:07:36] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[19:07:36] [AnalysisRequestService] GetAssignmentCalendar(202301126, 2026-04-15~2026-04-15): 2개 항목
+[19:07:36] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[19:07:36] [AnalysisRequestService] GetShortNames: 0개 로드
+[19:07:36] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[19:07:36] [AnalysisRequestService] GetAssignmentCalendar(202311016, 2026-04-15~2026-04-15): 6개 항목
+[19:07:41] [AnalysisRequestService] GetShortNames: 0개 로드
+[19:07:41] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[19:07:41] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[19:07:41] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[19:07:41] [AnalysisRequestService] GetShortNames: 0개 로드
+[19:07:41] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[19:07:41] [AnalysisRequestService] GetAssignmentCalendar(202301126, 2026-04-15~2026-04-15): 2개 항목
+[19:07:42] [AnalysisRequestService] GetShortNames: 0개 로드
+[19:07:42] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[19:07:42] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[19:07:42] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[19:07:42] [AnalysisRequestService] GetShortNames: 0개 로드
+[19:07:42] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[19:07:42] [AnalysisRequestService] GetAssignmentCalendar(202500340, 2026-04-15~2026-04-15): 3개 항목
+[19:11:04] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[19:15:47] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[19:17:49] [AnalysisRequestService] GetShortNames: 0개 로드
+[19:25:13] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[19:30:09] [AnalysisRequestService] GetManagersByDate(2026-04-15): 69개 담당자 로드
+[19:30:09] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[19:30:34] [AnalysisRequestService] GetManagersByDate(2026-04-15): 69개 담당자 로드
+[19:30:34] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[19:30:34] [AnalysisRequestService] GetManagersByDate(2026-04-15): 69개 담당자 로드
+[19:30:34] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[19:30:35] [AnalysisRequestService] GetManagersByDate(2026-04-15): 69개 담당자 로드
+[19:30:35] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[19:30:44] QuotationHistoryPanel 초기화 완료
+[19:30:44] LoadData() 시작
+[19:30:44] 견적 발행건수=938
+[19:30:45] LoadData() 완료 — 루트노드=6
+[19:30:46] 탭 전환 → 분석의뢰내역
+[19:30:46] LoadAnalysisTreeAsync() 시작
+[19:30:46] [AnalysisRequestService] 완료: 3668건
+[19:30:46] DB 조회 완료: 3668건
+[19:30:48] 트리 완료 — 년노드=7
+[19:30:49] 의뢰 선택: 포스코리튬 #W1 방류수 [20260415-165619]
+[19:30:49] [AnalysisRequestService] GetShortNames: 0개 로드
+[19:30:51] 분석의뢰 삭제: 20260415-165619 id=3780
+[19:30:51] [AnalysisRequestService] DeleteRecord: id=3780 → 1행 삭제
+[19:30:52] LoadAnalysisTreeAsync() 시작
+[19:30:52] [AnalysisRequestService] 완료: 3667건
+[19:30:52] DB 조회 완료: 3667건
+[19:30:53] 트리 완료 — 년노드=7
+[19:30:55] 의뢰 선택: 포스코리튬 #W1 유입수 [20260415-165619]
+[19:30:58] 분석의뢰 삭제: 20260415-165619 id=3781
+[19:30:58] [AnalysisRequestService] DeleteRecord: id=3781 → 1행 삭제
+[19:30:58] LoadAnalysisTreeAsync() 시작
+[19:30:59] [AnalysisRequestService] 완료: 3666건
+[19:30:59] DB 조회 완료: 3666건
+[19:31:00] 트리 완료 — 년노드=7
+[19:31:27] LoadData() 시작
+[19:31:27] 견적 발행건수=938
+[19:31:27] LoadData() 완료 — 루트노드=6
+[19:31:29] LoadData() 시작
+[19:31:29] 견적 발행건수=938
+[19:31:29] LoadData() 완료 — 루트노드=6
+[19:31:32] 의뢰 선택: LG나주 유입 [20260413-193351]
+[19:38:33] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[19:39:19] QuotationHistoryPanel 초기화 완료
+[19:39:19] LoadData() 시작
+[19:39:19] 견적 발행건수=938
+[19:39:20] LoadData() 완료 — 루트노드=6
+[19:39:20] 견적 선택: 포스코리튬 1111 [20260415-165619]
+[19:39:22] 견적 선택: LG나주 테스트 견적서 테스 [20260413-193351]
+[19:39:28] 견적 선택: 적량  [20260413-185419]
+[19:39:30] 견적 선택: 적량 원폐수(sample) 5 [20260305-135056]
+[19:39:34] 견적 선택: 머티리얼즈  [202600305-142154]
+[19:39:35] 견적 선택: 국도화학 3/4 국도화학(주) 익산지점 3EA 견적서 [20260303-155028]
+[19:39:35] 견적 선택: 국도화학 3/4 국도화학(주) 익산지점 3EA 견적서 [20260303-155028]
+[19:39:36] 견적 선택: 보임 (주)보임열병합발전 2026년 견적서 [20260303-113022]
+[19:39:44] 견적 선택: 머티리얼즈 롯데에너지머티리얼즈(주) 2026년 견적서 [20260226-094135]
+[19:39:45] 견적 선택: DL DL케미칼 1분기 정기시료 [20260226-094137]
+[19:39:46] 견적 선택: 용성 LG화학(주) 용성단지 TOC 재분석 4EA 견적서 [20260225-092450]
+[19:39:47] 견적 선택: 용성 LG화학(주) 용성단지 TOC 재분석 4EA 견적서 [20260225-092450]
+[19:39:48] 견적 선택: 포스코리튬 2/27 포스코리튬솔루션 1분기 (6EA) [20260225-141237]
+[19:39:49] 견적 선택: 포스코리튬 2/27 포스코리튬솔루션 1분기 (6EA) [20260225-141237]
+[19:39:49] 견적 선택: 한세 26년 2월 정기시료(1EA) 견적서(26.02.25) [20260223-170021]
+[19:40:06] 견적 선택: 롯데첨단소재 TOC 의뢰시료(25.12.22, 26.01.13, 26.01.27 총 138EA) 견적서 [20260223-093731]
+[19:40:07] 견적 선택: 화치 1/23 염화비닐 [20260223-083743]
+[19:40:07] 견적 선택: 적량 LG화학-적량 26년 1분기(8EA)+생태독성 참고측정(3EA) [20260220-153528]
+[19:40:08] 견적 선택: 적량 26.02.20 적량 5종 [20260220-151625]
+[19:40:52] LoadData() 시작
+[19:40:52] 견적 발행건수=938
+[19:40:53] LoadData() 완료 — 루트노드=6
+[19:40:53] 견적 선택: 적량  [20260413-185419]
+[19:40:58] 견적 선택: 적량 원폐수(sample) 5 [20260305-135056]
+[19:44:43] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[19:46:25] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[19:47:18] QuotationHistoryPanel 초기화 완료
+[19:47:18] LoadData() 시작
+[19:47:18] 견적 발행건수=938
+[19:47:18] LoadData() 완료 — 루트노드=6
+[19:47:41] 견적 선택: 포스코리튬 1111 [20260415-165619]
+[19:47:42] 견적 선택: LG나주 테스트 견적서 테스 [20260413-193351]
+[19:49:24] 견적 선택: LG나주 테스트 견적서 테스 [20260413-193351]
+[19:52:10] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[08:53:08] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[08:56:01] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[08:56:02] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[08:56:02] [AnalysisRequestService] GetAssignmentCalendar(201000308, 2026-04-16~2026-04-16): 0개 항목
+[08:56:03] [AnalysisRequestService] GetShortNames: 0개 로드
+[08:56:03] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[08:56:03] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[08:56:03] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[08:56:04] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[08:56:04] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[08:56:04] [AnalysisRequestService] GetShortNames: 0개 로드
+[08:56:04] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[08:56:04] [AnalysisRequestService] GetAssignmentCalendar(202104002, 2026-04-16~2026-04-16): 4개 항목
+[08:56:05] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[08:56:05] [AnalysisRequestService] GetShortNames: 0개 로드
+[08:56:05] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[08:56:05] [AnalysisRequestService] GetAssignmentCalendar(202106024, 2026-04-16~2026-04-16): 7개 항목
+[08:56:06] [AnalysisRequestService] GetShortNames: 0개 로드
+[08:56:06] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[08:56:07] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[08:56:07] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[08:56:07] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[08:56:07] [AnalysisRequestService] GetShortNames: 0개 로드
+[08:56:07] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[08:56:07] [AnalysisRequestService] GetAssignmentCalendar(202202011, 2026-04-16~2026-04-16): 4개 항목
+[08:56:08] [AnalysisRequestService] GetShortNames: 0개 로드
+[08:56:08] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[08:56:08] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[08:56:08] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[08:56:08] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[08:56:09] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[08:56:09] [AnalysisRequestService] GetShortNames: 0개 로드
+[08:56:09] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[08:56:09] [AnalysisRequestService] GetAssignmentCalendar(202204016, 2026-04-16~2026-04-16): 3개 항목
+[08:56:10] [AnalysisRequestService] GetShortNames: 0개 로드
+[08:56:10] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[08:56:10] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[08:56:10] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[08:56:11] [AnalysisRequestService] GetShortNames: 0개 로드
+[08:56:11] [AnalysisRequestService] GetStandardDaysInfo: 69개 로드 (days=False, short=False)
+[08:56:11] [AnalysisRequestService] GetAssignmentCalendar(202301126, 2026-04-16~2026-04-16): 2개 항목
+[09:51:38] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[09:57:13] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[09:59:46] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[10:03:38] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[10:05:09] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[10:09:35] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[10:14:19] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[10:15:30] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[10:49:15] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[10:54:49] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[10:56:20] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[10:58:39] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[11:08:39] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[11:17:48] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[11:55:27] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[13:24:47] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[13:57:31] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[14:16:35] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[15:01:19] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음
+[19:57:49] [AnalysisRequestService] AutoExtend: 추가할 날짜 없음

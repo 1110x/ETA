@@ -11,4 +11,5 @@ public class AnalysisItem
     public string ES            { get; set; } = string.Empty;
     public string Method        { get; set; } = string.Empty;
     public string instrument    { get; set; } = string.Empty;    // DB와 일치 (소문자)
+    public string AliasX        { get; set; } = string.Empty;    // 쉼표 구분 별칭 목록 (파서 키워드 매핑용)
 }

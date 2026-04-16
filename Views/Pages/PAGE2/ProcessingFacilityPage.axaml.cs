@@ -500,4 +500,44 @@ public partial class ProcessingFacilityPage : UserControl
             tbStatus.Text = $"❌ 오늘 데이터 생성 실패: {ex.Message}";
         }
     }
+
+    private void BtnDelete_Click(object? sender, RoutedEventArgs e)
+    {
+        // 선택된 시설과 날짜 확인
+        var selectedFacility = _selectedFacility;
+        if (string.IsNullOrEmpty(selectedFacility))
+        {
+            tbStatus.Foreground = AppTheme.FgDanger;
+            tbStatus.Text = "❌ 삭제할 시설을 선택하세요.";
+            return;
+        }
+
+        if (dpDate.SelectedDate == null)
+        {
+            tbStatus.Foreground = AppTheme.FgDanger;
+            tbStatus.Text = "❌ 삭제할 날짜를 선택하세요.";
+            return;
+        }
+
+        var selectedDate = dpDate.SelectedDate.Value.ToString("yyyy-MM-dd");
+
+        // 확인 메시지 표시 및 삭제 실행
+        tbStatus.Foreground = AppTheme.FgMuted;
+        tbStatus.Text = $"⚠️ {selectedFacility} ({selectedDate}) 측정결과를 삭제합니다. 잠시만 기다려주세요...";
+
+        try
+        {
+            FacilityResultService.DeleteResultsByFacilityAndDate(selectedFacility, selectedDate);
+            tbStatus.Foreground = AppTheme.FgSuccess;
+            tbStatus.Text = $"✅ {selectedFacility} ({selectedDate}) 측정결과 삭제 완료";
+
+            // 그리드 새로고침
+            BtnLoad_Click(null, null!);
+        }
+        catch (Exception ex)
+        {
+            tbStatus.Foreground = AppTheme.FgDanger;
+            tbStatus.Text = $"❌ 삭제 실패: {ex.Message}";
+        }
+    }
 }

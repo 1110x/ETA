@@ -29,7 +29,7 @@ public partial class QuotationDetailPanel : UserControl
     /// <summary>💾 저장 완료 후 Show1 트리뷰 리프레시 요청</summary>
     public event Action? SaveCompleted;
 
-    private bool _isEditMode = false;
+    private bool _isEditMode;
     private string _currentCompany = "";  // 현재 선택된 업체명
     private List<string> _availableManagers = new();  // 업체별 담당자 목록
     private bool _settingManagerName = false;  // 프로그래매틱 설정 중 이벤트 방지
@@ -101,7 +101,6 @@ public partial class QuotationDetailPanel : UserControl
         txbAmount.Text     = issue.총금액 > 0 ? $"{issue.총금액:#,0} 원" : "—";
 
         // 읽기 전용 모드로 설정 (편집 불가)
-        _isEditMode = false;
         SetEditMode(false);
 
         // 업체별 담당자 목록 로드
@@ -452,7 +451,7 @@ public partial class QuotationDetailPanel : UserControl
                 Child = new TextBlock
                 {
                     Text = alias,
-                    FontSize = AppFonts.SM,
+                    FontSize = AppFonts.Base,
                     FontWeight = FontWeight.Medium,
                     FontFamily = Font,
                     Foreground = new SolidColorBrush(Color.Parse(fgColor)),
@@ -465,7 +464,7 @@ public partial class QuotationDetailPanel : UserControl
             {
                 Text = kv.Value ?? "",
                 Width = 50,
-                FontSize = AppFonts.SM,
+                FontSize = AppFonts.Base,
                 FontFamily = Font,
                 Foreground = Brush.Parse("#aaaaaa"),
                 Background = Brush.Parse("Transparent"),
@@ -479,7 +478,7 @@ public partial class QuotationDetailPanel : UserControl
             var subtotalBlock = new TextBlock
             {
                 Text = FmtNum(subStr),
-                FontSize = AppFonts.SM,
+                FontSize = AppFonts.Base,
                 FontFamily = Font,
                 Foreground = Brush.Parse("#88cc88"),
                 VerticalAlignment = VerticalAlignment.Center,
@@ -539,7 +538,7 @@ public partial class QuotationDetailPanel : UserControl
             var itemNameTb = new TextBlock
             {
                 Text = col,
-                FontSize = AppFonts.SM,
+                FontSize = AppFonts.MD,
                 Foreground = Brush.Parse("#cccccc"),
                 VerticalAlignment = VerticalAlignment.Center,
                 Margin = new Thickness(8, 0, 0, 0),
@@ -551,22 +550,25 @@ public partial class QuotationDetailPanel : UserControl
             // 수량 (TextBox만 표시, 우측 정렬)
             quantityBox.HorizontalAlignment = HorizontalAlignment.Right;
             quantityBox.Width = double.NaN;  // 자동 너비
+            quantityBox.FontSize = AppFonts.MD;  // 폰트 크기 증가
             contentGrid.Children.Add(quantityBox);
             Grid.SetColumn(quantityBox, 2);
 
-            // 단가 정보
+            // 단가 정보 (폰트 크기를 md로 키워서 수량과 같은 크기)
             var priceLabel = new TextBlock
             {
                 Text = FmtNum(priceStr),
-                FontSize = AppFonts.XS,
+                FontSize = AppFonts.MD,
                 Foreground = Brush.Parse("#888888"),
                 VerticalAlignment = VerticalAlignment.Center,
                 Margin = new Thickness(12, 0, 0, 0),
+                MinWidth = 60,  // 단가 없을 때도 컬럼 너비 유지
             };
             contentGrid.Children.Add(priceLabel);
             Grid.SetColumn(priceLabel, 3);
 
             // 소계
+            subtotalBlock.FontSize = AppFonts.MD;  // 소계도 MD 크기로 증가
             contentGrid.Children.Add(subtotalBlock);
             Grid.SetColumn(subtotalBlock, 4);
 

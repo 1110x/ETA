@@ -1,4 +1,16 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(dotnet build:*)",
+      "Bash(node -e \":*)",
+      "Bash(curl -L -o Pretendard-Regular.otf \"https://github.com/orioncactus/pretendard/raw/main/packages/pretendard/dist/public/static/Pretendard-Regular.otf\")",
+      "Bash(curl -L -o Pretendard-Medium.otf \"https://github.com/orioncactus/pretendard/raw/main/packages/pretendard/dist/public/static/Pretendard-Medium.otf\")",
+      "Bash(curl -L -o Pretendard-SemiBold.otf \"https://github.com/orioncactus/pretendard/raw/main/packages/pretendard/dist/public/static/Pretendard-SemiBold.otf\")",
+      "Bash(curl -L -o Pretendard-Bold.otf \"https://github.com/orioncactus/pretendard/raw/main/packages/pretendard/dist/public/static/Pretendard-Bold.otf\")",
+      "Bash(mysql -h 1110s.synology.me -P 3306 -u eta_user -p'1212xx!!AA' eta_db -e \"SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='eta_db' AND TABLE_NAME LIKE '수질분석센터_%_DATA';\")",
+      "Bash(unzip -q -c \"Docs/CHUNGHA-김가린.xlsm\" \"xl/worksheets/sheet*.xml\")"
+    ]
+  },
   "hooks": {
     "PostToolUse": [
       {
@@ -11,17 +23,6 @@
           }
         ]
       }
-    ]
-  },
-  "permissions": {
-    "allow": [
-      "Bash(dotnet build:*)",
-      "Bash(node -e \":*)",
-      "Bash(curl -L -o Pretendard-Regular.otf \"https://github.com/orioncactus/pretendard/raw/main/packages/pretendard/dist/public/static/Pretendard-Regular.otf\")",
-      "Bash(curl -L -o Pretendard-Medium.otf \"https://github.com/orioncactus/pretendard/raw/main/packages/pretendard/dist/public/static/Pretendard-Medium.otf\")",
-      "Bash(curl -L -o Pretendard-SemiBold.otf \"https://github.com/orioncactus/pretendard/raw/main/packages/pretendard/dist/public/static/Pretendard-SemiBold.otf\")",
-      "Bash(curl -L -o Pretendard-Bold.otf \"https://github.com/orioncactus/pretendard/raw/main/packages/pretendard/dist/public/static/Pretendard-Bold.otf\")",
-      "Bash(mysql -h 1110s.synology.me -P 3306 -u eta_user -p'1212xx!!AA' eta_db -e \"SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='eta_db' AND TABLE_NAME LIKE '수질분석센터_%_DATA';\")"
     ]
   }
 }

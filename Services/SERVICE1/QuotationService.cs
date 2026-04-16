@@ -286,6 +286,7 @@ public static class QuotationService
     public static List<string> GetContractTypes()
     {
         var list = new List<string>();
+        var excludeTypes = new HashSet<string> { "위탁", "용역" };  // 제외할 유형
 
         try
         {
@@ -293,19 +294,21 @@ public static class QuotationService
             conn.Open();
             using var cmd = conn.CreateCommand();
             cmd.CommandText = "SELECT DISTINCT C_ContractType FROM `계약 DB` " +
-                              "WHERE C_ContractType IS NOT NULL AND C_ContractType <> '' AND C_ContractType <> '위탁' " +
+                              "WHERE C_ContractType IS NOT NULL AND C_ContractType <> '' " +
                               "ORDER BY C_ContractType ASC";
             using var dr = cmd.ExecuteReader();
             while (dr.Read())
             {
-                var v = dr.IsDBNull(0) ? "" : dr.GetString(0);
-                if (!string.IsNullOrWhiteSpace(v)) list.Add(v);
+                var v = dr.IsDBNull(0) ? "" : dr.GetString(0).Trim();
+                if (!string.IsNullOrWhiteSpace(v) && !excludeTypes.Contains(v))
+                    list.Add(v);
             }
         }
         catch (Exception ex) { }
 
+        // 기본값 (용역 제외)
         if (list.Count == 0)
-            list.AddRange(new[] { "위탁", "용역", "구매", "기타" });
+            list.AddRange(new[] { "구매", "기타" });
 
         return list;
     }

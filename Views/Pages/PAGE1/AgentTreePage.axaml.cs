@@ -189,7 +189,6 @@ public partial class AgentTreePage : UserControl
         _selectedAgent        = null;
         _isAddMode            = false;
         _pendingPhotoPath     = "";
-        _assignmentListBox    = null;
         _assignmentRangeStart = DateTime.Today;
         _assignmentRangeEnd   = DateTime.Today;
         DetailPanelChanged?.Invoke(null);
@@ -809,7 +808,6 @@ public partial class AgentTreePage : UserControl
         };
         _timelineScroll = timelineScroll;
         DragDrop.SetAllowDrop(timelineScroll, true);
-        _assignmentListBox = null; // no longer used
 
         // 날짜 범위 상태 (클로저로 공유)
         DateTime rangeStart = DateTime.Today;
@@ -1774,14 +1772,22 @@ public partial class AgentTreePage : UserControl
             var nameRow = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto") };
             nameRow.Children.Add(new Border
             {
-                Background   = new SolidColorBrush(Color.Parse(chipBg)),
-                CornerRadius = new CornerRadius(3), Padding = new Thickness(5, 1),
-                Margin       = new Thickness(0, 0, 6, 0),
+                Background      = new SolidColorBrush(Color.Parse(chipBg)),
+                BorderBrush     = new SolidColorBrush(Color.Parse(chipFg)),
+                BorderThickness = new Thickness(1),
+                CornerRadius    = new CornerRadius(10),
+                Padding         = new Thickness(6, 1, 8, 1),
+                Margin          = new Thickness(0, 0, 4, 0),
+                VerticalAlignment = VerticalAlignment.Center,
                 [Grid.ColumnProperty] = 0,
                 Child = new TextBlock
                 {
-                    Text = displayShort, FontSize = AppTheme.FontXS,
-                    FontFamily = font, Foreground = new SolidColorBrush(Color.Parse(chipFg)),
+                    Text              = displayShort,
+                    FontSize          = AppTheme.FontSM,
+                    FontWeight        = FontWeight.Medium,
+                    FontFamily        = font,
+                    Foreground        = new SolidColorBrush(Color.Parse(chipFg)),
+                    VerticalAlignment = VerticalAlignment.Center,
                 },
             });
             nameRow.Children.Add(new TextBlock
@@ -4274,18 +4280,22 @@ public partial class AgentTreePage : UserControl
                 Height = GC_ROW_H, Margin = new Thickness(0, 0, 0, 1),
             };
 
-            // 라벨: 약칭 배지 + 전체명
+            // 라벨: 약칭 배지 + 전체명 (Grid로 구성 — 긴 이름이 트랙 영역으로 넘치지 않도록 * 컬럼에서 ellipsis 트리밍)
             var (lbBg, lbFg) = BadgeColorHelper.GetBadgeColor(shortName);
-            var labelPanel = new StackPanel
+            var labelPanel = new Grid
             {
-                Orientation = Orientation.Horizontal, Spacing = 4,
-                VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(2, 0),
+                ColumnDefinitions = new ColumnDefinitions("Auto,4,*"),
+                Width = GC_LABEL_W - 4,
+                ClipToBounds = true,
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(2, 0),
             };
-            labelPanel.Children.Add(new Border
+            var badge = new Border
             {
                 Height = 16, MinWidth = 32, CornerRadius = new CornerRadius(3),
                 Background = new SolidColorBrush(Color.Parse(lbBg)),
                 Padding = new Thickness(4, 0),
+                VerticalAlignment = VerticalAlignment.Center,
                 Child = new TextBlock
                 {
                     Text = shortName, FontSize = AppTheme.FontXS, FontFamily = kbFont,
@@ -4293,14 +4303,18 @@ public partial class AgentTreePage : UserControl
                     VerticalAlignment = VerticalAlignment.Center,
                     TextAlignment = TextAlignment.Center,
                 },
-            });
-            labelPanel.Children.Add(new TextBlock
+            };
+            Grid.SetColumn(badge, 0);
+            labelPanel.Children.Add(badge);
+            var nameTb = new TextBlock
             {
                 Text = fullName, FontSize = AppTheme.FontXS, FontFamily = kbFont,
                 Foreground = AppTheme.FgMuted,
                 VerticalAlignment = VerticalAlignment.Center,
                 TextTrimming = TextTrimming.CharacterEllipsis,
-            });
+            };
+            Grid.SetColumn(nameTb, 2);
+            labelPanel.Children.Add(nameTb);
             Grid.SetColumn(labelPanel, 0);
             rowGrid.Children.Add(labelPanel);
 

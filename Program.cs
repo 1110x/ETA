@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Avalonia;
-using Avalonia.ReactiveUI;
+using ETA.Services.SERVICE2;
 namespace ETA;  // 네임스페이스 맞춰주세요
 
 class Program
@@ -32,6 +32,16 @@ class Program
         // CP949/EUC-KR 등 한국어 인코딩 활성화 (.NET 5+)
         System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
+        // ★ DB 마이그레이션 직접 실행 (앱 시작 전) ★
+        try
+        {
+            FacilityDbMigration.EnsureTables();
+            Console.WriteLine("✓ FacilityDbMigration.EnsureTables() 완료");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠ 마이그레이션 오류: {ex.Message}");
+        }
 
         // ★ 크래시 핸들링 추가 ★
         AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
@@ -66,6 +76,5 @@ class Program
     public static AppBuilder BuildAvaloniaApp()
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()
-            .WithInterFont()
-            .UseReactiveUI();
+            .WithInterFont();
 }

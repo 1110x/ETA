@@ -585,11 +585,8 @@
 
                     <MenuItem Header="비용부담금" x:Name="MenuItemWaste">
                         <MenuItem Header="폐수배출업소"   x:Name="MenuItemWasteCompany"    Click="WasteCompany_Click"/>
-                        <MenuItem Header="자료 조회"      Click="WasteDataQuery_Click" IsEnabled="False" Opacity="0.4"/>
                         <MenuItem Header="분석의뢰리스트" x:Name="MenuItemWasteSampleList" Click="WasteSampleList_Click"/>
                         <MenuItem Header="시험성적서"  x:Name="MenuItemWasteTestReport" Click="WasteTestReport_Click"/>
-                        <MenuItem Header="자료검토"    IsEnabled="False" Opacity="0.4"/>
-                        <MenuItem Header="테스트"      IsEnabled="False" Opacity="0.4"/>
                     </MenuItem>
 
                     <MenuItem Header="처리시설" x:Name="MenuItemFacility">
@@ -672,6 +669,23 @@
                                VerticalAlignment="Center"
                                Foreground="{DynamicResource FgMuted}"
                                Margin="0,0,6,0"/>
+
+                    <!-- 구분선 -->
+                    <Border Width="1" Height="14"
+                            Background="{DynamicResource FgMuted}"
+                            Opacity="0.35"
+                            VerticalAlignment="Center"
+                            Margin="0,0,6,0"/>
+
+                    <!-- 애니메이션 토글 -->
+                    <ToggleButton x:Name="btnAnimations"
+                                  Width="32" Height="26"
+                                  VerticalAlignment="Center"
+                                  ToolTip.Tip="애니메이션 토글 (Ctrl+Shift+A)"
+                                  Click="BtnAnimations_Click"
+                                  Content="🎬"
+                                  FontSize="14"
+                                  Foreground="{DynamicResource FgSecondary}"/>
 
                     <!-- 구분선 -->
                     <Border Width="1" Height="14"

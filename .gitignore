@@ -1,2 +1,14 @@
 bin/
 obj/
+
+# 빌드 결과물
+publish/
+bin */
+*.zip
+
+# macOS
+.DS_Store
+
+# 로그
+Logs/
+*.log

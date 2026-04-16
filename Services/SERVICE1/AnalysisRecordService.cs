@@ -267,7 +267,7 @@ public static class AnalysisRecordService
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = "SELECT * FROM `분석의뢰및결과` WHERE `견적번호` = @no";
+            cmd.CommandText = "SELECT * FROM `수질분석센터_결과` WHERE `견적번호` = @no";
             cmd.Parameters.AddWithValue("@no", 견적번호);
             using var rdr = cmd.ExecuteReader();
             while (rdr.Read())

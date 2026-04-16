@@ -68,7 +68,7 @@ public static class MyTaskService
                 dateStr = dt.ToString("yyyy-MM-dd");
 
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = $"SELECT {DbConnectionFactory.RowId}, `약칭`, `시료명`, `견적번호` FROM `분석의뢰및결과` WHERE `채취일자` = @d ORDER BY `견적번호`";
+            cmd.CommandText = $"SELECT {DbConnectionFactory.RowId}, `약칭`, `시료명`, `견적번호` FROM `수질분석센터_결과` WHERE `채취일자` = @d ORDER BY `견적번호`";
             cmd.Parameters.AddWithValue("@d", dateStr);
             var baseRows = new List<(int id, string company, string sample, string 접수번호)>();
             using (var rdr = cmd.ExecuteReader())
@@ -84,7 +84,7 @@ public static class MyTaskService
 
             // 각 row에서 analyteFullName 컬럼이 'O'인 것만 필터
             using var cmd2 = conn.CreateCommand();
-            cmd2.CommandText = $"SELECT {DbConnectionFactory.RowId}, `{analyteFullName}` FROM `분석의뢰및결과` WHERE `채취일자` = @d";
+            cmd2.CommandText = $"SELECT {DbConnectionFactory.RowId}, `{analyteFullName}` FROM `수질분석센터_결과` WHERE `채취일자` = @d";
             cmd2.Parameters.AddWithValue("@d", dateStr);
 
             var markedIds = new HashSet<int>();
@@ -115,7 +115,7 @@ public static class MyTaskService
     }
 
     // =========================================================================
-    //  분석의뢰및결과 — 채취일자 목록 (중복 제거)
+    //  수질분석센터_결과 — 채취일자 목록 (중복 제거)
     // =========================================================================
     public static List<DateTime> GetAnalysisRequestDates()
     {
@@ -125,7 +125,7 @@ public static class MyTaskService
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = "SELECT DISTINCT `채취일자` FROM `분석의뢰및결과` ORDER BY `채취일자` DESC";
+            cmd.CommandText = "SELECT DISTINCT `채취일자` FROM `수질분석센터_결과` ORDER BY `채취일자` DESC";
             using var rdr = cmd.ExecuteReader();
             while (rdr.Read())
             {
@@ -140,7 +140,7 @@ public static class MyTaskService
     }
 
     // =========================================================================
-    //  폐수의뢰및결과 — 채수일 목록 (중복 제거)
+    //  비용부담금_결과 — 채수일 목록 (중복 제거)
     // =========================================================================
     public static List<DateTime> GetWasteRequestDates()
     {
@@ -150,7 +150,7 @@ public static class MyTaskService
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = "SELECT DISTINCT `채수일` FROM `폐수의뢰및결과` ORDER BY `채수일` DESC";
+            cmd.CommandText = "SELECT DISTINCT `채수일` FROM `비용부담금_결과` ORDER BY `채수일` DESC";
             using var rdr = cmd.ExecuteReader();
             while (rdr.Read())
             {
@@ -196,7 +196,7 @@ public static class MyTaskService
     }
 
     // =========================================================================
-    //  의뢰목록 — 폐수의뢰및결과 (채수 일정)
+    //  의뢰목록 — 비용부담금_결과 (채수 일정)
     // =========================================================================
     public record RequestListItem(
         int    Id,
@@ -220,7 +220,7 @@ public static class MyTaskService
             cmd.CommandText = @"
                 SELECT r.Id, r.SN, r.업체명, r.구분, r.채수일, r.확인자, r.관리번호, r.비고,
                        CASE WHEN res.id IS NOT NULL THEN 1 ELSE 0 END AS HasResult
-                FROM `폐수의뢰및결과` r
+                FROM `비용부담금_결과` r
                 LEFT JOIN `폐수_결과` res ON res.관리번호 = r.관리번호 AND res.채취일자 = r.채수일
                 WHERE r.채수일 = @d
                 ORDER BY
@@ -258,7 +258,7 @@ public static class MyTaskService
             cmd.CommandText = @"
                 SELECT r.Id, r.SN, r.업체명, r.구분, r.채수일, r.확인자, r.관리번호, r.비고,
                        CASE WHEN res.id IS NOT NULL THEN 1 ELSE 0 END AS HasResult
-                FROM `폐수의뢰및결과` r
+                FROM `비용부담금_결과` r
                 LEFT JOIN `폐수_결과` res ON res.관리번호 = r.관리번호 AND res.채취일자 = r.채수일
                 WHERE r.채수일 BETWEEN @from AND @to
                 ORDER BY
@@ -302,7 +302,7 @@ public static class MyTaskService
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = $"SELECT {DbConnectionFactory.RowId}, `약칭`, `시료명`, `견적번호` FROM `분석의뢰및결과` WHERE `채취일자` = @d ORDER BY `견적번호`, `시료명`";
+            cmd.CommandText = $"SELECT {DbConnectionFactory.RowId}, `약칭`, `시료명`, `견적번호` FROM `수질분석센터_결과` WHERE `채취일자` = @d ORDER BY `견적번호`, `시료명`";
             cmd.Parameters.AddWithValue("@d", dateStr);
             using var rdr = cmd.ExecuteReader();
             while (rdr.Read())
@@ -323,7 +323,7 @@ public static class MyTaskService
     public record AnalyteAssignment(string FullName, string ShortName, string AssignedAnalyst);
 
     // =========================================================================
-    //  비용부담금 — 특정 폐수의뢰및결과 행의 분석항목 + 담당자
+    //  비용부담금 — 특정 비용부담금_결과 행의 분석항목 + 담당자
     // =========================================================================
     public static List<AnalyteAssignment> GetAnalytesForWasteRow(int id, string dateStr)
     {
@@ -355,7 +355,7 @@ public static class MyTaskService
                     }
             }
 
-            // 폐수의뢰및결과는 'O' 마커 없이 컬럼 자체가 분석항목 목록
+            // 비용부담금_결과는 'O' 마커 없이 컬럼 자체가 분석항목 목록
             // 메타데이터 컬럼 제외 후 전체 컬럼을 분석항목으로 반환
             var metaCols = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
@@ -364,7 +364,7 @@ public static class MyTaskService
             };
             using (var cmd = conn.CreateCommand())
             {
-                cmd.CommandText = "SELECT * FROM `폐수의뢰및결과` LIMIT 0";
+                cmd.CommandText = "SELECT * FROM `비용부담금_결과` LIMIT 0";
                 using var rdr = cmd.ExecuteReader();
                 for (int i = 0; i < rdr.FieldCount; i++)
                 {
@@ -438,7 +438,7 @@ public static class MyTaskService
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = $"SELECT * FROM `분석의뢰및결과` WHERE {DbConnectionFactory.RowId} = @id";
+            cmd.CommandText = $"SELECT * FROM `수질분석센터_결과` WHERE {DbConnectionFactory.RowId} = @id";
             cmd.Parameters.AddWithValue("@id", rowId);
             using var rdr = cmd.ExecuteReader();
             if (rdr.Read())
@@ -489,7 +489,7 @@ public static class MyTaskService
             // 해당 시료 행에서 'O' 컬럼 추출
             using (var cmd = conn.CreateCommand())
             {
-                cmd.CommandText = $"SELECT * FROM `분석의뢰및결과` WHERE {DbConnectionFactory.RowId} = @id";
+                cmd.CommandText = $"SELECT * FROM `수질분석센터_결과` WHERE {DbConnectionFactory.RowId} = @id";
                 cmd.Parameters.AddWithValue("@id", rowId);
                 using var rdr = cmd.ExecuteReader();
                 if (rdr.Read())
@@ -582,7 +582,7 @@ public static class MyTaskService
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = "SELECT `채취일자`, `약칭`, `시료명` FROM `분석의뢰및결과` WHERE `채취일자` BETWEEN @s AND @e ORDER BY `채취일자`, `약칭`, `시료명`";
+            cmd.CommandText = "SELECT `채취일자`, `약칭`, `시료명` FROM `수질분석센터_결과` WHERE `채취일자` BETWEEN @s AND @e ORDER BY `채취일자`, `약칭`, `시료명`";
             cmd.Parameters.AddWithValue("@s", startDate);
             cmd.Parameters.AddWithValue("@e", endDate);
             using var rdr = cmd.ExecuteReader();
@@ -613,7 +613,7 @@ public static class MyTaskService
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = "SELECT `채수일`, `업체명`, `구분` FROM `폐수의뢰및결과` WHERE `채수일` BETWEEN @s AND @e ORDER BY `채수일`, `구분`, `업체명`";
+            cmd.CommandText = "SELECT `채수일`, `업체명`, `구분` FROM `비용부담금_결과` WHERE `채수일` BETWEEN @s AND @e ORDER BY `채수일`, `구분`, `업체명`";
             cmd.Parameters.AddWithValue("@s", startDate);
             cmd.Parameters.AddWithValue("@e", endDate);
             using var rdr = cmd.ExecuteReader();

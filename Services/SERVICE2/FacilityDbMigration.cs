@@ -25,7 +25,6 @@ public static class FacilityDbMigration
         EnsureResultSubmitLog(conn);
         EnsureYeosuCompanyTable(conn);
         EnsureWasteRequestResultTable(conn);
-        EnsureAnalysisDataTables(conn);
         EnsureMigrationTable(conn);
 
         // 수질분석센터 + 처리시설 DATA 테이블 DROP (일회성)
@@ -263,10 +262,8 @@ public static class FacilityDbMigration
                     }
                 }
 
-                // 기본 테이블들
-                validAnalytes.Add("TOC_시험기록부");
-                validAnalytes.Add("TOC_NPOC_시험기록부");
-                validAnalytes.Add("TOC_TCIC_시험기록부");
+                // 생태독성_시험기록부는 Analyte 직접 매핑이 아닌 별도 스키마이므로 보존
+                validAnalytes.Add("생태독성_시험기록부");
 
                 // DB의 모든 _시험기록부 테이블 조회
                 var tablesToDrop = new List<string>();
@@ -380,133 +377,7 @@ public static class FacilityDbMigration
     {
         var ai = DbConnectionFactory.AutoIncrement;
 
-        // BOD_DATA
-        if (!DbConnectionFactory.TableExists(conn, "BOD_DATA"))
-        {
-            Exec(conn, $@"
-                CREATE TABLE `BOD_DATA` (
-                    id          INTEGER PRIMARY KEY {ai},
-                    분석일      TEXT NOT NULL,
-                    SN          TEXT NOT NULL,
-                    업체명      TEXT DEFAULT '',
-                    구분        TEXT DEFAULT '',
-                    시료량      TEXT DEFAULT '',
-                    D1          TEXT DEFAULT '',
-                    D2          TEXT DEFAULT '',
-                    희석배수    TEXT DEFAULT '',
-                    결과        TEXT DEFAULT '',
-                    식종시료량  TEXT DEFAULT '',
-                    식종D1      TEXT DEFAULT '',
-                    식종D2      TEXT DEFAULT '',
-                    식종BOD     TEXT DEFAULT '',
-                    식종함유량  TEXT DEFAULT '',
-                    등록일시    TEXT DEFAULT '',
-                    UNIQUE KEY uk_ana (분석일(20), SN(100))
-                )");
-            Log("BOD_DATA 테이블 생성");
-        }
-
-        // SS_DATA — 기존 테이블 컬럼명 불일치 수정 (한자→한글)
-        if (DbConnectionFactory.ColumnExists(conn, "SS_DATA", "\uBD84\u6790\u65E5"))
-        {
-            try { Exec(conn, "ALTER TABLE `SS_DATA` CHANGE `\uBD84\u6790\u65E5` `\uBD84\uC11D\uC77C` TEXT NOT NULL"); Log("SS_DATA 컬럼명 한자→한글 마이그레이션 완료"); }
-            catch (Exception ex) { Log($"SS_DATA 컬럼명 마이그레이션 실패: {ex.Message}"); }
-        }
-
-        // SS_DATA
-        if (!DbConnectionFactory.TableExists(conn, "SS_DATA"))
-        {
-            Exec(conn, $@"
-                CREATE TABLE `SS_DATA` (
-                    id      INTEGER PRIMARY KEY {ai},
-                    분석일  TEXT NOT NULL,
-                    SN      TEXT NOT NULL,
-                    업체명  TEXT DEFAULT '',
-                    구분    TEXT DEFAULT '',
-                    시료량  TEXT DEFAULT '',
-                    전무게  TEXT DEFAULT '',
-                    후무게  TEXT DEFAULT '',
-                    무게차  TEXT DEFAULT '',
-                    희석배수 TEXT DEFAULT '',
-                    결과    TEXT DEFAULT '',
-                    등록일시 TEXT DEFAULT '',
-                    UNIQUE KEY uk_ana (분석일(20), SN(100))
-                )");
-            Log("SS_DATA 테이블 생성");
-        }
-
-        // NHexan_DATA (단순 결과값 형식)
-        if (!DbConnectionFactory.TableExists(conn, "NHexan_DATA"))
-        {
-            Exec(conn, $@"
-                CREATE TABLE `NHexan_DATA` (
-                    id      INTEGER PRIMARY KEY {ai},
-                    분석일  TEXT NOT NULL,
-                    SN      TEXT NOT NULL,
-                    업체명  TEXT DEFAULT '',
-                    구분    TEXT DEFAULT '',
-                    시료량  TEXT DEFAULT '',
-                    결과    TEXT DEFAULT '',
-                    등록일시 TEXT DEFAULT '',
-                    UNIQUE KEY uk_ana (분석일(20), SN(100))
-                )");
-            Log("NHexan_DATA 테이블 생성");
-        }
-
-        // TN_DATA, TP_DATA, Phenols_DATA — UvVis 형식 (흡광도/검량선_a/농도 + 검정곳선)
-        foreach (var tbl in new[] { "TN_DATA", "TP_DATA", "Phenols_DATA" })
-        {
-            if (!DbConnectionFactory.TableExists(conn, tbl))
-            {
-                Exec(conn, $@"
-                    CREATE TABLE `{tbl}` (
-                        id       INTEGER PRIMARY KEY {ai},
-                        분석일   TEXT NOT NULL,
-                        SN       TEXT NOT NULL,
-                        업체명   TEXT DEFAULT '',
-                        구분     TEXT DEFAULT '',
-                        ST01_mgL TEXT DEFAULT '', ST02_mgL TEXT DEFAULT '', ST03_mgL TEXT DEFAULT '',
-                        ST04_mgL TEXT DEFAULT '', ST05_mgL TEXT DEFAULT '',
-                        ST01_abs TEXT DEFAULT '', ST02_abs TEXT DEFAULT '', ST03_abs TEXT DEFAULT '',
-                        ST04_abs TEXT DEFAULT '', ST05_abs TEXT DEFAULT '',
-                        기울기   TEXT DEFAULT '',
-                        절편     TEXT DEFAULT '',
-                        R2       TEXT DEFAULT '',
-                        시료량   TEXT DEFAULT '',
-                        흡광도   TEXT DEFAULT '',
-                        희석배수 TEXT DEFAULT '',
-                        검량선_a TEXT DEFAULT '',
-                        농도     TEXT DEFAULT '',
-                        등록일시 TEXT DEFAULT '',
-                        UNIQUE KEY uk_ana (분석일(20), SN(100))
-                    )");
-                Log($"{tbl} 테이블 생성");
-            }
-            else
-            {
-                // 기존 테이블에 검정곳선 콼럼 추가
-                foreach (var col in new[] {
-                    "ST01_mgL", "ST02_mgL", "ST03_mgL", "ST04_mgL", "ST05_mgL",
-                    "ST01_abs", "ST02_abs", "ST03_abs", "ST04_abs", "ST05_abs",
-                    "기울기", "절편", "R2" })
-                {
-                    if (!DbConnectionFactory.ColumnExists(conn, tbl, col))
-                        try { Exec(conn, $"ALTER TABLE `{tbl}` ADD COLUMN `{col}` TEXT DEFAULT ''"); }
-                        catch { }
-                }
-            }
-        }
-
-
-        // *_DATA 비고 컬럼 추가 (원본시료명 보존용)
-        foreach (var tbl in new[] { "BOD_DATA", "SS_DATA", "NHexan_DATA", "TN_DATA", "TP_DATA", "Phenols_DATA", "TOC_TCIC_DATA", "TOC_NPOC_DATA" })
-        {
-            if (DbConnectionFactory.TableExists(conn, tbl) && !DbConnectionFactory.ColumnExists(conn, tbl, "비고"))
-            {
-                try { Exec(conn, $"ALTER TABLE `{tbl}` ADD COLUMN `비고` TEXT DEFAULT ''"); Log($"{tbl} 비고 컬럼 추가"); }
-                catch { }
-            }
-        }
+        // 레거시 *_DATA 테이블은 DROP됨 (더 이상 사용하지 않음)
     }
 
     // ── 처리시설_마스터 ────────────────────────────────────────────────────
@@ -663,13 +534,13 @@ public static class FacilityDbMigration
         Log("폐수배출업소_분석결과 테이블 생성");
     }
 
-    // ── 처리시설_측정결과 ──────────────────────────────────────────────────
+    // ── 처리시설_결과 ──────────────────────────────────────────────────
     private static void EnsureFacilityResults(DbConnection conn)
     {
-        if (DbConnectionFactory.TableExists(conn, "처리시설_측정결과")) return;
+        if (DbConnectionFactory.TableExists(conn, "처리시설_결과")) return;
 
         Exec(conn, $@"
-            CREATE TABLE `처리시설_측정결과` (
+            CREATE TABLE `처리시설_결과` (
                 id          INTEGER PRIMARY KEY {DbConnectionFactory.AutoIncrement},
                 마스터_id   INTEGER NOT NULL,
                 시설명      TEXT NOT NULL,
@@ -691,7 +562,7 @@ public static class FacilityDbMigration
                 입력일시    TEXT DEFAULT ''
             )");
 
-        Log("처리시설_측정결과 테이블 생성");
+        Log("처리시설_결과 테이블 생성");
     }
 
     // ── 공개 API: 시험기록부 테이블 일괄 생성 ─────────────────────
@@ -1197,21 +1068,21 @@ public static class FacilityDbMigration
         Log($"여수_폐수배출업소 시드 완료: {names.Length}행");
     }
 
-    // ── 폐수의뢰및결과 (테이블 생성 + 분석항목 컬럼 추가) ───────────────
+    // ── 비용부담금_결과 (테이블 생성 + 분석항목 컬럼 추가) ───────────────
     private static void EnsureWasteRequestResultTable(DbConnection conn)
     {
         // 구 테이블명 → 신 테이블명 RENAME
         if (DbConnectionFactory.TableExists(conn, "폐수채수의뢰")
-            && !DbConnectionFactory.TableExists(conn, "폐수의뢰및결과"))
+            && !DbConnectionFactory.TableExists(conn, "비용부담금_결과"))
         {
-            Exec(conn, "ALTER TABLE `폐수채수의뢰` RENAME TO `폐수의뢰및결과`");
-            Log("폐수채수의뢰 → 폐수의뢰및결과 테이블명 변경");
+            Exec(conn, "ALTER TABLE `폐수채수의뢰` RENAME TO `비용부담금_결과`");
+            Log("폐수채수의뢰 → 비용부담금_결과 테이블명 변경");
         }
 
-        if (!DbConnectionFactory.TableExists(conn, "폐수의뢰및결과"))
+        if (!DbConnectionFactory.TableExists(conn, "비용부담금_결과"))
         {
             Exec(conn, $@"
-                CREATE TABLE `폐수의뢰및결과` (
+                CREATE TABLE `비용부담금_결과` (
                     Id          INTEGER PRIMARY KEY {DbConnectionFactory.AutoIncrement},
                     채수일      TEXT NOT NULL,
                     구분        TEXT NOT NULL DEFAULT '여수',
@@ -1229,40 +1100,40 @@ public static class FacilityDbMigration
                     비고        TEXT DEFAULT '',
                     확인자      TEXT DEFAULT ''
                 )");
-            Log("폐수의뢰및결과 테이블 생성");
+            Log("비용부담금_결과 테이블 생성");
             return;
         }
 
         // 구 컬럼명 TOC(TC-IC) → TOC 이관
-        if (ColumnExists(conn, "폐수의뢰및결과", "TOC(TC-IC)") && !ColumnExists(conn, "폐수의뢰및결과", "TOC"))
+        if (ColumnExists(conn, "비용부담금_결과", "TOC(TC-IC)") && !ColumnExists(conn, "비용부담금_결과", "TOC"))
         {
-            Exec(conn, "ALTER TABLE `폐수의뢰및결과` ADD COLUMN `TOC` TEXT DEFAULT ''");
-            Exec(conn, "UPDATE `폐수의뢰및결과` SET `TOC` = `TOC(TC-IC)` WHERE `TOC(TC-IC)` <> ''");
-            Log("폐수의뢰및결과 TOC(TC-IC) → TOC 컬럼 이관");
+            Exec(conn, "ALTER TABLE `비용부담금_결과` ADD COLUMN `TOC` TEXT DEFAULT ''");
+            Exec(conn, "UPDATE `비용부담금_결과` SET `TOC` = `TOC(TC-IC)` WHERE `TOC(TC-IC)` <> ''");
+            Log("비용부담금_결과 TOC(TC-IC) → TOC 컬럼 이관");
         }
 
         // 기존 테이블에 컬럼이 없으면 추가
         var cols = new[] { "BOD", "TOC", "SS", "T-N", "T-P", "N-Hexan", "Phenols" };
         foreach (var col in cols)
         {
-            if (!ColumnExists(conn, "폐수의뢰및결과", col))
+            if (!ColumnExists(conn, "비용부담금_결과", col))
             {
-                Exec(conn, $"ALTER TABLE `폐수의뢰및결과` ADD COLUMN `{col}` TEXT DEFAULT ''");
-                Log($"폐수의뢰및결과 컬럼 추가: {col}");
+                Exec(conn, $"ALTER TABLE `비용부담금_결과` ADD COLUMN `{col}` TEXT DEFAULT ''");
+                Log($"비용부담금_결과 컬럼 추가: {col}");
             }
         }
     }
 
     // ── BOD_DATA에서 ROW 생성 + *_DATA 결과값 마이그레이션 ─────────────────
     /// <summary>
-    /// 폐수의뢰및결과 데이터 재구축 (v2)
+    /// 비용부담금_결과 데이터 재구축 (v2)
     /// — *_DATA 테이블의 '분석일' = 분석한 날 (DB 컬럼명 변경 완료)
     /// — 진짜 채수일(시료발생일)은 SN에서 추출 (MM-DD), 연도는 분석일 기준
     /// — SN이 시료 고유 식별자이므로 SN 기반 매칭
     /// </summary>
     private static void MigrateDataToWasteRequestResult(DbConnection conn)
     {
-        const string T = "폐수의뢰및결과";
+        const string T = "비용부담금_결과";
 
         try
         {
@@ -1295,7 +1166,7 @@ public static class FacilityDbMigration
             }
 
             // ── 보충 모드: 누락 행 추가 + 빈 행 수리
-            // 1) BOD_DATA에 있지만 폐수의뢰및결과에 없는 SN 추가
+            // 1) BOD_DATA에 있지만 비용부담금_결과에 없는 SN 추가
             int added = AddMissingSamples(conn, T);
             if (added > 0) Log($"누락 시료 추가: {added}건");
 
@@ -1313,7 +1184,7 @@ public static class FacilityDbMigration
         catch (Exception ex) { Log($"마이그레이션 오류: {ex.Message}"); }
     }
 
-    /// <summary>BOD_DATA에 있지만 폐수의뢰및결과에 없는 시료 추가 (SN+업체명 복합키)</summary>
+    /// <summary>BOD_DATA에 있지만 비용부담금_결과에 없는 시료 추가 (SN+업체명 복합키)</summary>
     private static int AddMissingSamples(DbConnection conn, string T)
     {
         // 기존 (SN|업체명) 조합 로드
@@ -1435,14 +1306,14 @@ public static class FacilityDbMigration
     }
 
     /// <summary>
-    /// 폐수의뢰및결과 전면 재구축
+    /// 비용부담금_결과 전면 재구축
     /// 1) 기존 데이터 삭제
     /// 2) BOD_DATA에서 고유 시료 행 생성 (채수일은 SN에서 추출)
     /// 3) 각 DATA 테이블에서 SN 기반으로 결과값 매칭
     /// </summary>
     private static void RebuildFromDataTables(DbConnection conn, string T)
     {
-        Log("=== 폐수의뢰및결과 전면 재구축 시작 ===");
+        Log("=== 비용부담금_결과 전면 재구축 시작 ===");
 
         // ── Step 1: 기존 데이터 삭제
         Exec(conn, $"DELETE FROM `{T}`");
@@ -1540,7 +1411,7 @@ public static class FacilityDbMigration
 
     /// <summary>
     /// 비고+업체명+30일 범위 매칭 (v5 — BOHEMCIGAR 매크로 완전 재현)
-    /// — 폐수의뢰및결과.SN(접두사제거) = 의뢰SN (채수일 인코딩: MM-DD-NN)
+    /// — 비용부담금_결과.SN(접두사제거) = 의뢰SN (채수일 인코딩: MM-DD-NN)
     /// — *_DATA.비고(접두사제거) = 의뢰SN → 1순위 매칭키
     /// — *_DATA.SN(접두사제거) = 분석배치SN → 2순위 매칭키 (BOD처럼 당일 분석한 경우)
     /// — 채수일(SN에서 추출)로부터 +30일 이내 DATA.분석일만 검색
@@ -1549,7 +1420,7 @@ public static class FacilityDbMigration
     {
         try
         {
-            // 1) 폐수의뢰및결과 행 로드
+            // 1) 비용부담금_결과 행 로드
             var targets = new List<(int id, string sn, string company, string samplingDate)>();
             using (var cmd = conn.CreateCommand())
             {
@@ -1793,7 +1664,7 @@ public static class FacilityDbMigration
     }
 
     /// <summary>
-    /// BOD_DATA에서 고유 (채수일, SN, 업체명) 추출하여 폐수의뢰및결과에 없는 ROW 추가
+    /// BOD_DATA에서 고유 (채수일, SN, 업체명) 추출하여 비용부담금_결과에 없는 ROW 추가
     /// </summary>
     private static int InsertRowsFromBodData(DbConnection conn, string T)
     {
@@ -1819,7 +1690,7 @@ public static class FacilityDbMigration
             }
             Log($"BOD_DATA 고유 행: {bodRows.Count}건");
 
-            // 2) 기존 폐수의뢰및결과의 (SN, 채수일연도) 조합 로드
+            // 2) 기존 비용부담금_결과의 (SN, 채수일연도) 조합 로드
             var existing = new HashSet<string>();
             using (var cmd = conn.CreateCommand())
             {
@@ -1833,7 +1704,7 @@ public static class FacilityDbMigration
                         existing.Add($"{sn}|{date}");
                 }
             }
-            Log($"기존 폐수의뢰및결과 행: {existing.Count}건");
+            Log($"기존 비용부담금_결과 행: {existing.Count}건");
 
             // 3) 없는 행만 INSERT
             int inserted = 0;
@@ -1905,13 +1776,13 @@ public static class FacilityDbMigration
     }
 
     /// <summary>
-    /// SN(접두사 제거) + 업체명(유사도 95%) 으로 C# 루프 매칭하여 DATA 결과값을 폐수의뢰및결과에 반영
+    /// SN(접두사 제거) + 업체명(유사도 95%) 으로 C# 루프 매칭하여 DATA 결과값을 비용부담금_결과에 반영
     /// </summary>
     private static int MigrateBySnJoin(DbConnection conn, string T, string srcTable, string srcCol, string destCol, string? onlyEmptyCol)
     {
         try
         {
-            // 1) 폐수의뢰및결과 행 로드 (전체: 여수/율촌/세풍)
+            // 1) 비용부담금_결과 행 로드 (전체: 여수/율촌/세풍)
             var targets = new List<(int id, string sn, string company, DateTime date)>();
             using (var cmd = conn.CreateCommand())
             {
@@ -2010,12 +1881,12 @@ public static class FacilityDbMigration
 
     /// <summary>
     /// 빈 결과 행 수리: SN 기반 매칭으로 DATA 테이블에서 보충
-    /// — DATA.분석일 = 분석한 날, 폐수의뢰및결과.채수일 = 채수일(시료발생일)이므로
+    /// — DATA.분석일 = 분석한 날, 비용부담금_결과.채수일 = 채수일(시료발생일)이므로
     ///   날짜가 아닌 SN(시료번호)으로 매칭해야 함
     /// </summary>
     public static int RepairEmptyRows(DbConnection conn)
     {
-        const string T = "폐수의뢰및결과";
+        const string T = "비용부담금_결과";
         int totalRepaired = 0;
 
         // 1) 빈 행(모든 분석항목이 비어있는 행) 로드
@@ -2134,7 +2005,7 @@ public static class FacilityDbMigration
 
     private static int RepairEmptyToc(DbConnection conn, List<(int id, string 업체명, string 채수일, string sn)> emptyRows)
     {
-        const string T = "폐수의뢰및결과";
+        const string T = "비용부담금_결과";
         int repaired = 0;
 
         var tocEmptyIds = new HashSet<int>();

@@ -55,8 +55,6 @@ public partial class ContractPage : UserControl
     private readonly Dictionary<string, TextBox>   _show4QtyTextBoxes   = new();
     private readonly Dictionary<string, string>    _pendingQuantities   = new();
 
-    // 계약구분 ComboBox 참조 (저장 시 값 읽기용)
-    private ComboBox? _contractTypeComboBox;
 
     // 신규 추가 시 선택한 템플릿 업체명 (단가 복사용)
     private string? _templateCompanyName;
@@ -81,8 +79,9 @@ public partial class ContractPage : UserControl
 
     private void OnWindowKeyDown(object? sender, KeyEventArgs e)
     {
-        // Shift+2: Show4 수량 편집 모드 토글
-        if (e.KeyModifiers.HasFlag(KeyModifiers.Shift) && e.Key == Key.D2)
+        // Shift+2: Show4 수량 편집 모드 토글 (TextBox 포커스 중엔 무시)
+        if (e.KeyModifiers.HasFlag(KeyModifiers.Shift) && e.Key == Key.D2 &&
+            TopLevel.GetTopLevel(this)?.FocusManager?.GetFocusedElement() is not TextBox)
         {
             _show4EditMode = !_show4EditMode;
 
@@ -241,39 +240,88 @@ public partial class ContractPage : UserControl
         _detailPanel = root;
         DetailPanelChanged?.Invoke(scroll);  // Show2에 업체정보 표시
 
-        // ② 단가/계약수량/처리수량 백그라운드 로드
+        // ② Show4에 즉시 로딩 프로그레스바 표시
         var captured = contract;
-        _ = Task.Run(() =>
-                {
-                    var prices = ContractService.GetContractPrices(captured.C_CompanyName);
-                    var contractQtys = ContractService.GetContractQuantities(captured.C_CompanyName);
-                    var processedQtys = ContractService.GetProcessedQuantities(captured.C_CompanyName,
-                        captured.C_ContractStart, captured.C_ContractEnd);
-                    return (prices, contractQtys, processedQtys);
-                })
-                .ContinueWith(t =>
-                {
-                    if (t.Exception != null) { Log("데이터 로드 오류: " + t.Exception.Message); return; }
-                    var (prices, contractQtys, processedQtys) = t.Result;
-                    Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-                    {
-                        if (_selectedContract?.C_CompanyName != captured.C_CompanyName) return;
+        var loadingProgressBar = new Avalonia.Controls.ProgressBar
+        {
+            Minimum         = 0,
+            Maximum         = 100,
+            Value           = 0,
+            IsIndeterminate = false,
+            Height          = 4,
+            Margin          = new Thickness(0, 0, 0, 8),
+        };
+        var loadingStatusText = new TextBlock
+        {
+            Text       = "단가 정보 로딩 중...",
+            FontSize   = AppTheme.FontSM, FontFamily = Font,
+            Foreground = AppTheme.FgMuted,
+        };
+        {
+            var loadingPanel = new StackPanel { Margin = new Thickness(12) };
+            loadingPanel.Children.Add(loadingProgressBar);
+            loadingPanel.Children.Add(loadingStatusText);
+            StatsPanelChanged?.Invoke(loadingPanel);
+        }
 
-                        // Show2: 아무것도 표시 안 함 (계약정보만 표시)
-                        // PricePanelChanged?.Invoke(null);
-
-                        // Show3: 진행상황 프로그래스바
-                        var progressPanel = BuildProgressPanel(captured.C_CompanyName, contractQtys, processedQtys);
-                        EditPanelChanged?.Invoke(progressPanel);
-
-                        // Show4: 단가 정보 + 계약수량
-                        var priceInfoPanel = BuildPriceInfoPanel(prices, contractQtys);
-                        StatsPanelChanged?.Invoke(priceInfoPanel);
-                    });
-                }, TaskContinuationOptions.None);
-
-        Log($"선택: {contract.C_CompanyName}");
+        // ③ 단가/계약수량/처리수량 백그라운드 로드 (3단계, 각 33%)
+        _ = LoadContractDataAsync(captured, loadingProgressBar, loadingStatusText);
     }
+
+    private async Task LoadContractDataAsync(Contract captured,
+        Avalonia.Controls.ProgressBar progressBar, TextBlock statusText)
+    {
+        try
+        {
+            var prices       = await Task.Run(() => ContractService.GetContractPrices(captured.C_CompanyName));
+            progressBar.Value = 33; statusText.Text = "계약수량 로딩 중...";
+
+            var contractQtys = await Task.Run(() => ContractService.GetContractQuantities(captured.C_CompanyName));
+            progressBar.Value = 66; statusText.Text = "처리수량 로딩 중...";
+
+            var processedQtys = await Task.Run(() => ContractService.GetProcessedQuantities(
+                captured.C_CompanyName, captured.C_ContractStart, captured.C_ContractEnd));
+            progressBar.Value = 100; statusText.Text = "완료";
+
+            Log($"[데이터 로드] {captured.C_CompanyName}: 단가={prices.Count}개, 계약수량={contractQtys.Count}개");
+
+            if (_selectedContract?.C_CompanyName != captured.C_CompanyName) return;
+
+            // Show3: 진행상황 + 단가복사 버튼
+            var progressPanel = BuildProgressPanel(captured.C_CompanyName, contractQtys, processedQtys);
+            var copyPriceBtn = new Button
+            {
+                Content         = "📋  이 업체 단가를 신규계약에 복사",
+                FontSize        = AppTheme.FontSM,
+                FontFamily      = Font,
+                Background      = AppTheme.BgActiveBlue,
+                Foreground      = AppTheme.FgInfo,
+                BorderThickness = new Thickness(0),
+                CornerRadius    = new CornerRadius(4),
+                Padding         = new Thickness(12, 6),
+                Margin          = new Thickness(8, 8, 8, 0),
+            };
+            copyPriceBtn.Click += (_, _) =>
+            {
+                _templateCompanyName = captured.C_CompanyName;
+                ShowAddModeTemplateSelectionWithCompany(captured.C_CompanyName);
+            };
+            if (progressPanel is ScrollViewer sv && sv.Content is StackPanel sp)
+                sp.Children.Insert(0, copyPriceBtn);
+            EditPanelChanged?.Invoke(progressPanel);
+
+            // Show4: 단가 정보 + 계약수량
+            var priceInfoPanel = BuildPriceInfoPanel(captured.C_CompanyName, captured.C_Abbreviation, prices, contractQtys, _detailPanel);
+            StatsPanelChanged?.Invoke(priceInfoPanel);
+
+            Log($"[Show4 표시 완료] 단가={prices.Count}개");
+        }
+        catch (Exception ex)
+        {
+            Log($"데이터 로드 오류: {ex.Message}");
+        }
+    }
+
 
     // =========================================================================
     // 계약업체 추가 패널  (MainPage BT3)
@@ -288,7 +336,8 @@ public partial class ContractPage : UserControl
         ContractTreeView.SelectedItem  = null;
         _detailPanel                   = BuildAddPanel();
         DetailPanelChanged?.Invoke(_detailPanel);
-        PricePanelChanged?.Invoke(BuildTemplateSelector());
+        ShowAddModeTemplateSelection();  // Show3 템플릿 선택
+        StatsPanelChanged?.Invoke(null);  // Show4 초기화
         Log("추가 모드");
     }
 
@@ -375,7 +424,6 @@ public partial class ContractPage : UserControl
 
         AddGridRow(grid, 0, "업체명",           c.C_CompanyName,      isReadOnly: true, isLocked: true);
         AddGridRow(grid, 1, "약칭",             c.C_Abbreviation);
-        AddGridRowComboBox(grid, 2, "계약구분", c.C_ContractType);
         // 계약일수: C_ContractEnd - 오늘 (남은 일수)
         string remainDays = c.C_ContractEnd.HasValue
             ? (c.C_ContractEnd.Value.Date - DateTime.Today).Days.ToString()
@@ -386,18 +434,18 @@ public partial class ContractPage : UserControl
             ? c.C_ContractAmountVATExcluded.Value.ToString("N0") + " 원"
             : "";
 
-        AddGridRow(grid, 3, "계약시작",         c.C_ContractStartStr, isReadOnly: true);
-        AddGridRow(grid, 4, "계약종료",         c.C_ContractEndStr,   isReadOnly: true);
-        AddGridRow(grid, 5, "잔여일수",         remainDays,           isReadOnly: true);
-        AddGridRow(grid, 6, "계약금액(VAT별도)", amountStr);
-        AddGridRow(grid, 7, "주소",             c.C_Address);
-        AddGridRow(grid, 8, "대표자",           c.C_Representative);
-        AddGridRow(grid, 9, "시설별",           c.C_FacilityType);
-        AddGridRow(grid,10, "종류별",           c.C_CategoryType);
-        AddGridRow(grid,11, "주생산품",         c.C_MainProduct);
-        AddGridRow(grid,12, "담당자",           c.C_ContactPerson);
-        AddGridRow(grid,13, "연락처",           c.C_PhoneNumber);
-        AddGridRow(grid,14, "이메일",           c.C_Email);
+        AddGridRow(grid, 2, "계약시작",         c.C_ContractStartStr, isReadOnly: true);
+        AddGridRow(grid, 3, "계약종료",         c.C_ContractEndStr,   isReadOnly: true);
+        AddGridRow(grid, 4, "잔여일수",         remainDays,           isReadOnly: true);
+        AddGridRow(grid, 5, "계약금액(VAT별도)", amountStr);
+        AddGridRow(grid, 6, "주소",             c.C_Address);
+        AddGridRow(grid, 7, "대표자",           c.C_Representative);
+        AddGridRow(grid, 8, "시설별",           c.C_FacilityType);
+        AddGridRow(grid, 9, "종류별",           c.C_CategoryType);
+        AddGridRow(grid,10, "주생산품",         c.C_MainProduct);
+        AddGridRow(grid,11, "담당자",           c.C_ContactPerson);
+        AddGridRow(grid,12, "연락처",           c.C_PhoneNumber);
+        AddGridRow(grid,13, "이메일",           c.C_Email);
         root.Children.Add(grid);
 
         // ── 단가 섹션 컨테이너 (백그라운드 로드 후 채워짐) ───────────────────
@@ -540,15 +588,18 @@ public partial class ContractPage : UserControl
     }
 
     // =========================================================================
-    // Show4 — 단가 정보 + 계약수량 (뱃지+초성헬퍼 포함)
+    // Show4 — 단가 정보 + 계약수량 + 소계 (업체추가 Show4와 동일 레이아웃)
     // =========================================================================
-    private Control BuildPriceInfoPanel(List<(string Analyte, string Price)> prices,
-                                        Dictionary<string, string> contractQtys)
+    private Control BuildPriceInfoPanel(string companyName,
+                                        string abbr,
+                                        List<(string Analyte, string Price)> prices,
+                                        Dictionary<string, string> contractQtys,
+                                        StackPanel? show2Panel = null)
     {
-        var scrollViewer = new ScrollViewer();
+        var root = new StackPanel { Spacing = 0, Margin = new Thickness(8) };
 
-        var root = new StackPanel { Spacing = 8, Margin = new Thickness(8) };
-        scrollViewer.Content = root;
+        // 항목명 → 약칭 맵 로드
+        var aliasMap = ContractService.GetAnalyteAliasMap();
 
         if (prices.Count == 0)
         {
@@ -558,185 +609,437 @@ public partial class ContractPage : UserControl
                 FontSize   = AppTheme.FontBase, FontFamily = Font,
                 Foreground = AppTheme.FgMuted,
             });
-            return scrollViewer;
+            return new ScrollViewer { Content = root };
         }
 
+        // 업체명 + 약칭 뱃지 + 항목수
+        var headerLine = new StackPanel
+        {
+            Orientation       = Orientation.Horizontal,
+            Spacing           = 6,
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin            = new Thickness(0, 0, 0, 2),
+        };
+        headerLine.Children.Add(new TextBlock
+        {
+            Text              = companyName,
+            FontSize          = AppTheme.FontLG, FontFamily = Font, FontWeight = FontWeight.SemiBold,
+            Foreground        = AppTheme.FgMuted,
+            VerticalAlignment = VerticalAlignment.Center,
+        });
+        if (!string.IsNullOrEmpty(abbr))
+        {
+            var (bg, fg) = BadgeColorHelper.GetBadgeColor(abbr);
+            headerLine.Children.Add(new Border
+            {
+                Background        = Brush.Parse(bg),
+                CornerRadius      = new CornerRadius(3),
+                Padding           = new Thickness(5, 1),
+                VerticalAlignment = VerticalAlignment.Center,
+                Child = new TextBlock
+                {
+                    Text       = abbr,
+                    FontSize   = AppTheme.FontXS, FontFamily = Font,
+                    Foreground = Brush.Parse(fg),
+                }
+            });
+        }
+        root.Children.Add(headerLine);
         root.Children.Add(new TextBlock
         {
-            Text       = "💰  단가 및 계약수량",
-            FontSize   = AppTheme.FontLG, FontFamily = Font, FontWeight = FontWeight.SemiBold,
-            Foreground = AppTheme.FgSuccess,
+            Text       = $"({prices.Count}개 항목)",
+            FontSize   = AppTheme.FontSM, FontFamily = Font,
+            Foreground = AppTheme.FgDimmed,
+            Margin     = new Thickness(0, 0, 0, 8),
         });
-        root.Children.Add(new Border { Height = 1, Background = AppTheme.BorderMuted });
 
-        // 뱃지 색상 맵
-        var aliasMap = ContractService.GetAnalyteAliasMap();
-
-        // 단가 목록
-        foreach (var (analyte, price) in prices)
+        // "모두 선택" 체크박스 + "확정" 버튼
+        var topControlPanel = new StackPanel
         {
-            if (string.IsNullOrWhiteSpace(price)) continue;
+            Orientation       = Orientation.Horizontal,
+            Spacing           = 16,
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin            = new Thickness(0, 0, 0, 8),
+        };
+        var chkSelectAll = new CheckBox
+        {
+            Content    = "모두 선택",
+            FontSize   = AppTheme.FontMD, FontFamily = Font,
+            IsChecked  = true,
+        };
+        topControlPanel.Children.Add(chkSelectAll);
 
-            var itemContainer = new Border
+        var btnSave = new Button
+        {
+            Content         = "✅  확정",
+            Height          = 34,
+            FontSize        = AppTheme.FontMD, FontFamily = Font,
+            Background      = AppTheme.BgActiveGreen,
+            Foreground      = AppTheme.FgSuccess,
+            BorderThickness = new Thickness(0),
+            CornerRadius    = new CornerRadius(4),
+            Padding         = new Thickness(16, 0),
+        };
+        topControlPanel.Children.Add(btnSave);
+        root.Children.Add(topControlPanel);
+
+        // 컬럼 헤더 (체크 | 항목명 | 단가 | 수량 | 소계)
+        var headerGrid = new Grid
+        {
+            ColumnDefinitions = new ColumnDefinitions("Auto,*,90,70,90"),
+            ColumnSpacing     = 8,
+        };
+        var hdrDefs = new[] { ("", 0), ("항목명", 1), ("단가", 2), ("수량", 3), ("소계", 4) };
+        foreach (var (txt, col) in hdrDefs)
+        {
+            var align = col <= 1 ? Avalonia.Media.TextAlignment.Left : Avalonia.Media.TextAlignment.Right;
+            var hdr = new TextBlock { Text = txt, FontSize = AppTheme.FontSM, FontFamily = Font, Foreground = AppTheme.FgDimmed, TextAlignment = align };
+            Grid.SetColumn(hdr, col);
+            headerGrid.Children.Add(hdr);
+        }
+        root.Children.Add(new Border
+        {
+            Background = AppTheme.BgSecondary ?? AppTheme.BgPrimary,
+            Padding    = new Thickness(8, 4),
+            Child      = headerGrid,
+        });
+
+        // 합계 TextBlock
+        var totalSummary = new TextBlock
+        {
+            FontSize   = AppTheme.FontMD, FontFamily = Font, FontWeight = FontWeight.SemiBold,
+            Foreground = AppTheme.FgSuccess,
+            Margin     = new Thickness(0, 4, 0, 4),
+        };
+        root.Children.Add(totalSummary);
+
+        var subtotals  = new Dictionary<string, decimal>();
+        decimal grandTotal = 0m;
+        var checkBoxes = new List<CheckBox>();
+
+        // 카테고리 정보 로드 (QuotationCheckPanel과 동일)
+        var allItems   = AnalysisService.GetAllItems();
+        var priceDict  = prices.ToDictionary(p => p.Analyte, p => p.Price, StringComparer.OrdinalIgnoreCase);
+        var catOrder   = allItems
+            .Select(a => string.IsNullOrEmpty(a.Category) ? "기타" : a.Category)
+            .Distinct().ToList();
+        if (catOrder.Remove("일반항목")) catOrder.Insert(0, "일반항목");
+
+        // prices에 있는 항목만 카테고리별로 그룹핑 (단가 있는 것만)
+        var itemMeta = allItems
+            .Where(a => priceDict.ContainsKey(a.Analyte) && !string.IsNullOrWhiteSpace(priceDict[a.Analyte]))
+            .GroupBy(a => string.IsNullOrEmpty(a.Category) ? "기타" : a.Category)
+            .ToDictionary(g => g.Key);
+
+        // prices에 있지만 allItems에 없는 항목 → "기타"로 분류
+        var knownAnalytes = allItems.Select(a => a.Analyte).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var unknownItems  = prices
+            .Where(p => !string.IsNullOrWhiteSpace(p.Price) && !knownAnalytes.Contains(p.Analyte))
+            .Select(p => new AnalysisItem { Analyte = p.Analyte, Category = "기타", 약칭 = "", ES = "zzz" })
+            .ToList();
+        if (unknownItems.Count > 0)
+        {
+            if (!itemMeta.ContainsKey("기타"))
+                itemMeta["기타"] = unknownItems.GroupBy(_ => "기타").First();
+            // 기타 그룹에 unknown 추가는 아래 루프에서 처리
+        }
+
+        var itemsPanel = new StackPanel { Spacing = 4 };
+
+        foreach (var catKey in catOrder.Where(k => itemMeta.ContainsKey(k)))
+        {
+            var groupItems = itemMeta[catKey].OrderBy(a => a.ES).ToList();
+            if (catKey == "기타") groupItems.AddRange(unknownItems);
+            if (groupItems.Count == 0) continue;
+
+            // ── 카테고리 헤더 ──────────────────────────────────────────────
+            var catChk = new CheckBox
             {
-                Background = AppTheme.BgPrimary,
-                CornerRadius = new CornerRadius(3),
-                Padding = new Thickness(8, 6),
-                Margin = new Thickness(0, 2),
-                BorderBrush = AppTheme.BorderSubtle,
-                BorderThickness = new Thickness(1),
+                Content   = $"전체 ({groupItems.Count})",
+                IsChecked = true,
+                FontSize  = AppTheme.FontXS, FontFamily = Font,
+                Foreground = Brush.Parse("#88bb88"),
+                Padding   = new Thickness(2, 0),
+                Margin    = new Thickness(0),
+                MinHeight = 18,
             };
-
-            var itemContent = new StackPanel
+            var chevron = new TextBlock
             {
-                Orientation = Orientation.Vertical,
-                Spacing = 4,
+                Text      = "▾",
+                FontSize  = 10,
+                Foreground = AppTheme.FgMuted,
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin    = new Thickness(0, 0, 4, 0),
             };
-
-            // 상단: 뱃지 + 항목명
-            var topLine = new StackPanel
+            var headerRow = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto") };
+            headerRow.Children.Add(chevron); Grid.SetColumn(chevron, 0);
+            var catLabel = new TextBlock
             {
-                Orientation = Orientation.Horizontal,
-                Spacing = 8,
+                Text       = catKey,
+                FontSize   = AppTheme.FontSM, FontFamily = Font,
+                FontWeight = FontWeight.SemiBold,
+                Foreground = AppTheme.FgInfo,
                 VerticalAlignment = VerticalAlignment.Center,
             };
+            headerRow.Children.Add(catLabel); Grid.SetColumn(catLabel, 1);
+            headerRow.Children.Add(catChk);  Grid.SetColumn(catChk, 2);
 
-            // 뱃지 (약칭)
-            var alias = aliasMap.TryGetValue(analyte, out var a) ? a : "";
-            if (!string.IsNullOrEmpty(alias))
+            var headerBorder = new Border
             {
-                var badgeColor = BadgeColorHelper.GetBadgeColor(analyte);  // 한글 항목명으로 색상 생성
-                var badge = new Border
+                Background  = AppTheme.BgSecondary ?? AppTheme.BgPrimary,
+                Padding     = new Thickness(8, 5),
+                Margin      = new Thickness(0, 0, 0, 1),
+                CornerRadius = new CornerRadius(4),
+                Cursor      = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
+                Child       = headerRow,
+            };
+
+            // ── 항목 목록 패널 ─────────────────────────────────────────────
+            var itemsBorder = new Border
+            {
+                Background  = AppTheme.BgPrimary,
+                Padding     = new Thickness(8, 4, 4, 4),
+                Margin      = new Thickness(0, 0, 0, 4),
+                CornerRadius = new CornerRadius(0, 0, 4, 4),
+                IsVisible   = true,
+            };
+            var itemsStack = new StackPanel { Spacing = 0 };
+            itemsBorder.Child = itemsStack;
+
+            var catCheckBoxes = new List<CheckBox>();
+
+            foreach (var item in groupItems)
+            {
+                var analyte = item.Analyte;
+                if (!priceDict.TryGetValue(analyte, out var priceStr) || string.IsNullOrWhiteSpace(priceStr)) continue;
+
+                decimal priceValue = 0m;
+                decimal.TryParse(priceStr, out priceValue);
+
+                string contractQtyStr = (contractQtys.TryGetValue(analyte, out var cqStr) ? cqStr : "1") ?? "1";
+                int contractQty = int.TryParse(contractQtyStr, out int cqInt) && cqInt > 0 ? cqInt : 1;
+
+                decimal initSubtotal = priceValue * contractQty;
+                subtotals[analyte] = initSubtotal;
+                grandTotal += initSubtotal;
+
+                var rowGrid = new Grid
                 {
-                    Background = new SolidColorBrush(Color.Parse(badgeColor.Bg)),
-                    CornerRadius = new CornerRadius(3),
-                    Padding = new Thickness(6, 2),
+                    ColumnDefinitions = new ColumnDefinitions("Auto,*,90,70,90"),
+                    ColumnSpacing     = 8,
+                };
+
+                // 체크박스
+                var chk = new CheckBox { IsChecked = true, VerticalAlignment = VerticalAlignment.Center };
+                Grid.SetColumn(chk, 0);
+                rowGrid.Children.Add(chk);
+                checkBoxes.Add(chk);
+                catCheckBoxes.Add(chk);
+
+                // 항목명 + 약칭 뱃지
+                var analyteAlias = string.IsNullOrEmpty(item.약칭) ? (aliasMap.TryGetValue(analyte, out var al) ? al : "") : item.약칭;
+                var (abgColor, afgColor) = BadgeColorHelper.GetBadgeColor(analyteAlias);
+                var analyteBadge = new Border
+                {
+                    Background        = Brush.Parse(abgColor),
+                    BorderBrush       = Brush.Parse(afgColor),
+                    BorderThickness   = new Thickness(1),
+                    CornerRadius      = new CornerRadius(10),
+                    Padding           = new Thickness(6, 1, 8, 1),
+                    Margin            = new Thickness(0, 0, 4, 0),
                     VerticalAlignment = VerticalAlignment.Center,
                     Child = new TextBlock
                     {
-                        Text = alias,
-                        FontSize = AppTheme.FontXS,
-                        FontFamily = Font,
-                        FontWeight = FontWeight.Bold,
-                        Foreground = new SolidColorBrush(Color.Parse(badgeColor.Fg)),
+                        Text       = string.IsNullOrEmpty(analyteAlias) ? "✓" : analyteAlias,
+                        FontSize   = AppTheme.FontSM, FontFamily = Font,
+                        FontWeight = FontWeight.Medium,
+                        Foreground = Brush.Parse(afgColor),
+                        VerticalAlignment = VerticalAlignment.Center,
                     }
                 };
-                topLine.Children.Add(badge);
+                var namePanel = new StackPanel
+                {
+                    Orientation       = Orientation.Horizontal,
+                    Spacing           = 0,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Children = { analyteBadge, new TextBlock
+                    {
+                        Text              = analyte,
+                        FontSize          = AppTheme.FontSM, FontFamily = Font,
+                        Foreground        = AppTheme.FgPrimary,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        TextTrimming      = TextTrimming.CharacterEllipsis,
+                    }}
+                };
+                Grid.SetColumn(namePanel, 1);
+                rowGrid.Children.Add(namePanel);
+
+                // 단가 (편집 가능)
+                var priceBox = new TextBox
+                {
+                    Text              = priceValue > 0 ? ((long)priceValue).ToString() : "",
+                    FontSize          = AppTheme.FontSM, FontFamily = Font,
+                    Foreground        = AppTheme.FgSuccess,
+                    FontWeight        = FontWeight.SemiBold,
+                    TextAlignment     = Avalonia.Media.TextAlignment.Right,
+                    Height            = 28,
+                    Padding           = new Thickness(4, 2),
+                    VerticalAlignment = VerticalAlignment.Center,
+                };
+                Grid.SetColumn(priceBox, 2);
+                rowGrid.Children.Add(priceBox);
+
+                // 수량 (편집 가능)
+                var qtyBox = new TextBox
+                {
+                    Text              = contractQty.ToString(),
+                    FontSize          = AppTheme.FontSM, FontFamily = Font,
+                    TextAlignment     = Avalonia.Media.TextAlignment.Right,
+                    Height            = 28,
+                    Padding           = new Thickness(4, 2),
+                    VerticalAlignment = VerticalAlignment.Center,
+                };
+                _show4QtyTextBoxes[analyte] = qtyBox;
+                Grid.SetColumn(qtyBox, 3);
+                rowGrid.Children.Add(qtyBox);
+
+                // 소계
+                var subtotalTb = new TextBlock
+                {
+                    Text              = initSubtotal > 0 ? initSubtotal.ToString("N0") : "—",
+                    FontSize          = AppTheme.FontSM, FontFamily = Font,
+                    Foreground        = AppTheme.FgSuccess,
+                    FontWeight        = FontWeight.SemiBold,
+                    TextAlignment     = Avalonia.Media.TextAlignment.Right,
+                    VerticalAlignment = VerticalAlignment.Center,
+                };
+                Grid.SetColumn(subtotalTb, 4);
+                rowGrid.Children.Add(subtotalTb);
+
+                priceBox.TextChanged += (_, _) =>
+                {
+                    if (decimal.TryParse(priceBox.Text, out decimal np))
+                    {
+                        priceValue = np;
+                        _pendingPrices[analyte] = np.ToString();
+                    }
+                    if (int.TryParse(qtyBox.Text, out int nq) && nq > 0)
+                    {
+                        subtotals[analyte] = priceValue * nq;
+                        subtotalTb.Text = subtotals[analyte].ToString("N0");
+                    }
+                    UpdateTotalSummary(totalSummary, prices, subtotals, show2Panel);
+                };
+                qtyBox.TextChanged += (_, _) =>
+                {
+                    _pendingQuantities[analyte] = qtyBox.Text ?? "";
+                    if (int.TryParse(qtyBox.Text, out int nq) && nq > 0)
+                    {
+                        subtotals[analyte] = priceValue * nq;
+                        subtotalTb.Text = subtotals[analyte].ToString("N0");
+                    }
+                    else { subtotals.Remove(analyte); subtotalTb.Text = "—"; }
+                    UpdateTotalSummary(totalSummary, prices, subtotals, show2Panel);
+                };
+
+                itemsStack.Children.Add(new Border
+                {
+                    Padding         = new Thickness(0, 4),
+                    BorderBrush     = AppTheme.BorderSubtle,
+                    BorderThickness = new Thickness(0, 0, 0, 1),
+                    Child           = rowGrid,
+                });
             }
 
-            // 항목명
-            topLine.Children.Add(new TextBlock
+            // 카테고리 전체선택 연동
+            var capturedCatChk = catChk;
+            var capturedCatCbs = catCheckBoxes;
+            catChk.IsCheckedChanged += (_, _) =>
             {
-                Text = analyte,
-                FontSize = AppTheme.FontBase,
-                FontFamily = Font,
-                FontWeight = FontWeight.SemiBold,
-                Foreground = AppTheme.FgPrimary,
-                VerticalAlignment = VerticalAlignment.Center,
-            });
-
-            itemContent.Children.Add(topLine);
-
-            // 하단: 단가 + 계약수량
-            var bottomLine = new StackPanel
-            {
-                Orientation = Orientation.Horizontal,
-                Spacing = 16,
-                VerticalAlignment = VerticalAlignment.Center,
+                var v = capturedCatChk.IsChecked ?? false;
+                foreach (var cb in capturedCatCbs) cb.IsChecked = v;
             };
 
-            // 단가
-            bottomLine.Children.Add(new StackPanel
+            // 헤더 클릭 → 접힘/펼침
+            var capturedItems = itemsBorder;
+            headerBorder.PointerPressed += (_, _) =>
             {
-                Orientation = Orientation.Horizontal,
-                Spacing = 4,
-                VerticalAlignment = VerticalAlignment.Center,
-                Children =
-                {
-                    new TextBlock
-                    {
-                        Text = "단가:",
-                        FontSize = AppTheme.FontXS,
-                        FontFamily = Font,
-                        Foreground = AppTheme.FgMuted,
-                    },
-                    new TextBlock
-                    {
-                        Text = FormatPrice(price),
-                        FontSize = AppTheme.FontBase,
-                        FontFamily = Font,
-                        Foreground = AppTheme.FgSuccess,
-                        FontWeight = FontWeight.SemiBold,
-                    }
-                }
-            });
-
-            // 계약수량
-            string contractQtyStr = (contractQtys.TryGetValue(analyte, out var cq) ? cq : "0") ?? "0";
-            int contractQty = int.TryParse(contractQtyStr, out int c) ? c : 0;
-
-            var qtyLabel = new TextBlock
-            {
-                Text = "수량:",
-                FontSize = AppTheme.FontXS,
-                FontFamily = Font,
-                Foreground = AppTheme.FgMuted,
+                capturedItems.IsVisible = !capturedItems.IsVisible;
+                chevron.Text = capturedItems.IsVisible ? "▾" : "▸";
             };
 
-            var qtyTextBox = new TextBox
-            {
-                Text = contractQty > 0 ? contractQty.ToString() : "",
-                FontSize = AppTheme.FontBase,
-                FontFamily = Font,
-                IsVisible = false,  // 처음엔 숨김
-                Width = 60,
-                Padding = new Thickness(4, 2),
-            };
-            _show4QtyTextBoxes[analyte] = qtyTextBox;
-
-            var qtyDisplay = new TextBlock
-            {
-                Text = contractQty > 0 ? contractQty.ToString() : "-",
-                FontSize = AppTheme.FontBase,
-                FontFamily = Font,
-                Foreground = contractQty > 0 ? AppTheme.FgInfo : AppTheme.FgMuted,
-                FontWeight = FontWeight.SemiBold,
-            };
-
-            var qtyPanel = new StackPanel
-            {
-                Orientation = Orientation.Horizontal,
-                Spacing = 4,
-                VerticalAlignment = VerticalAlignment.Center,
-                Children = { qtyLabel, qtyDisplay, qtyTextBox }
-            };
-
-            // TextBox 키 입력 처리
-            qtyTextBox.KeyDown += (s, e) =>
-            {
-                if (e.Key == Key.Enter)
-                {
-                    _pendingQuantities[analyte] = qtyTextBox.Text ?? "";
-                    qtyDisplay.Text = string.IsNullOrEmpty(qtyTextBox.Text) ? "-" : qtyTextBox.Text;
-                    qtyTextBox.IsVisible = false;
-                    qtyDisplay.IsVisible = true;
-                }
-                else if (e.Key == Key.Escape)
-                {
-                    qtyTextBox.IsVisible = false;
-                    qtyDisplay.IsVisible = true;
-                }
-            };
-
-            bottomLine.Children.Add(qtyPanel);
-
-            itemContent.Children.Add(bottomLine);
-
-            itemContainer.Child = itemContent;
-            root.Children.Add(itemContainer);
+            itemsPanel.Children.Add(headerBorder);
+            itemsPanel.Children.Add(itemsBorder);
         }
 
-        return scrollViewer;
+        // 모두 선택/해제
+        chkSelectAll.IsCheckedChanged += (_, _) =>
+        {
+            var v = chkSelectAll.IsChecked ?? false;
+            foreach (var chk in checkBoxes) chk.IsChecked = v;
+        };
+
+        // 확정 버튼 — 체크된 항목 단가/수량을 _pending에 반영 후 즉시 DB 저장
+        btnSave.Click += (_, _) =>
+        {
+            Log("[확정/기존] 버튼 클릭됨");
+            foreach (var chk in checkBoxes)
+            {
+                if (chk.IsChecked != true || chk.Tag is not string analyte) continue;
+                if (_show4QtyTextBoxes.TryGetValue(analyte, out var qb))
+                    _pendingQuantities[analyte] = qb.Text ?? "";
+            }
+            // 체크된 항목 pending 없는 단가도 원래 값으로 채우기
+            for (int i = 0; i < prices.Count && i < checkBoxes.Count; i++)
+            {
+                if (checkBoxes[i].IsChecked != true) continue;
+                var (analyte, price) = prices[i];
+                if (!_pendingPrices.ContainsKey(analyte) && !string.IsNullOrWhiteSpace(price))
+                    _pendingPrices[analyte] = price;
+            }
+
+            Log($"[확정/기존] pendingPrices={_pendingPrices.Count}, pendingQtys={_pendingQuantities.Count}");
+
+            try
+            {
+                if (_pendingPrices.Count > 0)
+                {
+                    var priceList = _pendingPrices.Select(kv => (kv.Key, kv.Value)).ToList();
+                    bool ok = ContractService.UpdateContractPrices(companyName, priceList);
+                    Log(ok ? $"✅ 단가 저장: {companyName} ({priceList.Count}항목)" : "❌ 단가 저장 실패");
+                }
+                if (_pendingQuantities.Count > 0)
+                {
+                    var qtyList = _pendingQuantities.Select(kv => (kv.Key, kv.Value)).ToList();
+                    bool ok = ContractService.UpdateContractQuantities(companyName, qtyList);
+                    Log(ok ? $"✅ 수량 저장: {companyName} ({qtyList.Count}항목)" : "❌ 수량 저장 실패");
+                }
+                _pendingPrices.Clear();
+                _pendingQuantities.Clear();
+            }
+            catch (Exception ex) { Log($"❌ 저장 오류: {ex.Message}"); }
+        };
+
+        // 초기 합계
+        totalSummary.Text = $"💵 합계: {grandTotal.ToString("N0")} 원";
+        if (show2Panel != null)
+            UpdateContractAmountInShow2(show2Panel, grandTotal);
+
+        var scroll = new ScrollViewer
+        {
+            Content = itemsPanel,
+            HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
+            VerticalScrollBarVisibility   = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+            Margin = new Thickness(0, 0, 0, 8),
+        };
+        root.Children.Add(scroll);
+
+        return new ScrollViewer
+        {
+            Content = root,
+            HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
+            VerticalScrollBarVisibility   = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+        };
     }
 
     // =========================================================================
@@ -950,22 +1253,21 @@ public partial class ContractPage : UserControl
 
         AddGridRow(grid, 0, "업체명",           "", hint: "업체명 입력 (필수)");
         AddGridRow(grid, 1, "약칭",             "");
+        var txbStart  = AddGridRow(grid, 2, "계약시작",         "", hint: "예) 20240101");
+        var txbEnd    = AddGridRow(grid, 3, "계약종료",         "", hint: "예) 20241231");
+        var txbDays   = AddGridRow(grid, 4, "계약일수",         "", isReadOnly: true);
+        AddGridRow(grid, 5, "계약금액(VAT별도)", "");
+        AddGridRow(grid, 6, "주소",             "");
+        AddGridRow(grid, 7, "대표자",           "");
+        AddGridRow(grid, 8, "시설별",           "");
+        AddGridRow(grid, 9, "종류별",           "");
+        AddGridRow(grid,10, "주생산품",         "");
+        AddGridRow(grid,11, "담당자",           "");
+        AddGridRow(grid,12, "연락처",           "");
+        AddGridRow(grid,13, "이메일",           "");
 
-        // ★ 계약구분 → ComboBox (row 2)
-        AddGridRowComboBox(grid, 2, "계약구분", "");
-
-        AddGridRow(grid, 3, "계약시작",         "", hint: "예) 2024-01-01");
-        AddGridRow(grid, 4, "계약종료",         "", hint: "예) 2024-12-31");
-        AddGridRow(grid, 5, "계약일수",         "");
-        AddGridRow(grid, 6, "계약금액(VAT별도)", "");
-        AddGridRow(grid, 7, "주소",             "");
-        AddGridRow(grid, 8, "대표자",           "");
-        AddGridRow(grid, 9, "시설별",           "");
-        AddGridRow(grid,10, "종류별",           "");
-        AddGridRow(grid,11, "주생산품",         "");
-        AddGridRow(grid,12, "담당자",           "");
-        AddGridRow(grid,13, "연락처",           "");
-        AddGridRow(grid,14, "이메일",           "");
+        // [5][6] 날짜 자동 포맷 + 계약일수 자동 계산
+        AttachDateAutoFormat(txbStart, txbEnd, txbDays);
 
         root.Children.Add(grid);
         return root;
@@ -1011,28 +1313,40 @@ public partial class ContractPage : UserControl
 
         if (ok)
         {
-            // 템플릿 업체가 선택된 경우 단가 복사
-            if (!string.IsNullOrEmpty(_templateCompanyName))
+            // pending 단가/수량 저장 (Show4에서 선택한 항목)
+            if (_pendingPrices.Count > 0)
             {
                 try
                 {
-                    var templatePrices = ContractService.GetContractPrices(_templateCompanyName);
-                    var nonEmpty = templatePrices.Where(p => !string.IsNullOrWhiteSpace(p.Price)).ToList();
-                    if (nonEmpty.Count > 0)
-                    {
-                        ContractService.UpdateContractPrices(newContract.C_CompanyName, nonEmpty);
-                        Log($"✅ 템플릿 단가 복사: {_templateCompanyName} → {newContract.C_CompanyName} ({nonEmpty.Count}항목)");
-                    }
+                    var priceList = _pendingPrices.Select(kv => (kv.Key, kv.Value)).ToList();
+                    ContractService.UpdateContractPrices(newContract.C_CompanyName, priceList);
+                    Log($"✅ 단가 저장: {newContract.C_CompanyName} ({priceList.Count}항목)");
                 }
-                catch (Exception ex) { Log($"❌ 템플릿 단가 복사 실패: {ex.Message}"); }
+                catch (Exception ex) { Log($"❌ 단가 저장 실패: {ex.Message}"); }
+            }
+
+            if (_pendingQuantities.Count > 0)
+            {
+                try
+                {
+                    var qtyList = _pendingQuantities.Select(kv => (kv.Key, kv.Value)).ToList();
+                    ContractService.UpdateContractQuantities(newContract.C_CompanyName, qtyList);
+                    Log($"✅ 수량 저장: {newContract.C_CompanyName} ({qtyList.Count}항목)");
+                }
+                catch (Exception ex) { Log($"❌ 수량 저장 실패: {ex.Message}"); }
             }
 
             ContractTreeView.Items.Add(CreateTreeItem(newContract));
             _isAddMode           = false;
             _templateCompanyName = null;
+            _pendingPrices.Clear();
+            _pendingQuantities.Clear();
             _detailPanel         = null;
             DetailPanelChanged?.Invoke(null);
-            PricePanelChanged?.Invoke(null);
+            StatsPanelChanged?.Invoke(null);
+
+            // Show1 즉시 리프레시 (트리뷰 선택 해제 → 새 업체 자동 표시)
+            ContractTreeView.SelectedItem = ContractTreeView.Items.Cast<TreeViewItem>().LastOrDefault();
         }
     }
 
@@ -1051,14 +1365,6 @@ public partial class ContractPage : UserControl
             var labelBlock = child.Children[0] as TextBlock;
             var label = labelBlock?.Text ?? "";
             label = label.Replace("🔒 ", "").Replace("    ", "").Replace(" :", "").Trim();
-
-            // ★ ComboBox 처리 (계약구분)
-            if (child.Children[1] is ComboBox cb)
-            {
-                if (label == "계약구분")
-                    c.C_ContractType = cb.SelectedItem?.ToString() ?? "";
-                continue;
-            }
 
             // TextBox 처리
             var tb = child.Children[1] as TextBox;
@@ -1093,6 +1399,114 @@ public partial class ContractPage : UserControl
                     break;
             }
         }
+    }
+
+    /// <summary>Show4 전체 합계 업데이트 (Show2 계약금액도 함께 업데이트)</summary>
+    private void UpdateTotalSummary(TextBlock totalSummary,
+                                    List<(string Analyte, string Price)> prices,
+                                    Dictionary<string, decimal> subtotals,
+                                    StackPanel? show2Panel = null)
+    {
+        decimal grandTotal = 0m;
+        foreach (var (analyte, _) in prices)
+        {
+            if (subtotals.TryGetValue(analyte, out var subtotal))
+                grandTotal += subtotal;
+        }
+        totalSummary.Text = $"💵 합계: {grandTotal.ToString("N0")} 원";
+
+        // Show2 계약금액 TextBox 업데이트
+        if (show2Panel != null)
+        {
+            UpdateContractAmountInShow2(show2Panel, grandTotal);
+        }
+    }
+
+    /// <summary>Show2 패널에서 계약금액 TextBox를 찾아 업데이트</summary>
+    private void UpdateContractAmountInShow2(StackPanel show2Panel, decimal amount)
+    {
+        var grid = show2Panel.Children.OfType<Grid>().FirstOrDefault();
+        if (grid == null)
+        {
+            Log("[Show2금액] Grid 없음 — show2Panel에 Grid가 없습니다");
+            return;
+        }
+
+        var stackPanels = grid.Children.OfType<StackPanel>().ToList();
+        Log($"[Show2금액] StackPanel 개수={stackPanels.Count}, 적용금액={amount:N0}");
+
+        foreach (var child in stackPanels)
+        {
+            if (child.Children.Count < 2) continue;
+
+            var labelBlock = child.Children[0] as TextBlock;
+            var rawLabel = labelBlock?.Text ?? "";
+            var label = rawLabel.Replace("🔒 ", "").Replace("    ", "").Replace(" :", "").Trim();
+
+            Log($"[Show2금액] 라벨확인: '{label}' (원문='{rawLabel}')");
+
+            if (label == "계약금액(VAT별도)")
+            {
+                if (child.Children[1] is TextBox txb)
+                {
+                    txb.Text = amount > 0 ? amount.ToString("N0") : "";
+                    Log($"[Show2금액] ✅ 계약금액 TextBox 업데이트 완료: {txb.Text}");
+                    return;
+                }
+                else
+                {
+                    Log($"[Show2금액] ❌ 계약금액 라벨은 찾았으나 TextBox가 아님: {child.Children[1]?.GetType().Name}");
+                    return;
+                }
+            }
+        }
+
+        Log("[Show2금액] ❌ '계약금액(VAT별도)' 라벨을 가진 StackPanel을 찾지 못했습니다");
+    }
+
+    /// <summary>[5][6] 날짜 TextBox에 자동 포맷(20260504→2026-05-04) + 계약일수 자동 계산 연결</summary>
+    private static void AttachDateAutoFormat(TextBox txbStart, TextBox txbEnd, TextBox txbDays)
+    {
+        static string FormatDateInput(string raw)
+        {
+            var digits = new string(raw.Where(char.IsDigit).ToArray());
+            if (digits.Length == 8)
+                return $"{digits[..4]}-{digits[4..6]}-{digits[6..8]}";
+            return raw;
+        }
+
+        static void RecalcDays(TextBox s, TextBox e, TextBox d)
+        {
+            var sf = FormatDateInput(s.Text ?? "");
+            var ef = FormatDateInput(e.Text ?? "");
+            if (DateTime.TryParse(sf, out var sd) && DateTime.TryParse(ef, out var ed))
+                d.Text = (ed.Date - sd.Date).Days.ToString();
+            else
+                d.Text = "";
+        }
+
+        txbStart.LostFocus += (_, _) =>
+        {
+            txbStart.Text = FormatDateInput(txbStart.Text ?? "");
+            RecalcDays(txbStart, txbEnd, txbDays);
+        };
+
+        txbEnd.LostFocus += (_, _) =>
+        {
+            txbEnd.Text = FormatDateInput(txbEnd.Text ?? "");
+            RecalcDays(txbStart, txbEnd, txbDays);
+        };
+    }
+
+    /// <summary>[1] 기존 계약 선택 상태에서 단가 복사 → Add 모드로 진입</summary>
+    private void ShowAddModeTemplateSelectionWithCompany(string companyName)
+    {
+        // Add 모드가 아니면 진입
+        if (!_isAddMode)
+        {
+            ShowAddPanel();  // Show2에 신규 추가 패널
+        }
+        ShowAddModeAnalyteSelection(companyName);
     }
 
     // =========================================================================
@@ -1135,25 +1549,26 @@ public partial class ContractPage : UserControl
         return grid;
     }
 
-    private static void AddGridRow(Grid grid, int row, string label, string value,
+    private static TextBox AddGridRow(Grid grid, int row, string label, string value,
                                    bool isReadOnly = false, bool isLocked = false,
                                    string hint = "")
     {
-        var panel = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
+        var panel = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
 
         panel.Children.Add(new TextBlock
         {
-            Text              = (isLocked ? "🔒 " : "    ") + label + " :",
-            Width             = 130,
+            Text              = (isLocked ? "🔒 " : "") + label + " :",
+            Width             = 90,
             FontSize          = AppTheme.FontMD,
             FontFamily        = Font,
             Foreground        = isLocked
                                     ? AppTheme.FgMuted
                                     : AppRes("FgMuted"),
             VerticalAlignment = VerticalAlignment.Center,
+            TextAlignment     = Avalonia.Media.TextAlignment.Right,
         });
 
-        panel.Children.Add(new TextBox
+        var textBox = new TextBox
         {
             Text            = value ?? "",
             Width           = 200,
@@ -1173,13 +1588,15 @@ public partial class ContractPage : UserControl
                                   : AppTheme.BorderDefault,
             CornerRadius    = new CornerRadius(4),
             Padding         = new Thickness(8, 4),
-        });
+        };
+        panel.Children.Add(textBox);
 
         int col     = row % 2;
         int gridRow = row / 2;
         Grid.SetColumn(panel, col);
         Grid.SetRow(panel, gridRow);
         grid.Children.Add(panel);
+        return textBox;
     }
 
     // =========================================================================
@@ -1190,16 +1607,17 @@ public partial class ContractPage : UserControl
     // =========================================================================
     private void AddGridRowComboBox(Grid grid, int row, string label, string currentValue)
     {
-        var panel = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
+        var panel = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
 
         panel.Children.Add(new TextBlock
         {
             Text              = "    " + label + " :",
-            Width             = 130,
+            Width             = 140,
             FontSize          = AppTheme.FontMD,
             FontFamily        = Font,
             Foreground        = AppRes("FgMuted"),
             VerticalAlignment = VerticalAlignment.Center,
+            TextAlignment     = Avalonia.Media.TextAlignment.Right,
         });
 
         // 계약구분 목록 (계약 DB C_ContractType 고유값, 없으면 기본값)
@@ -1235,9 +1653,6 @@ public partial class ContractPage : UserControl
             comboBox.SelectedItem = "FS25";
         else if (columns.Count > 0)
             comboBox.SelectedIndex = 0;
-
-        // 필드 저장용 참조 보관
-        _contractTypeComboBox = comboBox;
 
         panel.Children.Add(comboBox);
 
@@ -1585,13 +2000,22 @@ public partial class ContractPage : UserControl
                 Foreground = AppRes("AppFg"),
             });
             if (!string.IsNullOrEmpty(abbr))
-                nameLine.Children.Add(new TextBlock
+            {
+                var (bg, fg) = BadgeColorHelper.GetBadgeColor(abbr);
+                nameLine.Children.Add(new Border
                 {
-                    Text       = $"({abbr})",
-                    FontSize   = AppTheme.FontSM, FontFamily = Font,
-                    Foreground = AppTheme.FgMuted,
+                    Background        = Brush.Parse(bg),
+                    CornerRadius      = new CornerRadius(3),
+                    Padding           = new Thickness(5, 1),
                     VerticalAlignment = VerticalAlignment.Center,
+                    Child = new TextBlock
+                    {
+                        Text       = abbr,
+                        FontSize   = AppTheme.FontXS, FontFamily = Font,
+                        Foreground = Brush.Parse(fg),
+                    }
                 });
+            }
             cardContent.Children.Add(nameLine);
 
             // 2줄: 단가 요약 (채워진 항목 / 전체)
@@ -1658,6 +2082,463 @@ public partial class ContractPage : UserControl
     // =========================================================================
     // Show3 — 단가 항목 편집 폼 (단일 항목)
     // =========================================================================
+
+    /// <summary>신규 추가 모드에서 Show3에 템플릿 선택 UI 표시 및 Show4 아이템 선택</summary>
+    private void ShowAddModeTemplateSelection()
+    {
+        var root = new StackPanel { Spacing = 12, Margin = new Thickness(12) };
+
+        root.Children.Add(new TextBlock
+        {
+            Text       = "💾  기존 계약 단가 복사",
+            FontSize   = AppTheme.FontLG, FontFamily = Font, FontWeight = FontWeight.SemiBold,
+            Foreground = AppTheme.FgMuted,
+        });
+        root.Children.Add(new Border { Height = 1, Background = AppTheme.BorderMuted });
+
+        root.Children.Add(new TextBlock
+        {
+            Text       = "기존 업체 선택 후 [적용] → Show4에서 항목 선택",
+            FontSize   = AppTheme.FontSM, FontFamily = Font,
+            Foreground = AppTheme.FgDimmed,
+            Margin     = new Thickness(0, 0, 0, 8),
+        });
+
+        // 드롭다운 + 적용 버튼 수평 배치
+        var controlPanel = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            Spacing     = 8,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+
+        // 기존 계약 업체 목록 (ComboBox)
+        var cmbTemplate = new ComboBox
+        {
+            Width           = 250,
+            FontSize        = AppTheme.FontMD,
+            FontFamily      = Font,
+            BorderThickness = new Thickness(1),
+            Background      = AppTheme.BgInput,
+            CornerRadius    = new CornerRadius(3),
+            Padding         = new Thickness(6, 4),
+        };
+
+        try
+        {
+            var allContracts = ContractService.GetAllContracts();
+            foreach (var c in allContracts.OrderBy(x => x.C_CompanyName))
+                cmbTemplate.Items.Add(c.C_CompanyName);
+        }
+        catch { }
+
+        controlPanel.Children.Add(cmbTemplate);
+
+        // 적용 버튼
+        var btnApply = new Button
+        {
+            Content         = "✅  적용",
+            Height          = 34,
+            FontSize        = AppTheme.FontMD,
+            FontFamily      = Font,
+            Background      = AppTheme.BgActiveGreen,
+            Foreground      = AppTheme.FgSuccess,
+            BorderThickness = new Thickness(0),
+            CornerRadius    = new CornerRadius(4),
+            Padding         = new Thickness(16, 0),
+        };
+        btnApply.Click += (_, _) =>
+        {
+            var selectedCompany = cmbTemplate.SelectedItem?.ToString();
+            if (!string.IsNullOrEmpty(selectedCompany))
+            {
+                _templateCompanyName = selectedCompany;
+                ShowAddModeAnalyteSelection(selectedCompany);
+                Log($"✅ 템플릿 선택: {selectedCompany}");
+            }
+        };
+        controlPanel.Children.Add(btnApply);
+
+        root.Children.Add(controlPanel);
+
+        EditPanelChanged?.Invoke(root);
+    }
+
+    /// <summary>신규 추가 모드에서 Show4에 선택된 템플릿의 분석항목 + 수량 입력 표시 (카테고리 그룹)</summary>
+    private void ShowAddModeAnalyteSelection(string templateCompanyName)
+    {
+        try
+        {
+            var templatePrices = ContractService.GetContractPrices(templateCompanyName);
+            var priceDict      = templatePrices
+                .Where(p => !string.IsNullOrWhiteSpace(p.Price))
+                .ToDictionary(p => p.Analyte, p => p.Price, StringComparer.OrdinalIgnoreCase);
+
+            var aliasMap = ContractService.GetAnalyteAliasMap();
+            var allItems = AnalysisService.GetAllItems();
+
+            var root = new StackPanel { Spacing = 0, Margin = new Thickness(12) };
+
+            // 헤더
+            root.Children.Add(new TextBlock
+            {
+                Text       = $"📋  {templateCompanyName}",
+                FontSize   = AppTheme.FontLG, FontFamily = Font, FontWeight = FontWeight.SemiBold,
+                Foreground = AppTheme.FgMuted,
+                Margin     = new Thickness(0, 0, 0, 2),
+            });
+            root.Children.Add(new TextBlock
+            {
+                Text       = $"({priceDict.Count}개 항목)",
+                FontSize   = AppTheme.FontSM, FontFamily = Font,
+                Foreground = AppTheme.FgDimmed,
+                Margin     = new Thickness(0, 0, 0, 8),
+            });
+
+            // 모두 선택 + 확정 버튼
+            var topControlPanel = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Spacing     = 16,
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin     = new Thickness(0, 0, 0, 8),
+            };
+            var chkSelectAll = new CheckBox { Content = "모두 선택", FontSize = AppTheme.FontMD, FontFamily = Font, IsChecked = true };
+            topControlPanel.Children.Add(chkSelectAll);
+            var btnConfirm = new Button
+            {
+                Content         = "✅  확정",
+                Height          = 34,
+                FontSize        = AppTheme.FontMD, FontFamily = Font,
+                Background      = AppTheme.BgActiveGreen,
+                Foreground      = AppTheme.FgSuccess,
+                BorderThickness = new Thickness(0),
+                CornerRadius    = new CornerRadius(4),
+                Padding         = new Thickness(16, 0),
+            };
+            topControlPanel.Children.Add(btnConfirm);
+            root.Children.Add(topControlPanel);
+
+            // 컬럼 헤더
+            var headerGrid = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*,90,70,90"), ColumnSpacing = 8 };
+            foreach (var (txt, col, align) in new[] {
+                ("",      0, Avalonia.Media.TextAlignment.Left),
+                ("항목명", 1, Avalonia.Media.TextAlignment.Left),
+                ("단가",  2, Avalonia.Media.TextAlignment.Right),
+                ("수량",  3, Avalonia.Media.TextAlignment.Right),
+                ("소계",  4, Avalonia.Media.TextAlignment.Right) })
+            {
+                var h = new TextBlock { Text = txt, FontSize = AppTheme.FontSM, FontFamily = Font, Foreground = AppTheme.FgDimmed, TextAlignment = align };
+                Grid.SetColumn(h, col); headerGrid.Children.Add(h);
+            }
+            root.Children.Add(new Border { Background = AppTheme.BgSecondary ?? AppTheme.BgPrimary, Padding = new Thickness(8, 4), Child = headerGrid, Margin = new Thickness(0, 0, 0, 4) });
+
+            // 합계 블록
+            var addModeTotalBlock = new TextBlock
+            {
+                FontSize = AppTheme.FontMD, FontFamily = Font, FontWeight = FontWeight.SemiBold,
+                Foreground = AppTheme.FgSuccess, Margin = new Thickness(0, 0, 0, 6),
+            };
+            root.Children.Add(addModeTotalBlock);
+
+            // 카테고리 그룹핑
+            var catOrder = allItems
+                .Select(a => string.IsNullOrEmpty(a.Category) ? "기타" : a.Category)
+                .Distinct().ToList();
+            if (catOrder.Remove("일반항목")) catOrder.Insert(0, "일반항목");
+
+            var knownAnalytes = allItems.Select(a => a.Analyte).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var unknownItems  = priceDict.Keys
+                .Where(k => !knownAnalytes.Contains(k))
+                .Select(k => new AnalysisItem { Analyte = k, Category = "기타", 약칭 = "", ES = "zzz" })
+                .ToList();
+
+            var itemMeta = allItems
+                .Where(a => priceDict.ContainsKey(a.Analyte))
+                .GroupBy(a => string.IsNullOrEmpty(a.Category) ? "기타" : a.Category)
+                .ToDictionary(g => g.Key);
+            if (unknownItems.Count > 0 && !itemMeta.ContainsKey("기타"))
+                catOrder.Add("기타");
+
+            // analyte → (CheckBox, TextBox) 맵 (확정 시 사용)
+            var chkMap = new Dictionary<string, CheckBox>(StringComparer.OrdinalIgnoreCase);
+            var qtyMap = new Dictionary<string, TextBox>(StringComparer.OrdinalIgnoreCase);
+            var allCheckBoxes = new List<CheckBox>();
+
+            void RecalcTotal()
+            {
+                decimal total = 0m;
+                foreach (var (an, cb) in chkMap)
+                {
+                    if (cb.IsChecked != true) continue;
+                    if (!priceDict.TryGetValue(an, out var pr)) continue;
+                    decimal.TryParse(pr, out decimal pv);
+                    int qv = qtyMap.TryGetValue(an, out var qb) && int.TryParse(qb.Text, out int qi) && qi > 0 ? qi : 1;
+                    total += pv * qv;
+                }
+                addModeTotalBlock.Text = $"💵 합계: {total:N0} 원";
+            }
+
+            var itemsPanel = new StackPanel { Spacing = 4 };
+
+            foreach (var catKey in catOrder)
+            {
+                var groupItems = (itemMeta.TryGetValue(catKey, out var grp) ? grp.OrderBy(a => a.ES).ToList() : new List<AnalysisItem>());
+                if (catKey == "기타") groupItems.AddRange(unknownItems);
+                groupItems = groupItems.Where(a => priceDict.ContainsKey(a.Analyte)).ToList();
+                if (groupItems.Count == 0) continue;
+
+                // 카테고리 헤더
+                var catChk = new CheckBox
+                {
+                    Content = $"전체 ({groupItems.Count})", IsChecked = true,
+                    FontSize = AppTheme.FontXS, FontFamily = Font,
+                    Foreground = Brush.Parse("#88bb88"),
+                    Padding = new Thickness(2, 0), Margin = new Thickness(0), MinHeight = 18,
+                };
+                var chevron = new TextBlock { Text = "▾", FontSize = 10, Foreground = AppTheme.FgMuted, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 4, 0) };
+                var hdrRow = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto") };
+                hdrRow.Children.Add(chevron); Grid.SetColumn(chevron, 0);
+                var catLbl = new TextBlock { Text = catKey, FontSize = AppTheme.FontSM, FontFamily = Font, FontWeight = FontWeight.SemiBold, Foreground = AppTheme.FgInfo, VerticalAlignment = VerticalAlignment.Center };
+                hdrRow.Children.Add(catLbl); Grid.SetColumn(catLbl, 1);
+                hdrRow.Children.Add(catChk); Grid.SetColumn(catChk, 2);
+                var hdrBorder = new Border
+                {
+                    Background = AppTheme.BgSecondary ?? AppTheme.BgPrimary,
+                    Padding = new Thickness(8, 5), Margin = new Thickness(0, 0, 0, 1),
+                    CornerRadius = new CornerRadius(4),
+                    Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
+                    Child = hdrRow,
+                };
+
+                var catItemsBorder = new Border
+                {
+                    Background = AppTheme.BgPrimary,
+                    Padding = new Thickness(8, 4, 4, 4), Margin = new Thickness(0, 0, 0, 4),
+                    CornerRadius = new CornerRadius(0, 0, 4, 4), IsVisible = true,
+                };
+                var catItemsStack = new StackPanel { Spacing = 0 };
+                catItemsBorder.Child = catItemsStack;
+
+                var catCbs = new List<CheckBox>();
+
+                foreach (var item in groupItems)
+                {
+                    var analyte = item.Analyte;
+                    if (!priceDict.TryGetValue(analyte, out var price)) continue;
+                    decimal.TryParse(price, out decimal priceValue);
+
+                    var chk    = new CheckBox { IsChecked = true, VerticalAlignment = VerticalAlignment.Center };
+                    var qtyBox = new TextBox
+                    {
+                        Text = "1", FontSize = AppTheme.FontSM, FontFamily = Font,
+                        TextAlignment = Avalonia.Media.TextAlignment.Right,
+                        Height = 28, Padding = new Thickness(4, 2),
+                        VerticalAlignment = VerticalAlignment.Center,
+                    };
+                    var subtotalTb = new TextBlock
+                    {
+                        Text = priceValue > 0 ? priceValue.ToString("N0") : "—",
+                        FontSize = AppTheme.FontSM, FontFamily = Font,
+                        Foreground = AppTheme.FgSuccess, FontWeight = FontWeight.SemiBold,
+                        TextAlignment = Avalonia.Media.TextAlignment.Right,
+                        VerticalAlignment = VerticalAlignment.Center,
+                    };
+
+                    qtyBox.TextChanged += (_, _) =>
+                    {
+                        subtotalTb.Text = int.TryParse(qtyBox.Text, out int q) && q > 0
+                            ? (priceValue * q).ToString("N0") : "—";
+                        RecalcTotal();
+                    };
+                    chk.IsCheckedChanged += (_, _) => RecalcTotal();
+
+                    // 뱃지 + 항목명
+                    var analyteAlias = string.IsNullOrEmpty(item.약칭) ? (aliasMap.TryGetValue(analyte, out var al) ? al : "") : item.약칭;
+                    var (abg, afg) = BadgeColorHelper.GetBadgeColor(analyteAlias);
+                    var badge = new Border
+                    {
+                        Background = Brush.Parse(abg), BorderBrush = Brush.Parse(afg),
+                        BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(10),
+                        Padding = new Thickness(6, 1, 8, 1), Margin = new Thickness(0, 0, 4, 0),
+                        VerticalAlignment = VerticalAlignment.Center,
+                        Child = new TextBlock
+                        {
+                            Text = string.IsNullOrEmpty(analyteAlias) ? "✓" : analyteAlias,
+                            FontSize = AppTheme.FontSM, FontFamily = Font, FontWeight = FontWeight.Medium,
+                            Foreground = Brush.Parse(afg), VerticalAlignment = VerticalAlignment.Center,
+                        }
+                    };
+                    var namePanel = new StackPanel
+                    {
+                        Orientation = Orientation.Horizontal, Spacing = 0,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        Children = { badge, new TextBlock { Text = analyte, FontSize = AppTheme.FontSM, FontFamily = Font, Foreground = AppTheme.FgPrimary, VerticalAlignment = VerticalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis } }
+                    };
+
+                    var itemGrid = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*,90,70,90"), ColumnSpacing = 8 };
+                    Grid.SetColumn(chk,         0); itemGrid.Children.Add(chk);
+                    Grid.SetColumn(namePanel,   1); itemGrid.Children.Add(namePanel);
+                    var priceBlock = new TextBlock { Text = FormatPrice(price), FontSize = AppTheme.FontSM, FontFamily = Font, Foreground = AppTheme.FgSuccess, TextAlignment = Avalonia.Media.TextAlignment.Right, VerticalAlignment = VerticalAlignment.Center };
+                    Grid.SetColumn(priceBlock,  2); itemGrid.Children.Add(priceBlock);
+                    Grid.SetColumn(qtyBox,      3); itemGrid.Children.Add(qtyBox);
+                    Grid.SetColumn(subtotalTb,  4); itemGrid.Children.Add(subtotalTb);
+
+                    catItemsStack.Children.Add(new Border
+                    {
+                        Padding = new Thickness(0, 4), BorderBrush = AppTheme.BorderSubtle,
+                        BorderThickness = new Thickness(0, 0, 0, 1), Child = itemGrid,
+                    });
+
+                    chkMap[analyte] = chk;
+                    qtyMap[analyte] = qtyBox;
+                    allCheckBoxes.Add(chk);
+                    catCbs.Add(chk);
+                }
+
+                // 카테고리 전체선택
+                var capturedCatChk = catChk;
+                var capturedCatCbs = catCbs;
+                catChk.IsCheckedChanged += (_, _) =>
+                {
+                    foreach (var cb in capturedCatCbs) cb.IsChecked = capturedCatChk.IsChecked ?? false;
+                };
+
+                // 접힘/펼침
+                var capturedCatItems = catItemsBorder;
+                hdrBorder.PointerPressed += (_, _) =>
+                {
+                    capturedCatItems.IsVisible = !capturedCatItems.IsVisible;
+                    chevron.Text = capturedCatItems.IsVisible ? "▾" : "▸";
+                };
+
+                itemsPanel.Children.Add(hdrBorder);
+                itemsPanel.Children.Add(catItemsBorder);
+            }
+
+            // 초기 합계
+            decimal initTotal = 0m;
+            foreach (var (an, pr) in priceDict) { decimal.TryParse(pr, out decimal p); initTotal += p; }
+            addModeTotalBlock.Text = $"💵 합계: {initTotal:N0} 원";
+
+            // 모두 선택/해제
+            chkSelectAll.IsCheckedChanged += (_, _) =>
+            {
+                var v = chkSelectAll.IsChecked ?? false;
+                foreach (var cb in allCheckBoxes) cb.IsChecked = v;
+            };
+
+            var scroll = new ScrollViewer
+            {
+                Content = itemsPanel,
+                HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
+                VerticalScrollBarVisibility   = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+                Margin = new Thickness(0, 0, 0, 8),
+            };
+            root.Children.Add(scroll);
+
+            // 확정 버튼
+            btnConfirm.Click += (_, _) =>
+            {
+                Log("[확정] 버튼 클릭됨");
+                var selectedItems = new List<(string Analyte, string Price, string Qty)>();
+                foreach (var (analyte, cb) in chkMap)
+                {
+                    if (cb.IsChecked != true) continue;
+                    if (!priceDict.TryGetValue(analyte, out var price)) continue;
+                    var qty = qtyMap.TryGetValue(analyte, out var qb) ? qb.Text?.Trim() ?? "1" : "1";
+                    selectedItems.Add((analyte, price, qty));
+                }
+
+                if (selectedItems.Count > 0)
+                {
+                    decimal confirmTotal = 0m;
+                    Log($"[확정] 선택항목 {selectedItems.Count}개 처리 시작");
+                    foreach (var (analyte, price, qty) in selectedItems)
+                    {
+                        _pendingPrices[analyte] = price;
+                        if (!string.IsNullOrWhiteSpace(qty)) _pendingQuantities[analyte] = qty;
+                        decimal.TryParse(price, out decimal p); int.TryParse(qty, out int q);
+                        confirmTotal += p * q;
+                        Log($"[확정]  항목={analyte}, price='{price}'({p}), qty='{qty}'({q}), 소계={p*q:N0}");
+                    }
+                    Log($"[확정] 합계={confirmTotal:N0}, pendingPrices={_pendingPrices.Count}, pendingQtys={_pendingQuantities.Count}");
+                    if (_detailPanel != null && confirmTotal > 0)
+                        UpdateContractAmountInShow2(_detailPanel, confirmTotal);
+                    SaveAdd();
+                }
+                else
+                {
+                    Log("❌ 확정 실패: 선택된 항목 없음");
+                }
+            };
+
+            var outerScroll = new ScrollViewer
+            {
+                Content = root,
+                HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
+                VerticalScrollBarVisibility   = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+            };
+            StatsPanelChanged?.Invoke(outerScroll);
+        }
+        catch (Exception ex)
+        {
+            Log($"❌ 항목 선택 오류: {ex.Message}");
+        }
+    }
+
+    /// <summary>Show4 행 선택 업데이트 및 수량 인라인 편집 활성화</summary>
+    private void UpdateAddModeRowSelection(List<Border> itemRows, List<TextBox> qtyTextBoxes, int selectedIndex)
+    {
+        for (int i = 0; i < itemRows.Count; i++)
+        {
+            var row = itemRows[i];
+            var grid = row.Child as Grid;
+            if (grid == null) continue;
+
+            if (i == selectedIndex)
+            {
+                // 선택 상태: 밝은 배경 강조
+                row.Background = new SolidColorBrush(Color.Parse("#334455"));
+                row.BorderThickness = new Thickness(2);
+                row.BorderBrush = new SolidColorBrush(Color.Parse("#88ccff"));
+
+                if (i < qtyTextBoxes.Count)
+                {
+                    qtyTextBoxes[i].Focus();
+                    qtyTextBoxes[i].SelectAll();
+                }
+            }
+            else
+            {
+                // 비선택 상태: 원래 배경
+                row.Background = i % 2 == 0
+                    ? AppTheme.BgPrimary
+                    : (AppTheme.BgSecondary ?? AppTheme.BgPrimary);
+                row.BorderThickness = new Thickness(0);
+            }
+        }
+    }
+
+    /// <summary>detailPanel에서 업체명 TextBox 찾기</summary>
+    private TextBox? FindCompanyNameTextBox(StackPanel? panel)
+    {
+        if (panel == null) return null;
+        var grid = panel.Children.OfType<Grid>().FirstOrDefault();
+        if (grid == null) return null;
+        foreach (var child in grid.Children)
+        {
+            if (child is StackPanel sp && sp.Children.Count > 1)
+            {
+                if (sp.Children[0] is TextBlock tb && tb.Text?.Contains("업체명") == true)
+                {
+                    if (sp.Children[1] is TextBox txb)
+                        return txb;
+                }
+            }
+        }
+        return null;
+    }
 
     /// <summary>Show2 단가 테이블에서 항목 클릭 시 Show3에 편집 폼 표시</summary>
     private void ShowPriceEditor(string companyName, string analyte)

@@ -48,7 +48,7 @@ public class AnalysisRequestDetailPanel : UserControl
             "_id","rowid",
             "약칭","시료명","접수번호","의뢰일","업체명","대표자",
             "담당자","연락처","이메일","견적번호","비고",
-            // 분석의뢰및결과 고정 컬럼 추가
+            // 수질분석센터_결과 고정 컬럼 추가
             "채취일자","채취시간","의뢰사업장","입회자",
             "시료채취자-1","시료채취자-2","방류허용기준 적용유무",
             "정도보증유무","분석완료일자","견적구분",
@@ -83,8 +83,11 @@ public class AnalysisRequestDetailPanel : UserControl
     {
         try
         {
-            // 분장표준처리 에서 약칭 행 직접 조회: 컬럼헤드 → 약칭
-            _shortNames = AnalysisRequestService.GetShortNames();
+            // 분석정보 테이블에서 Analyte → 약칭 매핑
+            var items = AnalysisService.GetAllItems();
+            _shortNames = items
+                .Where(a => !string.IsNullOrEmpty(a.약칭))
+                .ToDictionary(a => a.Analyte, a => a.약칭, StringComparer.OrdinalIgnoreCase);
         }
         catch { /* 실패해도 배지 기본값 사용 */ }
     }
@@ -313,14 +316,12 @@ public class AnalysisRequestDetailPanel : UserControl
             bool analyzing = string.Equals(val.Trim(), "O",
                 StringComparison.OrdinalIgnoreCase);
 
-            // 배지 색상 — Category 기반(있으면), 없으면 항목명 기반
-            var meta     = CheckPanel?.GetItem(col);
-            var badgeKey = meta?.Category is { Length: > 0 } cat ? cat : col;
-            var (bg, fg) = BadgeColorHelper.GetBadgeColor(badgeKey);
-            // 배지 텍스트 — 분장표준처리 약칭 우선, 없으면 항목명 앞 2자
+            // 배지 텍스트 — 분석정보 약칭 우선, 없으면 항목명 앞 2자
             var badgeText = _shortNames.TryGetValue(col, out var sn) && sn.Length > 0
                 ? sn
                 : (col.Length <= 3 ? col : col[..2]);
+            // 배지 색상 — 약칭 기반 (Show4와 동일)
+            var (bg, fg) = BadgeColorHelper.GetBadgeColor(badgeText);
 
             var grid = new Grid
             {
@@ -328,22 +329,25 @@ public class AnalysisRequestDetailPanel : UserControl
                 Background        = AppRes(odd ? "GridRowBg" : "GridRowAltBg"),
             };
 
-            // Col 0 — 카테고리 배지
+            // Col 0 — 배지 (QuotationCheckPanel과 동일)
             grid.Children.Add(new Border
             {
-                Background        = Brush.Parse(bg),
-                CornerRadius      = new Avalonia.CornerRadius(3),
-                Padding           = new Avalonia.Thickness(3, 1),
-                Margin            = new Avalonia.Thickness(4, 2),
+                Background        = new SolidColorBrush(Color.Parse(bg)),
+                BorderBrush       = new SolidColorBrush(Color.Parse(fg)),
+                BorderThickness   = new Avalonia.Thickness(1),
+                CornerRadius      = new Avalonia.CornerRadius(10),
+                Padding           = new Avalonia.Thickness(6, 1, 8, 1),
+                Margin            = new Avalonia.Thickness(0, 0, 4, 0),
                 VerticalAlignment = VerticalAlignment.Center,
                 [Grid.ColumnProperty] = 0,
                 Child = new TextBlock
                 {
-                    Text                = badgeText,
-                    FontSize            = AppTheme.FontXS, FontFamily = Font,
-                    Foreground          = Brush.Parse(fg),
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                    VerticalAlignment   = VerticalAlignment.Center,
+                    Text              = badgeText,
+                    FontSize          = AppTheme.FontSM,
+                    FontWeight        = FontWeight.Medium,
+                    FontFamily        = Font,
+                    Foreground        = new SolidColorBrush(Color.Parse(fg)),
+                    VerticalAlignment = VerticalAlignment.Center,
                 },
             });
 

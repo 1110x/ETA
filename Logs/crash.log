@@ -1,0 +1,31 @@
+System.InvalidOperationException: The Control already has a parent.
+   at Avalonia.StyledElement.Avalonia.Controls.ISetLogicalParent.SetParent(ILogical parent)
+   at Avalonia.Controls.Decorator.ChildChanged(AvaloniaPropertyChangedEventArgs e)
+   at Avalonia.Reactive.LightweightObservableBase`1.PublishNext(T value)
+   at Avalonia.AvaloniaObject.RaisePropertyChanged[T](AvaloniaProperty`1 property, Optional`1 oldValue, BindingValue`1 newValue, BindingPriority priority, Boolean isEffectiveValue)
+   at Avalonia.PropertyStore.EffectiveValue`1.NotifyValueChanged(ValueStore owner, StyledProperty`1 property, T oldValue)
+   at Avalonia.PropertyStore.EffectiveValue`1.SetAndRaiseCore(ValueStore owner, StyledProperty`1 property, T value, BindingPriority priority, Boolean isOverriddenCurrentValue, Boolean isCoercedDefaultValue)
+   at Avalonia.PropertyStore.ValueStore.SetLocalValue[T](StyledProperty`1 property, T value)
+   at Avalonia.PropertyStore.ValueStore.SetValue[T](StyledProperty`1 property, T value, BindingPriority priority)
+   at Avalonia.Controls.Decorator.set_Child(Control value)
+   at ETA.Views.Pages.PAGE2.WasteAnalysisInputPage.LoadFacilityRecordTable(String date, DateTime d, String catLabel, String tableName) in /Users/azrael/Documents/ETA/Views/Pages/PAGE2/WasteAnalysisInputPage.axaml.cs:line 6248
+   at ETA.Views.Pages.PAGE2.WasteAnalysisInputPage.LoadFacilityGrid(String date) in /Users/azrael/Documents/ETA/Views/Pages/PAGE2/WasteAnalysisInputPage.axaml.cs:line 6167
+   at ETA.Views.Pages.PAGE2.WasteAnalysisInputPage.<>c__DisplayClass128_2.<MakeDateNode>b__5(Object _, PointerPressedEventArgs e) in /Users/azrael/Documents/ETA/Views/Pages/PAGE2/WasteAnalysisInputPage.axaml.cs:line 2682
+   at Avalonia.Interactivity.EventRoute.RaiseEventImpl(RoutedEventArgs e)
+   at Avalonia.Interactivity.EventRoute.RaiseEvent(Interactive source, RoutedEventArgs e)
+   at Avalonia.Interactivity.Interactive.RaiseEvent(RoutedEventArgs e)
+   at Avalonia.Input.MouseDevice.MouseDown(IMouseDevice device, UInt64 timestamp, IInputElement root, Point p, PointerPointProperties properties, KeyModifiers inputModifiers, IInputElement hitTest)
+   at Avalonia.Input.MouseDevice.ProcessRawEvent(RawPointerEventArgs e)
+   at Avalonia.Controls.TopLevel.<>c.<HandleInput>b__150_0(Object state)
+   at Avalonia.Threading.Dispatcher.Send(SendOrPostCallback action, Object arg, Nullable`1 priority)
+   at Avalonia.Native.TopLevelImpl.RawMouseEvent(AvnRawMouseEventType type, AvnPointerDeviceType deviceType, UInt64 timeStamp, AvnInputModifiers modifiers, AvnPoint point, AvnVector delta, Single pressure, Single xTilt, Single yTilt)
+   at Avalonia.Native.Interop.Impl.__MicroComIAvnTopLevelEventsVTable.RawMouseEvent(Void* this, AvnRawMouseEventType type, AvnPointerDeviceType deviceType, UInt64 timeStamp, AvnInputModifiers modifiers, AvnPoint point, AvnVector delta, Single pressure, Single xTilt, Single yTilt)
+--- End of stack trace from previous location ---
+   at Avalonia.Native.DispatcherImpl.RunLoop(CancellationToken token)
+   at Avalonia.Threading.DispatcherFrame.Run(IControlledDispatcherImpl impl)
+   at Avalonia.Threading.Dispatcher.PushFrame(DispatcherFrame frame)
+   at Avalonia.Threading.Dispatcher.MainLoop(CancellationToken cancellationToken)
+   at Avalonia.Controls.ApplicationLifetimes.ClassicDesktopStyleApplicationLifetime.StartCore(String[] args)
+   at Avalonia.Controls.ApplicationLifetimes.ClassicDesktopStyleApplicationLifetime.Start(String[] args)
+   at Avalonia.ClassicDesktopStyleApplicationLifetimeExtensions.StartWithClassicDesktopLifetime(AppBuilder builder, String[] args, Action`1 lifetimeBuilder)
+   at ETA.Program.Main(String[] args) in /Users/azrael/Documents/ETA/Program.cs:line 70

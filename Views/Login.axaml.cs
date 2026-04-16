@@ -210,8 +210,22 @@ public partial class Login : Window
             SetProgress("사진 동기화 완료", 56);
             await Task.Delay(120);
 
-            // ── Step 5: 처리시설 / 폐수 테이블 마이그레이션 ──────────────────
-            SetProgress("테이블 초기화 중...", 56);
+            // ── Step 5: Phase 1 DB 마이그레이션 (테이블명 통일) ──────────────────
+            SetProgress("DB 마이그레이션 중... (Phase 1)", 60);
+            try
+            {
+                await Task.Run(() => DbPhase1Migration.ExecutePhase1());
+                SetProgress("DB 마이그레이션 완료 (Phase 1)", 65);
+            }
+            catch (Exception ex)
+            {
+                Log($"[Init] DbPhase1Migration 실패: {ex}");
+                SetProgress($"⚠ DB 마이그레이션 실패: {ex.Message}", 65);
+            }
+            await Task.Delay(100);
+
+            // ── Step 6: 처리시설 / 폐수 테이블 마이그레이션 ──────────────────
+            SetProgress("테이블 초기화 중...", 68);
             try
             {
                 await Task.Run(() => FacilityDbMigration.EnsureTables());
@@ -224,8 +238,22 @@ public partial class Login : Window
             }
             await Task.Delay(120);
 
-            // ── Step 6: 견적 테이블 초기화 ───────────────────────────────────
-            SetProgress("견적 데이터 준비 중...", 72);
+            // ── Step 6: Phase 2 xlsm 데이터 마이그레이션 ────────────────────
+            SetProgress("Phase 2 데이터 마이그레이션 중...", 75);
+            try
+            {
+                await Task.Run(() => XlsmDataMigration.ExecutePhase2());
+                SetProgress("Phase 2 마이그레이션 완료", 80);
+            }
+            catch (Exception ex)
+            {
+                Log($"[Init] Phase 2 마이그레이션 실패: {ex}");
+                SetProgress($"⚠ Phase 2 마이그레이션 실패: {ex.Message}", 80);
+            }
+            await Task.Delay(100);
+
+            // ── Step 7: 견적 테이블 초기화 ───────────────────────────────────
+            SetProgress("견적 데이터 준비 중...", 82);
             try
             {
                 await Task.Run(() => QuotationService.EnsureQuotationIssueTable());
@@ -238,7 +266,7 @@ public partial class Login : Window
             }
             await Task.Delay(120);
 
-            // ── Step 7: 처리시설 오늘 측정결과 자동 생성 ──────────────────────
+            // ── Step 8: 처리시설 오늘 측정결과 자동 생성 ──────────────────────
             SetProgress("처리시설 측정결과 준비 중...", 88);
             try
             {
@@ -352,9 +380,13 @@ public partial class Login : Window
         startupOverlay.IsVisible = false;
         loginForm.IsVisible = true;
 
-        if (txtEmail    != null) txtEmail.Text    = "201000308";
+        // 개발용: 자동 로그인
+        if (txtEmail != null) txtEmail.Text = "201000308";
         if (txtPassword != null) txtPassword.Text = "1212xx!!AA";
-        txtPassword?.Focus();
+
+        // 약간의 딜레이 후 자동 로그인
+        await Task.Delay(500);
+        DoLogin();
     }
 
     private void SetStartupProgress(string status, int value)

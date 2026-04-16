@@ -13,7 +13,7 @@ using ETA.Services.Common;
 namespace ETA.Services.SERVICE1;
 
 /// <summary>
-/// "분석의뢰및결과" 테이블 접근 서비스
+/// "수질분석센터_결과" 테이블 접근 서비스
 /// </summary>
 public static class AnalysisRequestService
 {
@@ -43,16 +43,16 @@ public static class AnalysisRequestService
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
-        if (!DbConnectionFactory.TableExists(conn, "분석의뢰및결과"))
+        if (!DbConnectionFactory.TableExists(conn, "수질분석센터_결과"))
         {
-            Log("테이블 없음: 분석의뢰및결과");
+            Log("테이블 없음: 수질분석센터_결과");
             return list;
         }
 
         // MariaDB: using var 중첩 시 커넥션 충돌 방지 — 단일 using 블록
-        bool has정도보증 = DbConnectionFactory.ColumnExists(conn, "분석의뢰및결과", "정도보증");
+        bool has정도보증 = DbConnectionFactory.ColumnExists(conn, "수질분석센터_결과", "정도보증");
         var samplerCandidates = new[] { "시료채취1", "채수담당자", "시료채취자1", "시료채취자-1" };
-        string? samplerCol = samplerCandidates.FirstOrDefault(c => DbConnectionFactory.ColumnExists(conn, "분석의뢰및결과", c));
+        string? samplerCol = samplerCandidates.FirstOrDefault(c => DbConnectionFactory.ColumnExists(conn, "수질분석센터_결과", c));
 
         using (var cmd = conn.CreateCommand())
         {
@@ -64,7 +64,7 @@ public static class AnalysisRequestService
                        COALESCE(`채취일자`, ''),
                        {(has정도보증 ? "COALESCE(`정도보증`, '')" : "''")},
                        {(samplerCol != null ? $"COALESCE(`{samplerCol}`, '')" : "''")}
-                FROM   `분석의뢰및결과`
+                FROM   `수질분석센터_결과`
                 ORDER  BY `채취일자` DESC";
 
             using (var rdr = cmd.ExecuteReader())
@@ -112,7 +112,7 @@ public static class AnalysisRequestService
         conn.Open();
 
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = $"SELECT * FROM `분석의뢰및결과` WHERE {DbConnectionFactory.RowId} = @id";
+        cmd.CommandText = $"SELECT * FROM `수질분석센터_결과` WHERE {DbConnectionFactory.RowId} = @id";
         cmd.Parameters.AddWithValue("@id", rowId);
 
         using var rdr = cmd.ExecuteReader();
@@ -145,7 +145,7 @@ public static class AnalysisRequestService
             using var cmd = conn.CreateCommand();
             var setParts = all.Select((a, i) => $"`{a}` = @v{i}");
             cmd.CommandText =
-                $"UPDATE `분석의뢰및결과` SET {string.Join(", ", setParts)} " +
+                $"UPDATE `수질분석센터_결과` SET {string.Join(", ", setParts)} " +
                 $"WHERE {DbConnectionFactory.RowId} = @id";
             for (int i = 0; i < all.Count; i++)
                 cmd.Parameters.AddWithValue($"@v{i}",
@@ -164,7 +164,7 @@ public static class AnalysisRequestService
 
     // =====================================================================
     //  견적서 수량 재계산
-    //  같은 견적번호를 가진 분석의뢰및결과 행들에서 각 항목이 'O'인 횟수를 집계해
+    //  같은 견적번호를 가진 수질분석센터_결과 행들에서 각 항목이 'O'인 횟수를 집계해
     //  견적발행내역의 수량과 소계를 갱신
     // =====================================================================
     private static void RecalcQuotationQuantities(int rowId, List<string> analyteNames)
@@ -178,7 +178,7 @@ public static class AnalysisRequestService
         string quotationNo;
         using (var c = conn.CreateCommand())
         {
-            c.CommandText = $"SELECT COALESCE(`견적번호`, '') FROM `분석의뢰및결과` WHERE {DbConnectionFactory.RowId} = @id";
+            c.CommandText = $"SELECT COALESCE(`견적번호`, '') FROM `수질분석센터_결과` WHERE {DbConnectionFactory.RowId} = @id";
             c.Parameters.AddWithValue("@id", rowId);
             quotationNo = c.ExecuteScalar()?.ToString()?.Trim() ?? "";
         }
@@ -207,7 +207,7 @@ public static class AnalysisRequestService
         var counts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
         using (var c = conn.CreateCommand())
         {
-            c.CommandText = "SELECT * FROM `분석의뢰및결과` WHERE `견적번호` = @no";
+            c.CommandText = "SELECT * FROM `수질분석센터_결과` WHERE `견적번호` = @no";
             c.Parameters.AddWithValue("@no", quotationNo);
             using var rdr = c.ExecuteReader();
             while (rdr.Read())
@@ -284,7 +284,7 @@ public static class AnalysisRequestService
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = $"DELETE FROM `분석의뢰및결과` WHERE {DbConnectionFactory.RowId} = @id";
+            cmd.CommandText = $"DELETE FROM `수질분석센터_결과` WHERE {DbConnectionFactory.RowId} = @id";
             cmd.Parameters.AddWithValue("@id", id);
             int rows = cmd.ExecuteNonQuery();
             Log($"DeleteRecord: id={id} → {rows}행 삭제");
@@ -338,7 +338,7 @@ public static class AnalysisRequestService
         return list;
     }
 
-    /// <summary>분석의뢰및결과의 방류허용기준 적용유무 업데이트</summary>
+    /// <summary>수질분석센터_결과의 방류허용기준 적용유무 업데이트</summary>
     public static bool UpdateDischargeStandard(int rowId, string standardName)
     {
         try
@@ -347,7 +347,7 @@ public static class AnalysisRequestService
             conn.Open();
             using var cmd = conn.CreateCommand();
             cmd.CommandText =
-                $"UPDATE `분석의뢰및결과` SET `방류허용기준 적용유무` = @val " +
+                $"UPDATE `수질분석센터_결과` SET `방류허용기준 적용유무` = @val " +
                 $"WHERE {DbConnectionFactory.RowId} = @id";
             cmd.Parameters.AddWithValue("@val", standardName);
             cmd.Parameters.AddWithValue("@id",  rowId);
@@ -369,7 +369,7 @@ public static class AnalysisRequestService
             using var cmd = conn.CreateCommand();
             cmd.CommandText = @"
                 SELECT DISTINCT `시료명`
-                FROM `분석의뢰및결과`
+                FROM `수질분석센터_결과`
                 WHERE `약칭` = @abbr AND `시료명` IS NOT NULL AND `시료명` <> ''
                 ORDER BY `시료명` ASC";
             cmd.Parameters.AddWithValue("@abbr", 약칭);
@@ -395,7 +395,7 @@ public static class AnalysisRequestService
             conn.Open();
             using var cmd = conn.CreateCommand();
             cmd.CommandText = @"
-                UPDATE `분석의뢰및결과`
+                UPDATE `수질분석센터_결과`
                 SET `시료명` = @newName
                 WHERE `약칭` = @abbr AND `시료명` = @oldName";
             cmd.Parameters.AddWithValue("@newName", newName.Trim());
@@ -421,7 +421,7 @@ public static class AnalysisRequestService
             using var cmd = conn.CreateCommand();
             cmd.CommandText = @"
                 SELECT DISTINCT `약칭`
-                FROM `분석의뢰및결과`
+                FROM `수질분석센터_결과`
                 WHERE `약칭` IS NOT NULL AND `약칭` <> ''
                 ORDER BY `약칭` ASC";
             using var r = cmd.ExecuteReader();
@@ -1585,8 +1585,8 @@ public static class AnalysisRequestService
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
-            if (!DbConnectionFactory.TableExists(conn, "분석의뢰및결과")) return 0;
-            if (!DbConnectionFactory.ColumnExists(conn, "분석의뢰및결과", analyteName)) return 0;
+            if (!DbConnectionFactory.TableExists(conn, "수질분석센터_결과")) return 0;
+            if (!DbConnectionFactory.ColumnExists(conn, "수질분석센터_결과", analyteName)) return 0;
 
             var today = DateTime.Today;
             var monthStart = new DateTime(today.Year, today.Month, 1).ToString("yyyy-MM-dd");
@@ -1594,7 +1594,7 @@ public static class AnalysisRequestService
 
             using var cmd = conn.CreateCommand();
             cmd.CommandText = $@"
-                SELECT COUNT(*) FROM `분석의뢰및결과`
+                SELECT COUNT(*) FROM `수질분석센터_결과`
                 WHERE `{analyteName}` = 'O'
                   AND `채취일자` >= @start AND `채취일자` <= @end";
             cmd.Parameters.AddWithValue("@start", monthStart);
@@ -1618,11 +1618,11 @@ public static class AnalysisRequestService
 
             // 여러 후보 컬럼 중 존재하는 첫 번째 컬럼에 저장
             var candidates = new[] { "시료채취1", "채수담당자", "시료채취자1", "시료채취자-1" };
-            string? col = candidates.FirstOrDefault(c => DbConnectionFactory.ColumnExists(conn, "분석의뢰및결과", c));
+            string? col = candidates.FirstOrDefault(c => DbConnectionFactory.ColumnExists(conn, "수질분석센터_결과", c));
             if (col == null) { Log($"UpdateSamplers: 채수담당자 컬럼 없음 (rowId={rowId})"); return; }
 
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = $"UPDATE `분석의뢰및결과` SET `{col}` = @v WHERE {DbConnectionFactory.RowId} = @id";
+            cmd.CommandText = $"UPDATE `수질분석센터_결과` SET `{col}` = @v WHERE {DbConnectionFactory.RowId} = @id";
             cmd.Parameters.AddWithValue("@v", nameStr);
             cmd.Parameters.AddWithValue("@id", rowId);
             cmd.ExecuteNonQuery();
@@ -1641,7 +1641,7 @@ public static class AnalysisRequestService
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
-            if (!DbConnectionFactory.TableExists(conn, "분석의뢰및결과")) return list;
+            if (!DbConnectionFactory.TableExists(conn, "수질분석센터_결과")) return list;
 
             using var cmd = conn.CreateCommand();
             cmd.CommandText = $@"
@@ -1650,7 +1650,7 @@ public static class AnalysisRequestService
                        COALESCE(`시료명`, ''),
                        COALESCE(`견적번호`, ''),
                        COALESCE(`채취일자`, '')
-                FROM `분석의뢰및결과`
+                FROM `수질분석센터_결과`
                 WHERE `채취일자` = @d
                 ORDER BY {DbConnectionFactory.RowId}";
             cmd.Parameters.AddWithValue("@d", date);
@@ -1681,11 +1681,11 @@ public static class AnalysisRequestService
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
-            if (!DbConnectionFactory.TableExists(conn, "분석의뢰및결과")) return list;
+            if (!DbConnectionFactory.TableExists(conn, "수질분석센터_결과")) return list;
             using var cmd = conn.CreateCommand();
             cmd.CommandText = @"
                 SELECT DISTINCT SUBSTR(`채취일자`, 1, 7) AS ym
-                FROM `분석의뢰및결과`
+                FROM `수질분석센터_결과`
                 WHERE `채취일자` IS NOT NULL AND `채취일자` <> ''
                 ORDER BY ym DESC";
             using var r = cmd.ExecuteReader();
@@ -1707,12 +1707,12 @@ public static class AnalysisRequestService
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
-            if (!DbConnectionFactory.TableExists(conn, "분석의뢰및결과")) return list;
+            if (!DbConnectionFactory.TableExists(conn, "수질분석센터_결과")) return list;
 
             using var cmd = conn.CreateCommand();
             cmd.CommandText = @"
                 SELECT DISTINCT `채취일자`
-                FROM `분석의뢰및결과`
+                FROM `수질분석센터_결과`
                 WHERE SUBSTR(`채취일자`, 1, 7) = @ym
                 ORDER BY `채취일자` DESC";
             cmd.Parameters.AddWithValue("@ym", yearMonth);
@@ -1730,7 +1730,7 @@ public static class AnalysisRequestService
 
     // =====================================================================
     //  특정 일자에 의뢰된 분석항목 상태 (분석결과입력 배지용)
-    //  → 분석의뢰및결과의 각 항목 컬럼을 스캔하여
+    //  → 수질분석센터_결과의 각 항목 컬럼을 스캔하여
     //     (항목명 → 결과입력여부) 맵 리턴
     //  - 'O' 값만 있으면 = 의뢰됐으나 결과 미입력 (requested=true, filled=false)
     //  - 숫자/문자 값이면 = 결과 입력됨            (requested=true, filled=true)
@@ -1743,7 +1743,7 @@ public static class AnalysisRequestService
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
-            if (!DbConnectionFactory.TableExists(conn, "분석의뢰및결과")) return result;
+            if (!DbConnectionFactory.TableExists(conn, "수질분석센터_결과")) return result;
 
             // 항목 컬럼 목록 = 분석정보 Analyte
             var analyteCols = new List<string>();
@@ -1755,7 +1755,7 @@ public static class AnalysisRequestService
                 {
                     var name = r.IsDBNull(0) ? "" : r.GetString(0);
                     if (!string.IsNullOrWhiteSpace(name) &&
-                        DbConnectionFactory.ColumnExists(conn, "분석의뢰및결과", name))
+                        DbConnectionFactory.ColumnExists(conn, "수질분석센터_결과", name))
                         analyteCols.Add(name);
                 }
             }
@@ -1763,7 +1763,7 @@ public static class AnalysisRequestService
 
             using var cmd = conn.CreateCommand();
             var colList = string.Join(", ", analyteCols.Select(c => $"`{c}`"));
-            cmd.CommandText = $"SELECT {colList} FROM `분석의뢰및결과` WHERE `채취일자` = @d";
+            cmd.CommandText = $"SELECT {colList} FROM `수질분석센터_결과` WHERE `채취일자` = @d";
             cmd.Parameters.AddWithValue("@d", date);
             using var rdr = cmd.ExecuteReader();
             while (rdr.Read())
@@ -1791,7 +1791,7 @@ public static class AnalysisRequestService
 
     // =====================================================================
     //  날짜별 의뢰 카테고리 상태 (수질분석센터 뱃지용)
-    //  → 분석의뢰및결과의 항목 컬럼을 분석정보.Category 로 그룹핑
+    //  → 수질분석센터_결과의 항목 컬럼을 분석정보.Category 로 그룹핑
     //     (Category명 → 결과입력여부) 맵 리턴
     //  - 'O' 만 있으면 = 의뢰됐으나 결과 미입력
     //  - 숫자/문자 값이면 = 결과 입력됨 (한 카테고리 내 어느 항목이라도 입력됐으면 filled=true)
@@ -1804,7 +1804,7 @@ public static class AnalysisRequestService
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
-            if (!DbConnectionFactory.TableExists(conn, "분석의뢰및결과")) return result;
+            if (!DbConnectionFactory.TableExists(conn, "수질분석센터_결과")) return result;
             if (!DbConnectionFactory.TableExists(conn, "분석정보")) return result;
 
             // Analyte → Category 매핑
@@ -1823,15 +1823,15 @@ public static class AnalysisRequestService
             }
             if (analyteToCategory.Count == 0) return result;
 
-            // 분석의뢰및결과에 실제로 존재하는 컬럼만 필터
+            // 수질분석센터_결과에 실제로 존재하는 컬럼만 필터
             var validCols = analyteToCategory.Keys
-                .Where(name => DbConnectionFactory.ColumnExists(conn, "분석의뢰및결과", name))
+                .Where(name => DbConnectionFactory.ColumnExists(conn, "수질분석센터_결과", name))
                 .ToList();
             if (validCols.Count == 0) return result;
 
             using var cmd = conn.CreateCommand();
             var colList = string.Join(", ", validCols.Select(c => $"`{c}`"));
-            cmd.CommandText = $"SELECT {colList} FROM `분석의뢰및결과` WHERE `채취일자` = @d";
+            cmd.CommandText = $"SELECT {colList} FROM `수질분석센터_결과` WHERE `채취일자` = @d";
             cmd.Parameters.AddWithValue("@d", date);
             using var rdr = cmd.ExecuteReader();
             while (rdr.Read())
@@ -1865,7 +1865,7 @@ public static class AnalysisRequestService
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
-            if (!DbConnectionFactory.TableExists(conn, "분석의뢰및결과")) return list;
+            if (!DbConnectionFactory.TableExists(conn, "수질분석센터_결과")) return list;
             using var cmd = conn.CreateCommand();
             var cutoff = DateTime.Today.AddMonths(-months).ToString("yyyy-MM-dd");
             cmd.CommandText = $@"
@@ -1874,7 +1874,7 @@ public static class AnalysisRequestService
                        COALESCE(`시료명`, ''),
                        COALESCE(`견적번호`, ''),
                        COALESCE(`채취일자`, '')
-                FROM `분석의뢰및결과`
+                FROM `수질분석센터_결과`
                 WHERE `채취일자` >= @cutoff
                 ORDER BY `채취일자` DESC";
             cmd.Parameters.AddWithValue("@cutoff", cutoff);
@@ -1903,8 +1903,8 @@ public static class AnalysisRequestService
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
-            if (!DbConnectionFactory.TableExists(conn, "분석의뢰및결과")) return list;
-            if (!DbConnectionFactory.ColumnExists(conn, "분석의뢰및결과", "생태독성")) return list;
+            if (!DbConnectionFactory.TableExists(conn, "수질분석센터_결과")) return list;
+            if (!DbConnectionFactory.ColumnExists(conn, "수질분석센터_결과", "생태독성")) return list;
             using var cmd = conn.CreateCommand();
             var cutoff = DateTime.Today.AddMonths(-months).ToString("yyyy-MM-dd");
             cmd.CommandText = $@"
@@ -1914,7 +1914,7 @@ public static class AnalysisRequestService
                        COALESCE(`견적번호`, ''),
                        COALESCE(`채취일자`, ''),
                        COALESCE(`생태독성`, '')
-                FROM `분석의뢰및결과`
+                FROM `수질분석센터_결과`
                 WHERE `채취일자` >= @cutoff
                   AND `생태독성` IS NOT NULL AND `생태독성` <> ''
                 ORDER BY `채취일자` DESC, {DbConnectionFactory.RowId}";
@@ -1945,7 +1945,7 @@ public static class AnalysisRequestService
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = $"UPDATE `분석의뢰및결과` SET `{columnName}` = @v WHERE {DbConnectionFactory.RowId} = @id";
+            cmd.CommandText = $"UPDATE `수질분석센터_결과` SET `{columnName}` = @v WHERE {DbConnectionFactory.RowId} = @id";
             cmd.Parameters.AddWithValue("@v", value);
             cmd.Parameters.AddWithValue("@id", rowId);
             cmd.ExecuteNonQuery();
@@ -1953,17 +1953,17 @@ public static class AnalysisRequestService
         catch (Exception ex) { Log($"UpdateResultValue 오류: {ex.Message}"); }
     }
 
-    /// <summary>생태독성 저장 후 분석의뢰및결과.생태독성 컬럼에 TU값 업데이트</summary>
+    /// <summary>생태독성 저장 후 수질분석센터_결과.생태독성 컬럼에 TU값 업데이트</summary>
     public static void UpdateEcotoxResult(string 채취일자, string 시료명, string tuValue)
     {
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
-            if (!DbConnectionFactory.TableExists(conn, "분석의뢰및결과")) return;
-            if (!DbConnectionFactory.ColumnExists(conn, "분석의뢰및결과", "생태독성")) return;
+            if (!DbConnectionFactory.TableExists(conn, "수질분석센터_결과")) return;
+            if (!DbConnectionFactory.ColumnExists(conn, "수질분석센터_결과", "생태독성")) return;
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = @"UPDATE `분석의뢰및결과`
+            cmd.CommandText = @"UPDATE `수질분석센터_결과`
                                    SET `생태독성` = @tu
                                  WHERE LEFT(`채취일자`, 10) = @d
                                    AND `시료명` = @nm";
