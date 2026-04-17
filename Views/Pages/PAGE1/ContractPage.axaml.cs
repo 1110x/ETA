@@ -39,8 +39,10 @@ public partial class ContractPage : UserControl
     public event Action<Control?>? StatsPanelChanged;  // Show4 (단가 정보)
 
     // ── 상태 ────────────────────────────────────────────────────────────────
+    private bool _suppressTotalUpdate;  // Show4 빌드 중 TextChanged 억제
     private Contract?   _selectedContract;
     private StackPanel? _detailPanel;        // 내부 StackPanel (SyncPanelToContract용)
+    private TextBox?    _contractAmountTextBox;
     private bool        _isAddMode = false;
     private bool        _showActive = true;   // true=현행계약, false=종료계약
     public MainPage? ParentMainPage { get; set; }
@@ -227,6 +229,8 @@ public partial class ContractPage : UserControl
 
         if (contract == null) return;
 
+        _contractAmountTextBox = null;
+        var sw = System.Diagnostics.Stopwatch.StartNew();
         _selectedContract = contract;
         _isAddMode        = false;
         _pendingPrices.Clear();
@@ -234,11 +238,14 @@ public partial class ContractPage : UserControl
         _show4EditMode    = false;
         _show4QtyTextBoxes.Clear();
         _pendingQuantities.Clear();
+        Log($"[타이밍] 초기화: {sw.ElapsedMilliseconds}ms");
 
         // ① 계약정보 패널 즉시 표시 (DB 없음 — 빠름)
         var (root, scroll, priceContainer) = BuildInfoPanel(contract);
+        Log($"[타이밍] BuildInfoPanel: {sw.ElapsedMilliseconds}ms");
         _detailPanel = root;
         DetailPanelChanged?.Invoke(scroll);  // Show2에 업체정보 표시
+        Log($"[타이밍] Show2 표시: {sw.ElapsedMilliseconds}ms");
 
         // ② Show4에 즉시 로딩 프로그레스바 표시
         var captured = contract;
@@ -264,7 +271,7 @@ public partial class ContractPage : UserControl
             StatsPanelChanged?.Invoke(loadingPanel);
         }
 
-        // ③ 단가/계약수량/처리수량 백그라운드 로드 (3단계, 각 33%)
+        // ③ 단가/계약수량/처리수량 백그라운드 로드
         _ = LoadContractDataAsync(captured, loadingProgressBar, loadingStatusText);
     }
 
@@ -273,22 +280,31 @@ public partial class ContractPage : UserControl
     {
         try
         {
+            var sw2 = System.Diagnostics.Stopwatch.StartNew();
             var prices       = await Task.Run(() => ContractService.GetContractPrices(captured.C_CompanyName));
+            Log($"[타이밍] GetContractPrices: {sw2.ElapsedMilliseconds}ms");
             progressBar.Value = 33; statusText.Text = "계약수량 로딩 중...";
 
             var contractQtys = await Task.Run(() => ContractService.GetContractQuantities(captured.C_CompanyName));
+            Log($"[타이밍] GetContractQuantities: {sw2.ElapsedMilliseconds}ms");
             progressBar.Value = 66; statusText.Text = "처리수량 로딩 중...";
 
-            var processedQtys = await Task.Run(() => ContractService.GetProcessedQuantities(
-                captured.C_CompanyName, captured.C_ContractStart, captured.C_ContractEnd));
             progressBar.Value = 100; statusText.Text = "완료";
+            Log($"[타이밍] 전체 데이터 로드: {sw2.ElapsedMilliseconds}ms");
 
             Log($"[데이터 로드] {captured.C_CompanyName}: 단가={prices.Count}개, 계약수량={contractQtys.Count}개");
 
             if (_selectedContract?.C_CompanyName != captured.C_CompanyName) return;
 
-            // Show3: 진행상황 + 단가복사 버튼
+            // Show3: 처리수량 진행상황
+            var processedQtys = await Task.Run(() => ContractService.GetProcessedQuantities(
+                captured.C_CompanyName, captured.C_ContractStart, captured.C_ContractEnd));
+            Log($"[타이밍] GetProcessedQuantities: {sw2.ElapsedMilliseconds}ms");
+
+            var swUi = System.Diagnostics.Stopwatch.StartNew();
             var progressPanel = BuildProgressPanel(captured.C_CompanyName, contractQtys, processedQtys);
+            Log($"[타이밍] BuildProgressPanel: {swUi.ElapsedMilliseconds}ms");
+
             var copyPriceBtn = new Button
             {
                 Content         = "📋  이 업체 단가를 신규계약에 복사",
@@ -309,12 +325,22 @@ public partial class ContractPage : UserControl
             if (progressPanel is ScrollViewer sv && sv.Content is StackPanel sp)
                 sp.Children.Insert(0, copyPriceBtn);
             EditPanelChanged?.Invoke(progressPanel);
+            Log($"[타이밍] Show3 렌더링: {swUi.ElapsedMilliseconds}ms");
 
-            // Show4: 단가 정보 + 계약수량
+            // Show4: 단가 정보 + 계약수량 (UI 스레드 양보 후 빌드 - 체감 속도 개선)
+            await Task.Delay(1);  // UI 스레드 양보, Show3가 먼저 렌더링되도록
+            if (_selectedContract?.C_CompanyName != captured.C_CompanyName) return;
+
+            swUi.Restart();
+            _suppressTotalUpdate = true;
             var priceInfoPanel = BuildPriceInfoPanel(captured.C_CompanyName, captured.C_Abbreviation, prices, contractQtys, _detailPanel);
+            Log($"[타이밍] BuildPriceInfoPanel: {swUi.ElapsedMilliseconds}ms");
             StatsPanelChanged?.Invoke(priceInfoPanel);
+            Log($"[타이밍] Show4 렌더링: {swUi.ElapsedMilliseconds}ms");
+            await Task.Yield();
+            _suppressTotalUpdate = false;
 
-            Log($"[Show4 표시 완료] 단가={prices.Count}개");
+            Log($"[타이밍] 전체 완료: {sw2.ElapsedMilliseconds}ms / [Show4 표시 완료] 단가={prices.Count}개");
         }
         catch (Exception ex)
         {
@@ -333,6 +359,7 @@ public partial class ContractPage : UserControl
         _templateCompanyName           = null;
         _pendingPrices.Clear();
         _priceDisplayBlocks.Clear();
+        _contractAmountTextBox         = null;
         ContractTreeView.SelectedItem  = null;
         _detailPanel                   = BuildAddPanel();
         DetailPanelChanged?.Invoke(_detailPanel);
@@ -398,6 +425,7 @@ public partial class ContractPage : UserControl
 
             _selectedContract = null;
             _detailPanel      = null;
+            _contractAmountTextBox = null;
             DetailPanelChanged?.Invoke(null);
         }
     }
@@ -437,7 +465,7 @@ public partial class ContractPage : UserControl
         AddGridRow(grid, 2, "계약시작",         c.C_ContractStartStr, isReadOnly: true);
         AddGridRow(grid, 3, "계약종료",         c.C_ContractEndStr,   isReadOnly: true);
         AddGridRow(grid, 4, "잔여일수",         remainDays,           isReadOnly: true);
-        AddGridRow(grid, 5, "계약금액(VAT별도)", amountStr);
+        _contractAmountTextBox = AddGridRow(grid, 5, "계약금액(VAT별도)", amountStr);
         AddGridRow(grid, 6, "주소",             c.C_Address);
         AddGridRow(grid, 7, "대표자",           c.C_Representative);
         AddGridRow(grid, 8, "시설별",           c.C_FacilityType);
@@ -668,6 +696,20 @@ public partial class ContractPage : UserControl
             IsChecked  = true,
         };
         topControlPanel.Children.Add(chkSelectAll);
+
+        // 전체 해제 버튼
+        var btnClearAll = new Button
+        {
+            Content         = "❌  전체 해제",
+            Height          = 30,
+            FontSize        = AppTheme.FontSM, FontFamily = Font,
+            Background      = AppTheme.BgDanger,
+            Foreground      = AppTheme.FgDanger,
+            BorderThickness = new Thickness(0),
+            CornerRadius    = new CornerRadius(4),
+            Padding         = new Thickness(10, 0),
+        };
+        topControlPanel.Children.Add(btnClearAll);
 
         var btnSave = new Button
         {
@@ -916,12 +958,15 @@ public partial class ContractPage : UserControl
                 Grid.SetColumn(subtotalTb, 4);
                 rowGrid.Children.Add(subtotalTb);
 
+                var capturedChk = chk;
                 priceBox.TextChanged += (_, _) =>
                 {
+                    if (_suppressTotalUpdate) return;
                     if (decimal.TryParse(priceBox.Text, out decimal np))
                     {
                         priceValue = np;
                         _pendingPrices[analyte] = np.ToString();
+                        if (np > 0) capturedChk.IsChecked = true;  // 단가 입력 → 자동 체크
                     }
                     if (int.TryParse(qtyBox.Text, out int nq) && nq > 0)
                     {
@@ -932,11 +977,13 @@ public partial class ContractPage : UserControl
                 };
                 qtyBox.TextChanged += (_, _) =>
                 {
+                    if (_suppressTotalUpdate) return;
                     _pendingQuantities[analyte] = qtyBox.Text ?? "";
                     if (int.TryParse(qtyBox.Text, out int nq) && nq > 0)
                     {
                         subtotals[analyte] = priceValue * nq;
                         subtotalTb.Text = subtotals[analyte].ToString("N0");
+                        capturedChk.IsChecked = true;  // 수량 입력 → 자동 체크
                     }
                     else { subtotals.Remove(analyte); subtotalTb.Text = "—"; }
                     UpdateTotalSummary(totalSummary, prices, subtotals, show2Panel);
@@ -979,23 +1026,36 @@ public partial class ContractPage : UserControl
             foreach (var chk in checkBoxes) chk.IsChecked = v;
         };
 
-        // 확정 버튼 — 체크된 항목 단가/수량을 _pending에 반영 후 즉시 DB 저장
+        // 전체 해제 버튼
+        btnClearAll.Click += (_, _) =>
+        {
+            foreach (var chk in checkBoxes) chk.IsChecked = false;
+            chkSelectAll.IsChecked = false;
+        };
+
+        // 확정 버튼 — 체크된 항목은 단가/수량 반영, 체크 해제된 항목은 0으로 저장
         btnSave.Click += (_, _) =>
         {
             Log("[확정/기존] 버튼 클릭됨");
-            foreach (var chk in checkBoxes)
-            {
-                if (chk.IsChecked != true || chk.Tag is not string analyte) continue;
-                if (_show4QtyTextBoxes.TryGetValue(analyte, out var qb))
-                    _pendingQuantities[analyte] = qb.Text ?? "";
-            }
-            // 체크된 항목 pending 없는 단가도 원래 값으로 채우기
             for (int i = 0; i < prices.Count && i < checkBoxes.Count; i++)
             {
-                if (checkBoxes[i].IsChecked != true) continue;
                 var (analyte, price) = prices[i];
-                if (!_pendingPrices.ContainsKey(analyte) && !string.IsNullOrWhiteSpace(price))
-                    _pendingPrices[analyte] = price;
+                bool isChecked = checkBoxes[i].IsChecked == true;
+
+                if (isChecked)
+                {
+                    // 체크됨: 단가/수량 현재값 저장
+                    if (_show4QtyTextBoxes.TryGetValue(analyte, out var qb))
+                        _pendingQuantities[analyte] = qb.Text ?? "";
+                    if (!_pendingPrices.ContainsKey(analyte) && !string.IsNullOrWhiteSpace(price))
+                        _pendingPrices[analyte] = price;
+                }
+                else
+                {
+                    // 체크 해제: 단가/수량 모두 0으로 저장
+                    _pendingPrices[analyte] = "0";
+                    _pendingQuantities[analyte] = "0";
+                }
             }
 
             Log($"[확정/기존] pendingPrices={_pendingPrices.Count}, pendingQtys={_pendingQuantities.Count}");
@@ -1407,6 +1467,7 @@ public partial class ContractPage : UserControl
                                     Dictionary<string, decimal> subtotals,
                                     StackPanel? show2Panel = null)
     {
+        if (_suppressTotalUpdate) { Log("[Show2금액] 억제됨 (빌드 중)"); return; }
         decimal grandTotal = 0m;
         foreach (var (analyte, _) in prices)
         {
@@ -1425,6 +1486,15 @@ public partial class ContractPage : UserControl
     /// <summary>Show2 패널에서 계약금액 TextBox를 찾아 업데이트</summary>
     private void UpdateContractAmountInShow2(StackPanel show2Panel, decimal amount)
     {
+        if (_contractAmountTextBox != null)
+        {
+            var newVal = amount > 0 ? amount.ToString("N0") : "";
+            if (_contractAmountTextBox.Text == newVal) return;
+            _contractAmountTextBox.Text = newVal;
+            Log($"[Show2금액] 직접 업데이트 (저장된 TextBox) 적용금액={amount:N0}");
+            return;
+        }
+
         var grid = show2Panel.Children.OfType<Grid>().FirstOrDefault();
         if (grid == null)
         {
@@ -1449,8 +1519,9 @@ public partial class ContractPage : UserControl
             {
                 if (child.Children[1] is TextBox txb)
                 {
-                    txb.Text = amount > 0 ? amount.ToString("N0") : "";
-                    Log($"[Show2금액] ✅ 계약금액 TextBox 업데이트 완료: {txb.Text}");
+                    var newVal = amount > 0 ? amount.ToString("N0") : "";
+                    if (txb.Text == newVal) return;  // 동일값이면 스킵 (무한루프 방지)
+                    txb.Text = newVal;
                     return;
                 }
                 else

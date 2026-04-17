@@ -686,6 +686,7 @@ public partial class MainPage : Window
             ["WaterQualityNameReconcile"]= this.FindControl<MenuItem>("MenuItemWaterQualityNameReconcile"),
             ["WasteNameReconcile"]       = this.FindControl<MenuItem>("MenuItemWasteNameReconcile"),
             ["Access"]                   = this.FindControl<MenuItem>("MenuItemAccess"),
+            ["ServerManagement"]         = this.FindControl<MenuItem>("MenuItemServerManagement"),
         };
 
         foreach (var (key, mi) in menuMap)
@@ -706,7 +707,7 @@ public partial class MainPage : Window
             ["MenuItemResultSubmit"]  = new[] { "ResultSubmitMeasure", "ResultSubmitErp" },
             ["MenuItemSchedule"]      = new[] { "Repair", "Purchase", "Schedule" },
             ["MenuItemRisk"]          = new[] { "Reagent" },
-            ["PermissionMenu"]        = new[] { "WaterQualityNameReconcile", "WasteNameReconcile", "Access" },
+            ["PermissionMenu"]        = new[] { "WaterQualityNameReconcile", "WasteNameReconcile", "Access", "ServerManagement" },
         };
 
         foreach (var (parentName, childKeys) in parentChildKeys)
@@ -2805,15 +2806,15 @@ public partial class MainPage : Window
         LogContentChange("Show1", _waterQualityNameReconcilePage.LeftPanel);
         Show2.Content = _waterQualityNameReconcilePage.CenterPanel;
         LogContentChange("Show2", _waterQualityNameReconcilePage.CenterPanel);
-        Show3.Content = null;
-        LogContentChange("Show3", null);
+        Show3.Content = _waterQualityNameReconcilePage.BottomPanel;
+        LogContentChange("Show3", _waterQualityNameReconcilePage.BottomPanel);
         Show4.Content = _waterQualityNameReconcilePage.RightPanel;
         LogContentChange("Show4", _waterQualityNameReconcilePage.RightPanel);
         _bt1SaveAction = null;
 
         SetSubMenu("새로고침", "", "", "", "", "", "설정");
         SetLeftPanelWidth(280);
-        SetContentLayout(content2Star: 1, content4Star: 1, upperStar: 1, lowerStar: 0);
+        SetContentLayout(content2Star: 1, content4Star: 1, upperStar: 6, lowerStar: 4);
 
         RestoreModeLayout("WaterQualityNameReconcile");
     }
@@ -4455,6 +4456,10 @@ public partial class MainPage : Window
 
         if (_contractPage == null)
         {
+            // 최초 1회: 단가/수량 컬럼 보장
+            try { ContractService.EnsureContractPriceColumns(); } catch { }
+            try { ContractService.EnsureContractQuantityColumns(); } catch { }
+
             _contractPage = new ContractPage();
             _contractPage.ParentMainPage = this;
             _contractPage.DetailPanelChanged += panel =>
@@ -4473,12 +4478,6 @@ public partial class MainPage : Window
                 LogContentChange("Show4", panel);
             };
         }
-
-        // 최초 진입 시 단가·수량 컬럼 보장 (없는 컬럼 자동 추가)
-        try { ContractService.EnsureContractPriceColumns(); }
-        catch (Exception ex) { }
-        try { ContractService.EnsureContractQuantityColumns(); }
-        catch (Exception ex) { }
 
         Show1.Content = _contractPage;
         LogContentChange("Show1", _contractPage);
@@ -4521,7 +4520,7 @@ public partial class MainPage : Window
         LogContentChange("Show4", _riskPage.DetailControl);
         _bt1SaveAction = null;
 
-        SetSubMenu("새로고침", "삭제", "", "", "", "", "", "");
+        SetSubMenu("새로고침", "삭제", "➕ 신규추가", "🗑 휴지통", "", "", "", "");
         SetLeftPanelWidth(320);
         SetContentLayout(content2Star: 1, content4Star: 1, upperStar: 5, lowerStar: 5);
         RestoreModeLayout("RiskManage", minLowerStar: 3);
@@ -5038,7 +5037,7 @@ public partial class MainPage : Window
         LogContentChange("Show4", null);
         _bt1SaveAction = null;
 
-        SetSubMenu("새로고침", "엑셀 내보내기", "승인", "반려", "완료", "삭제", "설정");
+        SetSubMenu("새로고침", "엑셀 내보내기", "승인", "반려", "완료", "삭제", "🗑 휴지통");
         SetLeftPanelWidth(250);
         SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 8, lowerStar: 2);
         
@@ -5368,6 +5367,30 @@ public partial class MainPage : Window
         RestoreModeLayout("Access");
     }
 
+    private ServerManagementPage? _serverManagementPage;
+
+    private void ServerManagement_Click(object? sender, RoutedEventArgs e)
+    {
+        _currentMode = "ServerManagement";
+
+        _serverManagementPage ??= new ServerManagementPage();
+
+        Show1.Content = _serverManagementPage.LeftPanel;
+        LogContentChange("Show1", _serverManagementPage.LeftPanel);
+        Show2.Content = _serverManagementPage.CenterPanel;
+        LogContentChange("Show2", _serverManagementPage.CenterPanel);
+        Show3.Content = null;
+        LogContentChange("Show3", null);
+        Show4.Content = null;
+        LogContentChange("Show4", null);
+        _bt1SaveAction = null;
+
+        SetSubMenu("새로고침", "💾 DB 백업", "", "", "", "", "");
+        SetLeftPanelWidth(320);
+        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 1, lowerStar: 0);
+        RestoreModeLayout("ServerManagement");
+    }
+
 
     private void AiDocClassification_Click(object? sender, RoutedEventArgs e)
     {
@@ -5551,7 +5574,42 @@ public partial class MainPage : Window
             case "AnalysisPlan":    SetAnalysisPlanDay(0); break; // 월
             case "AiDocClassification": AiDocClassification_Click(null, null!); break;
             case "Ecotoxicity":     _ = _ecotoxicityPage?.ExportTestReportAsync(); break;
+            case "ServerManagement": _ = BackupDatabaseAsync(); break;
             default: break;
+        }
+    }
+
+    /// <summary>DB 전체 백업 → YYMMDD-N_ETA.db 형식 SQL 덤프</summary>
+    private async Task BackupDatabaseAsync()
+    {
+        try
+        {
+            var top = TopLevel.GetTopLevel(this);
+            if (top == null) return;
+
+            // 파일명 YYMMDD-N_ETA.db (N은 오늘 날짜의 순번)
+            var dateStr = DateTime.Now.ToString("yyMMdd");
+            int n = 1;
+            var backupDir = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "Data", "Backups");
+            Directory.CreateDirectory(backupDir);
+            while (File.Exists(Path.Combine(backupDir, $"{dateStr}-{n}_ETA.db"))) n++;
+            var defaultName = $"{dateStr}-{n}_ETA.db";
+
+            var saveFile = await top.StorageProvider.SaveFilePickerAsync(new Avalonia.Platform.Storage.FilePickerSaveOptions
+            {
+                SuggestedFileName = defaultName,
+                DefaultExtension = "db",
+            });
+            if (saveFile == null) return;
+
+            var outPath = saveFile.Path.LocalPath;
+            await Task.Run(() => ServerManagementPage.BackupDatabase(outPath));
+
+            System.Diagnostics.Debug.WriteLine($"✅ 백업 완료: {outPath}");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"❌ 백업 오류: {ex.Message}");
         }
     }
 
@@ -5562,11 +5620,18 @@ public partial class MainPage : Window
             case "Agent":        _agentTreePage?.ShowAddPanel();           break;
             case "Contract":     _contractPage?.ShowAddPanel();            break;
             case "WasteCompany": _wasteCompanyPage?.ShowAddPanel();        break;
-            case "Purchase":   _purchasePage?.ApproveSelected();         break;
+            case "Purchase":
+                if (_purchasePage != null)
+                {
+                    if (_purchasePage.TrashMode) _purchasePage.RestoreSelected();
+                    else _purchasePage.ApproveSelected();
+                }
+                break;
             case "Quotation":  _quotationPage?.LoadData(); _quotationHistoryPanel?.LoadData(); break;
             case "TestReport": _ = _testReportPage?.DeleteSampleAsync(); break;
             case "WasteAnalysisInput": _ = _wasteAnalysisInputPage?.ImportData(); break;
             case "Repair":          _repairPage?.RejectSelected();           break;
+            case "RiskManage":      _riskPage?.NewItem();                    break;
             case "AnalysisPlan":    SetAnalysisPlanDay(1); break; // 화
             default: break;
         }
@@ -5583,6 +5648,7 @@ public partial class MainPage : Window
             case "WasteAnalysisInput": _wasteAnalysisInputPage?.ExportData(); break;
             case "Repair":          _repairPage?.CompleteSelected();   break;
             case "Quotation":       await ExportQuotationAsync(); break;
+            case "RiskManage":      if (_riskPage != null) _riskPage.TrashMode = !_riskPage.TrashMode; break;
             case "AnalysisPlan":    SetAnalysisPlanDay(2); break; // 수
             default: break;
         }
@@ -5657,7 +5723,13 @@ public partial class MainPage : Window
     {
         switch (_currentMode)
         {
-            case "Purchase":        _purchasePage?.DeleteSelected();        break;
+            case "Purchase":
+                if (_purchasePage != null)
+                {
+                    if (_purchasePage.TrashMode) _purchasePage.PermanentDeleteSelected();
+                    else _purchasePage.DeleteSelected();
+                }
+                break;
             case "TestReport":      _testReportPage?.BatchPrintExcel();     break;
             case "Quotation":       ShowTradeStatementEditor();             break;
             case "QuotationIssue":  IssueTradeStatementFromChecklist();     break;
@@ -6199,7 +6271,12 @@ public partial class MainPage : Window
                     Show2.Content = _agentTreePage.BuildAssignmentChart();
                 break;
             case "Purchase":
-                _purchasePage?.ShowSettings(this);
+                if (_purchasePage != null)
+                {
+                    var newVal = !_purchasePage.TrashMode;
+                    System.Diagnostics.Debug.WriteLine($"[BT7] Purchase TrashMode toggle: {_purchasePage.TrashMode} → {newVal}");
+                    _purchasePage.TrashMode = newVal;
+                }
                 break;
             case "ResultSubmitMeasure":
                 new MeasurerLoginWindow().Show(this);
@@ -6345,8 +6422,8 @@ public partial class MainPage : Window
                 Application.Current.Resources[key] = brush;
         }
 
-        // ── 모든 테마에서 shimmer 활성화 ──
-        Dispatcher.UIThread.Post(() => TextShimmer.AttachAll(this), DispatcherPriority.Background);
+        // ── 모든 테마에서 shimmer 활성화 (임시 비활성화 — 성능 테스트) ──
+        // Dispatcher.UIThread.Post(() => TextShimmer.AttachAll(this), DispatcherPriority.Background);
     }
 
     /// <summary>현재 테마 브러시를 Window.Resources 에서 읽는 헬퍼</summary>
@@ -7020,8 +7097,9 @@ public partial class MainPage : Window
                 "Show4" => Show4,
                 _ => null,
             };
-            if (target is Control targetCtrl)
-                Dispatcher.UIThread.Post(() => TextShimmer.AttachAll(targetCtrl), DispatcherPriority.Background);
+            // (임시 비활성화 — 성능 테스트)
+            // if (target is Control targetCtrl)
+            //     Dispatcher.UIThread.Post(() => TextShimmer.AttachAll(targetCtrl), DispatcherPriority.Background);
         }
     }
 

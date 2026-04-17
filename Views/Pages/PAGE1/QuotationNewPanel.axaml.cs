@@ -86,16 +86,19 @@ public partial class QuotationNewPanel : UserControl
         txbBulkQty.KeyDown     += (_, e) => { if (e.Key == Key.Enter) { e.Handled = true; BtnBulkQty_Click(null, null!); } };
         txbQty.KeyDown         += (_, e) => { if (e.Key == Key.Enter) { e.Handled = true; BtnApplyQty_Click(null, null!); } };
 
-        acbManager.TextChanged += (_, _) =>
+        acbManager.SelectionChanged += (_, _) => OnManagerChanged();
+        acbManager.KeyUp += (_, _) => OnManagerChanged();
+
+        void OnManagerChanged()
         {
-            var name = acbManager.Text?.Trim() ?? "";
+            var name = (acbManager.SelectedItem as string)
+                       ?? acbManager.Text?.Trim() ?? "";
             bool isKnown = !string.IsNullOrWhiteSpace(name)
                         && _knownManagers.Contains(name, StringComparer.OrdinalIgnoreCase);
             bool isNew   = !string.IsNullOrWhiteSpace(name) && !isKnown;
 
             if (isKnown)
             {
-                // 기존 담당자 → DB에서 연락처/이메일 자동 조회
                 var companyName = _company?.C_CompanyName ?? _carrotCompanyName;
                 if (!string.IsNullOrEmpty(companyName))
                 {
@@ -103,7 +106,7 @@ public partial class QuotationNewPanel : UserControl
                     txbManagerPhone.Text = phone;
                     txbManagerEmail.Text = email;
                 }
-                pnlContactInfo.IsVisible = true;   // 확인용으로 표시 (읽기전용 느낌)
+                pnlContactInfo.IsVisible = true;
             }
             else if (isNew)
             {
@@ -115,7 +118,7 @@ public partial class QuotationNewPanel : UserControl
                 txbManagerEmail.Text = "";
                 pnlContactInfo.IsVisible = false;
             }
-        };
+        }
 
         // 한글 IME 따라오기 방지: GotFocus 시 글자 수 저장, 이후 Background 우선순위로 초과분 제거
         AttachImeFix(txbSampleName);
@@ -412,6 +415,7 @@ public partial class QuotationNewPanel : UserControl
         // 빌드 후 ListPanelChanged 이벤트 호출 (자기 자신 전달)
         ListPanelChanged?.Invoke(this);
 
+        var aliasMap = ContractService.GetAnalyteAliasMap();
         decimal totalAmount = 0;
         bool odd = false;
         int idx = 0;
@@ -421,46 +425,71 @@ public partial class QuotationNewPanel : UserControl
             decimal sub = qty * price;
             totalAmount += sub;
 
-            var grid = new Grid
+            // 배지
+            var alias = aliasMap.TryGetValue(name, out var a) ? a : name;
+            var (bgColor, fgColor) = BadgeColorHelper.GetBadgeColor(alias);
+            var badge = new Border
             {
-                ColumnDefinitions = new ColumnDefinitions("*,55,75,80"),
-                Background = Brush.Parse(odd ? "#1a1a28" : "#1e1e30"),
+                Background = new SolidColorBrush(Color.Parse(bgColor)),
+                BorderBrush = new SolidColorBrush(Color.Parse(fgColor)),
+                BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(10),
+                Padding = new Thickness(6, 1, 8, 1),
+                VerticalAlignment = VerticalAlignment.Center,
+                Child = new TextBlock
+                {
+                    Text = alias,
+                    FontSize = AppFonts.Base,
+                    FontWeight = FontWeight.Medium,
+                    FontFamily = Font,
+                    Foreground = new SolidColorBrush(Color.Parse(fgColor)),
+                    VerticalAlignment = VerticalAlignment.Center,
+                }
             };
 
-            // 항목명
+            var contentGrid = new Grid
+            {
+                ColumnDefinitions = new ColumnDefinitions("Auto,*,70,70,70"),
+                VerticalAlignment = VerticalAlignment.Center,
+            };
+
+            // Column 0: 배지
+            contentGrid.Children.Add(badge);
+            Grid.SetColumn(badge, 0);
+
+            // Column 1: 항목명
             var nameBlock = new TextBlock
             {
                 Text      = name,
-                FontSize  = AppFonts.Base, FontFamily = Font,
-                Foreground = AppTheme.FgSecondary,
+                FontSize  = AppFonts.MD, FontFamily = Font,
+                Foreground = Brush.Parse("#cccccc"),
                 TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
                 VerticalAlignment = VerticalAlignment.Center,
-                Margin    = new Avalonia.Thickness(8, 3),
-                Cursor    = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
-                [Grid.ColumnProperty] = 0,
+                Margin    = new Avalonia.Thickness(8, 0, 0, 0),
             };
-            grid.Children.Add(nameBlock);
+            contentGrid.Children.Add(nameBlock);
+            Grid.SetColumn(nameBlock, 1);
 
-            // 수량 인라인 편집 셀
-            var qtyPanel = new Grid { [Grid.ColumnProperty] = 1 };
+            // Column 2: 수량 인라인 편집 셀
+            var qtyPanel = new Grid();
+            Grid.SetColumn(qtyPanel, 2);
             var qtyBtn = new Button
             {
                 Content = qty.ToString(),
-                FontSize = AppFonts.Base,
+                FontSize = AppFonts.MD,
                 FontFamily = Font,
                 Foreground = Brush.Parse(qty > 1 ? "#88d888" : "#888888"),
                 Background = Brushes.Transparent,
                 BorderThickness = new Thickness(0),
-                HorizontalAlignment = HorizontalAlignment.Stretch,
+                HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
                 Padding = new Thickness(0),
-                Margin = new Avalonia.Thickness(0, 2, 0, 2),
                 IsVisible = true,
             };
             var qtyInput = new TextBox
             {
                 Text = qty.ToString(),
-                FontSize = AppFonts.Base,
+                FontSize = AppFonts.MD,
                 FontFamily = Font,
                 Foreground = AppTheme.FgSecondary,
                 Background = AppRes("InputBg"),
@@ -469,12 +498,12 @@ public partial class QuotationNewPanel : UserControl
                 HorizontalContentAlignment = HorizontalAlignment.Center,
                 VerticalContentAlignment = VerticalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
-                Margin = new Avalonia.Thickness(0, 2, 0, 2),
+                Width = 50,
                 IsVisible = false,
             };
             qtyPanel.Children.Add(qtyBtn);
             qtyPanel.Children.Add(qtyInput);
-            grid.Children.Add(qtyPanel);
+            contentGrid.Children.Add(qtyPanel);
 
             while (_rowQtyButtons.Count <= idx) _rowQtyButtons.Add(null);
             while (_rowQtyInputs.Count <= idx) _rowQtyInputs.Add(null);
@@ -490,7 +519,6 @@ public partial class QuotationNewPanel : UserControl
                 {
                     ke.Handled = true;
                     CommitQty(idx);
-                    // 마지막 행이 아니면 다음 행으로 이동, 마지막 행이면 TextBox 닫기
                     if (idx < _rowQtyButtons.Count - 1)
                         MoveQtyFocus(idx, +1);
                 }
@@ -498,14 +526,44 @@ public partial class QuotationNewPanel : UserControl
                 else if (ke.Key == Key.Escape)                 { ke.Handled = true; qtyInput.IsVisible = false; qtyBtn.IsVisible = true; }
             }, Avalonia.Interactivity.RoutingStrategies.Tunnel);
 
-            grid.PointerPressed += (_, pe) => { SelectGridRow(idx); };
+            // Column 3: 단가
+            var priceLabel = new TextBlock
+            {
+                Text = price > 0 ? $"{price:#,0}" : "—",
+                FontSize = AppFonts.MD,
+                Foreground = Brush.Parse("#888888"),
+                VerticalAlignment = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center,
+            };
+            contentGrid.Children.Add(priceLabel);
+            Grid.SetColumn(priceLabel, 3);
 
-            // 단가
-            grid.Children.Add(Cell(price > 0 ? $"{price:#,0}" : "—", AppFonts.Base, "#aaaaaa", 2, HorizontalAlignment.Right));
-            // 소계
-            grid.Children.Add(Cell(sub > 0 ? $"{sub:#,0}" : "—", AppFonts.Base, "#88cc88", 3, HorizontalAlignment.Right));
+            // Column 4: 소계
+            var subtotalLabel = new TextBlock
+            {
+                Text = sub > 0 ? $"{sub:#,0}" : "—",
+                FontSize = AppFonts.MD,
+                Foreground = Brush.Parse("#88cc88"),
+                VerticalAlignment = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center,
+            };
+            contentGrid.Children.Add(subtotalLabel);
+            Grid.SetColumn(subtotalLabel, 4);
 
-            spItems.Children.Add(grid);
+            // Border 감싸기
+            var itemBorder = new Border
+            {
+                Background = Brush.Parse(odd ? "#1a1a28" : "#1e1e30"),
+                Padding = new Thickness(12, 4),
+                Margin = new Thickness(0, 1),
+                CornerRadius = new CornerRadius(4),
+                Cursor = new Cursor(Avalonia.Input.StandardCursorType.Hand),
+                Child = contentGrid,
+            };
+
+            itemBorder.PointerPressed += (_, pe) => { SelectGridRow(idx); };
+
+            spItems.Children.Add(itemBorder);
             odd = !odd;
             idx++;
         }

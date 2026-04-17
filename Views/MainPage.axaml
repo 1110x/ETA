@@ -625,6 +625,7 @@
                         <MenuItem Header="센터명칭"         x:Name="MenuItemWaterQualityNameReconcile" Click="WaterQualityNameReconcile_Click"/>
                         <MenuItem Header="폐수배출업소명칭"  x:Name="MenuItemWasteNameReconcile"          Click="WasteNameReconcile_Click"/>
                         <MenuItem Header="접근관리"         Click="Access_Click" x:Name="MenuItemAccess"/>
+                        <MenuItem Header="서버관리"         Click="ServerManagement_Click" x:Name="MenuItemServerManagement"/>
                     </MenuItem>
 
                     <MenuItem Header="AI 학습" x:Name="MenuItemAiLearning">

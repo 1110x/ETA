@@ -402,3 +402,6 @@
 [01:00:03.013] [EnsureTables] DB연결 OK. 타입: MySqlConnection
 [01:00:03.016] [EnsureTables] 테이블 존재: True
 [01:00:03.111] [EnsureTables] 테이블 정상 확인
+[16:57:13.476] [EnsureTables] DB연결 OK. 타입: MySqlConnection
+[16:57:13.498] [EnsureTables] 테이블 존재: True
+[16:57:13.619] [EnsureTables] 테이블 정상 확인

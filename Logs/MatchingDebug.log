@@ -19063,3 +19063,52 @@
 [2026-04-15 19:18:01.336] UI DISPLAY: 탈수케이크 → '처리시설'
 [2026-04-15 19:18:01.336] UI DISPLAY: 무산소조 유입-기존 Source=처리시설 IsControl=False
 [2026-04-15 19:18:01.337] UI DISPLAY: 무산소조 유입-기존 → '처리시설'
+[2026-04-17 00:24:14.383] LoadVerifiedGrid: No data found for category BOD
+[2026-04-17 00:24:43.052] LoadVerifiedGrid: No data found for category BOD
+[2026-04-17 00:24:54.191] LoadVerifiedGrid: No data found for category BOD
+[2026-04-17 01:00:49.364] LoadVerifiedGrid: Found 20 excel rows
+[2026-04-17 01:00:49.366] Row 12-23-01: Source=미분류, Status=입력가능, 시료명='(주)엘지화학[엔씨씨옥소알콜-엔씨씨]', Matched=, Analysis=
+[2026-04-17 01:00:49.366] Row 12-23-02: Source=미분류, Status=입력가능, 시료명='(주)엘지화학[엔씨씨옥소알콜-옥소알콜]', Matched=, Analysis=
+[2026-04-17 01:00:49.366] Row 12-23-03: Source=미분류, Status=입력가능, 시료명='한화솔루션(주)여수[1공장]', Matched=, Analysis=
+[2026-04-17 01:00:49.366] Row 12-23-04: Source=미분류, Status=입력가능, 시료명='금호폴리켐(주)여수1공장', Matched=, Analysis=
+[2026-04-17 01:00:49.366] Row 12-23-05: Source=미분류, Status=입력가능, 시료명='(주)롯데지에스화학', Matched=, Analysis=
+[2026-04-17 01:00:49.446] UI DISPLAY: 12-23-01 Source=폐수배출업소 IsControl=False
+[2026-04-17 01:00:49.446] UI DISPLAY: 12-23-01 → '폐수배출-여수'
+[2026-04-17 01:00:49.447] UI DISPLAY: 12-23-02 Source=폐수배출업소 IsControl=False
+[2026-04-17 01:00:49.447] UI DISPLAY: 12-23-02 → '폐수배출-여수'
+[2026-04-17 01:00:49.447] UI DISPLAY: 12-23-03 Source=폐수배출업소 IsControl=False
+[2026-04-17 01:00:49.447] UI DISPLAY: 12-23-03 → '폐수배출-여수'
+[2026-04-17 01:00:49.447] UI DISPLAY: 12-23-04 Source=폐수배출업소 IsControl=False
+[2026-04-17 01:00:49.447] UI DISPLAY: 12-23-04 → '폐수배출-여수'
+[2026-04-17 01:00:49.447] UI DISPLAY: 12-23-05 Source=폐수배출업소 IsControl=False
+[2026-04-17 01:00:49.447] UI DISPLAY: 12-23-05 → '폐수배출-여수'
+[2026-04-17 01:00:49.447] UI DISPLAY: 12-23-06 Source=폐수배출업소 IsControl=False
+[2026-04-17 01:00:49.447] UI DISPLAY: 12-23-06 → '폐수배출-여수'
+[2026-04-17 01:00:49.447] UI DISPLAY: 12-24-01 Source=폐수배출업소 IsControl=False
+[2026-04-17 01:00:49.448] UI DISPLAY: 12-24-01 → '폐수배출-여수'
+[2026-04-17 01:00:49.448] UI DISPLAY: 12-24-02 Source=폐수배출업소 IsControl=False
+[2026-04-17 01:00:49.448] UI DISPLAY: 12-24-02 → '폐수배출-여수'
+[2026-04-17 01:00:49.449] UI DISPLAY: 12-24-03 Source=폐수배출업소 IsControl=False
+[2026-04-17 01:00:49.449] UI DISPLAY: 12-24-03 → '폐수배출-여수'
+[2026-04-17 01:00:49.449] UI DISPLAY: 12-24-04 Source=폐수배출업소 IsControl=False
+[2026-04-17 01:00:49.449] UI DISPLAY: 12-24-04 → '폐수배출-여수'
+[2026-04-17 01:00:49.449] UI DISPLAY: 12-24-05 Source=폐수배출업소 IsControl=False
+[2026-04-17 01:00:49.449] UI DISPLAY: 12-24-05 → '폐수배출-여수'
+[2026-04-17 01:00:49.449] UI DISPLAY: 12-24-06 Source=폐수배출업소 IsControl=False
+[2026-04-17 01:00:49.449] UI DISPLAY: 12-24-06 → '폐수배출-여수'
+[2026-04-17 01:00:49.449] UI DISPLAY: 12-24-07 Source=폐수배출업소 IsControl=False
+[2026-04-17 01:00:49.449] UI DISPLAY: 12-24-07 → '폐수배출-여수'
+[2026-04-17 01:00:49.450] UI DISPLAY: 12-24-08 Source=폐수배출업소 IsControl=False
+[2026-04-17 01:00:49.450] UI DISPLAY: 12-24-08 → '폐수배출-여수'
+[2026-04-17 01:00:49.450] UI DISPLAY: 12-24-09 Source=폐수배출업소 IsControl=False
+[2026-04-17 01:00:49.450] UI DISPLAY: 12-24-09 → '폐수배출-여수'
+[2026-04-17 01:00:49.450] UI DISPLAY: 12-24-10 Source=폐수배출업소 IsControl=False
+[2026-04-17 01:00:49.450] UI DISPLAY: 12-24-10 → '폐수배출-여수'
+[2026-04-17 01:00:49.450] UI DISPLAY: 12-24-11 Source=미분류 IsControl=False
+[2026-04-17 01:00:49.450] UI DISPLAY: 12-24-11 → '—'
+[2026-04-17 01:00:49.450] UI DISPLAY: 12-24-12 Source=미분류 IsControl=False
+[2026-04-17 01:00:49.450] UI DISPLAY: 12-24-12 → '—'
+[2026-04-17 01:00:49.450] UI DISPLAY: 12-24-13 Source=미분류 IsControl=False
+[2026-04-17 01:00:49.450] UI DISPLAY: 12-24-13 → '—'
+[2026-04-17 01:00:49.450] UI DISPLAY: 12-24-14 Source=미분류 IsControl=False
+[2026-04-17 01:00:49.450] UI DISPLAY: 12-24-14 → '—'

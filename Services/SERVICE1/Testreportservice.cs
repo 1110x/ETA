@@ -204,35 +204,83 @@ public static class TestReportService
         return dict;
     }
 
-    // 방류기준표: 구분(col0)=항목명(행), 헤더=방류허용기준 컬럼명(열)
-    public static string GetStandardValue(string 항목명, string 방류허용기준컬럼)
+    /// <summary>
+    /// 특정 방류허용기준 코드(행)의 전체 항목값을 한번에 로드
+    /// 새 구조: 행=방류기준코드, 열=분석항목
+    /// </summary>
+    public static Dictionary<string, string> GetStandardValueMap(string 방류허용기준코드)
     {
-        if (string.IsNullOrEmpty(항목명) || string.IsNullOrEmpty(방류허용기준컬럼)) return "";
+        var map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        if (string.IsNullOrEmpty(방류허용기준코드)) return map;
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            if (!DbConnectionFactory.TableExists(conn, "방류기준표")) return map;
+
+            // 구분 컬럼 매칭: 정확 일치 → 하이픈/공백 무시 매칭
+            using var findCmd = conn.CreateCommand();
+            findCmd.CommandText = "SELECT 구분 FROM `방류기준표`";
+            var allCodes = new List<string>();
+            using (var r0 = findCmd.ExecuteReader())
+                while (r0.Read()) allCodes.Add(r0.GetValue(0)?.ToString()?.Trim() ?? "");
+
+            var target = 방류허용기준코드.Trim();
+            string? matchCode = allCodes.FirstOrDefault(c => c == target);
+            if (matchCode == null)
+            {
+                var norm = (string s) => s.Replace("-", "").Replace(" ", "").ToLower().Trim();
+                matchCode = allCodes.FirstOrDefault(c => norm(c) == norm(target));
+            }
+            if (matchCode == null) return map;
+
+            // 해당 행의 모든 컬럼(분석항목) 조회
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT * FROM `방류기준표` WHERE TRIM(`구분`) = @code LIMIT 1";
+            cmd.Parameters.AddWithValue("@code", matchCode);
+            using var r = cmd.ExecuteReader();
+            if (r.Read())
+            {
+                for (int i = 0; i < r.FieldCount; i++)
+                {
+                    var col = r.GetName(i);
+                    if (col == "_id" || col == "구분") continue;
+                    var val = r.IsDBNull(i) ? "" : r.GetValue(i)?.ToString()?.Trim() ?? "";
+                    if (val == "해당없음") val = "";
+                    map[col] = val;
+                }
+            }
+        }
+        catch { }
+        return map;
+    }
+
+    // 방류기준표: 행=방류기준코드, 열=분석항목
+    public static string GetStandardValue(string 항목명, string 방류허용기준코드)
+    {
+        if (string.IsNullOrEmpty(항목명) || string.IsNullOrEmpty(방류허용기준코드)) return "";
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             if (!DbConnectionFactory.TableExists(conn, "방류기준표")) { return ""; }
 
-            var safeCol = 방류허용기준컬럼.Trim();
+            var safeCol = 항목명.Trim();
             var cols = DbConnectionFactory.GetColumnNames(conn, "방류기준표");
 
-            // 정확히 일치 → 없으면 하이픈/공백 무시 후 유사 매칭
+            // 분석항목 컬럼 매칭
             string? matchCol = cols.FirstOrDefault(col => col.Trim() == safeCol);
             if (matchCol == null)
             {
                 var norm = (string s) => s.Replace("-", "").Replace(" ", "").ToLower().Trim();
                 matchCol = cols.FirstOrDefault(col => norm(col) == norm(safeCol));
             }
-            if (matchCol == null)
-            {
-                return "";
-            }
+            if (matchCol == null) return "";
             safeCol = matchCol.Trim();
 
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = $"SELECT `{safeCol}` FROM `방류기준표` WHERE TRIM(`구분`) = @항목 LIMIT 1";
-            cmd.Parameters.AddWithValue("@항목", 항목명.Trim());
+            cmd.CommandText = $"SELECT `{safeCol}` FROM `방류기준표` WHERE TRIM(`구분`) = @code LIMIT 1";
+            cmd.Parameters.AddWithValue("@code", 방류허용기준코드.Trim());
             var result = cmd.ExecuteScalar();
             var val    = result == null || result == DBNull.Value ? "" : result.ToString()?.Trim() ?? "";
             return val == "해당없음" ? "" : val;

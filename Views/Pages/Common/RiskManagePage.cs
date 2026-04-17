@@ -130,10 +130,23 @@ public class RiskManagePage
 
     public void Refresh() => RenderList();
 
-    public void DeleteSelected()
+    /// <summary>휴지통 모드 (true: 삭제된 항목만 표시)</summary>
+    private bool _trashMode = false;
+    public bool TrashMode
+    {
+        get => _trashMode;
+        set { _trashMode = value; RenderList(); ClearDetail(); }
+    }
+
+    public async void DeleteSelected()
     {
         if (_category == "시약" && _editingReagent != null)
         {
+            var name = _editingReagent.품목명 ?? "";
+            var confirmed = await ShowConfirmAsync(
+                "삭제 확인",
+                $"[{name}]\n\n이 항목을 삭제하시겠습니까?\n(휴지통에서 복원 가능합니다.)");
+            if (!confirmed) return;
             ReagentService.Delete(_editingReagent.Id);
             _editingReagent = null;
             RenderList();
@@ -141,11 +154,101 @@ public class RiskManagePage
         }
         else if (_category == "초자" && _editingGlass != null)
         {
+            var name = _editingGlass.품목명 ?? "";
+            var confirmed = await ShowConfirmAsync(
+                "삭제 확인",
+                $"[{name}]\n\n이 항목을 삭제하시겠습니까?\n(현재 초자는 영구 삭제됩니다.)");
+            if (!confirmed) return;
             GlasswareService.Delete(_editingGlass.Id);
             _editingGlass = null;
             RenderList();
             ClearDetail();
         }
+    }
+
+    /// <summary>휴지통에서 복원</summary>
+    public void RestoreSelected()
+    {
+        if (_category == "시약" && _editingReagent != null)
+        {
+            ReagentService.Restore(_editingReagent.Id);
+            _editingReagent = null;
+            RenderList();
+            ClearDetail();
+        }
+    }
+
+    /// <summary>신규 추가 (Show3 폼 초기화)</summary>
+    public void NewItem()
+    {
+        if (_category == "시약")
+        {
+            _editingReagent = new Reagent();
+            LoadReagentToForm(new Reagent());
+        }
+        else if (_category == "초자")
+        {
+            _editingGlass = new Glassware();
+            LoadGlassToForm(new Glassware());
+        }
+    }
+
+    private async Task<bool> ShowConfirmAsync(string title, string message)
+    {
+        var tcs = new TaskCompletionSource<bool>();
+        var win = new Window
+        {
+            Title = title,
+            Width = 420, Height = 200,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            CanResize = false,
+        };
+
+        var msgBlock = new TextBlock
+        {
+            Text = message,
+            FontFamily = FontM, FontSize = AppTheme.FontMD,
+            TextWrapping = TextWrapping.Wrap,
+            Margin = new Thickness(20, 20, 20, 0),
+        };
+        var btnOk = new Button
+        {
+            Content = "삭제", Width = 90, Height = 32,
+            Background = new SolidColorBrush(Color.Parse("#3a1a1a")),
+            Foreground = new SolidColorBrush(Color.Parse("#ff8888")),
+            FontFamily = FontM, FontSize = AppTheme.FontBase,
+            BorderThickness = new Thickness(0),
+            CornerRadius = new CornerRadius(4),
+        };
+        var btnCancel = new Button
+        {
+            Content = "취소", Width = 90, Height = 32,
+            FontFamily = FontM, FontSize = AppTheme.FontBase,
+            BorderThickness = new Thickness(0),
+            CornerRadius = new CornerRadius(4),
+        };
+        btnOk.Click += (_, _) => { tcs.TrySetResult(true); win.Close(); };
+        btnCancel.Click += (_, _) => { tcs.TrySetResult(false); win.Close(); };
+
+        var btnPanel = new StackPanel
+        {
+            Orientation = Orientation.Horizontal, Spacing = 8,
+            HorizontalAlignment = HorizontalAlignment.Right,
+            Margin = new Thickness(20),
+        };
+        btnPanel.Children.Add(btnCancel);
+        btnPanel.Children.Add(btnOk);
+
+        var grid = new Grid { RowDefinitions = new RowDefinitions("*,Auto") };
+        Grid.SetRow(msgBlock, 0); grid.Children.Add(msgBlock);
+        Grid.SetRow(btnPanel, 1); grid.Children.Add(btnPanel);
+        win.Content = grid;
+        win.Closed += (_, _) => tcs.TrySetResult(false);
+
+        var owner = TopLevel.GetTopLevel(_listPanel) as Window;
+        if (owner != null) await win.ShowDialog(owner);
+        else win.Show();
+        return await tcs.Task;
     }
 
     // =========================================================================
@@ -193,7 +296,7 @@ public class RiskManagePage
     // ── 시약 목록 ────────────────────────────────────────────────────────────
     private void RenderReagentList(string query)
     {
-        var all = ReagentService.GetAll();
+        var all = _trashMode ? ReagentService.GetAllDeleted() : ReagentService.GetAll();
         var filtered = string.IsNullOrEmpty(query)
             ? all
             : all.Where(r =>
@@ -203,7 +306,8 @@ public class RiskManagePage
                 r.CAS번호.ToLower().Contains(query) ||
                 r.ITEM_NO.ToLower().Contains(query)).ToList();
 
-        _listCount.Text = $"시약  {filtered.Count} / {all.Count}건";
+        var mode = _trashMode ? "🗑 휴지통" : "시약";
+        _listCount.Text = $"{mode}  {filtered.Count} / {all.Count}건";
         foreach (var item in filtered)
             _listPanel.Children.Add(MakeReagentCard(item));
     }

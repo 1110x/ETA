@@ -12,22 +12,22 @@ namespace ETA.Services.SERVICE2;
 
 public static class WasteSampleService
 {
-    // UV 5항목 컬럼이 폐수의뢰및결과 테이블에 존재하는지 여부 캐시
+    // UV 5항목 컬럼이 비용부담금_결과 테이블에 존재하는지 여부 캐시
     private static bool _uvColumnsEnsured;
     private static readonly string[] _uvColumnNames = { "시안", "6가크롬", "색도", "ABS", "불소" };
 
-    /// <summary>폐수의뢰및결과 테이블에 UV 5항목 컬럼이 존재하는지 확인하고, 없으면 추가</summary>
+    /// <summary>비용부담금_결과 테이블에 UV 5항목 컬럼이 존재하는지 확인하고, 없으면 추가</summary>
     private static void EnsureUvColumns(DbConnection conn)
     {
         if (_uvColumnsEnsured) return;
         foreach (var col in _uvColumnNames)
         {
-            if (!DbConnectionFactory.ColumnExists(conn, "폐수의뢰및결과", col))
+            if (!DbConnectionFactory.ColumnExists(conn, "비용부담금_결과", col))
             {
                 try
                 {
                     using var alt = conn.CreateCommand();
-                    alt.CommandText = $"ALTER TABLE `폐수의뢰및결과` ADD COLUMN `{col}` TEXT DEFAULT ''";
+                    alt.CommandText = $"ALTER TABLE `비용부담금_결과` ADD COLUMN `{col}` TEXT DEFAULT ''";
                     alt.ExecuteNonQuery();
                 }
                 catch { /* 이미 존재하거나 병렬 마이그레이션 */ }
@@ -36,13 +36,13 @@ public static class WasteSampleService
         _uvColumnsEnsured = true;
     }
 
-    // 폐수의뢰및결과 SELECT의 공통 컬럼 목록
+    // 비용부담금_결과 SELECT의 공통 컬럼 목록
     private const string SelectColumns = @"Id, 채수일, 구분, 순서, SN, 업체명, 관리번호,
                    BOD, `TOC`, SS, `T-N`, `T-P`, `N-Hexan`, Phenols,
                    비고, 확인자,
                    `시안`, `6가크롬`, `색도`, `ABS`, `불소`";
 
-    // ── 연월 목록 (폐수의뢰및결과 + 처리시설_작업 UNION, 역순) ────────────────
+    // ── 연월 목록 (비용부담금_결과 + 처리시설_작업 UNION, 역순) ────────────────
     public static List<string> GetMonths()
     {
         var list = new List<string>();
@@ -51,7 +51,7 @@ public static class WasteSampleService
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
             SELECT DISTINCT ym FROM (
-                SELECT SUBSTR(채수일, 1, 7) AS ym FROM `폐수의뢰및결과`
+                SELECT SUBSTR(채수일, 1, 7) AS ym FROM `비용부담금_결과`
                 UNION
                 SELECT SUBSTR(채취일자, 1, 7) AS ym FROM `처리시설_작업`
             ) t ORDER BY ym DESC";
@@ -69,7 +69,7 @@ public static class WasteSampleService
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
             SELECT DISTINCT d FROM (
-                SELECT 채수일 AS d FROM `폐수의뢰및결과` WHERE SUBSTR(채수일,1,7)=@ym
+                SELECT 채수일 AS d FROM `비용부담금_결과` WHERE SUBSTR(채수일,1,7)=@ym
                 UNION
                 SELECT 채취일자 AS d FROM `처리시설_작업` WHERE SUBSTR(채취일자,1,7)=@ym
             ) t ORDER BY d DESC";
@@ -86,7 +86,7 @@ public static class WasteSampleService
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = "SELECT DISTINCT 채수일 FROM `폐수의뢰및결과` ORDER BY 채수일 DESC";
+        cmd.CommandText = "SELECT DISTINCT 채수일 FROM `비용부담금_결과` ORDER BY 채수일 DESC";
         using var r = cmd.ExecuteReader();
         while (r.Read()) list.Add(r.GetString(0));
         return list;
@@ -101,7 +101,7 @@ public static class WasteSampleService
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
             SELECT DISTINCT 채수일
-            FROM `폐수의뢰및결과`
+            FROM `비용부담금_결과`
             WHERE 채수일 <= @maxDate
             ORDER BY 채수일 DESC";
         cmd.Parameters.AddWithValue("@maxDate", maxDateInclusive);
@@ -120,7 +120,7 @@ public static class WasteSampleService
         using var cmd = conn.CreateCommand();
         cmd.CommandText = $@"
             SELECT {SelectColumns}
-            FROM `폐수의뢰및결과`
+            FROM `비용부담금_결과`
             WHERE 채수일 = @d
             ORDER BY CASE 구분 WHEN '여수' THEN 0 WHEN '율촌' THEN 1 WHEN '세풍' THEN 2 ELSE 3 END,
                      순서 ASC";
@@ -144,7 +144,7 @@ public static class WasteSampleService
             var cutoff = DateTime.Today.AddMonths(-months).ToString("yyyy-MM-dd");
             cmd.CommandText = $@"
                 SELECT {SelectColumns}
-                FROM `폐수의뢰및결과`
+                FROM `비용부담금_결과`
                 WHERE 채수일 >= @cutoff
                 ORDER BY 채수일 DESC, 순서 ASC";
             cmd.Parameters.AddWithValue("@cutoff", cutoff);
@@ -165,7 +165,7 @@ public static class WasteSampleService
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = "SELECT 업체명 FROM `폐수의뢰및결과` WHERE 채수일 = @d";
+        cmd.CommandText = "SELECT 업체명 FROM `비용부담금_결과` WHERE 채수일 = @d";
         cmd.Parameters.AddWithValue("@d", 채수일);
         using var r = cmd.ExecuteReader();
         while (r.Read()) set.Add(r.GetString(0));
@@ -183,7 +183,7 @@ public static class WasteSampleService
         conn.Open();
         using var cmd = conn.CreateCommand();
         cmd.CommandText = $@"
-            INSERT INTO `폐수의뢰및결과` (채수일, 구분, 순서, SN, 업체명, 관리번호,
+            INSERT INTO `비용부담금_결과` (채수일, 구분, 순서, SN, 업체명, 관리번호,
                    BOD, `TOC`, SS, `T-N`, `T-P`, `N-Hexan`, Phenols, 확인자)
             VALUES (@d, @g, @s, @sn, @name, @no,
                    '', '', '', '', '', '', '', @chk);
@@ -214,7 +214,7 @@ public static class WasteSampleService
         string 채수일 = "", 구분 = "";
         using (var cmd = conn.CreateCommand())
         {
-            cmd.CommandText = "SELECT 채수일, 구분 FROM `폐수의뢰및결과` WHERE Id=@id";
+            cmd.CommandText = "SELECT 채수일, 구분 FROM `비용부담금_결과` WHERE Id=@id";
             cmd.Parameters.AddWithValue("@id", id);
             using var r = cmd.ExecuteReader();
             if (r.Read()) { 채수일 = r.GetString(0); 구분 = r.GetString(1); }
@@ -222,7 +222,7 @@ public static class WasteSampleService
 
         using (var cmd = conn.CreateCommand())
         {
-            cmd.CommandText = "DELETE FROM `폐수의뢰및결과` WHERE Id=@id";
+            cmd.CommandText = "DELETE FROM `비용부담금_결과` WHERE Id=@id";
             cmd.Parameters.AddWithValue("@id", id);
             cmd.ExecuteNonQuery();
         }
@@ -268,7 +268,7 @@ public static class WasteSampleService
         var ids = new List<int>();
         using (var cmd = conn.CreateCommand())
         {
-            cmd.CommandText = "SELECT Id FROM `폐수의뢰및결과` WHERE 채수일=@d AND 구분=@g ORDER BY 순서 ASC";
+            cmd.CommandText = "SELECT Id FROM `비용부담금_결과` WHERE 채수일=@d AND 구분=@g ORDER BY 순서 ASC";
             cmd.Parameters.AddWithValue("@d", 채수일);
             cmd.Parameters.AddWithValue("@g", 구분);
             using var r = cmd.ExecuteReader();
@@ -290,7 +290,7 @@ public static class WasteSampleService
             int seq = i + 1;
             string sn = WasteSample.BuildSN(채수일, 구분, seq);
             using var upd = conn.CreateCommand();
-            upd.CommandText = "UPDATE `폐수의뢰및결과` SET 순서=@s, SN=@sn WHERE Id=@id";
+            upd.CommandText = "UPDATE `비용부담금_결과` SET 순서=@s, SN=@sn WHERE Id=@id";
             upd.Parameters.AddWithValue("@s",  seq);
             upd.Parameters.AddWithValue("@sn", sn);
             upd.Parameters.AddWithValue("@id", ids[i]);
@@ -309,7 +309,7 @@ public static class WasteSampleService
         EnsureUvColumns(conn);
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            UPDATE `폐수의뢰및결과`
+            UPDATE `비용부담금_결과`
             SET BOD=@bod, `TOC`=@toc, SS=@ss,
                 `T-N`=@tn, `T-P`=@tp, `N-Hexan`=@nh, Phenols=@ph,
                 `시안`=@cn, `6가크롬`=@cr6, `색도`=@color, `ABS`=@abs, `불소`=@fl
@@ -335,7 +335,7 @@ public static class WasteSampleService
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = "SELECT COALESCE(MAX(순서),0)+1 FROM `폐수의뢰및결과` WHERE 채수일=@d AND 구분=@g";
+        cmd.CommandText = "SELECT COALESCE(MAX(순서),0)+1 FROM `비용부담금_결과` WHERE 채수일=@d AND 구분=@g";
         cmd.Parameters.AddWithValue("@d", 채수일);
         cmd.Parameters.AddWithValue("@g", 구분);
         return Convert.ToInt32(cmd.ExecuteScalar());
@@ -344,7 +344,7 @@ public static class WasteSampleService
     private static void UpdateSeq(DbConnection conn, WasteSample s)
     {
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = "UPDATE `폐수의뢰및결과` SET 순서=@seq WHERE Id=@id";
+        cmd.CommandText = "UPDATE `비용부담금_결과` SET 순서=@seq WHERE Id=@id";
         cmd.Parameters.AddWithValue("@seq", s.순서);
         cmd.Parameters.AddWithValue("@id",  s.Id);
         cmd.ExecuteNonQuery();
@@ -354,7 +354,7 @@ public static class WasteSampleService
     private static void Renumber(DbConnection conn, string 채수일, string 구분)
     {
         using var sel = conn.CreateCommand();
-        sel.CommandText = "SELECT Id FROM `폐수의뢰및결과` WHERE 채수일=@d AND 구분=@g ORDER BY 순서 ASC";
+        sel.CommandText = "SELECT Id FROM `비용부담금_결과` WHERE 채수일=@d AND 구분=@g ORDER BY 순서 ASC";
         sel.Parameters.AddWithValue("@d", 채수일);
         sel.Parameters.AddWithValue("@g", 구분);
         var ids = new List<long>();
@@ -366,7 +366,7 @@ public static class WasteSampleService
             int seq = i + 1;
             string sn = WasteSample.BuildSN(채수일, 구분, seq);
             using var upd = conn.CreateCommand();
-            upd.CommandText = "UPDATE `폐수의뢰및결과` SET 순서=@s, SN=@sn WHERE Id=@id";
+            upd.CommandText = "UPDATE `비용부담금_결과` SET 순서=@s, SN=@sn WHERE Id=@id";
             upd.Parameters.AddWithValue("@s",   seq);
             upd.Parameters.AddWithValue("@sn",  sn);
             upd.Parameters.AddWithValue("@id",  ids[i]);
@@ -374,7 +374,7 @@ public static class WasteSampleService
         }
     }
 
-    /// <summary>폐수의뢰및결과 SELECT 결과를 WasteSample로 매핑 (UV 5항목은 SELECT에 포함된 경우만)</summary>
+    /// <summary>비용부담금_결과 SELECT 결과를 WasteSample로 매핑 (UV 5항목은 SELECT에 포함된 경우만)</summary>
     private static WasteSample Map(DbDataReader r)
     {
         var s = new WasteSample
@@ -1108,7 +1108,7 @@ public static class WasteSampleService
         catch { return ""; }
     }
 
-    /// <summary>SN으로 폐수의뢰및결과에서 업체명/구분 조회</summary>
+    /// <summary>SN으로 비용부담금_결과에서 업체명/구분 조회</summary>
     public static WasteSample? FindBySN(string sn)
     {
         try
@@ -1116,7 +1116,7 @@ public static class WasteSampleService
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = "SELECT SN, 업체명, 구분 FROM `폐수의뢰및결과` WHERE SN=@sn LIMIT 1";
+            cmd.CommandText = "SELECT SN, 업체명, 구분 FROM `비용부담금_결과` WHERE SN=@sn LIMIT 1";
             cmd.Parameters.AddWithValue("@sn", sn);
             using var r = cmd.ExecuteReader();
             if (r.Read())

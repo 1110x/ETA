@@ -36,7 +36,7 @@
         <Border Grid.Row="0"
                 Background="{DynamicResource PanelBg}"
                 CornerRadius="6,6,0,0"
-                Padding="10,6">
+                Padding="2,8,2,2">
             <TextBlock Text="계약업체 목록"
                        FontSize="{DynamicResource FontSizeBase}" FontWeight="SemiBold"
                        Foreground="{DynamicResource FgMuted}"

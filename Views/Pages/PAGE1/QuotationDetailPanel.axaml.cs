@@ -470,8 +470,9 @@ public partial class QuotationDetailPanel : UserControl
                 Background = Brush.Parse("Transparent"),
                 BorderThickness = new Thickness(0),
                 Padding = new Thickness(2, 0),
-                TextAlignment = Avalonia.Media.TextAlignment.Right,
+                TextAlignment = Avalonia.Media.TextAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
+                VerticalContentAlignment = VerticalAlignment.Center,
             };
 
             // 소계 표시 (동적 업데이트)
@@ -525,7 +526,7 @@ public partial class QuotationDetailPanel : UserControl
             // 항목 정보 Grid: [배지] [항목명] [수량] [단가] [소계]
             var contentGrid = new Grid
             {
-                ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto,Auto,70"),
+                ColumnDefinitions = new ColumnDefinitions("Auto,*,70,70,70"),
                 Margin = new Thickness(0),
                 VerticalAlignment = VerticalAlignment.Center,
             };
@@ -547,28 +548,29 @@ public partial class QuotationDetailPanel : UserControl
             contentGrid.Children.Add(itemNameTb);
             Grid.SetColumn(itemNameTb, 1);
 
-            // 수량 (TextBox만 표시, 우측 정렬)
-            quantityBox.HorizontalAlignment = HorizontalAlignment.Right;
-            quantityBox.Width = double.NaN;  // 자동 너비
-            quantityBox.FontSize = AppFonts.MD;  // 폰트 크기 증가
+            // 수량 (중앙 정렬)
+            quantityBox.HorizontalAlignment = HorizontalAlignment.Center;
+            quantityBox.VerticalAlignment = VerticalAlignment.Center;
+            quantityBox.Width = double.NaN;
+            quantityBox.FontSize = AppFonts.MD;
             contentGrid.Children.Add(quantityBox);
             Grid.SetColumn(quantityBox, 2);
 
-            // 단가 정보 (폰트 크기를 md로 키워서 수량과 같은 크기)
+            // 단가
             var priceLabel = new TextBlock
             {
                 Text = FmtNum(priceStr),
                 FontSize = AppFonts.MD,
                 Foreground = Brush.Parse("#888888"),
                 VerticalAlignment = VerticalAlignment.Center,
-                Margin = new Thickness(12, 0, 0, 0),
-                MinWidth = 60,  // 단가 없을 때도 컬럼 너비 유지
+                HorizontalAlignment = HorizontalAlignment.Center,
             };
             contentGrid.Children.Add(priceLabel);
             Grid.SetColumn(priceLabel, 3);
 
             // 소계
-            subtotalBlock.FontSize = AppFonts.MD;  // 소계도 MD 크기로 증가
+            subtotalBlock.FontSize = AppFonts.MD;
+            subtotalBlock.HorizontalAlignment = HorizontalAlignment.Center;
             contentGrid.Children.Add(subtotalBlock);
             Grid.SetColumn(subtotalBlock, 4);
 
@@ -576,7 +578,7 @@ public partial class QuotationDetailPanel : UserControl
             var itemBorder = new Border
             {
                 Background = Brush.Parse(odd ? "#1a1a28" : "#1e1e30"),
-                Padding = new Thickness(12, 8),
+                Padding = new Thickness(12, 2),
                 Margin = new Thickness(0, 2),
                 CornerRadius = new CornerRadius(4),
                 Cursor = new Cursor(Avalonia.Input.StandardCursorType.Hand),

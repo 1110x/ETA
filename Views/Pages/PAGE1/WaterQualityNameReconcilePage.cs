@@ -29,6 +29,7 @@ public sealed class WaterQualityNameReconcilePage
 
     public Control LeftPanel   { get; }   // Show1: 약칭 트리
     public Control CenterPanel { get; }   // Show2: 매핑 편집기
+    public Control BottomPanel { get; }   // Show3: 의뢰일 그리드
     public Control RightPanel  { get; }   // Show4: 목표명 입력 + 시료명 목록
 
     private string? _abbr;               // 선택된 약칭
@@ -41,11 +42,13 @@ public sealed class WaterQualityNameReconcilePage
     private TextBlock?  _officialLabel;  // Show2 - 선택된 약칭 표시
     private StackPanel? _aliasList;
     private TextBlock?  _statusLabel;
+    private StackPanel? _bottomContent;   // Show3 컨텐츠 (의뢰일 그리드)
 
     public WaterQualityNameReconcilePage()
     {
         LeftPanel   = BuildAbbrPanel();
         CenterPanel = BuildMappingPanel();
+        BottomPanel = BuildBottomPanel();
         RightPanel  = BuildSamplePanel();
     }
 
@@ -90,17 +93,51 @@ public sealed class WaterQualityNameReconcilePage
         _abbrTree.Items.Clear();
         try
         {
+            var companyMap = AnalysisRequestService.GetAbbrCompanyMap();
             foreach (var abbr in AnalysisRequestService.GetDistinctAbbreviations())
             {
+                var (bgColor, fgColor) = BadgeColorHelper.GetBadgeColor(abbr);
+                var badge = new Border
+                {
+                    Background = new SolidColorBrush(Color.Parse(bgColor)),
+                    BorderBrush = new SolidColorBrush(Color.Parse(fgColor)),
+                    BorderThickness = new Thickness(1),
+                    CornerRadius = new CornerRadius(10),
+                    Padding = new Thickness(6, 1, 8, 1),
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Child = new TextBlock
+                    {
+                        Text = abbr,
+                        FontSize = AppTheme.FontSM,
+                        FontWeight = FontWeight.Medium,
+                        FontFamily = Font,
+                        Foreground = new SolidColorBrush(Color.Parse(fgColor)),
+                        VerticalAlignment = VerticalAlignment.Center,
+                    }
+                };
+
+                var company = companyMap.TryGetValue(abbr, out var c) ? c : "";
+                var headerPanel = new StackPanel
+                {
+                    Orientation = Orientation.Horizontal,
+                    Spacing = 6,
+                    VerticalAlignment = VerticalAlignment.Center,
+                };
+                headerPanel.Children.Add(badge);
+                headerPanel.Children.Add(new TextBlock
+                {
+                    Text = company,
+                    FontSize = AppTheme.FontMD, FontFamily = Font,
+                    FontWeight = FontWeight.Regular,
+                    Foreground = AppRes("AppFg"),
+                    VerticalAlignment = VerticalAlignment.Center,
+                    TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
+                });
+
                 _abbrTree.Items.Add(new TreeViewItem
                 {
                     Tag    = abbr,
-                    Header = new TextBlock
-                    {
-                        Text       = abbr, FontSize = AppTheme.FontMD, FontFamily = Font,
-                        FontWeight = FontWeight.Regular,
-                        Foreground = AppRes("AppFg"),
-                    }
+                    Header = headerPanel,
                 });
             }
         }
@@ -172,7 +209,7 @@ public sealed class WaterQualityNameReconcilePage
         _targetBox = new TextBox
         {
             FontSize        = AppTheme.FontMD, FontFamily = Font,
-            Watermark       = "앞으로 사용할 시료명...",
+            Watermark       = "앞으로 사용할 시료명... (오른쪽에서 드래그 가능)",
             Background      = Brush.Parse("#1e2030"),
             Foreground      = AppTheme.FgPrimary,
             BorderBrush     = AppTheme.BorderDefault,
@@ -181,6 +218,20 @@ public sealed class WaterQualityNameReconcilePage
             Padding         = new Thickness(8, 5),
             Margin          = new Thickness(0, 0, 0, 4),
         };
+        // 드롭 대상 설정
+        Avalonia.Input.DragDrop.SetAllowDrop(_targetBox, true);
+        _targetBox.AddHandler(Avalonia.Input.DragDrop.DragOverEvent, (_, e) =>
+        {
+            e.DragEffects = e.Data.Contains(Avalonia.Input.DataFormats.Text)
+                ? Avalonia.Input.DragDropEffects.Copy
+                : Avalonia.Input.DragDropEffects.None;
+        });
+        _targetBox.AddHandler(Avalonia.Input.DragDrop.DropEvent, (_, e) =>
+        {
+            var txt = e.Data.Get(Avalonia.Input.DataFormats.Text) as string;
+            if (!string.IsNullOrEmpty(txt))
+                _targetBox!.Text = txt;
+        });
         body.Children.Add(_targetBox);
 
         body.Children.Add(new Border { Height = 1, Background = AppTheme.BorderSubtle });
@@ -280,6 +331,117 @@ public sealed class WaterQualityNameReconcilePage
                 Child        = row,
             });
         }
+
+        RefreshBottomPanel();
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // Show3: 선택된 시료들의 의뢰일 그리드 (4컬럼)
+    // ═══════════════════════════════════════════════════════════════════
+    private Control BuildBottomPanel()
+    {
+        var root = new Grid { RowDefinitions = new RowDefinitions("Auto,*") };
+        root.Children.Add(new Border
+        {
+            Background   = AppTheme.BgPrimary,
+            CornerRadius = new CornerRadius(6, 6, 0, 0),
+            Padding      = new Thickness(10, 6),
+            Child = new TextBlock
+            {
+                Text       = "📅  변경 대상 시료 의뢰일",
+                FontSize   = AppTheme.FontBase, FontWeight = FontWeight.SemiBold,
+                FontFamily = Font, Foreground = AppTheme.FgMuted,
+            }
+        });
+
+        _bottomContent = new StackPanel { Spacing = 8, Margin = new Thickness(10, 6) };
+        var scroll = new ScrollViewer
+        {
+            Content = _bottomContent,
+            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+            HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
+        };
+        Grid.SetRow(scroll, 1);
+        root.Children.Add(scroll);
+        return root;
+    }
+
+    /// <summary>_aliases 리스트를 기반으로 각 시료명의 의뢰일을 4컬럼 그리드로 표시</summary>
+    private void RefreshBottomPanel(HashSet<string>? renamed = null)
+    {
+        if (_bottomContent == null) return;
+        _bottomContent.Children.Clear();
+
+        if (_aliases.Count == 0)
+        {
+            _bottomContent.Children.Add(new TextBlock
+            {
+                Text       = "변경 대상 시료명을 선택하세요",
+                FontSize   = AppTheme.FontSM, FontFamily = Font,
+                Foreground = AppTheme.FgDimmed,
+            });
+            return;
+        }
+
+        foreach (var name in _aliases)
+        {
+            var isRenamed = renamed != null && renamed.Contains(name);
+            var dates = AnalysisRequestService.GetRequestDatesBySample(_abbr ?? "", name);
+
+            // 시료명 헤더
+            var headerText = new TextBlock
+            {
+                Text = isRenamed ? $"✅ {name}  ({dates.Count}건, 변경됨)" : $"{name}  ({dates.Count}건)",
+                FontSize = AppTheme.FontBase, FontFamily = Font, FontWeight = FontWeight.SemiBold,
+                Foreground = isRenamed ? AppTheme.FgSuccess : AppRes("AppFg"),
+                Margin = new Thickness(0, 4, 0, 2),
+            };
+            _bottomContent.Children.Add(headerText);
+
+            if (dates.Count == 0)
+            {
+                _bottomContent.Children.Add(new TextBlock
+                {
+                    Text = "  의뢰일 없음",
+                    FontSize = AppTheme.FontSM, FontFamily = Font,
+                    Foreground = AppTheme.FgDimmed,
+                });
+                continue;
+            }
+
+            // 4컬럼 그리드
+            var grid = new Grid
+            {
+                ColumnDefinitions = new ColumnDefinitions("*,*,*,*"),
+                ColumnSpacing = 4,
+                RowSpacing = 2,
+            };
+            int rowsCount = (dates.Count + 3) / 4;
+            for (int i = 0; i < rowsCount; i++)
+                grid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+            for (int i = 0; i < dates.Count; i++)
+            {
+                int r = i / 4;
+                int c = i % 4;
+                var cell = new Border
+                {
+                    Background = isRenamed ? AppTheme.BgActiveGreen : Brush.Parse("#1e2030"),
+                    CornerRadius = new CornerRadius(3),
+                    Padding = new Thickness(6, 2),
+                    Child = new TextBlock
+                    {
+                        Text = dates[i],
+                        FontSize = AppTheme.FontSM, FontFamily = Font,
+                        Foreground = isRenamed ? AppTheme.FgSuccess : AppTheme.FgMuted,
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                    },
+                };
+                Grid.SetRow(cell, r);
+                Grid.SetColumn(cell, c);
+                grid.Children.Add(cell);
+            }
+            _bottomContent.Children.Add(grid);
+        }
     }
 
     private void ExecuteRename(object? sender, RoutedEventArgs e)
@@ -307,9 +469,16 @@ public sealed class WaterQualityNameReconcilePage
 
         int total = 0;
         var errors = new List<string>();
+        var renamed = new HashSet<string>();
         foreach (var alias in _aliases)
         {
-            try { total += AnalysisRequestService.RenameSampleName(_abbr, alias, targetName); }
+            try
+            {
+                total += AnalysisRequestService.RenameSampleName(_abbr, alias, targetName);
+                renamed.Add(alias);
+                // 각 시료 변경 완료 후 즉시 리프레시 (실시간 표시)
+                RefreshBottomPanel(renamed);
+            }
             catch (Exception ex) { errors.Add($"[{alias}] {ex.Message}"); }
         }
 
@@ -397,16 +566,29 @@ public sealed class WaterQualityNameReconcilePage
             }
             foreach (var name in names)
             {
-                _sampleTree.Items.Add(new TreeViewItem
+                var capturedName = name;
+                var tvi = new TreeViewItem
                 {
-                    Tag    = name,
+                    Tag    = capturedName,
                     Header = new TextBlock
                     {
-                        Text       = name, FontSize = AppTheme.FontBase, FontFamily = Font,
+                        Text       = capturedName, FontSize = AppTheme.FontBase, FontFamily = Font,
                         FontWeight = FontWeight.Regular,
                         Foreground = AppRes("AppFg"),
                     }
-                });
+                };
+                // 드래그 시작
+                tvi.PointerPressed += async (s, e) =>
+                {
+                    if (e.GetCurrentPoint(tvi).Properties.IsLeftButtonPressed)
+                    {
+                        var data = new Avalonia.Input.DataObject();
+                        data.Set(Avalonia.Input.DataFormats.Text, capturedName);
+                        await Avalonia.Input.DragDrop.DoDragDrop(e, data,
+                            Avalonia.Input.DragDropEffects.Copy);
+                    }
+                };
+                _sampleTree.Items.Add(tvi);
             }
         }
         catch (Exception ex)

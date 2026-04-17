@@ -9,6 +9,18 @@ namespace ETA.Services.Common;
 
 public static class PurchaseService
 {
+    private static readonly string LogFile = System.IO.Path.Combine("Logs", "Purchase.log");
+    private static void Log(string msg)
+    {
+        try
+        {
+            System.IO.Directory.CreateDirectory("Logs");
+            System.IO.File.AppendAllText(LogFile, $"[{DateTime.Now:HH:mm:ss}] {msg}\n");
+            System.Diagnostics.Debug.WriteLine($"[Purchase] {msg}");
+        }
+        catch { }
+    }
+
     // ── 테이블 자동 생성 ──────────────────────────────────────────────────────
     private static void EnsureTable(DbConnection conn)
     {
@@ -28,7 +40,10 @@ public static class PurchaseService
     }
 
     // ── 전체 조회 ─────────────────────────────────────────────────────────────
-    public static List<PurchaseItem> GetAll()
+    public static List<PurchaseItem> GetAll() => GetAllInternal(deletedOnly: false);
+    public static List<PurchaseItem> GetAllDeleted() => GetAllInternal(deletedOnly: true);
+
+    private static List<PurchaseItem> GetAllInternal(bool deletedOnly)
     {
         var list   = new List<PurchaseItem>();
 
@@ -36,11 +51,14 @@ public static class PurchaseService
         conn.Open();
         EnsureTable(conn);
 
+        var where = deletedOnly ? "WHERE `삭제여부`=1"
+                                : "WHERE (`삭제여부` IS NULL OR `삭제여부`=0)";
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"
-            SELECT Id, 구분, 품목, 수량, 비고, 요청자, 요청일, 상태
+        cmd.CommandText = $@"
+            SELECT _id, 구분, 품목, 수량, 비고, 요청자, 요청일, 상태
             FROM `물품구매`
-            ORDER BY Id DESC";
+            {where}
+            ORDER BY _id DESC";
 
         using var r = cmd.ExecuteReader();
         while (r.Read())
@@ -63,7 +81,7 @@ public static class PurchaseService
     }
 
     // ── 월별 조회 ────────────────────────────────────────────────────────────
-    public static List<PurchaseItem> GetByMonth(int year, int month)
+    public static List<PurchaseItem> GetByMonth(int year, int month, bool deletedOnly = false)
     {
         var list   = new List<PurchaseItem>();
 
@@ -73,13 +91,16 @@ public static class PurchaseService
 
         var ym = $"{year:D4}-{month:D2}";
         var dateFmt = DbConnectionFactory.DateFmt("요청일", "%Y-%m");
+        var trashWhere = deletedOnly
+            ? "`삭제여부`=1"
+            : "(`삭제여부` IS NULL OR `삭제여부`=0)";
 
         using var cmd = conn.CreateCommand();
         cmd.CommandText = $@"
-            SELECT Id, 구분, 품목, 수량, 비고, 요청자, 요청일, 상태
+            SELECT _id, 구분, 품목, 수량, 비고, 요청자, 요청일, 상태
             FROM `물품구매`
-            WHERE {dateFmt} = @ym
-            ORDER BY Id DESC";
+            WHERE {dateFmt} = @ym AND {trashWhere}
+            ORDER BY _id DESC";
         cmd.Parameters.AddWithValue("@ym", ym);
 
         using var r = cmd.ExecuteReader();
@@ -174,7 +195,7 @@ public static class PurchaseService
             UPDATE `물품구매` SET
                 구분=@구분, 품목=@품목, 수량=@수량,
                 요청자=@요청자, 비고=@비고
-            WHERE Id=@id";
+            WHERE _id=@id";
 
         cmd.Parameters.AddWithValue("@구분",   구분   ?? "");
         cmd.Parameters.AddWithValue("@품목",   품목   ?? "");
@@ -184,6 +205,7 @@ public static class PurchaseService
         cmd.Parameters.AddWithValue("@id",     id);
 
         int rows = cmd.ExecuteNonQuery();
+        Log($"Update(id={id}, {구분}/{품목} x{수량}) → rows={rows}");
         return rows > 0;
     }
 
@@ -193,26 +215,37 @@ public static class PurchaseService
         conn.Open();
 
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"UPDATE `물품구매` SET 상태=@상태 WHERE Id=@id";
+        cmd.CommandText = @"UPDATE `물품구매` SET 상태=@상태 WHERE _id=@id";
         cmd.Parameters.AddWithValue("@상태", status);
         cmd.Parameters.AddWithValue("@id",   id);
 
         int rows = cmd.ExecuteNonQuery();
+        Log($"UpdateStatus(id={id}, status={status}) → rows={rows}");
         return rows > 0;
     }
 
-    // ── 삭제 ─────────────────────────────────────────────────────────────────
+    // ── 소프트 삭제 ──────────────────────────────────────────────────────────
     public static bool Delete(int id)
     {
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
 
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"DELETE FROM `물품구매` WHERE Id=@id";
+        cmd.CommandText = @"UPDATE `물품구매` SET `삭제여부`=1 WHERE _id=@id";
         cmd.Parameters.AddWithValue("@id", id);
+        return cmd.ExecuteNonQuery() > 0;
+    }
 
-        int rows = cmd.ExecuteNonQuery();
-        return rows > 0;
+    // ── 복원 ─────────────────────────────────────────────────────────────────
+    public static bool Restore(int id)
+    {
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"UPDATE `물품구매` SET `삭제여부`=0 WHERE _id=@id";
+        cmd.Parameters.AddWithValue("@id", id);
+        return cmd.ExecuteNonQuery() > 0;
     }
 
     private static string S(DbDataReader r, int i)

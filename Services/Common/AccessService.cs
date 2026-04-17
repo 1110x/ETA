@@ -43,6 +43,7 @@ public static class AccessService
         ("WaterQualityNameReconcile", "센터명칭",            "권한관리"),
         ("WasteNameReconcile",        "폐수배출업소명칭",    "권한관리"),
         ("Access",                    "접근관리",            "권한관리"),
+        ("ServerManagement",          "서버관리",            "권한관리"),
     };
 
     // ── DB 마이그레이션 ──────────────────────────────────────────────────────

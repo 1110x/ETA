@@ -85,11 +85,11 @@
 
                                 <!-- 견적번호 -->
                                 <TextBlock Grid.Row="0" Grid.Column="1" Classes="lbl" Text="견적번호" />
-                                <TextBox Grid.Row="1" Grid.Column="1" Classes="val" x:Name="txbNo" Margin="0,4,0,0"/>
+                                <TextBox Grid.Row="1" Grid.Column="1" Classes="val" x:Name="txbNo" Margin="0,4,0,3"/>
 
                                 <!-- 발행일 -->
                                 <TextBlock Grid.Row="0" Grid.Column="2" Classes="lbl" Text="발행일" />
-                                <TextBox Grid.Row="1" Grid.Column="2" Classes="val" x:Name="txbDate" Margin="0,4,0,0"/>
+                                <TextBox Grid.Row="1" Grid.Column="2" Classes="val" x:Name="txbDate" Margin="0,4,0,3"/>
                             </Grid>
 
                             <!-- 구분선 -->
@@ -114,11 +114,11 @@
 
                                 <!-- 연락처 -->
                                 <TextBlock Grid.Row="0" Grid.Column="1" Classes="lbl" Text="연락처" />
-                                <TextBox Grid.Row="1" Grid.Column="1" Classes="val" x:Name="txbManagerPhone" Margin="0,4,0,0"/>
+                                <TextBox Grid.Row="1" Grid.Column="1" Classes="val" x:Name="txbManagerPhone" Margin="0,4,0,3"/>
 
                                 <!-- 이메일 -->
                                 <TextBlock Grid.Row="0" Grid.Column="2" Classes="lbl" Text="이메일" />
-                                <TextBox Grid.Row="1" Grid.Column="2" Classes="val" x:Name="txbManagerEmail" Margin="0,4,0,0"/>
+                                <TextBox Grid.Row="1" Grid.Column="2" Classes="val" x:Name="txbManagerEmail" Margin="0,4,0,3"/>
                             </Grid>
 
                             <!-- 구분선 -->
@@ -148,17 +148,17 @@
                     <Border Background="{DynamicResource PanelInnerBg}" CornerRadius="5" Padding="0">
                         <StackPanel>
                             <!-- 컬럼 헤더 -->
-                            <Grid ColumnDefinitions="Auto,*,Auto,Auto,70"
+                            <Grid ColumnDefinitions="Auto,*,70,70,70"
                                   Margin="12,6,12,4"
                                   VerticalAlignment="Center">
                                 <TextBlock Grid.Column="0" Classes="lbl" Text="" />
                                 <TextBlock Grid.Column="1" Classes="lbl" Text="항목" Margin="8,0,0,0"/>
                                 <TextBlock Grid.Column="2" Classes="lbl" Text="수량"
-                                           HorizontalAlignment="Right"/>
+                                           HorizontalAlignment="Center"/>
                                 <TextBlock Grid.Column="3" Classes="lbl" Text="단가"
-                                           HorizontalAlignment="Right"/>
+                                           HorizontalAlignment="Center"/>
                                 <TextBlock Grid.Column="4" Classes="lbl" Text="소계"
-                                           HorizontalAlignment="Right" Margin="0,0,8,0"/>
+                                           HorizontalAlignment="Center"/>
                             </Grid>
                             <Border Height="1" Background="{DynamicResource InputBorder}" Margin="8,0"/>
                             <!-- 항목 행 컨테이너 -->

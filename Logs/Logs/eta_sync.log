@@ -9476,3 +9476,2133 @@
 [2026-04-16 19:57:48] [Init] EnsureTodayMeasurementResults: 0건
 [2026-04-16 19:57:48] [Progress] 96% — 시스템 준비 완료
 [2026-04-16 19:57:48] [Progress] 100% — ✓ 완료!
+[2026-04-16 22:54:08] ========== 로그인 창 시작 ==========
+[2026-04-16 22:54:08] ---------- 로그인 시도 ----------
+[2026-04-16 22:54:08] [DoLogin] 사번 입력값: '201000308'
+[2026-04-16 22:54:08] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-16 22:54:09] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-16 22:54:09] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-16 22:54:09] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-16 22:54:09] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-16 22:54:09] [DoLogin] ValidateLogin 호출
+[2026-04-16 22:54:09] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-16 22:54:09] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-16 22:54:09] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-16 22:54:09] [Lottie] 재생 시작
+[2026-04-16 22:54:09] [Progress] 0% — DB 연결 중...
+[2026-04-16 22:54:09] [Progress] 14% — DB 연결 완료
+[2026-04-16 22:54:09] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-16 22:54:09] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-16 22:54:09] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-16 22:54:09] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-16 22:54:09] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-16 22:54:09] [Progress] 56% — 사진 동기화 완료
+[2026-04-16 22:54:09] [Progress] 60% — DB 마이그레이션 중... (Phase 1)
+[2026-04-16 22:54:09] [Progress] 65% — DB 마이그레이션 완료 (Phase 1)
+[2026-04-16 22:54:10] [Progress] 68% — 테이블 초기화 중...
+[2026-04-16 22:54:10] [Progress] 72% — 테이블 준비 완료
+[2026-04-16 22:54:10] [Progress] 75% — Phase 2 데이터 마이그레이션 중...
+[2026-04-16 22:57:08] ========== 로그인 창 시작 ==========
+[2026-04-16 22:57:08] ---------- 로그인 시도 ----------
+[2026-04-16 22:57:08] [DoLogin] 사번 입력값: '201000308'
+[2026-04-16 22:57:08] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-16 22:57:09] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-16 22:57:09] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-16 22:57:09] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-16 22:57:09] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-16 22:57:09] [DoLogin] ValidateLogin 호출
+[2026-04-16 22:57:09] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-16 22:57:09] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-16 22:57:09] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-16 22:57:09] [Lottie] 재생 시작
+[2026-04-16 22:57:09] [Progress] 0% — DB 연결 중...
+[2026-04-16 22:57:09] [Progress] 14% — DB 연결 완료
+[2026-04-16 22:57:09] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-16 22:57:09] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-16 22:57:09] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-16 22:57:09] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-16 22:57:09] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-16 22:57:09] [Progress] 56% — 사진 동기화 완료
+[2026-04-16 22:57:10] [Progress] 60% — DB 마이그레이션 중... (Phase 1)
+[2026-04-16 22:57:10] [Progress] 65% — DB 마이그레이션 완료 (Phase 1)
+[2026-04-16 22:57:10] [Progress] 68% — 테이블 초기화 중...
+[2026-04-16 22:57:10] [Progress] 72% — 테이블 준비 완료
+[2026-04-16 22:57:10] [Progress] 80% — Phase 2 마이그레이션 건너뜀
+[2026-04-16 22:57:10] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-16 22:57:10] [Progress] 88% — 데이터 준비 완료
+[2026-04-16 22:57:10] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-16 22:57:10] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-16 22:57:10] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-16 22:57:10] [Progress] 96% — 시스템 준비 완료
+[2026-04-16 22:57:11] [Progress] 100% — ✓ 완료!
+[2026-04-16 23:11:46] ========== 로그인 창 시작 ==========
+[2026-04-16 23:11:47] ---------- 로그인 시도 ----------
+[2026-04-16 23:11:47] [DoLogin] 사번 입력값: '201000308'
+[2026-04-16 23:11:47] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-16 23:11:47] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-16 23:11:47] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-16 23:11:47] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-16 23:11:47] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-16 23:11:47] [DoLogin] ValidateLogin 호출
+[2026-04-16 23:11:47] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-16 23:11:47] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-16 23:11:47] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-16 23:11:47] [Lottie] 재생 시작
+[2026-04-16 23:11:47] [Progress] 0% — DB 연결 중...
+[2026-04-16 23:11:47] [Progress] 14% — DB 연결 완료
+[2026-04-16 23:11:47] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-16 23:11:47] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-16 23:11:47] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-16 23:11:47] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-16 23:11:47] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-16 23:11:47] [Progress] 56% — 사진 동기화 완료
+[2026-04-16 23:11:48] [Progress] 60% — DB 마이그레이션 중... (Phase 1)
+[2026-04-16 23:11:48] [Progress] 65% — DB 마이그레이션 완료 (Phase 1)
+[2026-04-16 23:11:48] [Progress] 68% — 테이블 초기화 중...
+[2026-04-16 23:11:48] [Progress] 72% — 테이블 준비 완료
+[2026-04-16 23:11:48] [Progress] 75% — Phase 2 데이터 마이그레이션 중...
+[2026-04-16 23:11:54] [Progress] 80% — Phase 2 마이그레이션 완료
+[2026-04-16 23:11:54] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-16 23:11:54] [Progress] 88% — 데이터 준비 완료
+[2026-04-16 23:11:54] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-16 23:11:54] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-16 23:11:54] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-16 23:11:54] [Progress] 96% — 시스템 준비 완료
+[2026-04-16 23:11:55] [Progress] 100% — ✓ 완료!
+[2026-04-17 00:15:04] ========== 로그인 창 시작 ==========
+[2026-04-17 00:15:05] ---------- 로그인 시도 ----------
+[2026-04-17 00:15:05] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 00:15:05] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 00:15:05] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 00:15:05] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 00:15:05] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 00:15:05] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 00:15:05] [DoLogin] ValidateLogin 호출
+[2026-04-17 00:15:05] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 00:15:05] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 00:15:05] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 00:15:06] [Lottie] 재생 시작
+[2026-04-17 00:15:06] [Progress] 0% — DB 연결 중...
+[2026-04-17 00:15:06] [Progress] 14% — DB 연결 완료
+[2026-04-17 00:15:06] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 00:15:06] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 00:15:06] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 00:15:06] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 00:15:06] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 00:15:06] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 00:15:06] [Progress] 60% — DB 마이그레이션 중... (Phase 1)
+[2026-04-17 00:15:06] [Progress] 65% — DB 마이그레이션 완료 (Phase 1)
+[2026-04-17 00:15:06] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 00:15:06] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 00:15:06] [Progress] 75% — Phase 2 데이터 마이그레이션 중...
+[2026-04-17 00:15:12] [Progress] 80% — Phase 2 마이그레이션 완료
+[2026-04-17 00:15:12] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 00:15:12] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 00:15:12] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 00:15:15] [Progress] 94% — 처리시설 준비 완료 (60건)
+[2026-04-17 00:15:15] [Init] EnsureTodayMeasurementResults: 60건
+[2026-04-17 00:15:15] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 00:15:16] [Progress] 100% — ✓ 완료!
+[2026-04-17 00:22:26] ========== 로그인 창 시작 ==========
+[2026-04-17 00:22:27] ---------- 로그인 시도 ----------
+[2026-04-17 00:22:27] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 00:22:27] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 00:22:27] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 00:22:27] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 00:22:27] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 00:22:27] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 00:22:27] [DoLogin] ValidateLogin 호출
+[2026-04-17 00:22:27] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 00:22:27] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 00:22:27] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 00:22:27] [Lottie] 재생 시작
+[2026-04-17 00:22:27] [Progress] 0% — DB 연결 중...
+[2026-04-17 00:22:27] [Progress] 14% — DB 연결 완료
+[2026-04-17 00:22:27] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 00:22:27] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 00:22:27] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 00:22:27] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 00:22:28] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 00:22:28] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 00:22:28] [Progress] 60% — DB 마이그레이션 중... (Phase 1)
+[2026-04-17 00:22:28] [Progress] 65% — DB 마이그레이션 완료 (Phase 1)
+[2026-04-17 00:22:28] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 00:22:28] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 00:22:28] [Progress] 75% — Phase 2 데이터 마이그레이션 중...
+[2026-04-17 00:22:33] [Progress] 80% — Phase 2 마이그레이션 완료
+[2026-04-17 00:22:34] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 00:22:34] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 00:22:34] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 00:22:34] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 00:22:34] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 00:22:34] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 00:22:34] [Progress] 100% — ✓ 완료!
+[2026-04-17 00:34:20] ========== 로그인 창 시작 ==========
+[2026-04-17 00:34:21] ---------- 로그인 시도 ----------
+[2026-04-17 00:34:21] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 00:34:21] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 00:34:21] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 00:34:21] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 00:34:21] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 00:34:21] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 00:34:21] [DoLogin] ValidateLogin 호출
+[2026-04-17 00:34:21] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 00:34:21] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 00:34:21] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 00:34:22] [Lottie] 재생 시작
+[2026-04-17 00:34:22] [Progress] 0% — DB 연결 중...
+[2026-04-17 00:34:22] [Progress] 14% — DB 연결 완료
+[2026-04-17 00:34:22] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 00:34:22] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 00:34:22] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 00:34:22] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 00:34:22] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 00:34:22] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 00:34:22] [Progress] 60% — DB 마이그레이션 중... (Phase 1)
+[2026-04-17 00:34:22] [Progress] 65% — DB 마이그레이션 완료 (Phase 1)
+[2026-04-17 00:34:22] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 00:34:22] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 00:34:22] [Progress] 75% — Phase 2 데이터 마이그레이션 중...
+[2026-04-17 00:34:28] [Progress] 80% — Phase 2 마이그레이션 완료
+[2026-04-17 00:34:28] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 00:34:28] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 00:34:28] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 00:34:28] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 00:34:28] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 00:34:28] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 00:34:28] [Progress] 100% — ✓ 완료!
+[2026-04-17 00:39:42] ========== 로그인 창 시작 ==========
+[2026-04-17 00:39:43] ---------- 로그인 시도 ----------
+[2026-04-17 00:39:43] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 00:39:43] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 00:39:43] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 00:39:43] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 00:39:43] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 00:39:43] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 00:39:43] [DoLogin] ValidateLogin 호출
+[2026-04-17 00:39:43] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 00:39:43] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 00:39:43] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 00:39:43] [Lottie] 재생 시작
+[2026-04-17 00:39:43] [Progress] 0% — DB 연결 중...
+[2026-04-17 00:39:43] [Progress] 14% — DB 연결 완료
+[2026-04-17 00:39:43] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 00:39:43] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 00:39:44] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 00:39:44] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 00:39:44] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 00:39:44] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 00:39:44] [Progress] 60% — DB 마이그레이션 중... (Phase 1)
+[2026-04-17 00:39:44] [Progress] 65% — DB 마이그레이션 완료 (Phase 1)
+[2026-04-17 00:39:44] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 00:39:44] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 00:39:44] [Progress] 75% — Phase 2 데이터 마이그레이션 중...
+[2026-04-17 00:39:49] [Progress] 80% — Phase 2 마이그레이션 완료
+[2026-04-17 00:39:49] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 00:39:49] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 00:39:49] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 00:39:49] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 00:39:49] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 00:39:49] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 00:39:50] [Progress] 100% — ✓ 완료!
+[2026-04-17 00:44:10] ========== 로그인 창 시작 ==========
+[2026-04-17 00:44:10] ---------- 로그인 시도 ----------
+[2026-04-17 00:44:10] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 00:44:10] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 00:44:10] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 00:44:10] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 00:44:10] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 00:44:10] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 00:44:10] [DoLogin] ValidateLogin 호출
+[2026-04-17 00:44:10] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 00:44:10] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 00:44:10] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 00:44:11] [Lottie] 재생 시작
+[2026-04-17 00:44:11] [Progress] 0% — DB 연결 중...
+[2026-04-17 00:44:11] [Progress] 14% — DB 연결 완료
+[2026-04-17 00:44:11] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 00:44:11] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 00:44:11] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 00:44:11] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 00:44:11] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 00:44:11] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 00:44:11] [Progress] 60% — DB 마이그레이션 중... (Phase 1)
+[2026-04-17 00:44:11] [Progress] 65% — DB 마이그레이션 완료 (Phase 1)
+[2026-04-17 00:44:11] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 00:44:12] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 00:44:12] [Progress] 75% — Phase 2 데이터 마이그레이션 중...
+[2026-04-17 00:44:17] [Progress] 80% — Phase 2 마이그레이션 완료
+[2026-04-17 00:44:17] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 00:44:17] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 00:44:17] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 00:44:17] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 00:44:17] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 00:44:17] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 00:44:17] [Progress] 100% — ✓ 완료!
+[2026-04-17 00:52:31] ========== 로그인 창 시작 ==========
+[2026-04-17 00:52:32] ---------- 로그인 시도 ----------
+[2026-04-17 00:52:32] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 00:52:32] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 00:52:32] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 00:52:32] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 00:52:32] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 00:52:32] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 00:52:32] [DoLogin] ValidateLogin 호출
+[2026-04-17 00:52:32] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 00:52:32] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 00:52:32] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 00:52:32] [Lottie] 재생 시작
+[2026-04-17 00:52:32] [Progress] 0% — DB 연결 중...
+[2026-04-17 00:52:32] [Progress] 14% — DB 연결 완료
+[2026-04-17 00:52:33] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 00:52:33] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 00:52:33] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 00:52:33] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 00:52:33] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 00:52:33] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 00:52:33] [Progress] 60% — DB 마이그레이션 중... (Phase 1)
+[2026-04-17 00:52:33] [Progress] 65% — DB 마이그레이션 완료 (Phase 1)
+[2026-04-17 00:52:33] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 00:52:33] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 00:52:33] [Progress] 75% — Phase 2 데이터 마이그레이션 중...
+[2026-04-17 00:53:07] ========== 로그인 창 시작 ==========
+[2026-04-17 00:53:08] ---------- 로그인 시도 ----------
+[2026-04-17 00:53:08] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 00:53:08] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 00:53:08] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 00:53:08] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 00:53:08] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 00:53:08] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 00:53:08] [DoLogin] ValidateLogin 호출
+[2026-04-17 00:53:08] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 00:53:08] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 00:53:08] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 00:53:08] [Lottie] 재생 시작
+[2026-04-17 00:53:08] [Progress] 0% — DB 연결 중...
+[2026-04-17 00:53:08] [Progress] 14% — DB 연결 완료
+[2026-04-17 00:53:08] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 00:53:08] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 00:53:08] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 00:53:08] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 00:53:09] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 00:53:09] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 00:53:09] [Progress] 60% — DB 마이그레이션 중... (Phase 1)
+[2026-04-17 00:53:09] [Progress] 65% — DB 마이그레이션 완료 (Phase 1)
+[2026-04-17 00:53:09] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 00:53:09] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 00:53:09] [Progress] 75% — Phase 2 데이터 마이그레이션 중...
+[2026-04-17 00:53:14] [Progress] 80% — Phase 2 마이그레이션 완료
+[2026-04-17 00:53:14] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 00:53:14] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 00:53:14] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 00:53:14] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 00:53:14] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 00:53:14] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 00:53:15] [Progress] 100% — ✓ 완료!
+[2026-04-17 01:01:30] ========== 로그인 창 시작 ==========
+[2026-04-17 01:01:31] ---------- 로그인 시도 ----------
+[2026-04-17 01:01:31] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 01:01:31] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 01:01:31] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 01:01:31] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 01:01:31] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 01:01:31] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 01:01:31] [DoLogin] ValidateLogin 호출
+[2026-04-17 01:01:31] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 01:01:31] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 01:01:31] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 01:01:31] [Lottie] 재생 시작
+[2026-04-17 01:01:31] [Progress] 0% — DB 연결 중...
+[2026-04-17 01:01:31] [Progress] 14% — DB 연결 완료
+[2026-04-17 01:01:31] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 01:01:31] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 01:01:31] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 01:01:31] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 01:01:31] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 01:01:31] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 01:01:32] [Progress] 60% — DB 마이그레이션 중... (Phase 1)
+[2026-04-17 01:01:32] [Progress] 65% — DB 마이그레이션 완료 (Phase 1)
+[2026-04-17 01:01:32] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 01:01:32] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 01:01:32] [Progress] 75% — Phase 2 데이터 마이그레이션 중...
+[2026-04-17 01:01:37] [Progress] 80% — Phase 2 마이그레이션 완료
+[2026-04-17 01:01:37] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 01:01:37] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 01:01:37] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 01:01:37] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 01:01:37] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 01:01:38] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 01:01:38] [Progress] 100% — ✓ 완료!
+[2026-04-17 01:05:45] ========== 로그인 창 시작 ==========
+[2026-04-17 01:05:46] ---------- 로그인 시도 ----------
+[2026-04-17 01:05:46] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 01:05:46] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 01:05:46] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 01:05:46] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 01:05:46] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 01:05:46] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 01:05:46] [DoLogin] ValidateLogin 호출
+[2026-04-17 01:05:46] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 01:05:46] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 01:05:46] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 01:05:46] [Lottie] 재생 시작
+[2026-04-17 01:05:46] [Progress] 0% — DB 연결 중...
+[2026-04-17 01:05:46] [Progress] 14% — DB 연결 완료
+[2026-04-17 01:05:46] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 01:05:46] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 01:05:47] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 01:05:47] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 01:05:47] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 01:05:47] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 01:05:47] [Progress] 60% — DB 마이그레이션 중... (Phase 1)
+[2026-04-17 01:05:47] [Progress] 65% — DB 마이그레이션 완료 (Phase 1)
+[2026-04-17 01:05:47] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 01:05:47] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 01:05:47] [Progress] 75% — Phase 2 데이터 마이그레이션 중...
+[2026-04-17 01:05:53] [Progress] 80% — Phase 2 마이그레이션 완료
+[2026-04-17 01:05:53] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 01:05:53] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 01:05:53] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 01:05:53] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 01:05:53] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 01:05:53] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 01:05:53] [Progress] 100% — ✓ 완료!
+[2026-04-17 01:10:39] ========== 로그인 창 시작 ==========
+[2026-04-17 01:10:39] ---------- 로그인 시도 ----------
+[2026-04-17 01:10:39] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 01:10:39] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 01:10:40] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 01:10:40] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 01:10:40] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 01:10:40] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 01:10:40] [DoLogin] ValidateLogin 호출
+[2026-04-17 01:10:40] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 01:10:40] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 01:10:40] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 01:10:40] [Lottie] 재생 시작
+[2026-04-17 01:10:40] [Progress] 0% — DB 연결 중...
+[2026-04-17 01:10:40] [Progress] 14% — DB 연결 완료
+[2026-04-17 01:10:40] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 01:10:40] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 01:10:40] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 01:10:40] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 01:10:40] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 01:10:40] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 01:10:41] [Progress] 60% — DB 마이그레이션 중... (Phase 1)
+[2026-04-17 01:10:41] [Progress] 65% — DB 마이그레이션 완료 (Phase 1)
+[2026-04-17 01:10:41] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 01:10:41] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 01:10:41] [Progress] 75% — Phase 2 데이터 마이그레이션 중...
+[2026-04-17 01:10:46] [Progress] 80% — Phase 2 마이그레이션 완료
+[2026-04-17 01:10:46] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 01:10:46] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 01:10:46] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 01:10:46] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 01:10:46] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 01:10:46] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 01:10:47] [Progress] 100% — ✓ 완료!
+[2026-04-17 01:14:18] ========== 로그인 창 시작 ==========
+[2026-04-17 01:14:19] ---------- 로그인 시도 ----------
+[2026-04-17 01:14:19] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 01:14:19] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 01:14:19] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 01:14:19] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 01:14:19] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 01:14:19] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 01:14:19] [DoLogin] ValidateLogin 호출
+[2026-04-17 01:14:19] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 01:14:19] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 01:14:19] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 01:14:19] [Lottie] 재생 시작
+[2026-04-17 01:14:19] [Progress] 0% — DB 연결 중...
+[2026-04-17 01:14:19] [Progress] 14% — DB 연결 완료
+[2026-04-17 01:14:19] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 01:14:19] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 01:14:19] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 01:14:19] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 01:14:19] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 01:14:19] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 01:14:20] [Progress] 60% — DB 마이그레이션 중... (Phase 1)
+[2026-04-17 01:14:20] [Progress] 65% — DB 마이그레이션 완료 (Phase 1)
+[2026-04-17 01:14:20] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 01:14:20] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 01:14:20] [Progress] 75% — Phase 2 데이터 마이그레이션 중...
+[2026-04-17 01:14:25] [Progress] 80% — Phase 2 마이그레이션 완료
+[2026-04-17 01:14:25] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 01:14:25] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 01:14:25] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 01:14:25] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 01:14:25] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 01:14:25] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 01:14:25] [Progress] 100% — ✓ 완료!
+[2026-04-17 08:45:24] ========== 로그인 창 시작 ==========
+[2026-04-17 08:45:36] ---------- 로그인 시도 ----------
+[2026-04-17 08:45:36] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 08:45:36] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 08:45:36] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 08:45:36] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 08:45:36] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 08:45:36] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 08:45:36] [DoLogin] ValidateLogin 호출
+[2026-04-17 08:45:36] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 08:45:36] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 08:45:36] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 08:45:36] [Lottie] 재생 시작
+[2026-04-17 08:45:36] [Progress] 0% — DB 연결 중...
+[2026-04-17 08:45:36] [Progress] 14% — DB 연결 완료
+[2026-04-17 08:45:36] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 08:45:36] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 08:45:37] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 08:45:37] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 08:45:37] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 08:45:37] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 08:45:37] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 08:45:37] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 08:45:41] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 08:45:41] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 08:45:41] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 08:45:41] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 08:45:41] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 08:45:41] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 08:45:41] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 08:45:41] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 08:45:42] [Progress] 100% — ✓ 완료!
+[2026-04-17 08:53:59] ========== 로그인 창 시작 ==========
+[2026-04-17 08:54:00] ---------- 로그인 시도 ----------
+[2026-04-17 08:54:00] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 08:54:00] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 08:54:00] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 08:54:00] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 08:54:00] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 08:54:00] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 08:54:00] [DoLogin] ValidateLogin 호출
+[2026-04-17 08:54:00] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 08:54:00] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 08:54:00] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 08:54:01] [Lottie] 재생 시작
+[2026-04-17 08:54:01] [Progress] 0% — DB 연결 중...
+[2026-04-17 08:54:01] [Progress] 14% — DB 연결 완료
+[2026-04-17 08:54:01] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 08:54:01] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 08:54:01] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 08:54:01] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 08:54:01] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 08:54:01] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 08:54:01] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 08:54:01] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 08:54:03] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 08:54:04] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 08:54:04] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 08:54:04] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 08:54:04] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 08:54:04] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 08:54:04] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 08:54:04] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 08:54:04] [Progress] 100% — ✓ 완료!
+[2026-04-17 08:54:42] ========== 로그인 창 시작 ==========
+[2026-04-17 08:54:43] ---------- 로그인 시도 ----------
+[2026-04-17 08:54:43] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 08:54:43] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 08:54:43] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 08:54:43] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 08:54:43] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 08:54:43] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 08:54:43] [DoLogin] ValidateLogin 호출
+[2026-04-17 08:54:43] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 08:54:43] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 08:54:43] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 08:54:43] [Lottie] 재생 시작
+[2026-04-17 08:54:43] [Progress] 0% — DB 연결 중...
+[2026-04-17 08:54:43] [Progress] 14% — DB 연결 완료
+[2026-04-17 08:54:44] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 08:54:44] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 08:54:44] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 08:54:44] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 08:54:44] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 08:54:44] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 08:54:44] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 08:54:44] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 08:54:47] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 08:54:47] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 08:54:47] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 08:54:47] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 08:54:48] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 08:54:48] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 08:54:48] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 08:54:48] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 08:54:48] [Progress] 100% — ✓ 완료!
+[2026-04-17 09:25:14] ========== 로그인 창 시작 ==========
+[2026-04-17 09:25:15] ---------- 로그인 시도 ----------
+[2026-04-17 09:25:15] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 09:25:15] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 09:25:15] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 09:25:15] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 09:25:15] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 09:25:15] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 09:25:15] [DoLogin] ValidateLogin 호출
+[2026-04-17 09:25:15] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 09:25:15] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 09:25:15] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 09:25:15] [Lottie] 재생 시작
+[2026-04-17 09:25:15] [Progress] 0% — DB 연결 중...
+[2026-04-17 09:25:16] [Progress] 14% — DB 연결 완료
+[2026-04-17 09:25:16] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 09:25:16] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 09:25:16] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 09:25:16] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 09:25:16] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 09:25:16] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 09:25:16] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 09:25:16] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 09:25:19] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 09:25:19] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 09:25:19] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 09:25:19] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 09:25:19] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 09:25:19] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 09:25:19] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 09:25:19] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 09:25:20] [Progress] 100% — ✓ 완료!
+[2026-04-17 09:31:41] ========== 로그인 창 시작 ==========
+[2026-04-17 09:31:42] ---------- 로그인 시도 ----------
+[2026-04-17 09:31:42] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 09:31:42] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 09:31:42] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 09:31:42] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 09:31:42] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 09:31:42] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 09:31:42] [DoLogin] ValidateLogin 호출
+[2026-04-17 09:31:42] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 09:31:42] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 09:31:42] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 09:31:42] [Lottie] 재생 시작
+[2026-04-17 09:31:42] [Progress] 0% — DB 연결 중...
+[2026-04-17 09:31:42] [Progress] 14% — DB 연결 완료
+[2026-04-17 09:31:43] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 09:31:43] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 09:31:43] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 09:31:43] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 09:31:43] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 09:31:43] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 09:31:43] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 09:31:43] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 09:31:45] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 09:31:45] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 09:31:46] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 09:31:46] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 09:31:46] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 09:31:46] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 09:31:46] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 09:31:46] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 09:31:46] [Progress] 100% — ✓ 완료!
+[2026-04-17 09:35:42] ========== 로그인 창 시작 ==========
+[2026-04-17 09:35:44] ---------- 로그인 시도 ----------
+[2026-04-17 09:35:44] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 09:35:44] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 09:35:44] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 09:35:44] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 09:35:44] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 09:35:44] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 09:35:44] [DoLogin] ValidateLogin 호출
+[2026-04-17 09:35:44] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 09:35:44] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 09:35:44] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 09:35:44] [Lottie] 재생 시작
+[2026-04-17 09:35:44] [Progress] 0% — DB 연결 중...
+[2026-04-17 09:35:44] [Progress] 14% — DB 연결 완료
+[2026-04-17 09:35:45] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 09:35:45] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 09:35:45] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 09:35:45] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 09:35:45] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 09:35:45] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 09:35:45] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 09:35:45] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 09:35:47] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 09:35:47] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 09:35:48] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 09:35:48] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 09:35:48] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 09:35:48] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 09:35:48] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 09:35:48] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 09:35:48] [Progress] 100% — ✓ 완료!
+[2026-04-17 09:40:40] ========== 로그인 창 시작 ==========
+[2026-04-17 09:40:41] ---------- 로그인 시도 ----------
+[2026-04-17 09:40:41] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 09:40:41] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 09:40:41] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 09:40:41] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 09:40:41] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 09:40:41] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 09:40:41] [DoLogin] ValidateLogin 호출
+[2026-04-17 09:40:41] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 09:40:41] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 09:40:41] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 09:40:42] [Lottie] 재생 시작
+[2026-04-17 09:40:42] [Progress] 0% — DB 연결 중...
+[2026-04-17 09:40:42] [Progress] 14% — DB 연결 완료
+[2026-04-17 09:40:42] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 09:40:42] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 09:40:42] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 09:40:42] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 09:40:42] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 09:40:42] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 09:40:42] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 09:40:42] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 09:40:45] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 09:40:45] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 09:40:45] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 09:40:45] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 09:40:45] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 09:40:45] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 09:40:45] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 09:40:45] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 09:40:45] [Progress] 100% — ✓ 완료!
+[2026-04-17 09:44:27] ========== 로그인 창 시작 ==========
+[2026-04-17 09:44:28] ---------- 로그인 시도 ----------
+[2026-04-17 09:44:28] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 09:44:28] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 09:44:28] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 09:44:28] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 09:44:28] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 09:44:28] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 09:44:28] [DoLogin] ValidateLogin 호출
+[2026-04-17 09:44:28] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 09:44:28] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 09:44:28] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 09:44:29] [Lottie] 재생 시작
+[2026-04-17 09:44:29] [Progress] 0% — DB 연결 중...
+[2026-04-17 09:44:29] [Progress] 14% — DB 연결 완료
+[2026-04-17 09:44:29] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 09:44:29] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 09:44:29] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 09:44:29] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 09:44:29] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 09:44:29] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 09:44:29] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 09:44:30] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 09:44:32] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 09:44:32] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 09:44:32] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 09:44:32] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 09:44:32] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 09:44:32] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 09:44:32] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 09:44:32] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 09:44:33] [Progress] 100% — ✓ 완료!
+[2026-04-17 09:54:02] ========== 로그인 창 시작 ==========
+[2026-04-17 09:54:03] ---------- 로그인 시도 ----------
+[2026-04-17 09:54:03] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 09:54:03] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 09:54:03] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 09:54:03] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 09:54:03] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 09:54:03] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 09:54:03] [DoLogin] ValidateLogin 호출
+[2026-04-17 09:54:03] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 09:54:03] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 09:54:03] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 09:54:04] [Lottie] 재생 시작
+[2026-04-17 09:54:04] [Progress] 0% — DB 연결 중...
+[2026-04-17 09:54:04] [Progress] 14% — DB 연결 완료
+[2026-04-17 09:54:04] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 09:54:04] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 09:54:04] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 09:54:04] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 09:54:04] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 09:54:04] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 09:54:04] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 09:54:05] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 09:54:07] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 09:54:07] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 09:54:07] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 09:54:07] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 09:54:07] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 09:54:07] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 09:54:07] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 09:54:07] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 09:54:08] [Progress] 100% — ✓ 완료!
+[2026-04-17 09:56:41] ========== 로그인 창 시작 ==========
+[2026-04-17 09:56:43] ---------- 로그인 시도 ----------
+[2026-04-17 09:56:43] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 09:56:43] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 09:56:43] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 09:56:43] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 09:56:43] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 09:56:43] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 09:56:43] [DoLogin] ValidateLogin 호출
+[2026-04-17 09:56:43] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 09:56:43] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 09:56:43] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 09:56:43] [Lottie] 재생 시작
+[2026-04-17 09:56:43] [Progress] 0% — DB 연결 중...
+[2026-04-17 09:56:43] [Progress] 14% — DB 연결 완료
+[2026-04-17 09:56:43] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 09:56:43] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 09:56:43] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 09:56:43] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 09:56:44] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 09:56:44] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 09:56:44] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 09:56:44] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 09:56:46] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 09:56:46] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 09:56:46] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 09:56:46] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 09:56:46] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 09:56:47] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 09:56:47] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 09:56:47] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 09:56:47] [Progress] 100% — ✓ 완료!
+[2026-04-17 10:01:08] ========== 로그인 창 시작 ==========
+[2026-04-17 10:01:09] ---------- 로그인 시도 ----------
+[2026-04-17 10:01:09] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 10:01:09] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 10:01:09] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 10:01:09] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 10:01:09] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 10:01:09] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 10:01:09] [DoLogin] ValidateLogin 호출
+[2026-04-17 10:01:09] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 10:01:09] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 10:01:09] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 10:01:10] [Lottie] 재생 시작
+[2026-04-17 10:01:10] [Progress] 0% — DB 연결 중...
+[2026-04-17 10:01:10] [Progress] 14% — DB 연결 완료
+[2026-04-17 10:01:10] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 10:01:10] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 10:01:10] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 10:01:10] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 10:01:10] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 10:01:10] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 10:01:10] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 10:01:11] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 10:01:13] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 10:01:13] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 10:01:13] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 10:01:13] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 10:01:13] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 10:01:13] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 10:01:13] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 10:01:13] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 10:01:14] [Progress] 100% — ✓ 완료!
+[2026-04-17 10:02:49] ========== 로그인 창 시작 ==========
+[2026-04-17 10:02:50] ---------- 로그인 시도 ----------
+[2026-04-17 10:02:50] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 10:02:50] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 10:02:50] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 10:02:50] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 10:02:50] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 10:02:50] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 10:02:50] [DoLogin] ValidateLogin 호출
+[2026-04-17 10:02:50] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 10:02:50] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 10:02:50] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 10:02:51] [Lottie] 재생 시작
+[2026-04-17 10:02:51] [Progress] 0% — DB 연결 중...
+[2026-04-17 10:02:51] [Progress] 14% — DB 연결 완료
+[2026-04-17 10:02:51] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 10:02:51] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 10:02:51] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 10:02:51] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 10:02:51] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 10:02:51] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 10:02:51] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 10:02:51] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 10:02:53] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 10:02:53] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 10:02:54] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 10:02:54] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 10:02:54] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 10:02:54] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 10:02:54] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 10:02:54] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 10:02:54] [Progress] 100% — ✓ 완료!
+[2026-04-17 10:05:21] ========== 로그인 창 시작 ==========
+[2026-04-17 10:05:23] ---------- 로그인 시도 ----------
+[2026-04-17 10:05:23] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 10:05:23] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 10:05:23] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 10:05:23] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 10:05:23] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 10:05:23] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 10:05:23] [DoLogin] ValidateLogin 호출
+[2026-04-17 10:05:23] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 10:05:23] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 10:05:23] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 10:05:23] [Lottie] 재생 시작
+[2026-04-17 10:05:23] [Progress] 0% — DB 연결 중...
+[2026-04-17 10:05:23] [Progress] 14% — DB 연결 완료
+[2026-04-17 10:05:23] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 10:05:23] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 10:05:24] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 10:05:24] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 10:05:24] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 10:05:24] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 10:05:24] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 10:05:24] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 10:05:26] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 10:05:26] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 10:05:26] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 10:05:27] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 10:05:27] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 10:05:27] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 10:05:27] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 10:05:27] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 10:05:27] [Progress] 100% — ✓ 완료!
+[2026-04-17 10:10:35] ========== 로그인 창 시작 ==========
+[2026-04-17 10:10:36] ---------- 로그인 시도 ----------
+[2026-04-17 10:10:36] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 10:10:36] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 10:10:36] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 10:10:36] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 10:10:36] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 10:10:36] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 10:10:36] [DoLogin] ValidateLogin 호출
+[2026-04-17 10:10:36] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 10:10:36] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 10:10:36] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 10:10:37] [Lottie] 재생 시작
+[2026-04-17 10:10:37] [Progress] 0% — DB 연결 중...
+[2026-04-17 10:10:37] [Progress] 14% — DB 연결 완료
+[2026-04-17 10:10:37] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 10:10:37] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 10:10:37] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 10:10:37] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 10:10:37] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 10:10:37] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 10:10:37] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 10:10:38] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 10:10:40] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 10:10:40] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 10:10:40] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 10:10:40] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 10:10:40] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 10:10:40] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 10:10:40] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 10:10:40] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 10:10:41] [Progress] 100% — ✓ 완료!
+[2026-04-17 10:15:40] ========== 로그인 창 시작 ==========
+[2026-04-17 10:15:41] ---------- 로그인 시도 ----------
+[2026-04-17 10:15:41] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 10:15:41] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 10:15:41] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 10:15:41] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 10:15:41] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 10:15:41] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 10:15:41] [DoLogin] ValidateLogin 호출
+[2026-04-17 10:15:41] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 10:15:41] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 10:15:41] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 10:15:42] [Lottie] 재생 시작
+[2026-04-17 10:15:42] [Progress] 0% — DB 연결 중...
+[2026-04-17 10:15:42] [Progress] 14% — DB 연결 완료
+[2026-04-17 10:15:42] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 10:15:42] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 10:15:42] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 10:15:42] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 10:15:42] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 10:15:42] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 10:15:42] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 10:15:42] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 10:15:45] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 10:15:45] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 10:15:45] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 10:15:45] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 10:15:45] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 10:15:45] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 10:15:45] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 10:15:45] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 10:15:45] [Progress] 100% — ✓ 완료!
+[2026-04-17 10:19:01] ========== 로그인 창 시작 ==========
+[2026-04-17 10:19:02] ---------- 로그인 시도 ----------
+[2026-04-17 10:19:02] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 10:19:02] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 10:19:02] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 10:19:02] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 10:19:02] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 10:19:02] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 10:19:02] [DoLogin] ValidateLogin 호출
+[2026-04-17 10:19:03] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 10:19:03] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 10:19:03] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 10:19:03] [Lottie] 재생 시작
+[2026-04-17 10:19:03] [Progress] 0% — DB 연결 중...
+[2026-04-17 10:19:03] [Progress] 14% — DB 연결 완료
+[2026-04-17 10:19:03] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 10:19:03] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 10:19:03] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 10:19:03] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 10:19:03] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 10:19:03] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 10:19:04] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 10:19:04] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 10:19:06] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 10:19:06] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 10:19:06] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 10:19:06] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 10:19:06] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 10:19:06] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 10:19:06] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 10:19:06] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 10:19:07] [Progress] 100% — ✓ 완료!
+[2026-04-17 10:43:04] ========== 로그인 창 시작 ==========
+[2026-04-17 10:43:06] ---------- 로그인 시도 ----------
+[2026-04-17 10:43:06] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 10:43:06] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 10:43:06] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 10:43:06] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 10:43:06] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 10:43:06] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 10:43:06] [DoLogin] ValidateLogin 호출
+[2026-04-17 10:43:06] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 10:43:06] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 10:43:06] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 10:43:06] [Lottie] 재생 시작
+[2026-04-17 10:43:06] [Progress] 0% — DB 연결 중...
+[2026-04-17 10:43:06] [Progress] 14% — DB 연결 완료
+[2026-04-17 10:43:07] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 10:43:07] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 10:43:07] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 10:43:07] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 10:43:07] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 10:43:07] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 10:43:07] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 10:43:07] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 10:43:10] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 10:43:10] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 10:43:10] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 10:43:11] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 10:43:11] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 10:43:11] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 10:43:11] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 10:43:11] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 10:43:11] [Progress] 100% — ✓ 완료!
+[2026-04-17 10:45:02] ========== 로그인 창 시작 ==========
+[2026-04-17 10:45:03] ---------- 로그인 시도 ----------
+[2026-04-17 10:45:03] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 10:45:03] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 10:45:03] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 10:45:03] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 10:45:03] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 10:45:03] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 10:45:03] [DoLogin] ValidateLogin 호출
+[2026-04-17 10:45:03] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 10:45:03] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 10:45:03] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 10:45:04] [Lottie] 재생 시작
+[2026-04-17 10:45:04] [Progress] 0% — DB 연결 중...
+[2026-04-17 10:45:04] [Progress] 14% — DB 연결 완료
+[2026-04-17 10:45:04] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 10:45:04] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 10:45:04] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 10:45:04] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 10:45:04] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 10:45:04] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 10:45:04] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 10:45:04] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 10:45:07] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 10:45:07] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 10:45:07] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 10:45:07] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 10:45:07] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 10:45:07] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 10:45:07] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 10:45:07] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 10:45:07] [Progress] 100% — ✓ 완료!
+[2026-04-17 10:47:07] ========== 로그인 창 시작 ==========
+[2026-04-17 10:47:08] ---------- 로그인 시도 ----------
+[2026-04-17 10:47:08] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 10:47:08] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 10:47:09] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 10:47:09] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 10:47:09] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 10:47:09] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 10:47:09] [DoLogin] ValidateLogin 호출
+[2026-04-17 10:47:09] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 10:47:09] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 10:47:09] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 10:47:09] [Lottie] 재생 시작
+[2026-04-17 10:47:09] [Progress] 0% — DB 연결 중...
+[2026-04-17 10:47:09] [Progress] 14% — DB 연결 완료
+[2026-04-17 10:47:09] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 10:47:09] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 10:47:10] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 10:47:10] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 10:47:10] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 10:47:10] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 10:47:10] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 10:47:10] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 10:47:13] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 10:47:13] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 10:47:13] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 10:47:13] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 10:47:13] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 10:47:13] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 10:47:13] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 10:47:13] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 10:47:14] [Progress] 100% — ✓ 완료!
+[2026-04-17 10:53:51] ========== 로그인 창 시작 ==========
+[2026-04-17 10:53:52] ---------- 로그인 시도 ----------
+[2026-04-17 10:53:52] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 10:53:52] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 10:53:52] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 10:53:52] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 10:53:52] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 10:53:52] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 10:53:52] [DoLogin] ValidateLogin 호출
+[2026-04-17 10:53:52] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 10:53:52] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 10:53:52] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 10:53:53] [Lottie] 재생 시작
+[2026-04-17 10:53:53] [Progress] 0% — DB 연결 중...
+[2026-04-17 10:53:53] [Progress] 14% — DB 연결 완료
+[2026-04-17 10:53:53] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 10:53:53] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 10:53:53] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 10:53:53] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 10:53:53] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 10:53:53] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 10:53:53] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 10:53:53] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 10:53:56] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 10:53:56] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 10:53:56] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 10:53:56] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 10:53:56] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 10:53:56] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 10:53:56] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 10:53:56] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 10:53:56] [Progress] 100% — ✓ 완료!
+[2026-04-17 10:56:42] ========== 로그인 창 시작 ==========
+[2026-04-17 10:56:43] ---------- 로그인 시도 ----------
+[2026-04-17 10:56:43] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 10:56:43] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 10:56:43] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 10:56:43] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 10:56:44] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 10:56:44] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 10:56:44] [DoLogin] ValidateLogin 호출
+[2026-04-17 10:56:44] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 10:56:44] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 10:56:44] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 10:56:44] [Lottie] 재생 시작
+[2026-04-17 10:56:44] [Progress] 0% — DB 연결 중...
+[2026-04-17 10:56:44] [Progress] 14% — DB 연결 완료
+[2026-04-17 10:56:44] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 10:56:44] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 10:56:44] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 10:56:44] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 10:56:44] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 10:56:44] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 10:56:45] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 10:56:45] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 10:56:47] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 10:56:47] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 10:56:47] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 10:56:47] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 10:56:47] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 10:56:47] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 10:56:47] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 10:56:48] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 10:56:48] [Progress] 100% — ✓ 완료!
+[2026-04-17 10:58:42] ========== 로그인 창 시작 ==========
+[2026-04-17 10:58:43] ---------- 로그인 시도 ----------
+[2026-04-17 10:58:43] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 10:58:43] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 10:58:43] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 10:58:43] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 10:58:43] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 10:58:43] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 10:58:43] [DoLogin] ValidateLogin 호출
+[2026-04-17 10:58:43] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 10:58:43] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 10:58:43] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 10:58:44] [Lottie] 재생 시작
+[2026-04-17 10:58:44] [Progress] 0% — DB 연결 중...
+[2026-04-17 10:58:44] [Progress] 14% — DB 연결 완료
+[2026-04-17 10:58:44] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 10:58:44] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 10:58:44] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 10:58:44] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 10:58:44] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 10:58:44] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 10:58:44] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 10:58:44] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 10:58:47] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 10:58:47] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 10:58:47] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 10:58:47] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 10:58:47] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 10:58:47] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 10:58:47] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 10:58:47] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 10:58:47] [Progress] 100% — ✓ 완료!
+[2026-04-17 11:03:15] ========== 로그인 창 시작 ==========
+[2026-04-17 11:03:16] ---------- 로그인 시도 ----------
+[2026-04-17 11:03:16] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 11:03:16] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 11:03:16] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 11:03:16] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 11:03:17] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 11:03:17] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 11:03:17] [DoLogin] ValidateLogin 호출
+[2026-04-17 11:03:17] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 11:03:17] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 11:03:17] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 11:03:17] [Lottie] 재생 시작
+[2026-04-17 11:03:17] [Progress] 0% — DB 연결 중...
+[2026-04-17 11:03:17] [Progress] 14% — DB 연결 완료
+[2026-04-17 11:03:17] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 11:03:17] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 11:03:17] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 11:03:17] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 11:03:17] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 11:03:17] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 11:03:18] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 11:03:18] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 11:03:20] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 11:03:20] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 11:03:20] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 11:03:20] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 11:03:20] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 11:03:20] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 11:03:20] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 11:03:21] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 11:03:21] [Progress] 100% — ✓ 완료!
+[2026-04-17 11:04:37] ========== 로그인 창 시작 ==========
+[2026-04-17 11:04:39] ---------- 로그인 시도 ----------
+[2026-04-17 11:04:39] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 11:04:39] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 11:04:39] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 11:04:39] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 11:04:39] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 11:04:39] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 11:04:39] [DoLogin] ValidateLogin 호출
+[2026-04-17 11:04:39] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 11:04:39] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 11:04:39] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 11:04:39] [Lottie] 재생 시작
+[2026-04-17 11:04:39] [Progress] 0% — DB 연결 중...
+[2026-04-17 11:04:39] [Progress] 14% — DB 연결 완료
+[2026-04-17 11:04:39] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 11:04:39] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 11:04:39] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 11:04:40] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 11:04:40] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 11:04:40] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 11:04:40] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 11:04:40] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 11:04:42] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 11:04:42] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 11:04:42] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 11:04:42] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 11:04:43] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 11:04:43] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 11:04:43] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 11:04:43] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 11:04:43] [Progress] 100% — ✓ 완료!
+[2026-04-17 11:07:03] ========== 로그인 창 시작 ==========
+[2026-04-17 11:07:04] ---------- 로그인 시도 ----------
+[2026-04-17 11:07:04] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 11:07:04] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 11:07:05] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 11:07:05] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 11:07:05] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 11:07:05] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 11:07:05] [DoLogin] ValidateLogin 호출
+[2026-04-17 11:07:05] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 11:07:05] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 11:07:05] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 11:07:05] [Lottie] 재생 시작
+[2026-04-17 11:07:05] [Progress] 0% — DB 연결 중...
+[2026-04-17 11:07:05] [Progress] 14% — DB 연결 완료
+[2026-04-17 11:07:05] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 11:07:05] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 11:07:05] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 11:07:05] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 11:07:05] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 11:07:05] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 11:07:06] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 11:07:06] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 11:07:08] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 11:07:08] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 11:07:08] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 11:07:08] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 11:07:08] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 11:07:08] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 11:07:08] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 11:07:09] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 11:07:09] [Progress] 100% — ✓ 완료!
+[2026-04-17 11:13:45] ========== 로그인 창 시작 ==========
+[2026-04-17 11:13:46] ---------- 로그인 시도 ----------
+[2026-04-17 11:13:46] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 11:13:46] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 11:13:46] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 11:13:46] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 11:13:46] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 11:13:46] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 11:13:46] [DoLogin] ValidateLogin 호출
+[2026-04-17 11:13:46] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 11:13:46] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 11:13:46] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 11:13:46] [Lottie] 재생 시작
+[2026-04-17 11:13:46] [Progress] 0% — DB 연결 중...
+[2026-04-17 11:13:47] [Progress] 14% — DB 연결 완료
+[2026-04-17 11:13:47] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 11:13:47] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 11:13:47] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 11:13:47] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 11:13:47] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 11:13:47] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 11:13:47] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 11:13:47] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 11:14:32] ========== 로그인 창 시작 ==========
+[2026-04-17 11:14:33] ---------- 로그인 시도 ----------
+[2026-04-17 11:14:33] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 11:14:33] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 11:14:33] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 11:14:33] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 11:14:34] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 11:14:34] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 11:14:34] [DoLogin] ValidateLogin 호출
+[2026-04-17 11:14:34] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 11:14:34] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 11:14:34] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 11:14:34] [Lottie] 재생 시작
+[2026-04-17 11:14:34] [Progress] 0% — DB 연결 중...
+[2026-04-17 11:14:34] [Progress] 14% — DB 연결 완료
+[2026-04-17 11:14:34] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 11:14:34] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 11:14:34] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 11:14:34] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 11:14:34] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 11:14:34] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 11:14:35] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 11:14:35] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 11:14:37] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 11:14:37] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 11:14:37] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 11:14:37] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 11:14:37] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 11:14:37] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 11:14:37] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 11:14:38] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 11:14:38] [Progress] 100% — ✓ 완료!
+[2026-04-17 11:16:51] ========== 로그인 창 시작 ==========
+[2026-04-17 11:16:52] ---------- 로그인 시도 ----------
+[2026-04-17 11:16:52] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 11:16:52] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 11:16:52] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 11:16:52] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 11:16:52] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 11:16:52] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 11:16:52] [DoLogin] ValidateLogin 호출
+[2026-04-17 11:16:52] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 11:16:52] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 11:16:52] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 11:16:53] [Lottie] 재생 시작
+[2026-04-17 11:16:53] [Progress] 0% — DB 연결 중...
+[2026-04-17 11:16:53] [Progress] 14% — DB 연결 완료
+[2026-04-17 11:16:53] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 11:16:53] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 11:16:53] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 11:16:53] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 11:16:53] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 11:16:53] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 11:16:53] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 11:16:53] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 11:16:56] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 11:16:56] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 11:16:56] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 11:16:56] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 11:16:56] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 11:16:56] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 11:16:56] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 11:16:56] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 11:16:56] [Progress] 100% — ✓ 완료!
+[2026-04-17 11:20:27] ========== 로그인 창 시작 ==========
+[2026-04-17 11:20:28] ---------- 로그인 시도 ----------
+[2026-04-17 11:20:28] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 11:20:28] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 11:20:28] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 11:20:28] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 11:20:28] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 11:20:28] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 11:20:28] [DoLogin] ValidateLogin 호출
+[2026-04-17 11:20:28] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 11:20:28] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 11:20:28] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 11:20:28] [Lottie] 재생 시작
+[2026-04-17 11:20:28] [Progress] 0% — DB 연결 중...
+[2026-04-17 11:20:28] [Progress] 14% — DB 연결 완료
+[2026-04-17 11:20:29] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 11:20:29] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 11:20:29] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 11:20:29] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 11:20:29] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 11:20:29] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 11:20:29] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 11:20:29] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 11:20:31] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 11:20:32] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 11:20:32] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 11:20:32] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 11:20:32] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 11:20:32] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 11:20:32] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 11:20:32] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 11:20:32] [Progress] 100% — ✓ 완료!
+[2026-04-17 11:27:33] ========== 로그인 창 시작 ==========
+[2026-04-17 11:27:35] ---------- 로그인 시도 ----------
+[2026-04-17 11:27:35] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 11:27:35] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 11:27:35] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 11:27:35] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 11:27:35] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 11:27:35] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 11:27:35] [DoLogin] ValidateLogin 호출
+[2026-04-17 11:27:35] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 11:27:35] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 11:27:35] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 11:27:35] [Lottie] 재생 시작
+[2026-04-17 11:27:35] [Progress] 0% — DB 연결 중...
+[2026-04-17 11:27:35] [Progress] 14% — DB 연결 완료
+[2026-04-17 11:27:35] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 11:27:35] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 11:27:36] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 11:27:36] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 11:27:36] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 11:27:36] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 11:27:36] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 11:27:36] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 11:27:45] ========== 로그인 창 시작 ==========
+[2026-04-17 11:27:45] ---------- 로그인 시도 ----------
+[2026-04-17 11:27:45] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 11:27:45] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 11:27:46] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 11:27:46] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 11:27:46] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 11:27:46] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 11:27:46] [DoLogin] ValidateLogin 호출
+[2026-04-17 11:27:46] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 11:27:46] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 11:27:46] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 11:27:46] [DoLogin] 중복 호출 차단
+[2026-04-17 11:27:46] [Lottie] 재생 시작
+[2026-04-17 11:27:46] [Progress] 0% — DB 연결 중...
+[2026-04-17 11:27:46] [Progress] 14% — DB 연결 완료
+[2026-04-17 11:27:46] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 11:27:46] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 11:27:46] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 11:27:46] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 11:27:46] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 11:27:47] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 11:27:47] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 11:27:47] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 11:27:49] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 11:27:49] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 11:27:49] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 11:27:49] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 11:27:50] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 11:27:50] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 11:27:50] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 11:27:50] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 11:27:50] [Progress] 100% — ✓ 완료!
+[2026-04-17 11:29:59] ========== 로그인 창 시작 ==========
+[2026-04-17 11:30:00] ---------- 로그인 시도 ----------
+[2026-04-17 11:30:00] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 11:30:00] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 11:30:00] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 11:30:00] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 11:30:00] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 11:30:00] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 11:30:00] [DoLogin] ValidateLogin 호출
+[2026-04-17 11:30:00] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 11:30:00] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 11:30:00] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 11:30:01] [Lottie] 재생 시작
+[2026-04-17 11:30:01] [Progress] 0% — DB 연결 중...
+[2026-04-17 11:30:01] [Progress] 14% — DB 연결 완료
+[2026-04-17 11:30:01] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 11:30:01] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 11:30:01] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 11:30:01] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 11:30:01] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 11:30:01] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 11:30:01] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 11:30:01] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 11:30:04] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 11:30:04] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 11:30:04] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 11:30:04] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 11:30:04] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 11:30:04] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 11:30:04] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 11:30:04] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 11:30:05] [Progress] 100% — ✓ 완료!
+[2026-04-17 11:32:07] ========== 로그인 창 시작 ==========
+[2026-04-17 11:32:08] ---------- 로그인 시도 ----------
+[2026-04-17 11:32:08] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 11:32:08] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 11:32:08] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 11:32:08] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 11:32:08] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 11:32:08] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 11:32:08] [DoLogin] ValidateLogin 호출
+[2026-04-17 11:32:09] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 11:32:09] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 11:32:09] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 11:32:09] [Lottie] 재생 시작
+[2026-04-17 11:32:09] [Progress] 0% — DB 연결 중...
+[2026-04-17 11:32:09] [Progress] 14% — DB 연결 완료
+[2026-04-17 11:32:09] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 11:32:09] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 11:32:09] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 11:32:09] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 11:32:09] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 11:32:09] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 11:32:10] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 11:32:10] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 11:32:12] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 11:32:12] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 11:32:12] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 11:32:12] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 11:32:12] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 11:32:12] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 11:32:12] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 11:32:12] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 11:32:13] [Progress] 100% — ✓ 완료!
+[2026-04-17 11:34:22] ========== 로그인 창 시작 ==========
+[2026-04-17 11:34:23] ---------- 로그인 시도 ----------
+[2026-04-17 11:34:23] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 11:34:23] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 11:34:24] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 11:34:24] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 11:34:24] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 11:34:24] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 11:34:24] [DoLogin] ValidateLogin 호출
+[2026-04-17 11:34:24] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 11:34:24] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 11:34:24] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 11:34:24] [Lottie] 재생 시작
+[2026-04-17 11:34:24] [Progress] 0% — DB 연결 중...
+[2026-04-17 11:34:24] [Progress] 14% — DB 연결 완료
+[2026-04-17 11:34:24] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 11:34:24] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 11:34:24] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 11:34:24] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 11:34:25] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 11:34:25] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 11:34:25] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 11:34:25] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 11:34:27] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 11:34:27] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 11:34:27] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 11:34:27] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 11:34:27] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 11:34:28] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 11:34:28] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 11:34:28] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 11:34:28] [Progress] 100% — ✓ 완료!
+[2026-04-17 11:36:33] ========== 로그인 창 시작 ==========
+[2026-04-17 11:36:34] ---------- 로그인 시도 ----------
+[2026-04-17 11:36:34] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 11:36:34] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 11:36:34] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 11:36:34] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 11:36:34] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 11:36:34] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 11:36:34] [DoLogin] ValidateLogin 호출
+[2026-04-17 11:36:34] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 11:36:34] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 11:36:34] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 11:36:35] [Lottie] 재생 시작
+[2026-04-17 11:36:35] [Progress] 0% — DB 연결 중...
+[2026-04-17 11:36:35] [Progress] 14% — DB 연결 완료
+[2026-04-17 11:36:35] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 11:36:35] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 11:36:35] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 11:36:35] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 11:36:35] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 11:36:35] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 11:36:35] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 11:36:35] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 11:36:38] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 11:36:38] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 11:36:38] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 11:36:38] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 11:36:38] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 11:36:38] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 11:36:38] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 11:36:38] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 11:36:38] [Progress] 100% — ✓ 완료!
+[2026-04-17 11:40:00] ========== 로그인 창 시작 ==========
+[2026-04-17 11:40:01] ---------- 로그인 시도 ----------
+[2026-04-17 11:40:01] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 11:40:01] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 11:40:01] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 11:40:01] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 11:40:01] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 11:40:01] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 11:40:01] [DoLogin] ValidateLogin 호출
+[2026-04-17 11:40:01] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 11:40:01] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 11:40:01] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 11:40:02] [Lottie] 재생 시작
+[2026-04-17 11:40:02] [Progress] 0% — DB 연결 중...
+[2026-04-17 11:40:02] [Progress] 14% — DB 연결 완료
+[2026-04-17 11:40:02] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 11:40:02] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 11:40:02] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 11:40:02] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 11:40:02] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 11:40:02] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 11:40:02] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 11:40:02] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 11:40:05] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 11:40:05] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 11:40:05] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 11:40:05] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 11:40:05] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 11:40:05] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 11:40:05] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 11:40:05] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 11:40:05] [Progress] 100% — ✓ 완료!
+[2026-04-17 11:41:58] ========== 로그인 창 시작 ==========
+[2026-04-17 11:41:59] ---------- 로그인 시도 ----------
+[2026-04-17 11:41:59] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 11:41:59] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 11:41:59] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 11:41:59] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 11:41:59] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 11:41:59] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 11:41:59] [DoLogin] ValidateLogin 호출
+[2026-04-17 11:41:59] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 11:41:59] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 11:41:59] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 11:41:59] [Lottie] 재생 시작
+[2026-04-17 11:41:59] [Progress] 0% — DB 연결 중...
+[2026-04-17 11:41:59] [Progress] 14% — DB 연결 완료
+[2026-04-17 11:41:59] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 11:41:59] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 11:42:00] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 11:42:00] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 11:42:00] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 11:42:00] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 11:42:00] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 11:42:00] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 11:42:02] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 11:42:02] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 11:42:02] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 11:42:02] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 11:42:03] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 11:42:03] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 11:42:03] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 11:42:03] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 11:42:03] [Progress] 100% — ✓ 완료!
+[2026-04-17 13:10:16] ========== 로그인 창 시작 ==========
+[2026-04-17 13:10:18] ---------- 로그인 시도 ----------
+[2026-04-17 13:10:18] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 13:10:18] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 13:10:18] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 13:10:18] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 13:10:18] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 13:10:18] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 13:10:18] [DoLogin] ValidateLogin 호출
+[2026-04-17 13:10:18] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 13:10:18] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 13:10:18] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 13:10:18] [Lottie] 재생 시작
+[2026-04-17 13:10:18] [Progress] 0% — DB 연결 중...
+[2026-04-17 13:10:18] [Progress] 14% — DB 연결 완료
+[2026-04-17 13:10:18] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 13:10:18] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 13:10:18] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 13:10:19] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 13:10:19] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 13:10:19] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 13:10:19] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 13:10:19] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 13:10:21] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 13:10:21] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 13:10:21] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 13:10:21] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 13:10:21] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 13:10:22] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 13:10:22] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 13:10:22] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 13:10:22] [Progress] 100% — ✓ 완료!
+[2026-04-17 13:16:27] ========== 로그인 창 시작 ==========
+[2026-04-17 13:16:29] ---------- 로그인 시도 ----------
+[2026-04-17 13:16:29] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 13:16:29] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 13:16:29] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 13:16:29] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 13:16:29] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 13:16:29] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 13:16:29] [DoLogin] ValidateLogin 호출
+[2026-04-17 13:16:29] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 13:16:29] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 13:16:29] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 13:16:29] [Lottie] 재생 시작
+[2026-04-17 13:16:29] [Progress] 0% — DB 연결 중...
+[2026-04-17 13:16:29] [Progress] 14% — DB 연결 완료
+[2026-04-17 13:16:29] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 13:16:29] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 13:16:30] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 13:16:30] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 13:16:30] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 13:16:30] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 13:16:30] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 13:16:30] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 13:16:32] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 13:16:32] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 13:16:32] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 13:16:33] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 13:16:33] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 13:16:33] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 13:16:33] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 13:16:33] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 13:16:33] [Progress] 100% — ✓ 완료!
+[2026-04-17 13:39:26] ========== 로그인 창 시작 ==========
+[2026-04-17 13:39:27] ---------- 로그인 시도 ----------
+[2026-04-17 13:39:27] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 13:39:27] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 13:39:27] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 13:39:27] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 13:39:27] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 13:39:27] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 13:39:27] [DoLogin] ValidateLogin 호출
+[2026-04-17 13:39:27] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 13:39:27] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 13:39:27] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 13:39:28] [Lottie] 재생 시작
+[2026-04-17 13:39:28] [Progress] 0% — DB 연결 중...
+[2026-04-17 13:39:28] [Progress] 14% — DB 연결 완료
+[2026-04-17 13:39:28] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 13:39:28] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 13:39:28] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 13:39:28] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 13:39:28] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 13:39:28] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 13:39:28] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 13:39:29] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 13:39:31] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 13:39:31] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 13:39:31] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 13:39:31] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 13:39:31] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 13:39:31] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 13:39:31] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 13:39:31] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 13:39:32] [Progress] 100% — ✓ 완료!
+[2026-04-17 13:49:37] ========== 로그인 창 시작 ==========
+[2026-04-17 13:49:39] ---------- 로그인 시도 ----------
+[2026-04-17 13:49:39] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 13:49:39] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 13:49:39] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 13:49:39] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 13:49:39] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 13:49:39] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 13:49:39] [DoLogin] ValidateLogin 호출
+[2026-04-17 13:49:39] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 13:49:39] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 13:49:39] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 13:49:39] [Lottie] 재생 시작
+[2026-04-17 13:49:39] [Progress] 0% — DB 연결 중...
+[2026-04-17 13:49:39] [Progress] 14% — DB 연결 완료
+[2026-04-17 13:49:39] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 13:49:39] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 13:49:40] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 13:49:40] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 13:49:40] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 13:49:40] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 13:49:40] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 13:49:40] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 13:49:42] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 13:49:42] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 13:49:42] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 13:49:42] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 13:49:43] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 13:49:43] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 13:49:43] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 13:49:43] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 13:49:43] [Progress] 100% — ✓ 완료!
+[2026-04-17 15:24:22] ========== 로그인 창 시작 ==========
+[2026-04-17 15:24:23] ---------- 로그인 시도 ----------
+[2026-04-17 15:24:23] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 15:24:23] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 15:24:23] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 15:24:23] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 15:24:23] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 15:24:23] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 15:24:23] [DoLogin] ValidateLogin 호출
+[2026-04-17 15:24:23] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 15:24:23] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 15:24:23] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 15:24:24] [Lottie] 재생 시작
+[2026-04-17 15:24:24] [Progress] 0% — DB 연결 중...
+[2026-04-17 15:24:24] [Progress] 14% — DB 연결 완료
+[2026-04-17 15:24:24] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 15:24:24] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 15:24:24] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 15:24:24] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 15:24:24] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 15:24:24] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 15:24:24] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 15:24:24] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 15:24:27] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 15:24:27] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 15:24:27] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 15:24:27] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 15:24:27] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 15:24:27] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 15:24:27] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 15:24:27] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 15:24:27] [Progress] 100% — ✓ 완료!
+[2026-04-17 15:31:00] ========== 로그인 창 시작 ==========
+[2026-04-17 15:31:01] ---------- 로그인 시도 ----------
+[2026-04-17 15:31:01] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 15:31:01] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 15:31:01] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 15:31:01] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 15:31:01] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 15:31:01] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 15:31:01] [DoLogin] ValidateLogin 호출
+[2026-04-17 15:31:01] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 15:31:01] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 15:31:01] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 15:31:02] [Lottie] 재생 시작
+[2026-04-17 15:31:02] [Progress] 0% — DB 연결 중...
+[2026-04-17 15:31:02] [Progress] 14% — DB 연결 완료
+[2026-04-17 15:31:02] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 15:31:02] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 15:31:02] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 15:31:02] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 15:31:02] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 15:31:02] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 15:31:02] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 15:31:03] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 15:31:05] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 15:31:05] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 15:31:05] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 15:31:05] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 15:31:05] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 15:31:05] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 15:31:05] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 15:31:05] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 15:31:06] [Progress] 100% — ✓ 완료!
+[2026-04-17 15:56:10] ========== 로그인 창 시작 ==========
+[2026-04-17 15:56:11] ---------- 로그인 시도 ----------
+[2026-04-17 15:56:11] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 15:56:11] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 15:56:12] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 15:56:12] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 15:56:12] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 15:56:12] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 15:56:12] [DoLogin] ValidateLogin 호출
+[2026-04-17 15:56:12] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 15:56:12] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 15:56:12] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 15:56:12] [Lottie] 재생 시작
+[2026-04-17 15:56:12] [Progress] 0% — DB 연결 중...
+[2026-04-17 15:56:12] [Progress] 14% — DB 연결 완료
+[2026-04-17 15:56:12] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 15:56:12] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 15:56:12] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 15:56:12] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 15:56:13] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 15:56:13] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 15:56:13] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 15:56:13] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 15:56:15] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 15:56:15] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 15:56:15] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 15:56:15] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 15:56:15] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 15:56:15] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 15:56:15] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 15:56:16] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 15:56:16] [Progress] 100% — ✓ 완료!
+[2026-04-17 16:12:42] ========== 로그인 창 시작 ==========
+[2026-04-17 16:12:43] ---------- 로그인 시도 ----------
+[2026-04-17 16:12:43] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 16:12:43] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 16:12:43] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 16:12:43] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 16:12:43] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 16:12:43] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 16:12:43] [DoLogin] ValidateLogin 호출
+[2026-04-17 16:12:43] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 16:12:43] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 16:12:43] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 16:12:44] [Lottie] 재생 시작
+[2026-04-17 16:12:44] [Progress] 0% — DB 연결 중...
+[2026-04-17 16:12:44] [Progress] 14% — DB 연결 완료
+[2026-04-17 16:12:44] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 16:12:44] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 16:12:44] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 16:12:44] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 16:12:44] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 16:12:44] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 16:12:44] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 16:12:44] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 16:12:47] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 16:12:47] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 16:12:47] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 16:12:47] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 16:12:47] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 16:12:47] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 16:12:47] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 16:12:47] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 16:12:47] [Progress] 100% — ✓ 완료!
+[2026-04-17 17:16:04] ========== 로그인 창 시작 ==========
+[2026-04-17 17:16:05] ---------- 로그인 시도 ----------
+[2026-04-17 17:16:05] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 17:16:05] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 17:16:05] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 17:16:06] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 17:16:06] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 17:16:06] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 17:16:06] [DoLogin] ValidateLogin 호출
+[2026-04-17 17:16:06] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 17:16:06] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 17:16:06] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 17:16:06] [Lottie] 재생 시작
+[2026-04-17 17:16:06] [Progress] 0% — DB 연결 중...
+[2026-04-17 17:16:06] [Progress] 14% — DB 연결 완료
+[2026-04-17 17:16:06] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 17:16:06] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 17:16:06] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 17:16:06] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 17:16:06] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 17:16:06] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 17:16:07] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 17:16:07] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 17:16:09] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 17:16:09] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 17:16:09] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 17:16:09] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 17:16:09] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 17:16:09] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 17:16:09] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 17:16:09] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 17:16:10] [Progress] 100% — ✓ 완료!
+[2026-04-17 17:33:25] ========== 로그인 창 시작 ==========
+[2026-04-17 17:33:26] ---------- 로그인 시도 ----------
+[2026-04-17 17:33:26] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 17:33:26] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 17:33:26] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 17:33:26] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 17:33:26] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 17:33:26] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 17:33:26] [DoLogin] ValidateLogin 호출
+[2026-04-17 17:33:27] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 17:33:27] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 17:33:27] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 17:33:27] [Lottie] 재생 시작
+[2026-04-17 17:33:27] [Progress] 0% — DB 연결 중...
+[2026-04-17 17:33:27] [Progress] 14% — DB 연결 완료
+[2026-04-17 17:33:27] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 17:33:27] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 17:33:27] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 17:33:27] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 17:33:28] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 17:33:28] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 17:33:28] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 17:33:28] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 17:33:31] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 17:33:31] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 17:33:31] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 17:33:31] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 17:33:31] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 17:33:31] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 17:33:31] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 17:33:32] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 17:33:32] [Progress] 100% — ✓ 완료!
+[2026-04-17 17:38:13] ========== 로그인 창 시작 ==========
+[2026-04-17 17:38:14] ---------- 로그인 시도 ----------
+[2026-04-17 17:38:14] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 17:38:14] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 17:38:14] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 17:38:14] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 17:38:14] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 17:38:14] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 17:38:14] [DoLogin] ValidateLogin 호출
+[2026-04-17 17:38:14] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 17:38:14] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 17:38:14] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 17:38:15] [Lottie] 재생 시작
+[2026-04-17 17:38:15] [Progress] 0% — DB 연결 중...
+[2026-04-17 17:38:15] [Progress] 14% — DB 연결 완료
+[2026-04-17 17:38:15] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 17:38:15] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 17:38:15] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 17:38:15] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 17:38:15] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 17:38:15] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 17:38:15] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 17:38:15] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 17:38:39] ========== 로그인 창 시작 ==========
+[2026-04-17 17:38:40] ---------- 로그인 시도 ----------
+[2026-04-17 17:38:40] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 17:38:40] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 17:38:41] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 17:38:41] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 17:38:41] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 17:38:41] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 17:38:41] [DoLogin] ValidateLogin 호출
+[2026-04-17 17:38:41] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 17:38:41] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 17:38:41] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 17:38:41] [Lottie] 재생 시작
+[2026-04-17 17:38:41] [Progress] 0% — DB 연결 중...
+[2026-04-17 17:38:41] [Progress] 14% — DB 연결 완료
+[2026-04-17 17:38:41] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 17:38:41] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 17:38:41] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 17:38:41] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 17:38:42] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 17:38:42] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 17:38:42] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 17:38:42] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 17:38:45] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 17:38:45] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 17:38:45] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 17:38:45] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 17:38:46] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 17:38:46] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 17:38:46] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 17:38:46] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 17:38:46] [Progress] 100% — ✓ 완료!
+[2026-04-17 17:43:25] ========== 로그인 창 시작 ==========
+[2026-04-17 17:43:26] ---------- 로그인 시도 ----------
+[2026-04-17 17:43:26] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 17:43:26] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 17:43:26] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 17:43:26] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 17:43:26] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 17:43:26] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 17:43:26] [DoLogin] ValidateLogin 호출
+[2026-04-17 17:43:26] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 17:43:26] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 17:43:26] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 17:43:27] [DoLogin] 중복 호출 차단
+[2026-04-17 17:43:27] [Lottie] 재생 시작
+[2026-04-17 17:43:27] [Progress] 0% — DB 연결 중...
+[2026-04-17 17:43:27] [Progress] 14% — DB 연결 완료
+[2026-04-17 17:43:27] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 17:43:27] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 17:43:27] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 17:43:27] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 17:43:27] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 17:43:27] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 17:43:28] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 17:43:28] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 17:43:30] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 17:43:30] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 17:43:30] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 17:43:30] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 17:43:30] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 17:43:30] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 17:43:30] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 17:43:30] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 17:43:31] [Progress] 100% — ✓ 완료!
+[2026-04-17 17:45:31] ========== 로그인 창 시작 ==========
+[2026-04-17 17:45:32] ---------- 로그인 시도 ----------
+[2026-04-17 17:45:32] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 17:45:32] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 17:45:32] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 17:45:32] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 17:45:32] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 17:45:32] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 17:45:32] [DoLogin] ValidateLogin 호출
+[2026-04-17 17:45:32] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 17:45:32] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 17:45:32] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 17:45:32] [Lottie] 재생 시작
+[2026-04-17 17:45:32] [Progress] 0% — DB 연결 중...
+[2026-04-17 17:45:32] [Progress] 14% — DB 연결 완료
+[2026-04-17 17:45:32] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 17:45:32] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 17:45:33] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 17:45:33] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 17:45:33] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 17:45:33] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 17:45:33] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 17:45:33] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 17:45:35] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 17:45:35] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 17:45:35] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 17:45:36] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 17:45:36] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 17:45:36] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 17:45:36] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 17:45:36] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 17:45:36] [Progress] 100% — ✓ 완료!
+[2026-04-17 17:47:07] ========== 로그인 창 시작 ==========
+[2026-04-17 17:47:08] ---------- 로그인 시도 ----------
+[2026-04-17 17:47:08] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 17:47:08] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 17:47:08] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 17:47:08] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 17:47:08] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 17:47:08] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 17:47:08] [DoLogin] ValidateLogin 호출
+[2026-04-17 17:47:08] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 17:47:08] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 17:47:08] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 17:47:08] [Lottie] 재생 시작
+[2026-04-17 17:47:08] [Progress] 0% — DB 연결 중...
+[2026-04-17 17:47:08] [Progress] 14% — DB 연결 완료
+[2026-04-17 17:47:09] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 17:47:09] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 17:47:09] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 17:47:09] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 17:47:09] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 17:47:09] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 17:47:09] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 17:47:09] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 17:47:13] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 17:47:13] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 17:47:13] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 17:47:13] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 17:47:13] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 17:47:13] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 17:47:13] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 17:47:13] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 17:47:13] [Progress] 100% — ✓ 완료!
+[2026-04-17 17:50:01] ========== 로그인 창 시작 ==========
+[2026-04-17 17:50:02] ---------- 로그인 시도 ----------
+[2026-04-17 17:50:02] [DoLogin] 사번 입력값: '201000308'
+[2026-04-17 17:50:02] [DoLogin] 비밀번호 길이: 10자 / 비어있음: False
+[2026-04-17 17:50:02] [DoLogin] 비밀번호 입력 해시: f3898fe2...
+[2026-04-17 17:50:02] [DoLogin] DB 계정 상태 확인 시작
+[2026-04-17 17:50:02] [DebugCheck] 사번=201000308 상태=approved must_change=0 해시=f3898fe2... taskId=AQMkADAwATM3ZmYAZS0xYTYxLTUwMTEALTAwAi0wMAoARgAAA6fkKAJzURFCp03uDLvXp98HALAvg_JdvZ9GofhcqP1PJIMAAAIBEgAAALAvg_JdvZ9GofhcqP1PJIMABvr4c1sAAAA=
+[2026-04-17 17:50:02] [DebugCheck] 123456 해시=8d969eef...
+[2026-04-17 17:50:02] [DoLogin] ValidateLogin 호출
+[2026-04-17 17:50:02] [ValidateLogin] DB해시=f3898fe2... / 입력해시=f3898fe2... / 일치=True
+[2026-04-17 17:50:02] [DoLogin] ValidateLogin 결과 → success=True, mustChangePw=False, message='로그인 성공'
+[2026-04-17 17:50:02] [DoLogin] 로그인 성공 → Lottie 재생
+[2026-04-17 17:50:03] [Lottie] 재생 시작
+[2026-04-17 17:50:03] [Progress] 0% — DB 연결 중...
+[2026-04-17 17:50:03] [Progress] 14% — DB 연결 완료
+[2026-04-17 17:50:03] [Progress] 14% — 계정 DB 초기화 중...
+[2026-04-17 17:50:03] [Progress] 28% — 계정 DB 초기화 완료
+[2026-04-17 17:50:03] [Progress] 28% — 비밀번호 초기화 확인 중...
+[2026-04-17 17:50:03] [Progress] 42% — 비밀번호 확인 완료
+[2026-04-17 17:50:03] [Progress] 42% — 사진 데이터 동기화 중...
+[2026-04-17 17:50:03] [Progress] 56% — 사진 동기화 완료
+[2026-04-17 17:50:04] [Progress] 65% — Phase 1 마이그레이션 스킵 (완료됨)
+[2026-04-17 17:50:04] [Progress] 68% — 테이블 초기화 중...
+[2026-04-17 17:50:06] [Progress] 72% — 테이블 준비 완료
+[2026-04-17 17:50:06] [Progress] 80% — Phase 2 마이그레이션 스킵 (완료됨)
+[2026-04-17 17:50:06] [Progress] 82% — 견적 데이터 준비 중...
+[2026-04-17 17:50:06] [Progress] 88% — 데이터 준비 완료
+[2026-04-17 17:50:06] [Progress] 88% — 처리시설 측정결과 준비 중...
+[2026-04-17 17:50:06] [Progress] 94% — 처리시설 준비 완료 (0건)
+[2026-04-17 17:50:06] [Init] EnsureTodayMeasurementResults: 0건
+[2026-04-17 17:50:06] [Progress] 96% — 시스템 준비 완료
+[2026-04-17 17:50:07] [Progress] 100% — ✓ 완료!

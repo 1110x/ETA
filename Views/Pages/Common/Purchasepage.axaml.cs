@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using ETA.Models;
 using ETA.Services;
 using ETA.Services.SERVICE1;
@@ -360,7 +361,8 @@ public class PurchasePage
     {
         _filterYear  = year;
         _filterMonth = month;
-        _items       = PurchaseService.GetByMonth(year, month);
+        _items       = PurchaseService.GetByMonth(year, month, deletedOnly: _trashMode);
+        Debug.WriteLine($"[PurchasePage] LoadListByMonth({year}-{month:D2}, trash={_trashMode}) → {_items.Count}건");
         RefreshList();
     }
 
@@ -619,10 +621,16 @@ public class PurchasePage
     /// BT5 — 완료
     public void CompleteSelected() => ChangeStatus("완료");
 
-    /// BT6 — 삭제
-    public void DeleteSelected()
+    /// BT6 — 삭제 (확인 다이얼로그 + 소프트 삭제)
+    public async void DeleteSelected()
     {
         if (_selectedItem == null) return;
+
+        var itemText = $"[{_selectedItem.구분}] {_selectedItem.품목}";
+        var confirmed = await ShowConfirmDialogAsync(
+            "삭제 확인",
+            $"{itemText}\n\n이 항목을 삭제하시겠습니까?\n(휴지통에서 복원 가능합니다.)");
+        if (!confirmed) return;
 
         bool ok = PurchaseService.Delete(_selectedItem.Id);
 
@@ -635,23 +643,130 @@ public class PurchasePage
         }
     }
 
+    /// <summary>휴지통 모드 (true: 삭제된 항목 표시)</summary>
+    private bool _trashMode = false;
+    public bool TrashMode
+    {
+        get => _trashMode;
+        set
+        {
+            Debug.WriteLine($"[PurchasePage] TrashMode set: {_trashMode} → {value}");
+            _trashMode = value;
+            RefreshTree();
+            LoadListByMonth(_filterYear, _filterMonth);
+            Debug.WriteLine($"[PurchasePage] TrashMode applied: count={_items.Count}");
+        }
+    }
+
+    public bool RestoreSelected()
+    {
+        if (_selectedItem == null) return false;
+        bool ok = PurchaseService.Restore(_selectedItem.Id);
+        if (ok)
+        {
+            _selectedItem = null;
+            _selectedRowBorder = null;
+            RefreshTree();
+            LoadListByMonth(_filterYear, _filterMonth);
+        }
+        return ok;
+    }
+
+    private async Task<bool> ShowConfirmDialogAsync(string title, string message)
+    {
+        var tcs = new TaskCompletionSource<bool>();
+        var win = new Avalonia.Controls.Window
+        {
+            Title = title,
+            Width = 400, Height = 180,
+            WindowStartupLocation = Avalonia.Controls.WindowStartupLocation.CenterOwner,
+            CanResize = false,
+        };
+        var msg = new TextBlock
+        {
+            Text = message, FontFamily = Font, FontSize = AppTheme.FontMD,
+            TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+            Margin = new Avalonia.Thickness(20, 20, 20, 0),
+        };
+        var btnOk = new Button
+        {
+            Content = "삭제", Width = 80, Height = 30,
+            Background = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#3a1a1a")),
+            Foreground = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#ff8888")),
+            FontFamily = Font, BorderThickness = new Avalonia.Thickness(0),
+            CornerRadius = new Avalonia.CornerRadius(4),
+        };
+        var btnCancel = new Button
+        {
+            Content = "취소", Width = 80, Height = 30, FontFamily = Font,
+            BorderThickness = new Avalonia.Thickness(0),
+            CornerRadius = new Avalonia.CornerRadius(4),
+        };
+        btnOk.Click += (_, _) => { tcs.TrySetResult(true); win.Close(); };
+        btnCancel.Click += (_, _) => { tcs.TrySetResult(false); win.Close(); };
+        var btnPanel = new StackPanel
+        {
+            Orientation = Avalonia.Layout.Orientation.Horizontal,
+            Spacing = 8,
+            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Right,
+            Margin = new Avalonia.Thickness(20),
+        };
+        btnPanel.Children.Add(btnCancel);
+        btnPanel.Children.Add(btnOk);
+        var grid = new Grid { RowDefinitions = new RowDefinitions("*,Auto") };
+        Grid.SetRow(msg, 0); grid.Children.Add(msg);
+        Grid.SetRow(btnPanel, 1); grid.Children.Add(btnPanel);
+        win.Content = grid;
+        win.Closed += (_, _) => tcs.TrySetResult(false);
+        var owner = Avalonia.Controls.TopLevel.GetTopLevel(_listPanel) as Avalonia.Controls.Window;
+        if (owner != null) await win.ShowDialog(owner);
+        else win.Show();
+        return await tcs.Task;
+    }
+
     // ── 상태 변경 공통 ────────────────────────────────────────────────────────
     private void ChangeStatus(string status)
     {
         if (_selectedItem == null)
         {
+            Debug.WriteLine($"[PurchasePage] ChangeStatus({status}) — _selectedItem null");
             return;
         }
 
-        bool ok = PurchaseService.UpdateStatus(_selectedItem.Id, status);
+        var id = _selectedItem.Id;
+        bool ok = PurchaseService.UpdateStatus(id, status);
+        Debug.WriteLine($"[PurchasePage] ChangeStatus({status}, id={id}) → ok={ok}");
+        if (!ok) return;
 
-        if (ok)
-        {
-            _selectedItem.상태 = status;
-            _selectedItem      = null;
-            _selectedRowBorder = null;
-            LoadListByMonth(_filterYear, _filterMonth);
-        }
+        _selectedItem.상태 = status;
+        _selectedItem      = null;
+        _selectedRowBorder = null;
+        RefreshTree();
+        LoadListByMonth(_filterYear, _filterMonth);
+    }
+
+    /// <summary>완전 삭제 (휴지통에서만)</summary>
+    public async void PermanentDeleteSelected()
+    {
+        if (_selectedItem == null) return;
+        var itemText = $"[{_selectedItem.구분}] {_selectedItem.품목}";
+        var confirmed = await ShowConfirmDialogAsync(
+            "완전 삭제",
+            $"{itemText}\n\n영구적으로 삭제됩니다. 복구할 수 없습니다.\n정말 삭제하시겠습니까?");
+        if (!confirmed) return;
+
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "DELETE FROM `물품구매` WHERE _id=@id";
+        cmd.Parameters.AddWithValue("@id", _selectedItem.Id);
+        var n = cmd.ExecuteNonQuery();
+        Debug.WriteLine($"[PurchasePage] PermanentDelete(_id={_selectedItem.Id}) → rows={n}");
+
+        _selectedItem = null;
+        _selectedRowBorder = null;
+        // 완전삭제 후 일반 모드로 자동 전환
+        TrashMode = false;
     }
 
     // =========================================================================
@@ -673,12 +788,22 @@ public class PurchasePage
             _selectedItem.수량   = qty;
             _selectedItem.비고   = _tbRemark.Text?.Trim()    ?? "";
             _selectedItem.요청자 = _tbRequester.Text?.Trim() ?? "";
+            var updId = _selectedItem.Id;
+            var itemYear = _selectedItem.요청일.Year;
+            var itemMonth = _selectedItem.요청일.Month;
 
-            bool ok = PurchaseService.Update(_selectedItem.Id,
+            bool ok = PurchaseService.Update(updId,
                 _selectedItem.구분, _selectedItem.품목, _selectedItem.수량,
                 _selectedItem.요청자, _selectedItem.비고);
+            Debug.WriteLine($"[PurchasePage] SaveBtn 수정(id={updId}) → ok={ok}");
 
-            if (ok) { ClearForm(); RefreshTree(); LoadListByMonth(_filterYear, _filterMonth); }
+            if (ok)
+            {
+                ClearForm();
+                RefreshTree();
+                // 수정된 항목의 요청일 월로 이동해 확실하게 보이도록
+                LoadListByMonth(itemYear, itemMonth);
+            }
             return;
         }
 

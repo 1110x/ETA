@@ -431,6 +431,64 @@ public static class AnalysisRequestService
         return list;
     }
 
+    /// <summary>특정 약칭+시료명의 의뢰일 목록 (중복 제거, 최신순)</summary>
+    public static List<string> GetRequestDatesBySample(string 약칭, string 시료명)
+    {
+        var list = new List<string>();
+        if (string.IsNullOrWhiteSpace(시료명)) return list;
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"
+                SELECT DISTINCT `채취일자`
+                FROM `수질분석센터_결과`
+                WHERE `약칭` = @abbr AND `시료명` = @name
+                  AND `채취일자` IS NOT NULL AND `채취일자` <> ''
+                ORDER BY `채취일자` DESC";
+            cmd.Parameters.AddWithValue("@abbr", 약칭 ?? "");
+            cmd.Parameters.AddWithValue("@name", 시료명);
+            using var r = cmd.ExecuteReader();
+            while (r.Read())
+            {
+                var s = r.IsDBNull(0) ? "" : r.GetValue(0)?.ToString() ?? "";
+                if (!string.IsNullOrEmpty(s)) list.Add(s);
+            }
+        }
+        catch (Exception ex) { Log($"GetRequestDatesBySample 오류: {ex.Message}"); }
+        return list;
+    }
+
+    /// <summary>약칭 → 대표 의뢰사업장(업체명) 매핑</summary>
+    public static Dictionary<string, string> GetAbbrCompanyMap()
+    {
+        var map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            // 각 약칭별 최빈 의뢰사업장을 선택 (가장 많이 나온 값)
+            cmd.CommandText = @"
+                SELECT `약칭`, `의뢰사업장`, COUNT(*) AS cnt
+                FROM `수질분석센터_결과`
+                WHERE `약칭` IS NOT NULL AND `약칭` <> ''
+                  AND `의뢰사업장` IS NOT NULL AND `의뢰사업장` <> ''
+                GROUP BY `약칭`, `의뢰사업장`
+                ORDER BY `약칭`, cnt DESC";
+            using var r = cmd.ExecuteReader();
+            while (r.Read())
+            {
+                var abbr = r.GetString(0);
+                var company = r.GetString(1);
+                if (!map.ContainsKey(abbr)) map[abbr] = company;
+            }
+        }
+        catch (Exception ex) { Log($"GetAbbrCompanyMap 오류: {ex.Message}"); }
+        return map;
+    }
+
     // =====================================================================
     //  분석정보 — ES 순서대로 항목 목록 반환 (Show4 정렬용)
     //    반환: (fullName=Analyte, shortName=약칭) ordered by ES ASC

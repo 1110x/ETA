@@ -210,18 +210,9 @@ public partial class Login : Window
             SetProgress("사진 동기화 완료", 56);
             await Task.Delay(120);
 
-            // ── Step 5: Phase 1 DB 마이그레이션 (테이블명 통일) ──────────────────
-            SetProgress("DB 마이그레이션 중... (Phase 1)", 60);
-            try
-            {
-                await Task.Run(() => DbPhase1Migration.ExecutePhase1());
-                SetProgress("DB 마이그레이션 완료 (Phase 1)", 65);
-            }
-            catch (Exception ex)
-            {
-                Log($"[Init] DbPhase1Migration 실패: {ex}");
-                SetProgress($"⚠ DB 마이그레이션 실패: {ex.Message}", 65);
-            }
+            // ── Step 5: Phase 1 DB 마이그레이션 (완료 - 비활성화) ──────────────
+            // 테이블명 통일 마이그레이션 완료 (2026-04-15), 재실행 불필요
+            SetProgress("Phase 1 마이그레이션 스킵 (완료됨)", 65);
             await Task.Delay(100);
 
             // ── Step 6: 처리시설 / 폐수 테이블 마이그레이션 ──────────────────
@@ -238,18 +229,9 @@ public partial class Login : Window
             }
             await Task.Delay(120);
 
-            // ── Step 6: Phase 2 xlsm 데이터 마이그레이션 ────────────────────
-            SetProgress("Phase 2 데이터 마이그레이션 중...", 75);
-            try
-            {
-                await Task.Run(() => XlsmDataMigration.ExecutePhase2());
-                SetProgress("Phase 2 마이그레이션 완료", 80);
-            }
-            catch (Exception ex)
-            {
-                Log($"[Init] Phase 2 마이그레이션 실패: {ex}");
-                SetProgress($"⚠ Phase 2 마이그레이션 실패: {ex.Message}", 80);
-            }
+            // ── Step 6: Phase 2 xlsm 데이터 마이그레이션 (완료 - 비활성화) ──
+            // 청하 xlsm 마이그레이션 완료 (2026-04-16), 재실행 불필요
+            SetProgress("Phase 2 마이그레이션 스킵 (완료됨)", 80);
             await Task.Delay(100);
 
             // ── Step 7: 견적 테이블 초기화 ───────────────────────────────────

@@ -54,16 +54,16 @@ public static class XlsmDataMigration
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
 
-            // 생물학적_산소요구량_시험기록부 테이블 생성 (없으면)
+            // 생물화학적_산소요구량_시험기록부 테이블 생성 (없으면)
             try
             {
-                Console.WriteLine("\n[Step 4] 생물학적_산소요구량_시험기록부 테이블 확인");
-                if (!DbConnectionFactory.TableExists(conn, "생물학적_산소요구량_시험기록부"))
+                Console.WriteLine("\n[Step 4] 생물화학적_산소요구량_시험기록부 테이블 확인");
+                if (!DbConnectionFactory.TableExists(conn, "생물화학적_산소요구량_시험기록부"))
                 {
                     Console.WriteLine("  테이블 없음, CREATE 중...");
                     using var createCmd = conn.CreateCommand();
                     createCmd.CommandText = $@"
-                        CREATE TABLE `생물학적_산소요구량_시험기록부` (
+                        CREATE TABLE `생물화학적_산소요구량_시험기록부` (
                             Id          INTEGER PRIMARY KEY {DbConnectionFactory.AutoIncrement},
                             분석일      TEXT NOT NULL,
                             SN          TEXT NOT NULL,
@@ -86,12 +86,12 @@ public static class XlsmDataMigration
                             업체명      TEXT DEFAULT ''
                         )";
                     createCmd.ExecuteNonQuery();
-                    Console.WriteLine("✓ 생물학적_산소요구량_시험기록부 CREATE 완료");
-                    Log("생물학적_산소요구량_시험기록부 CREATE 완료");
+                    Console.WriteLine("✓ 생물화학적_산소요구량_시험기록부 CREATE 완료");
+                    Log("생물화학적_산소요구량_시험기록부 CREATE 완료");
                 }
                 else
                 {
-                    Console.WriteLine("✓ 생물학적_산소요구량_시험기록부 테이블 존재");
+                    Console.WriteLine("✓ 생물화학적_산소요구량_시험기록부 테이블 존재");
                 }
             }
             catch (Exception e)
@@ -117,6 +117,8 @@ public static class XlsmDataMigration
             // totalLoaded += LoadBodData(wb);
 
             // [Phase 2-처리시설] 회사 서버에서 처리시설 분석결과 동기화
+            // ⏳ 보류 중: 데이터 검증 후 활성화 예정
+            /*
             Console.WriteLine("\n[Step 처리시설] 처리시설_결과 API 동기화");
             try
             {
@@ -129,6 +131,7 @@ public static class XlsmDataMigration
                 Log($"처리시설 동기화 오류: {ex.Message}");
                 Console.WriteLine($"⚠ 처리시설 동기화 실패: {ex.Message}");
             }
+            */
 
             Console.WriteLine($"\n✓ Phase 2 완료: {totalLoaded}개 로드");
         }
@@ -240,7 +243,7 @@ public static class XlsmDataMigration
     private static int LoadBodData(XLWorkbook wb)
     {
         const string sheetName = "BOD-DATA";
-        const string tableName = "생물학적_산소요구량_시험기록부";
+        const string tableName = "생물화학적_산소요구량_시험기록부";
 
         if (!wb.TryGetWorksheet(sheetName, out var ws))
         {

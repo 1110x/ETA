@@ -61,18 +61,24 @@ public static class ReagentService
         }
     }
 
-    public static List<Reagent> GetAll()
+    public static List<Reagent> GetAll() => GetAllInternal(includeDeleted: false);
+    public static List<Reagent> GetAllDeleted() => GetAllInternal(deletedOnly: true);
+
+    private static List<Reagent> GetAllInternal(bool includeDeleted = false, bool deletedOnly = false)
     {
         var list = new List<Reagent>();
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         EnsureTable(conn);
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"
+        var where = deletedOnly ? "WHERE `삭제여부`=1"
+                  : includeDeleted ? ""
+                  : "WHERE (`삭제여부` IS NULL OR `삭제여부`=0)";
+        cmd.CommandText = $@"
             SELECT Id,ITEM_NO,품목명,영문명,CAS번호,화학식,규격,단위,제조사,위험등급,
                    GHS,보관조건,재고량,당월사용량,전월사용량,적정사용량,최대적정보유량,
                    만료일,비고,등록일,상태
-            FROM `시약` ORDER BY 품목명 ASC";
+            FROM `시약` {where} ORDER BY 품목명 ASC";
         using var r = cmd.ExecuteReader();
         while (r.Read()) list.Add(Map(r));
         return list;
@@ -132,15 +138,26 @@ public static class ReagentService
         return cmd.ExecuteNonQuery() > 0;
     }
 
+    /// <summary>소프트 삭제 (삭제여부=1로 UPDATE)</summary>
     public static bool Delete(int id)
     {
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = "DELETE FROM `시약` WHERE Id=@id";
+        cmd.CommandText = "UPDATE `시약` SET `삭제여부`=1 WHERE Id=@id";
         cmd.Parameters.AddWithValue("@id", id);
-        int rows = cmd.ExecuteNonQuery();
-        return rows > 0;
+        return cmd.ExecuteNonQuery() > 0;
+    }
+
+    /// <summary>휴지통에서 복원 (삭제여부=0)</summary>
+    public static bool Restore(int id)
+    {
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "UPDATE `시약` SET `삭제여부`=0 WHERE Id=@id";
+        cmd.Parameters.AddWithValue("@id", id);
+        return cmd.ExecuteNonQuery() > 0;
     }
 
     private static void SetParams(DbCommand cmd, Reagent item)

@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
@@ -76,7 +78,7 @@ public static class FacilityResultSyncService
     /// <summary>
     /// 특정 처리시설의 데이터 동기화
     /// </summary>
-    private static async Task SyncOfficeCdAsync(System.Data.DbConnection conn, string officeCd, string inputDate)
+    private static async Task SyncOfficeCdAsync(DbConnection conn, string officeCd, string inputDate)
     {
         try
         {
@@ -159,7 +161,7 @@ public static class FacilityResultSyncService
     /// <summary>
     /// 처리시설_결과에 데이터 INSERT
     /// </summary>
-    private static void InsertFacilityResult(System.Data.DbConnection conn, string facilityName, SubNoteOcr ocr)
+    private static void InsertFacilityResult(DbConnection conn, string facilityName, SubNoteOcr ocr)
     {
         try
         {

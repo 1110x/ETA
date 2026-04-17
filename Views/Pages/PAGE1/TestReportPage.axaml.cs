@@ -97,6 +97,10 @@ public partial class TestReportPage : UserControl
     private Grid?                       _persistentGrid;
     private TransitioningContentControl? _listTCC;
     private Border?                      _infoHeaderBorder;
+    private ProgressBar?                 _infoLoadProgress;
+    private Dictionary<string, string>   _standardValueCache = new();
+    private ToggleSwitch?                _dischargeStdToggle;
+    private bool                         _showDischargeStd = true;
 
     public TestReportPage()
     {
@@ -367,6 +371,12 @@ public partial class TestReportPage : UserControl
         _selectedRow       = null;
         _selectedRowBorder = null;
 
+        // 방류기준표 캐시 로드 (각 행마다 DB 조회 대신 1번만)
+        _standardValueCache = !string.IsNullOrEmpty(sample.방류허용기준)
+            && sample.방류허용기준 != "기준없음" && sample.방류허용기준 != "해당없음"
+            ? TestReportService.GetStandardValueMap(sample.방류허용기준)
+            : new Dictionary<string, string>();
+
         // 결과 리스트 빌드
         BuildResultRows(sample);
 
@@ -383,6 +393,16 @@ public partial class TestReportPage : UserControl
         RefreshAttachmentList(sample.Id);
 
         Log($"선택: {sample.약칭} / {sample.시료명} ({_resultRows.Count}항목)");
+    }
+
+    private void SetLoadProgress(double value)
+    {
+        if (_infoLoadProgress == null) return;
+        _infoLoadProgress.Value = value;
+        // 100% → 파랑, 미만 → 주황
+        _infoLoadProgress.Foreground = value >= 100
+            ? new SolidColorBrush(Color.Parse("#2196F3"))  // 파랑
+            : new SolidColorBrush(Color.Parse("#FF9800")); // 주황
     }
 
     // =========================================================================
@@ -498,6 +518,10 @@ public partial class TestReportPage : UserControl
         }
 
         // ── 결과 리스트 모드 ──
+        // 영속 그리드 존재 시 헤더를 먼저 갱신해 _infoLoadProgress를 최신으로 만든 뒤 리스트 빌드
+        if (_persistentGrid != null && _listTCC != null)
+            UpdateSampleInfoHeader();
+
         var listPanel = new StackPanel { Spacing = 0 };
         RefreshListPanel(listPanel);
 
@@ -511,14 +535,66 @@ public partial class TestReportPage : UserControl
         // ── 영속 그리드 존재 시: 헤더 고정, 데이터 행만 CrossFade 전환 ──
         if (_persistentGrid != null && _listTCC != null)
         {
-            UpdateSampleInfoHeader();
             _listTCC.Content = listScroll;
             return _persistentGrid;
         }
 
         // ── 최초 빌드: 영속 구조 생성 ──
+        // _stdToggle이 이전 Parent(ContentControl 또는 Panel)에 붙어있으면 제거
         if (_stdToggle.Parent is ContentControl oldC) oldC.Content = null;
-        _stdToggleContainer = new ContentControl { Content = _stdToggle };
+        else if (_stdToggle.Parent is Panel oldP) oldP.Children.Remove(_stdToggle);
+        var togglePanel = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            Spacing     = 20,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        togglePanel.Children.Add(_stdToggle);
+        togglePanel.Children.Add(new TextBlock
+        {
+            Text = "방류기준",
+            FontFamily = Font, FontSize = AppTheme.FontBase,
+            Foreground = AppTheme.FgMuted,
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin = new Thickness(12, 0, 4, 0),
+        });
+        togglePanel.Children.Add(CreateDischargeToggle());
+
+        // ── 출력 타입 버튼 3개 ──────────────────────────────
+        Button MkBtn(string text, string bg, string fg, EventHandler<RoutedEventArgs> onClick)
+        {
+            var b = new Button
+            {
+                Content = text,
+                FontFamily = Font, FontSize = AppTheme.FontSM,
+                Background = new SolidColorBrush(Color.Parse(bg)),
+                Foreground = new SolidColorBrush(Color.Parse(fg)),
+                BorderThickness = new Thickness(0),
+                Margin = new Thickness(0, 0, 0, 0),
+                VerticalAlignment = VerticalAlignment.Center,
+                Padding = new Thickness(10, 4),
+                CornerRadius = new CornerRadius(4),
+            };
+            b.Click += onClick;
+            return b;
+        }
+
+        var btnTR   = MkBtn("📄 시험성적서",   "#1a3a1a", "#7cd87c", OnPrintTestReport);
+        var btnWMR  = MkBtn("📋 수질측정기록부", "#1a2a3a", "#7aaae8", OnPrintWaterRecord);
+        var btnBoth = MkBtn("📄+📋 둘다",        "#2a2a1a", "#e8d87a", OnPrintBoth);
+        btnTR.Margin   = new Thickness(20, 0, 0, 0);
+        btnWMR.Margin  = new Thickness(4, 0, 0, 0);
+        btnBoth.Margin = new Thickness(4, 0, 0, 0);
+        togglePanel.Children.Add(btnTR);
+        togglePanel.Children.Add(btnWMR);
+        togglePanel.Children.Add(btnBoth);
+
+        // GS 발송양식 버튼
+        var btnGsExport = MkBtn("📤 GS 발송양식", "#2a1a3a", "#cc99ee", OnGsExportClick);
+        btnGsExport.Margin = new Thickness(16, 0, 0, 0);
+        togglePanel.Children.Add(btnGsExport);
+
+        _stdToggleContainer = new ContentControl { Content = togglePanel };
 
         _infoHeaderBorder = BuildSampleInfoHeader();
         var resultHeader  = BuildResultListHeader();
@@ -589,11 +665,23 @@ public partial class TestReportPage : UserControl
             });
         }
 
+        _infoLoadProgress = new ProgressBar
+        {
+            Minimum = 0, Maximum = 100, Value = 0,
+            Height = 3, Margin = new Thickness(0, 6, 0, 0),
+            IsIndeterminate = false,
+            Foreground = new SolidColorBrush(Color.Parse("#FF9800")),  // 주황
+        };
+
+        var outerPanel = new StackPanel { Spacing = 0 };
+        outerPanel.Children.Add(wrap);
+        outerPanel.Children.Add(_infoLoadProgress);
+
         return new Border
         {
             Background = new SolidColorBrush(Color.Parse("#1e2030")),
             Padding    = new Thickness(12, 8),
-            Child      = wrap
+            Child      = outerPanel
         };
     }
 
@@ -641,7 +729,131 @@ public partial class TestReportPage : UserControl
             });
         }
 
-        _infoHeaderBorder.Child = wrap;
+        _infoLoadProgress = new ProgressBar
+        {
+            Minimum = 0, Maximum = 100, Value = 0,
+            Height = 3, Margin = new Thickness(0, 6, 0, 0),
+            IsIndeterminate = false,
+            Foreground = new SolidColorBrush(Color.Parse("#FF9800")),  // 주황
+        };
+
+        var outerPanel = new StackPanel { Spacing = 0 };
+        outerPanel.Children.Add(wrap);
+        outerPanel.Children.Add(_infoLoadProgress);
+
+        _infoHeaderBorder.Child = outerPanel;
+    }
+
+    /// <summary>📄 시험성적서 출력</summary>
+    private void OnPrintTestReport(object? sender, RoutedEventArgs e)
+    {
+        OpenPrintWindow();
+    }
+
+    /// <summary>📋 수질측정기록부 Excel 생성</summary>
+    private async void OnPrintWaterRecord(object? sender, RoutedEventArgs e)
+    {
+        if (_selectedSample == null) { ShowToast("시료를 먼저 선택하세요."); return; }
+        if (!WaterMeasurementRecordService.TemplatesExist())
+        {
+            ShowToast("수질측정기록부 템플릿 없음\nData/Templates/수질측정기록부1(2)_template.xlsx 필요");
+            return;
+        }
+        try
+        {
+            var rows = BuildResultRowsForSample(_selectedSample);
+            var path = await Task.Run(() =>
+                WaterMeasurementRecordService.Generate(_selectedSample, rows, _meta));
+            Log($"[수질측정기록부] 생성: {path}");
+            ShowToast($"✅ 저장 완료: {System.IO.Path.GetFileName(path)}");
+            try
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                { FileName = path, UseShellExecute = true });
+            }
+            catch { }
+        }
+        catch (Exception ex)
+        {
+            Log($"[수질측정기록부] 오류: {ex.Message}");
+            ShowToast($"❌ 오류: {ex.Message}");
+        }
+    }
+
+    /// <summary>📄+📋 둘다 출력</summary>
+    private async void OnPrintBoth(object? sender, RoutedEventArgs e)
+    {
+        OnPrintWaterRecord(sender, e);
+        await Task.Delay(500);
+        OpenPrintWindow();
+    }
+
+    /// <summary>GS 발송양식 버튼 클릭</summary>
+    private async void OnGsExportClick(object? sender, RoutedEventArgs e)
+    {
+        if (_selectedSample == null)
+        {
+            await ShowInfoToast("시료를 먼저 선택하세요");
+            return;
+        }
+        // 지에스칼텍스 업체 확인
+        var company = _selectedSample.의뢰사업장 ?? "";
+        if (!company.Contains("지에스") && !company.Contains("GS") && !company.Contains("칼텍스"))
+        {
+            await ShowInfoToast("지에스칼텍스 시료만 GS 발송양식을 생성할 수 있습니다.");
+            return;
+        }
+
+        try
+        {
+            var path = await Task.Run(() =>
+                GsReportService.GenerateReport(new List<SampleRequest> { _selectedSample }, _meta));
+            Log($"[GS] 발송양식 생성 완료: {path}");
+            await ShowInfoToast($"GS 발송양식 생성: {System.IO.Path.GetFileName(path)}");
+
+            // 폴더에서 열기
+            try
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = path,
+                    UseShellExecute = true,
+                });
+            }
+            catch { }
+        }
+        catch (Exception ex)
+        {
+            Log($"[GS] 발송양식 생성 오류: {ex.Message}");
+            await ShowInfoToast($"오류: {ex.Message}");
+        }
+    }
+
+    private async Task ShowInfoToast(string msg)
+    {
+        ShowToast(msg);
+        await Task.CompletedTask;
+    }
+
+    /// <summary>방류기준 표시 ON/OFF 토글 스위치 생성</summary>
+    private ToggleSwitch CreateDischargeToggle()
+    {
+        _dischargeStdToggle = new ToggleSwitch
+        {
+            IsChecked     = _showDischargeStd,
+            OnContent     = "",
+            OffContent    = "",
+            FontSize      = AppTheme.FontXS,
+            Margin        = new Thickness(8, -6, 0, -6),
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        _dischargeStdToggle.IsCheckedChanged += (_, _) =>
+        {
+            _showDischargeStd = _dischargeStdToggle.IsChecked == true;
+            // 결과 리스트 재렌더링
+            ResultListChanged?.Invoke(BuildListControl());
+        };
+        return _dischargeStdToggle;
     }
 
     // 결과 리스트 헤더
@@ -664,20 +876,41 @@ public partial class TestReportPage : UserControl
 
 
     // 결과 행 1줄
-    private void RefreshListPanel(StackPanel listPanel)
+    private async void RefreshListPanel(StackPanel listPanel)
     {
         listPanel.Children.Clear();
         _selectedRow = null; _selectedRowBorder = null;
-        if (_resultRows.Count == 0)
+        if (_infoLoadProgress != null) _infoLoadProgress.Value = 0;
+
+        // 스냅샷: async 루프 중 다른 시료 선택으로 _resultRows 변경돼도 안전
+        var snapshot = _resultRows.ToList();
+        var sampleAtStart = _selectedSample;
+
+        if (snapshot.Count == 0)
         {
             listPanel.Children.Add(new TextBlock { Text = "분석 결과 없음",
                 FontFamily = Font, FontSize = AppTheme.FontMD, Margin = new Thickness(12, 20),
                 Foreground = AppTheme.FgDimmed,
                 HorizontalAlignment = HorizontalAlignment.Center });
+            SetLoadProgress(100);
             return;
         }
         bool odd = false; int no = 1;
-        foreach (var row in _resultRows) { listPanel.Children.Add(BuildResultRow(row, no++, odd)); odd = !odd; }
+        int total = snapshot.Count;
+        foreach (var row in snapshot)
+        {
+            // 시료가 바뀌면 이 루프는 취소 (새로운 RefreshListPanel이 실행 중)
+            if (_selectedSample != sampleAtStart) return;
+
+            listPanel.Children.Add(BuildResultRow(row, no, odd));
+            odd = !odd;
+            SetLoadProgress((double)no / total * 100);
+            no++;
+            // UI 스레드에 렌더링 기회 양보 (한 줄씩 표시되게)
+            await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(
+                () => { }, Avalonia.Threading.DispatcherPriority.Background);
+        }
+        SetLoadProgress(100);
     }
 
     private Border BuildResultRow(AnalysisResultRow row, int no, bool odd)
@@ -1325,13 +1558,13 @@ public partial class TestReportPage : UserControl
     // =========================================================================
     private string GetStdDisplay(AnalysisResultRow row)
     {
-        if (_selectedSample == null) { Log("[방류기준] _selectedSample null"); return ""; }
+        if (!_showDischargeStd) return "";
+        if (_selectedSample == null) return "";
         var col = _selectedSample.방류허용기준;
         if (string.IsNullOrEmpty(col) || col == "기준없음" || col == "해당없음")
             return "";
-        var result = TestReportService.GetStandardValue(row.항목명, col);
-        Log($"[방류기준] {row.항목명} / 기준컬럼={col} → '{result}'");
-        return result;
+        // 캐시에서 조회 (각 행마다 DB 조회 없음)
+        return _standardValueCache.TryGetValue(row.항목명.Trim(), out var v) ? v : "";
     }
 
     /// <summary>
@@ -1812,7 +2045,7 @@ public partial class TestReportPage : UserControl
         return rows;
     }
 
-    /// BT1 — 출력 (미리보기 윈도우)
+    /// BT1 — 시험성적서 엑셀 생성 (템플릿 기반)
     public void Print() => OpenPrintWindow();
 
     public void OpenPrintWindow()
@@ -1820,28 +2053,7 @@ public partial class TestReportPage : UserControl
         if (_selectedSample == null) { ShowToast("시료를 먼저 선택하세요."); return; }
         if (!TestReportPrintService.TemplateExists())
         {
-            ShowToast($"템플릿 없음\nData\\Templates\\ 폴더에 템플릿 파일을 넣어주세요.");
-            TestReportPrintService.OpenTemplateFolder();
-            return;
-        }
-        try
-        {
-            var rows = BuildResultRowsForSample(_selectedSample);
-            var owner = Avalonia.Controls.TopLevel.GetTopLevel(this) as Avalonia.Controls.Window;
-            var win = new TestReportPrintWindow(_selectedSample, rows);
-            if (owner != null) win.ShowDialog(owner);
-            else               win.Show();
-        }
-        catch (Exception ex) { Log($"❌ 미리보기 오류: {ex.Message}"); ShowToast($"❌ 오류: {ex.Message}"); }
-    }
-
-    // ── 엑셀 직접 저장 (레거시 — 미리보기 윈도우의 Excel 버튼으로 대체됨)
-    public void PrintExcel()
-    {
-        if (_selectedSample == null) { ShowToast("시료를 먼저 선택하세요."); return; }
-        if (!TestReportPrintService.TemplateExists())
-        {
-            ShowToast($"템플릿 없음\nData\\Templates\\ 폴더에 템플릿 파일을 넣어주세요.");
+            ShowToast("템플릿 없음\nData/Templates/ 폴더에 템플릿 파일을 넣어주세요.");
             TestReportPrintService.OpenTemplateFolder();
             return;
         }
@@ -1851,31 +2063,10 @@ public partial class TestReportPage : UserControl
             var path = TestReportPrintService.FillAndSave(
                 sample: _selectedSample, rows: rows, meta: _meta,
                 toPdf: false, openAfter: true);
-            Log($"✅ 엑셀 저장: {path}");
+            Log($"✅ 시험성적서 엑셀 저장: {path}");
             ShowToast($"✅ 저장 완료\n{System.IO.Path.GetFileName(path)}");
         }
         catch (Exception ex) { Log($"❌ 엑셀 오류: {ex.Message}"); ShowToast($"❌ 오류: {ex.Message}"); }
-    }
-
-    // ── PDF 저장 ──────────────────────────────────────────────────────────────
-    public void PrintPdf()
-    {
-        if (_selectedSample == null) { ShowToast("시료를 먼저 선택하세요."); return; }
-        if (!TestReportPrintService.TemplateExists())
-        {
-            ShowToast("템플릿 없음\nData\\Templates\\ 폴더에 템플릿 파일을 넣어주세요.");
-            return;
-        }
-        try
-        {
-            var rows = BuildResultRowsForSample(_selectedSample);
-            var path = TestReportPrintService.FillAndSave(
-                sample: _selectedSample, rows: rows, meta: _meta,
-                toPdf: true, openAfter: true);
-            Log($"✅ PDF 저장: {path}");
-            ShowToast($"✅ 저장 완료\n{System.IO.Path.GetFileName(path)}");
-        }
-        catch (Exception ex) { Log($"❌ PDF 오류: {ex.Message}"); ShowToast($"❌ 오류: {ex.Message}"); }
     }
 
     /// BT2 — CSV 저장
@@ -1982,7 +2173,7 @@ public partial class TestReportPage : UserControl
         new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
 
     private static ColumnDefinitions ResultColDefs =>
-        new ColumnDefinitions("36,70,160,90,60,140,80,*");
+        new ColumnDefinitions("36,130,200,90,60,300,100,*");
 
     private static TextBlock HeaderCell(string text, int col)
     {
