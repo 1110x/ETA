@@ -8,6 +8,7 @@ using ClosedXML.Excel;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,13 +29,16 @@ public sealed class ServerManagementPage
 
     public Control LeftPanel   { get; }   // Show1: 테이블 목록
     public Control CenterPanel { get; }   // Show2: 테이블 미리보기
+    public Control LogPanel    { get; }   // Show3: 업로드/다운로드 로그
 
     private ListBox?   _tableListBox;
     private TextBlock? _statusLabel;
     private DataGrid?  _previewGrid;
     private TextBlock? _previewTitle;
+    private TextBox?   _logBox;
+    private ScrollViewer? _logScroll;
     private List<string> _previewColumns = new();
-    private List<object?[]> _previewRows = new();
+    private List<IDictionary<string, object?>> _previewRows = new();
     private string? _pkColName;
     private int     _pkColIdx = -1;
 
@@ -42,9 +46,14 @@ public sealed class ServerManagementPage
     {
         LeftPanel   = BuildTableListPanel();
         CenterPanel = BuildCenterPanel();
+        LogPanel    = BuildLogPanel();
     }
 
-    public void Reload() => LoadTableList();
+    public void Reload()
+    {
+        LoadTableList();
+        if (_tableListBox?.SelectedItem is string) LoadPreview();
+    }
 
     // ═══════════════════════════════════════════════════════════════════
     // Show1: 테이블 목록
@@ -207,12 +216,12 @@ public sealed class ServerManagementPage
                 if (idx >= 0) { _pkColName = _previewColumns[idx]; _pkColIdx = idx; break; }
             }
 
-            _previewRows = new List<object?[]>();
+            _previewRows = new List<IDictionary<string, object?>>();
             while (r.Read())
             {
-                var row = new object?[r.FieldCount];
+                IDictionary<string, object?> row = new ExpandoObject();
                 for (int i = 0; i < r.FieldCount; i++)
-                    row[i] = r.IsDBNull(i) ? null : r.GetValue(i);
+                    row[$"c{i}"] = r.IsDBNull(i) ? null : r.GetValue(i);
                 _previewRows.Add(row);
             }
 
@@ -222,12 +231,26 @@ public sealed class ServerManagementPage
                 for (int i = 0; i < _previewColumns.Count; i++)
                 {
                     var colName = _previewColumns[i];
-                    _previewGrid.Columns.Add(new DataGridTextColumn
+                    var key = $"c{i}";
+                    var col = new DataGridTemplateColumn
                     {
                         Header = colName,
-                        Binding = new Avalonia.Data.Binding($"[{i}]"),
-                        IsReadOnly = (i == _pkColIdx),  // PK는 편집 불가
-                    });
+                        CellTemplate = new Avalonia.Controls.Templates.FuncDataTemplate<IDictionary<string, object?>>(
+                            (dict, _) =>
+                            {
+                                var tb = new TextBlock
+                                {
+                                    FontFamily = Font,
+                                    FontSize = AppTheme.FontSM,
+                                    VerticalAlignment = VerticalAlignment.Center,
+                                    Margin = new Thickness(4, 2),
+                                };
+                                if (dict != null && dict.TryGetValue(key, out var v) && v != null)
+                                    tb.Text = v.ToString();
+                                return tb;
+                            }),
+                    };
+                    _previewGrid.Columns.Add(col);
                 }
                 _previewGrid.ItemsSource = _previewRows;
             }
@@ -254,6 +277,7 @@ public sealed class ServerManagementPage
                 _statusLabel.Foreground = AppTheme.FgWarn;
                 _statusLabel.Text = "테이블을 먼저 선택하세요";
             }
+            Log("⚠ 다운로드: 테이블 미선택");
             return;
         }
 
@@ -287,11 +311,13 @@ public sealed class ServerManagementPage
                 _statusLabel.Foreground = AppTheme.FgDanger;
                 _statusLabel.Text = $"❌ {ex.Message}";
             }
+            Log($"❌ 다운로드 오류: {ex.Message}");
         }
     }
 
-    private static void ExportTableToExcel(string tableName, string outPath)
+    private void ExportTableToExcel(string tableName, string outPath)
     {
+        Log($"━━━ 다운로드 시작: table={tableName} ━━━");
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
@@ -304,6 +330,7 @@ public sealed class ServerManagementPage
         // 헤더
         for (int i = 0; i < r.FieldCount; i++)
             ws.Cell(1, i + 1).Value = r.GetName(i);
+        Log($"컬럼 {r.FieldCount}개, 시트명='{ws.Name}'");
 
         int rowIdx = 2;
         while (r.Read())
@@ -318,6 +345,7 @@ public sealed class ServerManagementPage
         }
         ws.Columns().AdjustToContents();
         wb.SaveAs(outPath);
+        Log($"━━━ 다운로드 완료: {rowIdx - 2}행, 저장 → {Path.GetFileName(outPath)} ━━━");
     }
 
     // ═══════════════════════════════════════════════════════════════════
@@ -332,6 +360,7 @@ public sealed class ServerManagementPage
                 _statusLabel.Foreground = AppTheme.FgWarn;
                 _statusLabel.Text = "업로드할 대상 테이블을 선택하세요";
             }
+            Log("⚠ 업로드: 테이블 미선택");
             return;
         }
 
@@ -362,17 +391,120 @@ public sealed class ServerManagementPage
                 _statusLabel.Foreground = AppTheme.FgDanger;
                 _statusLabel.Text = $"❌ 업로드 오류: {ex.Message}";
             }
+            Log($"❌ 업로드 오류: {ex.Message}");
         }
     }
 
-    private static (int ok, int err) ImportExcelToTable(string tableName, string filePath)
+    // ═══════════════════════════════════════════════════════════════════
+    // Show3: 실시간 로그 패널
+    // ═══════════════════════════════════════════════════════════════════
+    private Control BuildLogPanel()
+    {
+        var root = new Grid { RowDefinitions = new RowDefinitions("Auto,*,Auto") };
+
+        root.Children.Add(new Border
+        {
+            Background   = AppTheme.BgPrimary,
+            CornerRadius = new CornerRadius(6, 6, 0, 0),
+            Padding      = new Thickness(10, 6),
+            Child = new TextBlock
+            {
+                Text       = "📜  실행 로그",
+                FontSize   = AppTheme.FontBase, FontWeight = FontWeight.SemiBold,
+                FontFamily = Font, Foreground = AppTheme.FgMuted,
+            }
+        });
+
+        _logBox = new TextBox
+        {
+            IsReadOnly = true,
+            AcceptsReturn = true,
+            TextWrapping = Avalonia.Media.TextWrapping.NoWrap,
+            FontFamily = new Avalonia.Media.FontFamily("Menlo,Consolas,monospace"),
+            FontSize = AppTheme.FontSM,
+            Background = Brush.Parse("#0e0f18"),
+            Foreground = Brush.Parse("#cfd3e0"),
+            BorderThickness = new Thickness(0),
+            Margin = new Thickness(5, 4, 5, 4),
+        };
+        _logScroll = new ScrollViewer
+        {
+            HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+            VerticalScrollBarVisibility   = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+            Content = _logBox,
+        };
+        Grid.SetRow(_logScroll, 1);
+        root.Children.Add(_logScroll);
+
+        var btnClear = MakeButton("🧹 로그 지우기", "#2a2a2a", "#aaaaaa");
+        btnClear.Click += (_, _) => { if (_logBox != null) _logBox.Text = ""; };
+        btnClear.HorizontalAlignment = HorizontalAlignment.Right;
+        btnClear.Margin = new Thickness(5);
+        Grid.SetRow(btnClear, 2);
+        root.Children.Add(btnClear);
+
+        return root;
+    }
+
+    private object CellToDbValue(IXLCell cell, string dbColType)
+    {
+        if (cell.IsEmpty()) return DBNull.Value;
+        var v = cell.Value;
+        if (v.IsBlank) return DBNull.Value;
+        if (v.IsError) return DBNull.Value;
+
+        var t = dbColType.ToLowerInvariant();
+        bool isTextCol = t.StartsWith("varchar") || t.StartsWith("char") || t.StartsWith("text")
+                         || t.Contains("tinytext") || t.Contains("mediumtext") || t.Contains("longtext");
+
+        if (v.IsDateTime)
+        {
+            var dt = v.GetDateTime();
+            if (isTextCol)
+                return dt.TimeOfDay == TimeSpan.Zero
+                    ? dt.ToString("yyyy-MM-dd")
+                    : dt.ToString("yyyy-MM-dd HH:mm:ss");
+            return dt;
+        }
+        if (v.IsTimeSpan)
+            return isTextCol ? (object)v.GetTimeSpan().ToString() : v.GetTimeSpan();
+        if (v.IsNumber)
+            return isTextCol ? (object)v.GetNumber().ToString(System.Globalization.CultureInfo.InvariantCulture) : v.GetNumber();
+        if (v.IsBoolean)
+            return isTextCol ? (object)(v.GetBoolean() ? "1" : "0") : v.GetBoolean();
+
+        var s = v.GetText();
+        return string.IsNullOrEmpty(s) ? (object)DBNull.Value : s;
+    }
+
+    private void Log(string msg)
+    {
+        var line = $"[{DateTime.Now:HH:mm:ss}] {msg}";
+        try { File.AppendAllText("Logs/ServerMgmtDebug.log", $"[{DateTime.Now:HH:mm:ss}] [ServerMgmt] {msg}" + Environment.NewLine); } catch { }
+        if (_logBox == null) return;
+        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+        {
+            if (_logBox == null) return;
+            _logBox.Text = (_logBox.Text ?? "") + line + Environment.NewLine;
+            _logBox.CaretIndex = _logBox.Text?.Length ?? 0;
+            _logScroll?.ScrollToEnd();
+        });
+    }
+
+    private (int ok, int err) ImportExcelToTable(string tableName, string filePath)
     {
         int ok = 0, err = 0;
+        Log($"━━━ 업로드 시작: table={tableName}, file={Path.GetFileName(filePath)} ━━━");
         using var wb = new XLWorkbook(filePath);
         var ws = wb.Worksheet(1);
         var lastCol = ws.LastColumnUsed()?.ColumnNumber() ?? 0;
         var lastRow = ws.LastRowUsed()?.RowNumber() ?? 0;
-        if (lastCol == 0 || lastRow < 2) return (0, 0);
+        Log($"시트: '{ws.Name}', lastCol={lastCol}, lastRow={lastRow}");
+        if (lastCol == 0 || lastRow < 2)
+        {
+            Log($"조기 반환: lastCol={lastCol}, lastRow={lastRow} (헤더만 있거나 빈 시트)");
+            return (0, 0);
+        }
 
         // 1행 헤더 → 컬럼명
         var cols = new List<string>();
@@ -382,45 +514,99 @@ public sealed class ServerManagementPage
             if (!string.IsNullOrEmpty(h)) cols.Add(h);
             else cols.Add("");
         }
+        Log($"Excel 헤더 [{cols.Count}개]: {string.Join(" | ", cols.Select(c => $"'{c}'"))}");
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
-        // 대상 테이블 컬럼 확인 (누락된 엑셀 컬럼은 스킵)
-        var tableCols = new HashSet<string>(DbConnectionFactory.GetColumnNames(conn, tableName),
-            StringComparer.OrdinalIgnoreCase);
+        // 대상 테이블 컬럼/타입/PK 확인 (SHOW COLUMNS)
+        var dbColList = new List<string>();
+        var colTypeMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var pkCols = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        using (var tcmd = conn.CreateCommand())
+        {
+            tcmd.CommandText = $"SHOW COLUMNS FROM `{tableName}`";
+            using var tr = tcmd.ExecuteReader();
+            while (tr.Read())
+            {
+                var field = tr.GetString(0);
+                var type = tr.IsDBNull(1) ? "" : tr.GetString(1);
+                var key = tr.FieldCount > 3 && !tr.IsDBNull(3) ? tr.GetString(3) : "";
+                dbColList.Add(field);
+                colTypeMap[field] = type;
+                if (key == "PRI") pkCols.Add(field);
+            }
+        }
+        Log($"DB 컬럼 [{dbColList.Count}개]: {string.Join(" | ", dbColList.Select(c => $"'{c}'({colTypeMap[c]})"))}");
+        Log($"PK 컬럼: [{string.Join(", ", pkCols)}]");
+        var tableCols = new HashSet<string>(dbColList, StringComparer.OrdinalIgnoreCase);
         var colIndices = new List<(int excelCol, string dbCol)>();
         for (int i = 0; i < cols.Count; i++)
         {
             if (!string.IsNullOrEmpty(cols[i]) && tableCols.Contains(cols[i]))
                 colIndices.Add((i + 1, cols[i]));
+            else if (!string.IsNullOrEmpty(cols[i]))
+                Log($"  스킵: Excel 헤더 '{cols[i]}' → DB에 없음");
         }
-        if (colIndices.Count == 0) return (0, 0);
+        Log($"매칭된 컬럼 [{colIndices.Count}개]: {string.Join(", ", colIndices.Select(c => c.dbCol))}");
+        if (colIndices.Count == 0)
+        {
+            Log($"❌ 매칭 컬럼 0개 → 업로드 중단");
+            return (0, 0);
+        }
 
         var colList = string.Join(", ", colIndices.Select(c => $"`{c.dbCol}`"));
-        var placeholders = string.Join(",", colIndices.Select(_ => "%"));
         var paramNames = colIndices.Select((_, idx) => $"@p{idx}").ToList();
         var paramPart = string.Join(",", paramNames);
+        var updateCols = colIndices.Select(c => c.dbCol)
+            .Where(c => !pkCols.Contains(c))
+            .ToList();
+        var upsertSuffix = updateCols.Count > 0
+            ? " ON DUPLICATE KEY UPDATE " + string.Join(", ", updateCols.Select(c => $"`{c}`=VALUES(`{c}`)"))
+            : "";
+        var sqlTemplate = $"INSERT INTO `{tableName}` ({colList}) VALUES ({paramPart}){upsertSuffix}";
+        Log($"SQL: {sqlTemplate}");
 
+        string? firstError = null;
         for (int r = 2; r <= lastRow; r++)
         {
+            var paramDump = new List<string>();
             try
             {
                 using var cmd = conn.CreateCommand();
-                cmd.CommandText = $"INSERT INTO `{tableName}` ({colList}) VALUES ({paramPart})";
+                cmd.CommandText = sqlTemplate;
                 for (int i = 0; i < colIndices.Count; i++)
                 {
                     var cell = ws.Cell(r, colIndices[i].excelCol);
-                    object? val = cell.IsEmpty() ? (object)DBNull.Value : cell.Value.ToString();
                     var p = cmd.CreateParameter();
                     p.ParameterName = paramNames[i];
-                    p.Value = val ?? DBNull.Value;
+                    var dbCol = colIndices[i].dbCol;
+                    var dbType = colTypeMap.TryGetValue(dbCol, out var t) ? t : "";
+                    var v = CellToDbValue(cell, dbType);
+                    p.Value = v;
                     cmd.Parameters.Add(p);
+                    if (firstError == null)
+                    {
+                        var typeName = v is DBNull ? "NULL" : v.GetType().Name;
+                        var valStr = v is DBNull ? "<NULL>" : v.ToString();
+                        if (valStr != null && valStr.Length > 40) valStr = valStr.Substring(0, 40) + "…";
+                        paramDump.Add($"{colIndices[i].dbCol}=<{typeName}>'{valStr}'");
+                    }
                 }
                 cmd.ExecuteNonQuery();
                 ok++;
             }
-            catch { err++; }
+            catch (Exception ex)
+            {
+                err++;
+                if (firstError == null)
+                {
+                    firstError = ex.Message;
+                    Log($"❌ 행 {r} 첫 오류: {ex.Message}");
+                    Log($"   파라미터 덤프: {string.Join(" | ", paramDump)}");
+                }
+            }
         }
+        Log($"━━━ 완료: ok={ok}, err={err} ━━━");
         return (ok, err);
     }
 
@@ -430,13 +616,13 @@ public sealed class ServerManagementPage
     private void OnCellEditEnded(object? sender, DataGridCellEditEndedEventArgs e)
     {
         if (_tableListBox?.SelectedItem is not string tableName) return;
-        if (e.Row?.DataContext is not object?[] row) return;
+        if (e.Row?.DataContext is not IDictionary<string, object?> row) return;
 
         // 컬럼 인덱스 (DataGrid DisplayIndex 사용)
         var colIdx = e.Column?.DisplayIndex ?? -1;
         if (colIdx < 0 || colIdx >= _previewColumns.Count) return;
         var columnName = _previewColumns[colIdx];
-        var newVal = row[colIdx];
+        var newVal = row.TryGetValue($"c{colIdx}", out var v) ? v : null;
 
         if (_pkColName == null || _pkColIdx < 0)
         {
@@ -447,7 +633,7 @@ public sealed class ServerManagementPage
             }
             return;
         }
-        var pkVal = row[_pkColIdx];
+        var pkVal = row.TryGetValue($"c{_pkColIdx}", out var pv) ? pv : null;
 
         try
         {

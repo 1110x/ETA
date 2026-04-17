@@ -5379,15 +5379,15 @@ public partial class MainPage : Window
         LogContentChange("Show1", _serverManagementPage.LeftPanel);
         Show2.Content = _serverManagementPage.CenterPanel;
         LogContentChange("Show2", _serverManagementPage.CenterPanel);
-        Show3.Content = null;
-        LogContentChange("Show3", null);
+        Show3.Content = _serverManagementPage.LogPanel;
+        LogContentChange("Show3", _serverManagementPage.LogPanel);
         Show4.Content = null;
         LogContentChange("Show4", null);
         _bt1SaveAction = null;
 
         SetSubMenu("새로고침", "💾 DB 백업", "", "", "", "", "");
         SetLeftPanelWidth(320);
-        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 1, lowerStar: 0);
+        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 7, lowerStar: 3);
         RestoreModeLayout("ServerManagement");
     }
 
@@ -5542,6 +5542,7 @@ public partial class MainPage : Window
                 if (_parserGeneratorPage != null)
                     _ = _parserGeneratorPage.UploadAndAnalyzeAsync();
                 break;
+            case "ServerManagement": _serverManagementPage?.Reload(); break;
             default: _bt1SaveAction?.Invoke();                          break;
         }
     }
