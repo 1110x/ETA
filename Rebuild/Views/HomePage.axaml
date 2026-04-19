@@ -14,6 +14,10 @@
                 <TextBlock Text="홈" Classes="h1"/>
                 <TextBlock Text="· 오늘 할 일과 시료가 지금 어디쯤"
                            Classes="muted" VerticalAlignment="Bottom" Margin="4,0,0,5"/>
+
+                <Border Classes="chip ok" Margin="12,0,0,0" VerticalAlignment="Center">
+                    <TextBlock x:Name="LiveCountChip" Text="DB 조회 중…"/>
+                </Border>
                 <StackPanel Orientation="Horizontal" Spacing="6"
                             HorizontalAlignment="Right"
                             Margin="20,0,0,0" VerticalAlignment="Center">

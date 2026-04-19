@@ -60,6 +60,9 @@ public partial class MeasurerLoginWindow : Window
     /// <summary>로그인 성공 시 발생 — 외부에서 창 닫힌 후 데이터 주입 재시도용</summary>
     public bool LoginSucceeded { get; private set; }
 
+    /// <summary>측정인 전송 플로우에서 true로 세팅 — 로그인 성공 시 창 자동 종료.</summary>
+    public bool CloseOnLoginSuccess { get; set; } = false;
+
     // ── 브라우저 옵션 ─────────────────────────────────────────────────────────
     private record BrowserOption(string Label, string? ExePath);
 
@@ -293,20 +296,29 @@ public partial class MeasurerLoginWindow : Window
         }
         else
         {
-            // 로그인 성공 — 창을 닫지 않고 DB 업데이트 대기 상태로 전환
             LoginSucceeded = true;
-            Log($"=== 로그인 완료, 폴링 시작 (UserId={txbUserId.Text?.Trim()}) ===");
+            Log($"=== 로그인 완료 (UserId={txbUserId.Text?.Trim()}) ===");
 
-            // 로그인 폼 비활성화, DB 업데이트 패널 표시
-            btnLogin.IsEnabled   = false;
-            cmbBrowser.IsEnabled = false;
-            txbUserId.IsEnabled  = false;
-            txbPassword.IsEnabled = false;
-            if (pnlDbUpdate != null) pnlDbUpdate.IsVisible = true;
-            SetStatus("✅ 로그인 완료. 브라우저에서 DB 업데이트 버튼을 클릭하세요.", "#88ffaa");
+            if (CloseOnLoginSuccess)
+            {
+                // 측정인 전송 플로우: 창 닫고 호출자로 복귀
+                SetStatus("✅ 로그인 완료", "#88ffaa");
+                await Task.Delay(400);
+                Close();
+            }
+            else
+            {
+                // DB 업데이트 플로우: 창 유지하고 폴링 시작
+                btnLogin.IsEnabled   = false;
+                cmbBrowser.IsEnabled = false;
+                txbUserId.IsEnabled  = false;
+                txbPassword.IsEnabled = false;
+                if (pnlDbUpdate != null) pnlDbUpdate.IsVisible = true;
+                SetStatus("✅ 로그인 완료. 브라우저에서 DB 업데이트 버튼을 클릭하세요.", "#88ffaa");
 
-            _pollCts = new CancellationTokenSource();
-            _ = Task.Run(() => PollForSyncRequestAsync(_pollCts.Token));
+                _pollCts = new CancellationTokenSource();
+                _ = Task.Run(() => PollForSyncRequestAsync(_pollCts.Token));
+            }
         }
     }
 

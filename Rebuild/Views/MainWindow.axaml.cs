@@ -41,7 +41,47 @@ public partial class MainWindow : Window
             "note"     => new NotebookPage(),
             "facility" => new FacilityPage(),
             "waste"    => new WastePage(),
+            "ecotox"   => new EcotoxPage(),
+            "cheuk"    => new CheukPage(),
+            "parser"   => new ParserPage(),
             _          => new ComingSoonPage(btn.Content?.ToString() ?? "?"),
+        };
+    }
+
+    private void OnNavItem(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not MenuItem mi) return;
+        var tag = mi.Tag as string ?? "";
+        var label = mi.Header?.ToString() ?? "?";
+
+        foreach (var b in this.GetLogicalDescendants())
+        {
+            if (b is Button nav && nav.Classes.Contains("navtab"))
+                nav.Classes.Remove("active");
+        }
+
+        var parentName = tag switch
+        {
+            "client" or "quote" or "request" or "report" => "NavWater",
+            _ => "NavAdmin",
+        };
+        this.FindControl<Button>(parentName)?.Classes.Add("active");
+
+        var host = this.FindControl<ContentControl>("PageHost");
+        if (host is null) return;
+
+        host.Content = tag switch
+        {
+            "client"  => new ClientPage(),
+            "quote"   => new QuotePage(),
+            "request" => new RequestPage(),
+            "report"  => new ReportPage(),
+            "staff"   => new StaffPage(),
+            "alias"   => new AliasPage(),
+            "access"  => new AccessPage(),
+            "server"  => new ServerPage(),
+            "extra"   => new ExtraPage(),
+            _         => new ComingSoonPage(label),
         };
     }
 }

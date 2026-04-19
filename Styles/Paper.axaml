@@ -370,6 +370,47 @@
     </Style>
 
     <!--  =========================================================
+          Mode toggle (A / B / C / D / E) · 페이지 내부 모드 전환
+          ========================================================= -->
+    <Style Selector="Button.modetab">
+        <Setter Property="Background"      Value="{DynamicResource PaperCard}"/>
+        <Setter Property="Foreground"      Value="{DynamicResource PaperFgMuted}"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource PaperInkHair}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius"    Value="4"/>
+        <Setter Property="Padding"         Value="10,3"/>
+        <Setter Property="FontSize"        Value="11"/>
+        <Setter Property="FontWeight"      Value="SemiBold"/>
+        <Setter Property="Cursor"          Value="Hand"/>
+    </Style>
+    <Style Selector="Button.modetab:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource PaperRowAlt}"/>
+    </Style>
+    <Style Selector="Button.modetab.active">
+        <Setter Property="Background"  Value="{DynamicResource PaperInk}"/>
+        <Setter Property="Foreground"  Value="{DynamicResource PaperCard}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource PaperInk}"/>
+    </Style>
+    <Style Selector="Button.modetab.active /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource PaperInk}"/>
+    </Style>
+
+    <!--  =========================================================
+          Note banner · 경고/참고 배너
+          ========================================================= -->
+    <Style Selector="Border.note">
+        <Setter Property="Background"      Value="{DynamicResource PaperWarnBg}"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource PaperInk}"/>
+        <Setter Property="BorderThickness" Value="1.2"/>
+        <Setter Property="CornerRadius"    Value="4"/>
+        <Setter Property="Padding"         Value="10,8"/>
+    </Style>
+    <Style Selector="Border.note > TextBlock">
+        <Setter Property="FontSize"   Value="11"/>
+        <Setter Property="Foreground" Value="{DynamicResource PaperWarnFg}"/>
+    </Style>
+
+    <!--  =========================================================
           Top nav tab
           ========================================================= -->
     <Style Selector="Button.navtab">

@@ -791,8 +791,27 @@ public class AnalysisRequestListPanel : UserControl
             return (sample: pt.Rec.시료명, analytes: string.Join(", ", analytes), company: company ?? pt.Rec.약칭);
         }).ToList();
 
+        // 캘린더/DB 시료채취자 → 사전 선택 이름 수집
+        var preNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var n in parentNodes)
+        {
+            var pt = (ParentTag)n.Tag!;
+            string key = $"{pt.Rec.접수번호}:{pt.Rec.Id}";
+            if (!_rowCache.TryGetValue(key, out var row) || row == null) continue;
+            foreach (var col in new[] { "시료채취자-1", "시료채취자-2", "시료채취1", "시료채취2", "채수담당자", "시료채취자1", "시료채취자2" })
+            {
+                if (!row.TryGetValue(col, out var raw) || string.IsNullOrWhiteSpace(raw)) continue;
+                foreach (var tok in raw.Split(new[] { ',', '/', ';' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    var t = tok.Trim();
+                    if (t.Length > 0) preNames.Add(t);
+                }
+            }
+        }
+        Log($"preNames=[{string.Join(",", preNames)}]");
+
         var owner = TopLevel.GetTopLevel(this) as Window;
-        var dlg   = new MeasurerSendDialog(dialogRecords, allAgents);
+        var dlg   = new MeasurerSendDialog(dialogRecords, allAgents, preNames.ToList());
         if (owner != null)
             await dlg.ShowDialog(owner);
         else
@@ -806,10 +825,59 @@ public class AnalysisRequestListPanel : UserControl
 
         var purposeValues   = dlg.PurposeValues;      // List<string> per-record
         var empIdsPerRecord = dlg.EmpIdsPerRecord;    // List<List<string>> per-record
-        Log($"dlg.Confirmed=true, purposeValues.Count={purposeValues?.Count ?? 0}, empIdsPerRecord.Count={empIdsPerRecord?.Count ?? 0}");
+        var selectedNames   = dlg.SelectedAgentNames;
+        var selectedAgents  = dlg.SelectedAgents;
+        Log($"dlg.Confirmed=true, purposeValues.Count={purposeValues?.Count ?? 0}, empIdsPerRecord.Count={empIdsPerRecord?.Count ?? 0}, selectedNames=[{string.Join(",", selectedNames)}]");
         if (empIdsPerRecord != null)
             for (int i = 0; i < empIdsPerRecord.Count; i++)
                 Log($"  record[{i}]: purpose='{(purposeValues != null && i < purposeValues.Count ? purposeValues[i] : "?")}', empIds=[{string.Join(",", empIdsPerRecord[i])}]");
+
+        // ── 시료채취자 DB 저장 + 캘린더 자동 등록 ────────────────────
+        if (selectedNames.Count > 0)
+        {
+            // 의뢰별 시료채취자 컬럼 UPDATE
+            foreach (var n in parentNodes)
+            {
+                var pt = (ParentTag)n.Tag!;
+                try { AnalysisRequestService.UpdateSamplers(pt.Rec.Id, selectedNames); }
+                catch (Exception ex) { Log($"UpdateSamplers 실패 rowId={pt.Rec.Id}: {ex.Message}"); }
+            }
+
+            // 캘린더(일정) 등록 — (채취일자, 약칭) 그룹 단위로 인원별 1건
+            string now = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            string registrar = ETA.Views.MainPage.CurrentEmployeeId ?? "";
+            var groups = parentNodes
+                .Select(n => (ParentTag)n.Tag!)
+                .GroupBy(pt => (date: (pt.Rec.채취일자 ?? "").Trim(), abbr: (pt.Rec.약칭 ?? "").Trim()));
+            foreach (var g in groups)
+            {
+                if (string.IsNullOrWhiteSpace(g.Key.date)) continue;
+                foreach (var (name, empId) in selectedAgents)
+                {
+                    try
+                    {
+                        ScheduleService.Insert(new ScheduleEntry
+                        {
+                            날짜     = g.Key.date,
+                            직원명   = name,
+                            직원id   = empId,
+                            분류     = "채수",
+                            사이트   = "",
+                            업체약칭 = g.Key.abbr,
+                            제목     = "",
+                            내용     = "",
+                            시작시간 = "",
+                            종료시간 = "",
+                            첨부파일 = "",
+                            등록일시 = now,
+                            등록자   = registrar,
+                        });
+                        Log($"ScheduleService.Insert: {g.Key.date} {name}({empId}) 채수 {g.Key.abbr}");
+                    }
+                    catch (Exception ex) { Log($"ScheduleService.Insert 실패 {g.Key.date}/{name}: {ex.Message}"); }
+                }
+            }
+        }
         // ─────────────────────────────────────────────────────────────
 
         SetStatus($"⏳ {parentNodes.Count}건 개별 전송 준비 중...");

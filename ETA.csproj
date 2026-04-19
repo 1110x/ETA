@@ -18,17 +18,25 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- 구 코드 전부 .axaml 기본 포함에서 제외 -->
+    <!-- AvaloniaXaml: Rebuild + v1(Views/Styles) 모두 포함 -->
     <AvaloniaXaml Remove="**/*.axaml" />
     <AvaloniaXaml Include="App.axaml" />
-    <AvaloniaXaml Include="Styles/Paper.axaml" />
+    <AvaloniaXaml Include="Styles/**/*.axaml" />
     <AvaloniaXaml Include="Rebuild/**/*.axaml" />
+    <AvaloniaXaml Include="Views/**/*.axaml" />
+    <AvaloniaXaml Include="Services/**/*.axaml" />
 
     <Compile Include="Program.cs" />
     <Compile Include="App.axaml.cs" />
     <Compile Include="Rebuild/**/*.cs" />
 
-    <AvaloniaResource Include="Assets/Fonts/**" />
+    <!-- v1 소스 (프리뷰 활성화) -->
+    <Compile Include="Views/**/*.cs" />
+    <Compile Include="Models/**/*.cs" />
+    <Compile Include="ViewModels/**/*.cs" />
+    <Compile Include="Services/**/*.cs" />
+
+    <AvaloniaResource Include="Assets/**" />
 
     <None Include="appsettings.json" Condition="Exists('appsettings.json')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -37,6 +45,8 @@
     <PackageReference Include="Avalonia" Version="11.3.12" />
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.12" />
     <PackageReference Include="Avalonia.Desktop" Version="11.3.12" />
+    <PackageReference Include="Avalonia.Native" Version="11.3.12" Condition="$([MSBuild]::IsOSPlatform('OSX'))" />
+    <PackageReference Include="Avalonia.Skia" Version="11.3.12" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.12" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.12" />
     <PackageReference Include="Avalonia.Diagnostics" Version="11.3.12">
@@ -47,6 +57,20 @@
     <PackageReference Include="MySqlConnector" Version="2.4.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
+
+    <!-- v1 전용 패키지 -->
+    <PackageReference Include="Avalonia.Labs.Lottie" Version="11.3.1" />
+    <PackageReference Include="ClosedXML" Version="0.105.0" />
+    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.19.2" />
+    <PackageReference Include="Azure.Identity" Version="1.19.0" />
+    <PackageReference Include="MessageBox.Avalonia" Version="3.3.1.1" />
+    <PackageReference Include="Microsoft.Graph" Version="4.54.0" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.83.1" />
+    <PackageReference Include="SkiaSharp" Version="3.119.2" />
+    <PackageReference Include="SkiaSharp.Skottie" Version="3.119.2" />
+    <PackageReference Include="System.Windows.Extensions" Version="10.0.5" />
+    <PackageReference Include="TreeDataGrid.Avalonia" Version="11.3.1" />
+    <PackageReference Include="UglyToad.PdfPig" Version="1.7.0-custom-5" />
   </ItemGroup>
 
 </Project>

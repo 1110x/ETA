@@ -54,6 +54,16 @@
                 Padding="16,0">
             <StackPanel Orientation="Horizontal" Spacing="2">
                 <Button Classes="navtab active" Content="🏠 홈"            Click="OnNav" Tag="home"/>
+                <Button x:Name="NavWater" Classes="navtab" Content="📇 수질분석센터 ▾">
+                    <Button.Flyout>
+                        <MenuFlyout>
+                            <MenuItem Header="거래처·계약"    Click="OnNavItem" Tag="client"/>
+                            <MenuItem Header="견적"           Click="OnNavItem" Tag="quote"/>
+                            <MenuItem Header="의뢰서·분석"    Click="OnNavItem" Tag="request"/>
+                            <MenuItem Header="시험성적서"      Click="OnNavItem" Tag="report"/>
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
                 <Button Classes="navtab"        Content="✍ 분석결과입력"    Click="OnNav" Tag="input"/>
                 <Button Classes="navtab"        Content="🗂 파일플로우"      Click="OnNav" Tag="file"/>
                 <Button Classes="navtab"        Content="📓 시험기록부"      Click="OnNav" Tag="note"/>
@@ -62,6 +72,17 @@
                 <Button Classes="navtab"        Content="🧬 생태독성"        Click="OnNav" Tag="ecotox"/>
                 <Button Classes="navtab"        Content="🤖 측정인.kr"       Click="OnNav" Tag="cheuk"/>
                 <Button Classes="navtab"        Content="⚙ 파서"            Click="OnNav" Tag="parser"/>
+                <Button x:Name="NavAdmin" Classes="navtab" Content="🛠 관리자 ▾">
+                    <Button.Flyout>
+                        <MenuFlyout>
+                            <MenuItem Header="직원·내업무"       Click="OnNavItem" Tag="staff"/>
+                            <MenuItem Header="화합물별명 매칭"    Click="OnNavItem" Tag="alias"/>
+                            <MenuItem Header="권한 관리"         Click="OnNavItem" Tag="access"/>
+                            <MenuItem Header="서버·DB"          Click="OnNavItem" Tag="server"/>
+                            <MenuItem Header="위험·수리·구매"     Click="OnNavItem" Tag="extra"/>
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
             </StackPanel>
         </Border>
 

@@ -1407,58 +1407,71 @@ public static class AnalysisRequestService
     // =====================================================================
     public static void UpdateAssignmentByName(string analyteFullName, string managerName, DateTime start, DateTime end)
     {
-        // 항목명/_id 컬럼에 쓰면 날짜가 이름으로 덮어씌워지는 치명적 버그 방지
         if (analyteFullName == "항목명" || analyteFullName.StartsWith("_")) return;
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
-
-            for (DateTime date = start; date <= end; date = date.AddDays(1))
-            {
-                string dateKey = date.ToString("yyyy-MM-dd");
-
-                bool rowExists;
-                using (var chk = conn.CreateCommand())
-                {
-                    chk.CommandText = "SELECT COUNT(*) FROM `분장표준처리` WHERE `항목명` = @date";
-                    chk.Parameters.AddWithValue("@date", dateKey);
-                    rowExists = Convert.ToInt64(chk.ExecuteScalar()!) > 0;
-                }
-
-                if (rowExists)
-                {
-                    using var upd = conn.CreateCommand();
-                    upd.CommandText = $"UPDATE `분장표준처리` SET `{analyteFullName}` = @mgr WHERE `항목명` = @date";
-                    upd.Parameters.AddWithValue("@mgr", managerName);
-                    upd.Parameters.AddWithValue("@date", dateKey);
-                    upd.ExecuteNonQuery();
-                }
-                else
-                {
-                    var columns = DbConnectionFactory.GetColumnNames(conn, "분장표준처리");
-                    var insertCols = new List<string> { "`항목명`" };
-                    var vals = new List<string> { "@date" };
-                    foreach (var c in columns)
-                    {
-                        if (c == "항목명" || c.StartsWith("_")) continue;
-                        insertCols.Add($"`{c}`");
-                        if (string.Equals(c, analyteFullName, StringComparison.OrdinalIgnoreCase))
-                            vals.Add("@mgr");
-                        else
-                            vals.Add("NULL");
-                    }
-                    using var ins = conn.CreateCommand();
-                    ins.CommandText = $"INSERT INTO `분장표준처리` ({string.Join(", ", insertCols)}) VALUES ({string.Join(", ", vals)})";
-                    ins.Parameters.AddWithValue("@date", dateKey);
-                    ins.Parameters.AddWithValue("@mgr", managerName);
-                    ins.ExecuteNonQuery();
-                }
-            }
-
+            UpdateAssignmentByNameCore(conn, null, analyteFullName, managerName, start, end, null);
             Log($"UpdateAssignmentByName: {analyteFullName} → {managerName} ({start:yyyy-MM-dd}~{end:yyyy-MM-dd})");
         }
         catch (Exception ex) { Log($"UpdateAssignmentByName 오류: {ex.Message}"); }
+    }
+
+    /// <summary>배치용 오버로드 — 호출자가 연결/트랜잭션/컬럼캐시를 공유. 반영 버튼처럼 다량 호출 시 사용.</summary>
+    public static void UpdateAssignmentByName(DbConnection conn, DbTransaction tx, string analyteFullName, string managerName, DateTime start, DateTime end, List<string>? cachedColumns = null)
+    {
+        if (analyteFullName == "항목명" || analyteFullName.StartsWith("_")) return;
+        UpdateAssignmentByNameCore(conn, tx, analyteFullName, managerName, start, end, cachedColumns);
+    }
+
+    private static void UpdateAssignmentByNameCore(DbConnection conn, DbTransaction? tx, string analyteFullName, string managerName, DateTime start, DateTime end, List<string>? cachedColumns)
+    {
+        List<string>? columnsForInsert = cachedColumns;
+        for (DateTime date = start; date <= end; date = date.AddDays(1))
+        {
+            string dateKey = date.ToString("yyyy-MM-dd");
+
+            bool rowExists;
+            using (var chk = conn.CreateCommand())
+            {
+                if (tx != null) chk.Transaction = tx;
+                chk.CommandText = "SELECT COUNT(*) FROM `분장표준처리` WHERE `항목명` = @date";
+                var p = chk.CreateParameter(); p.ParameterName = "@date"; p.Value = dateKey; chk.Parameters.Add(p);
+                rowExists = Convert.ToInt64(chk.ExecuteScalar()!) > 0;
+            }
+
+            if (rowExists)
+            {
+                using var upd = conn.CreateCommand();
+                if (tx != null) upd.Transaction = tx;
+                upd.CommandText = $"UPDATE `분장표준처리` SET `{analyteFullName}` = @mgr WHERE `항목명` = @date";
+                var pm = upd.CreateParameter(); pm.ParameterName = "@mgr"; pm.Value = managerName; upd.Parameters.Add(pm);
+                var pd = upd.CreateParameter(); pd.ParameterName = "@date"; pd.Value = dateKey; upd.Parameters.Add(pd);
+                upd.ExecuteNonQuery();
+            }
+            else
+            {
+                columnsForInsert ??= DbConnectionFactory.GetColumnNames(conn, "분장표준처리");
+                var insertCols = new List<string> { "`항목명`" };
+                var vals = new List<string> { "@date" };
+                foreach (var c in columnsForInsert)
+                {
+                    if (c == "항목명" || c.StartsWith("_")) continue;
+                    insertCols.Add($"`{c}`");
+                    if (string.Equals(c, analyteFullName, StringComparison.OrdinalIgnoreCase))
+                        vals.Add("@mgr");
+                    else
+                        vals.Add("NULL");
+                }
+                using var ins = conn.CreateCommand();
+                if (tx != null) ins.Transaction = tx;
+                ins.CommandText = $"INSERT INTO `분장표준처리` ({string.Join(", ", insertCols)}) VALUES ({string.Join(", ", vals)})";
+                var pd = ins.CreateParameter(); pd.ParameterName = "@date"; pd.Value = dateKey; ins.Parameters.Add(pd);
+                var pm = ins.CreateParameter(); pm.ParameterName = "@mgr"; pm.Value = managerName; ins.Parameters.Add(pm);
+                ins.ExecuteNonQuery();
+            }
+        }
     }
 
     /// <summary>분장표에서 특정 항목의 날짜 범위를 NULL로 지움 (축소 시 사용)</summary>
@@ -1469,17 +1482,30 @@ public static class AnalysisRequestService
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
-            for (DateTime date = start; date <= end; date = date.AddDays(1))
-            {
-                string dateKey = date.ToString("yyyy-MM-dd");
-                using var cmd = conn.CreateCommand();
-                cmd.CommandText = $"UPDATE `분장표준처리` SET `{analyteFullName}` = NULL WHERE `항목명` = @date";
-                cmd.Parameters.AddWithValue("@date", dateKey);
-                cmd.ExecuteNonQuery();
-            }
+            ClearAssignmentByNameCore(conn, null, analyteFullName, start, end);
             Log($"ClearAssignmentByName: {analyteFullName} ({start:yyyy-MM-dd}~{end:yyyy-MM-dd}) → NULL");
         }
         catch (Exception ex) { Log($"ClearAssignmentByName 오류: {ex.Message}"); }
+    }
+
+    /// <summary>배치용 오버로드 — 호출자가 연결/트랜잭션을 공유</summary>
+    public static void ClearAssignmentByName(DbConnection conn, DbTransaction tx, string analyteFullName, DateTime start, DateTime end)
+    {
+        if (analyteFullName == "항목명" || analyteFullName.StartsWith("_")) return;
+        ClearAssignmentByNameCore(conn, tx, analyteFullName, start, end);
+    }
+
+    private static void ClearAssignmentByNameCore(DbConnection conn, DbTransaction? tx, string analyteFullName, DateTime start, DateTime end)
+    {
+        for (DateTime date = start; date <= end; date = date.AddDays(1))
+        {
+            string dateKey = date.ToString("yyyy-MM-dd");
+            using var cmd = conn.CreateCommand();
+            if (tx != null) cmd.Transaction = tx;
+            cmd.CommandText = $"UPDATE `분장표준처리` SET `{analyteFullName}` = NULL WHERE `항목명` = @date";
+            var pd = cmd.CreateParameter(); pd.ParameterName = "@date"; pd.Value = dateKey; cmd.Parameters.Add(pd);
+            cmd.ExecuteNonQuery();
+        }
     }
 
     /// <summary>분장표에서 항목명이 날짜가 아닌 깨진 행을 삭제</summary>

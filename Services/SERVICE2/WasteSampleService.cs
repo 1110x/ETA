@@ -1006,7 +1006,15 @@ public static class WasteSampleService
     }
 
     // ── 생태독성 UPSERT ──────────────────────────────────────────────────────
-    public static void UpsertEcotoxData(
+    private static void EcotoxLog(string msg)
+    {
+        var line = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] [Ecotox-DB] {msg}";
+        try { File.AppendAllText("Logs/EcotoxDebug.log", line + Environment.NewLine); } catch { }
+        Debug.WriteLine(line);
+    }
+
+    /// <summary>생태독성_시험기록부 INSERT/UPDATE. 성공 시 true, 실패 시 false 반환 + 파일 로그.</summary>
+    public static bool UpsertEcotoxData(
         string 채수일, string sn, string 업체명, string 구분, string 시료명, string 소스구분,
         string 시험종, string 시험시간, string 시험시간단위,
         int 대조군_생물수, int 대조군_사망수,
@@ -1016,15 +1024,94 @@ public static class WasteSampleService
         string 시험번호 = "", string endpoint = "", string 농도단위 = "",
         EcotoxicityService.EcotoxResult? probitResult = null)
     {
+        EcotoxLog($"UpsertEcotoxData 진입: 채수일={채수일}, SN={sn}, 시료명={시료명}, 시험종={시험종}, 농도수={농도.Length}");
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
+            EcotoxLog($"DB 연결 생성됨, 연결 시도");
             conn.Open();
+            EcotoxLog($"DB 연결 OPEN 성공");
+
+            // 테이블 존재 확인
+            if (!DbConnectionFactory.TableExists(conn, "생태독성_시험기록부"))
+            {
+                EcotoxLog($"❌ 테이블 `생태독성_시험기록부` 가 존재하지 않음. 마이그레이션 실행 필요.");
+                return false;
+            }
+            EcotoxLog($"테이블 `생태독성_시험기록부` 존재 확인됨");
+
+            // 누락된 컬럼 자가치유 (스키마 드리프트 대응)
+            var requiredCols = new (string name, string ddl)[]
+            {
+                ("업체명",         "VARCHAR(191) DEFAULT ''"),
+                ("구분",           "VARCHAR(50) DEFAULT ''"),
+                ("시료명",         "VARCHAR(191) DEFAULT ''"),
+                ("소스구분",       "VARCHAR(50) DEFAULT ''"),
+                ("시험종",         "TEXT DEFAULT ''"),
+                ("시험시간",       "TEXT DEFAULT ''"),
+                ("시험시간단위",   "TEXT DEFAULT ''"),
+                ("대조군_생물수", "TEXT DEFAULT ''"),
+                ("대조군_사망수", "TEXT DEFAULT ''"),
+                ("시험번호",       "TEXT DEFAULT ''"),
+                ("endpoint",       "TEXT DEFAULT ''"),
+                ("농도단위",       "TEXT DEFAULT ''"),
+                ("LC50",           "TEXT DEFAULT ''"),
+                ("LC50_하한",      "TEXT DEFAULT ''"),
+                ("LC50_상한",      "TEXT DEFAULT ''"),
+                ("TU",             "TEXT DEFAULT ''"),
+                ("분석방법",       "TEXT DEFAULT ''"),
+                ("trim_percent",   "TEXT DEFAULT ''"),
+                ("probit_EC50",    "TEXT DEFAULT ''"),
+                ("probit_하한",    "TEXT DEFAULT ''"),
+                ("probit_상한",    "TEXT DEFAULT ''"),
+                ("probit_TU",      "TEXT DEFAULT ''"),
+                ("probit_method",  "TEXT DEFAULT ''"),
+                ("결과",           "TEXT DEFAULT ''"),
+                ("비고",           "TEXT DEFAULT ''"),
+                ("등록일시",       "VARCHAR(30) DEFAULT ''"),
+            };
+            for (int i = 1; i <= 8; i++)
+            {
+                foreach (var prefix in new[] { "농도", "생물수", "사망수" })
+                {
+                    var col = $"{prefix}_{i}";
+                    if (!DbConnectionFactory.ColumnExists(conn, "생태독성_시험기록부", col))
+                    {
+                        try
+                        {
+                            using var alt = conn.CreateCommand();
+                            alt.CommandText = $"ALTER TABLE `생태독성_시험기록부` ADD COLUMN `{col}` TEXT DEFAULT ''";
+                            alt.ExecuteNonQuery();
+                            EcotoxLog($"  + 컬럼 추가: {col}");
+                        }
+                        catch (Exception ax) { EcotoxLog($"  ✗ 컬럼 추가 실패 {col}: {ax.Message}"); }
+                    }
+                }
+            }
+            int addedCount = 0;
+            foreach (var (name, ddl) in requiredCols)
+            {
+                if (!DbConnectionFactory.ColumnExists(conn, "생태독성_시험기록부", name))
+                {
+                    try
+                    {
+                        using var alt = conn.CreateCommand();
+                        alt.CommandText = $"ALTER TABLE `생태독성_시험기록부` ADD COLUMN `{name}` {ddl}";
+                        alt.ExecuteNonQuery();
+                        EcotoxLog($"  + 컬럼 추가: {name} ({ddl})");
+                        addedCount++;
+                    }
+                    catch (Exception ax) { EcotoxLog($"  ✗ 컬럼 추가 실패 {name}: {ax.Message}"); }
+                }
+            }
+            if (addedCount > 0) EcotoxLog($"자가치유: {addedCount}개 컬럼 추가됨");
+
             using var chk = conn.CreateCommand();
             chk.CommandText = "SELECT COUNT(*) FROM `생태독성_시험기록부` WHERE LEFT(분석일,10)=@d AND SN=@sn";
             chk.Parameters.AddWithValue("@d", 채수일);
             chk.Parameters.AddWithValue("@sn", sn);
             bool exists = Convert.ToInt32(chk.ExecuteScalar()) > 0;
+            EcotoxLog($"중복 체크: 분석일={채수일}, SN={sn} → exists={exists}");
 
             int cnt = Math.Min(농도.Length, 8);
 
@@ -1094,10 +1181,19 @@ public static class WasteSampleService
             cmd.Parameters.AddWithValue("@pm",     probitResult?.Method ?? "");
             cmd.Parameters.AddWithValue("@result", result?.TU.ToString("F1") ?? "");
             cmd.Parameters.AddWithValue("@remark", 비고);
-            cmd.ExecuteNonQuery();
+            EcotoxLog($"SQL 실행 직전: {(exists ? "UPDATE" : "INSERT")} 모드");
+            EcotoxLog($"SQL = {cmd.CommandText}");
+            int affected = cmd.ExecuteNonQuery();
+            EcotoxLog($"✅ {(exists ? "UPDATE" : "INSERT")} 완료 (분석일={채수일}, SN={sn}, affected={affected}행)");
+            return affected > 0;
         }
         catch (Exception ex)
         {
+            EcotoxLog($"❌ 저장 실패 (분석일={채수일}, SN={sn}): {ex.GetType().Name}: {ex.Message}");
+            EcotoxLog($"StackTrace:\n{ex.StackTrace}");
+            if (ex.InnerException != null)
+                EcotoxLog($"InnerException: {ex.InnerException.Message}");
+            return false;
         }
     }
 

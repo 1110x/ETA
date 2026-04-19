@@ -10,6 +10,10 @@ public class Contract
     // ── 원본 키 (UPDATE/DELETE WHERE 절용) ───────────────────────────────────
     public string OriginalCompanyName        { get; set; } = string.Empty;
 
+    // ── 소프트 삭제 ──────────────────────────────────────────────────────────
+    public bool   C_IsDeleted                { get; set; } = false;
+    public DateTime? C_DeletedAt              { get; set; } = null;
+
     // ── 필드 ─────────────────────────────────────────────────────────────────
     public string    C_CompanyName              { get; set; } = string.Empty;
     public DateTime? C_ContractStart            { get; set; }
@@ -17,7 +21,8 @@ public class Contract
     public int?      C_ContractDays             { get; set; }
     public decimal?  C_ContractAmountVATExcluded{ get; set; }
     public string    C_Abbreviation             { get; set; } = string.Empty;
-    public string    C_ContractType             { get; set; } = string.Empty;
+    public string    C_ContractType             { get; set; } = string.Empty;  // 계약근거 (계약번호)
+    public string    C_PlaceName                { get; set; } = string.Empty;  // 처리시설명 (측정인 cmb_emis_cmpy_plc_no 매칭용)
     public string    C_Address                  { get; set; } = string.Empty;
     public string    C_Representative           { get; set; } = string.Empty;
     public string    C_FacilityType             { get; set; } = string.Empty;

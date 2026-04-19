@@ -21,14 +21,20 @@ public static class ContractService
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
+        EnsureSoftDeleteColumns(conn);
+        EnsureKukdoChemical(conn);
 
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
             SELECT C_CompanyName, C_ContractStart, C_ContractEnd, C_ContractDays,
                    C_ContractAmountVATExcluded, C_Abbreviation, C_ContractType,
                    C_Address, C_Representative, C_FacilityType, C_CategoryType,
-                   C_MainProduct, C_ContactPerson, C_PhoneNumber, C_Email
+                   C_MainProduct, C_ContactPerson, C_PhoneNumber, C_Email,
+                   IFNULL(C_ContractType, ''),
+                   IFNULL(C_PlaceName, '') AS C_PlaceName,
+                   IFNULL(C_IsDeleted, 0) AS C_IsDeleted, C_DeletedAt
             FROM `계약 DB`
+            WHERE IFNULL(C_IsDeleted, 0) = 0
             ORDER BY C_CompanyName ASC";
 
         using var r = cmd.ExecuteReader();
@@ -40,6 +46,7 @@ public static class ContractService
                 OriginalCompanyName = S(r, "C_CompanyName"),
                 C_Abbreviation   = S(r, "C_Abbreviation"),
                 C_ContractType   = S(r, "C_ContractType"),
+                C_PlaceName      = S(r, "C_PlaceName"),
                 C_Address        = S(r, "C_Address"),
                 C_Representative = S(r, "C_Representative"),
                 C_FacilityType   = S(r, "C_FacilityType"),
@@ -50,6 +57,7 @@ public static class ContractService
                 C_Email          = S(r, "C_Email"),
                 C_ContractDays   = NullInt(r, "C_ContractDays"),
                 C_ContractAmountVATExcluded = NullDecimal(r, "C_ContractAmountVATExcluded"),
+                C_IsDeleted      = Convert.ToBoolean(r.GetInt32(r.GetOrdinal("C_IsDeleted"))),
             };
 
             var startStr = S(r, "C_ContractStart");
@@ -58,10 +66,97 @@ public static class ContractService
             var endStr = S(r, "C_ContractEnd");
             if (DateTime.TryParse(endStr, out var end)) c.C_ContractEnd = end;
 
+            var deletedAtStr = S(r, "C_DeletedAt");
+            if (DateTime.TryParse(deletedAtStr, out var deletedAt)) c.C_DeletedAt = deletedAt;
+
             list.Add(c);
         }
 
         return list;
+    }
+
+    // ── 휴지통: 삭제된 계약 조회 ──────────────────────────────────────────────
+    public static List<Contract> GetDeletedContracts()
+    {
+        var list = new List<Contract>();
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+        EnsureSoftDeleteColumns(conn);
+
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+            SELECT C_CompanyName, C_ContractStart, C_ContractEnd, C_ContractDays,
+                   C_ContractAmountVATExcluded, C_Abbreviation, C_ContractType,
+                   C_Address, C_Representative, C_FacilityType, C_CategoryType,
+                   C_MainProduct, C_ContactPerson, C_PhoneNumber, C_Email,
+                   IFNULL(C_ContractType, ''),
+                   IFNULL(C_PlaceName, '') AS C_PlaceName,
+                   IFNULL(C_IsDeleted, 0) AS C_IsDeleted, C_DeletedAt
+            FROM `계약 DB`
+            WHERE IFNULL(C_IsDeleted, 0) = 1
+            ORDER BY C_DeletedAt DESC";
+
+        using var r = cmd.ExecuteReader();
+        while (r.Read())
+        {
+            var c = new Contract
+            {
+                C_CompanyName    = S(r, "C_CompanyName"),
+                OriginalCompanyName = S(r, "C_CompanyName"),
+                C_Abbreviation   = S(r, "C_Abbreviation"),
+                C_ContractType   = S(r, "C_ContractType"),
+                C_PlaceName      = S(r, "C_PlaceName"),
+                C_Address        = S(r, "C_Address"),
+                C_Representative = S(r, "C_Representative"),
+                C_FacilityType   = S(r, "C_FacilityType"),
+                C_CategoryType   = S(r, "C_CategoryType"),
+                C_MainProduct    = S(r, "C_MainProduct"),
+                C_ContactPerson  = S(r, "C_ContactPerson"),
+                C_PhoneNumber    = S(r, "C_PhoneNumber"),
+                C_Email          = S(r, "C_Email"),
+                C_ContractDays   = NullInt(r, "C_ContractDays"),
+                C_ContractAmountVATExcluded = NullDecimal(r, "C_ContractAmountVATExcluded"),
+                C_IsDeleted      = Convert.ToBoolean(r.GetInt32(r.GetOrdinal("C_IsDeleted"))),
+            };
+
+            var startStr = S(r, "C_ContractStart");
+            if (DateTime.TryParse(startStr, out var start)) c.C_ContractStart = start;
+
+            var endStr = S(r, "C_ContractEnd");
+            if (DateTime.TryParse(endStr, out var end)) c.C_ContractEnd = end;
+
+            var deletedAtStr = S(r, "C_DeletedAt");
+            if (DateTime.TryParse(deletedAtStr, out var deletedAt)) c.C_DeletedAt = deletedAt;
+
+            list.Add(c);
+        }
+        return list;
+    }
+
+    // ── 휴지통: 계약 복구 ──────────────────────────────────────────────────────
+    public static bool Restore(string companyName)
+    {
+        if (string.IsNullOrEmpty(companyName)) return false;
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "UPDATE `계약 DB` SET C_IsDeleted=0, C_DeletedAt=NULL WHERE C_CompanyName=@name";
+        cmd.Parameters.AddWithValue("@name", companyName);
+        int rows = cmd.ExecuteNonQuery();
+        return rows > 0;
+    }
+
+    // ── 휴지통: 계약 영구 삭제 ─────────────────────────────────────────────────
+    public static bool PermanentDelete(string companyName)
+    {
+        if (string.IsNullOrEmpty(companyName)) return false;
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "DELETE FROM `계약 DB` WHERE C_CompanyName=@name";
+        cmd.Parameters.AddWithValue("@name", companyName);
+        int rows = cmd.ExecuteNonQuery();
+        return rows > 0;
     }
 
     // ── 수정 ─────────────────────────────────────────────────────────────────
@@ -82,7 +177,8 @@ public static class ContractService
                 C_Abbreviation=@abbr, C_ContractType=@type, C_Address=@addr,
                 C_Representative=@rep, C_FacilityType=@ftype, C_CategoryType=@ctype,
                 C_MainProduct=@prod, C_ContactPerson=@contact,
-                C_PhoneNumber=@phone, C_Email=@email
+                C_PhoneNumber=@phone, C_Email=@email, C_ContractType=@basisContractNo,
+                C_PlaceName=@place
             WHERE C_CompanyName=@original";
 
         SetParams(cmd, contract);
@@ -105,10 +201,10 @@ public static class ContractService
                 (C_CompanyName, C_ContractStart, C_ContractEnd, C_ContractDays,
                  C_ContractAmountVATExcluded, C_Abbreviation, C_ContractType,
                  C_Address, C_Representative, C_FacilityType, C_CategoryType,
-                 C_MainProduct, C_ContactPerson, C_PhoneNumber, C_Email)
+                 C_MainProduct, C_ContactPerson, C_PhoneNumber, C_Email, C_ContractType, C_PlaceName)
             VALUES
                 (@name, @start, @end, @days, @amount, @abbr, @type, @addr,
-                 @rep, @ftype, @ctype, @prod, @contact, @phone, @email)";
+                 @rep, @ftype, @ctype, @prod, @contact, @phone, @email, @basisContractNo, @place)";
 
         SetParams(cmd, contract);
         int rows = cmd.ExecuteNonQuery();
@@ -134,9 +230,10 @@ public static class ContractService
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
+        EnsureSoftDeleteColumns(conn);
 
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"DELETE FROM `계약 DB` WHERE C_CompanyName=@name";
+        cmd.CommandText = @"UPDATE `계약 DB` SET C_IsDeleted=1, C_DeletedAt=NOW() WHERE C_CompanyName=@name";
         cmd.Parameters.AddWithValue("@name", contract.C_CompanyName);
 
         int rows = cmd.ExecuteNonQuery();
@@ -446,7 +543,7 @@ public static class ContractService
     private static readonly HashSet<string> _basicContractCols = new(StringComparer.OrdinalIgnoreCase)
     {
         "id", "C_CompanyName", "C_ContractStart", "C_ContractEnd", "C_ContractDays",
-        "C_ContractAmountVATExcluded", "C_Abbreviation", "C_ContractType", "C_Address",
+        "C_ContractAmountVATExcluded", "C_Abbreviation", "C_ContractType", "C_PlaceName", "C_Address",
         "C_Representative", "C_FacilityType", "C_CategoryType", "C_MainProduct",
         "C_ContactPerson", "C_PhoneNumber", "C_Email", "OriginalCompanyName"
     };
@@ -566,6 +663,49 @@ public static class ContractService
             return rows > 0;
         }
         catch (Exception ex) { return false; }
+    }
+
+    // ── 단가 복사 (한 계약에서 다른 계약으로) ───────────────────────────────
+    /// <summary>fromCompany의 분석단가를 toCompany에 복사합니다.</summary>
+    public static bool CopyContractPrices(string fromCompany, string toCompany)
+    {
+        if (string.IsNullOrWhiteSpace(fromCompany) || string.IsNullOrWhiteSpace(toCompany))
+        {
+            Log($"[CopyContractPrices] 입력값 오류: from='{fromCompany}', to='{toCompany}'");
+            return false;
+        }
+
+        try
+        {
+            Log($"[CopyContractPrices] 시작: {fromCompany} → {toCompany}");
+
+            // 원본 계약의 단가 조회
+            var srcPrices = GetContractPrices(fromCompany);
+            if (srcPrices.Count == 0)
+            {
+                Log($"  → 복사할 단가 없음 (source count=0)");
+                return false;
+            }
+
+            Log($"  → 원본에서 {srcPrices.Count}개 단가 로드됨");
+
+            // 대상 계약에 단가 업데이트
+            bool updated = UpdateContractPrices(toCompany, srcPrices);
+            if (updated)
+            {
+                Log($"  ✅ 완료: {srcPrices.Count}개 단가 복사 성공");
+            }
+            else
+            {
+                Log($"  ⚠️ 부분 성공: UpdateContractPrices가 0개 행 업데이트");
+            }
+            return updated;
+        }
+        catch (Exception ex)
+        {
+            Log($"  ❌ 오류: {ex.Message}\n{ex.StackTrace}");
+            return false;
+        }
     }
 
     // ── 업체별 계약수량 컬럼 보장 ─────────────────────────────────────────────
@@ -744,6 +884,65 @@ public static class ContractService
         cmd.Parameters.AddWithValue("@contact", c.C_ContactPerson  ?? "");
         cmd.Parameters.AddWithValue("@phone",   c.C_PhoneNumber    ?? "");
         cmd.Parameters.AddWithValue("@email",   c.C_Email          ?? "");
+        cmd.Parameters.AddWithValue("@basisContractNo", c.C_ContractType ?? "");
+        cmd.Parameters.AddWithValue("@place",   c.C_PlaceName      ?? "");
+    }
+
+    // ── 소프트 삭제 컬럼 마이그레이션 ──────────────────────────────────────────
+    private static void EnsureSoftDeleteColumns(DbConnection conn)
+    {
+        try
+        {
+            if (!DbConnectionFactory.ColumnExists(conn, "계약 DB", "C_IsDeleted"))
+            {
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = "ALTER TABLE `계약 DB` ADD COLUMN `C_IsDeleted` TINYINT DEFAULT 0";
+                cmd.ExecuteNonQuery();
+            }
+            if (!DbConnectionFactory.ColumnExists(conn, "계약 DB", "C_DeletedAt"))
+            {
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = "ALTER TABLE `계약 DB` ADD COLUMN `C_DeletedAt` DATETIME NULL";
+                cmd.ExecuteNonQuery();
+            }
+            if (!DbConnectionFactory.ColumnExists(conn, "계약 DB", "C_ContractType"))
+            {
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = "ALTER TABLE `계약 DB` ADD COLUMN `C_ContractType` TEXT DEFAULT ''";
+                cmd.ExecuteNonQuery();
+            }
+            if (!DbConnectionFactory.ColumnExists(conn, "계약 DB", "C_PlaceName"))
+            {
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = "ALTER TABLE `계약 DB` ADD COLUMN `C_PlaceName` TEXT DEFAULT ''";
+                cmd.ExecuteNonQuery();
+            }
+        }
+        catch { }
+    }
+
+    // ── 국도화학 자동 추가 (초기화) ───────────────────────────────────────────
+    private static void EnsureKukdoChemical(DbConnection conn)
+    {
+        try
+        {
+            using var checkCmd = conn.CreateCommand();
+            checkCmd.CommandText = "SELECT COUNT(*) FROM `계약 DB` WHERE C_CompanyName='국도화학㈜익산지점'";
+            var count = (long)checkCmd.ExecuteScalar();
+            if (count == 0)
+            {
+                using var insertCmd = conn.CreateCommand();
+                insertCmd.CommandText = @"
+                    INSERT INTO `계약 DB`
+                        (C_CompanyName, C_Abbreviation, C_Address, C_Representative,
+                         C_FacilityType, C_CategoryType, C_MainProduct, C_ContractType)
+                    VALUES
+                        ('국도화학㈜익산지점', '국도화학', '전북특별자치도 익산시 석암로13길 32(석암동)',
+                         '대표자', '제조업', '제조업', '에폭시수지, 골판지 제조업', '1000479061')";
+                insertCmd.ExecuteNonQuery();
+            }
+        }
+        catch { }
     }
 
     // ── 헬퍼 ─────────────────────────────────────────────────────────────────

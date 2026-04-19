@@ -71,7 +71,7 @@
                 </Border>
 
                 <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
-                    <StackPanel Margin="8" Spacing="10">
+                    <StackPanel x:Name="WasteTree" Margin="8" Spacing="10">
 
                         <!-- 여수 (TOC 1법) -->
                         <StackPanel Spacing="3">

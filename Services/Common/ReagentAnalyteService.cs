@@ -44,6 +44,68 @@ public static class ReagentAnalyteService
         return list;
     }
 
+    /// <summary>특정 분석항목에 연결된 시약 Id 집합 반환.</summary>
+    public static HashSet<int> GetReagentIdsByAnalyte(string analyte)
+    {
+        var set = new HashSet<int>();
+        if (string.IsNullOrWhiteSpace(analyte)) return set;
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+        EnsureTable(conn);
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT DISTINCT 시약Id FROM `시약_분석항목` WHERE 분석항목=@a";
+        cmd.Parameters.AddWithValue("@a", analyte);
+        using var r = cmd.ExecuteReader();
+        while (r.Read())
+            if (!r.IsDBNull(0)) set.Add(r.GetInt32(0));
+        return set;
+    }
+
+    /// <summary>분석정보 테이블의 Analyte 목록 (Category 순). 시약/초자 필터용.</summary>
+    public static List<string> GetAllAnalytes()
+    {
+        var list = new List<string>();
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = $"SELECT DISTINCT `Analyte` FROM `분석정보` WHERE `Analyte` IS NOT NULL AND `Analyte` <> '' ORDER BY `Category`, `{DbConnectionFactory.RowId}`";
+            using var r = cmd.ExecuteReader();
+            while (r.Read())
+            {
+                var s = r.IsDBNull(0) ? "" : r.GetValue(0)?.ToString() ?? "";
+                if (!string.IsNullOrWhiteSpace(s)) list.Add(s);
+            }
+        }
+        catch { }
+        return list;
+    }
+
+    /// <summary>분석정보의 (Analyte, Category) 쌍 목록. 콤보 뱃지 표시용.</summary>
+    public static List<(string Analyte, string Category)> GetAllAnalytesWithCategory()
+    {
+        var list = new List<(string, string)>();
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = $"SELECT `Analyte`, COALESCE(`Category`,'') FROM `분석정보` WHERE `Analyte` IS NOT NULL AND `Analyte` <> '' ORDER BY `Category`, `{DbConnectionFactory.RowId}`";
+            using var r = cmd.ExecuteReader();
+            var seen = new HashSet<string>();
+            while (r.Read())
+            {
+                var ana = r.IsDBNull(0) ? "" : r.GetValue(0)?.ToString() ?? "";
+                var cat = r.IsDBNull(1) ? "" : r.GetValue(1)?.ToString() ?? "";
+                if (string.IsNullOrWhiteSpace(ana)) continue;
+                if (seen.Add(ana)) list.Add((ana, cat));
+            }
+        }
+        catch { }
+        return list;
+    }
+
     public static bool Insert(ReagentAnalyte item)
     {
         using var conn = DbConnectionFactory.CreateConnection();
