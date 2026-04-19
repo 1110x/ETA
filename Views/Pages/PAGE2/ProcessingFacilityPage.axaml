@@ -4,15 +4,17 @@
 
     <UserControl.Styles>
         <Style Selector="Button.FacBtn">
-            <Setter Property="Height"          Value="26"/>
-            <Setter Property="FontSize"        Value="{DynamicResource FontSizeBase}"/>
-            <Setter Property="FontFamily"      Value="avares://ETA/Assets/Fonts#Pretendard"/>
-            <Setter Property="Background"      Value="{DynamicResource SubBtnBg}"/>
-            <Setter Property="Foreground"      Value="{DynamicResource FgMuted}"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush"     Value="{DynamicResource InputBorder}"/>
-            <Setter Property="CornerRadius"    Value="4"/>
-            <Setter Property="Padding"         Value="8,0"/>
+            <Setter Property="Height"              Value="30"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="FontSize"            Value="{DynamicResource FontSizeBase}"/>
+            <Setter Property="FontFamily"          Value="avares://ETA/Assets/Fonts#Pretendard"/>
+            <Setter Property="Background"          Value="{DynamicResource SubBtnBg}"/>
+            <Setter Property="Foreground"          Value="{DynamicResource FgMuted}"/>
+            <Setter Property="BorderThickness"     Value="1"/>
+            <Setter Property="BorderBrush"         Value="{DynamicResource InputBorder}"/>
+            <Setter Property="CornerRadius"        Value="4"/>
+            <Setter Property="Padding"             Value="8,0"/>
         </Style>
         <Style Selector="Button.FacBtn:pointerover">
             <Setter Property="Background" Value="#2a3a2a"/>
@@ -49,9 +51,10 @@
                 <TextBlock Text="시설 선택"
                            FontSize="{DynamicResource FontSizeSM}" Foreground="{DynamicResource FgMuted}"
                            FontFamily="avares://ETA/Assets/Fonts#Pretendard"/>
-                <WrapPanel x:Name="FacilityButtonPanel"
-                           Orientation="Horizontal"
-                           HorizontalAlignment="Stretch"/>
+                <StackPanel x:Name="FacilityButtonPanel"
+                            Orientation="Vertical"
+                            Spacing="4"
+                            HorizontalAlignment="Stretch"/>
 
                 <!-- 채취일 -->
                 <TextBlock Text="채취일"
@@ -108,40 +111,6 @@
                            Foreground="{DynamicResource FgMuted}"
                            TextWrapping="Wrap"
                            FontFamily="avares://ETA/Assets/Fonts#Pretendard"/>
-
-                <!-- ═══ A · 주간 계획 매트릭스 섹션 ═══ -->
-                <Border Classes="section-head">
-                    <StackPanel Orientation="Horizontal" Spacing="10">
-                        <Border Classes="section-tag"><TextBlock Text="A"/></Border>
-                        <StackPanel VerticalAlignment="Center">
-                            <TextBlock Classes="section-title" Text="주간 계획 매트릭스"/>
-                            <TextBlock Classes="section-sub"   Text="요일 × 시설. 체크된 항목만 해당일에 분석 대상으로 생성."/>
-                        </StackPanel>
-                    </StackPanel>
-                </Border>
-
-                <!-- ═══ B · 오늘 처리시설 결과 대시 ═══ -->
-                <Border Classes="section-head">
-                    <StackPanel Orientation="Horizontal" Spacing="10">
-                        <Border Classes="section-tag"><TextBlock Text="B"/></Border>
-                        <StackPanel VerticalAlignment="Center">
-                            <TextBlock Classes="section-title" Text="오늘 · 처리시설 결과 대시"/>
-                            <TextBlock Classes="section-sub"   Text="요일에 잡힌 항목만 자동 로딩 · 시설별 progress."/>
-                        </StackPanel>
-                    </StackPanel>
-                </Border>
-                <WrapPanel x:Name="TodayCards" Orientation="Horizontal" ItemSpacing="8" LineSpacing="8"/>
-
-                <!-- ═══ C · 추이 · 30일 ═══ -->
-                <Border Classes="section-head">
-                    <StackPanel Orientation="Horizontal" Spacing="10">
-                        <Border Classes="section-tag"><TextBlock Text="C"/></Border>
-                        <StackPanel VerticalAlignment="Center">
-                            <TextBlock Classes="section-title" Text="시설별 추이 · 30일"/>
-                            <TextBlock Classes="section-sub"   Text="기록부 탭에서 잡히지 않는 맥락 · 스파크라인으로 이상치 발견."/>
-                        </StackPanel>
-                    </StackPanel>
-                </Border>
 
             </StackPanel>
         </ScrollViewer>

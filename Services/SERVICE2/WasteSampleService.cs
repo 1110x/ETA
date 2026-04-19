@@ -42,6 +42,34 @@ public static class WasteSampleService
                    비고, 확인자,
                    `시안`, `6가크롬`, `색도`, `ABS`, `불소`";
 
+    /// <summary>QAQC 중복 순번 계산: 같은 (분석일, 시료명, 업체명, SN, 구분) 기존 건수 + 1.
+    /// 반환값을 비고 컬럼에 저장해 UNIQUE(분석일, 시료명, 업체명, SN, 구분, 비고) 충돌 방지.</summary>
+    public static string NextQaqcSeq(string tableName, string 분석일, string 시료명, string 업체명, string sn, string 구분)
+    {
+        if (string.IsNullOrEmpty(tableName)) return "1";
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = $@"SELECT COUNT(*) FROM `{tableName}`
+                                 WHERE LEFT(`분석일`,10)=@d AND 시료명=@s AND 업체명=@c
+                                   AND SN=@n AND COALESCE(구분,'')=@g";
+            cmd.Parameters.AddWithValue("@d", 분석일 ?? "");
+            cmd.Parameters.AddWithValue("@s", 시료명 ?? "");
+            cmd.Parameters.AddWithValue("@c", 업체명 ?? "");
+            cmd.Parameters.AddWithValue("@n", sn ?? "");
+            cmd.Parameters.AddWithValue("@g", 구분 ?? "");
+            var cnt = Convert.ToInt32(cmd.ExecuteScalar() ?? 0);
+            return (cnt + 1).ToString();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[NextQaqcSeq] {ex.Message}");
+            return "1";
+        }
+    }
+
     // ── 연월 목록 (비용부담금_결과 + 처리시설_작업 UNION, 역순) ────────────────
     public static List<string> GetMonths()
     {
@@ -457,7 +485,8 @@ public static class WasteSampleService
         string 시료량, string d1, string d2, string 희석배수, string 결과,
         string 소스구분 = "폐수배출업소", string 식종시료량 = "", string 식종D1 = "", string 식종D2 = "",
         string 식종BOD = "", string 식종함유량 = "", string 비고 = "", string 시료명 = "",
-        string 분석자1 = "", string 분석자2 = "", string minDO = "", string dayDO = "", string 희석수시료량 = "")
+        string 분석자1 = "", string 분석자2 = "", string minDO = "", string dayDO = "", string 희석수시료량 = "",
+        string SCF_시료량 = "", string SCF_D1 = "", string SCF_D2 = "", string SCF_Result = "")
     {
         try
         {
@@ -477,6 +506,7 @@ public static class WasteSampleService
                     SET 분석일=@d, 시료량=@vol, D1=@d1, D2=@d2, 희석배수=@dil, 결과=@r,
                         식종시료량=@sv, 식종D1=@sd1, 식종D2=@sd2, 식종BOD=@sbod, 식종함유량=@spct,
                         분석자1=@a1, 분석자2=@a2, `15min_DO`=@mdo, `5Day_DO`=@ddo, 희석수시료량=@hsv,
+                        SCF_시료량=@scfv, SCF_D1=@scfd1, SCF_D2=@scfd2, SCF_Result=@scfr,
                         비고=@remark, 등록일시={DbConnectionFactory.NowExpr}
                     WHERE SN=@sn AND 업체명=@nm";
             }
@@ -485,10 +515,12 @@ public static class WasteSampleService
                 cmd.CommandText = $@"INSERT INTO `{tableName}`
                     (분석일, SN, 업체명, 구분, 소스구분, 시료명, 시료량, D1, D2, 희석배수, 결과,
                      식종시료량, 식종D1, 식종D2, 식종BOD, 식종함유량,
-                     분석자1, 분석자2, `15min_DO`, `5Day_DO`, 희석수시료량, 비고, 등록일시)
+                     분석자1, 분석자2, `15min_DO`, `5Day_DO`, 희석수시료량,
+                     SCF_시료량, SCF_D1, SCF_D2, SCF_Result, 비고, 등록일시)
                     VALUES (@d, @sn, @nm, @gu, @src, @nm2, @vol, @d1, @d2, @dil, @r,
                             @sv, @sd1, @sd2, @sbod, @spct,
-                            @a1, @a2, @mdo, @ddo, @hsv, @remark, {DbConnectionFactory.NowExpr})";
+                            @a1, @a2, @mdo, @ddo, @hsv,
+                            @scfv, @scfd1, @scfd2, @scfr, @remark, {DbConnectionFactory.NowExpr})";
                 cmd.Parameters.AddWithValue("@gu",  구분);
                 cmd.Parameters.AddWithValue("@src", 소스구분);
                 cmd.Parameters.AddWithValue("@nm2", 시료명);
@@ -511,6 +543,10 @@ public static class WasteSampleService
             cmd.Parameters.AddWithValue("@mdo",   minDO);
             cmd.Parameters.AddWithValue("@ddo",   dayDO);
             cmd.Parameters.AddWithValue("@hsv",   희석수시료량);
+            cmd.Parameters.AddWithValue("@scfv",  SCF_시료량);
+            cmd.Parameters.AddWithValue("@scfd1", SCF_D1);
+            cmd.Parameters.AddWithValue("@scfd2", SCF_D2);
+            cmd.Parameters.AddWithValue("@scfr",  SCF_Result);
             cmd.Parameters.AddWithValue("@remark", 비고);
             cmd.ExecuteNonQuery();
         }

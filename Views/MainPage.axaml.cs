@@ -53,6 +53,8 @@ public partial class MainPage : Window
     private WaterQualityNameReconcilePage?     _waterQualityNameReconcilePage;
     private WasteSampleListPage?         _wasteSampleListPage;
     private ProcessingFacilityPage?      _processingFacilityPage;
+    private ProcessingTrendPanel?        _processingTrendPanel;
+    private ProcessingResultTablePanel?  _processingResultTablePanel;
     private ResultSubmitMeasurePage?     _resultSubmitMeasurePage;
     private TestReportPage?              _resultSubmitMeasureTestReport;
     private WasteAnalysisInputPage?      _wasteAnalysisInputPage;
@@ -2865,27 +2867,34 @@ public partial class MainPage : Window
 
         if (_processingFacilityPage == null)
         {
-            _processingFacilityPage = new ProcessingFacilityPage();
+            _processingFacilityPage      = new ProcessingFacilityPage();
+            _processingTrendPanel        = new ProcessingTrendPanel();
+            _processingResultTablePanel  = new ProcessingResultTablePanel();
             _processingFacilityPage.ResultGridChanged += panel =>
             {
                 Show3.Content = panel;
                 LogContentChange("Show3", panel);
             };
+            _processingFacilityPage.FacilityClicked += facility =>
+            {
+                _processingTrendPanel!.SetFacility(facility);
+                _processingResultTablePanel!.SetFacility(facility);
+            };
         }
 
         Show1.Content = _processingFacilityPage;
         LogContentChange("Show1", _processingFacilityPage);
-        Show2.Content = null;
-        LogContentChange("Show2", null);
+        Show2.Content = _processingTrendPanel;
+        LogContentChange("Show2", _processingTrendPanel);
         Show3.Content = null;
         LogContentChange("Show3", null);
-        Show4.Content = null;
-        LogContentChange("Show4", null);
+        Show4.Content = _processingResultTablePanel;
+        LogContentChange("Show4", _processingResultTablePanel);
         _bt1SaveAction = () => _processingFacilityPage.Save();
 
         SetSubMenu("저장", "새로고침", "", "", "", "", "");
         SetLeftPanelWidth(260);
-        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 0, lowerStar: 1);
+        SetContentLayout(content2Star: 1, content4Star: 1, upperStar: 6, lowerStar: 4);
 
         RestoreModeLayout("ProcessingFacility");
     }
@@ -2991,6 +3000,11 @@ public partial class MainPage : Window
             {
                 Show3.Content = panel;
                 LogContentChange("Show3", panel);
+            };
+            _resultSubmitMeasureTestReport.StatsPanelChanged += panel =>
+            {
+                Show4.Content = panel;
+                LogContentChange("Show4", panel);
             };
         }
 
@@ -5353,12 +5367,17 @@ public partial class MainPage : Window
         if (CurrentEmployeeId != "201000308") return;
         _currentMode = "Access";
 
-        _accessPage ??= new AccessPage();
+        if (_accessPage == null)
+        {
+            _accessPage = new AccessPage();
+            _accessPage.Show4VisibleChanged += on =>
+                SetContentLayout(content2Star: 2, content4Star: on ? 1 : 0, upperStar: 1, lowerStar: 0);
+        }
 
         Show1.Content = _accessPage.Show1;
         Show2.Content = _accessPage.Show2;
         Show3.Content = null;
-        Show4.Content = null;
+        Show4.Content = _accessPage.Show4;
         _bt1SaveAction = null;
 
         SetSubMenu("새로고침", "", "", "", "", "", "");
@@ -5366,6 +5385,29 @@ public partial class MainPage : Window
         SetContentLayout(content2Star: 2, content4Star: 0, upperStar: 1, lowerStar: 0);
         RestoreModeLayout("Access");
     }
+
+    // ── 측정인관리 (최상위 메뉴) ─────────────────────────────────────────────
+    private AccessPage? _measurerPage;
+
+    private void OpenMeasurerPage(string initialMode)
+    {
+        _currentMode = "Measurer";
+        _measurerPage = new AccessPage(initialMode, showAccessTab: false, showMeasurerTabs: true);
+        Show1.Content = _measurerPage.Show1;
+        Show2.Content = _measurerPage.Show2;
+        Show3.Content = null;
+        Show4.Content = null;
+        _bt1SaveAction = null;
+
+        SetSubMenu("새로고침", "", "", "", "", "", "");
+        SetLeftPanelWidth(260);
+        SetContentLayout(content2Star: 2, content4Star: 0, upperStar: 1, lowerStar: 0);
+        RestoreModeLayout("Measurer");
+    }
+
+    private void MeasurerContract_Click(object? sender, RoutedEventArgs e)  => OpenMeasurerPage("mcontract");
+    private void MeasurerAnalyte_Click(object? sender, RoutedEventArgs e)   => OpenMeasurerPage("analyte");
+    private void MeasurerEquipment_Click(object? sender, RoutedEventArgs e) => OpenMeasurerPage("equipment");
 
     private ServerManagementPage? _serverManagementPage;
 
@@ -5532,6 +5574,11 @@ public partial class MainPage : Window
                 _accessPage = new AccessPage();
                 Show1.Content = _accessPage.Show1;
                 Show2.Content = _accessPage.Show2;
+                break;
+            case "Measurer":
+                _measurerPage = new AccessPage("mcontract", showAccessTab: false, showMeasurerTabs: true);
+                Show1.Content = _measurerPage.Show1;
+                Show2.Content = _measurerPage.Show2;
                 break;
             case "WasteAnalysisInput": _wasteAnalysisInputPage?.LoadData(); break;
             case "AiDocClassification":
@@ -6293,7 +6340,7 @@ public partial class MainPage : Window
         switch (_currentMode)
         {
             case "ResultSubmitMeasure":
-                new DataToMeasurerWindow().Show(this);
+                _resultSubmitMeasureTestReport?.ShowMeasurerPanel();
                 break;
             case "AnalysisPlan": SetAnalysisPlanDay(6); break; // 일
             default:

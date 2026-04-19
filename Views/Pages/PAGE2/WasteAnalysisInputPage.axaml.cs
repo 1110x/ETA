@@ -2468,12 +2468,15 @@ public partial class WasteAnalysisInputPage : UserControl
     // 특정 월의 날짜들을 노드에 채워 넣기 (진행바 표시)
     private async System.Threading.Tasks.Task LoadMonthDatesIntoNode(TreeViewItem monthNode, string ym)
     {
-        if (_loadedMonths.Contains(ym)) return;
+        if (!_loadedMonths.Add(ym)) return;
+
+        monthNode.Items.Clear();
 
         LoadProgressBorder.IsVisible = true;
         LoadProgressBar.IsIndeterminate = true;
         LoadProgressText.Text = $"{ym} 데이터 연결 중...";
 
+        bool success = false;
         try
         {
             // 모드별 날짜 소스
@@ -2524,10 +2527,11 @@ public partial class WasteAnalysisInputPage : UserControl
                 monthNode.Items.Add(MakeDateNode(dateStr, samples, facilityStatus, reqItems, schedItems, billingItems));
             }
 
-            _loadedMonths.Add(ym);
+            success = true;
         }
         finally
         {
+            if (!success) _loadedMonths.Remove(ym);
             LoadProgressBorder.IsVisible = false;
             LoadProgressBar.IsIndeterminate = false;
         }
@@ -3004,10 +3008,10 @@ public partial class WasteAnalysisInputPage : UserControl
                 continue;
             }
 
-            // 2순위: 처리시설 (시료명 매칭)
+            // 2순위: 처리시설 (SN 약칭 접두사 우선, 실패 시 시료명 매칭)
             if (facilityMasters != null)
             {
-                var fm = FacilityResultService.FindBySampleName(facilityMasters, row.시료명);
+                var fm = FacilityResultService.FindBySnAndSampleName(facilityMasters, row.SN, row.시료명);
                 if (fm != null)
                 {
                     row.Source = SourceType.처리시설;
@@ -3717,6 +3721,9 @@ public partial class WasteAnalysisInputPage : UserControl
                             || !string.IsNullOrWhiteSpace(docInfo.식종수_D1);
                 bool hasScf  = !string.IsNullOrWhiteSpace(docInfo.SCF_Result)
                             || !string.IsNullOrWhiteSpace(docInfo.SCF_D1);
+                System.Diagnostics.Debug.WriteLine(
+                    $"[SCF/Render] category={_activeCategory} hasSeed={hasSeed} hasScf={hasScf} " +
+                    $"SCF_시료량='{docInfo.SCF_시료량}' SCF_D1='{docInfo.SCF_D1}' SCF_D2='{docInfo.SCF_D2}' SCF_Result='{docInfo.SCF_Result}'");
                 if (hasSeed || hasScf)
                 {
                     docTbl = new StackPanel { Spacing = 0 };
@@ -4684,22 +4691,31 @@ public partial class WasteAnalysisInputPage : UserControl
                 continue;
             }
 
-            // 3순위: 처리시설 마스터 시료명 (시료명 유사도 검사 포함)
+            // 3순위: 처리시설 마스터 (SN=시설명 고정 매칭 우선, 실패 시 시료명만으로 fallback)
             if (_matchingFacilityMasters != null)
             {
-                var facilityMatch = _matchingFacilityMasters.FirstOrDefault(fm => fm.시료명 == row.시료명);
-                if (facilityMatch == default)
+                (string 시설명, string 시료명, int 마스터Id) facilityMatch = default;
+                var 시료 = row.시료명 ?? "";
+                if (!string.IsNullOrEmpty(row.SN))
                 {
-                    facilityMatch = _matchingFacilityMasters.FirstOrDefault(fm => !string.IsNullOrEmpty(fm.시료명) &&
-                                      CalculateSimilarity(fm.시료명, row.시료명) >= 0.85);
+                    facilityMatch = _matchingFacilityMasters.FirstOrDefault(fm => fm.시설명 == row.SN && fm.시료명 == 시료);
+                    if (facilityMatch == default)
+                        facilityMatch = _matchingFacilityMasters.FirstOrDefault(fm => fm.시설명 == row.SN &&
+                            !string.IsNullOrEmpty(fm.시료명) &&
+                            CalculateSimilarity(fm.시료명, 시료) >= 0.85);
                 }
+                // Fallback: 시료명만으로 매칭 (레거시 데이터 호환)
+                if (facilityMatch == default)
+                    facilityMatch = _matchingFacilityMasters.FirstOrDefault(fm => fm.시료명 == 시료);
+                if (facilityMatch == default)
+                    facilityMatch = _matchingFacilityMasters.FirstOrDefault(fm => !string.IsNullOrEmpty(fm.시료명) &&
+                                      CalculateSimilarity(fm.시료명, 시료) >= 0.85);
 
                 if (facilityMatch != default)
                 {
                     if (string.IsNullOrEmpty(row.원본시료명)) row.원본시료명 = row.시료명;
                     row.시료명 = facilityMatch.시료명;
                     row.MatchedFacilityName = facilityMatch.시설명;
-                    // MatchedMasterId 속성이 없으므로 제거
                     row.Source = SourceType.처리시설;
                     row.Status = MatchStatus.입력가능;
                     LogMatch($"FACILITY MATCH: {row.SN} → {facilityMatch.시설명} - {facilityMatch.시료명}");
@@ -6249,13 +6265,13 @@ public partial class WasteAnalysisInputPage : UserControl
 
         var excelRows = rows.Select(r =>
         {
-            // 시료명 복원:
-            // 1) "원본\n↳ 매칭명" 형태로 저장된 경우 분리
-            // 2) 비고에 원본시료명이 저장된 경우 (SaveRawData에서 비고=원본시료명)
-            // 3) SN ≠ 시료명이면 SN=원본, 시료명=매칭명
+            // 시료명 복원 (처리시설 전용):
+            //   처리시설 SN은 `약칭-시료명` 규약이라 rawName과 항상 다름 → SN을 원본시료명으로 쓰면 안 됨
+            //   1) "원본\n↳ 매칭명" 형태로 저장된 경우 분리
+            //   2) 비고에 원본시료명이 저장된 경우
+            //   3) 그 외엔 rawName 그대로 표시 (원본시료명 공란)
             var rawName = G(r, "시료명");
             var remark  = G(r, "비고");
-            var snVal   = G(r, "SN");
             string displayName, origName;
             if (rawName.Contains('\n'))
             {
@@ -6266,12 +6282,6 @@ public partial class WasteAnalysisInputPage : UserControl
             else if (!string.IsNullOrEmpty(remark) && remark != rawName)
             {
                 origName    = remark;
-                displayName = rawName;
-            }
-            else if (!string.IsNullOrEmpty(snVal) && snVal != rawName)
-            {
-                // SN이 원본시료명, 시료명이 매칭된 시료명
-                origName    = snVal;
                 displayName = rawName;
             }
             else
@@ -6307,6 +6317,19 @@ public partial class WasteAnalysisInputPage : UserControl
 
         // 검량선 정보는 첫 번째 행에서 복원
         var firstRow = rows.FirstOrDefault();
+
+        System.Diagnostics.Debug.WriteLine(
+            $"[SCF/LoadFacilityRecordTable] table={tableName} date={date} rows={rows.Count} " +
+            $"hasBodCols={columns.Contains("D1", StringComparer.OrdinalIgnoreCase) && columns.Contains("D2", StringComparer.OrdinalIgnoreCase) && !columns.Contains("흡광도", StringComparer.OrdinalIgnoreCase)} " +
+            $"scfCols=[{string.Join(",", columns.Where(c => c.StartsWith("SCF", StringComparison.OrdinalIgnoreCase)))}]");
+        if (firstRow != null)
+        {
+            System.Diagnostics.Debug.WriteLine(
+                $"[SCF/LoadFacilityRecordTable] firstRow SCF: 시료량='{(firstRow.TryGetValue("SCF_시료량", out var sv) ? sv : "<없음>")}', " +
+                $"D1='{(firstRow.TryGetValue("SCF_D1", out var sd1) ? sd1 : "<없음>")}', " +
+                $"D2='{(firstRow.TryGetValue("SCF_D2", out var sd2) ? sd2 : "<없음>")}', " +
+                $"Result='{(firstRow.TryGetValue("SCF_Result", out var sr) ? sr : "<없음>")}'");
+        }
 
         // ST01~ST05 표준점 / 흡광도 배열 복원
         var stMgl  = new List<string>();
@@ -6367,13 +6390,26 @@ public partial class WasteAnalysisInputPage : UserControl
                 docInfo.IsNHEX = true;
             }
         }
-        // BOD 모드: D2 복원
+        // BOD 모드: D2 복원 + 식종수 바탕값(B1/B2 등) docInfo 복원
         else if (hasBodCols)
         {
             foreach (var (er, r) in excelRows.Zip(rows))
             {
                 er.D1 = G(r, "D1");
                 er.D2 = G(r, "D2");
+            }
+            if (firstRow != null)
+            {
+                docInfo.식종수_시료량 = G(firstRow, "식종시료량");
+                docInfo.식종수_D1     = G(firstRow, "15min_DO");
+                docInfo.식종수_D2     = G(firstRow, "5Day_DO");
+                docInfo.식종수_P      = G(firstRow, "희석수시료량");
+                docInfo.식종수_Result = G(firstRow, "식종BOD");
+                docInfo.식종수_Remark = G(firstRow, "식종함유량");
+                docInfo.SCF_시료량    = G(firstRow, "SCF_시료량");
+                docInfo.SCF_D1        = G(firstRow, "SCF_D1");
+                docInfo.SCF_D2        = G(firstRow, "SCF_D2");
+                docInfo.SCF_Result    = G(firstRow, "SCF_Result");
             }
         }
 
@@ -7473,12 +7509,15 @@ public partial class WasteAnalysisInputPage : UserControl
             ? 분석일Raw
             : (s?.채수일 ?? DateTime.Today.ToString("yyyy-MM-dd"));
 
-        // SN 결정: QAQC=QC고정, 처리시설=시료명, 그 외=매칭SN
+        // SN 결정: QAQC=QC고정, 처리시설=시설명, 그 외=매칭SN
         string sn;
         if (소스구분 == "QAQC")
             sn = "QC";
         else if (소스구분 == "처리시설")
-            sn = row.시료명 ?? row.SN ?? "";
+        {
+            var 시설 = row.MatchedFacilityName ?? "";
+            sn = !string.IsNullOrEmpty(시설) ? 시설 : (row.시료명 ?? row.SN ?? "");
+        }
         else
             sn = s?.SN ?? row.SN ?? "";
         if (string.IsNullOrEmpty(sn)) sn = row.시료명 ?? "";
@@ -7533,24 +7572,42 @@ public partial class WasteAnalysisInputPage : UserControl
         else
             시료명Full = row.시료명 ?? "";
 
-        string remark = !string.IsNullOrEmpty(row.원본시료명) ? row.원본시료명 : "";
+        // 비고 컬럼 용도:
+        //   - QAQC: 같은 키 중복 순번(1,2,3…) — UNIQUE(분석일,시료명,업체명,SN,구분,비고) 충돌 방지
+        //   - 그 외: 원본시료명 (매칭 전 이름)
+        string remark;
+        if (소스구분 == "QAQC")
+        {
+            // tableName은 카테고리마다 다르니 공통 SS 테이블로 대표 조회 → 분기 내부에서 재계산 불필요한 정도
+            // 정확도 위해 각 분기에서 필요 시 재계산 (여기선 fallback "1")
+            remark = "1";
+        }
+        else
+            remark = !string.IsNullOrEmpty(row.원본시료명) ? row.원본시료명 : "";
+
+        // QAQC일 때 테이블별 중복순번 계산 헬퍼
+        string QcSeq(string? tbl) => (소스구분 == "QAQC" && !string.IsNullOrEmpty(tbl))
+            ? WasteSampleService.NextQaqcSeq(tbl!, 분석일, 시료명Full, 업체명, sn, 구분)
+            : remark;
 
         switch (_activeCategory)
         {
             case "TOC":
             {
                 _categoryDocInfo.TryGetValue("TOC", out var tocInfo);
+                var tblToc = AnalysisService.GetRecordTableName("TOC") ?? "총유기탄소_시험기록부";
                 WasteSampleService.UpsertTocData(
-                    AnalysisService.GetRecordTableName("TOC") ?? "총유기탄소_시험기록부", 분석일, sn, 업체명, 구분,
+                    tblToc, 분석일, sn, 업체명, 구분,
                     row.D1, row.P, tocInfo?.TocSlope_TC ?? "", row.Fxy, row.Result,
-                    소스구분: 소스구분, 비고: remark, 시료명: 시료명Full);
+                    소스구분: 소스구분, 비고: QcSeq(tblToc), 시료명: 시료명Full);
                 break;
             }
 
             case "BOD":
+            {
+                var tblBod = AnalysisService.GetRecordTableName("BOD") ?? "생물학적_산소요구량_시험기록부";
                 WasteSampleService.UpsertBodData(
-                    AnalysisService.GetRecordTableName("BOD") ?? "생물학적_산소요구량_시험기록부",
-                    분석일, sn, 업체명, 구분,
+                    tblBod, 분석일, sn, 업체명, 구분,
                     시료량: row.시료량, d1: row.D1, d2: row.D2,
                     희석배수: row.P, 결과: row.Result,
                     소스구분: 소스구분,
@@ -7559,22 +7616,33 @@ public partial class WasteAnalysisInputPage : UserControl
                     식종D2:     docInfo?.식종수_D2    ?? "",
                     식종BOD:    docInfo?.식종수_Result ?? "",
                     식종함유량: docInfo?.식종수_Remark  ?? "",
-                    비고: remark, 시료명: 시료명Full);
+                    SCF_시료량: docInfo?.SCF_시료량   ?? "",
+                    SCF_D1:     docInfo?.SCF_D1       ?? "",
+                    SCF_D2:     docInfo?.SCF_D2       ?? "",
+                    SCF_Result: docInfo?.SCF_Result   ?? "",
+                    비고: QcSeq(tblBod), 시료명: 시료명Full);
                 break;
+            }
 
             case "SS":
+            {
+                var tblSs = AnalysisService.GetRecordTableName("SS") ?? "부유물질_시험기록부";
                 WasteSampleService.UpsertSsData(
                     분석일, sn, 업체명, 구분,
                     row.시료량, row.D1, row.D2, row.Fxy, row.P, row.Result,
-                    소스구분: 소스구분, 비고: remark, 시료명: 시료명Full);
+                    소스구분: 소스구분, 비고: QcSeq(tblSs), 시료명: 시료명Full);
                 break;
+            }
 
             case "NHEX":
+            {
+                var tblNh = AnalysisService.GetRecordTableName("NHEX") ?? "NHexan_시험기록부";
                 WasteSampleService.UpsertNHexanData(
                     분석일, sn, 업체명, 구분,
                     row.시료량, row.D1, row.D2, row.Fxy, row.P, row.Result,
-                    소스구분: 소스구분, 비고: remark, 시료명: 시료명Full);
+                    소스구분: 소스구분, 비고: QcSeq(tblNh), 시료명: 시료명Full);
                 break;
+            }
 
             case "TN" when isUV:
             case "TP" when isUV:
@@ -7605,7 +7673,7 @@ public partial class WasteAnalysisInputPage : UserControl
                         기울기:  docInfo?.Standard_Slope ?? "",
                         절편:    docInfo?.Standard_Intercept ?? "",
                         R2:      docInfo?.Abs_R2 ?? "",
-                        비고: remark,
+                        비고: QcSeq(tblName),
                         시료명: 시료명Full,
                         소스구분: 소스구분);
                 }
@@ -7643,7 +7711,7 @@ public partial class WasteAnalysisInputPage : UserControl
                     기울기:  icpCal?.Slope ?? "",
                     절편:    icpCal?.Intercept ?? "",
                     R2:      icpCal?.R ?? "",
-                    비고: remark,
+                    비고: QcSeq(icpTable),
                     시료명: 시료명Full,
                     소스구분: 소스구분);
                 break;
@@ -7669,7 +7737,7 @@ public partial class WasteAnalysisInputPage : UserControl
                     ISTD: row.D2 ?? "",
                     검량선정보: docInfo,
                     compoundCal: compoundCal,
-                    비고: remark, 시료명: 시료명Full,
+                    비고: QcSeq(tableName), 시료명: 시료명Full,
                     흡광도: row.D1 ?? "");
                 break;
             }
@@ -7704,7 +7772,7 @@ public partial class WasteAnalysisInputPage : UserControl
                         기울기:  docInfo?.Standard_Slope ?? "",
                         절편:    docInfo?.Standard_Intercept ?? "",
                         R2:      docInfo?.Abs_R2 ?? "",
-                        비고: remark,
+                        비고: QcSeq(tblName),
                         시료명: 시료명Full,
                         소스구분: 소스구분);
                 }
@@ -7716,12 +7784,13 @@ public partial class WasteAnalysisInputPage : UserControl
                 var ecoData = row.EcotoxData;
                 if (ecoData != null)
                 {
+                    var tblEco = AnalysisService.GetRecordTableName("ECO") ?? "생태독성_시험기록부";
                     WasteSampleService.UpsertEcotoxData(
                         분석일, sn, 업체명, 구분, 시료명Full, 소스구분,
                         ecoData.Species, ecoData.Duration, ecoData.DurationUnit,
                         ecoData.ControlOrganisms, ecoData.ControlMortalities,
                         ecoData.Concentrations, ecoData.Organisms, ecoData.Mortalities,
-                        ecoData.Result, 비고: remark);
+                        ecoData.Result, 비고: QcSeq(tblEco));
                 }
                 break;
             }
@@ -8497,7 +8566,7 @@ public partial class WasteAnalysisInputPage : UserControl
             qRow.시료명    = qRow.원본시료명;
             qRow.원본시료명 = "";
         }
-        // QC 지정
+        // QC 지정: SN="QC" 고정, 중복 순번은 저장 시점에 비고 컬럼으로 부여
         qRow.SN        = "QC";
         qRow.IsControl = true;
         // _categoryExcelData 동기화
@@ -9037,7 +9106,7 @@ public partial class WasteAnalysisInputPage : UserControl
             }
             else if (facilityMasters != null)
             {
-                var fm = FacilityResultService.FindBySampleName(facilityMasters, row.시료명);
+                var fm = FacilityResultService.FindBySnAndSampleName(facilityMasters, row.SN, row.시료명);
                 if (fm != null)
                 {
                     row.Source = SourceType.처리시설;
@@ -9100,6 +9169,40 @@ public partial class WasteAnalysisInputPage : UserControl
         ShowMessage($"✅ 검증 완료: {excelRows.Count}건 확인", false);
     }
 
+    /// <summary>
+    /// DB 업데이트 직전 스냅샷 저장: ExcelRow → "자료시트" 덤프 + 인쇄여부 모달.
+    /// 템플릿 없거나 예외 발생 시 조용히 넘어감 (DB 업데이트 흐름 절대 막지 않음).
+    /// </summary>
+    private async Task TryPreDbSnapshotAsync(string category, List<ExcelRow> rows)
+    {
+        try
+        {
+            if (rows.Count == 0) return;
+            var headers = new[]
+            {
+                "시료명","원본시료명","SN","시료량","D1","D2","Fxy","P",
+                "TCAU","TCcon","ICAU","ICcon","CompoundName","Result",
+                "Source","MatchStatus","Enabled","IsControl",
+            };
+            var data = rows.Select(r => new object?[]
+            {
+                r.시료명, r.원본시료명, r.SN, r.시료량, r.D1, r.D2, r.Fxy, r.P,
+                r.TCAU, r.TCcon, r.ICAU, r.ICcon, r.CompoundName, r.Result,
+                r.Source.ToString(), r.Status.ToString(), r.Enabled, r.IsControl,
+            }).ToList();
+
+            _categoryDocDates.TryGetValue(category, out var d);
+            string ctx = $"{category}_{d ?? DateTime.Today.ToString("yyyyMMdd")}";
+
+            var parent = TopLevel.GetTopLevel(this) as Window;
+            await PreDbSnapshotService.SaveAndAskAsync(parent, ctx, headers, data);
+        }
+        catch (Exception ex)
+        {
+            LogInput($"PreDbSnapshot 오류(무시): {ex.Message}");
+        }
+    }
+
     /// <summary>서브메뉴 "입력" — 검증된 데이터 일괄 DB 반영</summary>
     public async Task ImportData()
     {
@@ -9107,6 +9210,9 @@ public partial class WasteAnalysisInputPage : UserControl
         { ShowMessage("먼저 파일을 첨부하세요.", true); return; }
 
         try { File.WriteAllText(ImportLogPath, $"=== ImportData 시작: {DateTime.Now:yyyy-MM-dd HH:mm:ss} cat={_activeCategory} rows={rows.Count} ===\n"); } catch { }
+
+        // ── DB 업데이트 직전 스냅샷 저장 (자료시트 덤프 → 인쇄여부 확인) ──
+        await TryPreDbSnapshotAsync(_activeCategory, rows);
 
         // 진행 오버레이 표시
         if (_importOverlay != null) _importOverlay.IsVisible = true;

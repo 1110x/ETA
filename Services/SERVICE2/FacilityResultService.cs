@@ -130,6 +130,74 @@ public static class FacilityResultService
         return rows;
     }
 
+    // ── 기간 조회 (추이 그래프용) ─────────────────────────────────────────
+    /// <summary>
+    /// 시설 + 기간 범위 조회: 시료명 → [(날짜, 항목값 dict)]
+    /// 결과 Values에 활성 항목만 포함.
+    /// </summary>
+    public static Dictionary<string, List<(string Date, Dictionary<string, string> Values)>>
+        GetRowsInRange(string facility, string dateFrom, string dateTo)
+    {
+        EnsureFacilityColumnsSync();
+        var items = GetAnalysisItems(activeOnly: false);
+        string Q(string c) => c.Contains('-') || c.Contains(' ') ? $"`{c}`" : c;
+
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+        using var cmd = conn.CreateCommand();
+
+        var selectParts = new List<string> { "m.시료명", "r.채취일자 AS d" };
+        foreach (var item in items)
+        {
+            var col = item.컬럼명.Trim('`');
+            selectParts.Add($"r.{Q(col)} AS `{col}_값`");
+        }
+
+        cmd.CommandText = $@"
+            SELECT {string.Join(", ", selectParts)}
+            FROM `처리시설_마스터` m
+            LEFT JOIN `처리시설_결과` r
+                ON r.마스터_id = m.id
+               AND r.채취일자 BETWEEN @f AND @t
+            LEFT JOIN (
+                SELECT 시설명, 시료명, MIN(시료순서) AS sortOrder, MIN(id) AS pid
+                FROM `처리시설_분석계획`
+                GROUP BY 시설명, 시료명
+            ) p ON p.시설명 = m.시설명 AND p.시료명 = m.시료명
+            WHERE m.시설명 = @facility
+              AND r.id IS NOT NULL
+            ORDER BY COALESCE(p.sortOrder, 99999), COALESCE(p.pid, 99999), m.id, r.채취일자";
+        cmd.Parameters.AddWithValue("@facility", facility);
+        cmd.Parameters.AddWithValue("@f", dateFrom);
+        cmd.Parameters.AddWithValue("@t", dateTo);
+
+        var result = new Dictionary<string, List<(string, Dictionary<string, string>)>>();
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            string sample = reader["시료명"]?.ToString() ?? "";
+            string d = reader["d"]?.ToString() ?? "";
+            if (string.IsNullOrEmpty(sample) || string.IsNullOrEmpty(d)) continue;
+
+            var values = new Dictionary<string, string>();
+            foreach (var item in items)
+            {
+                var col = item.컬럼명.Trim('`');
+                var v = reader[$"{col}_값"];
+                if (v is DBNull) continue;
+                var s = v?.ToString() ?? "";
+                if (string.IsNullOrWhiteSpace(s)) continue;
+                values[col] = s;
+            }
+            if (values.Count == 0) continue;
+
+            if (!result.TryGetValue(sample, out var list))
+                result[sample] = list = new();
+            list.Add((d, values));
+        }
+        return result;
+    }
+
     // ── 저장 (INSERT or UPDATE) — 동적 항목 지원 ──────────────────────────
     public static void SaveRows(string facility, string date, List<FacilityResultRow> rows, string inputUser)
     {
@@ -1267,6 +1335,48 @@ public static class FacilityResultService
             sampleName.Contains(m.시료명) || m.시료명.Contains(sampleName));
         if (partial != default) return (partial.시설명, partial.마스터Id);
         return null;
+    }
+
+    // ── 약칭→시설명 맵 (처리시설_설정) ───────────────────────────────────
+    private static Dictionary<string, string>? _aliasToFacilityCache;
+    public static Dictionary<string, string> GetAliasToFacilityMap()
+    {
+        if (_aliasToFacilityCache != null) return _aliasToFacilityCache;
+        var map = new Dictionary<string, string>();
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT `시설명`, `약칭` FROM `처리시설_설정`";
+            using var r = cmd.ExecuteReader();
+            while (r.Read())
+            {
+                var 시설 = r.IsDBNull(0) ? "" : r.GetString(0);
+                var 약 = r.IsDBNull(1) ? "" : r.GetString(1);
+                if (!string.IsNullOrEmpty(약) && !string.IsNullOrEmpty(시설))
+                    map[약] = 시설;
+            }
+        }
+        catch { }
+        _aliasToFacilityCache = map;
+        return map;
+    }
+
+    // ── SN(=시설명)으로 시설 확정 후 마스터 검색, 실패 시 시료명만으로 fallback ──
+    public static (string 시설명, int 마스터Id)? FindBySnAndSampleName(
+        List<(string 시설명, string 시료명, int 마스터Id)> masters, string sn, string sampleName)
+    {
+        if (!string.IsNullOrEmpty(sn))
+        {
+            var m = masters.FirstOrDefault(x => x.시설명 == sn && x.시료명 == sampleName);
+            if (m != default) return (m.시설명, m.마스터Id);
+            var m2 = masters.FirstOrDefault(x => x.시설명 == sn &&
+                !string.IsNullOrEmpty(x.시료명) &&
+                (sampleName.Contains(x.시료명) || x.시료명.Contains(sampleName)));
+            if (m2 != default) return (m2.시설명, m2.마스터Id);
+        }
+        return FindBySampleName(masters, sampleName);
     }
 
     // ── 측정결과 삭제 ────────────────────────────────────────────────────────

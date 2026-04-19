@@ -26,6 +26,8 @@ public partial class ProcessingFacilityPage : UserControl
     }
     // ── 외부 이벤트 ──────────────────────────────────────────────────────
     public event Action<Control?>? ResultGridChanged;
+    /// <summary>시설명이 선택될 때 발생 (Show2 추이 패널 갱신용)</summary>
+    public event Action<string>? FacilityClicked;
 
     // ── 상태 ─────────────────────────────────────────────────────────────
     private string? _selectedFacility;
@@ -59,16 +61,6 @@ public partial class ProcessingFacilityPage : UserControl
         InitializeComponent();
         dpDate.SelectedDate = DateTime.Today;
         LoadFacilityButtons();
-        SeedTodayCards();
-    }
-
-    private void SeedTodayCards()
-    {
-        TodayCards.Children.Add(LoadingCard.Live("BOD", "4.2 mg/L", 1.0, BadgeStatus.Ok));
-        TodayCards.Children.Add(LoadingCard.Live("TOC", "8.4",      1.0, BadgeStatus.Ok));
-        TodayCards.Children.Add(LoadingCard.Live("T-N", "12.3",     1.0, BadgeStatus.Warn));
-        TodayCards.Children.Add(LoadingCard.Skeleton("SS"));
-        TodayCards.Children.Add(LoadingCard.Live("대장균", "—",     0.0, BadgeStatus.Muted));
     }
 
     // =========================================================================
@@ -78,15 +70,16 @@ public partial class ProcessingFacilityPage : UserControl
     {
         try
         {
-            var names = FacilityResultService.GetFacilityNames();
+            var names    = FacilityResultService.GetFacilityNames();
+            var settings = FacilityResultService.GetFacilitySettings();
             foreach (var name in names)
             {
+                string 약칭 = settings.TryGetValue(name, out var s) ? s.약칭 : "";
                 var btn = new Button
                 {
-                    Content = name,
                     Tag     = name,
-                    Margin  = new Thickness(2),
                     Classes = { "FacBtn" },
+                    Content = BuildFacilityContent(name, 약칭),
                 };
                 btn.Click += FacilityBtn_Click;
                 FacilityButtonPanel.Children.Add(btn);
@@ -97,6 +90,44 @@ public partial class ProcessingFacilityPage : UserControl
             tbStatus.Foreground = AppTheme.FgDanger;
             tbStatus.Text = $"시설 목록 오류: {ex.Message}";
         }
+    }
+
+    private static Control BuildFacilityContent(string name, string 약칭)
+    {
+        var panel = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            Spacing     = 6,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        if (!string.IsNullOrWhiteSpace(약칭))
+        {
+            var (bg, fg, bd) = WasteCompanyPage.GetChosungBadgeColorPublic(약칭);
+            panel.Children.Add(new Border
+            {
+                Background      = Brush.Parse(bg),
+                BorderBrush     = Brush.Parse(bd),
+                BorderThickness = new Thickness(1),
+                CornerRadius    = new CornerRadius(8),
+                Padding         = new Thickness(6, 1),
+                VerticalAlignment = VerticalAlignment.Center,
+                Child = new TextBlock
+                {
+                    Text       = 약칭,
+                    FontSize   = AppTheme.FontSM,
+                    FontFamily = Font,
+                    Foreground = Brush.Parse(fg),
+                },
+            });
+        }
+        panel.Children.Add(new TextBlock
+        {
+            Text       = name,
+            FontFamily = Font,
+            FontSize   = AppTheme.FontBase,
+            VerticalAlignment = VerticalAlignment.Center,
+        });
+        return panel;
     }
 
     // =========================================================================
@@ -112,6 +143,9 @@ public partial class ProcessingFacilityPage : UserControl
         btn.Classes.Add("selected");
         _selectedFacility = btn.Tag as string;
         tbStatus.Text = "";
+
+        if (!string.IsNullOrEmpty(_selectedFacility))
+            FacilityClicked?.Invoke(_selectedFacility);
     }
 
     // =========================================================================
