@@ -150,10 +150,7 @@
                             <Border Grid.Row="1" Grid.Column="5" Classes="td"><TextBlock Text="184"/></Border>
                             <Border Grid.Row="1" Grid.Column="6" Classes="td"><TextBlock Text="96"/></Border>
                             <Border Grid.Row="1" Grid.Column="7" Classes="td">
-                                <StackPanel Orientation="Horizontal" Spacing="4">
-                                    <TextBlock Text="32.1"/>
-                                    <Border Classes="chip warn"><TextBlock Text="↑"/></Border>
-                                </StackPanel>
+                                <TextBlock Text="32.1 ↑" FontWeight="Bold" Foreground="{DynamicResource PaperAccent}"/>
                             </Border>
                             <Border Grid.Row="1" Grid.Column="8" Classes="td"><TextBlock Text="4.8"/></Border>
                             <Border Grid.Row="1" Grid.Column="9" Classes="td"><TextBlock Text="—" Classes="muted"/></Border>

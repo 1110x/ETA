@@ -209,11 +209,11 @@
         <Setter Property="Background"      Value="{DynamicResource PaperAccent}"/>
         <Setter Property="Foreground"      Value="#1a1a1a"/>
         <Setter Property="BorderBrush"     Value="{DynamicResource PaperInk}"/>
-        <Setter Property="BorderThickness" Value="1.5"/>
+        <Setter Property="BorderThickness" Value="1.2"/>
         <Setter Property="CornerRadius"    Value="6"/>
-        <Setter Property="Padding"         Value="14,6"/>
+        <Setter Property="Padding"         Value="10,4"/>
         <Setter Property="FontWeight"      Value="Bold"/>
-        <Setter Property="FontSize"        Value="12"/>
+        <Setter Property="FontSize"        Value="11"/>
         <Setter Property="Cursor"          Value="Hand"/>
     </Style>
     <Style Selector="Button.primary /template/ ContentPresenter">
@@ -303,6 +303,28 @@
     </Style>
 
     <!--  =========================================================
+          주간 네비 화살표 버튼 · .weekNav
+          ========================================================= -->
+    <Style Selector="Button.weekNav">
+        <Setter Property="Background"          Value="Transparent"/>
+        <Setter Property="Foreground"          Value="{DynamicResource PaperFgMuted}"/>
+        <Setter Property="BorderBrush"         Value="{DynamicResource PaperInkHair}"/>
+        <Setter Property="BorderThickness"     Value="1"/>
+        <Setter Property="CornerRadius"        Value="4"/>
+        <Setter Property="Padding"             Value="0"/>
+        <Setter Property="Width"               Value="22"/>
+        <Setter Property="Height"              Value="16"/>
+        <Setter Property="FontSize"            Value="9"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment"   Value="Center"/>
+        <Setter Property="Cursor"              Value="Hand"/>
+    </Style>
+    <Style Selector="Button.weekNav:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource PaperRowAlt}"/>
+    </Style>
+
+    <!--  =========================================================
           테이블 · .th / .td / .row / .row-active
           ========================================================= -->
     <Style Selector="Border.th">
@@ -316,6 +338,7 @@
         <Setter Property="FontWeight"          Value="Bold"/>
         <Setter Property="Foreground"          Value="{DynamicResource PaperFgTitle}"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment"   Value="Center"/>
     </Style>
     <Style Selector="Border.td">
         <Setter Property="Background"      Value="{DynamicResource PaperCard}"/>
@@ -327,9 +350,11 @@
         <Setter Property="FontSize"            Value="11"/>
         <Setter Property="Foreground"          Value="{DynamicResource PaperFgBody}"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment"   Value="Center"/>
     </Style>
     <Style Selector="Border.td > StackPanel">
         <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment"   Value="Center"/>
     </Style>
 
     <Style Selector="Border.row">

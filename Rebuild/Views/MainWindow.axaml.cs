@@ -40,6 +40,7 @@ public partial class MainWindow : Window
             "file"     => new FileflowPage(),
             "note"     => new NotebookPage(),
             "facility" => new FacilityPage(),
+            "waste"    => new WastePage(),
             _          => new ComingSoonPage(btn.Content?.ToString() ?? "?"),
         };
     }
