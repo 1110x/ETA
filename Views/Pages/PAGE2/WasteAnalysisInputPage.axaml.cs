@@ -21,6 +21,7 @@ using ETA.Services.SERVICE4;
 using ETA.Views.Pages.PAGE1;
 using ETA.Services.Common;
 using ETA.Views;
+using ETA.Views.Controls;
 
 namespace ETA.Views.Pages.PAGE2;
 
@@ -404,11 +405,14 @@ public partial class WasteAnalysisInputPage : UserControl
             BorderBrush = AppRes("InputBorder"), BorderThickness = new Thickness(1),
             CornerRadius = new CornerRadius(4), Padding = new Thickness(8, 4),
         };
+        var (aBg, aFg, aBd) = StatusBadge.GetBrushes(BadgeStatus.Ok);
         var addBtn = new Button
         {
-            Content = "시료 추가", FontFamily = Font,
-            Background = AppRes("BtnPrimaryBg"), Foreground = Brushes.White,
-            Padding = new Thickness(12, 4), CornerRadius = new CornerRadius(4),
+            Content = "시료 추가", FontFamily = Font, FontWeight = FontWeight.SemiBold,
+            Background = aBg, Foreground = aFg, BorderBrush = aBd,
+            BorderThickness = new Thickness(1),
+            Padding = new Thickness(14, 4), CornerRadius = new CornerRadius(999),
+            Cursor = new Cursor(StandardCursorType.Hand),
         };
         addPanel.Children.Add(nameInput);
         addPanel.Children.Add(addBtn);
@@ -589,16 +593,19 @@ public partial class WasteAnalysisInputPage : UserControl
         var allowedKeys = ModeCategoryKeys.TryGetValue(_inputMode, out var keys)
             ? keys : Categories.Select(c => c.Key).ToArray();
 
+        var (cBg, cFg, cBd) = StatusBadge.GetBrushes(BadgeStatus.Info);
         foreach (var cat in Categories.Where(c => allowedKeys.Contains(c.Key)))
         {
             var btn = FsSM(new Button
             {
                 Content = $"{cat.Icon} {cat.Label}",
                 Tag = cat.Key,
-                FontFamily = Font,
-                Padding = new Thickness(8, 4),
+                FontFamily = Font, FontWeight = FontWeight.SemiBold,
+                Background = cBg, Foreground = cFg, BorderBrush = cBd,
+                BorderThickness = new Thickness(1),
+                Padding = new Thickness(12, 4),
                 Margin = new Thickness(2),
-                CornerRadius = new CornerRadius(4),
+                CornerRadius = new CornerRadius(999),
                 Cursor = new Cursor(StandardCursorType.Hand),
                 MinWidth = 72, MinHeight = 0,
                 HorizontalContentAlignment = HorizontalAlignment.Center,
