@@ -9,6 +9,7 @@ using ClosedXML.Excel;
 using ETA.Models;
 using ETA.Services.SERVICE2;
 using ETA.Views;
+using ETA.Views.Controls;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -58,6 +59,16 @@ public partial class ProcessingFacilityPage : UserControl
         InitializeComponent();
         dpDate.SelectedDate = DateTime.Today;
         LoadFacilityButtons();
+        SeedTodayCards();
+    }
+
+    private void SeedTodayCards()
+    {
+        TodayCards.Children.Add(LoadingCard.Live("BOD", "4.2 mg/L", 1.0, BadgeStatus.Ok));
+        TodayCards.Children.Add(LoadingCard.Live("TOC", "8.4",      1.0, BadgeStatus.Ok));
+        TodayCards.Children.Add(LoadingCard.Live("T-N", "12.3",     1.0, BadgeStatus.Warn));
+        TodayCards.Children.Add(LoadingCard.Skeleton("SS"));
+        TodayCards.Children.Add(LoadingCard.Live("대장균", "—",     0.0, BadgeStatus.Muted));
     }
 
     // =========================================================================
