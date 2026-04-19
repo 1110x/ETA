@@ -15,6 +15,7 @@ using ETA.Services.SERVICE2;
 using ETA.Services.Common;
 using ETA.Services.Common;
 using ETA.Views;
+using ETA.Views.Controls;
 
 namespace ETA.Views.Pages.PAGE2;
 
@@ -420,14 +421,17 @@ public partial class WasteSampleListPage : UserControl
 
             // + 업체 추가 버튼
             var gk = groupKey;
+            var (aBg, aFg, aBd) = StatusBadge.GetBrushes(BadgeStatus.Ok);
             var addBtn = new Button
             {
                 Content = $"+ {groupKey} 업체 추가",
-                Height = 24, FontSize = AppTheme.FontSM, FontFamily = Font,
-                Background = AppTheme.BgActiveGreen, Foreground = AppTheme.FgSuccess,
-                BorderThickness = new Thickness(1), BorderBrush = AppTheme.BorderActive,
-                CornerRadius = new CornerRadius(4), Padding = new Thickness(10, 0),
+                Height = 26, FontSize = AppTheme.FontSM, FontFamily = Font,
+                FontWeight = FontWeight.SemiBold,
+                Background = aBg, Foreground = aFg, BorderBrush = aBd,
+                BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(999), Padding = new Thickness(14, 0),
                 Margin = new Thickness(0, 2, 0, 8),
+                Cursor = new Cursor(StandardCursorType.Hand),
             };
             addBtn.Click += (_, _) => ShowAddCompanyDialog(date, gk);
             root.Children.Add(addBtn);
@@ -776,19 +780,23 @@ public partial class WasteSampleListPage : UserControl
             Height = 32, FontSize = AppTheme.FontMD, FontFamily = Font,
         };
 
+        var (okBg, okFg, okBd) = StatusBadge.GetBrushes(BadgeStatus.Ok);
+        var (muBg, muFg, muBd) = StatusBadge.GetBrushes(BadgeStatus.Muted);
         var btnOk = new Button
         {
-            Content = "추가", Width = 80, Height = 30,
-            Background = AppTheme.BgActiveGreen, Foreground = AppTheme.FgSuccess,
-            BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
-            FontFamily = Font, FontSize = AppTheme.FontMD,
+            Content = "추가", Width = 88, Height = 30,
+            Background = okBg, Foreground = okFg, BorderBrush = okBd,
+            BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(999),
+            FontFamily = Font, FontSize = AppTheme.FontMD, FontWeight = FontWeight.SemiBold,
+            Cursor = new Cursor(StandardCursorType.Hand),
         };
         var btnCancel = new Button
         {
-            Content = "취소", Width = 80, Height = 30,
-            Background = AppTheme.BorderSubtle, Foreground = AppTheme.FgMuted,
-            BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
+            Content = "취소", Width = 88, Height = 30,
+            Background = muBg, Foreground = muFg, BorderBrush = muBd,
+            BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(999),
             FontFamily = Font, FontSize = AppTheme.FontMD,
+            Cursor = new Cursor(StandardCursorType.Hand),
         };
 
         btnOk.Click += (_, _) =>
@@ -854,13 +862,16 @@ public partial class WasteSampleListPage : UserControl
             FontFamily = Font, FontSize = AppTheme.FontMD,
         };
 
+        var (cBg, cFg, cBd) = StatusBadge.GetBrushes(BadgeStatus.Ok);
         var btnCreate = new Button
         {
             Content = "날짜 생성",
             Height = 30, FontSize = AppTheme.FontMD, FontFamily = Font,
-            Background = AppTheme.BgActiveGreen, Foreground = AppTheme.FgSuccess,
-            BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
-            Padding = new Thickness(16, 0),
+            FontWeight = FontWeight.SemiBold,
+            Background = cBg, Foreground = cFg, BorderBrush = cBd,
+            BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(999),
+            Padding = new Thickness(18, 0),
+            Cursor = new Cursor(StandardCursorType.Hand),
         };
         btnCreate.Click += (_, _) =>
         {
