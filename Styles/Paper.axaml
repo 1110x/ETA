@@ -80,7 +80,7 @@
         <Setter Property="BorderThickness" Value="1.5"/>
         <Setter Property="CornerRadius"    Value="6"/>
         <Setter Property="Padding"         Value="12"/>
-        <Setter Property="BoxShadow"       Value="4 4 0 0 #2a2a2a"/>
+        <Setter Property="BoxShadow"       Value="4 4 0 0 #d4c9a8"/>
     </Style>
 
     <!-- 얕은 카드 (그림자 없음) -->
@@ -97,6 +97,7 @@
         <Setter Property="Background"      Value="{DynamicResource PaperHeader}"/>
         <Setter Property="BorderBrush"     Value="{DynamicResource PaperInk}"/>
         <Setter Property="BorderThickness" Value="0,0,0,1.2"/>
+        <Setter Property="CornerRadius"    Value="4.5,4.5,0,0"/>
         <Setter Property="Padding"         Value="10,6"/>
     </Style>
 
@@ -217,7 +218,7 @@
     </Style>
     <Style Selector="Button.primary /template/ ContentPresenter">
         <Setter Property="Background"  Value="{DynamicResource PaperAccent}"/>
-        <Setter Property="BoxShadow"   Value="3 3 0 0 #2a2a2a"/>
+        <Setter Property="BoxShadow"   Value="3 3 0 0 #d4c9a8"/>
         <Setter Property="CornerRadius" Value="6"/>
     </Style>
     <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
@@ -298,7 +299,7 @@
         <Setter Property="BorderThickness" Value="1.2"/>
         <Setter Property="CornerRadius"    Value="5"/>
         <Setter Property="Padding"         Value="8"/>
-        <Setter Property="BoxShadow"       Value="2 2 0 0 #2a2a2a"/>
+        <Setter Property="BoxShadow"       Value="2 2 0 0 #d4c9a8"/>
     </Style>
 
     <!--  =========================================================

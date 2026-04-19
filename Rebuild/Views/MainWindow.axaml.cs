@@ -36,6 +36,7 @@ public partial class MainWindow : Window
         host.Content = (btn.Tag as string) switch
         {
             "home"     => new HomePage(),
+            "input"    => new InputPage(),
             _          => new ComingSoonPage(btn.Content?.ToString() ?? "?"),
         };
     }
