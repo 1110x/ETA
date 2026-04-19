@@ -1,0 +1,326 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Styles.Resources>
+        <ResourceDictionary>
+
+            <!--  =====================================================
+                  PAPER · 종이 노트북 테마 토큰
+                  HTML 와이어프레임 (01-09 전 페이지) 기반
+                  ===================================================== -->
+
+            <!-- 배경 -->
+            <SolidColorBrush x:Key="PaperBg"         Color="#f6f4ee"/>
+            <SolidColorBrush x:Key="PaperCard"       Color="#fffdf7"/>
+            <SolidColorBrush x:Key="PaperHeader"     Color="#f0ead6"/>
+            <SolidColorBrush x:Key="PaperRowAlt"     Color="#faf6e7"/>
+            <SolidColorBrush x:Key="PaperSelected"   Color="#fff3a8"/>
+
+            <!-- 섹션 파스텔 -->
+            <SolidColorBrush x:Key="PaperSecA"       Color="#fffef0"/>
+            <SolidColorBrush x:Key="PaperSecB"       Color="#f0faf0"/>
+            <SolidColorBrush x:Key="PaperSecC"       Color="#fff5ec"/>
+            <SolidColorBrush x:Key="PaperSecD"       Color="#ffecec"/>
+            <SolidColorBrush x:Key="PaperSecE"       Color="#ecf4fb"/>
+
+            <!-- 전경 -->
+            <SolidColorBrush x:Key="PaperFgTitle"    Color="#1a1a1a"/>
+            <SolidColorBrush x:Key="PaperFgBody"     Color="#333333"/>
+            <SolidColorBrush x:Key="PaperFgMuted"    Color="#888888"/>
+            <SolidColorBrush x:Key="PaperFgDim"      Color="#aaaaaa"/>
+
+            <!-- 잉크 보더 -->
+            <SolidColorBrush x:Key="PaperInk"        Color="#2a2a2a"/>
+            <SolidColorBrush x:Key="PaperInkSoft"    Color="#d8d8d8"/>
+            <SolidColorBrush x:Key="PaperInkHair"    Color="#bfbfbf"/>
+
+            <!-- 강조 (단 하나) -->
+            <SolidColorBrush x:Key="PaperAccent"     Color="#ff6a3d"/>
+            <SolidColorBrush x:Key="PaperAccentBg"   Color="#ffe2d6"/>
+
+            <!-- 상태 -->
+            <SolidColorBrush x:Key="PaperOkBg"       Color="#d9f0e3"/>
+            <SolidColorBrush x:Key="PaperOkBgSoft"   Color="#edf8f1"/>
+            <SolidColorBrush x:Key="PaperOkFg"       Color="#1f5f1f"/>
+            <SolidColorBrush x:Key="PaperWarnBg"     Color="#fdf3d8"/>
+            <SolidColorBrush x:Key="PaperWarnBgHot"  Color="#ffd09b"/>
+            <SolidColorBrush x:Key="PaperWarnFg"     Color="#7a5200"/>
+            <SolidColorBrush x:Key="PaperBadBg"      Color="#ffd7d4"/>
+            <SolidColorBrush x:Key="PaperBadBgSoft"  Color="#f9e2e2"/>
+            <SolidColorBrush x:Key="PaperBadFg"      Color="#8a1f1f"/>
+            <SolidColorBrush x:Key="PaperInfoBg"     Color="#cfe6ff"/>
+            <SolidColorBrush x:Key="PaperInfoBgSoft" Color="#e9f2ff"/>
+            <SolidColorBrush x:Key="PaperInfoFg"     Color="#1a4a7a"/>
+            <SolidColorBrush x:Key="PaperMuteBg"     Color="#eeeeee"/>
+            <SolidColorBrush x:Key="PaperMuteFg"     Color="#555555"/>
+
+            <!-- 폰트: Pretendard 기본 + 손그림 폴백 체인 -->
+            <FontFamily x:Key="PaperFont">avares://ETA/Assets/Fonts#Pretendard</FontFamily>
+            <FontFamily x:Key="PaperFontMono">Consolas,Menlo,monospace</FontFamily>
+
+        </ResourceDictionary>
+    </Styles.Resources>
+
+    <!--  =========================================================
+          Window 기본 배경 · 페이지 배경
+          ========================================================= -->
+    <Style Selector="Window">
+        <Setter Property="Background" Value="{DynamicResource PaperBg}"/>
+        <Setter Property="FontFamily" Value="{DynamicResource PaperFont}"/>
+        <Setter Property="Foreground" Value="{DynamicResource PaperFgBody}"/>
+    </Style>
+
+    <!--  =========================================================
+          카드 · .card
+          손그림 잉크 보더 1.5px + 4px offset solid 그림자
+          ========================================================= -->
+    <Style Selector="Border.card">
+        <Setter Property="Background"      Value="{DynamicResource PaperCard}"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource PaperInk}"/>
+        <Setter Property="BorderThickness" Value="1.5"/>
+        <Setter Property="CornerRadius"    Value="6"/>
+        <Setter Property="Padding"         Value="12"/>
+        <Setter Property="BoxShadow"       Value="4 4 0 0 #2a2a2a"/>
+    </Style>
+
+    <!-- 얕은 카드 (그림자 없음) -->
+    <Style Selector="Border.card-flat">
+        <Setter Property="Background"      Value="{DynamicResource PaperCard}"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource PaperInk}"/>
+        <Setter Property="BorderThickness" Value="1.5"/>
+        <Setter Property="CornerRadius"    Value="6"/>
+        <Setter Property="Padding"         Value="10"/>
+    </Style>
+
+    <!-- 헤더 (카드 상단 · 베이지) -->
+    <Style Selector="Border.card-head">
+        <Setter Property="Background"      Value="{DynamicResource PaperHeader}"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource PaperInk}"/>
+        <Setter Property="BorderThickness" Value="0,0,0,1.2"/>
+        <Setter Property="Padding"         Value="10,6"/>
+    </Style>
+
+    <!--  =========================================================
+          섹션 태그 A/B/C/D/E (사각 뱃지)
+          ========================================================= -->
+    <Style Selector="Border.sectag">
+        <Setter Property="Background"      Value="{DynamicResource PaperCard}"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource PaperInk}"/>
+        <Setter Property="BorderThickness" Value="1.5"/>
+        <Setter Property="CornerRadius"    Value="4"/>
+        <Setter Property="Width"           Value="28"/>
+        <Setter Property="Height"          Value="28"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+    <Style Selector="Border.sectag > TextBlock">
+        <Setter Property="FontSize"           Value="14"/>
+        <Setter Property="FontWeight"         Value="Bold"/>
+        <Setter Property="Foreground"         Value="{DynamicResource PaperFgTitle}"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment"   Value="Center"/>
+    </Style>
+
+    <!--  =========================================================
+          타이틀 · 서브 · 본문 텍스트
+          ========================================================= -->
+    <Style Selector="TextBlock.h1">
+        <Setter Property="FontSize"   Value="22"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Foreground" Value="{DynamicResource PaperFgTitle}"/>
+    </Style>
+    <Style Selector="TextBlock.h2">
+        <Setter Property="FontSize"   Value="16"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Foreground" Value="{DynamicResource PaperFgTitle}"/>
+    </Style>
+    <Style Selector="TextBlock.h3">
+        <Setter Property="FontSize"   Value="13"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Foreground" Value="{DynamicResource PaperFgTitle}"/>
+    </Style>
+    <Style Selector="TextBlock.body">
+        <Setter Property="FontSize"   Value="11"/>
+        <Setter Property="Foreground" Value="{DynamicResource PaperFgBody}"/>
+    </Style>
+    <Style Selector="TextBlock.muted">
+        <Setter Property="FontSize"   Value="11"/>
+        <Setter Property="Foreground" Value="{DynamicResource PaperFgMuted}"/>
+    </Style>
+    <Style Selector="TextBlock.sub">
+        <Setter Property="FontSize"   Value="10"/>
+        <Setter Property="Foreground" Value="{DynamicResource PaperFgMuted}"/>
+    </Style>
+    <Style Selector="TextBlock.mono">
+        <Setter Property="FontFamily" Value="{DynamicResource PaperFontMono}"/>
+    </Style>
+
+    <!--  =========================================================
+          Chip / Pill / StatusBadge
+          ========================================================= -->
+    <Style Selector="Border.chip">
+        <Setter Property="BorderBrush"     Value="{DynamicResource PaperInk}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius"    Value="999"/>
+        <Setter Property="Padding"         Value="8,2"/>
+        <Setter Property="Background"      Value="{DynamicResource PaperCard}"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+    <Style Selector="Border.chip > TextBlock">
+        <Setter Property="FontSize"   Value="10"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+
+    <Style Selector="Border.chip.ok">
+        <Setter Property="Background" Value="{DynamicResource PaperOkBg}"/>
+    </Style>
+    <Style Selector="Border.chip.ok > TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource PaperOkFg}"/>
+    </Style>
+    <Style Selector="Border.chip.warn">
+        <Setter Property="Background" Value="{DynamicResource PaperWarnBg}"/>
+    </Style>
+    <Style Selector="Border.chip.warn > TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource PaperWarnFg}"/>
+    </Style>
+    <Style Selector="Border.chip.bad">
+        <Setter Property="Background" Value="{DynamicResource PaperBadBg}"/>
+    </Style>
+    <Style Selector="Border.chip.bad > TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource PaperBadFg}"/>
+    </Style>
+    <Style Selector="Border.chip.info">
+        <Setter Property="Background" Value="{DynamicResource PaperInfoBg}"/>
+    </Style>
+    <Style Selector="Border.chip.info > TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource PaperInfoFg}"/>
+    </Style>
+    <Style Selector="Border.chip.mute">
+        <Setter Property="Background" Value="{DynamicResource PaperMuteBg}"/>
+    </Style>
+    <Style Selector="Border.chip.mute > TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource PaperMuteFg}"/>
+    </Style>
+
+    <!--  =========================================================
+          Button · 주요 오렌지 / 서브 고스트
+          ========================================================= -->
+    <Style Selector="Button.primary">
+        <Setter Property="Background"      Value="{DynamicResource PaperAccent}"/>
+        <Setter Property="Foreground"      Value="#1a1a1a"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource PaperInk}"/>
+        <Setter Property="BorderThickness" Value="1.5"/>
+        <Setter Property="CornerRadius"    Value="6"/>
+        <Setter Property="Padding"         Value="14,6"/>
+        <Setter Property="FontWeight"      Value="Bold"/>
+        <Setter Property="FontSize"        Value="12"/>
+        <Setter Property="Cursor"          Value="Hand"/>
+    </Style>
+    <Style Selector="Button.primary /template/ ContentPresenter">
+        <Setter Property="Background"  Value="{DynamicResource PaperAccent}"/>
+        <Setter Property="BoxShadow"   Value="3 3 0 0 #2a2a2a"/>
+        <Setter Property="CornerRadius" Value="6"/>
+    </Style>
+    <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="#ff8c66"/>
+    </Style>
+
+    <Style Selector="Button.ghost">
+        <Setter Property="Background"      Value="{DynamicResource PaperCard}"/>
+        <Setter Property="Foreground"      Value="{DynamicResource PaperFgTitle}"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource PaperInk}"/>
+        <Setter Property="BorderThickness" Value="1.2"/>
+        <Setter Property="CornerRadius"    Value="6"/>
+        <Setter Property="Padding"         Value="10,4"/>
+        <Setter Property="FontSize"        Value="11"/>
+        <Setter Property="Cursor"          Value="Hand"/>
+    </Style>
+    <Style Selector="Button.ghost:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource PaperRowAlt}"/>
+    </Style>
+
+    <!--  =========================================================
+          Keyboard shortcut pill · kbd
+          ========================================================= -->
+    <Style Selector="Border.kbd">
+        <Setter Property="Background"      Value="{DynamicResource PaperHeader}"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource PaperInk}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius"    Value="4"/>
+        <Setter Property="Padding"         Value="6,1"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+    <Style Selector="Border.kbd > TextBlock">
+        <Setter Property="FontFamily" Value="{DynamicResource PaperFontMono}"/>
+        <Setter Property="FontSize"   Value="10"/>
+        <Setter Property="Foreground" Value="{DynamicResource PaperFgTitle}"/>
+    </Style>
+
+    <!--  =========================================================
+          타임라인 스텝 번호 원형
+          ========================================================= -->
+    <Style Selector="Border.step">
+        <Setter Property="Width"           Value="28"/>
+        <Setter Property="Height"          Value="28"/>
+        <Setter Property="CornerRadius"    Value="14"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource PaperInk}"/>
+        <Setter Property="BorderThickness" Value="1.5"/>
+        <Setter Property="Background"      Value="{DynamicResource PaperCard}"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+    <Style Selector="Border.step.done">
+        <Setter Property="Background" Value="{DynamicResource PaperOkBg}"/>
+    </Style>
+    <Style Selector="Border.step.now">
+        <Setter Property="Background" Value="{DynamicResource PaperAccent}"/>
+    </Style>
+    <Style Selector="Border.step > TextBlock">
+        <Setter Property="FontSize"            Value="12"/>
+        <Setter Property="FontWeight"          Value="Bold"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment"   Value="Center"/>
+    </Style>
+
+    <!--  =========================================================
+          DashedDivider · 점선 구분
+          ========================================================= -->
+    <Style Selector="Border.dashed">
+        <Setter Property="BorderBrush"     Value="{DynamicResource PaperInk}"/>
+        <Setter Property="BorderThickness" Value="0,0,0,1.2"/>
+        <Setter Property="Height"          Value="1"/>
+    </Style>
+
+    <!--  =========================================================
+          Kanban ticket · 칸반 카드
+          ========================================================= -->
+    <Style Selector="Border.ticket">
+        <Setter Property="Background"      Value="{DynamicResource PaperCard}"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource PaperInk}"/>
+        <Setter Property="BorderThickness" Value="1.2"/>
+        <Setter Property="CornerRadius"    Value="5"/>
+        <Setter Property="Padding"         Value="8"/>
+        <Setter Property="BoxShadow"       Value="2 2 0 0 #2a2a2a"/>
+    </Style>
+
+    <!--  =========================================================
+          Top nav tab
+          ========================================================= -->
+    <Style Selector="Button.navtab">
+        <Setter Property="Background"      Value="Transparent"/>
+        <Setter Property="Foreground"      Value="{DynamicResource PaperFgBody}"/>
+        <Setter Property="BorderBrush"     Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0,0,0,2"/>
+        <Setter Property="Padding"         Value="12,8"/>
+        <Setter Property="FontSize"        Value="12"/>
+        <Setter Property="FontWeight"      Value="SemiBold"/>
+        <Setter Property="CornerRadius"    Value="0"/>
+        <Setter Property="Cursor"          Value="Hand"/>
+    </Style>
+    <Style Selector="Button.navtab:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource PaperRowAlt}"/>
+    </Style>
+    <Style Selector="Button.navtab.active">
+        <Setter Property="BorderBrush"     Value="{DynamicResource PaperAccent}"/>
+        <Setter Property="Foreground"      Value="{DynamicResource PaperFgTitle}"/>
+    </Style>
+
+</Styles>

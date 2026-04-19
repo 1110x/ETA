@@ -1,0 +1,368 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ETA.Rebuild.Views.HomePage">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled"
+                  Background="{DynamicResource PaperBg}">
+        <StackPanel Margin="20" Spacing="20" MaxWidth="1600">
+
+            <!--  ═══════════════════════════════════════════════════════
+                  페이지 타이틀
+                  ═══════════════════════════════════════════════════════ -->
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBlock Text="홈" Classes="h1"/>
+                <TextBlock Text="· 오늘 할 일과 시료가 지금 어디쯤"
+                           Classes="muted" VerticalAlignment="Bottom" Margin="4,0,0,5"/>
+                <StackPanel Orientation="Horizontal" Spacing="6"
+                            HorizontalAlignment="Right"
+                            Margin="20,0,0,0" VerticalAlignment="Center">
+                    <Border Classes="kbd"><TextBlock Text="Ctrl+1"/></Border>
+                    <TextBlock Text="A·오늘+칸반 (현재)" Classes="sub" VerticalAlignment="Center"/>
+                    <Border Classes="kbd" Margin="10,0,0,0"><TextBlock Text="Ctrl+2"/></Border>
+                    <TextBlock Text="B·대시보드" Classes="sub" VerticalAlignment="Center"/>
+                    <Border Classes="kbd" Margin="10,0,0,0"><TextBlock Text="Ctrl+3"/></Border>
+                    <TextBlock Text="C·타임라인" Classes="sub" VerticalAlignment="Center"/>
+                </StackPanel>
+            </StackPanel>
+
+            <!--  ═══════════════════════════════════════════════════════
+                  A · 오늘 할 일 · 타임라인 + 사이드 카드
+                  ═══════════════════════════════════════════════════════ -->
+            <StackPanel Spacing="10">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <Border Classes="sectag"><TextBlock Text="A"/></Border>
+                    <TextBlock Classes="h2" Text="오늘 할 일"/>
+                    <TextBlock Classes="muted" Text="· 2026-04-19 (일)"
+                               VerticalAlignment="Center" Margin="6,0,0,0"/>
+                    <TextBlock Classes="sub" Text="· 5건 완료 / 9건 남음"
+                               VerticalAlignment="Center" Margin="10,0,0,0"/>
+                </StackPanel>
+
+                <Grid ColumnDefinitions="*,16,340">
+
+                    <!-- 좌 · 타임라인 카드 -->
+                    <Border Grid.Column="0" Classes="card" Background="{DynamicResource PaperSecA}">
+                        <StackPanel Spacing="14">
+
+                            <!-- step row · 템플릿 반복 -->
+                            <Grid ColumnDefinitions="Auto,12,*,Auto">
+                                <Border Grid.Column="0" Classes="step done"><TextBlock Text="1"/></Border>
+                                <StackPanel Grid.Column="2" Spacing="2">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBlock Text="08:30" Classes="mono muted" FontSize="10"/>
+                                        <TextBlock Text="현장 출발 · 여수산단" Classes="body" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                    <TextBlock Text="냉각탑 #W10 방류수 채수 · 3시료"
+                                               Classes="sub"/>
+                                </StackPanel>
+                                <Border Grid.Column="3" Classes="chip ok" VerticalAlignment="Center">
+                                    <TextBlock Text="완료"/>
+                                </Border>
+                            </Grid>
+                            <Border Classes="dashed"/>
+
+                            <Grid ColumnDefinitions="Auto,12,*,Auto">
+                                <Border Grid.Column="0" Classes="step done"><TextBlock Text="2"/></Border>
+                                <StackPanel Grid.Column="2" Spacing="2">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBlock Text="11:10" Classes="mono muted" FontSize="10"/>
+                                        <TextBlock Text="접수 · SN-20260419-007~009" Classes="body" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                    <TextBlock Text="CNT생산팀 Cooling Tower 20"
+                                               Classes="sub"/>
+                                </StackPanel>
+                                <Border Grid.Column="3" Classes="chip ok" VerticalAlignment="Center">
+                                    <TextBlock Text="완료"/>
+                                </Border>
+                            </Grid>
+                            <Border Classes="dashed"/>
+
+                            <Grid ColumnDefinitions="Auto,12,*,Auto">
+                                <Border Grid.Column="0" Classes="step now"><TextBlock Text="3"/></Border>
+                                <StackPanel Grid.Column="2" Spacing="2">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBlock Text="13:20" Classes="mono muted" FontSize="10"/>
+                                        <TextBlock Text="전처리 · BOD₅ 희석" Classes="body" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                    <TextBlock Text="SN-007 x3 · 희석배수 1/50"
+                                               Classes="sub"/>
+                                </StackPanel>
+                                <Border Grid.Column="3" Classes="chip warn" VerticalAlignment="Center">
+                                    <TextBlock Text="진행중"/>
+                                </Border>
+                            </Grid>
+                            <Border Classes="dashed"/>
+
+                            <Grid ColumnDefinitions="Auto,12,*,Auto">
+                                <Border Grid.Column="0" Classes="step"><TextBlock Text="4"/></Border>
+                                <StackPanel Grid.Column="2" Spacing="2">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBlock Text="15:00" Classes="mono muted" FontSize="10"/>
+                                        <TextBlock Text="GCMS · 미량유해물질 6종" Classes="body" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                    <TextBlock Text="SN-005,006 · 예약 슬롯 #A"
+                                               Classes="sub"/>
+                                </StackPanel>
+                                <Border Grid.Column="3" Classes="chip mute" VerticalAlignment="Center">
+                                    <TextBlock Text="대기"/>
+                                </Border>
+                            </Grid>
+                            <Border Classes="dashed"/>
+
+                            <Grid ColumnDefinitions="Auto,12,*,Auto">
+                                <Border Grid.Column="0" Classes="step"><TextBlock Text="5"/></Border>
+                                <StackPanel Grid.Column="2" Spacing="2">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBlock Text="17:30" Classes="mono muted" FontSize="10"/>
+                                        <TextBlock Text="결과 입력 마감 · 3건" Classes="body" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                    <TextBlock Text="BOD, COD, TOC — 오늘 입력해야 내일 성적서 나감"
+                                               Classes="sub"/>
+                                </StackPanel>
+                                <Border Grid.Column="3" Classes="chip bad" VerticalAlignment="Center">
+                                    <TextBlock Text="마감"/>
+                                </Border>
+                            </Grid>
+
+                        </StackPanel>
+                    </Border>
+
+                    <!-- 우 · 사이드 카드 -->
+                    <StackPanel Grid.Column="2" Spacing="12">
+
+                        <Border Classes="card" Background="{DynamicResource PaperSecE}">
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="📆 이번 주" Classes="h3"/>
+                                <Grid ColumnDefinitions="*,*,*,*,*,*,*" RowDefinitions="Auto,Auto">
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="월" Classes="sub" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="화" Classes="sub" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="수" Classes="sub" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="3" Text="목" Classes="sub" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="4" Text="금" Classes="sub" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="5" Text="토" Classes="sub" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="6" Text="일" Classes="sub" HorizontalAlignment="Center" Foreground="#b13838"/>
+
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="13" Classes="body mono" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="14" Classes="body mono" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="15" Classes="body mono" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="3" Text="16" Classes="body mono" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="4" Text="17" Classes="body mono" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="5" Text="18" Classes="body mono" HorizontalAlignment="Center"/>
+                                    <Border    Grid.Row="1" Grid.Column="6"
+                                               Background="{DynamicResource PaperAccent}"
+                                               CornerRadius="12" Width="22" Height="22"
+                                               HorizontalAlignment="Center">
+                                        <TextBlock Text="19" Foreground="#1a1a1a" FontWeight="Bold"
+                                                   FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Classes="card" Background="{DynamicResource PaperSecB}">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="✅ 오늘의 진척" Classes="h3"/>
+                                <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                                    <TextBlock Text="56%" FontSize="28" FontWeight="Bold"
+                                               Foreground="{DynamicResource PaperOkFg}"
+                                               Classes="mono"/>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="5 / 9 완료" Classes="body"/>
+                                        <TextBlock Text="전주 평균 62%보다 -6" Classes="sub"/>
+                                    </StackPanel>
+                                </StackPanel>
+                                <Border Background="{DynamicResource PaperInkSoft}" Height="6" CornerRadius="3">
+                                    <Border Background="{DynamicResource PaperOkFg}"
+                                            Height="6" CornerRadius="3"
+                                            HorizontalAlignment="Left" Width="180"/>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Classes="card" Background="{DynamicResource PaperSecD}">
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="⚠ 마감 임박" Classes="h3"/>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Border Classes="chip bad"><TextBlock Text="D-0"/></Border>
+                                    <TextBlock Text="BOD 결과 3건 · 17:30" Classes="body" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Border Classes="chip warn"><TextBlock Text="D-1"/></Border>
+                                    <TextBlock Text="성적서 발송 · 5건" Classes="body" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Border Classes="chip mute"><TextBlock Text="D-3"/></Border>
+                                    <TextBlock Text="TMS 월간 리포트" Classes="body" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <Button Classes="primary" HorizontalAlignment="Stretch"
+                                Content="💾  결과 입력 시작 (Ctrl+N)"/>
+
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+
+            <!--  ═══════════════════════════════════════════════════════
+                  B · 파이프라인 칸반
+                  채수 → 접수 → 분석 → 입력 → 완료
+                  ═══════════════════════════════════════════════════════ -->
+            <StackPanel Spacing="10">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <Border Classes="sectag"><TextBlock Text="B"/></Border>
+                    <TextBlock Classes="h2" Text='Pipeline · "시료가 지금 어디쯤?"'/>
+                    <TextBlock Classes="muted" Text="채수 → 접수 → 분석 → 입력 → 완료 · 총 47건"
+                               VerticalAlignment="Center" Margin="6,0,0,0"/>
+                </StackPanel>
+
+                <Border Classes="card" Background="{DynamicResource PaperSecC}">
+                    <Grid ColumnDefinitions="*,8,*,8,*,8,*,8,*">
+
+                        <!-- 채수 -->
+                        <StackPanel Grid.Column="0" Spacing="8">
+                            <Border Classes="card-head">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Grid.Column="0" Text="💧 채수 대기" Classes="h3"/>
+                                    <Border Grid.Column="1" Classes="chip info"><TextBlock Text="10"/></Border>
+                                </Grid>
+                            </Border>
+                            <Border Classes="ticket">
+                                <StackPanel Spacing="3">
+                                    <TextBlock Text="SN-20260419-010" Classes="mono" FontSize="11" FontWeight="Bold"/>
+                                    <TextBlock Text="율촌처리장 · 방류수" Classes="sub"/>
+                                    <TextBlock Text="예정 14:30" Classes="sub"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Classes="ticket">
+                                <StackPanel Spacing="3">
+                                    <TextBlock Text="SN-20260419-011" Classes="mono" FontSize="11" FontWeight="Bold"/>
+                                    <TextBlock Text="월내사업소 · 폐수" Classes="sub"/>
+                                    <TextBlock Text="예정 15:00" Classes="sub"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Classes="ticket">
+                                <StackPanel Spacing="3">
+                                    <TextBlock Text="SN-20260419-012" Classes="mono" FontSize="11" FontWeight="Bold"/>
+                                    <TextBlock Text="중흥사업소 · 방류수" Classes="sub"/>
+                                    <TextBlock Text="예정 16:00" Classes="sub"/>
+                                </StackPanel>
+                            </Border>
+                            <TextBlock Text="+ 7개 더" Classes="sub" HorizontalAlignment="Center"/>
+                        </StackPanel>
+
+                        <!-- 접수 -->
+                        <StackPanel Grid.Column="2" Spacing="8">
+                            <Border Classes="card-head" Background="{DynamicResource PaperInfoBgSoft}">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Grid.Column="0" Text="📥 접수" Classes="h3"/>
+                                    <Border Grid.Column="1" Classes="chip info"><TextBlock Text="8"/></Border>
+                                </Grid>
+                            </Border>
+                            <Border Classes="ticket" Background="{DynamicResource PaperInfoBgSoft}">
+                                <StackPanel Spacing="3">
+                                    <TextBlock Text="SN-20260419-007" Classes="mono" FontSize="11" FontWeight="Bold"/>
+                                    <TextBlock Text="CNT·Cooling Tower 20" Classes="sub"/>
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <Border Classes="chip info"><TextBlock Text="신규"/></Border>
+                                        <TextBlock Text="11:10" Classes="sub" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                            <Border Classes="ticket" Background="{DynamicResource PaperInfoBgSoft}">
+                                <StackPanel Spacing="3">
+                                    <TextBlock Text="SN-20260419-008" Classes="mono" FontSize="11" FontWeight="Bold"/>
+                                    <TextBlock Text="CNT·Cooling Tower 20" Classes="sub"/>
+                                    <TextBlock Text="11:10" Classes="sub"/>
+                                </StackPanel>
+                            </Border>
+                            <TextBlock Text="+ 6개 더" Classes="sub" HorizontalAlignment="Center"/>
+                        </StackPanel>
+
+                        <!-- 분석 -->
+                        <StackPanel Grid.Column="4" Spacing="8">
+                            <Border Classes="card-head" Background="{DynamicResource PaperWarnBg}">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Grid.Column="0" Text="🧪 분석 중" Classes="h3"/>
+                                    <Border Grid.Column="1" Classes="chip warn"><TextBlock Text="18"/></Border>
+                                </Grid>
+                            </Border>
+                            <Border Classes="ticket" Background="{DynamicResource PaperWarnBg}">
+                                <StackPanel Spacing="3">
+                                    <TextBlock Text="SN-007 BOD₅" Classes="mono" FontSize="11" FontWeight="Bold"/>
+                                    <TextBlock Text="희석 1/50 · D2 day1/5" Classes="sub"/>
+                                    <Border Classes="chip warn"><TextBlock Text="진행중"/></Border>
+                                </StackPanel>
+                            </Border>
+                            <Border Classes="ticket" Background="{DynamicResource PaperWarnBg}">
+                                <StackPanel Spacing="3">
+                                    <TextBlock Text="SN-005 COD" Classes="mono" FontSize="11" FontWeight="Bold"/>
+                                    <TextBlock Text="적정 진행" Classes="sub"/>
+                                    <TextBlock Text="11:45 시작" Classes="sub"/>
+                                </StackPanel>
+                            </Border>
+                            <TextBlock Text="+ 16개 더" Classes="sub" HorizontalAlignment="Center"/>
+                        </StackPanel>
+
+                        <!-- 입력 -->
+                        <StackPanel Grid.Column="6" Spacing="8">
+                            <Border Classes="card-head" Background="{DynamicResource PaperBadBgSoft}">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Grid.Column="0" Text="✍ 입력 대기" Classes="h3"/>
+                                    <Border Grid.Column="1" Classes="chip bad"><TextBlock Text="6"/></Border>
+                                </Grid>
+                            </Border>
+                            <Border Classes="ticket" Background="{DynamicResource PaperBadBgSoft}">
+                                <StackPanel Spacing="3">
+                                    <TextBlock Text="SN-001 BOD" Classes="mono" FontSize="11" FontWeight="Bold"/>
+                                    <TextBlock Text="여수산단 · D-0 17:30" Classes="sub"/>
+                                    <Border Classes="chip bad"><TextBlock Text="마감임박"/></Border>
+                                </StackPanel>
+                            </Border>
+                            <Border Classes="ticket" Background="{DynamicResource PaperBadBgSoft}">
+                                <StackPanel Spacing="3">
+                                    <TextBlock Text="SN-002 COD" Classes="mono" FontSize="11" FontWeight="Bold"/>
+                                    <TextBlock Text="여수산단 · D-0 17:30" Classes="sub"/>
+                                </StackPanel>
+                            </Border>
+                            <TextBlock Text="+ 4개 더" Classes="sub" HorizontalAlignment="Center"/>
+                        </StackPanel>
+
+                        <!-- 완료 -->
+                        <StackPanel Grid.Column="8" Spacing="8">
+                            <Border Classes="card-head" Background="{DynamicResource PaperOkBgSoft}">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Grid.Column="0" Text="✅ 완료" Classes="h3"/>
+                                    <Border Grid.Column="1" Classes="chip ok"><TextBlock Text="5"/></Border>
+                                </Grid>
+                            </Border>
+                            <Border Classes="ticket" Background="{DynamicResource PaperOkBgSoft}">
+                                <StackPanel Spacing="3">
+                                    <TextBlock Text="SN-20260418-022" Classes="mono" FontSize="11" FontWeight="Bold"/>
+                                    <TextBlock Text="율촌·방류수" Classes="sub"/>
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <Border Classes="chip ok"><TextBlock Text="성적서"/></Border>
+                                        <TextBlock Text="발송 대기" Classes="sub" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                            <Border Classes="ticket" Background="{DynamicResource PaperOkBgSoft}">
+                                <StackPanel Spacing="3">
+                                    <TextBlock Text="SN-20260418-023" Classes="mono" FontSize="11" FontWeight="Bold"/>
+                                    <TextBlock Text="중흥·방류수" Classes="sub"/>
+                                </StackPanel>
+                            </Border>
+                            <TextBlock Text="+ 3개 더" Classes="sub" HorizontalAlignment="Center"/>
+                        </StackPanel>
+
+                    </Grid>
+                </Border>
+
+                <TextBlock Text="← drag &amp; drop으로 상태 이동 · SN 클릭 → 상세 패널 열기"
+                           Classes="sub" Margin="4,0,0,0"/>
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -1,0 +1,16 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ETA.Rebuild.Views.ComingSoonPage">
+    <Grid Background="{DynamicResource PaperBg}">
+        <Border Classes="card" HorizontalAlignment="Center" VerticalAlignment="Center" Width="480">
+            <StackPanel Spacing="10" HorizontalAlignment="Center">
+                <TextBlock Text="✍" FontSize="48" HorizontalAlignment="Center"/>
+                <TextBlock x:Name="tbTitle" Classes="h2" HorizontalAlignment="Center"/>
+                <TextBlock Text="이 페이지는 다음 순서에 만듭니다." Classes="muted" HorizontalAlignment="Center"/>
+                <Border Classes="dashed" Margin="0,6"/>
+                <TextBlock Text="9개 페이지 × 다중 모드 · 순차 빌드 중"
+                           Classes="sub" HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

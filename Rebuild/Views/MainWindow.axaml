@@ -1,0 +1,76 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:views="clr-namespace:ETA.Rebuild.Views"
+        x:Class="ETA.Rebuild.Views.MainWindow"
+        Title="ETA · 수질분석센터"
+        Width="1440" Height="900"
+        MinWidth="1200" MinHeight="720">
+
+    <Grid RowDefinitions="Auto,Auto,*">
+
+        <!-- ══════════════════════════════════════════════════════════
+             상단 브랜드 바 · 로고 + 검색 + 사용자
+             ══════════════════════════════════════════════════════════ -->
+        <Border Grid.Row="0"
+                Background="{DynamicResource PaperCard}"
+                BorderBrush="{DynamicResource PaperInk}"
+                BorderThickness="0,0,0,1.5"
+                Padding="16,10">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                    <TextBlock Text="ETA" Classes="h1"/>
+                    <TextBlock Text="· 수질분석센터 · v21" Classes="muted" VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <Border Grid.Column="1"
+                        HorizontalAlignment="Center"
+                        MinWidth="360"
+                        Classes="card-flat"
+                        Padding="10,4">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="🔍" VerticalAlignment="Center"/>
+                        <TextBlock Text="시료·업체·접수번호·파일 검색…"
+                                   Classes="muted" VerticalAlignment="Center"/>
+                        <Border Classes="kbd" Margin="10,0,0,0">
+                            <TextBlock Text="⌘K"/>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                    <Border Classes="chip ok"><TextBlock Text="● 연결됨"/></Border>
+                    <TextBlock Text="azrael@eta" Classes="body" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ══════════════════════════════════════════════════════════
+             네비게이션 탭 바
+             ══════════════════════════════════════════════════════════ -->
+        <Border Grid.Row="1"
+                Background="{DynamicResource PaperBg}"
+                BorderBrush="{DynamicResource PaperInkSoft}"
+                BorderThickness="0,0,0,1"
+                Padding="16,0">
+            <StackPanel Orientation="Horizontal" Spacing="2">
+                <Button Classes="navtab active" Content="🏠 홈"            Click="OnNav" Tag="home"/>
+                <Button Classes="navtab"        Content="✍ 분석결과입력"    Click="OnNav" Tag="input"/>
+                <Button Classes="navtab"        Content="🗂 파일플로우"      Click="OnNav" Tag="file"/>
+                <Button Classes="navtab"        Content="📓 시험기록부"      Click="OnNav" Tag="note"/>
+                <Button Classes="navtab"        Content="🏭 처리시설"        Click="OnNav" Tag="facility"/>
+                <Button Classes="navtab"        Content="💧 폐수배출업소"    Click="OnNav" Tag="waste"/>
+                <Button Classes="navtab"        Content="🧬 생태독성"        Click="OnNav" Tag="ecotox"/>
+                <Button Classes="navtab"        Content="🤖 측정인.kr"       Click="OnNav" Tag="cheuk"/>
+                <Button Classes="navtab"        Content="⚙ 파서"            Click="OnNav" Tag="parser"/>
+            </StackPanel>
+        </Border>
+
+        <!-- ══════════════════════════════════════════════════════════
+             페이지 호스트
+             ══════════════════════════════════════════════════════════ -->
+        <ContentControl Grid.Row="2" x:Name="PageHost">
+            <views:HomePage/>
+        </ContentControl>
+    </Grid>
+
+</Window>
