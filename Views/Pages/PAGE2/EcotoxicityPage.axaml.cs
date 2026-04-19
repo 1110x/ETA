@@ -11,6 +11,7 @@ using Avalonia.Media;
 using ClosedXML.Excel;
 using ETA.Services.Common;
 using ETA.Services.SERVICE2;
+using ETA.Views.Controls;
 using static ETA.Services.Common.AppFonts;
 
 namespace ETA.Views.Pages.PAGE2;
@@ -67,6 +68,8 @@ public partial class EcotoxicityPage : UserControl
     private bool _equalOrganisms = true;
     private int _organismsPerConc = 20;
     private TextBlock? _selectedTreeNameTb;  // Show1 선택된 시료명 TextBlock
+    private string _selectedSn = "";          // Show1 선택된 접수번호(또는 약칭) — DB SN 식별자로 사용
+    private string _selectedAlias = "";       // Show1 선택된 약칭
 
     // ── 추가 시험조건 데이터 (ES 04704.1c 기준) ────────────────────────────
     private double _testTemperature = 20.0;  // (20±2)°C
@@ -207,6 +210,10 @@ public partial class EcotoxicityPage : UserControl
                     _toxicant = capturedRec.시료명;
                     _testDate = capturedRec.채취일자;
                     _species = "물벼룩";
+                    _selectedSn = !string.IsNullOrWhiteSpace(capturedRec.접수번호)
+                        ? capturedRec.접수번호
+                        : capturedRec.약칭;
+                    _selectedAlias = capturedRec.약칭;
                     ShowInputForm();
                 };
 
@@ -222,74 +229,167 @@ public partial class EcotoxicityPage : UserControl
     // ══════════════════════════════════════════════════════════════════════════
     private void ShowInputForm()
     {
-        var root = new StackPanel { Spacing = 6, Margin = new Thickness(16) };
+        var root = new StackPanel { Spacing = 12, Margin = new Thickness(14) };
 
-        root.Children.Add(FsLG(new TextBlock
+        // ── 헤더 바 ─────────────────────────────────────────────────────────
+        var titleBar = new Border
         {
-            Text = "🐟 생태독성 통계분석 (TSK / Probit)",
+            Background = AppRes("PanelInnerBg"),
+            BorderBrush = AppRes("BtnPrimaryBorder"),
+            BorderThickness = new Thickness(0, 0, 0, 2),
+            CornerRadius = new CornerRadius(8),
+            Padding = new Thickness(16, 12),
+        };
+        var titleSp = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 12, VerticalAlignment = VerticalAlignment.Center };
+        titleSp.Children.Add(new TextBlock { Text = "🐟", FontSize = 26, VerticalAlignment = VerticalAlignment.Center });
+        var titleStack = new StackPanel { Spacing = 2, VerticalAlignment = VerticalAlignment.Center };
+        titleStack.Children.Add(FsLG(new TextBlock
+        {
+            Text = "생태독성 통계분석",
             FontWeight = FontWeight.Bold, FontFamily = Font, Foreground = AppRes("AppFg"),
         }));
+        titleStack.Children.Add(FsXS(new TextBlock
+        {
+            Text = "TSK / Probit · ES 04704.1c (수질오염공정시험기준)",
+            FontFamily = Font, Foreground = AppRes("FgMuted"),
+        }));
+        titleSp.Children.Add(titleStack);
+        // 선택된 시료 배지 (wire-v01)
+        if (!string.IsNullOrWhiteSpace(_selectedSn))
+        {
+            var badge = StatusBadge.Info($"선택: {_selectedAlias} · {_selectedSn}", withIcon: false);
+            badge.Margin = new Thickness(12, 0, 0, 0);
+            titleSp.Children.Add(badge);
+        }
+        titleBar.Child = titleSp;
+        root.Children.Add(titleBar);
 
-        // ── 1. 시험 정보 ────────────────────────────────────────────────────
-        root.Children.Add(SectionHeader("1. 시험 정보"));
+        // ── 2열 카드 그리드 ─────────────────────────────────────────────────
+        var twoCol = new Grid { ColumnSpacing = 12 };
+        twoCol.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Star));
+        twoCol.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Star));
 
-        var infoGrid = MakeGrid(4, 2);
-        AddLabelInput(infoGrid, 0, 0, "시험일자", _testDate, v => _testDate = v);
-        AddLabelInput(infoGrid, 0, 1, "시험번호", _testNumber, v => _testNumber = v);
-        AddLabelInput(infoGrid, 1, 0, "시험종", _species, v => _species = v);
-        AddLabelInput(infoGrid, 1, 1, "독성물질", _toxicant, v => _toxicant = v);
-        AddLabelInput(infoGrid, 2, 0, "농도단위", _concUnit, v => _concUnit = v);
+        var leftCol = new StackPanel { Spacing = 12 };
+        var rightCol = new StackPanel { Spacing = 12 };
+        Grid.SetColumn(leftCol, 0); Grid.SetColumn(rightCol, 1);
+        twoCol.Children.Add(leftCol); twoCol.Children.Add(rightCol);
+        root.Children.Add(twoCol);
 
-        // LC50/EC50 선택
-        var endpointPanel = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, VerticalAlignment = VerticalAlignment.Center };
+        // ── 카드 1: 시험 정보 (좌상) ────────────────────────────────────────
+        var infoStack = new StackPanel { Spacing = 8 };
+
+        // 상단 read-only 상수 스트립 (시험종/농도단위/시험시간)
+        var constStrip = new Border
+        {
+            Background = AppRes("Panel4Bg"),
+            CornerRadius = new CornerRadius(4),
+            Padding = new Thickness(10, 6),
+        };
+        var constSp = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 14 };
+        constSp.Children.Add(MakeReadOnlyItem("시험종", _species));
+        constSp.Children.Add(new Border { Width = 1, Background = AppRes("ThemeBorderSubtle") });
+        constSp.Children.Add(MakeReadOnlyItem("농도단위", _concUnit));
+        constSp.Children.Add(new Border { Width = 1, Background = AppRes("ThemeBorderSubtle") });
+        constSp.Children.Add(MakeReadOnlyItem("시험시간", $"{_duration} {_durUnit}"));
+        constStrip.Child = constSp;
+        infoStack.Children.Add(constStrip);
+
+        // 편집 필드: 단일 컬럼 (라벨 좁게, 입력 넓게 stretch)
+        var fieldGrid = new Grid { ColumnSpacing = 10, RowSpacing = 8 };
+        fieldGrid.ColumnDefinitions.Add(new ColumnDefinition(72, GridUnitType.Pixel));
+        fieldGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Star));
+        for (int i = 0; i < 5; i++) fieldGrid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+
+        // Row 0: 시험일자 (CalendarDatePicker, 기본값 = 채수일)
+        AddFieldLabel(fieldGrid, 0, "시험일자");
+        DateTime.TryParse(_testDate, out var parsedDate);
+        var datePicker = new CalendarDatePicker
+        {
+            SelectedDate = parsedDate == DateTime.MinValue ? DateTime.Today : parsedDate,
+            FontFamily = Font,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+        };
+        datePicker.Bind(CalendarDatePicker.FontSizeProperty, AppFonts.Obs("FontSizeBase"));
+        datePicker.SelectedDateChanged += (_, _) =>
+        {
+            if (datePicker.SelectedDate.HasValue)
+                _testDate = datePicker.SelectedDate.Value.ToString("yyyy-MM-dd");
+        };
+        Grid.SetRow(datePicker, 0); Grid.SetColumn(datePicker, 1);
+        fieldGrid.Children.Add(datePicker);
+
+        // Row 1: 시험번호
+        AddFieldLabel(fieldGrid, 1, "시험번호");
+        var noBox = MakeInput(_testNumber, v => _testNumber = v);
+        noBox.HorizontalAlignment = HorizontalAlignment.Stretch;
+        Grid.SetRow(noBox, 1); Grid.SetColumn(noBox, 1);
+        fieldGrid.Children.Add(noBox);
+
+        // Row 2: 시료명 (긴 이름 대비, 가장 넓게)
+        AddFieldLabel(fieldGrid, 2, "시료명");
+        var nameBox = MakeInput(_toxicant, v => _toxicant = v);
+        nameBox.HorizontalAlignment = HorizontalAlignment.Stretch;
+        nameBox.TextWrapping = TextWrapping.NoWrap;
+        Grid.SetRow(nameBox, 2); Grid.SetColumn(nameBox, 1);
+        fieldGrid.Children.Add(nameBox);
+
+        // Row 3: 분석유형 (LC50/EC50)
+        AddFieldLabel(fieldGrid, 3, "분석유형");
+        var endpointPanel = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 16, VerticalAlignment = VerticalAlignment.Center };
         var rbLC = new RadioButton { Content = "LC50", IsChecked = _endpoint == "LC50", FontFamily = Font, Foreground = AppRes("AppFg"), GroupName = "EP" };
         var rbEC = new RadioButton { Content = "EC50", IsChecked = _endpoint == "EC50", FontFamily = Font, Foreground = AppRes("AppFg"), GroupName = "EP" };
         rbLC.IsCheckedChanged += (_, _) => { if (rbLC.IsChecked == true) _endpoint = "LC50"; };
         rbEC.IsCheckedChanged += (_, _) => { if (rbEC.IsChecked == true) _endpoint = "EC50"; };
         endpointPanel.Children.Add(rbLC);
         endpointPanel.Children.Add(rbEC);
-        var epLabel = FsXS(new TextBlock { Text = "분석유형", FontFamily = Font, Foreground = AppRes("FgMuted"), Margin = new Thickness(0, 0, 8, 0), VerticalAlignment = VerticalAlignment.Center });
-        var epRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4 };
-        epRow.Children.Add(epLabel);
-        epRow.Children.Add(endpointPanel);
-        Grid.SetRow(epRow, 2); Grid.SetColumn(epRow, 1); infoGrid.Children.Add(epRow);
+        Grid.SetRow(endpointPanel, 3); Grid.SetColumn(endpointPanel, 1);
+        fieldGrid.Children.Add(endpointPanel);
 
-        AddLabelInput(infoGrid, 3, 0, "시험시간", _duration, v => _duration = v);
-        var durUnitPanel = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4, VerticalAlignment = VerticalAlignment.Center };
-        durUnitPanel.Children.Add(FsXS(new TextBlock { Text = "단위", FontFamily = Font, Foreground = AppRes("FgMuted"), VerticalAlignment = VerticalAlignment.Center }));
+        // Row 4: 단위 (시간 단위 H/M)
+        AddFieldLabel(fieldGrid, 4, "단위");
         var durBox = MakeInput(_durUnit, v => _durUnit = v);
-        durBox.Width = 40;
-        durUnitPanel.Children.Add(durBox);
-        Grid.SetRow(durUnitPanel, 3); Grid.SetColumn(durUnitPanel, 1); infoGrid.Children.Add(durUnitPanel);
-        root.Children.Add(infoGrid);
+        durBox.HorizontalAlignment = HorizontalAlignment.Left;
+        durBox.MinWidth = 80;
+        Grid.SetRow(durBox, 4); Grid.SetColumn(durBox, 1);
+        fieldGrid.Children.Add(durBox);
 
-        // ── 2. 대조군 ──────────────────────────────────────────────────────
-        root.Children.Add(SectionHeader("2. 대조군 (Control)"));
-        var ctrlGrid = MakeGrid(1, 2);
-        AddLabelInput(ctrlGrid, 0, 0, "생물수", _controlOrganisms.ToString(), v => int.TryParse(v, out _controlOrganisms));
-        AddLabelInput(ctrlGrid, 0, 1, "사망수", _controlMortalities.ToString(), v => int.TryParse(v, out _controlMortalities));
-        root.Children.Add(ctrlGrid);
+        infoStack.Children.Add(fieldGrid);
+        leftCol.Children.Add(MakeCard("📋", "시험 정보", infoStack));
 
-        // ── 3. 농도 수 ─────────────────────────────────────────────────────
-        root.Children.Add(SectionHeader("3. 농도 설정"));
+        // ── 카드 2: 대조군 (좌하) ──────────────────────────────────────────
+        var ctrlGrid = new Grid { ColumnSpacing = 16, RowSpacing = 4 };
+        ctrlGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Star));
+        ctrlGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Star));
+        ctrlGrid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+        AddStretchedField(ctrlGrid, 0, 0, "생물수", _controlOrganisms.ToString(),
+            v => int.TryParse(v, out _controlOrganisms));
+        AddStretchedField(ctrlGrid, 0, 1, "사망수", _controlMortalities.ToString(),
+            v => int.TryParse(v, out _controlMortalities));
+        leftCol.Children.Add(MakeCard("🧪", "대조군 (Control)", ctrlGrid));
+
+        // ── 카드 3: 농도 설정 (우상) ────────────────────────────────────────
+        var concSetStack = new StackPanel { Spacing = 8 };
         var concSetGrid = MakeGrid(1, 2);
         AddLabelInput(concSetGrid, 0, 0, "농도 수 (대조군 제외)", _numConcentrations.ToString(), v =>
         {
             if (int.TryParse(v, out var nc) && nc >= 2 && nc <= 8) _numConcentrations = nc;
         });
-        var eqPanel = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4, VerticalAlignment = VerticalAlignment.Center };
+        var eqPanel = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, VerticalAlignment = VerticalAlignment.Center };
         var cbEqual = new CheckBox { IsChecked = _equalOrganisms, FontFamily = Font, Foreground = AppRes("AppFg") };
         cbEqual.IsCheckedChanged += (_, _) => _equalOrganisms = cbEqual.IsChecked == true;
         eqPanel.Children.Add(cbEqual);
         eqPanel.Children.Add(FsSM(new TextBlock { Text = "각 농도 생물수 동일", FontFamily = Font, Foreground = AppRes("AppFg"), VerticalAlignment = VerticalAlignment.Center }));
         Grid.SetRow(eqPanel, 0); Grid.SetColumn(eqPanel, 1); concSetGrid.Children.Add(eqPanel);
-        // 표준농도 입력 버튼 (ES 04704.1c: 6.25, 12.5, 25, 50, 100%)
+        concSetStack.Children.Add(concSetGrid);
+
         var stdBtn = new Button
         {
-            Content = "표준농도 입력 (6.25/12.5/25/50/100%)", FontFamily = Font,
-            Background = AppRes("ThemeFgInfo"), Foreground = Brushes.White,
-            Padding = new Thickness(12, 4), CornerRadius = new CornerRadius(4),
-            Margin = new Thickness(0, 4),
+            Content = "⚡ 표준농도 자동입력 (6.25 / 12.5 / 25 / 50 / 100 %)",
+            FontFamily = Font, FontSize = AppTheme.FontSM,
+            Background = AppRes("BtnPrimaryBg"), Foreground = AppRes("BtnPrimaryFg"),
+            BorderBrush = AppRes("BtnPrimaryBorder"), BorderThickness = new Thickness(1),
+            Padding = new Thickness(10, 4), CornerRadius = new CornerRadius(6),
+            HorizontalContentAlignment = HorizontalAlignment.Center,
         };
         stdBtn.Click += (_, _) =>
         {
@@ -300,23 +400,11 @@ public partial class EcotoxicityPage : UserControl
             for (int si = 0; si < 5; si++) _organisms[si] = EcotoxicityService.StandardOrganismsPerConc;
             _equalOrganisms = true;
             _organismsPerConc = EcotoxicityService.StandardOrganismsPerConc;
-            ShowInputForm(); // UI 새로고침
+            ShowInputForm();
         };
-        Grid.SetRow(stdBtn, 0); Grid.SetColumn(stdBtn, 1);
-        // concSetGrid의 기존 eqPanel 대신 stdBtn + eqPanel을 세로로
-        var concRightPanel = new StackPanel { Spacing = 4 };
-        // eqPanel을 concSetGrid에서 제거 후 concRightPanel에 추가
-        concSetGrid.Children.Remove(eqPanel);
-        concRightPanel.Children.Add(stdBtn);
-        concRightPanel.Children.Add(eqPanel);
-        Grid.SetRow(concRightPanel, 0); Grid.SetColumn(concRightPanel, 1);
-        concSetGrid.Children.Add(concRightPanel);
+        rightCol.Children.Add(MakeCard("⚗️", "농도 설정", concSetStack));
 
-        root.Children.Add(concSetGrid);
-
-        // ── 4. 농도별 데이터 입력 ─────────────────────────────────────────
-        root.Children.Add(SectionHeader("4. 농도별 데이터 입력"));
-
+        // ── 카드 4: 농도별 데이터 입력 (우하) ───────────────────────────────
         // 기존 값 복원
         if (_concentrations.Length != _numConcentrations)
         {
@@ -333,19 +421,30 @@ public partial class EcotoxicityPage : UserControl
                 for (int i = 0; i < _numConcentrations; i++) _organisms[i] = _organismsPerConc;
         }
 
-        var dataGrid = new Grid { Margin = new Thickness(0, 4) };
-        dataGrid.ColumnDefinitions.Add(new ColumnDefinition(30, GridUnitType.Pixel));
-        dataGrid.ColumnDefinitions.Add(new ColumnDefinition(70, GridUnitType.Pixel));
-        dataGrid.ColumnDefinitions.Add(new ColumnDefinition(70, GridUnitType.Pixel));
-        dataGrid.ColumnDefinitions.Add(new ColumnDefinition(70, GridUnitType.Pixel));
+        var dataGrid = new Grid { Margin = new Thickness(0) };
+        dataGrid.ColumnDefinitions.Add(new ColumnDefinition(36, GridUnitType.Pixel));
+        dataGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Star));
+        dataGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Star));
+        dataGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Star));
 
-        // 헤더
+        // 헤더 행 (배경색 강조)
         dataGrid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
-        var hNum = FsXS(new TextBlock { Text = "#", FontFamily = Font, Foreground = AppRes("FgMuted"), HorizontalAlignment = HorizontalAlignment.Center });
-        var hConc = FsSM(new TextBlock { Text = $"농도({_concUnit})", FontFamily = Font, Foreground = AppRes("ThemeFgInfo"), FontWeight = FontWeight.SemiBold });
-        var hOrg = FsSM(new TextBlock { Text = "생물수", FontFamily = Font, Foreground = AppRes("ThemeFgInfo"), FontWeight = FontWeight.SemiBold, HorizontalAlignment = HorizontalAlignment.Center });
-        var hMort = FsSM(new TextBlock { Text = "💀 사망수", FontFamily = Font, Foreground = AppRes("ThemeFgWarn"), FontWeight = FontWeight.SemiBold, HorizontalAlignment = HorizontalAlignment.Center });
-        Grid.SetColumn(hNum, 0); Grid.SetColumn(hConc, 1); Grid.SetColumn(hOrg, 2); Grid.SetColumn(hMort, 3);
+        var headerBg = new Border
+        {
+            Background = AppRes("GridHeaderBg"),
+            CornerRadius = new CornerRadius(4, 4, 0, 0),
+        };
+        Grid.SetRow(headerBg, 0); Grid.SetColumn(headerBg, 0); Grid.SetColumnSpan(headerBg, 4);
+        dataGrid.Children.Add(headerBg);
+
+        var hNum = FsXS(new TextBlock { Text = "#", FontFamily = Font, Foreground = AppRes("FgMuted"), HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 6) });
+        var hConc = FsSM(new TextBlock { Text = $"농도 ({_concUnit})", FontFamily = Font, Foreground = AppRes("ThemeFgInfo"), FontWeight = FontWeight.SemiBold, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 6) });
+        var hOrg = FsSM(new TextBlock { Text = "생물수", FontFamily = Font, Foreground = AppRes("ThemeFgInfo"), FontWeight = FontWeight.SemiBold, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 6) });
+        var hMort = FsSM(new TextBlock { Text = "💀 사망수", FontFamily = Font, Foreground = AppRes("ThemeFgWarn"), FontWeight = FontWeight.SemiBold, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 6) });
+        Grid.SetRow(hNum, 0); Grid.SetColumn(hNum, 0);
+        Grid.SetRow(hConc, 0); Grid.SetColumn(hConc, 1);
+        Grid.SetRow(hOrg, 0); Grid.SetColumn(hOrg, 2);
+        Grid.SetRow(hMort, 0); Grid.SetColumn(hMort, 3);
         dataGrid.Children.Add(hNum); dataGrid.Children.Add(hConc); dataGrid.Children.Add(hOrg); dataGrid.Children.Add(hMort);
 
         var concInputs = new TextBox[_numConcentrations];
@@ -408,14 +507,13 @@ public partial class EcotoxicityPage : UserControl
             };
         }
 
-        root.Children.Add(dataGrid);
+        rightCol.Children.Add(MakeCard("📊", "농도별 데이터 입력", dataGrid, headerRight: stdBtn));
 
-        // ── 5. 계산 버튼 ───────────────────────────────────────────────────
-        root.Children.Add(new Border { Height = 1, Background = AppRes("ThemeBorderSubtle"), Margin = new Thickness(0, 8) });
-
+        // ── 결과 카드 (하단 강조) ──────────────────────────────────────────
         var resultTb = FsLG(new TextBlock { FontFamily = Font, Foreground = AppRes("ThemeFgSuccess"), FontWeight = FontWeight.Bold, TextWrapping = TextWrapping.Wrap });
         var detailTb = FsSM(new TextBlock { FontFamily = Font, Foreground = AppRes("FgMuted"), TextWrapping = TextWrapping.Wrap });
         var compareTb = FsSM(new TextBlock { FontFamily = Font, Foreground = AppRes("ThemeFgInfo"), TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 0) });
+        var resultPlaceholder = FsSM(new TextBlock { Text = "계산 버튼을 눌러 결과를 확인하세요.", FontFamily = Font, Foreground = AppRes("FgMuted"), FontStyle = FontStyle.Italic });
 
         void CollectInputs()
         {
@@ -494,52 +592,58 @@ public partial class EcotoxicityPage : UserControl
             catch (Exception ex) { compareTb.Text = $"Probit 오류: {ex.Message}"; }
         }
 
-        var btnPanel = new WrapPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 0, 0, 4) };
-
-        var tskBtn = new Button
+        Button MakeActionBtn(string text, BadgeStatus status)
         {
-            Content = "TSK 계산", FontFamily = Font,
-            Background = AppRes("BtnPrimaryBg"), Foreground = Brushes.White,
-            Padding = new Thickness(16, 8), CornerRadius = new CornerRadius(4),
-            FontWeight = FontWeight.Bold, Margin = new Thickness(0, 0, 8, 4),
-        };
-        tskBtn.Click += (_, _) => DoCalcTSK();
+            var (bg, fg, bd) = StatusBadge.GetBrushes(status);
+            return new Button
+            {
+                Content = text, FontFamily = Font,
+                Background = bg, Foreground = fg,
+                BorderBrush = bd, BorderThickness = new Thickness(1),
+                Padding = new Thickness(18, 8), CornerRadius = new CornerRadius(999),
+                FontWeight = FontWeight.SemiBold,
+                Cursor = new Cursor(StandardCursorType.Hand),
+            };
+        }
 
-        var probitBtn = new Button
-        {
-            Content = "Probit 계산", FontFamily = Font,
-            Background = AppRes("ThemeFgInfo"), Foreground = Brushes.White,
-            Padding = new Thickness(16, 8), CornerRadius = new CornerRadius(4),
-            FontWeight = FontWeight.Bold, Margin = new Thickness(0, 0, 8, 4),
-        };
+        var tskBtn    = MakeActionBtn("TSK 계산",     BadgeStatus.Info);
+        var probitBtn = MakeActionBtn("Probit 계산",  BadgeStatus.Info);
+        var bothBtn   = MakeActionBtn("TSK + Probit", BadgeStatus.Accent);
+        var saveBtn   = MakeActionBtn("💾 DB 저장",   BadgeStatus.Ok);
+        tskBtn.Click    += (_, _) => DoCalcTSK();
         probitBtn.Click += (_, _) => DoCalcProbit();
-
-        var bothBtn = new Button
-        {
-            Content = "TSK + Probit", FontFamily = Font,
-            Background = new SolidColorBrush(Color.Parse("#2E7D32")), Foreground = Brushes.White,
-            Padding = new Thickness(16, 8), CornerRadius = new CornerRadius(4),
-            Margin = new Thickness(0, 0, 8, 4),
-        };
-        bothBtn.Click += (_, _) => DoCalcBoth();
-
-        var saveBtn = new Button
-        {
-            Content = "DB 저장", FontFamily = Font,
-            Background = AppRes("ThemeFgSuccess"), Foreground = Brushes.White,
-            Padding = new Thickness(16, 8), CornerRadius = new CornerRadius(4),
-            Margin = new Thickness(0, 0, 8, 4),
-        };
+        bothBtn.Click   += (_, _) => DoCalcBoth();
         saveBtn.Click += (_, _) =>
         {
-            if (_tskResult == null) { DoCalcTSK(); }
-            if (_tskResult == null) return;
+            Log("───── DB 저장 버튼 클릭 ─────");
+            Log($"입력 상태: 시험일자={_testDate}, 시험번호={_testNumber}, 시험종={_species}, 시료명(_toxicant)={_toxicant}, endpoint={_endpoint}, 농도단위={_concUnit}, 시험시간={_duration}{_durUnit}");
+            Log($"트리 선택: SN={_selectedSn}, 약칭={_selectedAlias}");
+            Log($"대조군: 생물수={_controlOrganisms}, 사망수={_controlMortalities}");
+            Log($"농도배열: [{string.Join(",", _concentrations)}], 생물수배열: [{string.Join(",", _organisms)}], 사망수배열: [{string.Join(",", _mortalities)}]");
+
+            if (_tskResult == null)
+            {
+                Log("_tskResult == null → DoCalcTSK() 호출");
+                DoCalcTSK();
+            }
+            if (_tskResult == null)
+            {
+                Log("⚠ DoCalcTSK 후에도 _tskResult == null. 저장 중단.");
+                detailTb.Text = "⚠ TSK 계산 결과가 없어 저장 중단됨 (농도/사망수를 입력하세요)";
+                return;
+            }
             CollectInputs();
+            Log($"CollectInputs 후 농도배열: [{string.Join(",", _concentrations)}], 사망수배열: [{string.Join(",", _mortalities)}]");
+            Log($"TSK 결과: EC50={_tskResult.EC50}, TU={_tskResult.TU}, CI=[{_tskResult.LowerCI},{_tskResult.UpperCI}]");
+
             try
             {
                 int validCnt = _concentrations.Count(c => c > 0);
-                WasteSampleService.UpsertEcotoxData(
-                    _testDate, _toxicant, "", "", _species, "생태독성",
+                var snForDb = !string.IsNullOrWhiteSpace(_selectedSn) ? _selectedSn : _toxicant;
+                Log($"UpsertEcotoxData 호출 시작 → SN={snForDb}, 분석일={_testDate}, 시료명={_toxicant}, 시험종={_species}, validCnt={validCnt}");
+
+                bool ok = WasteSampleService.UpsertEcotoxData(
+                    _testDate, snForDb, "", "", _toxicant, "생태독성",
                     _species, _duration, _durUnit,
                     _controlOrganisms, _controlMortalities,
                     _concentrations.Where(c => c > 0).ToArray(),
@@ -552,13 +656,16 @@ public partial class EcotoxicityPage : UserControl
                     농도단위: _concUnit,
                     probitResult: _probitResult);
 
+                Log($"UpsertEcotoxData 반환값: {ok}");
+
                 // 수질분석센터_결과.생태독성 컨럼 업데이트 (트리 Show1 새로고침 대비)
                 try
                 {
                     ETA.Services.SERVICE1.AnalysisRequestService.UpdateEcotoxResult(
                         _testDate, _toxicant, _tskResult.TU.ToString("F1"));
+                    Log($"UpdateEcotoxResult 호출 완료 (수질분석센터_결과 갱신)");
                 }
-                catch { }
+                catch (Exception ex) { Log($"UpdateEcotoxResult 실패: {ex.Message}"); }
 
                 // 이력 추가
                 _records.Insert(0, new TestRecord(
@@ -571,21 +678,27 @@ public partial class EcotoxicityPage : UserControl
                     _testTemperature, _testPH, _sampleTemperature, _samplePH, _sampleDO,
                     $"{_duration} {_durUnit}", _ecCalculationMethod, _analysisObservations, _analystName));
                 ShowHistoryPanel();
-                detailTb.Text += "  ✅ DB 저장 완료";
+                detailTb.Text += ok
+                    ? $"  ✅ 시험기록부 저장 완료 (SN={snForDb})"
+                    : "  ⚠ 시험기록부 저장 실패 (Logs/EcotoxDebug.log 확인)";
 
                 // Show1 트리 새로고침
                 BuildRequestTree();
+                Log("───── DB 저장 버튼 처리 완료 ─────");
             }
-            catch (Exception ex) { detailTb.Text = $"저장 오류: {ex.Message}"; }
+            catch (Exception ex)
+            {
+                Log($"❌ 저장 중 예외: {ex.Message}\n{ex.StackTrace}");
+                detailTb.Text = $"저장 오류: {ex.Message}";
+            }
         };
 
         var clearBtn = new Button
         {
             Content = "초기화", FontFamily = Font,
-            Background = Brushes.Transparent, Foreground = AppRes("ThemeFgDanger"),
-            BorderBrush = AppRes("ThemeFgDanger"), BorderThickness = new Thickness(1),
-            Padding = new Thickness(16, 8), CornerRadius = new CornerRadius(4),
-            Margin = new Thickness(0, 0, 0, 4),
+            Background = AppRes("BtnDangerBg"), Foreground = AppRes("BtnDangerFg"),
+            BorderBrush = AppRes("BtnDangerBorder"), BorderThickness = new Thickness(1),
+            Padding = new Thickness(16, 8), CornerRadius = new CornerRadius(6),
         };
         clearBtn.Click += (_, _) =>
         {
@@ -599,17 +712,108 @@ public partial class EcotoxicityPage : UserControl
             ShowInputForm();
         };
 
-        btnPanel.Children.Add(tskBtn);
-        btnPanel.Children.Add(probitBtn);
-        btnPanel.Children.Add(bothBtn);
-        btnPanel.Children.Add(saveBtn);
-        btnPanel.Children.Add(clearBtn);
-        root.Children.Add(btnPanel);
-        root.Children.Add(resultTb);
-        root.Children.Add(detailTb);
-        root.Children.Add(compareTb);
+        // 액션바: 좌측(분석실행) + 우측(저장/초기화)
+        var actionBar = new Border
+        {
+            Background = AppRes("PanelInnerBg"),
+            BorderBrush = AppRes("ThemeBorderSubtle"),
+            BorderThickness = new Thickness(1),
+            CornerRadius = new CornerRadius(8),
+            Padding = new Thickness(14, 10),
+        };
+        var actionGrid = new Grid { ColumnSpacing = 8 };
+        actionGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
+        actionGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Star));
+        actionGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
+
+        var leftActions = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+        leftActions.Children.Add(FsSM(new TextBlock { Text = "▶ 분석", FontFamily = Font, Foreground = AppRes("FgMuted"), VerticalAlignment = VerticalAlignment.Center }));
+        leftActions.Children.Add(tskBtn);
+        leftActions.Children.Add(probitBtn);
+        leftActions.Children.Add(bothBtn);
+        Grid.SetColumn(leftActions, 0); actionGrid.Children.Add(leftActions);
+
+        var rightActions = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+        rightActions.Children.Add(saveBtn);
+        rightActions.Children.Add(clearBtn);
+        Grid.SetColumn(rightActions, 2); actionGrid.Children.Add(rightActions);
+
+        actionBar.Child = actionGrid;
+        root.Children.Add(actionBar);
+
+        // 결과 카드
+        var resultStack = new StackPanel { Spacing = 4 };
+        resultStack.Children.Add(resultPlaceholder);
+        resultStack.Children.Add(resultTb);
+        resultStack.Children.Add(detailTb);
+        resultStack.Children.Add(compareTb);
+        // 결과 텍스트가 채워지면 placeholder 숨김
+        resultTb.PropertyChanged += (_, e) =>
+        {
+            if (e.Property == TextBlock.TextProperty)
+                resultPlaceholder.IsVisible = string.IsNullOrEmpty(resultTb.Text);
+        };
+
+        var resultCard = new Border
+        {
+            Background = AppRes("PanelInnerBg"),
+            BorderBrush = AppRes("ThemeFgSuccess"),
+            BorderThickness = new Thickness(0, 0, 0, 3),
+            CornerRadius = new CornerRadius(8),
+            Padding = new Thickness(16, 12),
+        };
+        var resultRoot = new StackPanel { Spacing = 6 };
+        var resultHeader = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+        resultHeader.Children.Add(new TextBlock { Text = "✅", FontSize = 18, VerticalAlignment = VerticalAlignment.Center });
+        resultHeader.Children.Add(FsBase(new TextBlock { Text = "분석 결과", FontFamily = Font, FontWeight = FontWeight.Bold, Foreground = AppRes("AppFg"), VerticalAlignment = VerticalAlignment.Center }));
+        resultRoot.Children.Add(resultHeader);
+        resultRoot.Children.Add(resultStack);
+        resultCard.Child = resultRoot;
+        root.Children.Add(resultCard);
 
         ListPanelChanged?.Invoke(new ScrollViewer { Content = root, Padding = new Thickness(0, 0, 0, 40) });
+    }
+
+    // ── 카드 컨테이너 헬퍼 ────────────────────────────────────────────────────
+    private Border MakeCard(string icon, string title, Control content, Control? headerRight = null)
+    {
+        var card = new Border
+        {
+            Background = AppRes("PanelInnerBg"),
+            BorderBrush = AppRes("ThemeBorderSubtle"),
+            BorderThickness = new Thickness(1),
+            CornerRadius = new CornerRadius(8),
+            Padding = new Thickness(14, 10, 14, 12),
+        };
+        var stack = new StackPanel { Spacing = 8 };
+
+        var headerGrid = new Grid();
+        headerGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
+        headerGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Star));
+
+        var titleRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, VerticalAlignment = VerticalAlignment.Center };
+        titleRow.Children.Add(new TextBlock { Text = icon, FontSize = 16, VerticalAlignment = VerticalAlignment.Center });
+        titleRow.Children.Add(FsBase(new TextBlock
+        {
+            Text = title, FontFamily = Font, FontWeight = FontWeight.Bold,
+            Foreground = AppRes("AppFg"), VerticalAlignment = VerticalAlignment.Center,
+        }));
+        Grid.SetColumn(titleRow, 0);
+        headerGrid.Children.Add(titleRow);
+
+        if (headerRight != null)
+        {
+            headerRight.HorizontalAlignment = HorizontalAlignment.Right;
+            headerRight.VerticalAlignment = VerticalAlignment.Center;
+            Grid.SetColumn(headerRight, 1);
+            headerGrid.Children.Add(headerRight);
+        }
+        stack.Children.Add(headerGrid);
+        stack.Children.Add(new Border { Height = 1, Background = AppRes("ThemeBorderSubtle"), Margin = new Thickness(0, 0, 0, 2) });
+        stack.Children.Add(content);
+
+        card.Child = stack;
+        return card;
     }
 
     // ══════════════════════════════════════════════════════════════════════════
@@ -706,6 +910,17 @@ public partial class EcotoxicityPage : UserControl
         grid.Children.Add(panel);
     }
 
+    // 파일 로그 (Logs/EcotoxDebug.log)
+    private static void Log(string msg)
+    {
+        var line = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] [Ecotox] {msg}";
+        if (App.EnableLogging)
+        {
+            try { File.AppendAllText("Logs/EcotoxDebug.log", line + Environment.NewLine); } catch { }
+        }
+        System.Diagnostics.Debug.WriteLine(line);
+    }
+
     private TextBox MakeInput(string value, Action<string>? onChange = null)
     {
         var tb = FsBase(new TextBox
@@ -719,6 +934,46 @@ public partial class EcotoxicityPage : UserControl
         if (onChange != null)
             tb.LostFocus += (_, _) => onChange(tb.Text ?? "");
         return tb;
+    }
+
+    // 읽기 전용 상수 표시 ("라벨: 값" 형태)
+    private Control MakeReadOnlyItem(string label, string value)
+    {
+        var sp = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, VerticalAlignment = VerticalAlignment.Center };
+        sp.Children.Add(FsXS(new TextBlock { Text = label, FontFamily = Font, Foreground = AppRes("FgMuted"), VerticalAlignment = VerticalAlignment.Center }));
+        sp.Children.Add(FsSM(new TextBlock { Text = value, FontFamily = Font, Foreground = AppRes("AppFg"), FontWeight = FontWeight.SemiBold, VerticalAlignment = VerticalAlignment.Center }));
+        return sp;
+    }
+
+    // 좌측 라벨만 추가 (입력은 별도)
+    private void AddFieldLabel(Grid grid, int row, string label)
+    {
+        var tb = FsXS(new TextBlock
+        {
+            Text = label, FontFamily = Font, Foreground = AppRes("FgMuted"),
+            VerticalAlignment = VerticalAlignment.Center,
+        });
+        Grid.SetRow(tb, row); Grid.SetColumn(tb, 0);
+        grid.Children.Add(tb);
+    }
+
+    // 라벨 + 입력창 (입력창이 셀 가득 stretch, MinWidth 보장)
+    private void AddStretchedField(Grid grid, int row, int col, string label, string value, Action<string> onChange, double inputMinWidth = 110)
+    {
+        var inner = new Grid { ColumnSpacing = 8 };
+        inner.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
+        inner.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Star));
+
+        var lbl = FsXS(new TextBlock { Text = label, FontFamily = Font, Foreground = AppRes("FgMuted"), VerticalAlignment = VerticalAlignment.Center });
+        Grid.SetColumn(lbl, 0); inner.Children.Add(lbl);
+
+        var input = MakeInput(value, onChange);
+        input.HorizontalAlignment = HorizontalAlignment.Stretch;
+        input.MinWidth = inputMinWidth;
+        Grid.SetColumn(input, 1); inner.Children.Add(input);
+
+        Grid.SetRow(inner, row); Grid.SetColumn(inner, col);
+        grid.Children.Add(inner);
     }
 
     // ══════════════════════════════════════════════════════════════════════════
