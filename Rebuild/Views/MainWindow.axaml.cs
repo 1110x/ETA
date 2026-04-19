@@ -38,6 +38,7 @@ public partial class MainWindow : Window
             "home"     => new HomePage(),
             "input"    => new InputPage(),
             "file"     => new FileflowPage(),
+            "note"     => new NotebookPage(),
             _          => new ComingSoonPage(btn.Content?.ToString() ?? "?"),
         };
     }
