@@ -17,6 +17,7 @@ using ETA.Services.SERVICE2;
 using ETA.Services.Common;
 using Avalonia.VisualTree;
 using ETA.Views;
+using ETA.Views.Controls;
 
 namespace ETA.Views.Pages.PAGE1;
 
@@ -45,7 +46,9 @@ public partial class ContractPage : UserControl
     private TextBox?    _contractAmountTextBox;
     private bool        _isAddMode = false;
     private bool        _showActive = true;   // true=현행계약, false=종료계약
+    private bool        _trashMode = false;   // true=휴지통, false=일반
     public MainPage? ParentMainPage { get; set; }
+    private TextBlock? _txbTotalAmount;      // Show1 합계 표시용
 
     // 단가 in-memory 편집본 (서브메뉴 저장 시 DB 반영)
     private readonly Dictionary<string, string>    _pendingPrices       = new();
@@ -122,29 +125,69 @@ public partial class ContractPage : UserControl
 
         try
         {
-            var today = DateTime.Today;
-            var items = ContractService.GetAllContracts()
-                            .Where(c =>
-                            {
-                                bool active = c.C_ContractStart.HasValue && c.C_ContractEnd.HasValue
-                                              && c.C_ContractStart.Value.Date <= today
-                                              && c.C_ContractEnd.Value.Date   >= today;
-                                return _showActive ? active : !active;
-                            })
+            List<Contract> items;
+
+            if (_trashMode)
+            {
+                // 휴지통: 삭제된 계약 목록
+                items = ContractService.GetDeletedContracts()
                             .OrderBy(c => c.C_CompanyName)
                             .ToList();
+                Log($"휴지통 로드 → {items.Count}건");
+            }
+            else
+            {
+                // 일반: 현행/종료 계약
+                var today = DateTime.Today;
+                items = ContractService.GetAllContracts()
+                                .Where(c =>
+                                {
+                                    bool active = c.C_ContractStart.HasValue && c.C_ContractEnd.HasValue
+                                                  && c.C_ContractStart.Value.Date <= today
+                                                  && c.C_ContractEnd.Value.Date   >= today;
+                                    return _showActive ? active : !active;
+                                })
+                                .OrderBy(c => c.C_CompanyName)
+                                .ToList();
+                Log($"일반 로드 → {items.Count}건 ({(_showActive ? "현행" : "종료")})");
+            }
 
             foreach (var item in items)
                 ContractTreeView.Items.Add(CreateTreeItem(item));
 
-            Log($"로드 완료 → {items.Count}건 ({(_showActive ? "현행" : "종료")})");
+            // 계약금액 합계 계산 및 표시 (휴지통 제외)
+            if (_txbTotalAmount == null)
+                _txbTotalAmount = this.FindControl<TextBlock>("txbTotalAmount");
+
+            if (_txbTotalAmount != null)
+            {
+                if (_trashMode)
+                {
+                    _txbTotalAmount.Text = "";
+                }
+                else
+                {
+                    decimal totalAmount = items
+                        .Where(c => c.C_ContractAmountVATExcluded.HasValue)
+                        .Sum(c => c.C_ContractAmountVATExcluded.Value);
+
+                    _txbTotalAmount.Text = totalAmount > 0
+                        ? $"계약금액 합계: {totalAmount:N0} 원"
+                        : "계약금액 합계: -";
+                }
+            }
         }
         catch (Exception ex) { Log("★ 크래시 ★ " + ex.Message); }
     }
 
-    private void TglContractStatus_Changed(object? sender, RoutedEventArgs e)
+    private void CmbContractView_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        _showActive = tglContractStatus.IsChecked == true;
+        if (cmbContractView == null) return;
+
+        int index = cmbContractView.SelectedIndex;
+        _trashMode = (index == 2);  // 2 = 휴지통
+        _showActive = (index == 0); // 0 = 현행, 1 = 종료
+
         LoadData();
     }
 
@@ -240,11 +283,90 @@ public partial class ContractPage : UserControl
         _pendingQuantities.Clear();
         Log($"[타이밍] 초기화: {sw.ElapsedMilliseconds}ms");
 
+        // 휴지통 모드: 복구/삭제 버튼 표시
+        if (_trashMode)
+        {
+            var (root, scroll, _) = BuildInfoPanel(contract);
+            _detailPanel = root;
+            DetailPanelChanged?.Invoke(scroll);
+
+            var trashPanel = new StackPanel { Spacing = 8, Margin = new Thickness(12) };
+
+            var (rBg, rFg, rBd) = StatusBadge.GetBrushes(BadgeStatus.Info);
+            var restoreBtn = new Button
+            {
+                Content         = "♻️  복구",
+                FontSize        = AppTheme.FontMD,
+                FontFamily      = Font, FontWeight = FontWeight.SemiBold,
+                Background      = rBg, Foreground = rFg, BorderBrush = rBd,
+                BorderThickness = new Thickness(1),
+                CornerRadius    = new CornerRadius(999),
+                Padding         = new Thickness(14, 6),
+                Cursor          = new Cursor(StandardCursorType.Hand),
+            };
+            restoreBtn.Click += (_, _) =>
+            {
+                if (ContractService.Restore(contract.C_CompanyName))
+                {
+                    Log($"✅ {contract.C_CompanyName} 복구 완료");
+                    LoadData();
+                }
+                else
+                {
+                    Log($"❌ {contract.C_CompanyName} 복구 실패");
+                }
+            };
+
+            var (dBg, dFg, dBd) = StatusBadge.GetBrushes(BadgeStatus.Bad);
+            var deleteBtn = new Button
+            {
+                Content         = "🗑️  영구 삭제",
+                FontSize        = AppTheme.FontMD,
+                FontFamily      = Font, FontWeight = FontWeight.SemiBold,
+                Background      = dBg, Foreground = dFg, BorderBrush = dBd,
+                BorderThickness = new Thickness(1),
+                CornerRadius    = new CornerRadius(999),
+                Padding         = new Thickness(14, 6),
+                Cursor          = new Cursor(StandardCursorType.Hand),
+            };
+            deleteBtn.Click += (_, _) =>
+            {
+                if (ContractService.PermanentDelete(contract.C_CompanyName))
+                {
+                    Log($"✅ {contract.C_CompanyName} 영구 삭제 완료");
+                    LoadData();
+                }
+                else
+                {
+                    Log($"❌ {contract.C_CompanyName} 영구 삭제 실패");
+                }
+            };
+
+            trashPanel.Children.Add(new TextBlock
+            {
+                Text       = "삭제된 계약",
+                FontSize   = AppTheme.FontLG, FontFamily = Font, FontWeight = FontWeight.SemiBold,
+                Foreground = AppTheme.FgMuted,
+                Margin     = new Thickness(0, 0, 0, 8),
+            });
+            trashPanel.Children.Add(restoreBtn);
+            trashPanel.Children.Add(deleteBtn);
+
+            var scroll2 = new ScrollViewer
+            {
+                Content = trashPanel,
+                HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
+            };
+            EditPanelChanged?.Invoke(scroll2);
+            StatsPanelChanged?.Invoke(null);
+            return;
+        }
+
         // ① 계약정보 패널 즉시 표시 (DB 없음 — 빠름)
-        var (root, scroll, priceContainer) = BuildInfoPanel(contract);
+        var (root2, scroll3, priceContainer) = BuildInfoPanel(contract);
         Log($"[타이밍] BuildInfoPanel: {sw.ElapsedMilliseconds}ms");
-        _detailPanel = root;
-        DetailPanelChanged?.Invoke(scroll);  // Show2에 업체정보 표시
+        _detailPanel = root2;
+        DetailPanelChanged?.Invoke(scroll3);  // Show2에 업체정보 표시
         Log($"[타이밍] Show2 표시: {sw.ElapsedMilliseconds}ms");
 
         // ② Show4에 즉시 로딩 프로그레스바 표시
@@ -280,26 +402,36 @@ public partial class ContractPage : UserControl
     {
         try
         {
+            Log($"[로드 시작] {captured.C_CompanyName}");
             var sw2 = System.Diagnostics.Stopwatch.StartNew();
+
+            Log($"  → GetContractPrices 시작...");
+            var pricesSw = System.Diagnostics.Stopwatch.StartNew();
             var prices       = await Task.Run(() => ContractService.GetContractPrices(captured.C_CompanyName));
-            Log($"[타이밍] GetContractPrices: {sw2.ElapsedMilliseconds}ms");
+            Log($"  → GetContractPrices 완료: {pricesSw.ElapsedMilliseconds}ms, {prices.Count}개");
             progressBar.Value = 33; statusText.Text = "계약수량 로딩 중...";
 
+            Log($"  → GetContractQuantities 시작...");
+            var qtySw = System.Diagnostics.Stopwatch.StartNew();
             var contractQtys = await Task.Run(() => ContractService.GetContractQuantities(captured.C_CompanyName));
-            Log($"[타이밍] GetContractQuantities: {sw2.ElapsedMilliseconds}ms");
+            Log($"  → GetContractQuantities 완료: {qtySw.ElapsedMilliseconds}ms, {contractQtys.Count}개");
             progressBar.Value = 66; statusText.Text = "처리수량 로딩 중...";
 
             progressBar.Value = 100; statusText.Text = "완료";
-            Log($"[타이밍] 전체 데이터 로드: {sw2.ElapsedMilliseconds}ms");
+            Log($"[데이터 로드] {captured.C_CompanyName}: 단가={prices.Count}개, 계약수량={contractQtys.Count}개, 누적={sw2.ElapsedMilliseconds}ms");
 
-            Log($"[데이터 로드] {captured.C_CompanyName}: 단가={prices.Count}개, 계약수량={contractQtys.Count}개");
-
-            if (_selectedContract?.C_CompanyName != captured.C_CompanyName) return;
+            if (_selectedContract?.C_CompanyName != captured.C_CompanyName)
+            {
+                Log($"[로드 취소] {captured.C_CompanyName} (선택 변경됨)");
+                return;
+            }
 
             // Show3: 처리수량 진행상황
+            Log($"  → GetProcessedQuantities 시작...");
+            var procSw = System.Diagnostics.Stopwatch.StartNew();
             var processedQtys = await Task.Run(() => ContractService.GetProcessedQuantities(
                 captured.C_CompanyName, captured.C_ContractStart, captured.C_ContractEnd));
-            Log($"[타이밍] GetProcessedQuantities: {sw2.ElapsedMilliseconds}ms");
+            Log($"  → GetProcessedQuantities 완료: {procSw.ElapsedMilliseconds}ms, {processedQtys.Count}개");
 
             var swUi = System.Diagnostics.Stopwatch.StartNew();
             var progressPanel = BuildProgressPanel(captured.C_CompanyName, contractQtys, processedQtys);
@@ -466,14 +598,18 @@ public partial class ContractPage : UserControl
         AddGridRow(grid, 3, "계약종료",         c.C_ContractEndStr,   isReadOnly: true);
         AddGridRow(grid, 4, "잔여일수",         remainDays,           isReadOnly: true);
         _contractAmountTextBox = AddGridRow(grid, 5, "계약금액(VAT별도)", amountStr);
-        AddGridRow(grid, 6, "주소",             c.C_Address);
-        AddGridRow(grid, 7, "대표자",           c.C_Representative);
-        AddGridRow(grid, 8, "시설별",           c.C_FacilityType);
-        AddGridRow(grid, 9, "종류별",           c.C_CategoryType);
-        AddGridRow(grid,10, "주생산품",         c.C_MainProduct);
-        AddGridRow(grid,11, "담당자",           c.C_ContactPerson);
-        AddGridRow(grid,12, "연락처",           c.C_PhoneNumber);
-        AddGridRow(grid,13, "이메일",           c.C_Email);
+
+        // 계약근거 + 처리시설 ComboBox (2행: row 6, 7)
+        AddBasisContractComboBox(grid, 6, c.C_ContractType, c.C_PlaceName);
+
+        AddGridRow(grid, 8, "주소",             c.C_Address);
+        AddGridRow(grid, 9, "대표자",           c.C_Representative);
+        AddGridRow(grid,10, "시설별",           c.C_FacilityType);
+        AddGridRow(grid,11, "종류별",           c.C_CategoryType);
+        AddGridRow(grid,12, "주생산품",         c.C_MainProduct);
+        AddGridRow(grid,13, "담당자",           c.C_ContactPerson);
+        AddGridRow(grid,14, "연락처",           c.C_PhoneNumber);
+        AddGridRow(grid,15, "이메일",           c.C_Email);
         root.Children.Add(grid);
 
         // ── 단가 섹션 컨테이너 (백그라운드 로드 후 채워짐) ───────────────────
@@ -509,15 +645,6 @@ public partial class ContractPage : UserControl
                 Text       = "⏳ 단가 로드 중...",
                 FontSize   = AppTheme.FontSM, FontFamily = Font,
                 Foreground = AppTheme.FgDimmed,
-            });
-        }
-        else
-        {
-            root.Children.Add(new TextBlock
-            {
-                Text       = "🔒  단가 정보 — 접근 권한 없음",
-                FontSize   = AppTheme.FontMD, FontFamily = Font,
-                Foreground = new SolidColorBrush(Color.Parse("#775555")),
             });
         }
 
@@ -622,9 +749,113 @@ public partial class ContractPage : UserControl
                                         string abbr,
                                         List<(string Analyte, string Price)> prices,
                                         Dictionary<string, string> contractQtys,
-                                        StackPanel? show2Panel = null)
+                                        StackPanel? show2Panel = null,
+                                        bool uncheckedByDefault = false)
     {
+        Log($"[UI빌드] BuildPriceInfoPanel({companyName}) 시작");
+        var swBuild = System.Diagnostics.Stopwatch.StartNew();
         var root = new StackPanel { Spacing = 0, Margin = new Thickness(8) };
+
+        // ─── 상단 영역: 비교 계약 드롭다운 (우측 정렬) ─────────────────────────
+        Log($"  → GetAllContracts 호출...");
+        var contractsSw = System.Diagnostics.Stopwatch.StartNew();
+        var allContracts = ContractService.GetAllContracts();
+        Log($"  → GetAllContracts 완료: {contractsSw.ElapsedMilliseconds}ms, {allContracts.Count}개");
+
+        // 비교 계약 라벨 (topControlPanel에서 "확정" 버튼 옆에 배치됨)
+        var lblCompare = new TextBlock
+        {
+            Text = "비교 계약:",
+            FontSize = AppTheme.FontMD,
+            FontFamily = Font,
+            Foreground = AppTheme.FgMuted,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+
+        var cbContract = new ComboBox
+        {
+            Width = 200,
+            Height = 34,
+            FontSize = AppTheme.FontMD,
+            FontFamily = Font,
+            Background = AppTheme.BorderSeparator,
+            Foreground = AppRes("AppFg"),
+            BorderThickness = new Thickness(1),
+            BorderBrush = AppTheme.BorderDefault,
+            Padding = new Thickness(8, 4),
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+
+        // 드롭다운 항목: "업체명 (약칭)"
+        foreach (var c in allContracts.OrderBy(x => x.C_CompanyName))
+        {
+            var displayText = string.IsNullOrEmpty(c.C_Abbreviation)
+                ? c.C_CompanyName
+                : $"{c.C_CompanyName} ({c.C_Abbreviation})";
+            cbContract.Items.Add(displayText);
+        }
+
+        // 비교 계약 선택 시 → 자동으로 DB에 적용 + Show4 새로고침
+        cbContract.SelectionChanged += async (_, _) =>
+        {
+            if (cbContract.SelectedIndex < 0) return;
+
+            var selectedText = cbContract.SelectedItem as string;
+            if (string.IsNullOrEmpty(selectedText)) return;
+
+            // 선택된 계약명 추출
+            var selectedCompany = selectedText.Contains("(")
+                ? selectedText[..selectedText.LastIndexOf("(")].Trim()
+                : selectedText;
+
+            var selectedContract = allContracts.FirstOrDefault(c => c.C_CompanyName == selectedCompany);
+            if (selectedContract == null) return;
+
+            // 선택된 계약의 단가 조회
+            var selectedPrices = ContractService.GetContractPrices(selectedCompany);
+            if (selectedPrices.Count == 0)
+            {
+                Log($"⚠️ {selectedCompany}에 단가가 없습니다");
+                cbContract.SelectedIndex = -1;
+                return;
+            }
+
+            try
+            {
+                Log($"💾 {selectedCompany}의 단가를 {companyName}에 적용 중...");
+
+                // DB 저장
+                bool success = await Task.Run(() => ContractService.CopyContractPrices(selectedCompany, companyName));
+
+                if (success)
+                {
+                    Log($"✅ 단가 적용 완료: {selectedPrices.Count}개, Show4 새로고침...");
+                    cbContract.SelectedIndex = -1;
+
+                    // Show4 새로고침: DB 다시 로드해서 화면 반영 (체크박스는 해제 상태)
+                    if (_selectedContract != null)
+                    {
+                        var updatedPrices = await Task.Run(() => ContractService.GetContractPrices(_selectedContract.C_CompanyName));
+                        var contractQtys = await Task.Run(() => ContractService.GetContractQuantities(_selectedContract.C_CompanyName));
+                        _suppressTotalUpdate = true;
+                        var refreshedPanel = BuildPriceInfoPanel(_selectedContract.C_CompanyName, _selectedContract.C_Abbreviation, updatedPrices, contractQtys, _detailPanel, uncheckedByDefault: true);
+                        _suppressTotalUpdate = false;
+                        StatsPanelChanged?.Invoke(refreshedPanel);
+                        Log($"✅ Show4 갱신 완료 (체크박스 해제)");
+                    }
+                }
+                else
+                {
+                    Log($"❌ 단가 적용 실패");
+                    cbContract.SelectedIndex = -1;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log($"❌ 오류: {ex.Message}");
+                cbContract.SelectedIndex = -1;
+            }
+        };
 
         // 항목명 → 약칭 맵 로드
         var aliasMap = ContractService.GetAnalyteAliasMap();
@@ -681,13 +912,20 @@ public partial class ContractPage : UserControl
             Margin     = new Thickness(0, 0, 0, 8),
         });
 
-        // "모두 선택" 체크박스 + "확정" 버튼
-        var topControlPanel = new StackPanel
+        // 좌측: "모두 선택" 체크박스 + "전체 해제" + "확정" 버튼 / 우측: 비교 계약 드롭다운
+        var topControlPanel = new Grid
+        {
+            ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto,Auto"),
+            ColumnSpacing     = 8,
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin            = new Thickness(0, 0, 0, 8),
+        };
+
+        var leftGroup = new StackPanel
         {
             Orientation       = Orientation.Horizontal,
             Spacing           = 16,
             VerticalAlignment = VerticalAlignment.Center,
-            Margin            = new Thickness(0, 0, 0, 8),
         };
         var chkSelectAll = new CheckBox
         {
@@ -695,13 +933,13 @@ public partial class ContractPage : UserControl
             FontSize   = AppTheme.FontMD, FontFamily = Font,
             IsChecked  = true,
         };
-        topControlPanel.Children.Add(chkSelectAll);
+        leftGroup.Children.Add(chkSelectAll);
 
         // 전체 해제 버튼
         var btnClearAll = new Button
         {
             Content         = "❌  전체 해제",
-            Height          = 30,
+            Height          = 34,
             FontSize        = AppTheme.FontSM, FontFamily = Font,
             Background      = AppTheme.BgDanger,
             Foreground      = AppTheme.FgDanger,
@@ -709,7 +947,7 @@ public partial class ContractPage : UserControl
             CornerRadius    = new CornerRadius(4),
             Padding         = new Thickness(10, 0),
         };
-        topControlPanel.Children.Add(btnClearAll);
+        leftGroup.Children.Add(btnClearAll);
 
         var btnSave = new Button
         {
@@ -722,7 +960,17 @@ public partial class ContractPage : UserControl
             CornerRadius    = new CornerRadius(4),
             Padding         = new Thickness(16, 0),
         };
-        topControlPanel.Children.Add(btnSave);
+        leftGroup.Children.Add(btnSave);
+
+        topControlPanel.Children.Add(leftGroup);
+        Grid.SetColumn(leftGroup, 0);
+
+        // 우측: 비교 계약 라벨 + 드롭다운 (확정 버튼과 같은 높이)
+        topControlPanel.Children.Add(lblCompare);
+        Grid.SetColumn(lblCompare, 2);
+        topControlPanel.Children.Add(cbContract);
+        Grid.SetColumn(cbContract, 3);
+
         root.Children.Add(topControlPanel);
 
         // 컬럼 헤더 (체크 | 항목명 | 단가 | 수량 | 소계)
@@ -767,9 +1015,8 @@ public partial class ContractPage : UserControl
             .Distinct().ToList();
         if (catOrder.Remove("일반항목")) catOrder.Insert(0, "일반항목");
 
-        // prices에 있는 항목만 카테고리별로 그룹핑 (단가 있는 것만)
+        // 모든 분석항목을 카테고리별로 그룹핑 (단가 유무와 무관하게 전체 표시)
         var itemMeta = allItems
-            .Where(a => priceDict.ContainsKey(a.Analyte) && !string.IsNullOrWhiteSpace(priceDict[a.Analyte]))
             .GroupBy(a => string.IsNullOrEmpty(a.Category) ? "기타" : a.Category)
             .ToDictionary(g => g.Key);
 
@@ -853,16 +1100,27 @@ public partial class ContractPage : UserControl
             foreach (var item in groupItems)
             {
                 var analyte = item.Analyte;
-                if (!priceDict.TryGetValue(analyte, out var priceStr) || string.IsNullOrWhiteSpace(priceStr)) continue;
+
+                // DB에 단가/수량이 실제로 있는지 확인
+                bool hasRealPrice = priceDict.TryGetValue(analyte, out var priceStr)
+                    && !string.IsNullOrWhiteSpace(priceStr);
+                bool hasRealQuantity = contractQtys.TryGetValue(analyte, out var rawQtyStr)
+                    && !string.IsNullOrWhiteSpace(rawQtyStr);
 
                 decimal priceValue = 0m;
-                decimal.TryParse(priceStr, out priceValue);
+                if (hasRealPrice) decimal.TryParse(priceStr, out priceValue);
 
-                string contractQtyStr = (contractQtys.TryGetValue(analyte, out var cqStr) ? cqStr : "1") ?? "1";
-                int contractQty = int.TryParse(contractQtyStr, out int cqInt) && cqInt > 0 ? cqInt : 1;
+                // 수량: DB에 있으면 그 값, 단가만 있고 수량 없으면 기본 1, 둘 다 없으면 0
+                int contractQty;
+                if (hasRealQuantity && int.TryParse(rawQtyStr, out int cqInt) && cqInt > 0)
+                    contractQty = cqInt;
+                else if (hasRealPrice)
+                    contractQty = 1;
+                else
+                    contractQty = 0;
 
-                decimal initSubtotal = priceValue * contractQty;
-                subtotals[analyte] = initSubtotal;
+                decimal initSubtotal = hasRealPrice ? priceValue * contractQty : 0m;
+                if (initSubtotal > 0) subtotals[analyte] = initSubtotal;
                 grandTotal += initSubtotal;
 
                 var rowGrid = new Grid
@@ -871,8 +1129,12 @@ public partial class ContractPage : UserControl
                     ColumnSpacing     = 8,
                 };
 
-                // 체크박스
-                var chk = new CheckBox { IsChecked = true, VerticalAlignment = VerticalAlignment.Center };
+                // 체크박스: 단가가 있으면 체크 (수량 유무는 무관)
+                var chk = new CheckBox
+                {
+                    IsChecked = hasRealPrice,
+                    VerticalAlignment = VerticalAlignment.Center
+                };
                 Grid.SetColumn(chk, 0);
                 rowGrid.Children.Add(chk);
                 checkBoxes.Add(chk);
@@ -934,7 +1196,7 @@ public partial class ContractPage : UserControl
                 // 수량 (편집 가능)
                 var qtyBox = new TextBox
                 {
-                    Text              = contractQty.ToString(),
+                    Text              = contractQty > 0 ? contractQty.ToString() : "",
                     FontSize          = AppTheme.FontSM, FontFamily = Font,
                     TextAlignment     = Avalonia.Media.TextAlignment.Right,
                     Height            = 28,
@@ -989,6 +1251,21 @@ public partial class ContractPage : UserControl
                     UpdateTotalSummary(totalSummary, prices, subtotals, show2Panel);
                 };
 
+                // 체크박스 해제 → 단가/수량 비우기 + pending에 빈값 표시 (서브메뉴 [저장] 시 NULL 반영)
+                chk.IsCheckedChanged += (_, _) =>
+                {
+                    if (chk.IsChecked == false)
+                    {
+                        priceBox.Text = "";
+                        qtyBox.Text = "";
+                        subtotals.Remove(analyte);
+                        subtotalTb.Text = "—";
+                        _pendingPrices[analyte] = "";
+                        _pendingQuantities[analyte] = "";
+                        UpdateTotalSummary(totalSummary, prices, subtotals, show2Panel);
+                    }
+                };
+
                 itemsStack.Children.Add(new Border
                 {
                     Padding         = new Thickness(0, 4),
@@ -1033,7 +1310,7 @@ public partial class ContractPage : UserControl
             chkSelectAll.IsChecked = false;
         };
 
-        // 확정 버튼 — 체크된 항목은 단가/수량 반영, 체크 해제된 항목은 0으로 저장
+        // 확정 버튼 — 체크된 항목은 단가/수량 반영, 체크 해제된 항목은 NULL로 저장
         btnSave.Click += (_, _) =>
         {
             Log("[확정/기존] 버튼 클릭됨");
@@ -1052,9 +1329,9 @@ public partial class ContractPage : UserControl
                 }
                 else
                 {
-                    // 체크 해제: 단가/수량 모두 0으로 저장
-                    _pendingPrices[analyte] = "0";
-                    _pendingQuantities[analyte] = "0";
+                    // 체크 해제: 단가/수량 모두 NULL로 저장 (빈 문자열 → Service에서 DBNull 처리)
+                    _pendingPrices[analyte] = "";
+                    _pendingQuantities[analyte] = "";
                 }
             }
 
@@ -1094,6 +1371,7 @@ public partial class ContractPage : UserControl
         };
         root.Children.Add(scroll);
 
+        Log($"[UI빌드] BuildPriceInfoPanel 완료: {swBuild.ElapsedMilliseconds}ms");
         return new ScrollViewer
         {
             Content = root,
@@ -1109,6 +1387,9 @@ public partial class ContractPage : UserControl
                                        Dictionary<string, string> contractQtys,
                                        Dictionary<string, int> processedQtys)
     {
+        Log($"[UI빌드] BuildProgressPanel({companyName}) 시작, 계약수량={contractQtys.Count}, 처리수량={processedQtys.Count}");
+        var swProg = System.Diagnostics.Stopwatch.StartNew();
+
         var scrollViewer = new ScrollViewer();
 
         var root = new StackPanel { Spacing = 8, Margin = new Thickness(8) };
@@ -1300,6 +1581,7 @@ public partial class ContractPage : UserControl
         }
 
         root.Children.Add(grid);
+        Log($"[UI빌드] BuildProgressPanel 완료: {swProg.ElapsedMilliseconds}ms");
         return scrollViewer;
     }
 
@@ -1425,6 +1707,28 @@ public partial class ContractPage : UserControl
             var labelBlock = child.Children[0] as TextBlock;
             var label = labelBlock?.Text ?? "";
             label = label.Replace("🔒 ", "").Replace("    ", "").Replace(" :", "").Trim();
+
+            // ComboBox 처리 (계약근거 / 처리시설)
+            var cb = child.Children[1] as ComboBox;
+            if (cb != null)
+            {
+                if (label == "계약근거" && cb.SelectedItem is string selectedBasis)
+                {
+                    // 전체텍스트 포맷: "계약번호 / 업체명 / 대표사업장 / 기간"
+                    // 구 포맷 호환: "계약번호_업체명" (언더바 분리)
+                    string no;
+                    if (selectedBasis.Contains(" / "))
+                        no = selectedBasis.Split('/')[0].Trim();
+                    else
+                        no = selectedBasis.Split('_')[0].Trim();
+                    c.C_ContractType = no;
+                }
+                else if (label == "측정대상 사업장" && cb.SelectedItem is string selectedPlace)
+                {
+                    c.C_PlaceName = selectedPlace;
+                }
+                continue;
+            }
 
             // TextBox 처리
             var tb = child.Children[1] as TextBox;
@@ -1667,6 +1971,7 @@ public partial class ContractPage : UserControl
         Grid.SetColumn(panel, col);
         Grid.SetRow(panel, gridRow);
         grid.Children.Add(panel);
+        FadeIn.Apply(textBox);
         return textBox;
     }
 
@@ -1735,6 +2040,118 @@ public partial class ContractPage : UserControl
 
     }
 
+    // 계약근거 + 처리시설 ComboBox 추가 (측정인계약/측정인처리시설 DB 기준)
+    // - 계약근거 → 스크랩된 add_meas_cont_no 전체텍스트 (ex: "1000497193 / 보임.../ .../ 2026-...")
+    // - 처리시설 → 선택된 계약번호에 속한 cmb_emis_cmpy_plc_no 옵션 텍스트
+    // - row: 계약근거 행, row+1: 처리시설 행
+    private void AddBasisContractComboBox(Grid grid, int row, string currentContractNo, string currentPlaceName)
+    {
+        StackPanel MakeRow(string label)
+        {
+            var p = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+            p.Children.Add(new TextBlock
+            {
+                Text              = label + " :",
+                Width             = 90,
+                FontSize          = AppTheme.FontMD,
+                FontFamily        = Font,
+                Foreground        = AppRes("FgMuted"),
+                VerticalAlignment = VerticalAlignment.Center,
+                TextAlignment     = Avalonia.Media.TextAlignment.Right,
+            });
+            return p;
+        }
+
+        ComboBox MakeCombo() => new ComboBox
+        {
+            Width           = 200,
+            FontSize        = AppTheme.FontMD,
+            FontFamily      = Font,
+            Background      = AppTheme.BorderSeparator,
+            Foreground      = AppRes("AppFg"),
+            BorderThickness = new Thickness(1),
+            BorderBrush     = AppTheme.BorderDefault,
+            Padding         = new Thickness(8, 4),
+        };
+
+        var basisPanel = MakeRow("계약근거");
+        var placePanel = MakeRow("측정대상 사업장");
+        var basisCombo = MakeCombo();
+        var placeCombo = MakeCombo();
+        basisPanel.Children.Add(basisCombo);
+        placePanel.Children.Add(placeCombo);
+
+        // 계약근거: 측정인계약 전체텍스트 옵션
+        List<MeasurerService.MeasurerContract> contracts = new();
+        try
+        {
+            contracts = MeasurerService.GetAllMeasurerContracts();
+            Log($"[ComboBox] GetAllMeasurerContracts 로드: {contracts.Count}건");
+            foreach (var c in contracts)
+            {
+                string label = string.IsNullOrWhiteSpace(c.전체텍스트)
+                    ? $"{c.계약번호} / {c.업체명}"
+                    : c.전체텍스트;
+                basisCombo.Items.Add(label);
+            }
+            if (!string.IsNullOrEmpty(currentContractNo))
+            {
+                var match = contracts.FirstOrDefault(x => x.계약번호 == currentContractNo);
+                if (!string.IsNullOrEmpty(match.계약번호))
+                {
+                    string lbl = string.IsNullOrWhiteSpace(match.전체텍스트)
+                        ? $"{match.계약번호} / {match.업체명}" : match.전체텍스트;
+                    basisCombo.SelectedItem = lbl;
+                }
+            }
+        }
+        catch (Exception ex) { Log($"[ComboBox] 계약근거 로드 오류: {ex.Message}"); }
+
+        // 처리시설 옵션 갱신 (계약번호 기반)
+        void RefreshPlaces(string 계약번호, string? preserveName)
+        {
+            placeCombo.Items.Clear();
+            if (string.IsNullOrWhiteSpace(계약번호)) return;
+            try
+            {
+                var places = MeasurerService.GetMeasurerPlaces(계약번호);
+                foreach (var p in places) placeCombo.Items.Add(p.처리시설명);
+                if (!string.IsNullOrEmpty(preserveName) &&
+                    places.Any(p => p.처리시설명 == preserveName))
+                    placeCombo.SelectedItem = preserveName;
+            }
+            catch (Exception ex) { Log($"[ComboBox] 처리시설 로드 오류: {ex.Message}"); }
+        }
+
+        RefreshPlaces(currentContractNo, currentPlaceName);
+
+        basisCombo.SelectionChanged += (_, _) =>
+        {
+            if (basisCombo.SelectedItem is not string sel) return;
+            var no = sel.Split('/')[0].Trim();
+            if (_selectedContract != null) _selectedContract.C_ContractType = no;
+            RefreshPlaces(no, null);
+        };
+
+        placeCombo.SelectionChanged += (_, _) =>
+        {
+            if (placeCombo.SelectedItem is string sp && _selectedContract != null)
+                _selectedContract.C_PlaceName = sp;
+        };
+
+        int col1     = row % 2;
+        int gridRow1 = row / 2;
+        Grid.SetColumn(basisPanel, col1);
+        Grid.SetRow(basisPanel, gridRow1);
+        grid.Children.Add(basisPanel);
+
+        int col2     = (row + 1) % 2;
+        int gridRow2 = (row + 1) / 2;
+        Grid.SetColumn(placePanel, col2);
+        Grid.SetRow(placePanel, gridRow2);
+        grid.Children.Add(placePanel);
+    }
+
     // =========================================================================
     // 확인 다이얼로그
     // =========================================================================
@@ -1750,12 +2167,16 @@ public partial class ContractPage : UserControl
         };
 
         bool result = false;
-        var yes = new Button { Content = "삭제", Width = 80,
-                               Background = AppTheme.FgDanger,
-                               Foreground = Brushes.White, BorderThickness = new Thickness(0) };
-        var no  = new Button { Content = "취소", Width = 80,
-                               Background = AppTheme.BorderMuted,
-                               Foreground = Brushes.White, BorderThickness = new Thickness(0) };
+        var (yBg, yFg, yBd) = StatusBadge.GetBrushes(BadgeStatus.Bad);
+        var (nBg, nFg, nBd) = StatusBadge.GetBrushes(BadgeStatus.Muted);
+        var yes = new Button { Content = "삭제", Width = 88, Height = 30,
+                               Background = yBg, Foreground = yFg, BorderBrush = yBd,
+                               BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(999),
+                               FontWeight = FontWeight.SemiBold, Cursor = new Cursor(StandardCursorType.Hand) };
+        var no  = new Button { Content = "취소", Width = 88, Height = 30,
+                               Background = nBg, Foreground = nFg, BorderBrush = nBd,
+                               BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(999),
+                               Cursor = new Cursor(StandardCursorType.Hand) };
 
         yes.Click += (_, _) => { result = true;  dlg.Close(); };
         no.Click  += (_, _) => { result = false; dlg.Close(); };
@@ -1896,15 +2317,17 @@ public partial class ContractPage : UserControl
                 Text = "추천:", FontSize = AppTheme.FontXS, FontFamily = Font,
                 Foreground = AppTheme.FgDimmed, VerticalAlignment = VerticalAlignment.Center,
             });
+            var (sBg, sFg, sBd) = StatusBadge.GetBrushes(BadgeStatus.Info);
             foreach (var sug in suggestions)
             {
                 var s = sug;
                 var btn = new Button
                 {
-                    Content = s, Height = 20, FontSize = AppTheme.FontXS, FontFamily = Font,
-                    Background = Brush.Parse("#2a2a4a"), Foreground = Brush.Parse("#99aacc"),
-                    BorderThickness = new Thickness(1), BorderBrush = AppTheme.BorderMuted,
-                    CornerRadius = new CornerRadius(3), Padding = new Thickness(6, 0),
+                    Content = s, Height = 22, FontSize = AppTheme.FontXS, FontFamily = Font,
+                    Background = sBg, Foreground = sFg, BorderBrush = sBd,
+                    BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(999),
+                    Padding = new Thickness(8, 0),
+                    Cursor = new Cursor(StandardCursorType.Hand),
                 };
                 btn.Click += (_, _) => { if (_txbMeasAlias != null) _txbMeasAlias.Text = s; };
                 sugRow.Children.Add(btn);

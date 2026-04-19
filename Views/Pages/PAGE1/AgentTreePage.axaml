@@ -40,7 +40,7 @@
         </Border>
         <TextBox Grid.Row="1"
                  x:Name="AgentSearchBox"
-                 Watermark="\ud83d\udd0d \uc9c1\uc6d0 \uac80\uc0c9..."
+                 Watermark="🔍 직원 검색..."
                  FontSize="{DynamicResource FontSizeMD}"
                  FontFamily="avares://ETA/Assets/Fonts#Pretendard"
                  Height="32" Margin="5,4,5,2"

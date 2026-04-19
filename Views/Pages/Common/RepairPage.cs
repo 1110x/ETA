@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ETA.Views;
+using ETA.Views.Controls;
 
 namespace ETA.Views.Pages.Common;
 
@@ -68,8 +69,8 @@ public class RepairPage
         _txbProcess   = MakeTxb("처리 내용");
         _txbNote      = MakeTxb("비고");
         _txbFormTitle = new TextBlock { Text = "신규 보수요청", FontSize = AppTheme.FontLG, FontWeight = FontWeight.Bold, FontFamily = Font, Foreground = AppTheme.FgPrimary, Margin = new Thickness(0,0,0,8) };
-        _btnSave = MakeBtn("💾 저장", "#2a4a2a", "#aef0ae");
-        _btnNew  = MakeBtn("✚ 신규", "#2a2a3a", "#aaa");
+        _btnSave = MakePill("💾 저장", BadgeStatus.Ok);
+        _btnNew  = MakePill("✚ 신규", BadgeStatus.Info);
         _btnSave.Click += OnSave;
         _btnNew.Click  += (_, _) => ClearForm();
 
@@ -365,25 +366,40 @@ public class RepairPage
 
     private void UpdateSelectedStatus(string status)
     {
-        if (_editingItem == null) return;
-        var editId = _editingItem.Id;
-        if (RepairService.UpdateStatus(editId, status))
+        if (_editingItem == null)
         {
-            // 트리 건수 갱신 + 현재 월 목록 리프레시
-            LoadTree();
+            System.Diagnostics.Debug.WriteLine($"[RepairPage] UpdateSelectedStatus({status}) — 선택된 항목 없음");
+            return;
+        }
+        var editId = _editingItem.Id;
+        bool ok = RepairService.UpdateStatus(editId, status);
+        System.Diagnostics.Debug.WriteLine($"[RepairPage] UpdateStatus(id={editId}, status={status}) → ok={ok}");
+        if (!ok) return;
 
-            // 목록에서 변경된 항목 자동 재선택
-            foreach (var child in _listPanel.Children)
+        // 로컬 캐시 즉시 갱신 (재선택 시 새 상태 반영)
+        _editingItem.상태 = status;
+
+        // 트리 건수 + 현재 월 목록 전체 리빌드
+        LoadTree();
+
+        // 변경된 항목 자동 재선택 (있으면 폼/배경 갱신, 없으면 폼만 클리어)
+        bool reselected = false;
+        foreach (var child in _listPanel.Children)
+        {
+            if (child is Border b && b.Tag is int id && id == editId)
             {
-                if (child is Border b && b.Tag is int id && id == editId)
-                {
-                    _selectedRowBorder = b;
-                    b.Background = AppTheme.BgActiveBlue;
-                    if (b.DataContext is RepairItem item)
-                        LoadToForm(item);
-                    break;
-                }
+                _selectedRowBorder = b;
+                b.Background = AppTheme.BgActiveBlue;
+                if (b.DataContext is RepairItem item)
+                    LoadToForm(item);
+                reselected = true;
+                break;
             }
+        }
+        if (!reselected)
+        {
+            _selectedRowBorder = null;
+            ClearForm();
         }
     }
 
@@ -425,14 +441,20 @@ public class RepairPage
         return cb;
     }
 
-    private static Button MakeBtn(string text, string bg, string fg) => new()
+    // wire-v01: pill 버튼 (StatusBadge 토큰)
+    private static Button MakePill(string text, BadgeStatus status)
     {
-        Content = text, Height = 28, FontSize = AppTheme.FontMD, FontFamily = Font,
-        Background = new SolidColorBrush(Color.Parse(bg)),
-        Foreground = new SolidColorBrush(Color.Parse(fg)),
-        BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
-        Padding = new Thickness(14,0),
-    };
+        var (bg, fg, bd) = StatusBadge.GetBrushes(status);
+        return new Button
+        {
+            Content = text, Height = 30, FontSize = AppTheme.FontMD, FontFamily = Font,
+            FontWeight = FontWeight.SemiBold,
+            Background = bg, Foreground = fg, BorderBrush = bd,
+            BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(999),
+            Padding = new Thickness(16, 0),
+            Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
+        };
+    }
 
     private static void SelectCombo(ComboBox cb, string value)
     {

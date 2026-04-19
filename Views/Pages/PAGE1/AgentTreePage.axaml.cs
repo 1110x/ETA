@@ -11,6 +11,7 @@ using Avalonia.Threading;
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 using ETA.Models;
@@ -19,6 +20,7 @@ using ETA.Services.SERVICE1;
 using ETA.Services.SERVICE2;
 using ETA.Services.Common;
 using ETA.Views;
+using ETA.Views.Controls;
 
 namespace ETA.Views.Pages.PAGE1;
 
@@ -105,11 +107,10 @@ public partial class AgentTreePage : UserControl
     private const double GC_BAR_H     = 24.0;   // 바 높이
     private const double GC_DATE_H    = 20.0;   // 하단 날짜 영역
     private string _chartTab = "분석항목";          // 현재 업무분장표 탭
-    private DispatcherTimer? _chartShimmerTimer;
-    private readonly List<(LinearGradientBrush bgBrush, LinearGradientBrush borderBrush, Color baseColor)> _chartShimmerBars = new();
+    private StackPanel? _chartSummaryPanel;           // wire-v01 요약 스트립
     // 드래그로 변경된 경계 — (항목명, 원래시작일, 원래종료일, 새시작일, 새종료일, 담당자)
     private readonly List<(string FullName, string Manager, DateTime OrigStart, DateTime OrigEnd, DateTime NewStart, DateTime NewEnd)> _chartPendingChanges = new();
-    private readonly List<Action> _chartPendingActions = new();
+    private readonly List<Action<DbConnection, DbTransaction, List<string>>> _chartPendingActions = new();
     private ProgressBar? _chartProgressBar;
     private TextBlock? _chartProgressLabel;
     /// <summary>로컬 캐시 — null이면 DB에서 로드, 편집 시 로컬만 수정</summary>
@@ -3919,39 +3920,47 @@ public partial class AgentTreePage : UserControl
         _chartRangeEnd   = new DateTime(today.Year, today.Month, 1).AddMonths(2).AddDays(9); // +2개월 10일
         bool isH1 = today.Month <= 6;
 
-        var root = new Grid { RowDefinitions = new RowDefinitions("Auto,Auto,*") };
+        var root = new Grid { RowDefinitions = new RowDefinitions("Auto,Auto,Auto,*") };
         var kbFont = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
 
-        // ── Row 0: 헤더 ─────────────────────────────────────────────────────
-        var header = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Margin = new Thickness(8, 6, 8, 4) };
+        // ── Row 0: 헤더 (wire-v01 pill 스타일) ───────────────────────────────
+        var header = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, Margin = new Thickness(12, 10, 12, 6) };
 
         header.Children.Add(new TextBlock {
-            Text = "업무분장표", FontSize = AppTheme.FontXL, FontWeight = FontWeight.Bold,
-            FontFamily = kbFont, Foreground = AppTheme.FgInfo,
-            VerticalAlignment = VerticalAlignment.Center });
+            Text = "업무분장표", FontSize = AppTheme.FontXL + 4, FontWeight = FontWeight.Bold,
+            FontFamily = kbFont, Foreground = AppTheme.FgPrimary,
+            VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 12, 0) });
 
-        Button MakeBtn(string text, string bg, string fg, string bd, int w = 30) => new()
+        // wire-v01: pill 버튼 팩토리 (디자인 시스템 상태 토큰 사용)
+        Button MakePill(string text, BadgeStatus status, bool active = true, int w = 52)
         {
-            Content = text, Width = w, Height = 24, FontSize = AppTheme.FontSM,
-            Padding = new Thickness(0), CornerRadius = new CornerRadius(4),
-            FontFamily = kbFont, Cursor = new Cursor(StandardCursorType.Hand),
-            Background = new SolidColorBrush(Color.Parse(bg)),
-            Foreground = new SolidColorBrush(Color.Parse(fg)),
-            BorderThickness = new Thickness(1),
-            BorderBrush = new SolidColorBrush(Color.Parse(bd)),
-        };
+            var (bg, fg, bd) = active
+                ? StatusBadge.GetBrushes(status)
+                : (AppTheme.StatusMutedBg, AppTheme.StatusMutedFg, AppTheme.StatusMutedBorder);
+            return new Button
+            {
+                Content = text, Width = w, Height = 26, FontSize = AppTheme.FontSM,
+                Padding = new Thickness(0), CornerRadius = new CornerRadius(999),
+                FontFamily = kbFont, Cursor = new Cursor(StandardCursorType.Hand),
+                Background = bg, Foreground = fg,
+                BorderThickness = new Thickness(1.2), BorderBrush = bd,
+                FontWeight = active ? FontWeight.SemiBold : FontWeight.Normal,
+                HorizontalContentAlignment = HorizontalAlignment.Center,
+                VerticalContentAlignment = VerticalAlignment.Center,
+            };
+        }
 
-        var btnPrev  = MakeBtn("◀", "#2a3a5a", "#88aacc", "#3a5a8a");
-        var btnNext  = MakeBtn("▶", "#2a3a5a", "#88aacc", "#3a5a8a");
-        var btnToday = MakeBtn("이번달", "#2a3a2a", "#88cc88", "#3a6a3a", 52);
-        var btnH1    = MakeBtn("상반기", isH1 ? "#2a4a3a" : "#2a2a2a", isH1 ? "#88ddaa" : "#666", isH1 ? "#3a6a4a" : "#444", 52);
-        var btnH2    = MakeBtn("하반기", !isH1 ? "#2a4a3a" : "#2a2a2a", !isH1 ? "#88ddaa" : "#666", !isH1 ? "#3a6a4a" : "#444", 52);
-        var btnApply = MakeBtn("반영", "#4a2a1a", "#ffaa66", "#6a4a2a", 48);
+        var btnPrev  = MakePill("◀",     BadgeStatus.Info,   active: true,  w: 32);
+        var btnNext  = MakePill("▶",     BadgeStatus.Info,   active: true,  w: 32);
+        var btnToday = MakePill("이번달", BadgeStatus.Accent, active: true,  w: 60);
+        var btnH1    = MakePill("상반기", BadgeStatus.Ok,     active: isH1);
+        var btnH2    = MakePill("하반기", BadgeStatus.Ok,     active: !isH1);
+        var btnApply = MakePill("반영",   BadgeStatus.Accent, active: true,  w: 54);
 
         var txbMonth = new TextBlock {
             Text = $"{_chartRangeStart:M/dd} – {_chartRangeEnd:M/dd}", FontSize = AppTheme.FontMD,
-            FontFamily = kbFont, Foreground = AppTheme.FgSecondary,
-            VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(8, 0, 0, 0) };
+            FontFamily = kbFont, Foreground = AppTheme.FgSecondary, FontWeight = FontWeight.SemiBold,
+            VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(8, 0, 8, 0) };
 
         header.Children.Add(btnPrev);
         header.Children.Add(txbMonth);
@@ -3963,22 +3972,34 @@ public partial class AgentTreePage : UserControl
         Grid.SetRow(header, 0);
         root.Children.Add(header);
 
-        // ── Row 1: 카테고리 탭 ──────────────────────────────────────────────
-        var tabBar = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4, Margin = new Thickness(8, 0, 8, 4) };
+        // ── Row 1: 카테고리 탭 (wire-v01 active=Info, inactive=Muted) ─────────
+        var tabBar = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, Margin = new Thickness(12, 0, 12, 6) };
         string[] tabNames = ["분석항목", "계약업체", "일반업무"];
         var tabBtns = new Button[tabNames.Length];
         for (int t = 0; t < tabNames.Length; t++)
         {
             bool active = tabNames[t] == _chartTab;
-            var tb = MakeBtn(tabNames[t], active ? "#2a4a5a" : "#1a1a1a", active ? "#88ccee" : "#666", active ? "#3a6a8a" : "#333", 64);
-            tb.FontWeight = active ? FontWeight.Bold : FontWeight.Normal;
+            var tb = MakePill(tabNames[t], BadgeStatus.Info, active: active, w: 76);
             tabBtns[t] = tb;
             tabBar.Children.Add(tb);
         }
-        Grid.SetRow(tabBar, 1);
+        Grid.SetRow(tabBar, 2);
         root.Children.Add(tabBar);
 
-        // ── Row 2: 헤더+본문 공통 래퍼 (같은 부모 → 컬럼 정렬 보장) ──────────
+        // ── Row 1: Summary strip (wire-v01) ────────────────────────────────
+        var summaryStrip = new Border
+        {
+            Background = AppTheme.BgCard, BorderBrush = AppTheme.BorderSubtle,
+            BorderThickness = new Thickness(0, 1, 0, 1),
+            Padding = new Thickness(12, 8), Margin = new Thickness(0, 0, 0, 0),
+        };
+        var summaryPanel = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+        summaryStrip.Child = summaryPanel;
+        _chartSummaryPanel = summaryPanel;
+        Grid.SetRow(summaryStrip, 1);
+        root.Children.Add(summaryStrip);
+
+        // ── Row 3: 헤더+본문 공통 래퍼 (같은 부모 → 컬럼 정렬 보장) ──────────
         var chartWrapper = new Grid
         {
             Margin          = new Thickness(4, 0, 4, 4),
@@ -4001,7 +4022,7 @@ public partial class AgentTreePage : UserControl
         Grid.SetRow(scroll, 1);
         chartWrapper.Children.Add(scroll);
 
-        Grid.SetRow(chartWrapper, 2);
+        Grid.SetRow(chartWrapper, 3);
         root.Children.Add(chartWrapper);
 
         // 탭별 렌더링
@@ -4017,15 +4038,20 @@ public partial class AgentTreePage : UserControl
         RefreshBody();
 
         // ── 이벤트 ─────────────────────────────────────────────────────────
+        void ApplyPillStyle(Button btn, BadgeStatus status, bool active, FontWeight? weight = null)
+        {
+            var (bg, fg, bd) = active
+                ? StatusBadge.GetBrushes(status)
+                : (AppTheme.StatusMutedBg, AppTheme.StatusMutedFg, AppTheme.StatusMutedBorder);
+            btn.Background = bg; btn.Foreground = fg; btn.BorderBrush = bd;
+            btn.FontWeight = weight ?? (active ? FontWeight.SemiBold : FontWeight.Normal);
+        }
+
         void UpdateHalfBtnStyle()
         {
             bool h1 = _chartRangeStart.Month <= 6;
-            btnH1.Background = new SolidColorBrush(Color.Parse(h1 ? "#2a4a3a" : "#2a2a2a"));
-            btnH1.Foreground = new SolidColorBrush(Color.Parse(h1 ? "#88ddaa" : "#666"));
-            btnH1.BorderBrush = new SolidColorBrush(Color.Parse(h1 ? "#3a6a4a" : "#444"));
-            btnH2.Background = new SolidColorBrush(Color.Parse(!h1 ? "#2a4a3a" : "#2a2a2a"));
-            btnH2.Foreground = new SolidColorBrush(Color.Parse(!h1 ? "#88ddaa" : "#666"));
-            btnH2.BorderBrush = new SolidColorBrush(Color.Parse(!h1 ? "#3a6a4a" : "#444"));
+            ApplyPillStyle(btnH1, BadgeStatus.Ok, active: h1);
+            ApplyPillStyle(btnH2, BadgeStatus.Ok, active: !h1);
         }
 
         void Navigate()
@@ -4050,9 +4076,17 @@ public partial class AgentTreePage : UserControl
             Navigate();
         };
         btnH1.Click += (_, _) =>
-        { _chartRangeStart = new DateTime(_chartRangeStart.Year, 1, 1); Navigate(); };
+        {
+            _chartRangeStart = new DateTime(_chartRangeStart.Year, 1, 1);
+            _chartRangeEnd   = new DateTime(_chartRangeStart.Year, 6, 30);
+            Navigate();
+        };
         btnH2.Click += (_, _) =>
-        { _chartRangeStart = new DateTime(_chartRangeStart.Year, 7, 1); Navigate(); };
+        {
+            _chartRangeStart = new DateTime(_chartRangeStart.Year, 7, 1);
+            _chartRangeEnd   = new DateTime(_chartRangeStart.Year, 12, 31);
+            Navigate();
+        };
         btnApply.Click += async (_, _) =>
         {
             if (_chartPendingActions.Count == 0) return;
@@ -4066,17 +4100,35 @@ public partial class AgentTreePage : UserControl
             _chartPendingActions.Clear();
             _chartPendingChanges.Clear();
 
+            // 단일 커넥션/트랜잭션으로 일괄 반영 — N회 왕복을 1회로
             await Task.Run(() =>
             {
-                for (int i = 0; i < actions.Count; i++)
+                try
                 {
-                    actions[i]();
-                    var pct = (double)(i + 1) / actions.Count;
-                    Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                    using var conn = DbConnectionFactory.CreateConnection();
+                    conn.Open();
+                    var cols = DbConnectionFactory.GetColumnNames(conn, "분장표준처리");
+                    using var tx = conn.BeginTransaction();
+
+                    int step = Math.Max(1, actions.Count / 20); // 진행률 UI 업데이트 5%마다
+                    for (int i = 0; i < actions.Count; i++)
                     {
-                        if (pb != null) pb.Value = pct;
-                        if (pl != null) pl.Text = $"반영 중... {(int)(pct * 100)}%";
-                    });
+                        actions[i](conn, tx, cols);
+                        if (i == actions.Count - 1 || i % step == 0)
+                        {
+                            var pct = (double)(i + 1) / actions.Count;
+                            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                            {
+                                if (pb != null) pb.Value = pct;
+                                if (pl != null) pl.Text = $"반영 중... {(int)(pct * 100)}%";
+                            });
+                        }
+                    }
+                    tx.Commit();
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[AgentTreePage] 반영 일괄 처리 오류: {ex}");
                 }
             });
 
@@ -4087,20 +4139,20 @@ public partial class AgentTreePage : UserControl
             RefreshShow3AfterChartUpdate();
             btnApply.IsEnabled = true; btnApply.Content = "반영됨";
         };
-        // 프로그레스바 (헤더에 인라인)
+        // 프로그레스바 (헤더에 인라인) — wire-v01 accent
         var progressBar = new ProgressBar
         {
             Minimum = 0, Maximum = 1, Value = 0,
             Height = 6, Width = 150, CornerRadius = new CornerRadius(3),
-            Foreground = new SolidColorBrush(Color.Parse("#ff8844")),
             Background = new SolidColorBrush(Color.Parse("#333")),
             VerticalAlignment = VerticalAlignment.Center,
             IsVisible = false,
         };
+        progressBar.Classes.Add("accent");
         var progressLabel = new TextBlock
         {
             FontSize = AppTheme.FontXS, FontFamily = kbFont,
-            Foreground = new SolidColorBrush(Color.Parse("#ff8844")),
+            Foreground = AppTheme.StatusAccentFg,
             VerticalAlignment = VerticalAlignment.Center,
             IsVisible = false,
         };
@@ -4113,13 +4165,7 @@ public partial class AgentTreePage : UserControl
         void UpdateTabStyle()
         {
             for (int i = 0; i < tabNames.Length; i++)
-            {
-                bool a = tabNames[i] == _chartTab;
-                tabBtns[i].Background = new SolidColorBrush(Color.Parse(a ? "#2a4a5a" : "#1a1a1a"));
-                tabBtns[i].Foreground = new SolidColorBrush(Color.Parse(a ? "#88ccee" : "#666"));
-                tabBtns[i].BorderBrush = new SolidColorBrush(Color.Parse(a ? "#3a6a8a" : "#333"));
-                tabBtns[i].FontWeight = a ? FontWeight.Bold : FontWeight.Normal;
-            }
+                ApplyPillStyle(tabBtns[i], BadgeStatus.Info, active: tabNames[i] == _chartTab);
         }
         for (int t = 0; t < tabNames.Length; t++)
         {
@@ -4174,11 +4220,6 @@ public partial class AgentTreePage : UserControl
     /// <summary>업무분장표 테이블 렌더링 — 분석항목 탭 (2개월)</summary>
     private void RefreshChartTable(StackPanel fixedHeader, StackPanel body)
     {
-        // 기존 shimmer 타이머 정리
-        _chartShimmerTimer?.Stop();
-        _chartShimmerTimer = null;
-        _chartShimmerBars.Clear();
-
         fixedHeader.Children.Clear();
         body.Children.Clear();
         var kbFont = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
@@ -4194,6 +4235,8 @@ public partial class AgentTreePage : UserControl
             .Where(a => !a.fullName.StartsWith("_") && a.fullName != "기타업무" && a.fullName != "담당계약업체" && a.fullName != "항목명")
             .ToList();
         if (analytes.Count == 0) return;
+
+        RefreshSummaryStrip(spans, analytes.Select(a => a.fullName).ToList(), rangeEnd);
 
         double trackW = totalDays * GC_DAY_W;
 
@@ -4353,15 +4396,15 @@ public partial class AgentTreePage : UserControl
                     {
                         var hs = hitSpan;
                         ApplySpanChangeToCache(captFullDrop, dropName, hs.Start, hs.End);
-                        _chartPendingActions.Add(() =>
-                            AnalysisRequestService.UpdateAssignmentByName(captFullDrop, dropName, hs.Start, hs.End));
+                        _chartPendingActions.Add((c, t, cols) =>
+                            AnalysisRequestService.UpdateAssignmentByName(c, t, captFullDrop, dropName, hs.Start, hs.End, cols));
                     }
                     else
                     {
                         var dd = dropDate;
                         ApplySpanChangeToCache(captFullDrop, dropName, dd, dd);
-                        _chartPendingActions.Add(() =>
-                            AnalysisRequestService.UpdateAssignmentByName(captFullDrop, dropName, dd, dd));
+                        _chartPendingActions.Add((c, t, cols) =>
+                            AnalysisRequestService.UpdateAssignmentByName(c, t, captFullDrop, dropName, dd, dd, cols));
                     }
                     RefreshChartTable(captHeaderDrop, captBodyDrop);
                 });
@@ -4400,7 +4443,7 @@ public partial class AgentTreePage : UserControl
                 Stroke = AppTheme.BorderSubtle, StrokeThickness = 1,
             });
 
-            // 스팬 바 — shimmer sweep (배경 비움, 테두리 + shimmer 텍스트)
+            // 스팬 바 — solid 배경
             var itemSpans = spans
                 .Where(s => string.Equals(s.FullName, fullName, StringComparison.OrdinalIgnoreCase))
                 .OrderBy(s => s.Start).ToList();
@@ -4413,41 +4456,8 @@ public partial class AgentTreePage : UserControl
                 double w = ex - sx;
                 if (w < 1) continue;
 
-                // 배경: 아주 미세한 shimmer sweep gradient
-                var dim = Color.FromArgb(15, baseColor.R, baseColor.G, baseColor.B);
-                var glow = Color.FromArgb(50, baseColor.R, baseColor.G, baseColor.B);
-                var bgBrush = new LinearGradientBrush
-                {
-                    StartPoint = new RelativePoint(0, 0.5, RelativeUnit.Relative),
-                    EndPoint   = new RelativePoint(1, 0.5, RelativeUnit.Relative),
-                    GradientStops =
-                    {
-                        new GradientStop(dim, 0.0),
-                        new GradientStop(dim, 0.0),
-                        new GradientStop(glow, 0.0),
-                        new GradientStop(dim, 0.0),
-                        new GradientStop(dim, 1.0),
-                    },
-                };
-
-                // 테두리: shimmer sweep gradient
-                var borderDim = Color.FromArgb(40, baseColor.R, baseColor.G, baseColor.B);
-                var borderGlow = Color.FromArgb(140, baseColor.R, baseColor.G, baseColor.B);
-                var borderBrush = new LinearGradientBrush
-                {
-                    StartPoint = new RelativePoint(0, 0.5, RelativeUnit.Relative),
-                    EndPoint   = new RelativePoint(1, 0.5, RelativeUnit.Relative),
-                    GradientStops =
-                    {
-                        new GradientStop(borderDim, 0.0),
-                        new GradientStop(borderDim, 0.0),
-                        new GradientStop(borderGlow, 0.0),
-                        new GradientStop(borderDim, 0.0),
-                        new GradientStop(borderDim, 1.0),
-                    },
-                };
-
-                _chartShimmerBars.Add((bgBrush, borderBrush, baseColor));
+                var bgBrush = new SolidColorBrush(Color.FromArgb(180, baseColor.R, baseColor.G, baseColor.B));
+                var borderBrush = new SolidColorBrush(Color.FromArgb(255, baseColor.R, baseColor.G, baseColor.B));
 
                 var captHeader = fixedHeader; var captBody = body; var captFull = fullName; var captSp = sp;
                 var bar = new Border
@@ -4460,7 +4470,7 @@ public partial class AgentTreePage : UserControl
                     Child = new TextBlock
                     {
                         Text = sp.Manager, FontSize = AppTheme.FontXS, FontFamily = kbFont,
-                        Foreground = new SolidColorBrush(baseColor),
+                        Foreground = Brushes.White, FontWeight = FontWeight.SemiBold,
                         TextTrimming = TextTrimming.CharacterEllipsis,
                         VerticalAlignment = VerticalAlignment.Center,
                         TextAlignment = TextAlignment.Center,
@@ -4485,8 +4495,8 @@ public partial class AgentTreePage : UserControl
                             if (lb.SelectedItem is not string nm) return;
                             var cFull = captFull; var cStart = captSp.Start; var cEnd = captSp.End;
                             ApplySpanChangeToCache(cFull, nm, cStart, cEnd);
-                            _chartPendingActions.Add(() =>
-                                AnalysisRequestService.UpdateAssignmentByName(cFull, nm, cStart, cEnd));
+                            _chartPendingActions.Add((c, t, cols) =>
+                                AnalysisRequestService.UpdateAssignmentByName(c, t, cFull, nm, cStart, cEnd, cols));
                             fly.Hide();
                             RefreshChartTable(captHeader, captBody);
                         };
@@ -4512,8 +4522,8 @@ public partial class AgentTreePage : UserControl
                         {
                             var cFull = captFull; var cStart = captSp.Start; var cEnd = captSp.End;
                             ClearSpanFromCache(cFull, cStart, cEnd);
-                            _chartPendingActions.Add(() =>
-                                AnalysisRequestService.ClearAssignmentByName(cFull, cStart, cEnd));
+                            _chartPendingActions.Add((c, t, cols) =>
+                                AnalysisRequestService.ClearAssignmentByName(c, t, cFull, cStart, cEnd));
                             fly.Hide();
                             RefreshChartTable(captHeader, captBody);
                         };
@@ -4560,34 +4570,6 @@ public partial class AgentTreePage : UserControl
 
             rowGrid.Children.Add(track);
             body.Children.Add(rowGrid);
-        }
-
-        // ── shimmer 타이머 시작 (모든 바 공용) ─────────────────────────
-        if (_chartShimmerBars.Count > 0)
-        {
-            double offset = -0.3;
-            _chartShimmerTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(30) };
-            _chartShimmerTimer.Tick += (_, _) =>
-            {
-                offset += 0.008;
-                if (offset > 1.3) offset = -0.3;
-
-                double a = Math.Clamp(offset - 0.12, 0, 1);
-                double b = Math.Clamp(offset, 0, 1);
-                double c = Math.Clamp(offset + 0.12, 0, 1);
-
-                foreach (var (bgBrush, borderBrush, _) in _chartShimmerBars)
-                {
-                    bgBrush.GradientStops[1] = new GradientStop(bgBrush.GradientStops[0].Color, a);
-                    bgBrush.GradientStops[2] = new GradientStop(bgBrush.GradientStops[2].Color, b);
-                    bgBrush.GradientStops[3] = new GradientStop(bgBrush.GradientStops[4].Color, c);
-
-                    borderBrush.GradientStops[1] = new GradientStop(borderBrush.GradientStops[0].Color, a);
-                    borderBrush.GradientStops[2] = new GradientStop(borderBrush.GradientStops[2].Color, b);
-                    borderBrush.GradientStops[3] = new GradientStop(borderBrush.GradientStops[4].Color, c);
-                }
-            };
-            _chartShimmerTimer.Start();
         }
     }
 
@@ -4793,13 +4775,13 @@ public partial class AgentTreePage : UserControl
                     DateTime tNewEnd2 = captIsLeft ? target2.End : captNewEnd;
                     var tgt = target2;
 
-                    _chartPendingActions.Add(() =>
+                    _chartPendingActions.Add((c, t, cols) =>
                     {
                         if (captIsLeft && tNewStart2 > tgt.Start)
-                            AnalysisRequestService.ClearAssignmentByName(fnLocal, tgt.Start, tNewStart2.AddDays(-1));
+                            AnalysisRequestService.ClearAssignmentByName(c, t, fnLocal, tgt.Start, tNewStart2.AddDays(-1));
                         if (!captIsLeft && tNewEnd2 < tgt.End)
-                            AnalysisRequestService.ClearAssignmentByName(fnLocal, tNewEnd2.AddDays(1), tgt.End);
-                        AnalysisRequestService.UpdateAssignmentByName(fnLocal, tgt.Manager, tNewStart2, tNewEnd2);
+                            AnalysisRequestService.ClearAssignmentByName(c, t, fnLocal, tNewEnd2.AddDays(1), tgt.End);
+                        AnalysisRequestService.UpdateAssignmentByName(c, t, fnLocal, tgt.Manager, tNewStart2, tNewEnd2, cols);
                     });
                 }
             }
@@ -4815,18 +4797,18 @@ public partial class AgentTreePage : UserControl
                 // DB 반영 액션 등록
                 var captNewStart = newStart; var captNewEnd = newEnd;
                 var captNewDate = newDate;
-                _chartPendingActions.Add(() =>
+                _chartPendingActions.Add((c, t, cols) =>
                 {
                     if (isLeft && captNewStart > captSpan.Start)
-                        AnalysisRequestService.ClearAssignmentByName(captFn, captSpan.Start, captNewStart.AddDays(-1));
+                        AnalysisRequestService.ClearAssignmentByName(c, t, captFn, captSpan.Start, captNewStart.AddDays(-1));
                     if (!isLeft && captNewEnd < captSpan.End)
-                        AnalysisRequestService.ClearAssignmentByName(captFn, captNewEnd.AddDays(1), captSpan.End);
+                        AnalysisRequestService.ClearAssignmentByName(c, t, captFn, captNewEnd.AddDays(1), captSpan.End);
 
                     if (prevSpan != null && isLeft)
-                        AnalysisRequestService.UpdateAssignmentByName(captFn, prevSpan.Manager, prevSpan.Start, captNewDate.AddDays(-1));
+                        AnalysisRequestService.UpdateAssignmentByName(c, t, captFn, prevSpan.Manager, prevSpan.Start, captNewDate.AddDays(-1), cols);
                     if (nextSpan != null && !isLeft)
-                        AnalysisRequestService.UpdateAssignmentByName(captFn, nextSpan.Manager, captNewDate.AddDays(1), nextSpan.End);
-                    AnalysisRequestService.UpdateAssignmentByName(captFn, captSpan.Manager, captNewStart, captNewEnd);
+                        AnalysisRequestService.UpdateAssignmentByName(c, t, captFn, nextSpan.Manager, captNewDate.AddDays(1), nextSpan.End, cols);
+                    AnalysisRequestService.UpdateAssignmentByName(c, t, captFn, captSpan.Manager, captNewStart, captNewEnd, cols);
                 });
             }
 
@@ -4836,6 +4818,35 @@ public partial class AgentTreePage : UserControl
         };
 
         track.Children.Add(handle);
+    }
+
+    /// <summary>wire-v01 요약 스트립 — 배정 상태 카운트 배지</summary>
+    private void RefreshSummaryStrip(
+        List<AnalysisRequestService.AssignmentSpan> spans,
+        List<string> analyteFullNames,
+        DateTime rangeEnd)
+    {
+        if (_chartSummaryPanel == null) return;
+        _chartSummaryPanel.Children.Clear();
+
+        var today = DateTime.Today;
+        var itemsWithSpan = spans.Select(s => s.FullName).Distinct(StringComparer.OrdinalIgnoreCase).ToHashSet();
+        int totalItems = analyteFullNames.Count;
+        int assignedItems = analyteFullNames.Count(n => itemsWithSpan.Contains(n));
+        int unassignedItems = totalItems - assignedItems;
+        int endingSoon = spans.Count(s => s.End >= today && s.End <= today.AddDays(7));
+        int managers = spans.Select(s => s.Manager).Where(m => !string.IsNullOrWhiteSpace(m))
+                            .Distinct(StringComparer.OrdinalIgnoreCase).Count();
+
+        _chartSummaryPanel.Children.Add(StatusBadge.Info($"항목 {totalItems}", withIcon: false));
+        _chartSummaryPanel.Children.Add(StatusBadge.Ok($"배정 {assignedItems}"));
+        if (unassignedItems > 0)
+            _chartSummaryPanel.Children.Add(StatusBadge.Bad($"미배정 {unassignedItems}"));
+        else
+            _chartSummaryPanel.Children.Add(StatusBadge.Muted($"미배정 {unassignedItems}"));
+        if (endingSoon > 0)
+            _chartSummaryPanel.Children.Add(StatusBadge.Warn($"7일 내 만료 {endingSoon}"));
+        _chartSummaryPanel.Children.Add(StatusBadge.Accent($"담당자 {managers}"));
     }
 
     /// <summary>업무분장표 — 계약업체 탭</summary>
@@ -4884,21 +4895,13 @@ public partial class AgentTreePage : UserControl
             Grid.SetColumn(label, 0);
             rowGrid.Children.Add(label);
 
-            // 업체 칩 목록
+            // 업체 칩 목록 — wire-v01 통일 StatusBadge
             var chips = new WrapPanel { Margin = new Thickness(4, 2), };
             foreach (var company in agent.담당업체목록)
             {
-                chips.Children.Add(new Border
-                {
-                    Background = new SolidColorBrush(Color.Parse("#1a2a3a")),
-                    CornerRadius = new CornerRadius(3),
-                    Padding = new Thickness(6, 2), Margin = new Thickness(2, 1),
-                    Child = new TextBlock
-                    {
-                        Text = company, FontSize = AppTheme.FontXS, FontFamily = kbFont,
-                        Foreground = new SolidColorBrush(Color.Parse("#88bbdd")),
-                    },
-                });
+                var chip = ETA.Views.Controls.StatusBadge.Info(company, withIcon: false);
+                chip.Margin = new Thickness(2, 1);
+                chips.Children.Add(chip);
             }
             Grid.SetColumn(chips, 1);
             rowGrid.Children.Add(chips);

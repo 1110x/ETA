@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Controls.Templates;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
@@ -13,6 +14,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Threading.Tasks;
 using ETA.Views;
+using ETA.Views.Controls;
 
 namespace ETA.Views.Pages.Common;
 
@@ -53,6 +55,20 @@ public class RiskManagePage
         Margin = new Thickness(0, 4, 0, 4),
     };
     private Border? _selectedCard;
+
+    // ── Show1 키보드 네비게이션 상태 ────────────────────────────────────────
+    private readonly List<Border> _cards = new();
+    private readonly List<Action> _selectActions = new();
+    private int _selectedIndex = -1;
+    private ScrollViewer? _listScroll;
+
+    // ── 분석항목 필터 (시약 카테고리에서만 사용) ───────────────────────────
+    private const string AnalyteFilterAll = "전체";
+    private string _analyteFilter = AnalyteFilterAll;
+    private ComboBox? _analyteCombo;
+    private Button? _analyteClearBtn;
+
+    private sealed record AnalyteOption(string Analyte, string Category, bool IsAll = false);
 
     // ── Show4 — 분석항목 연결 패널 ──────────────────────────────────────────
     private readonly StackPanel _analytePanel = new() { Spacing = 4 };
@@ -124,6 +140,10 @@ public class RiskManagePage
     public void SelectCategory(string cat)
     {
         _category = cat;
+        bool showCombo = (cat == "시약");
+        if (_analyteCombo != null) _analyteCombo.IsVisible = showCombo;
+        if (_analyteClearBtn != null)
+            _analyteClearBtn.IsVisible = showCombo && _analyteFilter != AnalyteFilterAll;
         RenderList();
         ClearDetail();
     }
@@ -211,21 +231,23 @@ public class RiskManagePage
             TextWrapping = TextWrapping.Wrap,
             Margin = new Thickness(20, 20, 20, 0),
         };
+        var (okBg, okFg, okBd) = StatusBadge.GetBrushes(BadgeStatus.Bad);
+        var (caBg, caFg, caBd) = StatusBadge.GetBrushes(BadgeStatus.Muted);
         var btnOk = new Button
         {
-            Content = "삭제", Width = 90, Height = 32,
-            Background = new SolidColorBrush(Color.Parse("#3a1a1a")),
-            Foreground = new SolidColorBrush(Color.Parse("#ff8888")),
-            FontFamily = FontM, FontSize = AppTheme.FontBase,
-            BorderThickness = new Thickness(0),
-            CornerRadius = new CornerRadius(4),
+            Content = "삭제", Width = 92, Height = 32,
+            Background = okBg, Foreground = okFg, BorderBrush = okBd,
+            FontFamily = FontM, FontSize = AppTheme.FontBase, FontWeight = FontWeight.SemiBold,
+            BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(999),
+            Cursor = new Cursor(StandardCursorType.Hand),
         };
         var btnCancel = new Button
         {
-            Content = "취소", Width = 90, Height = 32,
+            Content = "취소", Width = 92, Height = 32,
+            Background = caBg, Foreground = caFg, BorderBrush = caBd,
             FontFamily = FontM, FontSize = AppTheme.FontBase,
-            BorderThickness = new Thickness(0),
-            CornerRadius = new CornerRadius(4),
+            BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(999),
+            Cursor = new Cursor(StandardCursorType.Hand),
         };
         btnOk.Click += (_, _) => { tcs.TrySetResult(true); win.Close(); };
         btnCancel.Click += (_, _) => { tcs.TrySetResult(false); win.Close(); };
@@ -260,10 +282,108 @@ public class RiskManagePage
         {
             Text = "시약관리", FontSize = AppTheme.FontXL, FontWeight = FontWeight.Bold,
             FontFamily = FontM, Foreground = AppTheme.FgPrimary,
-            Margin = new Thickness(0, 0, 0, 10),
+            VerticalAlignment = VerticalAlignment.Center,
         };
 
-        var scroll = new ScrollViewer
+        // 분석항목 필터 콤보 (분석정보.Analyte) — 항목에 Category 뱃지 표시
+        _analyteCombo = new ComboBox
+        {
+            FontFamily = FontR, FontSize = AppTheme.FontSM,
+            MinWidth = 180, MaxWidth = 260,
+            VerticalAlignment = VerticalAlignment.Center,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            PlaceholderText = "분석항목 필터",
+            ItemTemplate = new FuncDataTemplate<AnalyteOption>((opt, _) =>
+            {
+                if (opt == null) return new TextBlock();
+                if (opt.IsAll)
+                    return new TextBlock
+                    {
+                        Text = "🔄 전체 보기", FontFamily = FontM, FontSize = AppTheme.FontSM,
+                        Foreground = AppTheme.FgInfo, FontWeight = FontWeight.SemiBold,
+                        VerticalAlignment = VerticalAlignment.Center,
+                    };
+
+                var sp = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, VerticalAlignment = VerticalAlignment.Center };
+                if (!string.IsNullOrEmpty(opt.Category))
+                {
+                    string color = GetChosungColor(opt.Category);
+                    sp.Children.Add(new Border
+                    {
+                        Background = new SolidColorBrush(Color.Parse(color)),
+                        CornerRadius = new CornerRadius(3),
+                        Padding = new Thickness(5, 1),
+                        MinWidth = 36,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        Child = new TextBlock
+                        {
+                            Text = opt.Category, FontSize = AppTheme.FontXS, FontFamily = FontM,
+                            Foreground = Brushes.White, TextAlignment = TextAlignment.Center,
+                        },
+                    });
+                }
+                sp.Children.Add(new TextBlock
+                {
+                    Text = opt.Analyte, FontSize = AppTheme.FontSM, FontFamily = FontR,
+                    Foreground = AppTheme.FgPrimary,
+                    VerticalAlignment = VerticalAlignment.Center,
+                });
+                return sp;
+            }, supportsRecycling: true),
+        };
+        ReloadAnalyteCombo();
+        _analyteCombo.SelectionChanged += (_, _) =>
+        {
+            var sel = (_analyteCombo.SelectedItem as AnalyteOption)?.Analyte ?? AnalyteFilterAll;
+            if (sel != _analyteFilter)
+            {
+                _analyteFilter = sel;
+                if (_analyteClearBtn != null)
+                    _analyteClearBtn.IsVisible = _analyteFilter != AnalyteFilterAll;
+                RenderList();
+            }
+        };
+
+        // 필터 해제 버튼 — 필터 적용 중일 때만 표시, 클릭 시 전체 복귀
+        _analyteClearBtn = new Button
+        {
+            Content = "✕",
+            FontSize = AppTheme.FontSM, FontFamily = FontM,
+            Background = Brushes.Transparent,
+            Foreground = AppTheme.FgMuted,
+            BorderBrush = AppTheme.BorderSubtle,
+            BorderThickness = new Thickness(1),
+            CornerRadius = new CornerRadius(4),
+            Padding = new Thickness(8, 2),
+            Margin = new Thickness(4, 0, 0, 0),
+            VerticalAlignment = VerticalAlignment.Center,
+            IsVisible = false,
+            Cursor = new Cursor(StandardCursorType.Hand),
+        };
+        ToolTip.SetTip(_analyteClearBtn, "필터 해제 (전체 보기)");
+        _analyteClearBtn.Click += (_, _) =>
+        {
+            _analyteFilter = AnalyteFilterAll;
+            ReloadAnalyteCombo();
+            RenderList();
+        };
+
+        var titleRow = new Grid
+        {
+            ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto"),
+            Margin = new Thickness(0, 0, 0, 10),
+        };
+        Grid.SetColumn(title,            0); titleRow.Children.Add(title);
+        var comboHolder = new Border
+        {
+            Margin = new Thickness(12, 0, 0, 0),
+            VerticalAlignment = VerticalAlignment.Center,
+            Child = _analyteCombo,
+        };
+        Grid.SetColumn(comboHolder,      1); titleRow.Children.Add(comboHolder);
+        Grid.SetColumn(_analyteClearBtn, 2); titleRow.Children.Add(_analyteClearBtn);
+
+        _listScroll = new ScrollViewer
         {
             Content = _listPanel,
             VerticalScrollBarVisibility   = ScrollBarVisibility.Auto,
@@ -275,18 +395,83 @@ public class RiskManagePage
             RowDefinitions = new RowDefinitions("Auto,Auto,Auto,*"),
             Margin = new Thickness(10, 12, 10, 4),
         };
-        Grid.SetRow(title,      0); root.Children.Add(title);
-        Grid.SetRow(_searchBox, 1); root.Children.Add(_searchBox);
-        Grid.SetRow(_listCount, 2); root.Children.Add(_listCount);
-        Grid.SetRow(scroll,     3); root.Children.Add(scroll);
+        Grid.SetRow(titleRow,    0); root.Children.Add(titleRow);
+        Grid.SetRow(_searchBox,  1); root.Children.Add(_searchBox);
+        Grid.SetRow(_listCount,  2); root.Children.Add(_listCount);
+        Grid.SetRow(_listScroll, 3); root.Children.Add(_listScroll);
 
-        return new Border { Child = root };
+        // 키보드 네비게이션: ↑/↓ 이동, Home/End 처음/끝, Enter 선택 액션
+        var container = new Border { Child = root, Focusable = true };
+        container.AddHandler(InputElement.KeyDownEvent, OnTreeKeyDown, RoutingStrategies.Tunnel);
+        return container;
+    }
+
+    private void OnTreeKeyDown(object? _, KeyEventArgs e)
+    {
+        if (_cards.Count == 0) return;
+
+        int next = _selectedIndex;
+        switch (e.Key)
+        {
+            case Key.Down:  next = Math.Min(_cards.Count - 1, _selectedIndex < 0 ? 0 : _selectedIndex + 1); break;
+            case Key.Up:    next = Math.Max(0, _selectedIndex < 0 ? 0 : _selectedIndex - 1); break;
+            case Key.Home:  next = 0; break;
+            case Key.End:   next = _cards.Count - 1; break;
+            case Key.PageDown: next = Math.Min(_cards.Count - 1, (_selectedIndex < 0 ? 0 : _selectedIndex) + 8); break;
+            case Key.PageUp:   next = Math.Max(0, (_selectedIndex < 0 ? 0 : _selectedIndex) - 8); break;
+            default: return;
+        }
+        if (next != _selectedIndex && next >= 0 && next < _selectActions.Count)
+        {
+            _selectActions[next]();
+            e.Handled = true;
+        }
+    }
+
+    private void ReloadAnalyteCombo()
+    {
+        if (_analyteCombo == null) return;
+        var items = new List<AnalyteOption> { new AnalyteOption(AnalyteFilterAll, "", IsAll: true) };
+        try
+        {
+            foreach (var (ana, cat) in ReagentAnalyteService.GetAllAnalytesWithCategory())
+                items.Add(new AnalyteOption(ana, cat));
+        }
+        catch { }
+        _analyteCombo.ItemsSource = items;
+        var match = items.FirstOrDefault(i => i.Analyte == _analyteFilter) ?? items[0];
+        if (match.IsAll) _analyteFilter = AnalyteFilterAll;
+        _analyteCombo.SelectedItem = match;
+        if (_analyteClearBtn != null)
+            _analyteClearBtn.IsVisible = _analyteFilter != AnalyteFilterAll;
+    }
+
+    private void ScrollCardIntoView(Border card)
+    {
+        if (_listScroll == null) return;
+        try
+        {
+            var pos = card.TranslatePoint(new Point(0, 0), _listPanel);
+            if (!pos.HasValue) return;
+            double top = pos.Value.Y;
+            double bottom = top + card.Bounds.Height;
+            double viewTop = _listScroll.Offset.Y;
+            double viewBottom = viewTop + _listScroll.Viewport.Height;
+            if (top < viewTop)
+                _listScroll.Offset = new Vector(_listScroll.Offset.X, Math.Max(0, top - 4));
+            else if (bottom > viewBottom)
+                _listScroll.Offset = new Vector(_listScroll.Offset.X, bottom - _listScroll.Viewport.Height + 4);
+        }
+        catch { }
     }
 
     private void RenderList()
     {
         _listPanel.Children.Clear();
         _selectedCard = null;
+        _cards.Clear();
+        _selectActions.Clear();
+        _selectedIndex = -1;
         string query = _searchBox.Text?.Trim().ToLower() ?? "";
 
         if (_category == "시약") RenderReagentList(query);
@@ -297,9 +482,18 @@ public class RiskManagePage
     private void RenderReagentList(string query)
     {
         var all = _trashMode ? ReagentService.GetAllDeleted() : ReagentService.GetAll();
+        IEnumerable<Reagent> source = all;
+
+        // 분석항목 필터: 선택된 Analyte에 매핑된 시약Id 집합으로 필터링
+        if (_analyteFilter != AnalyteFilterAll && !string.IsNullOrWhiteSpace(_analyteFilter))
+        {
+            var allowedIds = ReagentAnalyteService.GetReagentIdsByAnalyte(_analyteFilter);
+            source = source.Where(r => allowedIds.Contains(r.Id));
+        }
+
         var filtered = string.IsNullOrEmpty(query)
-            ? all
-            : all.Where(r =>
+            ? source.ToList()
+            : source.Where(r =>
                 r.품목명.ToLower().Contains(query) ||
                 r.영문명.ToLower().Contains(query) ||
                 r.화학식.ToLower().Contains(query) ||
@@ -307,9 +501,40 @@ public class RiskManagePage
                 r.ITEM_NO.ToLower().Contains(query)).ToList();
 
         var mode = _trashMode ? "🗑 휴지통" : "시약";
-        _listCount.Text = $"{mode}  {filtered.Count} / {all.Count}건";
+        var filterTag = _analyteFilter != AnalyteFilterAll ? $"  · 🔬 {_analyteFilter}" : "";
+        _listCount.Text = $"{mode}  {filtered.Count} / {all.Count}건{filterTag}";
         foreach (var item in filtered)
-            _listPanel.Children.Add(MakeReagentCard(item));
+        {
+            var captured = item;
+            var card = MakeReagentCard(item);
+            AttachCardSelection(card, () =>
+            {
+                LoadReagentToForm(captured);
+                UpdateUsagePanel(captured);
+                UpdateAnalytePanel(captured);
+            });
+            _listPanel.Children.Add(card);
+        }
+    }
+
+    private void AttachCardSelection(Border card, Action onSelect)
+    {
+        int idx = _cards.Count;
+        string color = (card.Tag as string) ?? "#555";
+        Action select = () =>
+        {
+            _selectedIndex = idx;
+            HighlightCard(card, color);
+            onSelect();
+            ScrollCardIntoView(card);
+        };
+        _cards.Add(card);
+        _selectActions.Add(select);
+        card.AddHandler(InputElement.PointerPressedEvent, (object? _, PointerPressedEventArgs ev) =>
+        {
+            if (ev.GetCurrentPoint(card).Properties.IsLeftButtonPressed)
+                select();
+        }, RoutingStrategies.Tunnel);
     }
 
     private Border MakeReagentCard(Reagent item)
@@ -385,19 +610,6 @@ public class RiskManagePage
             Cursor          = new Cursor(StandardCursorType.Hand),
         };
         card.Tag = color;
-
-        var captured = item;
-        card.AddHandler(InputElement.PointerPressedEvent, (object? _, PointerPressedEventArgs ev) =>
-        {
-            if (ev.GetCurrentPoint(card).Properties.IsLeftButtonPressed)
-            {
-                HighlightCard(card, color);
-                LoadReagentToForm(captured);
-                UpdateUsagePanel(captured);
-                UpdateAnalytePanel(captured);
-            }
-        }, RoutingStrategies.Tunnel);
-
         return card;
     }
 
@@ -414,7 +626,12 @@ public class RiskManagePage
 
         _listCount.Text = $"초자  {filtered.Count} / {all.Count}건";
         foreach (var item in filtered)
-            _listPanel.Children.Add(MakeGlassCard(item));
+        {
+            var captured = item;
+            var card = MakeGlassCard(item);
+            AttachCardSelection(card, () => LoadGlassToForm(captured));
+            _listPanel.Children.Add(card);
+        }
     }
 
     private Border MakeGlassCard(Glassware item)
@@ -483,17 +700,6 @@ public class RiskManagePage
             Cursor          = new Cursor(StandardCursorType.Hand),
         };
         card.Tag = color;
-
-        var captured = item;
-        card.AddHandler(InputElement.PointerPressedEvent, (object? _, PointerPressedEventArgs ev) =>
-        {
-            if (ev.GetCurrentPoint(card).Properties.IsLeftButtonPressed)
-            {
-                HighlightCard(card, color);
-                LoadGlassToForm(captured);
-            }
-        }, RoutingStrategies.Tunnel);
-
         return card;
     }
 
@@ -1420,19 +1626,37 @@ public class RiskManagePage
     }
 
 
-    private static Button MakeBtn(string text, string bg, string fg) => new()
+    // wire-v01: 기존 시그니처 유지 — 색상 힌트로 BadgeStatus 매핑
+    private static Button MakeBtn(string text, string bg, string fg)
     {
-        Content         = text,
-        Height          = 30,
-        Padding         = new Thickness(14, 0),
-        FontFamily      = FontR,
-        FontSize        = AppTheme.FontBase,
-        Background      = new SolidColorBrush(Color.Parse(bg)),
-        Foreground      = new SolidColorBrush(Color.Parse(fg)),
-        BorderThickness = new Thickness(0),
-        CornerRadius    = new CornerRadius(4),
-        Cursor          = new Cursor(StandardCursorType.Hand),
-    };
+        var status = MapLegacyColor(bg, fg);
+        var (b, f, bd) = StatusBadge.GetBrushes(status);
+        return new Button
+        {
+            Content         = text,
+            Height          = 30,
+            Padding         = new Thickness(16, 0),
+            FontFamily      = FontR,
+            FontSize        = AppTheme.FontBase,
+            FontWeight      = FontWeight.SemiBold,
+            Background      = b, Foreground = f, BorderBrush = bd,
+            BorderThickness = new Thickness(1),
+            CornerRadius    = new CornerRadius(999),
+            Cursor          = new Cursor(StandardCursorType.Hand),
+        };
+    }
+
+    // 기존 hex 패턴 → wire-v01 status 매핑
+    private static BadgeStatus MapLegacyColor(string bg, string fg)
+    {
+        // 녹색 톤 (#1a3a2a, #2a4a2a, #aef0ae, #88ffaa) → Ok
+        if (bg.Contains("3a2") || bg.Contains("4a2") || fg.StartsWith("#a") || fg.Contains("ffaa")) return BadgeStatus.Ok;
+        // 적색 톤 (#3a1a, #ff8) → Bad
+        if (bg.StartsWith("#3a1") || fg.Contains("ff8")) return BadgeStatus.Bad;
+        // 파란 톤 → Info
+        if (bg.Contains("2a3a") || fg.Contains("aaff") || fg.Contains("88a")) return BadgeStatus.Info;
+        return BadgeStatus.Muted;
+    }
 
     private static void SelectCombo(ComboBox cb, string value)
     {

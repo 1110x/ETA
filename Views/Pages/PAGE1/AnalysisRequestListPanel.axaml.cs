@@ -4,14 +4,17 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
+using ETA.Models;
 using ETA.Services;
 using ETA.Services.SERVICE1;
 using ETA.Services.SERVICE2;
 using ETA.Services.Common;
 using ETA.Views;
+using ETA.Views.Controls;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.WebSockets;
@@ -68,17 +71,24 @@ public class AnalysisRequestListPanel : UserControl
         Content = BuildUI();
     }
 
-    private static Button MakeHdrBtn(string text, string bg, string fg, int padX = 10) => new Button
+    // wire-v01: pill 버튼 (StatusBadge 토큰 기반)
+    private static Button MakePill(string text, BadgeStatus status, int padX = 12)
     {
-        Content = text, Height = 24, FontSize = AppTheme.FontSM,
-        FontFamily = new("avares://ETA/Assets/Fonts#Pretendard"),
-        Background = Brush.Parse(bg), Foreground = Brush.Parse(fg),
-        BorderThickness = new Avalonia.Thickness(0),
-        CornerRadius = new Avalonia.CornerRadius(4),
-        Padding = new Avalonia.Thickness(padX, 0),
-        Margin = new Avalonia.Thickness(0, 0, 4, 0),
-        VerticalAlignment = VerticalAlignment.Center,
-    };
+        var (bg, fg, bd) = StatusBadge.GetBrushes(status);
+        return new Button
+        {
+            Content = text, Height = 26, FontSize = AppTheme.FontSM,
+            FontFamily = new("avares://ETA/Assets/Fonts#Pretendard"),
+            FontWeight = FontWeight.SemiBold,
+            Background = bg, Foreground = fg, BorderBrush = bd,
+            BorderThickness = new Avalonia.Thickness(1),
+            CornerRadius = new Avalonia.CornerRadius(999),
+            Padding = new Avalonia.Thickness(padX, 0),
+            Margin = new Avalonia.Thickness(0, 0, 6, 0),
+            VerticalAlignment = VerticalAlignment.Center,
+            Cursor = new Cursor(StandardCursorType.Hand),
+        };
+    }
 
     private Control BuildUI()
     {
@@ -93,10 +103,10 @@ public class AnalysisRequestListPanel : UserControl
         };
 
         // ── 2행: 버튼 모음 ───────────────────────────────────────────────
-        var btnTodo  = MakeHdrBtn("📌 TODO 전송",  "#2a2a1a", "#e0c060");
-        var btnPrint = MakeHdrBtn("🖨 의뢰서 출력", "#1a2a3a", "#88ccff");
-        var btnClear = MakeHdrBtn("전체 삭제",       "#3a1a1a", "#f0aeae", 8);
-        _btnMeasurer = MakeHdrBtn("🌐 측정인 전송", "#1a3a2a", "#88ffaa");
+        var btnTodo  = MakePill("📌 TODO 전송",  BadgeStatus.Warn);
+        var btnPrint = MakePill("🖨 의뢰서 출력", BadgeStatus.Info);
+        var btnClear = MakePill("전체 삭제",       BadgeStatus.Bad, padX: 10);
+        _btnMeasurer = MakePill("🌐 측정인 전송", BadgeStatus.Ok);
 
         btnTodo.Click    += BtnTodo_Click;
         btnPrint.Click   += BtnPrint_Click;
@@ -224,7 +234,7 @@ public class AnalysisRequestListPanel : UserControl
 
             var childGrid = new Grid
             {
-                ColumnDefinitions = new ColumnDefinitions("*,60"),
+                ColumnDefinitions = new ColumnDefinitions("*,Auto"),
                 Background        = AppRes("PanelInnerBg"),
             };
             childGrid.Children.Add(new TextBlock
@@ -235,16 +245,14 @@ public class AnalysisRequestListPanel : UserControl
                 Margin = new Avalonia.Thickness(8, 2),
                 [Grid.ColumnProperty] = 0,
             });
-            childGrid.Children.Add(new TextBlock
-            {
-                Text = pending ? "🔴 분석중" : kv.Value,
-                FontSize = AppTheme.FontXS, FontFamily = Font,
-                Foreground = pending ? AppTheme.FgDanger : AppTheme.FgSuccess,
-                HorizontalAlignment = HorizontalAlignment.Right,
-                VerticalAlignment   = VerticalAlignment.Center,
-                Margin = new Avalonia.Thickness(4, 2),
-                [Grid.ColumnProperty] = 1,
-            });
+            var statusBadge = pending
+                ? StatusBadge.Bad("분석중")
+                : StatusBadge.Ok(kv.Value, withIcon: false);
+            statusBadge.HorizontalAlignment = HorizontalAlignment.Right;
+            statusBadge.VerticalAlignment   = VerticalAlignment.Center;
+            statusBadge.Margin = new Avalonia.Thickness(4, 2, 6, 2);
+            Grid.SetColumn(statusBadge, 1);
+            childGrid.Children.Add(statusBadge);
 
             // 자식 Tag에 분석항목 전체명 저장
             var childNode = new TreeViewItem
@@ -722,6 +730,22 @@ public class AnalysisRequestListPanel : UserControl
     private void SetStatus(string msg)
     {
         if (_txbStatus != null) _txbStatus.Text = msg;
+        Log(msg);
+    }
+
+    private static readonly object _logLock = new();
+    private static void Log(string msg)
+    {
+        try
+        {
+            Directory.CreateDirectory("Logs");
+            lock (_logLock)
+            {
+                File.AppendAllText("Logs/MeasurerDebug.log",
+                    $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] {msg}" + Environment.NewLine);
+            }
+        }
+        catch { }
     }
 
     private void UpdateStatusCount()
@@ -742,7 +766,9 @@ public class AnalysisRequestListPanel : UserControl
     // ══════════════════════════════════════════════════════════════════════
     private async void BtnMeasurer_Click(object? sender, RoutedEventArgs e)
     {
+        Log("═══ 측정인 전송 시작 ═══");
         var parentNodes = GetParentNodes();
+        Log($"parentNodes.Count = {parentNodes.Count}");
         if (parentNodes.Count == 0)
         {
             SetStatus("⚠ 전송할 의뢰 항목이 없습니다.");
@@ -780,6 +806,10 @@ public class AnalysisRequestListPanel : UserControl
 
         var purposeValues   = dlg.PurposeValues;      // List<string> per-record
         var empIdsPerRecord = dlg.EmpIdsPerRecord;    // List<List<string>> per-record
+        Log($"dlg.Confirmed=true, purposeValues.Count={purposeValues?.Count ?? 0}, empIdsPerRecord.Count={empIdsPerRecord?.Count ?? 0}");
+        if (empIdsPerRecord != null)
+            for (int i = 0; i < empIdsPerRecord.Count; i++)
+                Log($"  record[{i}]: purpose='{(purposeValues != null && i < purposeValues.Count ? purposeValues[i] : "?")}', empIds=[{string.Join(",", empIdsPerRecord[i])}]");
         // ─────────────────────────────────────────────────────────────
 
         SetStatus($"⏳ {parentNodes.Count}건 개별 전송 준비 중...");
@@ -787,7 +817,7 @@ public class AnalysisRequestListPanel : UserControl
         try
         {
             SetStatus("⏳ 측정인 로그인 창을 엽니다...");
-            var loginWin = new MeasurerLoginWindow();
+            var loginWin = new MeasurerLoginWindow { CloseOnLoginSuccess = true };
             if (owner != null)
                 await loginWin.ShowDialog(owner);
             else
@@ -800,9 +830,11 @@ public class AnalysisRequestListPanel : UserControl
 
             if (loginWin.LoginSucceeded)
             {
+                Log("loginWin.LoginSucceeded=true");
                 SetStatus($"⏳ 로그인 완료 — {parentNodes.Count}건 개별 전송 중...");
                 await Task.Delay(1500); // 브라우저 다음 페이지 로드 대기
                 bool injected = await TryInjectRequestDataAsync(parentNodes, purposeValues, empIdsPerRecord);
+                Log($"TryInjectRequestDataAsync → {injected}");
                 if (injected)
                     SetStatus($"✅ 의뢰계획 {parentNodes.Count}건 개별 전달 완료 ({DateTime.Now:HH:mm})");
                 else
@@ -810,15 +842,17 @@ public class AnalysisRequestListPanel : UserControl
             }
             else
             {
+                Log("loginWin.LoginSucceeded=false");
                 SetStatus("⚠ 로그인 취소됨");
             }
         }
         catch (Exception ex)
         {
+            Log($"EXCEPTION in BtnMeasurer_Click: {ex.GetType().Name}: {ex.Message}\n{ex.StackTrace}");
             var msg = ex.Message.Length > 60 ? ex.Message[..60] + "…" : ex.Message;
             SetStatus($"❌ 전달 실패: {msg}");
         }
-        finally { _btnMeasurer.IsEnabled = true; }
+        finally { _btnMeasurer.IsEnabled = true; Log("═══ 측정인 전송 종료 ═══"); }
     }
 
     /// <summary>
@@ -835,7 +869,8 @@ public class AnalysisRequestListPanel : UserControl
 
         string tabsJson;
         try { tabsJson = await http.GetStringAsync($"http://127.0.0.1:{port}/json"); }
-        catch { return false; }
+        catch (Exception ex) { Log($"CDP /json fetch 실패: {ex.Message}"); return false; }
+        Log($"CDP tabs fetched, length={tabsJson.Length}");
 
         // 측정인.kr 탭 우선, 없으면 field_water 포함 탭
         using var jdoc = JsonDocument.Parse(tabsJson);
@@ -862,7 +897,8 @@ public class AnalysisRequestListPanel : UserControl
                 break;
             }
         }
-        if (wsUrl == null) return false;
+        if (wsUrl == null) { Log("wsUrl null — 측정인 탭을 찾지 못함"); return false; }
+        Log($"wsUrl 찾음: {wsUrl.Substring(0, Math.Min(80, wsUrl.Length))}");
 
         // 레코드 데이터 직렬화
         var records = parentNodes.Select(n =>
@@ -884,11 +920,40 @@ public class AnalysisRequestListPanel : UserControl
             row.TryGetValue("비고", out var note);
             row.TryGetValue("견적번호", out var quoteNo);
 
-            // 1순위: 시료명 → 채취지점명 직접 매칭
-            var matchedContract = MeasurerService.FindContractBySamplingPoint(pt.Rec.시료명, pt.Rec.약칭 ?? "");
-            // 2순위: 업체명+의뢰사업장 기반 fallback
-            if (string.IsNullOrEmpty(matchedContract.계약번호))
-                matchedContract = MeasurerService.FindBestContract(company ?? "", workSite ?? "", pt.Rec.약칭 ?? "");
+            // 계약 DB의 C_ContractType(계약근거) + C_PlaceName(처리시설) 사용. 업체명→약칭 순으로 조회
+            string finalContractNo = "";
+            string finalPlaceName  = "";
+            (string 계약번호, string 약칭, string 계약기간, string 업체명, string 채취지점명) finalContract = ("", "", "", "", "");
+            try
+            {
+                var allContracts = ContractService.GetAllContracts();
+                Contract? mainContract = null;
+                if (!string.IsNullOrEmpty(company))
+                    mainContract = allContracts.FirstOrDefault(c => c.C_CompanyName == company);
+                // 업체명 조회 실패 시 약칭으로 폴백
+                if (mainContract == null && !string.IsNullOrEmpty(pt.Rec.약칭))
+                {
+                    mainContract = allContracts.FirstOrDefault(c => c.C_Abbreviation == pt.Rec.약칭);
+                    if (mainContract != null) Log($"[근거계약] 약칭 '{pt.Rec.약칭}'로 계약 찾음 (업체명='{company}')");
+                }
+
+                if (mainContract == null)
+                    Log($"[근거계약] 계약 DB에 업체 없음 (업체명='{company}', 약칭='{pt.Rec.약칭}')");
+                else if (string.IsNullOrEmpty(mainContract.C_ContractType))
+                    Log($"[근거계약] '{mainContract.C_CompanyName}'의 C_ContractType 미설정 (계약업체 페이지에서 근거계약 선택 필요)");
+                else
+                {
+                    finalContractNo = mainContract.C_ContractType;
+                    finalPlaceName  = mainContract.C_PlaceName ?? "";
+                    var basisContractData = MeasurerService.GetAllData()
+                        .FirstOrDefault(d => d.계약번호 == finalContractNo);
+                    if (!string.IsNullOrEmpty(basisContractData.계약번호))
+                        finalContract = basisContractData;
+                    else
+                        Log($"[근거계약] 계약번호 '{finalContractNo}' 찾음, 그러나 측정인 DB에 부가정보 없음");
+                }
+            }
+            catch (Exception ex) { Log($"[근거계약] 조회 오류: {ex.Message}"); }
 
             return new
             {
@@ -903,16 +968,16 @@ public class AnalysisRequestListPanel : UserControl
                 sampleDate,
                 workSite,
                 note,
-                contractNo = matchedContract.계약번호,
-                contractCompany = matchedContract.업체명,
-                contractPoint = matchedContract.채취지점명,
-                contractPeriod = matchedContract.계약기간,
+                contractNo = finalContractNo,
+                contractCompany = finalContract.업체명,
+                contractPoint = !string.IsNullOrWhiteSpace(finalPlaceName) ? finalPlaceName : finalContract.채취지점명,
+                contractPeriod = finalContract.계약기간,
                 contractLabel = string.Join(" / ", new[]
                 {
-                    matchedContract.계약번호,
-                    matchedContract.업체명,
-                    matchedContract.채취지점명,
-                    matchedContract.계약기간,
+                    finalContract.계약번호,
+                    finalContract.업체명,
+                    finalContract.채취지점명,
+                    finalContract.계약기간,
                 }.Where(x => !string.IsNullOrWhiteSpace(x))),
                 planText = string.Join(", ", analytes),
                 analytes,
@@ -931,12 +996,15 @@ public class AnalysisRequestListPanel : UserControl
 
         using var cts    = new CancellationTokenSource(TimeSpan.FromSeconds(60 * records.Count));
         using var socket = new ClientWebSocket();
-        await socket.ConnectAsync(new Uri(wsUrl), cts.Token);
+        try { await socket.ConnectAsync(new Uri(wsUrl), cts.Token); }
+        catch (Exception ex) { Log($"WebSocket connect 실패: {ex.Message}"); return false; }
+        Log($"WebSocket 연결됨, records.Count={records.Count}");
 
         // ── 레코드별 반복: 각 부모 노드마다 모달 열기 → 입력 → 저장 ──
         for (int ri = 0; ri < records.Count; ri++)
         {
             var rec = records[ri];
+            Log($"── record[{ri}] 시작: sample='{rec.sample}', abbr='{rec.abbr}', accNo='{rec.accNo}', analytes={rec.analytes.Length}건 ──");
 
             // ── 이 레코드의 분석항목 코드 매핑 (자기 자식만) ──
             var analyteCodes = new List<string>();
@@ -950,7 +1018,10 @@ public class AnalysisRequestListPanel : UserControl
                         || analyte.Contains(m.항목명, StringComparison.OrdinalIgnoreCase));
                 if (!string.IsNullOrEmpty(mi.코드값))
                     analyteCodes.Add(mi.코드값);
+                else
+                    Log($"  ⚠ analyte '{analyte}' → 코드값 없음 (측정인_분석항목 미등록)");
             }
+            Log($"  analyteCodes: [{string.Join(",", analyteCodes)}] ({analyteCodes.Count}/{rec.analytes.Length})");
 
             // ── 이 레코드의 인력 매핑 ──
             // 각 레코드마다 다이얼로그 선택 우선, fallback: 시료채취자 DB 조회
@@ -982,6 +1053,7 @@ public class AnalysisRequestListPanel : UserControl
                     if (ag != null) empIds.Add(ag.측정인고유번호);
                 }
             }
+            Log($"  empIds: [{string.Join(",", empIds)}] ({empIds.Count}건)");
 
             // ── 모달 열기 (addFieldPlan 클릭) ──
             string openScript = $$"""
@@ -1017,7 +1089,8 @@ public class AnalysisRequestListPanel : UserControl
                 })()", cts.Token));
                 modalReady = chk == "YES";
             }
-            if (!modalReady) continue;
+            Log($"  modalReady={modalReady}");
+            if (!modalReady) { Log("  ⚠ modal 안 열림 → skip"); continue; }
 
             // ── A. 근거계약 선택 — 측정인_채취지점 DB 기준 매칭 ─────────────
             string contOptsRaw = await CdpEvalAsync(socket, @"(function(){
@@ -1036,29 +1109,23 @@ public class AnalysisRequestListPanel : UserControl
             string chosenContVal = "";
             if (!string.IsNullOrEmpty(contOptsJson) && contOptsJson != "[]")
             {
-                // rec.contractNo = DB에서 조회한 계약번호 (채취지점명 매칭 결과)
+                // rec.contractNo = 계약 DB의 C_ContractType(사용자 선택 근거계약)
                 string wNo = (rec.contractNo ?? "").Trim();
-                string wNoLow = wNo.ToLowerInvariant();
-                string wCo = (rec.contractCompany ?? rec.company ?? "").Trim().ToLowerInvariant();
-                string wPt = (rec.contractPoint ?? rec.workSite ?? "").Trim().ToLowerInvariant();
-                int bestScore = 0;
-                using var cDoc = JsonDocument.Parse(contOptsJson);
-                foreach (var o in cDoc.RootElement.EnumerateArray())
+                if (!string.IsNullOrEmpty(wNo))
                 {
-                    string v = o.GetProperty("value").GetString() ?? "";
-                    string t = (o.GetProperty("text").GetString() ?? "").ToLowerInvariant();
-                    if (string.IsNullOrEmpty(v)) continue;
-                    int sc = 0;
-                    // 1순위: DB 계약번호와 option value 정확 일치
-                    if (!string.IsNullOrEmpty(wNoLow) && v.ToLowerInvariant() == wNoLow) sc += 1000;
-                    // 2순위: option text에 계약번호 포함
-                    else if (!string.IsNullOrEmpty(wNoLow) && t.Contains(wNoLow)) sc += 500;
-                    // 3순위: 업체명/현장명 텍스트 매칭
-                    if (!string.IsNullOrEmpty(wCo) && t.Contains(wCo)) sc += 220;
-                    if (!string.IsNullOrEmpty(wPt) && t.Contains(wPt)) sc += 180;
-                    if (sc > bestScore) { bestScore = sc; chosenContVal = v; }
+                    string wNoLow = wNo.ToLowerInvariant();
+                    using var cDoc = JsonDocument.Parse(contOptsJson);
+                    foreach (var o in cDoc.RootElement.EnumerateArray())
+                    {
+                        string v = o.GetProperty("value").GetString() ?? "";
+                        if (string.IsNullOrEmpty(v)) continue;
+                        if (v.ToLowerInvariant() == wNoLow) { chosenContVal = v; break; }
+                    }
                 }
             }
+            Log($"  계약매칭: DB계약번호='{rec.contractNo}' → chosenContVal='{chosenContVal}'"
+                + (string.IsNullOrEmpty(chosenContVal) && !string.IsNullOrEmpty(rec.contractNo?.ToString())
+                    ? " (드랍박스 옵션에 일치하는 계약번호 없음)" : ""));
 
             // VBA: option.selected=true → option.click() → change + select2 trigger
             if (!string.IsNullOrEmpty(chosenContVal))
@@ -1083,6 +1150,8 @@ public class AnalysisRequestListPanel : UserControl
                     }}
                     return 'OK';
                 }})()";
+                string selResult = ExtractCdpValue(await CdpEvalAsync(socket, selScript, cts.Token));
+                Log($"  근거계약 선택 결과: {selResult} (value={chosenContVal})");
 
                 // 현장 목록 로딩 대기 (최대 5초)
                 for (int w = 0; w < 5000; w += 400)
@@ -1098,7 +1167,9 @@ public class AnalysisRequestListPanel : UserControl
             }
 
             // ── B. 현장 선택 (VBA: option.selected + change) ─────────────
-            string wsName = (rec.workSite ?? "").Trim();
+            //   우선순위: 계약 DB의 C_PlaceName(= rec.contractPoint, 측정인 옵션 텍스트 그대로) → 시료 의뢰사업장
+            string wsName = (rec.contractPoint ?? "").Trim();
+            if (string.IsNullOrEmpty(wsName)) wsName = (rec.workSite ?? "").Trim();
             if (!string.IsNullOrEmpty(wsName))
             {
                 string wsE = wsName.Replace("\\", "\\\\").Replace("'", "\\'");
@@ -1120,6 +1191,8 @@ public class AnalysisRequestListPanel : UserControl
                     }}
                     return 'NO_MATCH';
                 }})()";
+                string plcResult = ExtractCdpValue(await CdpEvalAsync(socket, plcScript, cts.Token));
+                Log($"  현장 선택 결과: {plcResult} (want={wsName})");
 
                 // 채취지점 로딩 대기
                 for (int w = 0; w < 5000; w += 400)
@@ -1171,22 +1244,27 @@ public class AnalysisRequestListPanel : UserControl
                 string baseNo = (rec.quoteNo ?? rec.accNo ?? "").Trim();
                 string measNo = $"{baseNo} {rec.sample ?? ""}".Trim();
                 string measNoE = measNo.Replace("\\", "\\\\").Replace("'", "\\'");
-                await CdpEvalAsync(socket, $@"(function(){{
+                string measNoResult = ExtractCdpValue(await CdpEvalAsync(socket, $@"(function(){{
                     var chk = document.getElementById('meas_no_yn');
-                    if (chk && !chk.checked) {{
-                        chk.checked = true;
-                        chk.dispatchEvent(new Event('change', {{bubbles:true}}));
-                        chk.click();
+                    var chkState = 'NO_CHK';
+                    if (chk) {{
+                        if (!chk.checked) {{
+                            chk.click();  // 토글 + onClickMeas_no_yn() 실행
+                        }}
+                        chkState = chk.checked ? 'CHECKED' : 'UNCHECKED';
                     }}
                     var inp = document.getElementById('add_meas_no') || document.getElementById('edit_meas_no');
                     if (inp) {{
                         inp.removeAttribute('disabled');
+                        inp.removeAttribute('readonly');
                         inp.value = '{measNoE}';
                         inp.dispatchEvent(new Event('input', {{bubbles:true}}));
                         inp.dispatchEvent(new Event('change', {{bubbles:true}}));
+                        return chkState + '|INP:' + inp.id + '=' + inp.value;
                     }}
-                    return 'OK';
-                }})()", cts.Token);
+                    return chkState + '|NO_INP';
+                }})()", cts.Token));
+                Log($"  계획번호 입력 결과: {measNoResult} (measNo='{measNo}')");
             }
 
             // ── H. 차량 선택 — edit_meas_car_no / add_meas_car_no → 1000004880 ──
@@ -1235,6 +1313,8 @@ public class AnalysisRequestListPanel : UserControl
                     }}
                     return 'ITEMS:' + found + '/' + codes.length;
                 }})()";
+                string itemResult = ExtractCdpValue(await CdpEvalAsync(socket, itemScript, cts.Token));
+                Log($"  분석항목 선택 결과: {itemResult}");
             }
 
             // ── F. 인력 선택 (VBA CommandButton9: 기존 해제 → 다중 option.selected + change) ──
@@ -1261,6 +1341,52 @@ public class AnalysisRequestListPanel : UserControl
                     sel.dispatchEvent(new Event('change', {{bubbles:true}}));
                     return 'EMP:' + found + '/' + ids.length;
                 }})()";
+                string empResult = ExtractCdpValue(await CdpEvalAsync(socket, empScript, cts.Token));
+                Log($"  인력 선택 결과: {empResult}");
+            }
+
+            // ── F-2. 측정장비 — 현장측정장비 테이블의 코드값으로 option 매칭 ──
+            {
+                List<(string 장비명, string 코드값)> fieldEquip;
+                try { fieldEquip = MeasurerService.GetFieldMeasEquipment(); }
+                catch (Exception ex) { Log($"  ⚠ GetFieldMeasEquipment 실패: {ex.Message}"); fieldEquip = new List<(string, string)>(); }
+                Log($"  현장측정장비: {fieldEquip.Count}건 [{string.Join(";", fieldEquip.Select(x => x.장비명))}]");
+
+                if (fieldEquip.Count > 0)
+                {
+                    string codesJs = string.Join(",", fieldEquip
+                        .Select(x => x.코드값)
+                        .Where(c => !string.IsNullOrWhiteSpace(c))
+                        .Select(c => $"'{c.Trim().Replace("'", "\\'")}'"));
+                    string equipResult = ExtractCdpValue(await CdpEvalAsync(socket, $@"(function(){{
+                        var ids = ['edit_meas_equip_no','add_meas_equip_no'];
+                        var sel = null, usedId = null;
+                        for (var k=0;k<ids.length;k++){{
+                            var s = document.getElementById(ids[k]);
+                            if (s) {{ sel = s; usedId = ids[k]; break; }}
+                        }}
+                        if (!sel) return 'NO_SEL';
+                        while (sel.selectedOptions.length > 0) sel.selectedOptions[0].selected = false;
+                        var codes = [{codesJs}];
+                        var picked = 0;
+                        var miss = [];
+                        codes.forEach(function(c){{
+                            var opt = sel.querySelector('option[value=""' + c + '""]');
+                            if (opt) {{ opt.selected = true; picked++; }}
+                            else miss.push(c);
+                        }});
+                        sel.dispatchEvent(new Event('change', {{bubbles:true}}));
+                        if (window.$ && window.$(sel).data('select2')) {{
+                            window.$(sel).trigger('change.select2');
+                        }}
+                        return 'EQUIP('+usedId+'):' + picked + '/' + codes.length + (miss.length ? ' MISS=['+miss.join('|')+']' : '');
+                    }})()", cts.Token));
+                    Log($"  측정장비 선택 결과: {equipResult}");
+                }
+                else
+                {
+                    Log("  측정장비 스킵 (현장측정장비 0건 — 권한관리→분석장비 탭에서 '🎯 현장장비 스크랩' 필요)");
+                }
             }
 
             // ── G. 측정목적 — 레코드별 다이얼로그 선택값 사용 ──
@@ -1285,6 +1411,7 @@ public class AnalysisRequestListPanel : UserControl
                 if (btn) { btn.click(); return 'SAVE'; }
                 return 'NO_BTN';
             })()", cts.Token));
+            Log($"  saveResult='{saveResult}'");
 
             // 모달 닫힘 대기 (add_meas_cont_no 사라질 때까지 최대 5초)
             for (int w = 0; w < 5000; w += 400)
@@ -1296,6 +1423,8 @@ public class AnalysisRequestListPanel : UserControl
                 })()", cts.Token));
                 if (chk == "CLOSED") break;
             }
+            Log($"  ✅ record[{ri}] 완료");
+
             // 다음 루프 또는 완료 전 잠깐 대기
             await Task.Delay(800, cts.Token);
         } // end for each record

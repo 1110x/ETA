@@ -41,11 +41,14 @@
                            VerticalAlignment="Center"/>
                 <Button x:Name="btnNewDate"
                         Content="+ 날짜 추가"
-                        Height="20" FontSize="{DynamicResource FontSizeSM}"
+                        Height="24" FontSize="{DynamicResource FontSizeSM}"
+                        FontWeight="SemiBold"
                         FontFamily="avares://ETA/Assets/Fonts#Pretendard"
-                        Background="{DynamicResource ThemeBgActiveGreen}" Foreground="{DynamicResource ThemeFgSuccess}"
-                        BorderThickness="0" CornerRadius="3"
-                        Padding="8,0"
+                        Background="{DynamicResource StatusOkBg}"
+                        Foreground="{DynamicResource StatusOkFg}"
+                        BorderBrush="{DynamicResource StatusOkBorder}"
+                        BorderThickness="1" CornerRadius="999"
+                        Padding="12,2"
                         Click="BtnNewDate_Click"/>
             </StackPanel>
         </Border>
