@@ -1,0 +1,313 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ETA.Rebuild.Views.FacilityPage">
+
+    <Grid Margin="16" ColumnDefinitions="260,12,*,12,320" RowDefinitions="*">
+
+        <!-- ══════════════════════════════════════════════════════════
+             SHOW1 · 사업소 → 날짜 트리
+             ══════════════════════════════════════════════════════════ -->
+        <Border Grid.Column="0" Classes="card">
+            <Grid RowDefinitions="Auto,*">
+
+                <Border Grid.Row="0" Classes="card-head">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Grid.Column="0" Text="🏭 처리시설" Classes="h3"/>
+                        <Border Grid.Column="1" Classes="chip info">
+                            <TextBlock Text="3 사업소"/>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="8" Spacing="10">
+
+                        <StackPanel Spacing="3">
+                            <Border Classes="card-flat" Background="{DynamicResource PaperHeader}" Padding="8,5">
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <TextBlock Grid.Column="0" Text="▾" Classes="muted" Margin="0,0,6,0"/>
+                                    <TextBlock Grid.Column="1" Text="중흥처리장" Classes="h3"/>
+                                    <Border Grid.Column="2" Classes="chip ok"><TextBlock Text="정상"/></Border>
+                                </Grid>
+                            </Border>
+
+                            <Border Classes="row-active" Padding="20,6,8,6">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Grid.Column="0" Text="2026-04-19 (일)" Classes="body"/>
+                                    <Border Grid.Column="1" Classes="chip info"><TextBlock Text="입력중"/></Border>
+                                </Grid>
+                            </Border>
+                            <Border Classes="row" Padding="20,6,8,6">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Grid.Column="0" Text="2026-04-18 (토)" Classes="body"/>
+                                    <Border Grid.Column="1" Classes="chip ok"><TextBlock Text="완료"/></Border>
+                                </Grid>
+                            </Border>
+                            <Border Classes="row" Padding="20,6,8,6">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Grid.Column="0" Text="2026-04-17 (금)" Classes="body"/>
+                                    <Border Grid.Column="1" Classes="chip ok"><TextBlock Text="완료"/></Border>
+                                </Grid>
+                            </Border>
+                            <Border Classes="row" Padding="20,6,8,6">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Grid.Column="0" Text="2026-04-16 (목)" Classes="body"/>
+                                    <Border Grid.Column="1" Classes="chip warn"><TextBlock Text="재측"/></Border>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+
+                        <StackPanel Spacing="3">
+                            <Border Classes="card-flat" Background="{DynamicResource PaperHeader}" Padding="8,5">
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <TextBlock Grid.Column="0" Text="▸" Classes="muted" Margin="0,0,6,0"/>
+                                    <TextBlock Grid.Column="1" Text="월내처리장" Classes="h3"/>
+                                    <Border Grid.Column="2" Classes="chip ok"><TextBlock Text="정상"/></Border>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+
+                        <StackPanel Spacing="3">
+                            <Border Classes="card-flat" Background="{DynamicResource PaperHeader}" Padding="8,5">
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <TextBlock Grid.Column="0" Text="▸" Classes="muted" Margin="0,0,6,0"/>
+                                    <TextBlock Grid.Column="1" Text="율촌처리장" Classes="h3"/>
+                                    <Border Grid.Column="2" Classes="chip warn"><TextBlock Text="미입력"/></Border>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+
+        <!-- ══════════════════════════════════════════════════════════
+             SHOW2 · 분석 매트릭스 (시료명 × 항목)
+             ══════════════════════════════════════════════════════════ -->
+        <Border Grid.Column="2" Classes="card">
+            <Grid RowDefinitions="Auto,*,Auto">
+
+                <Border Grid.Row="0" Classes="card-head">
+                    <Grid ColumnDefinitions="Auto,*,Auto">
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6">
+                            <Border Classes="sectag" Width="22" Height="22">
+                                <TextBlock Text="2" FontSize="11"/>
+                            </Border>
+                            <TextBlock Text="중흥처리장 · 2026-04-19 (일) · 분석결과" Classes="h3" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6">
+                            <Border Classes="chip info"><TextBlock Text="4 시료 × 10 항목"/></Border>
+                            <Button Classes="ghost" Content="📋 시료 추가"/>
+                            <Button Classes="primary" Content="💾 저장"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                    <Border Margin="12" Classes="card-flat" Padding="0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="140"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- 헤더: [시료명] [항목들…] -->
+                            <Border Grid.Row="0" Grid.Column="0" Classes="th"><TextBlock Text="시료명"/></Border>
+                            <Border Grid.Row="0" Grid.Column="1" Classes="th"><TextBlock Text="pH"/></Border>
+                            <Border Grid.Row="0" Grid.Column="2" Classes="th"><TextBlock Text="수온"/></Border>
+                            <Border Grid.Row="0" Grid.Column="3" Classes="th"><TextBlock Text="DO"/></Border>
+                            <Border Grid.Row="0" Grid.Column="4" Classes="th"><TextBlock Text="BOD"/></Border>
+                            <Border Grid.Row="0" Grid.Column="5" Classes="th"><TextBlock Text="COD"/></Border>
+                            <Border Grid.Row="0" Grid.Column="6" Classes="th"><TextBlock Text="SS"/></Border>
+                            <Border Grid.Row="0" Grid.Column="7" Classes="th"><TextBlock Text="T-N"/></Border>
+                            <Border Grid.Row="0" Grid.Column="8" Classes="th"><TextBlock Text="T-P"/></Border>
+                            <Border Grid.Row="0" Grid.Column="9" Classes="th"><TextBlock Text="MLSS"/></Border>
+                            <Border Grid.Row="0" Grid.Column="10" Classes="th"><TextBlock Text="SVI"/></Border>
+
+                            <!-- 유입수 -->
+                            <Border Grid.Row="1" Grid.Column="0" Classes="td"><TextBlock Text="유입수" Classes="body" HorizontalAlignment="Left"/></Border>
+                            <Border Grid.Row="1" Grid.Column="1" Classes="td"><TextBlock Text="7.17"/></Border>
+                            <Border Grid.Row="1" Grid.Column="2" Classes="td"><TextBlock Text="18.9"/></Border>
+                            <Border Grid.Row="1" Grid.Column="3" Classes="td"><TextBlock Text="—" Classes="muted"/></Border>
+                            <Border Grid.Row="1" Grid.Column="4" Classes="td"><TextBlock Text="128"/></Border>
+                            <Border Grid.Row="1" Grid.Column="5" Classes="td"><TextBlock Text="184"/></Border>
+                            <Border Grid.Row="1" Grid.Column="6" Classes="td"><TextBlock Text="96"/></Border>
+                            <Border Grid.Row="1" Grid.Column="7" Classes="td">
+                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                    <TextBlock Text="32.1"/>
+                                    <Border Classes="chip warn"><TextBlock Text="↑"/></Border>
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Row="1" Grid.Column="8" Classes="td"><TextBlock Text="4.8"/></Border>
+                            <Border Grid.Row="1" Grid.Column="9" Classes="td"><TextBlock Text="—" Classes="muted"/></Border>
+                            <Border Grid.Row="1" Grid.Column="10" Classes="td"><TextBlock Text="—" Classes="muted"/></Border>
+
+                            <!-- 방류수 -->
+                            <Border Grid.Row="2" Grid.Column="0" Classes="td"><TextBlock Text="방류수" Classes="body" HorizontalAlignment="Left"/></Border>
+                            <Border Grid.Row="2" Grid.Column="1" Classes="td"><TextBlock Text="7.05"/></Border>
+                            <Border Grid.Row="2" Grid.Column="2" Classes="td"><TextBlock Text="19.2"/></Border>
+                            <Border Grid.Row="2" Grid.Column="3" Classes="td"><TextBlock Text="—" Classes="muted"/></Border>
+                            <Border Grid.Row="2" Grid.Column="4" Classes="td"><TextBlock Text="8.2"/></Border>
+                            <Border Grid.Row="2" Grid.Column="5" Classes="td"><TextBlock Text="18.6"/></Border>
+                            <Border Grid.Row="2" Grid.Column="6" Classes="td"><TextBlock Text="6"/></Border>
+                            <Border Grid.Row="2" Grid.Column="7" Classes="td"><TextBlock Text="9.7"/></Border>
+                            <Border Grid.Row="2" Grid.Column="8" Classes="td"><TextBlock Text="0.42"/></Border>
+                            <Border Grid.Row="2" Grid.Column="9" Classes="td"><TextBlock Text="—" Classes="muted"/></Border>
+                            <Border Grid.Row="2" Grid.Column="10" Classes="td"><TextBlock Text="—" Classes="muted"/></Border>
+
+                            <!-- 반송슬러지 -->
+                            <Border Grid.Row="3" Grid.Column="0" Classes="td"><TextBlock Text="반송슬러지" Classes="body" HorizontalAlignment="Left"/></Border>
+                            <Border Grid.Row="3" Grid.Column="1" Classes="td"><TextBlock Text="—" Classes="muted"/></Border>
+                            <Border Grid.Row="3" Grid.Column="2" Classes="td"><TextBlock Text="—" Classes="muted"/></Border>
+                            <Border Grid.Row="3" Grid.Column="3" Classes="td"><TextBlock Text="—" Classes="muted"/></Border>
+                            <Border Grid.Row="3" Grid.Column="4" Classes="td"><TextBlock Text="—" Classes="muted"/></Border>
+                            <Border Grid.Row="3" Grid.Column="5" Classes="td"><TextBlock Text="—" Classes="muted"/></Border>
+                            <Border Grid.Row="3" Grid.Column="6" Classes="td"><TextBlock Text="—" Classes="muted"/></Border>
+                            <Border Grid.Row="3" Grid.Column="7" Classes="td"><TextBlock Text="—" Classes="muted"/></Border>
+                            <Border Grid.Row="3" Grid.Column="8" Classes="td"><TextBlock Text="—" Classes="muted"/></Border>
+                            <Border Grid.Row="3" Grid.Column="9" Classes="td"><TextBlock Text="8,420"/></Border>
+                            <Border Grid.Row="3" Grid.Column="10" Classes="td"><TextBlock Text="112"/></Border>
+
+                            <!-- 포기조 -->
+                            <Border Grid.Row="4" Grid.Column="0" Classes="td"><TextBlock Text="포기조" Classes="body" HorizontalAlignment="Left"/></Border>
+                            <Border Grid.Row="4" Grid.Column="1" Classes="td"><TextBlock Text="7.21"/></Border>
+                            <Border Grid.Row="4" Grid.Column="2" Classes="td"><TextBlock Text="20.1"/></Border>
+                            <Border Grid.Row="4" Grid.Column="3" Classes="td"><TextBlock Text="2.5"/></Border>
+                            <Border Grid.Row="4" Grid.Column="4" Classes="td"><TextBlock Text="—" Classes="muted"/></Border>
+                            <Border Grid.Row="4" Grid.Column="5" Classes="td"><TextBlock Text="—" Classes="muted"/></Border>
+                            <Border Grid.Row="4" Grid.Column="6" Classes="td"><TextBlock Text="—" Classes="muted"/></Border>
+                            <Border Grid.Row="4" Grid.Column="7" Classes="td"><TextBlock Text="—" Classes="muted"/></Border>
+                            <Border Grid.Row="4" Grid.Column="8" Classes="td"><TextBlock Text="—" Classes="muted"/></Border>
+                            <Border Grid.Row="4" Grid.Column="9" Classes="td"><TextBlock Text="3,850"/></Border>
+                            <Border Grid.Row="4" Grid.Column="10" Classes="td"><TextBlock Text="—" Classes="muted"/></Border>
+
+                        </Grid>
+                    </Border>
+                </ScrollViewer>
+
+                <!-- 하단 작업 바 -->
+                <Border Grid.Row="2" Classes="card-head" BorderThickness="0,1.2,0,0">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                            <Border Classes="chip ok"><TextBlock Text="● 자동저장 켬"/></Border>
+                            <TextBlock Text="마지막 입력 · 12:04" Classes="muted" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+                            <Button Classes="ghost" Content="↺ 되돌리기"/>
+                            <Button Classes="ghost" Content="📄 기록부"/>
+                            <Button Classes="primary" Content="✔ 분석 마감"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+            </Grid>
+        </Border>
+
+        <!-- ══════════════════════════════════════════════════════════
+             SHOW4 · 분석 진도 · 재측정 · QC
+             ══════════════════════════════════════════════════════════ -->
+        <Border Grid.Column="4" Classes="card">
+            <Grid RowDefinitions="Auto,*">
+
+                <Border Grid.Row="0" Classes="card-head">
+                    <TextBlock Text="🧪 분석 진도" Classes="h3"/>
+                </Border>
+
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="12" Spacing="12">
+
+                        <!-- 항목별 진도 -->
+                        <Border Classes="card-flat" Padding="12,10">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="항목별 완료" Classes="h3"/>
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Grid.Column="0" Text="pH · 수온" Classes="body"/>
+                                    <Border Grid.Column="1" Classes="chip ok"><TextBlock Text="3/3"/></Border>
+                                </Grid>
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Grid.Column="0" Text="BOD · COD · SS" Classes="body"/>
+                                    <Border Grid.Column="1" Classes="chip ok"><TextBlock Text="2/2"/></Border>
+                                </Grid>
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Grid.Column="0" Text="T-N · T-P" Classes="body"/>
+                                    <Border Grid.Column="1" Classes="chip warn"><TextBlock Text="1/2"/></Border>
+                                </Grid>
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Grid.Column="0" Text="MLSS · SVI" Classes="body"/>
+                                    <Border Grid.Column="1" Classes="chip ok"><TextBlock Text="2/2"/></Border>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- 재측정 대상 -->
+                        <Border Classes="card-flat" Padding="12,10">
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="🔁 재측정 대상" Classes="h3"/>
+                                <Border Classes="row" Padding="8,6">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <TextBlock Grid.Column="0" Text="유입수 T-N 32.1 · 기준 초과" Classes="body"/>
+                                        <Border Grid.Column="1" Classes="chip warn"><TextBlock Text="↑"/></Border>
+                                    </Grid>
+                                </Border>
+                                <Border Classes="row" Padding="8,6">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <TextBlock Grid.Column="0" Text="방류수 T-P · 미입력" Classes="body"/>
+                                        <Border Grid.Column="1" Classes="chip mute"><TextBlock Text="대기"/></Border>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- QC 정도관리 -->
+                        <Border Classes="card-flat" Padding="12,10">
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="🔬 정도관리" Classes="h3"/>
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Grid.Column="0" Text="BK" Classes="body"/>
+                                    <Border Grid.Column="1" Classes="chip ok"><TextBlock Text="통과"/></Border>
+                                </Grid>
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Grid.Column="0" Text="CCV (98.2%)" Classes="body"/>
+                                    <Border Grid.Column="1" Classes="chip ok"><TextBlock Text="통과"/></Border>
+                                </Grid>
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Grid.Column="0" Text="MBK (102.4%)" Classes="body"/>
+                                    <Border Grid.Column="1" Classes="chip ok"><TextBlock Text="통과"/></Border>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- 기록부 링크 -->
+                        <Border Classes="card-flat" Padding="12,10">
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="📓 연관 기록부" Classes="h3"/>
+                                <TextBlock Text="· BOD₅ — 2026-04-19" Classes="body"/>
+                                <TextBlock Text="· COD — 2026-04-19" Classes="body"/>
+                                <TextBlock Text="· T-N — 2026-04-19" Classes="body"/>
+                            </StackPanel>
+                        </Border>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+
+    </Grid>
+</UserControl>

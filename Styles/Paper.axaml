@@ -303,6 +303,48 @@
     </Style>
 
     <!--  =========================================================
+          테이블 · .th / .td / .row / .row-active
+          ========================================================= -->
+    <Style Selector="Border.th">
+        <Setter Property="Background"      Value="{DynamicResource PaperHeader}"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource PaperInkHair}"/>
+        <Setter Property="BorderThickness" Value="0,0,1,1"/>
+        <Setter Property="Padding"         Value="6,4"/>
+    </Style>
+    <Style Selector="Border.th > TextBlock">
+        <Setter Property="FontSize"            Value="10"/>
+        <Setter Property="FontWeight"          Value="Bold"/>
+        <Setter Property="Foreground"          Value="{DynamicResource PaperFgTitle}"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+    </Style>
+    <Style Selector="Border.td">
+        <Setter Property="Background"      Value="{DynamicResource PaperCard}"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource PaperInkHair}"/>
+        <Setter Property="BorderThickness" Value="0,0,1,1"/>
+        <Setter Property="Padding"         Value="6,4"/>
+    </Style>
+    <Style Selector="Border.td > TextBlock">
+        <Setter Property="FontSize"            Value="11"/>
+        <Setter Property="Foreground"          Value="{DynamicResource PaperFgBody}"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+    </Style>
+    <Style Selector="Border.td > StackPanel">
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+    </Style>
+
+    <Style Selector="Border.row">
+        <Setter Property="Background"   Value="Transparent"/>
+        <Setter Property="CornerRadius" Value="4"/>
+    </Style>
+    <Style Selector="Border.row:pointerover">
+        <Setter Property="Background" Value="{DynamicResource PaperRowAlt}"/>
+    </Style>
+    <Style Selector="Border.row-active">
+        <Setter Property="Background"   Value="{DynamicResource PaperSelected}"/>
+        <Setter Property="CornerRadius" Value="4"/>
+    </Style>
+
+    <!--  =========================================================
           Top nav tab
           ========================================================= -->
     <Style Selector="Button.navtab">

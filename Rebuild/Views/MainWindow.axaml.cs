@@ -39,6 +39,7 @@ public partial class MainWindow : Window
             "input"    => new InputPage(),
             "file"     => new FileflowPage(),
             "note"     => new NotebookPage(),
+            "facility" => new FacilityPage(),
             _          => new ComingSoonPage(btn.Content?.ToString() ?? "?"),
         };
     }
