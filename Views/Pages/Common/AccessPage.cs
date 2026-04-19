@@ -18,6 +18,7 @@ using ETA.Services.SERVICE2;
 using ETA.Services.SERVICE3;
 using ETA.Services.Common;
 using ETA.Views;
+using ETA.Views.Controls;
 
 namespace ETA.Views.Pages.Common;
 
@@ -26,6 +27,7 @@ namespace ETA.Views.Pages.Common;
 ///   탭 1 — 권한관리: 직원별 메뉴 접근 설정
 ///   탭 2 — 분석항목 관리: 분석정보 CRUD + 시험기록부 테이블 생성
 ///   탭 3 — 분석장비 관리: 측정인_분석장비 테이블 수동 CRUD
+///   탭 4 — 측정인계약: add_meas_cont_no + cmb_emis_cmpy_plc_no 스크랩
 /// </summary>
 public class AccessPage
 {
@@ -45,12 +47,13 @@ public class AccessPage
     // ── 공통 상태 ─────────────────────────────────────────────────────────────
     private readonly ContentControl _show2Content;
     private readonly ContentControl _show1Switcher;
-    private string _mode = "access"; // "access" | "analyte" | "equipment"
+    private string _mode = "access"; // "access" | "analyte" | "equipment" | "mcontract"
 
     // ── 탭 버튼 ───────────────────────────────────────────────────────────────
     private Border? _tabAccess;
     private Border? _tabAnalyte;
     private Border? _tabEquipment;
+    private Border? _tabMeasurerContract;
 
     // ── 권한관리 상태 ─────────────────────────────────────────────────────────
     private Agent?           _selectedAgent;
@@ -75,20 +78,38 @@ public class AccessPage
     private (string 장비명, string 코드값)? _selectedEquipment;
     private readonly StackPanel _equipmentListPanel; // 장비 목록 행들
 
+    // ── 측정인계약 상태 ───────────────────────────────────────────────────────
+    private readonly StackPanel _measurerContractListPanel;
+
     // ── 패널 캐시 ─────────────────────────────────────────────────────────────
     private readonly Control _employeePanelRef;
     private readonly Control _analytePanelRef;
     private readonly Control _equipmentPanelRef;
+    private readonly Control _measurerContractPanelRef;
+
+    // 표시 플래그 ── 측정인관리 메뉴에서 진입할 때 measurerOnly=true 로 호출
+    private readonly bool _showAccessTab;
+    private readonly bool _showMeasurerTabs;
 
     // =========================================================================
-    public AccessPage()
+    public AccessPage() : this("access", showAccessTab: true, showMeasurerTabs: false) { }
+
+    /// <param name="initialMode">"access" | "analyte" | "equipment" | "mcontract"</param>
+    /// <param name="showAccessTab">권한관리 탭 노출 여부</param>
+    /// <param name="showMeasurerTabs">분석항목/분석장비/측정인계약 탭 노출 여부 (측정인관리 진입 시 true)</param>
+    public AccessPage(string initialMode, bool showAccessTab, bool showMeasurerTabs)
     {
+        _showAccessTab    = showAccessTab;
+        _showMeasurerTabs = showMeasurerTabs;
+
         AccessService.EnsureTable();
         MeasurerService.EnsureEquipmentTable();
+        MeasurerService.EnsureMeasurerContractTables();
 
         _treeView          = BuildEmployeeTreeView();
         _analyteTree       = BuildAnalyteTreeView();
         _equipmentListPanel = new StackPanel { Spacing = 1 };
+        _measurerContractListPanel = new StackPanel { Spacing = 1 };
 
         _show2Content = new ContentControl
         {
@@ -104,12 +125,13 @@ public class AccessPage
         _employeePanelRef  = BuildEmployeePanel();
         _analytePanelRef   = BuildAnalytePanel();
         _equipmentPanelRef = BuildEquipmentPanel();
+        _measurerContractPanelRef = BuildMeasurerContractPanel();
 
         Show1 = BuildShow1Shell();
         Show2 = new Border { Padding = new Thickness(6), Child = _show2Content };
 
-        SwitchMode("access");
-        LoadEmployeeTree();
+        SwitchMode(initialMode);
+        if (_showAccessTab) LoadEmployeeTree();
     }
 
     // =========================================================================
@@ -131,12 +153,20 @@ public class AccessPage
     private Border BuildTabBar()
     {
         var stack = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 2 };
-        _tabAccess    = MakeTabBtn("🔐 권한관리",    active: true,  () => SwitchMode("access"));
-        _tabAnalyte   = MakeTabBtn("🧪 분석항목",    active: false, () => SwitchMode("analyte"));
-        _tabEquipment = MakeTabBtn("🔧 분석장비",    active: false, () => SwitchMode("equipment"));
-        stack.Children.Add(_tabAccess);
-        stack.Children.Add(_tabAnalyte);
-        stack.Children.Add(_tabEquipment);
+        if (_showAccessTab)
+        {
+            _tabAccess = MakeTabBtn("🔐 권한관리", active: true, () => SwitchMode("access"));
+            stack.Children.Add(_tabAccess);
+        }
+        if (_showMeasurerTabs)
+        {
+            _tabAnalyte          = MakeTabBtn("🧪 분석항목",    active: false, () => SwitchMode("analyte"));
+            _tabEquipment        = MakeTabBtn("🔧 분석장비",    active: false, () => SwitchMode("equipment"));
+            _tabMeasurerContract = MakeTabBtn("🧾 계약·측정시설", active: false, () => SwitchMode("mcontract"));
+            stack.Children.Add(_tabAnalyte);
+            stack.Children.Add(_tabEquipment);
+            stack.Children.Add(_tabMeasurerContract);
+        }
         return new Border
         {
             Background      = AppRes("PanelBg"),
@@ -172,9 +202,10 @@ public class AccessPage
     private void SwitchMode(string mode)
     {
         _mode = mode;
-        UpdateTabStyle(_tabAccess,    mode == "access");
-        UpdateTabStyle(_tabAnalyte,   mode == "analyte");
-        UpdateTabStyle(_tabEquipment, mode == "equipment");
+        UpdateTabStyle(_tabAccess,           mode == "access");
+        UpdateTabStyle(_tabAnalyte,          mode == "analyte");
+        UpdateTabStyle(_tabEquipment,        mode == "equipment");
+        UpdateTabStyle(_tabMeasurerContract, mode == "mcontract");
 
         switch (mode)
         {
@@ -187,6 +218,11 @@ public class AccessPage
                 _show1Switcher.Content = _equipmentPanelRef;
                 _show2Content.Content  = BuildEquipmentHint();
                 LoadEquipmentList();
+                break;
+            case "mcontract":
+                _show1Switcher.Content = _measurerContractPanelRef;
+                _show2Content.Content  = BuildMeasurerContractHint();
+                LoadMeasurerContractList();
                 break;
             default:
                 _show1Switcher.Content = _employeePanelRef;
@@ -379,7 +415,7 @@ public class AccessPage
         hdrGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
         var hdrTitle = new TextBlock { Text = "분석정보 항목 목록", FontSize = AppTheme.FontBase, FontWeight = FontWeight.SemiBold, Foreground = AppRes("FgMuted"), FontFamily = Font, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(10, 6) };
         Grid.SetColumn(hdrTitle, 0);
-        var addBtn = new Button { Content = "+ 항목 추가", FontSize = AppTheme.FontSM, FontFamily = Font, Padding = new Thickness(8, 4), Margin = new Thickness(4), Background = new SolidColorBrush(Color.Parse("#1a6e2e")), Foreground = Brushes.White, CornerRadius = new CornerRadius(4) };
+        var addBtn = new Button { Content = "+ 항목 추가", FontSize = AppTheme.FontSM, FontFamily = Font, Padding = new Thickness(8, 4), Margin = new Thickness(4), Background = AppTheme.StatusOkBg, Foreground = AppTheme.StatusOkFg, BorderBrush = AppTheme.StatusOkBorder, BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(999), FontWeight = FontWeight.SemiBold };
         addBtn.Click += (_, _) => { _selectedAnalyte = null; _show2Content.Content = BuildAnalyteEditPanel(null, isNew: true); };
         Grid.SetColumn(addBtn, 1);
         hdrGrid.Children.Add(hdrTitle); hdrGrid.Children.Add(addBtn);
@@ -468,42 +504,117 @@ public class AccessPage
         var tbMethod   = MkTb(item?.Method ?? "",                      "시험방법 (예: 자외선/가시선분광법)");
         var tbInst     = MkTb(item?.instrument ?? "",                  "기기 (예: ICP-OES)");
 
-        // ─ 기기 선택 드롭다운 ─────────────────────────────────────────
+        // ─ 기기 선택: 체크박스 드롭다운(다중 선택) ────────────────────
+        // 현장측정 분석항목이면 현장측정장비 테이블 사용, 그 외는 전체 분석장비
+        bool isFieldMeasAnalyteEarly =
+            (item?.Category?.Contains("현장측정") == true) ||
+            (item?.Analyte?.Contains("현장측정") == true);
         var equipments = new List<(string 장비명, string 코드값)>();
-        try { equipments = MeasurerService.GetAllEquipments(); } catch { }
+        try
+        {
+            equipments = isFieldMeasAnalyteEarly
+                ? MeasurerService.GetFieldMeasEquipment()
+                : MeasurerService.GetAllEquipments();
+        }
+        catch { }
 
         Control instField;
         if (equipments.Count > 0)
         {
-            var combo = new ComboBox
-            {
-                PlaceholderText = "등록 장비에서 선택 →",
-                FontSize        = AppTheme.FontSM,
-                FontFamily      = Font,
-                Height          = 26,
-                Margin          = new Thickness(0, 2, 0, 0),
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-                Background      = AppRes("PanelBg"),
-                BorderBrush     = AppRes("InputBorder"),
-                BorderThickness = new Thickness(1),
-            };
-            foreach (var (name, _) in equipments)
-                combo.Items.Add(name);
+            // 현재값 → 선택된 장비명 집합
+            // 저장 포맷이 다양해도 매칭: 쉼표/슬래시/| 구분 토큰 + 대소문자/특수문자 무시 + 양방향 부분매칭
+            static string NormEquip(string s)
+                => new string((s ?? "").ToLowerInvariant()
+                    .Where(char.IsLetterOrDigit).ToArray());
 
-            // 현재 값과 일치하는 항목 선택
+            var selected = new HashSet<string>();
             if (!string.IsNullOrWhiteSpace(item?.instrument))
             {
-                var match = equipments.FirstOrDefault(e => item.instrument.Contains(e.장비명));
-                if (match.장비명 != null)
-                    combo.SelectedItem = match.장비명;
+                var raw = item!.instrument!;
+                var tokens = raw
+                    .Split(new[] { ',', ';', '|', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(t => t.Trim())
+                    .Where(t => t.Length > 0)
+                    .ToList();
+                if (tokens.Count == 0) tokens.Add(raw.Trim());
+
+                var normTokens = tokens.Select(NormEquip).Where(t => t.Length > 0).ToList();
+                var normRawAll = NormEquip(raw);
+
+                foreach (var (name, _) in equipments)
+                {
+                    var nName = NormEquip(name);
+                    if (nName.Length == 0) continue;
+
+                    bool hit = false;
+                    // 1) 토큰별 양방향 부분매칭
+                    foreach (var tok in normTokens)
+                    {
+                        if (tok.Length == 0) continue;
+                        if (nName.Contains(tok) || tok.Contains(nName)) { hit = true; break; }
+                    }
+                    // 2) 전체 원문 안에 장비명(정규화)이 포함되는지
+                    if (!hit && nName.Length >= 3 && normRawAll.Contains(nName)) hit = true;
+
+                    if (hit) selected.Add(name);
+                }
             }
-            combo.SelectionChanged += (_, _) =>
+
+            string SummaryText() => selected.Count == 0
+                ? "장비 선택 ▾"
+                : (selected.Count == 1 ? selected.First() : $"{selected.First()} 외 {selected.Count - 1}개") + " ▾";
+
+            var dropdownBtn = new Button
             {
-                if (combo.SelectedItem is string name && !string.IsNullOrWhiteSpace(name))
-                    tbInst.Text = name;
+                Content                    = SummaryText(),
+                FontSize                   = AppTheme.FontSM,
+                FontFamily                 = Font,
+                Height                     = 26,
+                Padding                    = new Thickness(8, 0),
+                Margin                     = new Thickness(0, 2, 0, 0),
+                HorizontalAlignment        = HorizontalAlignment.Stretch,
+                HorizontalContentAlignment = HorizontalAlignment.Left,
+                Background                 = AppRes("PanelBg"),
+                Foreground                 = AppRes("AppFg"),
+                BorderBrush                = AppRes("InputBorder"),
+                BorderThickness            = new Thickness(1),
             };
 
-            instField = combo;
+            var listPanel = new StackPanel { Spacing = 2, Margin = new Thickness(6) };
+            foreach (var (name, _) in equipments)
+            {
+                var cb = new CheckBox
+                {
+                    Content    = name,
+                    IsChecked  = selected.Contains(name),
+                    FontSize   = AppTheme.FontSM,
+                    FontFamily = Font,
+                    Foreground = AppRes("AppFg"),
+                };
+                var capturedName = name;
+                cb.IsCheckedChanged += (_, _) =>
+                {
+                    if (cb.IsChecked == true) selected.Add(capturedName);
+                    else                      selected.Remove(capturedName);
+                    tbInst.Text        = string.Join(", ", selected);
+                    dropdownBtn.Content = SummaryText();
+                };
+                listPanel.Children.Add(cb);
+            }
+
+            var sv = new ScrollViewer
+            {
+                MaxHeight                     = 320,
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                VerticalScrollBarVisibility   = ScrollBarVisibility.Auto,
+                Content                       = listPanel,
+            };
+            dropdownBtn.Flyout = new Flyout { Content = sv, Placement = PlacementMode.Bottom };
+
+            // 초기 text 동기화 (최초 진입 시 빈 문자열 보정)
+            tbInst.Text = string.Join(", ", selected);
+
+            instField = dropdownBtn;
         }
         else
         {
@@ -538,8 +649,58 @@ public class AccessPage
         form.Children.Add(Labeled("시험방법", tbMethod));
         form.Children.Add(Labeled("기기 (instrument)", instField));
 
+        // ─ 동시분석그룹 (번호 같은 항목끼리 한번에 분석) ────────────────────
+        int curGroup = 0;
+        if (!string.IsNullOrWhiteSpace(origAnalyte))
+        {
+            try { curGroup = MeasurerService.GetConcurrentGroup(origAnalyte!); } catch { }
+        }
+        var cbGroup = new ComboBox
+        {
+            FontSize = AppTheme.FontBase, FontFamily = Font,
+            Height = 28, Margin = new Thickness(0, 2, 0, 0),
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            Background = AppRes("PanelBg"),
+            BorderBrush = AppRes("InputBorder"), BorderThickness = new Thickness(1),
+            Tag = curGroup,
+        };
+        // 각 그룹에 속한 항목 목록 조회
+        var groupMembers = new Dictionary<int, List<string>>();
+        try
+        {
+            var all = MeasurerService.GetAllConcurrentGroups();
+            foreach (var kv in all)
+            {
+                if (kv.Value < 1 || kv.Value > 10) continue;
+                if (!groupMembers.ContainsKey(kv.Value)) groupMembers[kv.Value] = new List<string>();
+                groupMembers[kv.Value].Add(kv.Key);
+            }
+        }
+        catch (Exception ex) { Console.WriteLine($"[GetAllConcurrentGroups] {ex.Message}"); }
+
+        cbGroup.Items.Add("(없음)");
+        for (int g = 1; g <= 10; g++)
+        {
+            string label;
+            if (groupMembers.TryGetValue(g, out var members) && members.Count > 0)
+            {
+                var joined = string.Join(", ", members.OrderBy(s => s));
+                if (joined.Length > 60) joined = joined.Substring(0, 57) + "…";
+                label = $"그룹 {g} — {joined} ({members.Count})";
+            }
+            else
+            {
+                label = $"그룹 {g} (비어있음)";
+            }
+            cbGroup.Items.Add(label);
+        }
+        cbGroup.SelectedIndex = Math.Max(0, Math.Min(10, curGroup));
+        form.Children.Add(Labeled(
+            "동시분석그룹 (같이 분석되는 항목끼리 같은 번호 — 예: 금속류 1, 음이온 2)",
+            cbGroup));
+
         // ─ 버튼 행 ───────────────────────────────────────────────────
-        var btnSave = new Button { Content = isNew ? "✚ 신규 저장" : "💾 저장", FontSize = AppTheme.FontBase, FontFamily = Font, Padding = new Thickness(14, 6), Background = new SolidColorBrush(Color.Parse("#1565c0")), Foreground = Brushes.White, CornerRadius = new CornerRadius(4) };
+        var btnSave = new Button { Content = isNew ? "✚ 신규 저장" : "💾 저장", FontSize = AppTheme.FontBase, FontFamily = Font, Padding = new Thickness(14, 6), Background = AppTheme.StatusInfoBg, Foreground = AppTheme.StatusInfoFg, BorderBrush = AppTheme.StatusInfoBorder, BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(999), FontWeight = FontWeight.SemiBold };
         btnSave.Click += (_, _) =>
         {
             var updated = new AnalysisItem
@@ -557,12 +718,17 @@ public class AccessPage
             };
             if (string.IsNullOrWhiteSpace(updated.Analyte)) return;
             SaveAnalyteToDB(updated, isNew ? null : origAnalyte);
+
+            // 동시분석그룹 저장 (SelectedIndex 0 = 없음, 1~ = 그룹번호)
+            try { MeasurerService.SaveConcurrentGroup(updated.Analyte, cbGroup.SelectedIndex); }
+            catch (Exception ex) { Console.WriteLine($"[SaveConcurrentGroup] {ex.Message}"); }
+
             LoadAnalyteTree();
             _selectedAnalyte = updated;
             _show2Content.Content = BuildAnalyteEditPanel(updated, isNew: false);
         };
 
-        var btnDelete = new Button { Content = "🗑 삭제", FontSize = AppTheme.FontBase, FontFamily = Font, Padding = new Thickness(14, 6), Background = new SolidColorBrush(Color.Parse("#c62828")), Foreground = Brushes.White, CornerRadius = new CornerRadius(4), IsVisible = !isNew };
+        var btnDelete = new Button { Content = "🗑 삭제", FontSize = AppTheme.FontBase, FontFamily = Font, Padding = new Thickness(14, 6), Background = AppTheme.StatusBadBg, Foreground = AppTheme.StatusBadFg, BorderBrush = AppTheme.StatusBadBorder, BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(999), FontWeight = FontWeight.SemiBold, IsVisible = !isNew };
         btnDelete.Click += (_, _) =>
         {
             if (string.IsNullOrWhiteSpace(origAnalyte)) return;
@@ -572,7 +738,7 @@ public class AccessPage
             _show2Content.Content = BuildAnalyteHint();
         };
 
-        var btnCreateTable = new Button { Content = "🗄 시험기록부 테이블 생성", FontSize = AppTheme.FontBase, FontFamily = Font, Padding = new Thickness(14, 6), Background = new SolidColorBrush(Color.Parse("#4a148c")), Foreground = Brushes.White, CornerRadius = new CornerRadius(4) };
+        var btnCreateTable = new Button { Content = "🗄 시험기록부 테이블 생성", FontSize = AppTheme.FontBase, FontFamily = Font, Padding = new Thickness(14, 6), Background = AppTheme.StatusAccentBg, Foreground = AppTheme.StatusAccentFg, BorderBrush = AppTheme.StatusAccentBorder, BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(999), FontWeight = FontWeight.SemiBold };
         var statusText = new TextBlock { FontSize = AppTheme.FontSM, FontFamily = Font, Foreground = AppRes("FgMuted"), Margin = new Thickness(0, 4), IsVisible = false };
         btnCreateTable.Click += (_, _) =>
         {
@@ -1321,9 +1487,10 @@ public class AccessPage
         hdrGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
         hdrGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
         hdrGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
+        hdrGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
         var hdrTitle = new TextBlock { Text = "분석장비 목록", FontSize = AppTheme.FontBase, FontWeight = FontWeight.SemiBold, Foreground = AppRes("FgMuted"), FontFamily = Font, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(10, 6) };
         Grid.SetColumn(hdrTitle, 0);
-        var scrapeBtn = new Button { Content = "📡 스크랩", FontSize = AppTheme.FontSM, FontFamily = Font, Padding = new Thickness(8, 4), Margin = new Thickness(4), Background = new SolidColorBrush(Color.Parse("#0b4f6c")), Foreground = Brushes.White, CornerRadius = new CornerRadius(4) };
+        var scrapeBtn = new Button { Content = "📡 스크랩", FontSize = AppTheme.FontSM, FontFamily = Font, Padding = new Thickness(8, 4), Margin = new Thickness(4), Background = AppTheme.StatusInfoBg, Foreground = AppTheme.StatusInfoFg, BorderBrush = AppTheme.StatusInfoBorder, BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(999), FontWeight = FontWeight.SemiBold };
         scrapeBtn.Click += async (_, _) =>
         {
             scrapeBtn.IsEnabled = false;
@@ -1336,10 +1503,24 @@ public class AccessPage
             else { scrapeStatusTb.Text = "✓ " + saved + "개 저장됨"; scrapeStatusTb.Foreground = Brushes.LightGreen; LoadEquipmentList(); }
         };
         Grid.SetColumn(scrapeBtn, 1);
-        var addBtn = new Button { Content = "+ 추가", FontSize = AppTheme.FontSM, FontFamily = Font, Padding = new Thickness(8, 4), Margin = new Thickness(4), Background = new SolidColorBrush(Color.Parse("#1a6e2e")), Foreground = Brushes.White, CornerRadius = new CornerRadius(4) };
+        var scrapeFieldBtn = new Button { Content = "🎯 현장장비 스크랩", FontSize = AppTheme.FontSM, FontFamily = Font, Padding = new Thickness(8, 4), Margin = new Thickness(4), Background = AppTheme.StatusAccentBg, Foreground = AppTheme.StatusAccentFg, BorderBrush = AppTheme.StatusAccentBorder, BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(999), FontWeight = FontWeight.SemiBold };
+        Avalonia.Controls.ToolTip.SetTip(scrapeFieldBtn, "의뢰추가 모달의 edit_meas_equip_no 드롭다운에서 직접 스크랩 — 모달이 열려있어야 함");
+        scrapeFieldBtn.Click += async (_, _) =>
+        {
+            scrapeFieldBtn.IsEnabled = false;
+            scrapeStatusTb.IsVisible = true;
+            scrapeStatusTb.Text = "현장장비 스크랩 중...";
+            var (saved, err) = await MeasurerCdpService.ScrapeFieldMeasEquipmentsAsync(msg =>
+                Dispatcher.UIThread.Post(() => { scrapeStatusTb.Text = msg; }));
+            scrapeFieldBtn.IsEnabled = true;
+            if (err != null) { scrapeStatusTb.Text = "⚠ " + err; scrapeStatusTb.Foreground = Brushes.OrangeRed; }
+            else { scrapeStatusTb.Text = $"✓ 현장측정장비 {saved}개 저장됨"; scrapeStatusTb.Foreground = Brushes.LightGreen; }
+        };
+        Grid.SetColumn(scrapeFieldBtn, 2);
+        var addBtn = new Button { Content = "+ 추가", FontSize = AppTheme.FontSM, FontFamily = Font, Padding = new Thickness(8, 4), Margin = new Thickness(4), Background = AppTheme.StatusOkBg, Foreground = AppTheme.StatusOkFg, BorderBrush = AppTheme.StatusOkBorder, BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(999), FontWeight = FontWeight.SemiBold };
         addBtn.Click += (_, _) => { _show2Content.Content = BuildEquipmentEditPanel(null, null, isNew: true); };
-        Grid.SetColumn(addBtn, 2);
-        hdrGrid.Children.Add(hdrTitle); hdrGrid.Children.Add(scrapeBtn); hdrGrid.Children.Add(addBtn);
+        Grid.SetColumn(addBtn, 3);
+        hdrGrid.Children.Add(hdrTitle); hdrGrid.Children.Add(scrapeBtn); hdrGrid.Children.Add(scrapeFieldBtn); hdrGrid.Children.Add(addBtn);
         var hdrOuter = new StackPanel { Spacing = 0 };
         hdrOuter.Children.Add(hdrGrid);
         hdrOuter.Children.Add(scrapeStatusTb);
@@ -1379,15 +1560,55 @@ public class AccessPage
 
     private Border CreateEquipmentRow(string name, string code)
     {
+        try
+        {
+            System.IO.Directory.CreateDirectory("Logs");
+            System.IO.File.AppendAllText("Logs/MeasurerDebug.log",
+                $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] [CreateEquipmentRow] name='{name}' code='{code}'\n");
+        }
+        catch { }
         var row = new Grid { Margin = new Thickness(4, 2) };
-        row.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
+        row.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));  // 현장측정 체크박스
+        row.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));  // 이름/코드
         row.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
+
+        // 현장측정 플래그 체크박스 (행 내 인라인 — 즉시 저장)
+        bool cur = false;
+        try { cur = MeasurerService.GetFieldMeasFlag(code); } catch { }
+        var cbField = new CheckBox
+        {
+            IsChecked = cur,
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin = new Thickness(4, 0, 10, 0),
+        };
+        Avalonia.Controls.ToolTip.SetTip(cbField, "현장측정장비");
+        // Click(부모 PointerPressed 우선권 회피) + IsCheckedChanged 둘 다 연결
+        void CommitField()
+        {
+            try
+            {
+                bool on = cbField.IsChecked == true;
+                MeasurerService.SetFieldMeasFlag(code, on);
+                try
+                {
+                    System.IO.Directory.CreateDirectory("Logs");
+                    System.IO.File.AppendAllText("Logs/MeasurerDebug.log",
+                        $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] [UI:인라인체크] code='{code}' on={on}\n");
+                }
+                catch { }
+            }
+            catch (Exception ex) { Console.WriteLine($"[SetFieldMeasFlag] {ex.Message}"); }
+        }
+        cbField.IsCheckedChanged += (_, _) => CommitField();
+        cbField.Click           += (_, _) => CommitField();
+        Grid.SetColumn(cbField, 0);
+        row.Children.Add(cbField);
 
         var nameBlock = new TextBlock { Text = name, FontSize = AppTheme.FontBase, FontFamily = Font, Foreground = AppRes("AppFg"), VerticalAlignment = VerticalAlignment.Center };
         var codeBlock = new TextBlock { Text = code, FontSize = AppTheme.FontXS, FontFamily = Font, Foreground = AppRes("FgMuted"), VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 2) };
         var info = new StackPanel { Spacing = 1 };
         info.Children.Add(nameBlock); info.Children.Add(codeBlock);
-        Grid.SetColumn(info, 0);
+        Grid.SetColumn(info, 1);
         row.Children.Add(info);
 
         var border = new Border
@@ -1398,7 +1619,20 @@ public class AccessPage
             Cursor       = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
             Child        = row,
         };
-        border.PointerPressed += (_, _) =>
+        // 진단: Border 전체 클릭 탐지 (이벤트가 어디까지 오는지 확인)
+        border.PointerPressed += (s, e) =>
+        {
+            try
+            {
+                System.IO.Directory.CreateDirectory("Logs");
+                var src = e.Source?.GetType().Name ?? "null";
+                System.IO.File.AppendAllText("Logs/MeasurerDebug.log",
+                    $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] [Border.PointerPressed] code='{code}' src={src}\n");
+            }
+            catch { }
+        };
+        // 행 클릭 → 편집 패널 (체크박스 클릭은 CheckBox가 Handled 처리)
+        info.PointerPressed += (_, _) =>
         {
             _show2Content.Content = BuildEquipmentEditPanel(name, code, isNew: false);
         };
@@ -1436,7 +1670,24 @@ public class AccessPage
         form.Children.Add(Labeled("장비명", tbName));
         form.Children.Add(Labeled("코드값 (측정인.kr ID)", tbCode));
 
-        var btnSave = new Button { Content = isNew ? "✚ 저장" : "💾 저장", FontSize = AppTheme.FontBase, FontFamily = Font, Padding = new Thickness(14, 6), Background = new SolidColorBrush(Color.Parse("#1565c0")), Foreground = Brushes.White, CornerRadius = new CornerRadius(4) };
+        // 현장측정장비 플래그 — 측정인 전송 시 이 장비들이 자동 선택됨
+        bool curField = false;
+        if (!isNew && !string.IsNullOrWhiteSpace(origCode))
+        {
+            try { curField = MeasurerService.GetFieldMeasFlag(origCode!); } catch { }
+        }
+        var cbField = new CheckBox
+        {
+            Content    = "현장측정장비 (측정인 전송 시 자동 선택)",
+            IsChecked  = curField,
+            FontSize   = AppTheme.FontBase,
+            FontFamily = Font,
+            Foreground = AppRes("AppFg"),
+            Margin     = new Thickness(0, 8, 0, 0),
+        };
+        form.Children.Add(cbField);
+
+        var btnSave = new Button { Content = isNew ? "✚ 저장" : "💾 저장", FontSize = AppTheme.FontBase, FontFamily = Font, Padding = new Thickness(14, 6), Background = AppTheme.StatusInfoBg, Foreground = AppTheme.StatusInfoFg, BorderBrush = AppTheme.StatusInfoBorder, BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(999), FontWeight = FontWeight.SemiBold };
         var statusTb = new TextBlock { FontSize = AppTheme.FontSM, FontFamily = Font, Foreground = AppRes("FgMuted"), IsVisible = false, Margin = new Thickness(0, 4) };
         btnSave.Click += (_, _) =>
         {
@@ -1447,13 +1698,15 @@ public class AccessPage
             try
             {
                 MeasurerService.SaveEquipment(n, c, isNew ? null : origCode);
+                try { MeasurerService.SetFieldMeasFlag(c, cbField.IsChecked == true); }
+                catch (Exception ex2) { Console.WriteLine($"[SetFieldMeasFlag] {ex2.Message}"); }
                 LoadEquipmentList();
                 _show2Content.Content = BuildEquipmentEditPanel(n, c, isNew: false);
             }
             catch (Exception ex) { statusTb.Text = $"오류: {ex.Message}"; statusTb.Foreground = Brushes.Red; statusTb.IsVisible = true; }
         };
 
-        var btnDelete = new Button { Content = "🗑 삭제", FontSize = AppTheme.FontBase, FontFamily = Font, Padding = new Thickness(14, 6), Background = new SolidColorBrush(Color.Parse("#c62828")), Foreground = Brushes.White, CornerRadius = new CornerRadius(4), IsVisible = !isNew };
+        var btnDelete = new Button { Content = "🗑 삭제", FontSize = AppTheme.FontBase, FontFamily = Font, Padding = new Thickness(14, 6), Background = AppTheme.StatusBadBg, Foreground = AppTheme.StatusBadFg, BorderBrush = AppTheme.StatusBadBorder, BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(999), FontWeight = FontWeight.SemiBold, IsVisible = !isNew };
         btnDelete.Click += (_, _) =>
         {
             if (string.IsNullOrWhiteSpace(origCode)) return;
@@ -1504,6 +1757,7 @@ public class AccessPage
                 cmd.Parameters.AddWithValue("@unit", item.unit);         cmd.Parameters.AddWithValue("@es",   item.ES);
                 cmd.Parameters.AddWithValue("@meth", item.Method);       cmd.Parameters.AddWithValue("@inst", item.instrument);
                 cmd.Parameters.AddWithValue("@orig", originalAnalyte);
+                cmd.ExecuteNonQuery();
             }
             else
             {
@@ -1586,4 +1840,292 @@ public class AccessPage
     private static Control BuildEmptyHint()    => MakeHint("← 직원을 선택하면\n메뉴 접근 권한을 설정할 수 있습니다.");
     private static Control BuildAnalyteHint()  => MakeHint("← 항목을 클릭하면 편집할 수 있습니다.\n+ 항목 추가로 새 분석항목을 등록하세요.");
     private static Control BuildEquipmentHint()=> MakeHint("← 장비를 클릭하면 편집할 수 있습니다.\n+ 장비 추가로 새 분석장비를 등록하세요.");
+    private static Control BuildMeasurerContractHint() => MakeHint("📡 스크랩 버튼으로\n측정인.kr 의뢰추가 모달의\n계약·측정대상 사업장·측정시설 목록을 가져옵니다.\n\n※ 스크랩 전 의뢰추가 모달을 먼저 열어두세요.");
+
+    // =========================================================================
+    // 탭 4 — 측정인계약 Show1
+    // =========================================================================
+    private Control BuildMeasurerContractPanel()
+    {
+        var grid = new Grid();
+        grid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+        grid.RowDefinitions.Add(new RowDefinition(GridLength.Star));
+
+        var scrapeStatusTb = new TextBlock { FontSize = AppTheme.FontXS, FontFamily = Font, Foreground = AppRes("FgMuted"), Margin = new Thickness(8, 2, 8, 4), IsVisible = false, TextWrapping = TextWrapping.Wrap };
+
+        var hdrGrid = new Grid();
+        hdrGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
+        hdrGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
+        hdrGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
+        var hdrTitle = new TextBlock { Text = "측정인 계약·측정대상 사업장", FontSize = AppTheme.FontBase, FontWeight = FontWeight.SemiBold, Foreground = AppRes("FgMuted"), FontFamily = Font, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(10, 6) };
+        Grid.SetColumn(hdrTitle, 0);
+
+        var importBtn = new Button { Content = "📥 xlsx Import", FontSize = AppTheme.FontSM, FontFamily = Font, Padding = new Thickness(8, 4), Margin = new Thickness(4), Background = AppTheme.StatusOkBg, Foreground = AppTheme.StatusOkFg, BorderBrush = AppTheme.StatusOkBorder, BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(999), FontWeight = FontWeight.SemiBold };
+        importBtn.Click += async (_, _) => await RunFacilityImportAsync(importBtn, scrapeStatusTb);
+        Grid.SetColumn(importBtn, 1);
+
+        var scrapeBtn = new Button { Content = "📡 스크랩", FontSize = AppTheme.FontSM, FontFamily = Font, Padding = new Thickness(8, 4), Margin = new Thickness(4), Background = AppTheme.StatusInfoBg, Foreground = AppTheme.StatusInfoFg, BorderBrush = AppTheme.StatusInfoBorder, BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(999), FontWeight = FontWeight.SemiBold };
+        scrapeBtn.Click += async (_, _) =>
+        {
+            scrapeBtn.IsEnabled = false;
+            scrapeStatusTb.IsVisible = true;
+            scrapeStatusTb.Foreground = AppRes("FgMuted");
+            scrapeStatusTb.Text = "스크랩 중...";
+            var (contracts, places, facilities, err) = await MeasurerCdpService.ScrapeContractsAsync(msg =>
+                Dispatcher.UIThread.Post(() => { scrapeStatusTb.Text = msg; }));
+            scrapeBtn.IsEnabled = true;
+            if (err != null) { scrapeStatusTb.Text = "⚠ " + err; scrapeStatusTb.Foreground = Brushes.OrangeRed; }
+            else { scrapeStatusTb.Text = $"✓ 계약 {contracts}건 / 측정대상 사업장 {places}건 / 측정시설 {facilities}건 저장"; scrapeStatusTb.Foreground = Brushes.LightGreen; LoadMeasurerContractList(); }
+        };
+        Grid.SetColumn(scrapeBtn, 2);
+
+        hdrGrid.Children.Add(hdrTitle);
+        hdrGrid.Children.Add(importBtn);
+        hdrGrid.Children.Add(scrapeBtn);
+
+        var hdrOuter = new StackPanel { Spacing = 0 };
+        hdrOuter.Children.Add(hdrGrid);
+        hdrOuter.Children.Add(scrapeStatusTb);
+        var headerBorder = new Border { Background = AppRes("PanelBg"), Child = hdrOuter };
+        Grid.SetRow(headerBorder, 0);
+
+        var scroll = new ScrollViewer { VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Content = _measurerContractListPanel };
+        Grid.SetRow(scroll, 1);
+
+        grid.Children.Add(headerBorder);
+        grid.Children.Add(scroll);
+        return grid;
+    }
+
+    // ── 측정시설(지역) xlsx Import ───────────────────────────────────────────
+    private async System.Threading.Tasks.Task RunFacilityImportAsync(Button btn, TextBlock statusTb)
+    {
+        try
+        {
+            btn.IsEnabled = false;
+            statusTb.IsVisible = true;
+            statusTb.Foreground = AppRes("FgMuted");
+
+            // 파일 피커 — 시작 폴더는 Data/
+            var top = TopLevel.GetTopLevel(btn);
+            if (top == null)
+            {
+                statusTb.Text = "⚠ 파일 피커를 열 수 없습니다.";
+                statusTb.Foreground = Brushes.OrangeRed;
+                btn.IsEnabled = true; return;
+            }
+
+            Avalonia.Platform.Storage.IStorageFolder? startFolder = null;
+            try
+            {
+                string dataDir = System.IO.Path.Combine(AppContext.BaseDirectory, "Data");
+                if (!Directory.Exists(dataDir)) dataDir = "Data";
+                if (Directory.Exists(dataDir))
+                    startFolder = await top.StorageProvider.TryGetFolderFromPathAsync(new Uri(System.IO.Path.GetFullPath(dataDir)));
+            }
+            catch { }
+
+            var files = await top.StorageProvider.OpenFilePickerAsync(new Avalonia.Platform.Storage.FilePickerOpenOptions
+            {
+                Title = "측정시설(지역)관리 xlsx 선택",
+                AllowMultiple = false,
+                SuggestedStartLocation = startFolder,
+                FileTypeFilter = new[]
+                {
+                    new Avalonia.Platform.Storage.FilePickerFileType("Excel") { Patterns = new[] { "*.xlsx" } }
+                }
+            });
+            if (files.Count == 0) { statusTb.Text = "취소됨"; btn.IsEnabled = true; return; }
+            string path = files[0].Path.LocalPath;
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                statusTb.Text = "⚠ 파일 경로를 읽을 수 없습니다.";
+                statusTb.Foreground = Brushes.OrangeRed;
+                btn.IsEnabled = true; return;
+            }
+
+            statusTb.Text = $"Import 중: {System.IO.Path.GetFileName(path)} …";
+
+            // 3) 백그라운드 실행
+            var result = await System.Threading.Tasks.Task.Run(() => MeasurerService.ImportFacilitiesFromXlsx(path));
+
+            if (result.Error != null)
+            {
+                statusTb.Text = "⚠ " + result.Error;
+                statusTb.Foreground = Brushes.OrangeRed;
+            }
+            else
+            {
+                statusTb.Text = $"✓ {System.IO.Path.GetFileName(path)} — 행 {result.TotalRows} · 계약 {result.ContractsUpsert} · 채취지점 {result.PointsUpsert}" +
+                                (result.Skipped > 0 ? $" · skip {result.Skipped}" : "");
+                statusTb.Foreground = Brushes.LightGreen;
+                LoadMeasurerContractList();
+            }
+        }
+        catch (Exception ex)
+        {
+            statusTb.Text = "⚠ Import 실패: " + ex.Message;
+            statusTb.Foreground = Brushes.OrangeRed;
+        }
+        finally { btn.IsEnabled = true; }
+    }
+
+    private void LoadMeasurerContractList()
+    {
+        _measurerContractListPanel.Children.Clear();
+        try
+        {
+            var list = MeasurerService.GetAllMeasurerContracts();
+            if (list.Count == 0)
+            {
+                _measurerContractListPanel.Children.Add(new TextBlock
+                {
+                    Text         = "스크랩된 계약이 없습니다.\n📡 스크랩 버튼을 눌러\n측정인.kr 드롭다운을 가져오세요.",
+                    FontSize     = AppTheme.FontBase,
+                    FontFamily   = Font,
+                    Foreground   = AppRes("FgMuted"),
+                    TextWrapping = TextWrapping.Wrap,
+                    Margin       = new Thickness(12, 16),
+                });
+                return;
+            }
+            foreach (var c in list)
+            {
+                var placeCount = MeasurerService.GetMeasurerPlaces(c.계약번호).Count;
+                _measurerContractListPanel.Children.Add(CreateMeasurerContractRow(c, placeCount));
+            }
+        }
+        catch (Exception ex) { Console.WriteLine($"[LoadMeasurerContractList] {ex.Message}"); }
+    }
+
+    private Border CreateMeasurerContractRow(MeasurerService.MeasurerContract c, int placeCount)
+    {
+        var row = new Grid { Margin = new Thickness(4, 2) };
+        row.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
+        row.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
+
+        var titleBlock = new TextBlock { Text = c.계약번호, FontSize = AppTheme.FontBase, FontFamily = Font, Foreground = AppRes("AppFg"), FontWeight = FontWeight.SemiBold, VerticalAlignment = VerticalAlignment.Center };
+        var subBlock   = new TextBlock { Text = string.IsNullOrWhiteSpace(c.업체명) ? "(업체명 없음)" : c.업체명, FontSize = AppTheme.FontXS, FontFamily = Font, Foreground = AppRes("FgMuted"), VerticalAlignment = VerticalAlignment.Center, TextWrapping = TextWrapping.NoWrap, TextTrimming = TextTrimming.CharacterEllipsis, Margin = new Thickness(0, 2) };
+        var info = new StackPanel { Spacing = 1 };
+        info.Children.Add(titleBlock); info.Children.Add(subBlock);
+        Grid.SetColumn(info, 0);
+        row.Children.Add(info);
+
+        var countBadge = new Border
+        {
+            Background   = new SolidColorBrush(Color.Parse("#0b4f6c")),
+            CornerRadius = new CornerRadius(8),
+            Padding      = new Thickness(6, 2),
+            VerticalAlignment = VerticalAlignment.Center,
+            Child        = new TextBlock { Text = placeCount + "곳", FontSize = AppTheme.FontXS, FontFamily = Font, Foreground = Brushes.White },
+        };
+        Grid.SetColumn(countBadge, 1);
+        row.Children.Add(countBadge);
+
+        var border = new Border
+        {
+            Padding      = new Thickness(8, 6),
+            CornerRadius = new CornerRadius(4),
+            Background   = Brushes.Transparent,
+            Cursor       = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
+            Child        = row,
+        };
+        border.PointerPressed += (_, _) =>
+        {
+            _show2Content.Content = BuildMeasurerContractDetailPanel(c);
+        };
+        border.PointerEntered += (_, _) => border.Background = AppTheme.BgSecondary;
+        border.PointerExited  += (_, _) => border.Background = Brushes.Transparent;
+        return border;
+    }
+
+    // =========================================================================
+    // 탭 4 — 측정인계약 Show2 (상세: 처리시설 목록)
+    // =========================================================================
+    private Control BuildMeasurerContractDetailPanel(MeasurerService.MeasurerContract c)
+    {
+        var places = MeasurerService.GetMeasurerPlaces(c.계약번호);
+
+        var root = new StackPanel { Spacing = 0, Margin = new Thickness(8) };
+        root.Children.Add(new TextBlock { Text = $"🧾 {c.계약번호}", FontSize = AppTheme.FontXL, FontWeight = FontWeight.SemiBold, FontFamily = Font, Foreground = AppRes("AppFg"), Margin = new Thickness(0, 0, 0, 2) });
+        root.Children.Add(new TextBlock { Text = c.업체명, FontSize = AppTheme.FontBase, FontFamily = Font, Foreground = AppRes("FgMuted"), Margin = new Thickness(0, 0, 0, 6), TextWrapping = TextWrapping.Wrap });
+        root.Children.Add(new Border { Height = 1, Background = AppTheme.BorderDefault, Margin = new Thickness(0, 0, 0, 8) });
+
+        void AddField(string label, string value)
+        {
+            if (string.IsNullOrWhiteSpace(value)) return;
+            var s = new StackPanel { Spacing = 0, Margin = new Thickness(0, 2) };
+            s.Children.Add(new TextBlock { Text = label, FontSize = AppTheme.FontSM, FontFamily = Font, Foreground = AppRes("FgMuted") });
+            s.Children.Add(new TextBlock { Text = value, FontSize = AppTheme.FontBase, FontFamily = Font, Foreground = AppRes("AppFg"), TextWrapping = TextWrapping.Wrap });
+            root.Children.Add(s);
+        }
+        AddField("대표사업장", c.대표사업장);
+        AddField("계약기간", c.계약기간);
+
+        root.Children.Add(new TextBlock { Text = $"측정대상 사업장 ({places.Count}곳)", FontSize = AppTheme.FontLG, FontWeight = FontWeight.SemiBold, FontFamily = Font, Foreground = AppRes("AppFg"), Margin = new Thickness(0, 12, 0, 4) });
+        root.Children.Add(new Border { Height = 1, Background = AppTheme.BorderDefault, Margin = new Thickness(0, 0, 0, 4) });
+
+        if (places.Count == 0)
+        {
+            root.Children.Add(new TextBlock { Text = "(스크랩된 측정대상 사업장 없음)", FontSize = AppTheme.FontSM, FontFamily = Font, Foreground = AppRes("FgMuted"), Margin = new Thickness(0, 4) });
+        }
+        else
+        {
+            foreach (var p in places)
+            {
+                var headerLine = new Grid { Margin = new Thickness(0, 2) };
+                headerLine.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
+                headerLine.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
+                var nameTb = new TextBlock { Text = p.처리시설명, FontSize = AppTheme.FontBase, FontFamily = Font, Foreground = AppRes("AppFg"), FontWeight = FontWeight.SemiBold, VerticalAlignment = VerticalAlignment.Center, TextWrapping = TextWrapping.Wrap };
+                var codeTb = new TextBlock { Text = p.처리시설코드, FontSize = AppTheme.FontXS, FontFamily = Font, Foreground = AppRes("FgMuted"), VerticalAlignment = VerticalAlignment.Center };
+                Grid.SetColumn(nameTb, 0); Grid.SetColumn(codeTb, 1);
+                headerLine.Children.Add(nameTb); headerLine.Children.Add(codeTb);
+
+                var placeBlock = new StackPanel { Spacing = 2, Margin = new Thickness(0, 4, 0, 6) };
+                placeBlock.Children.Add(new Border { Padding = new Thickness(6, 4), Child = headerLine });
+
+                // 하위 측정시설 목록
+                try
+                {
+                    var facilities = MeasurerService.GetMeasurerFacilities(c.계약번호, p.처리시설코드);
+                    if (facilities.Count == 0)
+                    {
+                        placeBlock.Children.Add(new TextBlock { Text = "    (측정시설 없음)", FontSize = AppTheme.FontXS, FontFamily = Font, Foreground = AppRes("FgMuted"), Margin = new Thickness(0, 0, 0, 2) });
+                    }
+                    else
+                    {
+                        foreach (var f in facilities)
+                        {
+                            placeBlock.Children.Add(new TextBlock
+                            {
+                                Text       = "    · " + f.측정시설명,
+                                FontSize   = AppTheme.FontSM,
+                                FontFamily = Font,
+                                Foreground = AppRes("AppFg"),
+                                Margin     = new Thickness(0, 0, 0, 1),
+                            });
+                        }
+                    }
+                }
+                catch (Exception ex) { Console.WriteLine($"[MeasurerFacilities] {ex.Message}"); }
+
+                root.Children.Add(placeBlock);
+            }
+        }
+
+        var btnDelete = new Button { Content = "🗑 이 계약 삭제", FontSize = AppTheme.FontSM, FontFamily = Font, Padding = new Thickness(12, 6), Margin = new Thickness(0, 14, 0, 4), Background = AppTheme.StatusBadBg, Foreground = AppTheme.StatusBadFg, BorderBrush = AppTheme.StatusBadBorder, BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(999), FontWeight = FontWeight.SemiBold, HorizontalAlignment = HorizontalAlignment.Left };
+        btnDelete.Click += (_, _) =>
+        {
+            try
+            {
+                MeasurerService.DeleteMeasurerContract(c.계약번호);
+                LoadMeasurerContractList();
+                _show2Content.Content = BuildMeasurerContractHint();
+            }
+            catch (Exception ex) { Console.WriteLine($"[DeleteMeasurerContract] {ex.Message}"); }
+        };
+        root.Children.Add(btnDelete);
+
+        return new ScrollViewer { VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Content = root };
+    }
 }
