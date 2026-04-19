@@ -76,6 +76,7 @@
         <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
         <StyleInclude Source="avares://Avalonia.Controls.TreeDataGrid/Themes/Fluent.axaml"/>
         <StyleInclude Source="/Styles/DataGridCommonStyles.axaml"/>  <!-- 프로젝트 내 경로 -->
+        <StyleInclude Source="/Styles/SectionStyles.axaml"/>           <!-- wireframe v0.1 섹션 스타일 -->
 
         <!-- ══════════════════════════════════════════════════════════════
              Calendar 날짜 호버 글로우 — Windows 빛 번짐 스타일

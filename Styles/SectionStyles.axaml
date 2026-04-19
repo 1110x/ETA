@@ -1,0 +1,66 @@
+<!-- wireframe v0.1 · 섹션 헤더 / 서브헤드 / muted 공통 스타일
+     App.axaml 의 <Application.Styles> 맨 아래에 StyleInclude 로 추가:
+       <StyleInclude Source="/Styles/SectionStyles.axaml"/>
+-->
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- 섹션 헤더 컨테이너 (숫자 태그 + 제목 + 설명 한 줄) -->
+    <Style Selector="Border.section-head">
+        <Setter Property="Padding"         Value="0,12,0,6"/>
+        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource ThemeBorderSeparator}"/>
+        <Setter Property="Margin"          Value="0,16,0,12"/>
+    </Style>
+
+    <!-- 숫자 태그 (①②③ 느낌: 굵은 테두리 원형 박스) -->
+    <Style Selector="Border.section-tag">
+        <Setter Property="Width"           Value="30"/>
+        <Setter Property="Height"          Value="30"/>
+        <Setter Property="CornerRadius"    Value="999"/>
+        <Setter Property="BorderThickness" Value="1.5"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource ThemeBorderDefault}"/>
+        <Setter Property="Background"      Value="{DynamicResource ThemeBgCard}"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+    </Style>
+    <Style Selector="Border.section-tag > TextBlock">
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment"   Value="Center"/>
+        <Setter Property="FontWeight"          Value="Bold"/>
+        <Setter Property="Foreground"          Value="{DynamicResource ThemeFgPrimary}"/>
+    </Style>
+
+    <!-- 섹션 제목 TextBlock -->
+    <Style Selector="TextBlock.section-title">
+        <Setter Property="FontSize"   Value="16"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Foreground" Value="{DynamicResource ThemeFgPrimary}"/>
+    </Style>
+
+    <!-- 섹션 서브타이틀 (제목 옆 회색 설명) -->
+    <Style Selector="TextBlock.section-sub">
+        <Setter Property="FontSize"   Value="12"/>
+        <Setter Property="Foreground" Value="{DynamicResource ThemeFgMuted}"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
+    <!-- 카드 패널 라벨 (작은 대문자 느낌) -->
+    <Style Selector="TextBlock.panel-label">
+        <Setter Property="FontSize"      Value="11"/>
+        <Setter Property="FontWeight"    Value="SemiBold"/>
+        <Setter Property="Foreground"    Value="{DynamicResource ThemeFgSecondary}"/>
+        <Setter Property="Margin"        Value="0,8,0,4"/>
+    </Style>
+
+    <!-- 공통 muted/tiny -->
+    <Style Selector="TextBlock.muted">
+        <Setter Property="Foreground" Value="{DynamicResource ThemeFgMuted}"/>
+    </Style>
+    <Style Selector="TextBlock.tiny">
+        <Setter Property="FontSize"   Value="10"/>
+        <Setter Property="Foreground" Value="{DynamicResource ThemeFgMuted}"/>
+    </Style>
+    <Style Selector="TextBlock.mono">
+        <Setter Property="FontFamily" Value="Consolas, Menlo, monospace"/>
+    </Style>
+</Styles>
