@@ -42,6 +42,26 @@ internal static class AppTheme
     public static IBrush BgActiveBlue   => Get("ThemeBgActiveBlue",  "#1e3a5a");
     public static IBrush BgDanger       => Get("ThemeBgDanger",      "#4a2a2a");
 
+    // ── 의미 상태 토큰 (배지/프로그레스 통일) — wireframe v0.1 ──
+    public static IBrush StatusOkBg         => Get("StatusOkBg",         "#1a3a2a");
+    public static IBrush StatusOkFg         => Get("StatusOkFg",         "#88ddaa");
+    public static IBrush StatusOkBorder     => Get("StatusOkBorder",     "#2fa36b");
+    public static IBrush StatusWarnBg       => Get("StatusWarnBg",       "#3a2e1a");
+    public static IBrush StatusWarnFg       => Get("StatusWarnFg",       "#ffcc66");
+    public static IBrush StatusWarnBorder   => Get("StatusWarnBorder",   "#e4a11b");
+    public static IBrush StatusBadBg        => Get("StatusBadBg",        "#3a1e1e");
+    public static IBrush StatusBadFg        => Get("StatusBadFg",        "#ff8888");
+    public static IBrush StatusBadBorder    => Get("StatusBadBorder",    "#d94a4a");
+    public static IBrush StatusInfoBg       => Get("StatusInfoBg",       "#1e2a3e");
+    public static IBrush StatusInfoFg       => Get("StatusInfoFg",       "#88aadd");
+    public static IBrush StatusInfoBorder   => Get("StatusInfoBorder",   "#3b6bd8");
+    public static IBrush StatusMutedBg      => Get("StatusMutedBg",      "#2a2a2a");
+    public static IBrush StatusMutedFg      => Get("StatusMutedFg",      "#888888");
+    public static IBrush StatusMutedBorder  => Get("StatusMutedBorder",  "#444444");
+    public static IBrush StatusAccentBg     => Get("StatusAccentBg",     "#3a2a1e");
+    public static IBrush StatusAccentFg     => Get("StatusAccentFg",     "#ffaa66");
+    public static IBrush StatusAccentBorder => Get("StatusAccentBorder", "#ff6a3d");
+
     // ── 폰트 크기 (DynamicResource 매핑) ──
     public static double FontXS   => GetDouble("FontSizeXS",    9);
     public static double FontSM   => GetDouble("FontSizeSM",   10);

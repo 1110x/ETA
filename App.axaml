@@ -48,6 +48,26 @@
                  <SolidColorBrush x:Key="LoginCardBorder"      Color="#C7D2FE"/>
                  <SolidColorBrush x:Key="LoginActionBorder"    Color="#2a5a3a"/>
                  <SolidColorBrush x:Key="LoginMutedBorder"     Color="#3a3a55"/>
+
+                 <!-- 의미 상태 토큰 (배지/프로그레스바 통일) — wireframe v0.1 -->
+                 <SolidColorBrush x:Key="StatusOkBg"           Color="#1a3a2a"/>
+                 <SolidColorBrush x:Key="StatusOkFg"           Color="#88ddaa"/>
+                 <SolidColorBrush x:Key="StatusOkBorder"       Color="#2fa36b"/>
+                 <SolidColorBrush x:Key="StatusWarnBg"         Color="#3a2e1a"/>
+                 <SolidColorBrush x:Key="StatusWarnFg"         Color="#ffcc66"/>
+                 <SolidColorBrush x:Key="StatusWarnBorder"     Color="#e4a11b"/>
+                 <SolidColorBrush x:Key="StatusBadBg"          Color="#3a1e1e"/>
+                 <SolidColorBrush x:Key="StatusBadFg"          Color="#ff8888"/>
+                 <SolidColorBrush x:Key="StatusBadBorder"      Color="#d94a4a"/>
+                 <SolidColorBrush x:Key="StatusInfoBg"         Color="#1e2a3e"/>
+                 <SolidColorBrush x:Key="StatusInfoFg"         Color="#88aadd"/>
+                 <SolidColorBrush x:Key="StatusInfoBorder"     Color="#3b6bd8"/>
+                 <SolidColorBrush x:Key="StatusMutedBg"        Color="#2a2a2a"/>
+                 <SolidColorBrush x:Key="StatusMutedFg"        Color="#888888"/>
+                 <SolidColorBrush x:Key="StatusMutedBorder"    Color="#444444"/>
+                 <SolidColorBrush x:Key="StatusAccentBg"       Color="#3a2a1e"/>
+                 <SolidColorBrush x:Key="StatusAccentFg"       Color="#ffaa66"/>
+                 <SolidColorBrush x:Key="StatusAccentBorder"   Color="#ff6a3d"/>
              </Application.Resources>
 
     <Application.Styles>
@@ -153,6 +173,26 @@
             <Setter Property="Background"   Value="Transparent"/>
             <Setter Property="BorderBrush"  Value="#33555577"/>
             <Setter Property="CornerRadius" Value="10"/>
+        </Style>
+
+        <!-- ══════════════════════════════════════════════════════════════
+             의미 상태 ProgressBar — Classes="ok|warn|bad|info|accent"
+             wireframe v0.1 통일 색상 (채움색만 덮어씀)
+             ══════════════════════════════════════════════════════════════ -->
+        <Style Selector="ProgressBar.ok /template/ Border#PART_Indicator">
+            <Setter Property="Background" Value="{DynamicResource StatusOkBorder}"/>
+        </Style>
+        <Style Selector="ProgressBar.warn /template/ Border#PART_Indicator">
+            <Setter Property="Background" Value="{DynamicResource StatusWarnBorder}"/>
+        </Style>
+        <Style Selector="ProgressBar.bad /template/ Border#PART_Indicator">
+            <Setter Property="Background" Value="{DynamicResource StatusBadBorder}"/>
+        </Style>
+        <Style Selector="ProgressBar.info /template/ Border#PART_Indicator">
+            <Setter Property="Background" Value="{DynamicResource StatusInfoBorder}"/>
+        </Style>
+        <Style Selector="ProgressBar.accent /template/ Border#PART_Indicator">
+            <Setter Property="Background" Value="{DynamicResource StatusAccentBorder}"/>
         </Style>
 
     </Application.Styles>

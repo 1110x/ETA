@@ -11,6 +11,7 @@ using Avalonia.Threading;
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 using ETA.Models;
@@ -105,11 +106,9 @@ public partial class AgentTreePage : UserControl
     private const double GC_BAR_H     = 24.0;   // 바 높이
     private const double GC_DATE_H    = 20.0;   // 하단 날짜 영역
     private string _chartTab = "분석항목";          // 현재 업무분장표 탭
-    private DispatcherTimer? _chartShimmerTimer;
-    private readonly List<(LinearGradientBrush bgBrush, LinearGradientBrush borderBrush, Color baseColor)> _chartShimmerBars = new();
     // 드래그로 변경된 경계 — (항목명, 원래시작일, 원래종료일, 새시작일, 새종료일, 담당자)
     private readonly List<(string FullName, string Manager, DateTime OrigStart, DateTime OrigEnd, DateTime NewStart, DateTime NewEnd)> _chartPendingChanges = new();
-    private readonly List<Action> _chartPendingActions = new();
+    private readonly List<Action<DbConnection, DbTransaction, List<string>>> _chartPendingActions = new();
     private ProgressBar? _chartProgressBar;
     private TextBlock? _chartProgressLabel;
     /// <summary>로컬 캐시 — null이면 DB에서 로드, 편집 시 로컬만 수정</summary>
@@ -4050,9 +4049,17 @@ public partial class AgentTreePage : UserControl
             Navigate();
         };
         btnH1.Click += (_, _) =>
-        { _chartRangeStart = new DateTime(_chartRangeStart.Year, 1, 1); Navigate(); };
+        {
+            _chartRangeStart = new DateTime(_chartRangeStart.Year, 1, 1);
+            _chartRangeEnd   = new DateTime(_chartRangeStart.Year, 6, 30);
+            Navigate();
+        };
         btnH2.Click += (_, _) =>
-        { _chartRangeStart = new DateTime(_chartRangeStart.Year, 7, 1); Navigate(); };
+        {
+            _chartRangeStart = new DateTime(_chartRangeStart.Year, 7, 1);
+            _chartRangeEnd   = new DateTime(_chartRangeStart.Year, 12, 31);
+            Navigate();
+        };
         btnApply.Click += async (_, _) =>
         {
             if (_chartPendingActions.Count == 0) return;
@@ -4066,17 +4073,35 @@ public partial class AgentTreePage : UserControl
             _chartPendingActions.Clear();
             _chartPendingChanges.Clear();
 
+            // 단일 커넥션/트랜잭션으로 일괄 반영 — N회 왕복을 1회로
             await Task.Run(() =>
             {
-                for (int i = 0; i < actions.Count; i++)
+                try
                 {
-                    actions[i]();
-                    var pct = (double)(i + 1) / actions.Count;
-                    Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                    using var conn = DbConnectionFactory.CreateConnection();
+                    conn.Open();
+                    var cols = DbConnectionFactory.GetColumnNames(conn, "분장표준처리");
+                    using var tx = conn.BeginTransaction();
+
+                    int step = Math.Max(1, actions.Count / 20); // 진행률 UI 업데이트 5%마다
+                    for (int i = 0; i < actions.Count; i++)
                     {
-                        if (pb != null) pb.Value = pct;
-                        if (pl != null) pl.Text = $"반영 중... {(int)(pct * 100)}%";
-                    });
+                        actions[i](conn, tx, cols);
+                        if (i == actions.Count - 1 || i % step == 0)
+                        {
+                            var pct = (double)(i + 1) / actions.Count;
+                            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                            {
+                                if (pb != null) pb.Value = pct;
+                                if (pl != null) pl.Text = $"반영 중... {(int)(pct * 100)}%";
+                            });
+                        }
+                    }
+                    tx.Commit();
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[AgentTreePage] 반영 일괄 처리 오류: {ex}");
                 }
             });
 
@@ -4087,20 +4112,20 @@ public partial class AgentTreePage : UserControl
             RefreshShow3AfterChartUpdate();
             btnApply.IsEnabled = true; btnApply.Content = "반영됨";
         };
-        // 프로그레스바 (헤더에 인라인)
+        // 프로그레스바 (헤더에 인라인) — wire-v01 accent
         var progressBar = new ProgressBar
         {
             Minimum = 0, Maximum = 1, Value = 0,
             Height = 6, Width = 150, CornerRadius = new CornerRadius(3),
-            Foreground = new SolidColorBrush(Color.Parse("#ff8844")),
             Background = new SolidColorBrush(Color.Parse("#333")),
             VerticalAlignment = VerticalAlignment.Center,
             IsVisible = false,
         };
+        progressBar.Classes.Add("accent");
         var progressLabel = new TextBlock
         {
             FontSize = AppTheme.FontXS, FontFamily = kbFont,
-            Foreground = new SolidColorBrush(Color.Parse("#ff8844")),
+            Foreground = AppTheme.StatusAccentFg,
             VerticalAlignment = VerticalAlignment.Center,
             IsVisible = false,
         };
@@ -4174,11 +4199,6 @@ public partial class AgentTreePage : UserControl
     /// <summary>업무분장표 테이블 렌더링 — 분석항목 탭 (2개월)</summary>
     private void RefreshChartTable(StackPanel fixedHeader, StackPanel body)
     {
-        // 기존 shimmer 타이머 정리
-        _chartShimmerTimer?.Stop();
-        _chartShimmerTimer = null;
-        _chartShimmerBars.Clear();
-
         fixedHeader.Children.Clear();
         body.Children.Clear();
         var kbFont = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
@@ -4353,15 +4373,15 @@ public partial class AgentTreePage : UserControl
                     {
                         var hs = hitSpan;
                         ApplySpanChangeToCache(captFullDrop, dropName, hs.Start, hs.End);
-                        _chartPendingActions.Add(() =>
-                            AnalysisRequestService.UpdateAssignmentByName(captFullDrop, dropName, hs.Start, hs.End));
+                        _chartPendingActions.Add((c, t, cols) =>
+                            AnalysisRequestService.UpdateAssignmentByName(c, t, captFullDrop, dropName, hs.Start, hs.End, cols));
                     }
                     else
                     {
                         var dd = dropDate;
                         ApplySpanChangeToCache(captFullDrop, dropName, dd, dd);
-                        _chartPendingActions.Add(() =>
-                            AnalysisRequestService.UpdateAssignmentByName(captFullDrop, dropName, dd, dd));
+                        _chartPendingActions.Add((c, t, cols) =>
+                            AnalysisRequestService.UpdateAssignmentByName(c, t, captFullDrop, dropName, dd, dd, cols));
                     }
                     RefreshChartTable(captHeaderDrop, captBodyDrop);
                 });
@@ -4400,7 +4420,7 @@ public partial class AgentTreePage : UserControl
                 Stroke = AppTheme.BorderSubtle, StrokeThickness = 1,
             });
 
-            // 스팬 바 — shimmer sweep (배경 비움, 테두리 + shimmer 텍스트)
+            // 스팬 바 — solid 배경
             var itemSpans = spans
                 .Where(s => string.Equals(s.FullName, fullName, StringComparison.OrdinalIgnoreCase))
                 .OrderBy(s => s.Start).ToList();
@@ -4413,41 +4433,8 @@ public partial class AgentTreePage : UserControl
                 double w = ex - sx;
                 if (w < 1) continue;
 
-                // 배경: 아주 미세한 shimmer sweep gradient
-                var dim = Color.FromArgb(15, baseColor.R, baseColor.G, baseColor.B);
-                var glow = Color.FromArgb(50, baseColor.R, baseColor.G, baseColor.B);
-                var bgBrush = new LinearGradientBrush
-                {
-                    StartPoint = new RelativePoint(0, 0.5, RelativeUnit.Relative),
-                    EndPoint   = new RelativePoint(1, 0.5, RelativeUnit.Relative),
-                    GradientStops =
-                    {
-                        new GradientStop(dim, 0.0),
-                        new GradientStop(dim, 0.0),
-                        new GradientStop(glow, 0.0),
-                        new GradientStop(dim, 0.0),
-                        new GradientStop(dim, 1.0),
-                    },
-                };
-
-                // 테두리: shimmer sweep gradient
-                var borderDim = Color.FromArgb(40, baseColor.R, baseColor.G, baseColor.B);
-                var borderGlow = Color.FromArgb(140, baseColor.R, baseColor.G, baseColor.B);
-                var borderBrush = new LinearGradientBrush
-                {
-                    StartPoint = new RelativePoint(0, 0.5, RelativeUnit.Relative),
-                    EndPoint   = new RelativePoint(1, 0.5, RelativeUnit.Relative),
-                    GradientStops =
-                    {
-                        new GradientStop(borderDim, 0.0),
-                        new GradientStop(borderDim, 0.0),
-                        new GradientStop(borderGlow, 0.0),
-                        new GradientStop(borderDim, 0.0),
-                        new GradientStop(borderDim, 1.0),
-                    },
-                };
-
-                _chartShimmerBars.Add((bgBrush, borderBrush, baseColor));
+                var bgBrush = new SolidColorBrush(Color.FromArgb(180, baseColor.R, baseColor.G, baseColor.B));
+                var borderBrush = new SolidColorBrush(Color.FromArgb(255, baseColor.R, baseColor.G, baseColor.B));
 
                 var captHeader = fixedHeader; var captBody = body; var captFull = fullName; var captSp = sp;
                 var bar = new Border
@@ -4460,7 +4447,7 @@ public partial class AgentTreePage : UserControl
                     Child = new TextBlock
                     {
                         Text = sp.Manager, FontSize = AppTheme.FontXS, FontFamily = kbFont,
-                        Foreground = new SolidColorBrush(baseColor),
+                        Foreground = Brushes.White, FontWeight = FontWeight.SemiBold,
                         TextTrimming = TextTrimming.CharacterEllipsis,
                         VerticalAlignment = VerticalAlignment.Center,
                         TextAlignment = TextAlignment.Center,
@@ -4485,8 +4472,8 @@ public partial class AgentTreePage : UserControl
                             if (lb.SelectedItem is not string nm) return;
                             var cFull = captFull; var cStart = captSp.Start; var cEnd = captSp.End;
                             ApplySpanChangeToCache(cFull, nm, cStart, cEnd);
-                            _chartPendingActions.Add(() =>
-                                AnalysisRequestService.UpdateAssignmentByName(cFull, nm, cStart, cEnd));
+                            _chartPendingActions.Add((c, t, cols) =>
+                                AnalysisRequestService.UpdateAssignmentByName(c, t, cFull, nm, cStart, cEnd, cols));
                             fly.Hide();
                             RefreshChartTable(captHeader, captBody);
                         };
@@ -4512,8 +4499,8 @@ public partial class AgentTreePage : UserControl
                         {
                             var cFull = captFull; var cStart = captSp.Start; var cEnd = captSp.End;
                             ClearSpanFromCache(cFull, cStart, cEnd);
-                            _chartPendingActions.Add(() =>
-                                AnalysisRequestService.ClearAssignmentByName(cFull, cStart, cEnd));
+                            _chartPendingActions.Add((c, t, cols) =>
+                                AnalysisRequestService.ClearAssignmentByName(c, t, cFull, cStart, cEnd));
                             fly.Hide();
                             RefreshChartTable(captHeader, captBody);
                         };
@@ -4560,34 +4547,6 @@ public partial class AgentTreePage : UserControl
 
             rowGrid.Children.Add(track);
             body.Children.Add(rowGrid);
-        }
-
-        // ── shimmer 타이머 시작 (모든 바 공용) ─────────────────────────
-        if (_chartShimmerBars.Count > 0)
-        {
-            double offset = -0.3;
-            _chartShimmerTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(30) };
-            _chartShimmerTimer.Tick += (_, _) =>
-            {
-                offset += 0.008;
-                if (offset > 1.3) offset = -0.3;
-
-                double a = Math.Clamp(offset - 0.12, 0, 1);
-                double b = Math.Clamp(offset, 0, 1);
-                double c = Math.Clamp(offset + 0.12, 0, 1);
-
-                foreach (var (bgBrush, borderBrush, _) in _chartShimmerBars)
-                {
-                    bgBrush.GradientStops[1] = new GradientStop(bgBrush.GradientStops[0].Color, a);
-                    bgBrush.GradientStops[2] = new GradientStop(bgBrush.GradientStops[2].Color, b);
-                    bgBrush.GradientStops[3] = new GradientStop(bgBrush.GradientStops[4].Color, c);
-
-                    borderBrush.GradientStops[1] = new GradientStop(borderBrush.GradientStops[0].Color, a);
-                    borderBrush.GradientStops[2] = new GradientStop(borderBrush.GradientStops[2].Color, b);
-                    borderBrush.GradientStops[3] = new GradientStop(borderBrush.GradientStops[4].Color, c);
-                }
-            };
-            _chartShimmerTimer.Start();
         }
     }
 
@@ -4793,13 +4752,13 @@ public partial class AgentTreePage : UserControl
                     DateTime tNewEnd2 = captIsLeft ? target2.End : captNewEnd;
                     var tgt = target2;
 
-                    _chartPendingActions.Add(() =>
+                    _chartPendingActions.Add((c, t, cols) =>
                     {
                         if (captIsLeft && tNewStart2 > tgt.Start)
-                            AnalysisRequestService.ClearAssignmentByName(fnLocal, tgt.Start, tNewStart2.AddDays(-1));
+                            AnalysisRequestService.ClearAssignmentByName(c, t, fnLocal, tgt.Start, tNewStart2.AddDays(-1));
                         if (!captIsLeft && tNewEnd2 < tgt.End)
-                            AnalysisRequestService.ClearAssignmentByName(fnLocal, tNewEnd2.AddDays(1), tgt.End);
-                        AnalysisRequestService.UpdateAssignmentByName(fnLocal, tgt.Manager, tNewStart2, tNewEnd2);
+                            AnalysisRequestService.ClearAssignmentByName(c, t, fnLocal, tNewEnd2.AddDays(1), tgt.End);
+                        AnalysisRequestService.UpdateAssignmentByName(c, t, fnLocal, tgt.Manager, tNewStart2, tNewEnd2, cols);
                     });
                 }
             }
@@ -4815,18 +4774,18 @@ public partial class AgentTreePage : UserControl
                 // DB 반영 액션 등록
                 var captNewStart = newStart; var captNewEnd = newEnd;
                 var captNewDate = newDate;
-                _chartPendingActions.Add(() =>
+                _chartPendingActions.Add((c, t, cols) =>
                 {
                     if (isLeft && captNewStart > captSpan.Start)
-                        AnalysisRequestService.ClearAssignmentByName(captFn, captSpan.Start, captNewStart.AddDays(-1));
+                        AnalysisRequestService.ClearAssignmentByName(c, t, captFn, captSpan.Start, captNewStart.AddDays(-1));
                     if (!isLeft && captNewEnd < captSpan.End)
-                        AnalysisRequestService.ClearAssignmentByName(captFn, captNewEnd.AddDays(1), captSpan.End);
+                        AnalysisRequestService.ClearAssignmentByName(c, t, captFn, captNewEnd.AddDays(1), captSpan.End);
 
                     if (prevSpan != null && isLeft)
-                        AnalysisRequestService.UpdateAssignmentByName(captFn, prevSpan.Manager, prevSpan.Start, captNewDate.AddDays(-1));
+                        AnalysisRequestService.UpdateAssignmentByName(c, t, captFn, prevSpan.Manager, prevSpan.Start, captNewDate.AddDays(-1), cols);
                     if (nextSpan != null && !isLeft)
-                        AnalysisRequestService.UpdateAssignmentByName(captFn, nextSpan.Manager, captNewDate.AddDays(1), nextSpan.End);
-                    AnalysisRequestService.UpdateAssignmentByName(captFn, captSpan.Manager, captNewStart, captNewEnd);
+                        AnalysisRequestService.UpdateAssignmentByName(c, t, captFn, nextSpan.Manager, captNewDate.AddDays(1), nextSpan.End, cols);
+                    AnalysisRequestService.UpdateAssignmentByName(c, t, captFn, captSpan.Manager, captNewStart, captNewEnd, cols);
                 });
             }
 
@@ -4884,21 +4843,13 @@ public partial class AgentTreePage : UserControl
             Grid.SetColumn(label, 0);
             rowGrid.Children.Add(label);
 
-            // 업체 칩 목록
+            // 업체 칩 목록 — wire-v01 통일 StatusBadge
             var chips = new WrapPanel { Margin = new Thickness(4, 2), };
             foreach (var company in agent.담당업체목록)
             {
-                chips.Children.Add(new Border
-                {
-                    Background = new SolidColorBrush(Color.Parse("#1a2a3a")),
-                    CornerRadius = new CornerRadius(3),
-                    Padding = new Thickness(6, 2), Margin = new Thickness(2, 1),
-                    Child = new TextBlock
-                    {
-                        Text = company, FontSize = AppTheme.FontXS, FontFamily = kbFont,
-                        Foreground = new SolidColorBrush(Color.Parse("#88bbdd")),
-                    },
-                });
+                var chip = ETA.Views.Controls.StatusBadge.Info(company, withIcon: false);
+                chip.Margin = new Thickness(2, 1);
+                chips.Children.Add(chip);
             }
             Grid.SetColumn(chips, 1);
             rowGrid.Children.Add(chips);
