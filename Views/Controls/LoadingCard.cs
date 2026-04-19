@@ -37,7 +37,10 @@ public static class LoadingCard
             CornerRadius = new CornerRadius(4),
             Background = AppTheme.BorderSubtle,
             Margin = new Thickness(0, 8, 0, 8),
+            ClipToBounds = true,
         };
+        // shimmer 는 skeleton bar 안에서만 좁게 흐름 (카드 전체 번짐 방지)
+        ShimmerOverlay.Attach(skelBar, Avalonia.Media.Color.FromArgb(150, 255, 255, 255));
 
         var progress = new ProgressBar
         {
@@ -61,7 +64,7 @@ public static class LoadingCard
             },
         });
 
-        var card = new Border
+        return new Border
         {
             Padding = new Thickness(12),
             CornerRadius = new CornerRadius(6),
@@ -70,11 +73,6 @@ public static class LoadingCard
             BorderThickness = new Thickness(1),
             Child = stack,
         };
-
-        // shimmer sweep 오버레이
-        ShimmerOverlay.Attach(card);
-
-        return card;
     }
 
     public static Border Live(string title, string value, double progress01, BadgeStatus status = BadgeStatus.Ok)
