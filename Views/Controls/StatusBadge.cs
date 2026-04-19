@@ -45,7 +45,7 @@ public static class StatusBadge
     public static Border Muted(string text, double? fontSize = null, bool withIcon = true) => Create(text, BadgeStatus.Muted, fontSize, withIcon);
     public static Border Accent(string text, double? fontSize = null, bool withIcon = true)=> Create(text, BadgeStatus.Accent,fontSize, withIcon);
 
-    private static (IBrush bg, IBrush fg, IBrush border) GetBrushes(BadgeStatus s) => s switch
+    public static (IBrush bg, IBrush fg, IBrush border) GetBrushes(BadgeStatus s) => s switch
     {
         BadgeStatus.Ok     => (AppTheme.StatusOkBg,     AppTheme.StatusOkFg,     AppTheme.StatusOkBorder),
         BadgeStatus.Warn   => (AppTheme.StatusWarnBg,   AppTheme.StatusWarnFg,   AppTheme.StatusWarnBorder),
