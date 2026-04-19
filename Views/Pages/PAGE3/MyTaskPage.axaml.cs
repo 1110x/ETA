@@ -12,6 +12,7 @@ using ETA.Services.Common;
 using ETA.Services.SERVICE2;
 using ETA.Services.SERVICE3;
 using ETA.Views;
+using ETA.Views.Controls;
 using ClosedXML.Excel;
 using System;
 using System.Collections.Generic;
@@ -37,6 +38,7 @@ public partial class MyTaskPage : UserControl
 
     // 수질분석센터/비용부담금 — 선택 바스켓 (Show2)
     private readonly Dictionary<string, string> _basket = new();  // "category:id" → 표시레이블
+    private readonly Dictionary<string, string> _basketDates = new();  // "category:id" → 채취/채수일자 (Show2 그룹화용)
     private readonly List<(int Id, CheckBox Cb)> _treeCheckboxes = new();
 
     // 수질분석센터 — 대리 분석 추가 항목
@@ -70,12 +72,12 @@ public partial class MyTaskPage : UserControl
     private static readonly FontFamily Font =
         new("avares://ETA/Assets/Fonts#Pretendard");
 
-    // 카테고리별 활성 버튼 스타일
-    private static readonly Dictionary<string, (string Bg, string Fg, string Bd)> CatStyle = new()
+    // wire-v01: 카테고리별 활성 pill 스타일 (StatusBadge 토큰)
+    private static readonly Dictionary<string, BadgeStatus> CatStyle = new()
     {
-        ["수질분석센터"] = ("#1a2a4a", "#88aaee", "#336699"),
-        ["비용부담금"]   = ("#2a2a1a", "#ccbb88", "#887733"),
-        ["처리시설"]     = ("#2a1a3a", "#bb99cc", "#663399"),
+        ["수질분석센터"] = BadgeStatus.Info,
+        ["비용부담금"]   = BadgeStatus.Warn,
+        ["처리시설"]     = BadgeStatus.Accent,
     };
 
     private readonly Dictionary<string, Button> _catBtns = new();
@@ -313,18 +315,13 @@ public partial class MyTaskPage : UserControl
     {
         foreach (var (cat, btn) in _catBtns)
         {
-            if (cat == _activeCategory && CatStyle.TryGetValue(cat, out var s))
-            {
-                btn.Background  = new SolidColorBrush(Color.Parse(s.Bg));
-                btn.Foreground  = new SolidColorBrush(Color.Parse(s.Fg));
-                btn.BorderBrush = new SolidColorBrush(Color.Parse(s.Bd));
-            }
-            else
-            {
-                btn.Background  = AppRes("SubBtnBg");
-                btn.Foreground  = AppRes("FgMuted");
-                btn.BorderBrush = AppRes("InputBorder");
-            }
+            bool active = cat == _activeCategory;
+            var status = active && CatStyle.TryGetValue(cat, out var s) ? s : BadgeStatus.Muted;
+            var (bg, fg, bd) = StatusBadge.GetBrushes(status);
+            btn.Background  = bg;
+            btn.Foreground  = fg;
+            btn.BorderBrush = bd;
+            btn.FontWeight  = active ? FontWeight.SemiBold : FontWeight.Normal;
         }
     }
 
@@ -419,8 +416,17 @@ public partial class MyTaskPage : UserControl
         };
         cb.IsCheckedChanged += (_, _) =>
         {
-            if (cb.IsChecked.GetValueOrDefault()) _basket[$"meok:{s.RowId}"] = label;
-            else _basket.Remove($"meok:{s.RowId}");
+            string key = $"meok:{s.RowId}";
+            if (cb.IsChecked.GetValueOrDefault())
+            {
+                _basket[key] = label;
+                _basketDates[key] = _selectedDate.ToString("yyyy-MM-dd");
+            }
+            else
+            {
+                _basket.Remove(key);
+                _basketDates.Remove(key);
+            }
             DetailPanelChanged?.Invoke(BuildSelectedListPanel());
         };
         _treeCheckboxes.Add((s.RowId, cb));
@@ -644,8 +650,19 @@ public partial class MyTaskPage : UserControl
         };
         cb.IsCheckedChanged += (_, _) =>
         {
-            if (cb.IsChecked.GetValueOrDefault()) _basket[$"waste:{ri.Id}"] = label;
-            else _basket.Remove($"waste:{ri.Id}");
+            string key = $"waste:{ri.Id}";
+            if (cb.IsChecked.GetValueOrDefault())
+            {
+                _basket[key] = label;
+                _basketDates[key] = string.IsNullOrWhiteSpace(ri.채수일)
+                    ? _selectedDate.ToString("yyyy-MM-dd")
+                    : ri.채수일;
+            }
+            else
+            {
+                _basket.Remove(key);
+                _basketDates.Remove(key);
+            }
             DetailPanelChanged?.Invoke(BuildSelectedListPanel());
         };
         _treeCheckboxes.Add((ri.Id, cb));
@@ -828,8 +845,19 @@ public partial class MyTaskPage : UserControl
         };
         cb.IsCheckedChanged += (_, _) =>
         {
-            if (cb.IsChecked.GetValueOrDefault()) _basket[$"facility:{fi.Id}"] = label;
-            else _basket.Remove($"facility:{fi.Id}");
+            string key = $"facility:{fi.Id}";
+            if (cb.IsChecked.GetValueOrDefault())
+            {
+                _basket[key] = label;
+                _basketDates[key] = string.IsNullOrWhiteSpace(fi.채취일자)
+                    ? _selectedDate.ToString("yyyy-MM-dd")
+                    : fi.채취일자;
+            }
+            else
+            {
+                _basket.Remove(key);
+                _basketDates.Remove(key);
+            }
         };
         _treeCheckboxes.Add((fi.Id, cb));
 
@@ -893,6 +921,7 @@ public partial class MyTaskPage : UserControl
                 {
                     string lbl = (string.IsNullOrEmpty(row.시료명) ? "(시료명 없음)" : row.시료명);
                     _basket[$"meok:{row.RowId}"] = lbl;
+                    _basketDates[$"meok:{row.RowId}"] = dateStr;
                     var entry = _treeCheckboxes.Find(t => t.Id == row.RowId);
                     if (entry.Cb != null) entry.Cb.IsChecked = true;
                 }
@@ -916,6 +945,7 @@ public partial class MyTaskPage : UserControl
                 if (!_basket.ContainsKey($"waste:{ri.Id}"))
                 {
                     _basket[$"waste:{ri.Id}"] = ri.업체명 + (string.IsNullOrEmpty(ri.관리번호) ? "" : $"  {ri.관리번호}");
+                    _basketDates[$"waste:{ri.Id}"] = string.IsNullOrWhiteSpace(ri.채수일) ? dateStr : ri.채수일;
                     var entry = _treeCheckboxes.Find(t => t.Id == ri.Id);
                     if (entry.Cb != null) entry.Cb.IsChecked = true;
                 }
@@ -941,39 +971,74 @@ public partial class MyTaskPage : UserControl
         }
         else
         {
-            foreach (var kv in _basket)
-            {
-                var kvLocal = kv;
-                var inner = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
-                inner.Children.Add(new TextBlock { Text = "✔", FontSize = AppTheme.FontBase, Foreground = AppRes("FgMuted"), VerticalAlignment = VerticalAlignment.Center });
-                inner.Children.Add(new TextBlock
-                {
-                    Text = kvLocal.Value, FontFamily = Font, FontSize = AppTheme.FontMD,
-                    Foreground = AppRes("AppFg"), VerticalAlignment = VerticalAlignment.Center
-                });
+            // 날짜별 그룹화 (날짜 미상 항목은 마지막)
+            const string undated = "(날짜 미상)";
+            var grouped = _basket
+                .GroupBy(kv => _basketDates.TryGetValue(kv.Key, out var d) && !string.IsNullOrWhiteSpace(d) ? d : undated)
+                .OrderByDescending(g => g.Key == undated ? "" : g.Key);
 
-                // 수질분석센터 시료: 클릭 시 Show4에 의뢰 항목 마킹 표시
-                if (_activeCategory == "수질분석센터" && kvLocal.Key.StartsWith("meok:") &&
-                    int.TryParse(kvLocal.Key.Substring(5), out int rowId))
+            foreach (var dateGroup in grouped)
+            {
+                // 날짜 헤더 — 칩 형태
+                var headerBorder = new Border
                 {
-                    var itemBorder = new Border
-                    {
-                        Background = Brushes.Transparent,
-                        CornerRadius = new CornerRadius(3),
-                        Padding = new Thickness(2, 1),
-                        Cursor = new Cursor(StandardCursorType.Hand),
-                        Child = inner
-                    };
-                    itemBorder.PointerPressed += (_, _) =>
-                    {
-                        _markedColumns = MyTaskService.GetMarkedColumnsForRow(rowId);
-                        StatsPanelChanged?.Invoke(BuildAnalyteListPanel());
-                    };
-                    root.Children.Add(itemBorder);
-                }
-                else
+                    Background = AppRes("BtnPrimaryBg"),
+                    BorderBrush = AppRes("BtnPrimaryBorder"),
+                    BorderThickness = new Thickness(0, 0, 0, 1),
+                    CornerRadius = new CornerRadius(4, 4, 0, 0),
+                    Padding = new Thickness(8, 4),
+                    Margin = new Thickness(0, 6, 0, 2),
+                };
+                var headerSp = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
+                headerSp.Children.Add(new TextBlock { Text = "📅", FontSize = AppTheme.FontBase, VerticalAlignment = VerticalAlignment.Center });
+                headerSp.Children.Add(new TextBlock
                 {
-                    root.Children.Add(inner);
+                    Text = dateGroup.Key, FontFamily = Font, FontSize = AppTheme.FontBase,
+                    FontWeight = FontWeight.SemiBold, Foreground = AppRes("BtnPrimaryFg"),
+                    VerticalAlignment = VerticalAlignment.Center,
+                });
+                headerSp.Children.Add(new TextBlock
+                {
+                    Text = $"({dateGroup.Count()}건)", FontFamily = Font, FontSize = AppTheme.FontSM,
+                    Foreground = AppRes("FgMuted"), VerticalAlignment = VerticalAlignment.Center,
+                });
+                headerBorder.Child = headerSp;
+                root.Children.Add(headerBorder);
+
+                foreach (var kv in dateGroup)
+                {
+                    var kvLocal = kv;
+                    var inner = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, Margin = new Thickness(8, 0, 0, 0) };
+                    inner.Children.Add(new TextBlock { Text = "✔", FontSize = AppTheme.FontBase, Foreground = AppRes("FgMuted"), VerticalAlignment = VerticalAlignment.Center });
+                    inner.Children.Add(new TextBlock
+                    {
+                        Text = kvLocal.Value, FontFamily = Font, FontSize = AppTheme.FontMD,
+                        Foreground = AppRes("AppFg"), VerticalAlignment = VerticalAlignment.Center
+                    });
+
+                    // 수질분석센터 시료: 클릭 시 Show4에 의뢰 항목 마킹 표시
+                    if (_activeCategory == "수질분석센터" && kvLocal.Key.StartsWith("meok:") &&
+                        int.TryParse(kvLocal.Key.Substring(5), out int rowId))
+                    {
+                        var itemBorder = new Border
+                        {
+                            Background = Brushes.Transparent,
+                            CornerRadius = new CornerRadius(3),
+                            Padding = new Thickness(2, 1),
+                            Cursor = new Cursor(StandardCursorType.Hand),
+                            Child = inner
+                        };
+                        itemBorder.PointerPressed += (_, _) =>
+                        {
+                            _markedColumns = MyTaskService.GetMarkedColumnsForRow(rowId);
+                            StatsPanelChanged?.Invoke(BuildAnalyteListPanel());
+                        };
+                        root.Children.Add(itemBorder);
+                    }
+                    else
+                    {
+                        root.Children.Add(inner);
+                    }
                 }
             }
         }
@@ -1735,55 +1800,104 @@ public partial class MyTaskPage : UserControl
             Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
             $"분석노트_{DateTime.Now:yyyyMMdd_HHmm}.xlsx");
 
-        await System.Threading.Tasks.Task.Run(() =>
+        string? errorTitle = null;
+        string? errorBody = null;
+        try
         {
-            using var wb = new XLWorkbook();
-            foreach (var analyteForExport in analytesToExport)
+            // 바스켓 항목 + 날짜 정보 캡쳐 (UI 스레드 외에서 안전 접근)
+            var basketItems = _basket
+                .Select(kv => (Key: kv.Key, Label: kv.Value,
+                               Date: _basketDates.TryGetValue(kv.Key, out var d) ? d : ""))
+                .ToList();
+
+            await System.Threading.Tasks.Task.Run(() =>
             {
-                var cols = ETA.Services.SERVICE3.AnalysisNoteService.GetNoteColumns(analyteForExport);
-                if (cols.Count == 0) cols = new List<string> { "희석배수", "비고" };
+                using var wb = new XLWorkbook();
+                var ws = wb.Worksheets.Add("분석노트");
 
-                // 시트명 최대 31자 (Excel 제한)
-                string sheetName = analyteForExport.Length > 31 ? analyteForExport.Substring(0, 31) : analyteForExport;
-                var ws = wb.Worksheets.Add(sheetName);
+                int row = 1;
+                bool firstSection = true;
 
-                ws.Cell(1, 1).Value = "날짜";
-                ws.Cell(1, 2).Value = "시료명";
-                for (int c = 0; c < cols.Count; c++)
-                    ws.Cell(1, c + 3).Value = cols[c];
-
-                var hdr = ws.Range(1, 1, 1, 2 + cols.Count);
-                hdr.Style.Font.Bold = true;
-                hdr.Style.Fill.BackgroundColor = XLColor.FromHtml("#1565c0");
-                hdr.Style.Font.FontColor = XLColor.White;
-                hdr.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-
-                int row = 2;
-                foreach (var kv in _basket)
+                foreach (var analyteForExport in analytesToExport)
                 {
-                    var parts = kv.Value.Split(new[] { "  " }, 2, StringSplitOptions.RemoveEmptyEntries);
-                    ws.Cell(row, 1).Value = parts.Length > 0 ? parts[0].Trim() : "";
-                    ws.Cell(row, 2).Value = parts.Length > 1 ? parts[1].Trim() : kv.Value;
+                    var cols = ETA.Services.SERVICE3.AnalysisNoteService.GetNoteColumns(analyteForExport);
+                    if (cols.Count == 0) cols = new List<string> { "희석배수", "비고" };
+                    int totalCols = 2 + cols.Count;
+
+                    // 섹션 사이 간격
+                    if (!firstSection) row++;
+                    firstSection = false;
+
+                    // 항목 섹션 헤더 (병합 + 강조)
+                    var sectionCell = ws.Cell(row, 1);
+                    sectionCell.Value = $"■ {analyteForExport}";
+                    var sectionRange = ws.Range(row, 1, row, totalCols);
+                    sectionRange.Merge();
+                    sectionRange.Style.Font.Bold = true;
+                    sectionRange.Style.Font.FontSize = 12;
+                    sectionRange.Style.Fill.BackgroundColor = XLColor.FromHtml("#0d47a1");
+                    sectionRange.Style.Font.FontColor = XLColor.White;
+                    sectionRange.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                    ws.Row(row).Height = 22;
                     row++;
+
+                    // 컬럼 헤더
+                    ws.Cell(row, 1).Value = "날짜";
+                    ws.Cell(row, 2).Value = "시료명";
+                    for (int c = 0; c < cols.Count; c++)
+                        ws.Cell(row, c + 3).Value = cols[c];
+
+                    var hdr = ws.Range(row, 1, row, totalCols);
+                    hdr.Style.Font.Bold = true;
+                    hdr.Style.Fill.BackgroundColor = XLColor.FromHtml("#1565c0");
+                    hdr.Style.Font.FontColor = XLColor.White;
+                    hdr.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    int hdrRow = row;
+                    row++;
+
+                    // 데이터: 바스켓 항목 (날짜 오름차순)
+                    int dataStart = row;
+                    foreach (var item in basketItems.OrderBy(b => b.Date).ThenBy(b => b.Label))
+                    {
+                        ws.Cell(row, 1).Value = item.Date;
+                        ws.Cell(row, 2).Value = item.Label;
+                        row++;
+                    }
+
+                    // 섹션 테두리
+                    if (row > dataStart)
+                    {
+                        var dataRange = ws.Range(hdrRow, 1, row - 1, totalCols);
+                        dataRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                        dataRange.Style.Border.InsideBorder  = XLBorderStyleValues.Hair;
+                    }
                 }
 
-                var dataRange = ws.Range(1, 1, row - 1, 2 + cols.Count);
-                dataRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
-                dataRange.Style.Border.InsideBorder  = XLBorderStyleValues.Hair;
                 ws.Columns().AdjustToContents();
-            }
-            wb.SaveAs(path);
-        });
+                wb.SaveAs(path);
+            });
+        }
+        catch (System.IO.IOException)
+        {
+            errorTitle = "파일이 사용 중입니다";
+            errorBody  = $"같은 이름의 파일이 Excel(또는 다른 프로그램)에서 열려 있어 덮어쓸 수 없습니다.\n\n파일을 닫고 다시 시도하세요.\n\n경로: {path}";
+        }
+        catch (Exception ex)
+        {
+            errorTitle = "Excel 생성 실패";
+            errorBody  = $"원인: {ex.Message}";
+        }
 
         await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
         {
             var dlg = new Window
             {
-                Title = "Excel 생성 완료", Width = 380, Height = 130, CanResize = false,
+                Title  = errorTitle ?? "Excel 생성 완료",
+                Width  = 440, Height = errorBody != null ? 180 : 130, CanResize = false,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
                 Content = new TextBlock
                 {
-                    Text = $"저장됨: {path}",
+                    Text = errorBody ?? $"저장됨: {path}",
                     Margin = new Thickness(20), VerticalAlignment = VerticalAlignment.Center,
                     TextWrapping = TextWrapping.Wrap
                 }
