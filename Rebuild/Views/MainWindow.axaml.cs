@@ -37,6 +37,7 @@ public partial class MainWindow : Window
         {
             "home"     => new HomePage(),
             "input"    => new InputPage(),
+            "file"     => new FileflowPage(),
             _          => new ComingSoonPage(btn.Content?.ToString() ?? "?"),
         };
     }
