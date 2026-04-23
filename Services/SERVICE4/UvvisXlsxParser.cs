@@ -113,10 +113,19 @@ public static class UvvisXlsxParser
 
         // 데이터 행: 페놀류는 R8~(헤더 R7), 총질소/총인도 동일
         // colResult=6(좌), 14(우)
+        int leftStart = rows.Count;
         XlsxParserHelpers.ParsePage(ws, rows, colName: 1, colResult: 6, colSN: 8, startRow: 8,
             itemAbbr: itemAbbr, resultFormatter: resultFormatter);
+        int rightStart = rows.Count;
         XlsxParserHelpers.ParsePage(ws, rows, colName: 9, colResult: 14, colSN: 16, startRow: 8,
             itemAbbr: itemAbbr, resultFormatter: resultFormatter);
+
+        // 페놀류: 좌측 페이지 = 직접법, 우측 페이지 = 추출법 (충돌 팝업용 태그)
+        if (isPhenols)
+        {
+            for (int i = leftStart;  i < rightStart;    i++) rows[i].Method = "직접법";
+            for (int i = rightStart; i < rows.Count;    i++) rows[i].Method = "추출법";
+        }
 
         string fmt = isPhenols ? "UVVIS_Phenols" : "UVVIS";
         return new ParseResult(rows, docInfo, docDate, fmt);

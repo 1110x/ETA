@@ -18,11 +18,15 @@ public class ExcelRow
     public string Fxy { get; set; } = "";  // f(x/y) 식종액 함유율
     public string P { get; set; } = "";    // 희석배수
     public string CompoundName { get; set; } = "";  // 다성분: 성분명 (GC/ICP/PFAS)
+    /// <summary>분석방법 태그 — PHENOLS: "직접법"|"추출법", TOC: "NPOC"|"TCIC" (충돌 팝업용)</summary>
+    public string Method { get; set; } = "";
     // TOC TCIC 전용 (TOC_TCIC_DATA 컬럼 매핑)
     public string TCAU  { get; set; } = "";
     public string TCcon { get; set; } = "";
     public string ICAU  { get; set; } = "";
     public string ICcon { get; set; } = "";
+    /// <summary>값이 대입된 계산식 문자열 (시험기록부 표시용) — 예: "(0.4593-0.01806)/24.2768*(60/50)*2 = 1.6278"</summary>
+    public string 계산식 { get; set; } = "";
     public WasteSample? Matched { get; set; }                   // 폐수배출업소 매칭
     public AnalysisRequestRecord? MatchedAnalysis { get; set; } // 수질분석센터 매칭
     public FacilityResultRow? MatchedFacility { get; set; }     // 처리시설 매칭
@@ -59,6 +63,13 @@ public class EcotoxTestData
 public enum MatchStatus { 입력가능, 덮어쓰기, 미매칭, 대기 }
 public enum SourceType { 미분류, 폐수배출업소, 수질분석센터, 처리시설 }
 
+/// <summary>항목별 분석조건 (오븐온도/유량/반응시간 등 Key/Value)</summary>
+public class AnalysisCondition
+{
+    public string Key   { get; set; } = "";
+    public string Value { get; set; } = "";
+}
+
 /// <summary>엑셀 문서 헤더 정보 (행1~7) + 검정곡선 정보</summary>
 public class ExcelDocInfo
 {
@@ -66,6 +77,15 @@ public class ExcelDocInfo
     public string 분석방법 { get; set; } = "";
     public string 결과표시 { get; set; } = "";
     public string 관련근거 { get; set; } = "";
+    // 분석조건 섹션 (시험기록부 상단 블록)
+    public string 업체명   { get; set; } = "";
+    public string 분석장비 { get; set; } = "";   // "UV-1800" 등
+    public string 측정파장 { get; set; } = "";   // "880 nm" 등
+    public string 채수일자 { get; set; } = "";
+    public string 분석일자 { get; set; } = "";
+    public string 분석자   { get; set; } = "";
+    /// <summary>항목별 추가 분석조건 (오븐온도/유량 등) — 분석정보 테이블에서 Lookup</summary>
+    public List<AnalysisCondition> 분석조건 { get; set; } = new();
     // 식종수의 BOD (행6)
     public string 식종수_시료량 { get; set; } = "";
     public string 식종수_D1 { get; set; } = "";

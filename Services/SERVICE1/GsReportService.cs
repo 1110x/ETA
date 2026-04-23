@@ -15,8 +15,7 @@ namespace ETA.Services.SERVICE1;
 /// </summary>
 public static class GsReportService
 {
-    private static readonly string TemplatePath =
-        Path.Combine("Data", "Templates", "GS_발송양식_template.xlsx");
+    private static string TemplatePath => TemplateConfiguration.Resolve("GsReport");
 
     /// <summary>
     /// 시료명에서 배출구번호 추출 (점 앞까지)

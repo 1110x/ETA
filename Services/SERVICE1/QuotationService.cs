@@ -998,6 +998,16 @@ public static class QuotationService
 
     private static string TemplatePath(string fileName)
     {
+        // 설정(양식폴더)에서 사용자 지정 경로가 있으면 우선 사용
+        string? key = fileName switch
+        {
+            "견적서1.xlsx"     => "Quotation1",
+            "견적서2.xlsx"     => "Quotation2",
+            "거래명세서1.xlsx" => "TradeStatement1",
+            "거래명세서2.xlsx" => "TradeStatement2",
+            _ => null,
+        };
+        if (key != null) return TemplateConfiguration.Resolve(key);
         var root = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", ".."));
         return Path.Combine(root, "Data", "Templates", fileName);
     }

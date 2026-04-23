@@ -1,0 +1,93 @@
+name: Release Windows Installer
+
+# 트리거:
+#   - v1.2.3 같은 태그 푸시 → 자동 Release 생성 + Setup.exe 업로드
+#   - Actions 탭에서 "Run workflow" 수동 실행도 가능 (version 입력)
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '릴리스 버전 (예: 1.2.0)'
+        required: true
+        default: '1.2.0'
+
+permissions:
+  contents: write  # Release 생성·업로드에 필요
+
+jobs:
+  build-installer:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Resolve version
+        id: ver
+        shell: pwsh
+        run: |
+          if ('${{ github.event_name }}' -eq 'push') {
+            $v = '${{ github.ref_name }}' -replace '^v',''
+          } else {
+            $v = '${{ github.event.inputs.version }}'
+          }
+          echo "version=$v" >> $env:GITHUB_OUTPUT
+          echo "ETA 버전: $v"
+
+      - name: Publish (self-contained win-x64)
+        shell: pwsh
+        run: |
+          dotnet publish ETA.sln `
+            -c Release `
+            -r win-x64 `
+            --self-contained true `
+            -p:PublishSingleFile=true `
+            -p:IncludeNativeLibrariesForSelfExtract=true `
+            -p:DebugType=embedded `
+            -p:Version=${{ steps.ver.outputs.version }} `
+            -o Build/publish
+
+      - name: Stage runtime assets
+        shell: pwsh
+        run: |
+          if (Test-Path Data/Templates) {
+            New-Item -ItemType Directory -Force -Path Build/publish/Data | Out-Null
+            Copy-Item -Recurse -Force Data/Templates Build/publish/Data/
+          }
+          if (Test-Path Assets)           { Copy-Item -Recurse -Force Assets          Build/publish/Assets }
+          if (Test-Path appsettings.json) { Copy-Item -Force         appsettings.json Build/publish/ }
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: choco install innosetup --no-progress -y
+
+      - name: Compile installer
+        shell: pwsh
+        working-directory: Build
+        run: |
+          $iscc = 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe'
+          & $iscc /DMyAppVersion=${{ steps.ver.outputs.version }} installer.iss
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ETA-Setup-${{ steps.ver.outputs.version }}
+          path: Build/Output/ETA-Setup-*.exe
+          retention-days: 30
+
+      - name: Create GitHub Release
+        if: github.event_name == 'push'
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ETA ${{ steps.ver.outputs.version }}
+          tag_name: ${{ github.ref_name }}
+          files: Build/Output/ETA-Setup-*.exe
+          generate_release_notes: true

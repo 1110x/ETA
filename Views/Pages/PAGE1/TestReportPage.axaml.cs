@@ -19,6 +19,7 @@ using ETA.Services.SERVICE2;
 using ETA.Services.Common;
 using ETA.Services.Common;
 using ETA.Views;
+using ETA.Views.Controls;
 
 namespace ETA.Views.Pages.PAGE1;
 
@@ -33,6 +34,7 @@ public partial class TestReportPage : UserControl
     // ── 외부(MainPage) 연결 ──────────────────────────────────────────────────
     /// Show2 에 넣을 결과 리스트 컨트롤
     public event Action<Control?>? ResultListChanged;
+    public event Action<Control?>? StatsPanelChanged;   // Show4 (측정인 매칭 카드)
     /// Show3 에 넣을 수정 폼 컨트롤
     public event Action<Control?>? EditPanelChanged;
     /// 현재 트리에서 선택된 시료 (DataToMeasurerWindow에서 사용)
@@ -385,6 +387,7 @@ public partial class TestReportPage : UserControl
         {
             _showMeasurerPanel = true;
             _measurerRows = DataToMeasurerService.BuildRows(sample);
+            StatsPanelChanged?.Invoke(BuildMeasurerStdPanel());
         }
 
         ResultListChanged?.Invoke(BuildListControl());
@@ -582,12 +585,15 @@ public partial class TestReportPage : UserControl
         var btnTR   = MkBtn("📄 시험성적서",   "#1a3a1a", "#7cd87c", OnPrintTestReport);
         var btnWMR  = MkBtn("📋 수질측정기록부", "#1a2a3a", "#7aaae8", OnPrintWaterRecord);
         var btnBoth = MkBtn("📄+📋 둘다",        "#2a2a1a", "#e8d87a", OnPrintBoth);
+        var btnTRB  = MkBtn("📕 시험기록부",     "#3a1a2a", "#ee99cc", OnPrintTestRecordBook);
         btnTR.Margin   = new Thickness(20, 0, 0, 0);
         btnWMR.Margin  = new Thickness(4, 0, 0, 0);
         btnBoth.Margin = new Thickness(4, 0, 0, 0);
+        btnTRB.Margin  = new Thickness(4, 0, 0, 0);
         togglePanel.Children.Add(btnTR);
         togglePanel.Children.Add(btnWMR);
         togglePanel.Children.Add(btnBoth);
+        togglePanel.Children.Add(btnTRB);
 
         // GS 발송양식 버튼
         var btnGsExport = MkBtn("📤 GS 발송양식", "#2a1a3a", "#cc99ee", OnGsExportClick);
@@ -788,28 +794,82 @@ public partial class TestReportPage : UserControl
         OpenPrintWindow();
     }
 
-    /// <summary>GS 발송양식 버튼 클릭</summary>
-    private async void OnGsExportClick(object? sender, RoutedEventArgs e)
+    /// <summary>📕 시험기록부 Excel 생성 (스캐폴드 단계: 자료 시트 덤프 + 포맷 시트 placeholder)</summary>
+    private async void OnPrintTestRecordBook(object? sender, RoutedEventArgs e)
     {
-        if (_selectedSample == null)
+        if (_selectedSample == null) { ShowToast("시료를 먼저 선택하세요."); return; }
+        if (!TestRecordBookService.TemplatesExist())
         {
-            await ShowInfoToast("시료를 먼저 선택하세요");
+            ShowToast("시험기록부 템플릿 없음");
             return;
         }
-        // 지에스칼텍스 업체 확인
-        var company = _selectedSample.의뢰사업장 ?? "";
-        if (!company.Contains("지에스") && !company.Contains("GS") && !company.Contains("칼텍스"))
+        try
         {
-            await ShowInfoToast("지에스칼텍스 시료만 GS 발송양식을 생성할 수 있습니다.");
-            return;
+            var rows = BuildResultRowsForSample(_selectedSample);
+            var path = await Task.Run(() =>
+                TestRecordBookService.Generate(_selectedSample, rows, _meta));
+            Log($"[시험기록부] 생성: {path}");
+            ShowToast($"✅ 저장 완료: {System.IO.Path.GetFileName(path)}");
+            try
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                { FileName = path, UseShellExecute = true });
+            }
+            catch { }
+        }
+        catch (Exception ex)
+        {
+            Log($"[시험기록부] 오류: {ex.Message}");
+            ShowToast($"❌ 오류: {ex.Message}");
+        }
+    }
+
+    /// <summary>GS 발송양식 버튼 클릭
+    /// 우선순위: Show1 체크된 시료 중 GS만 필터 → 0건이면 Show2 _selectedSample 폴백.</summary>
+    private async void OnGsExportClick(object? sender, RoutedEventArgs e)
+    {
+        static bool IsGsCompany(string? c) =>
+            !string.IsNullOrEmpty(c) &&
+            (c.Contains("지에스") || c.Contains("GS") || c.Contains("칼텍스"));
+
+        List<SampleRequest> targets;
+        if (_checkedSamples.Count > 0)
+        {
+            targets = _checkedSamples
+                .Where(s => IsGsCompany(s.의뢰사업장))
+                .OrderBy(s => s.채취일자)
+                .ThenBy(s => s.시료명)
+                .ToList();
+            int skipped = _checkedSamples.Count - targets.Count;
+            if (targets.Count == 0)
+            {
+                await ShowInfoToast("체크된 시료 중 지에스칼텍스 시료가 없습니다.");
+                return;
+            }
+            if (skipped > 0)
+                Log($"[GS] 비-GS 시료 {skipped}건 제외, {targets.Count}건 내보내기");
+        }
+        else
+        {
+            // 폴백: Show2에 떠있는 단일 시료
+            if (_selectedSample == null)
+            {
+                await ShowInfoToast("시료를 먼저 선택하거나 체크하세요");
+                return;
+            }
+            if (!IsGsCompany(_selectedSample.의뢰사업장))
+            {
+                await ShowInfoToast("지에스칼텍스 시료만 GS 발송양식을 생성할 수 있습니다.");
+                return;
+            }
+            targets = new List<SampleRequest> { _selectedSample };
         }
 
         try
         {
-            var path = await Task.Run(() =>
-                GsReportService.GenerateReport(new List<SampleRequest> { _selectedSample }, _meta));
-            Log($"[GS] 발송양식 생성 완료: {path}");
-            await ShowInfoToast($"GS 발송양식 생성: {System.IO.Path.GetFileName(path)}");
+            var path = await Task.Run(() => GsReportService.GenerateReport(targets, _meta));
+            Log($"[GS] 발송양식 생성 완료 ({targets.Count}건): {path}");
+            await ShowInfoToast($"GS 발송양식 생성 ({targets.Count}건): {System.IO.Path.GetFileName(path)}");
 
             // 폴더에서 열기
             try
@@ -1709,6 +1769,167 @@ public partial class TestReportPage : UserControl
         _measurerRows = DataToMeasurerService.BuildRows(_selectedSample);
         ResultListChanged?.Invoke(BuildListControl());
         EditPanelChanged?.Invoke(BuildMeasurerActionPanel());
+        StatsPanelChanged?.Invoke(BuildMeasurerStdPanel());
+    }
+
+    private ComboBox?    _stdCombo;
+    private StackPanel?  _stdListPanel;
+    private string       _currentStdSelection = "";
+
+    /// <summary>Show4 — 측정인: 방류기준표 선택 + 항목별 기준값 미리보기 + Show2 적용</summary>
+    private Control BuildMeasurerStdPanel()
+    {
+        Dictionary<string, Dictionary<string, string>> stdTable;
+        try   { stdTable = AnalysisRecordService.Load방류기준표(); }
+        catch { stdTable = new(StringComparer.OrdinalIgnoreCase); }
+
+        var 구분Keys  = stdTable.Keys.OrderBy(k => k, StringComparer.Ordinal).ToList();
+        var currentStd = (_selectedSample?.방류허용기준 ?? "").Trim();
+
+        var header = new TextBlock
+        {
+            Text       = "방류기준 선택",
+            FontFamily = Font, FontSize = AppTheme.FontMD, FontWeight = FontWeight.SemiBold,
+            Foreground = AppTheme.FgInfo,
+        };
+
+        _stdCombo = new ComboBox
+        {
+            FontFamily          = Font, FontSize = AppTheme.FontBase,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            Background          = AppTheme.BgInput,
+            Foreground          = AppRes("AppFg"),
+            BorderBrush         = AppTheme.BorderDefault,
+            PlaceholderText     = "방류기준 선택…",
+        };
+        foreach (var k in 구분Keys) _stdCombo.Items.Add(k);
+        if (!string.IsNullOrEmpty(currentStd) && 구분Keys.Contains(currentStd))
+            _stdCombo.SelectedItem = currentStd;
+        _currentStdSelection = currentStd;
+
+        _stdListPanel = new StackPanel { Spacing = 3 };
+        RebuildMeasurerStdList(stdTable, _currentStdSelection);
+
+        _stdCombo.SelectionChanged += (_, _) =>
+        {
+            _currentStdSelection = _stdCombo.SelectedItem?.ToString() ?? "";
+            RebuildMeasurerStdList(stdTable, _currentStdSelection);
+        };
+
+        var applyBtn = new Button
+        {
+            Content                    = "✓ Show2 적용",
+            FontFamily                 = Font, FontSize = AppTheme.FontBase, FontWeight = FontWeight.SemiBold,
+            Background                 = AppTheme.BgActiveGreen,
+            Foreground                 = AppRes("AppFg"),
+            BorderThickness            = new Thickness(0), CornerRadius = new CornerRadius(4),
+            Padding                    = new Thickness(14, 6),
+            HorizontalAlignment        = HorizontalAlignment.Stretch,
+            HorizontalContentAlignment = HorizontalAlignment.Center,
+        };
+        applyBtn.Click += (_, _) =>
+        {
+            if (_selectedSample == null) { ShowToast("시료를 먼저 선택하세요."); return; }
+            if (string.IsNullOrEmpty(_currentStdSelection)) { ShowToast("방류기준을 선택하세요."); return; }
+            _selectedSample.방류허용기준 = _currentStdSelection;
+            _measurerRows = DataToMeasurerService.BuildRows(_selectedSample);
+            ResultListChanged?.Invoke(BuildListControl());
+            ShowToast($"‘{_currentStdSelection}’ 적용됨");
+        };
+
+        var listScroll = new ScrollViewer
+        {
+            VerticalScrollBarVisibility   = ScrollBarVisibility.Auto,
+            HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+            Content                       = _stdListPanel,
+        };
+
+        var root = new Grid { RowDefinitions = new RowDefinitions("Auto,Auto,*,Auto") };
+        var headerBorder = new Border { Padding = new Thickness(12, 10, 12, 6),  Child = header };
+        var comboBorder  = new Border { Padding = new Thickness(12, 0, 12, 8),   Child = _stdCombo };
+        var listBorder   = new Border { Padding = new Thickness(12, 0, 12, 8),   Child = listScroll };
+        var applyBorder  = new Border { Padding = new Thickness(12, 0, 12, 12),  Child = applyBtn };
+        Grid.SetRow(headerBorder, 0);
+        Grid.SetRow(comboBorder,  1);
+        Grid.SetRow(listBorder,   2);
+        Grid.SetRow(applyBorder,  3);
+        root.Children.Add(headerBorder);
+        root.Children.Add(comboBorder);
+        root.Children.Add(listBorder);
+        root.Children.Add(applyBorder);
+        return root;
+    }
+
+    private void RebuildMeasurerStdList(
+        Dictionary<string, Dictionary<string, string>> stdTable,
+        string? selected)
+    {
+        if (_stdListPanel == null) return;
+        _stdListPanel.Children.Clear();
+
+        if (_selectedSample == null || _selectedSample.분석결과.Count == 0)
+        {
+            _stdListPanel.Children.Add(new TextBlock
+            {
+                Text       = _selectedSample == null ? "시료를 먼저 선택하세요." : "분석 항목이 없습니다.",
+                FontFamily = Font, FontSize = AppTheme.FontSM,
+                Foreground = AppTheme.FgDimmed,
+                Margin     = new Thickness(0, 4),
+            });
+            return;
+        }
+
+        Dictionary<string, string>? inner = null;
+        if (!string.IsNullOrEmpty(selected) && stdTable.TryGetValue(selected, out var v)) inner = v;
+
+        foreach (var analyte in _selectedSample.분석결과.Keys)
+        {
+            string val = "";
+            if (inner != null)
+            {
+                if (inner.TryGetValue(analyte, out var direct))
+                    val = (direct ?? "").Trim();
+                else
+                {
+                    var norm = analyte.Replace("-", "").Replace(" ", "").ToLowerInvariant();
+                    foreach (var kv in inner)
+                    {
+                        if (kv.Key.Replace("-", "").Replace(" ", "").ToLowerInvariant() == norm)
+                        { val = (kv.Value ?? "").Trim(); break; }
+                    }
+                }
+            }
+            bool has = !string.IsNullOrEmpty(val) && val != "해당없음";
+            var badge = has
+                ? StatusBadge.Create(val, BadgeStatus.Info,  AppTheme.FontXS, withIcon: false)
+                : StatusBadge.Create("해당없음", BadgeStatus.Muted, AppTheme.FontXS, withIcon: false);
+
+            var nameTb = new TextBlock
+            {
+                Text                = analyte,
+                FontFamily          = Font, FontSize = AppTheme.FontSM,
+                Foreground          = AppRes("AppFg"),
+                VerticalAlignment   = VerticalAlignment.Center,
+                TextWrapping        = Avalonia.Media.TextWrapping.Wrap,
+            };
+            var grid = new Grid
+            {
+                ColumnDefinitions = new ColumnDefinitions("*,Auto"),
+                VerticalAlignment = VerticalAlignment.Center,
+            };
+            Grid.SetColumn(nameTb, 0);
+            Grid.SetColumn(badge,  1);
+            grid.Children.Add(nameTb);
+            grid.Children.Add(badge);
+
+            _stdListPanel.Children.Add(new Border
+            {
+                Padding      = new Thickness(8, 5),
+                Background   = AppTheme.BgCard,
+                CornerRadius = new CornerRadius(4),
+                Child        = grid,
+            });
+        }
     }
 
     private Control BuildMeasurerListControl()
@@ -1839,15 +2060,6 @@ public partial class TestReportPage : UserControl
 
     private Control BuildMeasurerActionPanel()
     {
-        var matchTb = new TextBlock
-        {
-            FontFamily   = Font, FontSize = AppTheme.FontBase,
-            Foreground   = new SolidColorBrush(Color.Parse("#8888aa")),
-            TextWrapping = Avalonia.Media.TextWrapping.Wrap,
-            Margin       = new Thickness(0, 4, 0, 0),
-            Text         = "브라우저에서 측정인.kr 입력 화면을 먼저 열어 주세요.",
-        };
-
         var statusTb = new TextBlock
         {
             FontFamily   = Font, FontSize = AppTheme.FontBase,
@@ -1857,19 +2069,18 @@ public partial class TestReportPage : UserControl
             IsVisible    = false,
         };
 
-        var checkBtn = new Button
+        var progressBar = new ProgressBar
         {
-            Content         = "페이지 확인",
-            FontFamily      = Font, FontSize = AppTheme.FontBase,
-            Background      = AppTheme.BgActiveBlue,
-            Foreground      = AppRes("AppFg"),
-            BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
-            Padding         = new Thickness(12, 5),
+            Minimum = 0, Maximum = 100, Value = 0,
+            Height  = 14,
+            ShowProgressText = true,
+            IsVisible = false,
+            Margin   = new Thickness(0, 4, 0, 0),
         };
 
         var inputBtn = new Button
         {
-            Content         = "측정값 입력 진행",
+            Content         = "자료TO측정인",
             FontFamily      = Font, FontSize = AppTheme.FontMD,
             Background      = new SolidColorBrush(Color.Parse("#264026")),
             Foreground      = AppRes("AppFg"),
@@ -1885,19 +2096,6 @@ public partial class TestReportPage : UserControl
             Margin       = new Thickness(0, 8, 0, 0),
         };
 
-        checkBtn.Click += async (_, _) =>
-        {
-            if (_selectedSample == null) return;
-            checkBtn.IsEnabled = false;
-            matchTb.Text       = "페이지 확인 중...";
-            matchTb.Foreground = AppTheme.FgInfo;
-            var (text, hex) = await MeasurerCdpService.CheckPageMatchAsync(
-                _selectedSample.약칭, _selectedSample.시료명, _selectedSample.채취일자);
-            matchTb.Text       = text;
-            matchTb.Foreground = new SolidColorBrush(Color.Parse(hex));
-            checkBtn.IsEnabled = true;
-        };
-
         inputBtn.Click += async (_, _) =>
         {
             if (_measurerRows.Count == 0)
@@ -1907,9 +2105,11 @@ public partial class TestReportPage : UserControl
                 return;
             }
             inputBtn.IsEnabled  = false;
-            checkBtn.IsEnabled  = false;
             statusTb.IsVisible  = true;
             statusTb.Foreground = AppTheme.FgSuccess;
+            progressBar.IsVisible = true;
+            progressBar.IsIndeterminate = true;
+            progressBar.Value = 0;
             try
             {
                 var (ok, msg) = await MeasurerCdpService.AutoInputAsync(
@@ -1917,29 +2117,52 @@ public partial class TestReportPage : UserControl
                     text => Avalonia.Threading.Dispatcher.UIThread.Post(() =>
                     {
                         statusTb.Text = text;
+                        var (det, val) = ParseMeasurerStatus(text);
+                        if (det)
+                        {
+                            progressBar.IsIndeterminate = false;
+                            progressBar.Value = val;
+                        }
                     }));
                 statusTb.Text       = (ok ? "✅ " : "⚠ ") + msg;
                 statusTb.Foreground = new SolidColorBrush(Color.Parse(ok ? "#44cc44" : "#ffaa44"));
+                progressBar.IsIndeterminate = false;
+                progressBar.Value = ok ? 100 : progressBar.Value;
             }
             catch (Exception ex)
             {
                 statusTb.Text       = "❌ " + ex.Message;
                 statusTb.Foreground = AppTheme.FgDanger;
+                progressBar.IsIndeterminate = false;
             }
-            finally { inputBtn.IsEnabled = true; checkBtn.IsEnabled = true; }
+            finally { inputBtn.IsEnabled = true; }
         };
 
         var btnRow = new StackPanel
         {
             Orientation = Orientation.Horizontal, Spacing = 8,
-            Children    = { checkBtn, inputBtn },
+            Children    = { inputBtn },
         };
 
         return new Border
         {
             Padding = new Thickness(10),
-            Child   = new StackPanel { Spacing = 6, Children = { btnRow, matchTb, statusTb, infoTb } }
+            Child   = new StackPanel { Spacing = 6, Children = { btnRow, progressBar, statusTb, infoTb } }
         };
+    }
+
+    /// <summary>상태 텍스트에서 진행률 파싱 (예: "Phase 3: 12/45 입력 중" → 12/45)</summary>
+    private static (bool determinate, double value) ParseMeasurerStatus(string text)
+    {
+        if (string.IsNullOrEmpty(text)) return (false, 0);
+        var m = System.Text.RegularExpressions.Regex.Match(text, @"(\d+)\s*/\s*(\d+)");
+        if (m.Success)
+        {
+            double cur = double.Parse(m.Groups[1].Value);
+            double tot = double.Parse(m.Groups[2].Value);
+            if (tot > 0) return (true, cur / tot * 100.0);
+        }
+        return (false, 0);
     }
 
     private static TextBlock MeasurerHeaderCell(string text, int col)

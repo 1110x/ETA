@@ -46,11 +46,23 @@
         <Border Grid.Row="1"
                 Background="{DynamicResource PanelInnerBg}"
                 Padding="8,4">
-            <ToggleSwitch x:Name="tglContractStatus"
-                          IsChecked="True"
-                          OnContent="✅ 현행계약"
-                          OffContent="📁 종료계약"
-                          IsCheckedChanged="TglContractStatus_Changed" />
+            <Grid ColumnDefinitions="Auto,*">
+                <ToggleSwitch Grid.Column="0"
+                              x:Name="tglContractStatus"
+                              IsChecked="True"
+                              OnContent="✅ 현행계약"
+                              OffContent="📁 종료계약"
+                              IsCheckedChanged="TglContractStatus_Changed" />
+                <TextBlock Grid.Column="1"
+                           x:Name="txbTotalAmount"
+                           FontSize="{DynamicResource FontSizeBase}" FontWeight="SemiBold"
+                           Foreground="{DynamicResource FgMuted}"
+                           FontFamily="avares://ETA/Assets/Fonts#Pretendard"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Right"
+                           TextTrimming="CharacterEllipsis"
+                           Margin="8,0,4,0" />
+            </Grid>
         </Border>
         <TreeView Grid.Row="2"
                   x:Name="ContractTreeView"

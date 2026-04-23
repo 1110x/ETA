@@ -460,12 +460,6 @@
             <Setter Property="CornerRadius"      Value="2"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
-        <!-- ComboBox MinHeight 제거 (Fluent 기본 32px 무력화) -->
-        <Style Selector="ComboBox#cboTheme">
-            <Setter Property="MinHeight" Value="0"/>
-            <Setter Property="Padding"   Value="8,0"/>
-        </Style>
-
         <!-- ScrollBar -->
         <Style Selector="ScrollBar">
             <Setter Property="Background" Value="Transparent"/>
@@ -564,7 +558,7 @@
                             </MenuItem.Header>
                             <MenuItem Header="나의 업무" Click="ProfileName_MenuClick"/>
                             <Separator/>
-                            <MenuItem Header="⏻  로그아웃" Click="Logout_Click"
+                            <MenuItem Header="로그아웃" Click="Logout_Click"
                                       Foreground="#EF4444"/>
                         </MenuItem>
                     </Menu>
@@ -580,6 +574,7 @@
                         <MenuItem Header="견적/의뢰서" x:Name="MenuItemQuotation"     Click="Quotation_Click"/>
                         <MenuItem Header="거래명세발행"    x:Name="MenuItemQuotationIssue" Click="QuotationIssuing_Click"/>
                         <MenuItem Header="시험성적서"  x:Name="MenuItemTestReport"     Click="TestReport_Click"/>
+                        <MenuItem Header="시험기록부 템플릿 폴더..." x:Name="MenuItemTestRecordBookFolder" Click="TestRecordBookFolder_Click"/>
                         <MenuItem Header="DB Migration" x:Name="MenuItemDbMigration" Click="DbMigration_Click"/>
                     </MenuItem>
 
@@ -606,7 +601,7 @@
                     <MenuItem Header="결과 제출" x:Name="MenuItemResultSubmit">
                         <MenuItem Header="측정인" x:Name="MenuItemResultSubmitMeasure" Click="ResultSubmitMeasure_Click"/>
                         <MenuItem Header="ERP"    x:Name="MenuItemResultSubmitErp"     Click="ResultSubmitErp_Click"/>
-                        <MenuItem Header="Zero4"  Click="ResultSubmitZero4_Click"  IsEnabled="False" Opacity="0.4"/>
+                        <MenuItem Header="Wayble" Click="ResultSubmitZero4_Click"/>
                     </MenuItem>
 
                     <MenuItem Header="일정업무관리" x:Name="MenuItemSchedule">
@@ -632,9 +627,17 @@
                         <MenuItem Header="AI 문서분류"  Click="AiDocClassification_Click"  x:Name="MenuItemAiDocClassification"/>
                         <MenuItem Header="파서 생성기"  Click="ParserGenerator_Click"      x:Name="MenuItemParserGenerator"/>
                     </MenuItem>
+
+                    <MenuItem Header="설정" x:Name="MenuItemSettings">
+                        <MenuItem Header="계약·측정시설"  x:Name="MenuItemMeasurerContract"  Click="MeasurerContract_Click"/>
+                        <MenuItem Header="분석항목"       x:Name="MenuItemMeasurerAnalyte"   Click="MeasurerAnalyte_Click"/>
+                        <MenuItem Header="분석조건"       x:Name="MenuItemMeasurerCondition" Click="MeasurerCondition_Click"/>
+                        <MenuItem Header="분석장비"       x:Name="MenuItemMeasurerEquipment" Click="MeasurerEquipment_Click"/>
+                        <MenuItem Header="양식폴더"       x:Name="MenuItemTemplateFolder"    Click="TemplateFolder_Click"/>
+                    </MenuItem>
                 </Menu>
 
-                <!-- 오른쪽: 글자 크기 슬라이더 + 테마 토글 -->
+                <!-- 오른쪽: 레이아웃 저장 버튼 -->
                 <StackPanel Grid.Column="2"
                             Orientation="Horizontal"
                             HorizontalAlignment="Right"
@@ -642,76 +645,13 @@
                             ClipToBounds="False"
                             Spacing="4"
                             Margin="0,0,12,0">
-
-                    <!-- 글자 크기 슬라이더 (주변 요소 고정폭/고정 크기 → 슬라이더 위치 고정) -->
-                    <TextBlock Text="가"
-                               FontSize="9"
-                               Width="14" TextAlignment="Center"
-                               VerticalAlignment="Center"
-                               Foreground="{DynamicResource FgMuted}"/>
-                    <Slider x:Name="sldFontSize"
-                            Minimum="0.9" Maximum="1.1" Value="1.0"
-                            SmallChange="0.01" LargeChange="0.05"
-                            TickFrequency="0.01" IsSnapToTickEnabled="True"
-                            Width="100"
+                    <Button x:Name="btnSaveLayout"
+                            Content="레이아웃 저장"
+                            Height="22" Padding="10,0"
+                            FontSize="{DynamicResource FontSizeSM}"
                             VerticalAlignment="Center"
-                            ClipToBounds="False"
-                            ValueChanged="SldFontSize_ValueChanged"/>
-                    <TextBlock Text="가"
-                               FontSize="13"
-                               Width="18" TextAlignment="Center"
-                               VerticalAlignment="Center"
-                               Foreground="{DynamicResource FgMuted}"/>
-                    <TextBlock x:Name="txbFontScale"
-                               Text="100%"
-                               FontSize="9"
-                               Width="30"
-                               TextAlignment="Center"
-                               VerticalAlignment="Center"
-                               Foreground="{DynamicResource FgMuted}"
-                               Margin="0,0,6,0"/>
-
-                    <!-- 구분선 -->
-                    <Border Width="1" Height="14"
-                            Background="{DynamicResource FgMuted}"
-                            Opacity="0.35"
-                            VerticalAlignment="Center"
-                            Margin="0,0,6,0"/>
-
-                    <!-- 애니메이션 토글 -->
-                    <ToggleButton x:Name="btnAnimations"
-                                  Width="32" Height="26"
-                                  VerticalAlignment="Center"
-                                  ToolTip.Tip="애니메이션 토글 (Ctrl+Shift+A)"
-                                  Click="BtnAnimations_Click"
-                                  Content="🎬"
-                                  FontSize="14"
-                                  Foreground="{DynamicResource FgSecondary}"/>
-
-                    <!-- 구분선 -->
-                    <Border Width="1" Height="14"
-                            Background="{DynamicResource FgMuted}"
-                            Opacity="0.35"
-                            VerticalAlignment="Center"
-                            Margin="0,0,6,0"/>
-
-                    <!-- 테마 선택 -->
-                    <TextBlock Text="🎨" FontSize="13" VerticalAlignment="Center" Margin="0,0,4,0"/>
-                    <ComboBox x:Name="cboTheme"
-                              Width="130" Height="26"
-                              FontSize="{DynamicResource FontSizeSM}"
-                              VerticalAlignment="Center"
-                              SelectedIndex="0"
-                              SelectionChanged="OnThemeSelectionChanged">
-                        <ComboBoxItem Content="🌙 Dark"/>
-                        <ComboBoxItem Content="☀️ Soft Light"/>
-                        <ComboBoxItem Content="🌊 Ocean"/>
-                        <ComboBoxItem Content="🍃 Forest"/>
-                        <ComboBoxItem Content="🕷️ Deadpool"/>
-                        <ComboBoxItem Content="🐝 Bumblebee"/>
-                        <ComboBoxItem Content="💪 Hulk"/>
-                        <ComboBoxItem Content="🦾 Iron Man"/>
-                    </ComboBox>
+                            ToolTip.Tip="현재 메뉴의 Show1~4 레이아웃/크기를 사용자별로 저장"
+                            Click="BtnSaveLayout_Click"/>
                 </StackPanel>
             </Grid>
         </Border>

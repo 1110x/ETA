@@ -358,6 +358,29 @@ public static class WasteSampleService
         cmd.ExecuteNonQuery();
     }
 
+    /// <summary>비용부담금_결과에서 Phenols/TOC 현재값 + 분석방법 조회
+    /// 6가크롬 컬럼은 페놀류 분석방법(직접법/추출법),
+    /// 시안   컬럼은 TOC 분석방법(NPOC/TCIC)을 저장하는 용도로 재사용됨.</summary>
+    public static (string phenols, string phenolsMethod, string toc, string tocMethod) GetResultSnapshot(int id)
+    {
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+        EnsureUvColumns(conn);
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT Phenols, `6가크롬`, `TOC`, `시안` FROM `비용부담금_결과` WHERE Id=@id";
+        cmd.Parameters.AddWithValue("@id", id);
+        using var r = cmd.ExecuteReader();
+        if (r.Read())
+        {
+            return (
+                r.IsDBNull(0) ? "" : r.GetString(0),
+                r.IsDBNull(1) ? "" : r.GetString(1),
+                r.IsDBNull(2) ? "" : r.GetString(2),
+                r.IsDBNull(3) ? "" : r.GetString(3));
+        }
+        return ("", "", "", "");
+    }
+
     public static int NextSeq(string 채수일, string 구분)
     {
         using var conn = DbConnectionFactory.CreateConnection();
@@ -1248,11 +1271,18 @@ public static class WasteSampleService
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = "SELECT SN, 업체명, 구분 FROM `비용부담금_결과` WHERE SN=@sn LIMIT 1";
+            cmd.CommandText = "SELECT Id, SN, 업체명, 구분, 채수일 FROM `비용부담금_결과` WHERE SN=@sn LIMIT 1";
             cmd.Parameters.AddWithValue("@sn", sn);
             using var r = cmd.ExecuteReader();
             if (r.Read())
-                return new WasteSample { SN = GetString(r, 0), 업체명 = GetString(r, 1), 구분 = GetString(r, 2) };
+                return new WasteSample
+                {
+                    Id     = r.IsDBNull(0) ? 0 : Convert.ToInt32(r.GetValue(0)),
+                    SN     = GetString(r, 1),
+                    업체명 = GetString(r, 2),
+                    구분   = GetString(r, 3),
+                    채수일 = GetString(r, 4),
+                };
         }
         catch { }
         return null;

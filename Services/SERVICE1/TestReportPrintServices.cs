@@ -19,14 +19,9 @@ public static class TestReportPrintService
     private static string RootPath =>
         Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", ".."));
 
-    public static string Template1Path =>
-        Path.Combine(RootPath, "Data", "Templates", "시험성적서1_template.xlsx");
-
-    public static string Template2Path =>
-        Path.Combine(RootPath, "Data", "Templates", "시험성적서2_template.xlsx");
-
-    private static string IntegratedTemplatePath =>
-        Path.Combine(RootPath, "Data", "Templates", "시험성적서통합.xlsm");
+    public static string Template1Path => TemplateConfiguration.Resolve("TestReport1");
+    public static string Template2Path => TemplateConfiguration.Resolve("TestReport2");
+    private static string IntegratedTemplatePath => TemplateConfiguration.Resolve("TestReportIntegrated");
 
     private static string OutputDir =>
         Path.Combine(RootPath, "Data", "Reports");

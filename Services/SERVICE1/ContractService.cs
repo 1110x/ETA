@@ -177,7 +177,7 @@ public static class ContractService
                 C_Abbreviation=@abbr, C_ContractType=@type, C_Address=@addr,
                 C_Representative=@rep, C_FacilityType=@ftype, C_CategoryType=@ctype,
                 C_MainProduct=@prod, C_ContactPerson=@contact,
-                C_PhoneNumber=@phone, C_Email=@email, C_ContractType=@basisContractNo,
+                C_PhoneNumber=@phone, C_Email=@email, C_BasisContractNumber=@basisContractNo,
                 C_PlaceName=@place
             WHERE C_CompanyName=@original";
 
@@ -201,7 +201,7 @@ public static class ContractService
                 (C_CompanyName, C_ContractStart, C_ContractEnd, C_ContractDays,
                  C_ContractAmountVATExcluded, C_Abbreviation, C_ContractType,
                  C_Address, C_Representative, C_FacilityType, C_CategoryType,
-                 C_MainProduct, C_ContactPerson, C_PhoneNumber, C_Email, C_ContractType, C_PlaceName)
+                 C_MainProduct, C_ContactPerson, C_PhoneNumber, C_Email, C_BasisContractNumber, C_PlaceName)
             VALUES
                 (@name, @start, @end, @days, @amount, @abbr, @type, @addr,
                  @rep, @ftype, @ctype, @prod, @contact, @phone, @email, @basisContractNo, @place)";
@@ -545,7 +545,9 @@ public static class ContractService
         "id", "C_CompanyName", "C_ContractStart", "C_ContractEnd", "C_ContractDays",
         "C_ContractAmountVATExcluded", "C_Abbreviation", "C_ContractType", "C_PlaceName", "C_Address",
         "C_Representative", "C_FacilityType", "C_CategoryType", "C_MainProduct",
-        "C_ContactPerson", "C_PhoneNumber", "C_Email", "OriginalCompanyName"
+        "C_ContactPerson", "C_PhoneNumber", "C_Email", "OriginalCompanyName",
+        // 메타/플래그 컬럼 — 단가 항목 아님
+        "C_IsDeleted", "C_DeletedAt", "C_BasisContractNumber",
     };
 
     // 계약 DB 컬럼 목록 캐시 (SHOW COLUMNS 중복 호출 방지)

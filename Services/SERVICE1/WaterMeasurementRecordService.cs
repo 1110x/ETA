@@ -17,10 +17,8 @@ namespace ETA.Services.SERVICE1;
 public static class WaterMeasurementRecordService
 {
     private const int ItemThreshold = 22;
-    private static readonly string Template1 =
-        Path.Combine("Data", "Templates", "수질측정기록부1_template.xlsx");
-    private static readonly string Template2 =
-        Path.Combine("Data", "Templates", "수질측정기록부2_template.xlsx");
+    private static string Template1 => TemplateConfiguration.Resolve("WaterRecord1");
+    private static string Template2 => TemplateConfiguration.Resolve("WaterRecord2");
 
     public static bool TemplatesExist() => File.Exists(Template1) && File.Exists(Template2);
 

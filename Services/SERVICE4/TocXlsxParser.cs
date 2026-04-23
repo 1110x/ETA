@@ -63,6 +63,9 @@ public static class TocXlsxParser
         XlsxParserHelpers.ParsePage(ws, rows, colName: 9, colResult: 15, colSN: 16, startRow: 8,
             itemAbbr: "TOC", resultFormatter: resultFormatter);
 
+        // 모든 행에 분석방법 태그 (충돌 팝업용)
+        foreach (var r in rows) r.Method = method;
+
         return new ParseResult(rows, docInfo, docDate, method);
     }
 }

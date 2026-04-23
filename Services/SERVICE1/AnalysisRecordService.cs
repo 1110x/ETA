@@ -16,8 +16,7 @@ public static class AnalysisRecordService
     private static readonly string DataRoot = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "ETA", "Data");
 
-    private static string TemplatePath =>
-        Path.Combine(DataRoot, "Templates", "분석기록부.xlsx");
+    private static string TemplatePath => TemplateConfiguration.Resolve("AnalysisRecord");
 
     // ── 출력 폴더: 바탕화면\시험의뢰서 출력\yyyy-MM-dd ───────────────────
     public static string GetOutputDir()

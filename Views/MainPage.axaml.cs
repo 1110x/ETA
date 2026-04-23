@@ -24,6 +24,8 @@ using ETA.Views.Pages.PAGE3;
 using ETA.Views.Pages.Common;
 using ETA.Views.Pages.PAGE5;
 using ClosedXML.Excel;
+using MsBox.Avalonia;
+using MsBox.Avalonia.Enums;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -123,18 +125,9 @@ public partial class MainPage : Window
         DataContext = new MainWindowViewModel();
         ApplyTheme(0);
 
-        // 애니메이션 토글 버튼 초기 상태 설정 & 비활성화 처리
+        // 애니메이션 비활성화 처리 (토글 UI는 제거됐지만 내부 상태는 유지)
         Dispatcher.UIThread.Post(() =>
         {
-            var btn = this.FindControl<Control>("btnAnimations");
-            if (btn != null)
-            {
-                var prop = btn.GetType().GetProperty("IsChecked");
-                if (prop != null)
-                    prop.SetValue(btn, App.AnimationsEnabled);
-            }
-
-            // 애니메이션 비활성화 (활성화되지 않은 경우)
             if (!App.AnimationsEnabled)
             {
                 DisableTransitionsRecursive(this);
@@ -154,21 +147,17 @@ public partial class MainPage : Window
             };
         }
 
-        // WindowPositionManager 초기화 - 완전 비활성화 (스턱 방지)
-        _positionManager = null; // new WindowPositionManager(CurrentUserManager.Instance.CurrentUserId);
+        // WindowPositionManager 초기화 (사용자별 레이아웃 저장/복원)
+        _positionManager = new WindowPositionManager(CurrentUserManager.Instance.CurrentUserId);
 
         // 윈도우 이벤트 연결
         this.Opened += MainPage_Opened;
         this.Closing += MainPage_Closing;
 
-        // 한글 IME 마지막 글자 다음 입력창 이동 버그 수정
-        // 포인터 클릭/Tab/Enter로 포커스가 이동하기 전에 IME 조합 상태를 초기화하여
-        // 조합 중이던 마지막 글자가 다음 TextBox로 넘어가지 않게 함
-        AddHandler(InputElement.PointerPressedEvent, OnPointerPressedImeReset,
-            RoutingStrategies.Tunnel, handledEventsToo: false);
-        AddHandler(InputElement.KeyDownEvent, OnKeyDownImeReset,
-            RoutingStrategies.Tunnel, handledEventsToo: false);
-
+        // 한글 IME: Tunnel 계층에서의 수동 개입은 TextBox 의 기본 IME 처리를 방해하므로 제거.
+        // 마지막 글자가 다음 입력창으로 따라가는 현상은 LostFocus 이벤트에서 표준 경로로 처리.
+        AddHandler(InputElement.LostFocusEvent, OnTextBoxLostFocus,
+            RoutingStrategies.Bubble, handledEventsToo: true);
 
         // GridSplitter 실시간 레이아웃 저장 이벤트 연결
         this.Loaded += SetupSplitterEvents;
@@ -516,48 +505,12 @@ public partial class MainPage : Window
     }
 
     /// <summary>
-    /// <summary>
-    /// 한글 IME 조합 중 포커스 이동 시 마지막 글자가 다음 입력창으로 넘어가는 버그 방지.
-    /// 포인터 클릭/Tab/Enter 등 모든 포커스 변경 전에 IME 상태를 초기화.
+    /// TextBox 포커스 상실 시 훅 포인트. 현재는 프레임워크 네이티브 IME 처리에 맡김.
+    /// (Tunnel 계층에서 IME 토글 같은 편법을 사용하지 않음)
     /// </summary>
-    private void OnPointerPressedImeReset(object? sender, PointerPressedEventArgs e)
+    private void OnTextBoxLostFocus(object? sender, RoutedEventArgs e)
     {
-        var focused = FocusManager?.GetFocusedElement();
-        if (focused is not TextBox) return;
-        if (e.Source is TextBox clickedBox && clickedBox == focused) return;
-
-        ResetImeComposition(focused as TextBox);
-    }
-
-    /// <summary>Tab/Enter 키로 포커스가 이동할 때 IME 조합 상태 초기화</summary>
-    private void OnKeyDownImeReset(object? sender, KeyEventArgs e)
-    {
-        // Tab, Shift+Tab, Enter 키만 처리
-        if (e.Key != Key.Tab && e.Key != Key.Return) return;
-
-        var focused = FocusManager?.GetFocusedElement() as TextBox;
-        if (focused == null) return;
-
-        // 포커스 이동 직전에 IME를 리셋하되, 키 입력 처리 직후에 포커스 이동이 일어나도록
-        // PreviewKeyDown(Tunnel) → KeyDown(Bubble) 순서를 이용
-        ResetImeComposition(focused);
-    }
-
-    /// <summary>IME 조합 상태를 강제로 초기화 (한글 입력 안정화)</summary>
-    private static void ResetImeComposition(TextBox? tb)
-    {
-        if (tb == null) return;
-
-        try
-        {
-            // IME 클라이언트를 종료했다가 재생성 → 조합 중이던 글자를 현재 TextBox에서 flush
-            Avalonia.Input.InputMethod.SetIsInputMethodEnabled(tb, false);
-            // 약간의 딜레이 후 재활성화 (Avalonia의 버그 우회)
-            Dispatcher.UIThread.Post(() =>
-                Avalonia.Input.InputMethod.SetIsInputMethodEnabled(tb, true),
-                DispatcherPriority.Input);
-        }
-        catch { }
+        // 의도적 no-op: Avalonia 11.3 의 표준 LostFocus → IME commit 경로에 위임.
     }
 
     private void MainPage_Opened(object? sender, EventArgs e)
@@ -631,11 +584,9 @@ public partial class MainPage : Window
             });
         }
 
-        // 저장된 글자 크기 복원
+        // 저장된 글자 크기 복원 (슬라이더 UI는 제거됐지만 저장값은 유지)
         var savedScale = LoadFontScale();
         ApplyFontScale(savedScale);
-        if (sldFontSize != null) sldFontSize.Value = savedScale;
-        if (txbFontScale != null) txbFontScale.Text = $"{(int)(savedScale * 100)}%";
 
         // MenuItem 호버 시 텍스트 그라데이션 효과 (최상위 + 서브메뉴 열릴 때 동적 부착)
         foreach (var mi in this.GetVisualDescendants().OfType<MenuItem>())
@@ -775,17 +726,15 @@ public partial class MainPage : Window
     {
         ETA.Services.Common.CurrentUserManager.Instance.ResetToWindowsUser();
         MainPage.CurrentEmployeeId = "";
-        var login = new Login();
+        var login = new ETA.Rebuild.Views.LoginWindow(suppressAutoLogin: true);
         login.Show();
         Close();
     }
 
     private void MainPage_Closing(object? sender, WindowClosingEventArgs e)
     {
-        if (!string.IsNullOrEmpty(_currentMode) && _currentMode != "None")
-        {
-            SaveCurrentModeLayout();
-        }
+        // 레이아웃은 `레이아웃 저장` 버튼으로만 명시적으로 저장.
+        // 로그아웃/종료 시 자동 저장은 사용자가 정성 들여 저장한 값을 우발적 변경으로 덮어씀 → 제거.
     }
 
     // ══════════════════════════════════════════════════════════════════════
@@ -3043,15 +2992,213 @@ public partial class MainPage : Window
     private void ResultSubmitZero4_Click(object? sender, RoutedEventArgs e)
     {
         _currentMode = "ResultSubmitZero4";
-        _resultSubmitZero4Page ??= new ResultSubmitZero4Page();
-        Show1.Content = _resultSubmitZero4Page;
-        LogContentChange("Show1", _resultSubmitZero4Page);
-        Show2.Content = null; Show3.Content = null; Show4.Content = null;
-        SetSubMenu("저장", "새로고침", "", "", "", "", "");
-        SetLeftPanelWidth(260);
-        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 8, lowerStar: 2);
+        if (_resultSubmitZero4Page == null)
+        {
+            _resultSubmitZero4Page = new ResultSubmitZero4Page();
+            _resultSubmitZero4Page.DateGroupSelected += (date, group) =>
+            {
+                Show2.Content = BuildWaybleItemButtonsPanel(date, group);
+                LogContentChange("Show2", Show2.Content as Control);
+            };
+        }
+        else
+        {
+            _resultSubmitZero4Page.Reload();
+        }
+        // 진행도 모니터는 Show4(우측 보조 패널)에 배치 — 입력 중에도 진행도 확인 가능
+        Show1.Content = BuildWaybleDateNavPanel();
+        LogContentChange("Show1", Show1.Content as Control);
+        Show2.Content = null;
+        Show3.Content = null;
+        Show4.Content = _resultSubmitZero4Page;
+        LogContentChange("Show4", _resultSubmitZero4Page);
+        SetSubMenu("로그인", "", "", "", "", "", "");
+        _bt1SaveAction = async () =>
+        {
+            var w = new ETA.Views.WaybleLoginWindow();
+            await w.ShowDialog(this);
+        };
+        SetLeftPanelWidth(220);
+        SetContentLayout(content2Star: 2, content4Star: 1, upperStar: 8, lowerStar: 2);
         RestoreModeLayout("ResultSubmitZero4");
     }
+
+    // ═════════════════════════════════════════════════════════════════════════
+    //  Wayble Show1: 일자 네비게이션 (주 단위 Expander, 최신 주 자동 펼침)
+    // ═════════════════════════════════════════════════════════════════════════
+    private Control BuildWaybleDateNavPanel()
+    {
+        var wayFont = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
+        var root = new StackPanel { Spacing = 2, Margin = new Thickness(4) };
+
+        root.Children.Add(new TextBlock
+        {
+            Text       = "일자 선택",
+            FontFamily = wayFont,
+            FontSize   = 12,
+            FontWeight = FontWeight.SemiBold,
+            Foreground = Brush.Parse("#aaaaaa"),
+            Margin     = new Thickness(0, 0, 0, 4),
+        });
+
+        List<string> dates;
+        try { dates = FacilityResultService.GetWaybleDistinctDates(); }
+        catch { dates = new List<string>(); }
+
+        if (dates.Count == 0)
+        {
+            root.Children.Add(new TextBlock
+            {
+                Text = "표시할 일자가 없습니다.",
+                FontFamily = wayFont,
+                FontSize = 11,
+                Foreground = Brush.Parse("#666677"),
+            });
+            return new ScrollViewer { Content = root, VerticalScrollBarVisibility = ScrollBarVisibility.Auto };
+        }
+
+        // 주 단위 버킷팅 (월요일 기준)
+        static DateTime MondayOf(DateTime d)
+        {
+            int diff = ((int)d.DayOfWeek + 6) % 7;
+            return d.Date.AddDays(-diff);
+        }
+        var weeks = new SortedDictionary<DateTime, List<string>>(Comparer<DateTime>.Create((a, b) => b.CompareTo(a)));
+        foreach (var ds in dates)
+        {
+            if (!DateTime.TryParse(ds, out var d)) continue;
+            var mon = MondayOf(d);
+            if (!weeks.ContainsKey(mon)) weeks[mon] = new List<string>();
+            weeks[mon].Add(ds);
+        }
+        var currentMon = MondayOf(DateTime.Today);
+
+        foreach (var (monday, weekDates) in weeks)
+        {
+            bool isCurrent = monday == currentMon;
+            var range = $"{monday:yyyy-MM-dd}";
+            var header = new TextBlock
+            {
+                Text = isCurrent ? $"📅 금주  {range}" : $"{range}   ({weekDates.Count}일)",
+                FontFamily = wayFont,
+                FontSize = 11,
+                FontWeight = FontWeight.SemiBold,
+                Foreground = Brush.Parse(isCurrent ? "#cce0ff" : "#aaaaaa"),
+            };
+
+            var body = new StackPanel { Spacing = 1, Margin = new Thickness(6, 4, 0, 4) };
+            foreach (var d in weekDates)
+            {
+                var capDate = d;
+                var btn = new Button
+                {
+                    Content = d,
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    HorizontalContentAlignment = HorizontalAlignment.Left,
+                    Padding = new Thickness(4, 2),
+                    Margin = new Thickness(0, 1),
+                    Background = Brushes.Transparent,
+                    BorderThickness = new Thickness(0),
+                    FontFamily = wayFont,
+                    FontSize = 11,
+                    Foreground = Brush.Parse("#d8d8e0"),
+                };
+                btn.Click += async (_, _) => await OnWaybleDateNavClickedAsync(capDate);
+                body.Children.Add(btn);
+            }
+
+            var expander = new Expander
+            {
+                Header = header,
+                IsExpanded = isCurrent,
+                Padding = new Thickness(2),
+                Margin = new Thickness(0, 1),
+                Background = Brush.Parse(isCurrent ? "#1e3a5a" : "#252535"),
+                BorderBrush = Brush.Parse("#333344"),
+                BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(4),
+                Content = body,
+            };
+            root.Children.Add(expander);
+        }
+
+        return new ScrollViewer { Content = root, VerticalScrollBarVisibility = ScrollBarVisibility.Auto };
+    }
+
+    private async Task OnWaybleDateNavClickedAsync(string date)
+    {
+        try
+        {
+            var items = await Task.Run(() => FacilityResultService.GetWaybleDateItemsInRange(date, date));
+            if (items.Count == 0) return;
+            var firstGroup = items[0].Group;
+            Show2.Content = BuildWaybleItemButtonsPanel(date, firstGroup);
+            LogContentChange("Show2", Show2.Content as Control);
+        }
+        catch { }
+    }
+
+    // ═════════════════════════════════════════════════════════════════════════
+    //  Wayble Show2: 선택한 (일자, 그룹)의 항목별 입력 진행 버튼
+    // ═════════════════════════════════════════════════════════════════════════
+    private Control BuildWaybleItemButtonsPanel(string date, string group)
+    {
+        var items = new[] { "BOD", "TOC", "SS", "T-N", "T-P", "총대장균군" };
+        var wayFont = new FontFamily("avares://ETA/Assets/Fonts#Pretendard");
+
+        var header = new TextBlock
+        {
+            Text       = $"{date}  ·  {group}",
+            FontFamily = wayFont,
+            FontSize   = 14,
+            FontWeight = FontWeight.SemiBold,
+            Foreground = Brush.Parse("#d8d8e0"),
+            Margin     = new Thickness(2, 0, 0, 8),
+        };
+
+        var wrap = new WrapPanel { Orientation = Orientation.Horizontal };
+        foreach (var it in items)
+        {
+            var (bg, fg, bd) = WasteCompanyPage.GetChosungBadgeColorPublic(it);
+            var btn = new Button
+            {
+                Content = new TextBlock
+                {
+                    Text       = it,
+                    FontFamily = wayFont,
+                    FontSize   = 13,
+                    FontWeight = FontWeight.SemiBold,
+                    Foreground = Brush.Parse(fg),
+                },
+                Background      = Brush.Parse(bg),
+                BorderBrush     = Brush.Parse(bd),
+                BorderThickness = new Thickness(1),
+                CornerRadius    = new CornerRadius(8),
+                Padding         = new Thickness(18, 10),
+                Margin          = new Thickness(0, 0, 8, 8),
+                MinWidth        = 90,
+            };
+            string captured = it;
+            btn.Click += (_, _) =>
+            {
+                // 분석결과입력(WasteAnalysisInput) 모드로 전환하여 해당 항목/일자로 입력 진행
+                WasteAnalysisInput_Click(null, new RoutedEventArgs());
+                _pendingWaybleDate = date;
+                _pendingWaybleGroup = group;
+                _pendingWaybleItem = captured;
+            };
+            wrap.Children.Add(btn);
+        }
+
+        var root = new StackPanel { Spacing = 6, Margin = new Thickness(4) };
+        root.Children.Add(header);
+        root.Children.Add(wrap);
+        return root;
+    }
+
+    private string? _pendingWaybleDate;
+    private string? _pendingWaybleGroup;
+    private string? _pendingWaybleItem;
 
     // 처리시설 목록 (분석계획 Show1) — 엑셀에서 동적 로딩
     private string[] _facilityNames = Array.Empty<string>();
@@ -5125,6 +5272,50 @@ public partial class MainPage : Window
             Avalonia.Threading.DispatcherPriority.Render);
     }
 
+    /// <summary>시험기록부 양식 템플릿 폴더 선택 — 폴더 피커 → UserPrefs 저장</summary>
+    private async void TestRecordBookFolder_Click(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var top = TopLevel.GetTopLevel(this);
+            if (top == null) return;
+
+            Avalonia.Platform.Storage.IStorageFolder? startFolder = null;
+            var current = UserPrefsService.TestRecordBookTemplateFolder;
+            if (!string.IsNullOrWhiteSpace(current) && Directory.Exists(current))
+            {
+                try { startFolder = await top.StorageProvider.TryGetFolderFromPathAsync(new Uri(current)); }
+                catch { }
+            }
+
+            var picked = await top.StorageProvider.OpenFolderPickerAsync(
+                new Avalonia.Platform.Storage.FolderPickerOpenOptions
+                {
+                    Title = "시험기록부 템플릿 폴더 선택",
+                    AllowMultiple = false,
+                    SuggestedStartLocation = startFolder,
+                });
+            if (picked.Count == 0) return;
+
+            var path = picked[0].Path.LocalPath;
+            if (string.IsNullOrWhiteSpace(path)) return;
+
+            UserPrefsService.TestRecordBookTemplateFolder = path;
+
+            var box = MessageBoxManager.GetMessageBoxStandard(
+                "시험기록부 템플릿 폴더",
+                $"✓ 저장되었습니다.\n\n{path}",
+                ButtonEnum.Ok);
+            await box.ShowAsync();
+        }
+        catch (Exception ex)
+        {
+            var box = MessageBoxManager.GetMessageBoxStandard(
+                "오류", $"폴더 선택 실패: {ex.Message}", ButtonEnum.Ok);
+            await box.ShowAsync();
+        }
+    }
+
     private void WasteTestReport_Click(object? sender, RoutedEventArgs e)
     {
         _currentMode = "WasteTestReport";
@@ -5386,7 +5577,7 @@ public partial class MainPage : Window
         RestoreModeLayout("Access");
     }
 
-    // ── 측정인관리 (최상위 메뉴) ─────────────────────────────────────────────
+    // ── 설정 (최상위 메뉴) ───────────────────────────────────────────────────
     private AccessPage? _measurerPage;
 
     private void OpenMeasurerPage(string initialMode)
@@ -5408,6 +5599,40 @@ public partial class MainPage : Window
     private void MeasurerContract_Click(object? sender, RoutedEventArgs e)  => OpenMeasurerPage("mcontract");
     private void MeasurerAnalyte_Click(object? sender, RoutedEventArgs e)   => OpenMeasurerPage("analyte");
     private void MeasurerEquipment_Click(object? sender, RoutedEventArgs e) => OpenMeasurerPage("equipment");
+
+    private ETA.Views.Pages.Common.TemplateSettingsPage? _templateSettingsPage;
+
+    /// <summary>설정 → 양식폴더: Show2에 양식 경로 설정 페이지 로드</summary>
+    private void TemplateFolder_Click(object? sender, RoutedEventArgs e)
+    {
+        _currentMode = "TemplateSettings";
+        _templateSettingsPage ??= new ETA.Views.Pages.Common.TemplateSettingsPage();
+        Show1.Content = null;
+        Show2.Content = _templateSettingsPage.View;
+        Show3.Content = null;
+        Show4.Content = null;
+        _bt1SaveAction = null;
+
+        SetSubMenu("", "", "", "", "", "", "");
+        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 1, lowerStar: 0);
+    }
+
+    private ETA.Views.Pages.Common.AnalysisConditionPage? _analysisConditionPage;
+    private void MeasurerCondition_Click(object? sender, RoutedEventArgs e)
+    {
+        _currentMode = "AnalysisCondition";
+        _analysisConditionPage ??= new ETA.Views.Pages.Common.AnalysisConditionPage();
+        Show1.Content = _analysisConditionPage.LeftPanel;
+        Show2.Content = _analysisConditionPage.CenterPanel;
+        Show3.Content = null;
+        Show4.Content = null;
+        _bt1SaveAction = null;
+
+        SetSubMenu("새로고침", "", "", "", "", "", "");
+        SetLeftPanelWidth(260);
+        SetContentLayout(content2Star: 2, content4Star: 0, upperStar: 1, lowerStar: 0);
+        RestoreModeLayout("AnalysisCondition");
+    }
 
     private ServerManagementPage? _serverManagementPage;
 
@@ -6359,28 +6584,8 @@ public partial class MainPage : Window
     }
 
     // ══════════════════════════════════════════════════════════════════════
-    //  테마 (DynamicResource 전체 교체 방식)
+    //  테마 (DynamicResource 전체 교체 방식) - 고정 Dark 사용
     // ══════════════════════════════════════════════════════════════════════
-
-    private void OnThemeSelectionChanged(object? sender, SelectionChangedEventArgs e)
-    {
-        if (cboTheme == null) return;
-        ApplyTheme(cboTheme.SelectedIndex);
-    }
-
-    // ══════════════════════════════════════════════════════════════════════
-    //  글자 크기 슬라이더
-    // ══════════════════════════════════════════════════════════════════════
-
-    private void SldFontSize_ValueChanged(object? sender,
-        Avalonia.Controls.Primitives.RangeBaseValueChangedEventArgs e)
-    {
-        var scale = e.NewValue;
-        ApplyFontScale(scale);
-        if (txbFontScale != null)
-            txbFontScale.Text = $"{(int)(scale * 100)}%";
-        SaveFontScale(scale);
-    }
 
     /// <summary>8개 폰트 크기 키를 scale 배율로 일괄 갱신</summary>
     private void ApplyFontScale(double scale)
@@ -7202,6 +7407,10 @@ public partial class MainPage : Window
                 }
             }
 
+            // 모서리 펼치기 상태(◣◤▼) 저장
+            layout.LayoutMode = _layoutMode;
+            layout.Show3Collapsed = _show3Collapsed;
+
             layout.SavedAt = DateTime.Now;
             _positionManager?.SavePageLayout(modeKey, layout); // null 체크 - WindowPositionManager 비활성화 시
         }
@@ -7231,17 +7440,29 @@ public partial class MainPage : Window
             }
 
 
-            // 왼쪽 패널 너비 복원
+            // 창 크기 복원 (★ 픽셀/비율 해석 일관성을 위해 먼저 창을 저장 시 크기로 되돌림)
+            if (layout.WindowWidth  > 0) this.Width  = layout.WindowWidth;
+            if (layout.WindowHeight > 0) this.Height = layout.WindowHeight;
+
+            // 왼쪽 패널 너비 복원 (픽셀 절대값)
             if (layout.LeftPanelWidth > 0)
                 SetLeftPanelWidth(layout.LeftPanelWidth);
 
             // 레이아웃 비율 복원 (minLowerStar 이상 보장)
+            // 창 크기가 저장 시점과 동일하므로 Star 단위 해석이 원래 픽셀 레이아웃과 일치함
             SetContentLayout(
                 content2Star: layout.Content2Star,
                 content4Star: layout.Content4Star,
                 upperStar: layout.UpperStar,
                 lowerStar: Math.Max(layout.LowerStar, minLowerStar));
 
+            // 모서리 펼치기 모드 복원 (◣◤▼ 상태)
+            if (!string.IsNullOrWhiteSpace(layout.LayoutMode) && layout.LayoutMode != "default")
+                SetPanelLayout(layout.LayoutMode);
+
+            // Show3 접힘 상태 복원 (현재 상태와 다르면 토글)
+            if (layout.Show3Collapsed != _show3Collapsed)
+                BtnToggleShow3_Click(null, new RoutedEventArgs());
         }
         catch (Exception ex)
         {
@@ -7257,8 +7478,8 @@ public partial class MainPage : Window
         if (!string.IsNullOrWhiteSpace(newUserId))
         {
             CurrentUserManager.Instance.SetCurrentUser(newUserId);
-            // 새 사용자로 WindowPositionManager 재초기화 - 완전 비활성화 (스턱 방지)
-            _positionManager = null; // new WindowPositionManager(newUserId);
+            // 새 사용자로 WindowPositionManager 재초기화
+            _positionManager = new WindowPositionManager(newUserId);
         }
     }
 
@@ -7310,25 +7531,13 @@ public partial class MainPage : Window
     }
 
     /// <summary>
-    /// GridSplitter 이동 완료 시 지연 저장 (300ms 후)
+    /// GridSplitter 이동 완료 시 호출되지만 **자동 저장은 하지 않음**.
+    /// 레이아웃은 상단 `레이아웃 저장` 버튼으로만 명시적으로 저장.
+    /// (자동 저장이 사용자가 실수로 움직인 값을 영구화하거나 명시적 저장을 덮어쓰는 문제 방지)
     /// </summary>
     private void OnSplitterMoved(object? sender, VectorEventArgs e)
     {
-        // 기존 타이머가 있으면 취소
-        _layoutSaveTimer?.Dispose();
-
-        // 300ms 후 레이아웃 저장 (연속 드래그 중 중복 저장 방지)
-        _layoutSaveTimer = new System.Threading.Timer(
-            callback: _ =>
-            {
-                Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
-                {
-                    SaveCurrentModeLayout();
-                });
-            },
-            state: null,
-            dueTime: TimeSpan.FromMilliseconds(300),
-            period: System.Threading.Timeout.InfiniteTimeSpan);
+        // no-op: 자동 저장 비활성화
     }
 
     private void TEST_Click(object? sender, RoutedEventArgs e) { }
@@ -7373,18 +7582,23 @@ public partial class MainPage : Window
             DisableTransitionsRecursive(this);
         }
 
-        // UI 업데이트 - 리플렉션으로 IsChecked 설정
-        var btn = this.FindControl<Control>("btnAnimations");
-        if (btn != null)
-        {
-            var prop = btn.GetType().GetProperty("IsChecked");
-            if (prop != null)
-                prop.SetValue(btn, App.AnimationsEnabled);
-        }
     }
 
-    private void BtnAnimations_Click(object? sender, RoutedEventArgs e)
+    // ══════════════════════════════════════════════════════════════════════
+    //  레이아웃 저장 버튼 - 현재 메뉴의 Show1~4 크기/비율을 사용자별로 저장
+    // ══════════════════════════════════════════════════════════════════════
+    private void BtnSaveLayout_Click(object? sender, RoutedEventArgs e)
     {
-        ToggleAnimations();
+        if (string.IsNullOrEmpty(_currentMode) || _currentMode == "None")
+        {
+            Debug.WriteLine("[레이아웃 저장] 활성 메뉴가 없어 저장하지 않습니다.");
+            return;
+        }
+
+        if (_positionManager == null)
+            _positionManager = new WindowPositionManager(CurrentUserManager.Instance.CurrentUserId);
+
+        SaveCurrentModeLayout();
+        Debug.WriteLine($"[레이아웃 저장] {_currentMode} 저장 완료 (사용자: {CurrentUserManager.Instance.CurrentUserId})");
     }
 }

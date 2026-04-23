@@ -32,7 +32,7 @@ public partial class WasteSampleListPage : UserControl
     public event Action<Control?>? DetailPanelSilentChanged;  // 전환 효과 없이 교체
 
     private string? _selectedDate;
-    private Panel?  _detailPanel;
+    private Control?  _detailPanel;
     private readonly Dictionary<string, List<string>> _datesByMonth = new();
     private readonly HashSet<string> _loadedMonths = new();
     private string _maxEnabledMonth = "";
@@ -296,7 +296,7 @@ public partial class WasteSampleListPage : UserControl
     // =========================================================================
     // 채수 의뢰 상세 패널 (날짜 선택 시 Show2)
     // =========================================================================
-    private Panel BuildSamplePanel(string date)
+    private Control BuildSamplePanel(string date)
     {
         var rows = WasteSampleService.GetByDate(date);
         var pendingForDate = _pendingCompanies
@@ -437,7 +437,13 @@ public partial class WasteSampleListPage : UserControl
             root.Children.Add(addBtn);
         }
 
-        return root;
+        // 시료가 많아 하단 내용이 잘리지 않도록 ScrollViewer로 래핑
+        return new ScrollViewer
+        {
+            VerticalScrollBarVisibility   = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+            HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
+            Content                       = root,
+        };
     }
 
     // =========================================================================

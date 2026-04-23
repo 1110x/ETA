@@ -41,9 +41,7 @@ public static class FacilityResultService
 
     internal static string? GetExcelPath()
     {
-        var path = Path.GetFullPath(
-            Path.Combine(AppContext.BaseDirectory, "..", "..", "..",
-                         "Data", "Templates", "요일별 분석항목 정리.xlsx"));
+        var path = TemplateConfiguration.Resolve("WeeklySchedule");
         return File.Exists(path) ? path : null;
     }
 
@@ -1145,6 +1143,125 @@ public static class FacilityResultService
         }
         catch { }
         return set;
+    }
+
+    // ── Wayble 페이지: (일자, 시설그룹)별 항목 진행도 ─────────────────────
+    public class WaybleDateItem
+    {
+        public string Date { get; set; } = "";
+        public string Group { get; set; } = "";
+        public Dictionary<string, (int Filled, int Total)> ItemProgress { get; } = new();
+    }
+
+    /// <summary>시설명 → 시설 그룹 라벨</summary>
+    public static string FacilityGroupOf(string facility)
+    {
+        if (string.IsNullOrEmpty(facility)) return "기타";
+        if (facility.Contains("중흥") || facility.Contains("월내")) return "중흥+월내";
+        if (facility.Contains("4단계")) return "4단계";
+        if (facility.Contains("율촌") || facility.Contains("해룡")) return "율촌+해룡";
+        if (facility.Contains("세풍")) return "세풍";
+        return "기타";
+    }
+
+    /// <summary>결과제출-Wayble Show1 표시용: (일자, 그룹)별 6개 기본항목 진행도 집계</summary>
+    public static List<WaybleDateItem> GetWaybleDateItems()
+        => GetWaybleDateItemsInRange(null, null);
+
+    /// <summary>처리시설_결과에 존재하는 채취일자(유일) 목록 (DESC)</summary>
+    public static List<string> GetWaybleDistinctDates()
+    {
+        var list = new List<string>();
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"
+                SELECT DISTINCT 채취일자 FROM `처리시설_결과`
+                WHERE 채취일자 IS NOT NULL AND 채취일자 <> ''
+                ORDER BY 채취일자 DESC";
+            using var r = cmd.ExecuteReader();
+            while (r.Read())
+            {
+                if (r.IsDBNull(0)) continue;
+                var d = r.GetString(0);
+                if (!string.IsNullOrWhiteSpace(d)) list.Add(d);
+            }
+        }
+        catch { }
+        return list;
+    }
+
+    /// <summary>지정 기간에 한정한 (일자, 그룹)별 진행도 집계. from/to=null 이면 전체.</summary>
+    public static List<WaybleDateItem> GetWaybleDateItemsInRange(string? fromDate, string? toDate)
+    {
+        var list = new List<WaybleDateItem>();
+        var tracked = new[] { "BOD", "TOC", "SS", "T-N", "T-P", "총대장균군" };
+        string Q(string c) => c.Contains('-') || c.Contains(' ') ? $"`{c}`" : c;
+
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+        using var cmd = conn.CreateCommand();
+
+        var selectParts = new List<string> { "m.시설명", "r.채취일자 AS d" };
+        foreach (var it in tracked)
+        {
+            selectParts.Add($"m.{Q(it)} AS `{it}_활성`");
+            selectParts.Add($"r.{Q(it)} AS `{it}_값`");
+        }
+
+        var where = new List<string> { "r.채취일자 IS NOT NULL", "r.채취일자 <> ''" };
+        if (!string.IsNullOrEmpty(fromDate)) where.Add("r.채취일자 >= @f");
+        if (!string.IsNullOrEmpty(toDate))   where.Add("r.채취일자 <= @t");
+
+        cmd.CommandText = $@"
+            SELECT {string.Join(", ", selectParts)}
+            FROM `처리시설_마스터` m
+            INNER JOIN `처리시설_결과` r ON r.마스터_id = m.id
+            WHERE {string.Join(" AND ", where)}";
+        if (!string.IsNullOrEmpty(fromDate)) cmd.Parameters.AddWithValue("@f", fromDate);
+        if (!string.IsNullOrEmpty(toDate))   cmd.Parameters.AddWithValue("@t", toDate);
+
+        var map = new Dictionary<(string Date, string Group), Dictionary<string, (int Filled, int Total)>>();
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            var facility = reader["시설명"]?.ToString() ?? "";
+            var date = reader["d"]?.ToString() ?? "";
+            if (string.IsNullOrEmpty(facility) || string.IsNullOrEmpty(date)) continue;
+            var group = FacilityGroupOf(facility);
+
+            if (!map.TryGetValue((date, group), out var dict))
+            {
+                dict = new Dictionary<string, (int, int)>();
+                foreach (var it in tracked) dict[it] = (0, 0);
+                map[(date, group)] = dict;
+            }
+
+            foreach (var it in tracked)
+            {
+                var actObj = reader[$"{it}_활성"];
+                bool active = actObj is not DBNull
+                    && (actObj?.ToString() ?? "").StartsWith("O", StringComparison.OrdinalIgnoreCase);
+                if (!active) continue;
+
+                var valObj = reader[$"{it}_값"];
+                bool filled = valObj is not DBNull
+                    && !string.IsNullOrWhiteSpace(valObj?.ToString());
+
+                var (f, t) = dict[it];
+                dict[it] = (f + (filled ? 1 : 0), t + 1);
+            }
+        }
+
+        foreach (var kv in map.OrderByDescending(x => x.Key.Date).ThenBy(x => x.Key.Group))
+        {
+            var w = new WaybleDateItem { Date = kv.Key.Date, Group = kv.Key.Group };
+            foreach (var itkv in kv.Value) w.ItemProgress[itkv.Key] = itkv.Value;
+            list.Add(w);
+        }
+        return list;
     }
 
     // ── 분석계획 기반 처리시설_작업 일괄 생성 ───────────────────────────

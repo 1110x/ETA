@@ -193,16 +193,16 @@ public static class RiskExcelService
     // ── 엑셀 파일 경로 ─────────────────────────────────────────────────────
     private static string FindExcelPath()
     {
+        // 설정(양식폴더)의 사용자 지정 경로 우선
+        var configured = TemplateConfiguration.Resolve("RiskAssessment");
+        if (File.Exists(configured)) return configured;
+        // 과거 구조 폴백
         foreach (var root in new[] { AppContext.BaseDirectory, Environment.CurrentDirectory })
         {
-            // 새 파일명 우선
-            var p1 = Path.Combine(root, "Data", "Templates", "2025 리스크 청하-2.xlsm");
-            if (File.Exists(p1)) return p1;
-            // 기존 경로 폴백
             var p2 = Path.Combine(root, "Data", "Risk 청하", "2025 리스크 청하.xlsm");
             if (File.Exists(p2)) return p2;
         }
-        return Path.Combine(Environment.CurrentDirectory, "Data", "Templates", "2025 리스크 청하-2.xlsm");
+        return configured; // 없으면 기본 경로 (호출자가 존재 확인)
     }
 
     private static string S(IXLWorksheet ws, int r, int c)

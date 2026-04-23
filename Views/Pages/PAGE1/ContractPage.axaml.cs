@@ -58,6 +58,8 @@ public partial class ContractPage : UserControl
     // Show4 수량 편집 모드
     private bool                                   _show4EditMode       = false;
     private readonly Dictionary<string, TextBox>   _show4QtyTextBoxes   = new();
+    private readonly Dictionary<string, TextBox>   _show4PriceTextBoxes = new();
+    private readonly Dictionary<string, CheckBox>  _show4CheckBoxes     = new();
     private readonly Dictionary<string, string>    _pendingQuantities   = new();
 
 
@@ -182,12 +184,20 @@ public partial class ContractPage : UserControl
 
     private void CmbContractView_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        if (cmbContractView == null) return;
+        if (sender is not ComboBox cb) return;
 
-        int index = cmbContractView.SelectedIndex;
+        int index = cb.SelectedIndex;
         _trashMode = (index == 2);  // 2 = 휴지통
         _showActive = (index == 0); // 0 = 현행, 1 = 종료
 
+        LoadData();
+    }
+
+    private void TglContractStatus_Changed(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not ToggleSwitch ts) return;
+        _showActive = ts.IsChecked == true;
+        _trashMode = false;
         LoadData();
     }
 
@@ -280,6 +290,8 @@ public partial class ContractPage : UserControl
         _priceDisplayBlocks.Clear();
         _show4EditMode    = false;
         _show4QtyTextBoxes.Clear();
+        _show4PriceTextBoxes.Clear();
+        _show4CheckBoxes.Clear();
         _pendingQuantities.Clear();
         Log($"[타이밍] 초기화: {sw.ElapsedMilliseconds}ms");
 
@@ -508,10 +520,36 @@ public partial class ContractPage : UserControl
         if (_isAddMode) SaveAdd();
         else
         {
+            // Show4(단가/수량) 현재 UI 상태를 pending으로 스냅샷 — 확정 버튼 없이도 저장되게.
+            CommitShow4Changes();
             SaveEdit();
             SavePendingPrices();
             SavePendingQuantities();
         }
+    }
+
+    /// <summary>Show4 현재 체크박스/단가/수량 UI 상태를 pending dict 에 반영.
+    /// 체크된 항목 → 현재 textbox 값, 체크해제 → 빈 문자열(DBNull로 저장). 저장 직전 호출.</summary>
+    private void CommitShow4Changes()
+    {
+        foreach (var analyte in _show4CheckBoxes.Keys)
+        {
+            bool isChecked = _show4CheckBoxes[analyte].IsChecked == true;
+            if (isChecked)
+            {
+                if (_show4PriceTextBoxes.TryGetValue(analyte, out var pb))
+                    _pendingPrices[analyte] = pb.Text ?? "";
+                if (_show4QtyTextBoxes.TryGetValue(analyte, out var qb))
+                    _pendingQuantities[analyte] = qb.Text ?? "";
+            }
+            else
+            {
+                // 체크해제 → NULL 로 저장 (빈 문자열은 ContractService 에서 DBNull 처리됨)
+                _pendingPrices[analyte] = "";
+                _pendingQuantities[analyte] = "";
+            }
+        }
+        Log($"[CommitShow4] 체크박스 {_show4CheckBoxes.Count}개 → pending prices={_pendingPrices.Count}, qtys={_pendingQuantities.Count}");
     }
 
     private void SavePendingQuantities()
@@ -594,10 +632,28 @@ public partial class ContractPage : UserControl
             ? c.C_ContractAmountVATExcluded.Value.ToString("N0") + " 원"
             : "";
 
-        AddGridRow(grid, 2, "계약시작",         c.C_ContractStartStr, isReadOnly: true);
-        AddGridRow(grid, 3, "계약종료",         c.C_ContractEndStr,   isReadOnly: true);
-        AddGridRow(grid, 4, "잔여일수",         remainDays,           isReadOnly: true);
+        var tbStart  = AddGridRow(grid, 2, "계약시작", c.C_ContractStartStr, hint: "예) 20240101");
+        var tbEnd    = AddGridRow(grid, 3, "계약종료", c.C_ContractEndStr,   hint: "예) 20241231");
+        var tbRemain = AddGridRow(grid, 4, "잔여일수", remainDays, isReadOnly: true);
         _contractAmountTextBox = AddGridRow(grid, 5, "계약금액(VAT별도)", amountStr);
+
+        // 계약시작/계약종료 편집 시 자동 포맷(20240101→2024-01-01) + 잔여일수 자동 계산
+        static string FormatDate(string raw)
+        {
+            var digits = new string(raw.Where(char.IsDigit).ToArray());
+            if (digits.Length == 8) return $"{digits[..4]}-{digits[4..6]}-{digits[6..8]}";
+            return raw;
+        }
+        void RecalcRemain()
+        {
+            tbStart.Text = FormatDate(tbStart.Text ?? "");
+            tbEnd.Text   = FormatDate(tbEnd.Text   ?? "");
+            tbRemain.Text = DateTime.TryParse(tbEnd.Text ?? "", out var ed)
+                ? (ed.Date - DateTime.Today).Days.ToString()
+                : "";
+        }
+        tbStart.LostFocus += (_, _) => RecalcRemain();
+        tbEnd.LostFocus   += (_, _) => RecalcRemain();
 
         // 계약근거 + 처리시설 ComboBox (2행: row 6, 7)
         AddBasisContractComboBox(grid, 6, c.C_ContractType, c.C_PlaceName);
@@ -949,18 +1005,7 @@ public partial class ContractPage : UserControl
         };
         leftGroup.Children.Add(btnClearAll);
 
-        var btnSave = new Button
-        {
-            Content         = "✅  확정",
-            Height          = 34,
-            FontSize        = AppTheme.FontMD, FontFamily = Font,
-            Background      = AppTheme.BgActiveGreen,
-            Foreground      = AppTheme.FgSuccess,
-            BorderThickness = new Thickness(0),
-            CornerRadius    = new CornerRadius(4),
-            Padding         = new Thickness(16, 0),
-        };
-        leftGroup.Children.Add(btnSave);
+        // 확정 버튼 제거 — 서브메뉴 [저장] 버튼(CommitShow4Changes→SavePendingPrices/Quantities)으로 통합
 
         topControlPanel.Children.Add(leftGroup);
         Grid.SetColumn(leftGroup, 0);
@@ -1139,6 +1184,7 @@ public partial class ContractPage : UserControl
                 rowGrid.Children.Add(chk);
                 checkBoxes.Add(chk);
                 catCheckBoxes.Add(chk);
+                _show4CheckBoxes[analyte] = chk;
 
                 // 항목명 + 약칭 뱃지
                 var analyteAlias = string.IsNullOrEmpty(item.약칭) ? (aliasMap.TryGetValue(analyte, out var al) ? al : "") : item.약칭;
@@ -1192,6 +1238,7 @@ public partial class ContractPage : UserControl
                 };
                 Grid.SetColumn(priceBox, 2);
                 rowGrid.Children.Add(priceBox);
+                _show4PriceTextBoxes[analyte] = priceBox;
 
                 // 수량 (편집 가능)
                 var qtyBox = new TextBox
@@ -1308,53 +1355,6 @@ public partial class ContractPage : UserControl
         {
             foreach (var chk in checkBoxes) chk.IsChecked = false;
             chkSelectAll.IsChecked = false;
-        };
-
-        // 확정 버튼 — 체크된 항목은 단가/수량 반영, 체크 해제된 항목은 NULL로 저장
-        btnSave.Click += (_, _) =>
-        {
-            Log("[확정/기존] 버튼 클릭됨");
-            for (int i = 0; i < prices.Count && i < checkBoxes.Count; i++)
-            {
-                var (analyte, price) = prices[i];
-                bool isChecked = checkBoxes[i].IsChecked == true;
-
-                if (isChecked)
-                {
-                    // 체크됨: 단가/수량 현재값 저장
-                    if (_show4QtyTextBoxes.TryGetValue(analyte, out var qb))
-                        _pendingQuantities[analyte] = qb.Text ?? "";
-                    if (!_pendingPrices.ContainsKey(analyte) && !string.IsNullOrWhiteSpace(price))
-                        _pendingPrices[analyte] = price;
-                }
-                else
-                {
-                    // 체크 해제: 단가/수량 모두 NULL로 저장 (빈 문자열 → Service에서 DBNull 처리)
-                    _pendingPrices[analyte] = "";
-                    _pendingQuantities[analyte] = "";
-                }
-            }
-
-            Log($"[확정/기존] pendingPrices={_pendingPrices.Count}, pendingQtys={_pendingQuantities.Count}");
-
-            try
-            {
-                if (_pendingPrices.Count > 0)
-                {
-                    var priceList = _pendingPrices.Select(kv => (kv.Key, kv.Value)).ToList();
-                    bool ok = ContractService.UpdateContractPrices(companyName, priceList);
-                    Log(ok ? $"✅ 단가 저장: {companyName} ({priceList.Count}항목)" : "❌ 단가 저장 실패");
-                }
-                if (_pendingQuantities.Count > 0)
-                {
-                    var qtyList = _pendingQuantities.Select(kv => (kv.Key, kv.Value)).ToList();
-                    bool ok = ContractService.UpdateContractQuantities(companyName, qtyList);
-                    Log(ok ? $"✅ 수량 저장: {companyName} ({qtyList.Count}항목)" : "❌ 수량 저장 실패");
-                }
-                _pendingPrices.Clear();
-                _pendingQuantities.Clear();
-            }
-            catch (Exception ex) { Log($"❌ 저장 오류: {ex.Message}"); }
         };
 
         // 초기 합계
@@ -1971,7 +1971,6 @@ public partial class ContractPage : UserControl
         Grid.SetColumn(panel, col);
         Grid.SetRow(panel, gridRow);
         grid.Children.Add(panel);
-        FadeIn.Apply(textBox);
         return textBox;
     }
 
