@@ -33,6 +33,13 @@ public static class AnalysisService
             alt.CommandText = "ALTER TABLE `분석정보` ADD COLUMN `AliasX` TEXT DEFAULT ''";
             try { alt.ExecuteNonQuery(); } catch { }
         }
+        // 분석조건 컬럼 없으면 자동 추가 (시험기록부 상단 블록용, JSON Key/Value 배열)
+        if (!DbConnectionFactory.ColumnExists(connection, "분석정보", "분석조건"))
+        {
+            using var alt = connection.CreateCommand();
+            alt.CommandText = "ALTER TABLE `분석정보` ADD COLUMN `분석조건` TEXT DEFAULT ''";
+            try { alt.ExecuteNonQuery(); } catch { }
+        }
 
         using var command = connection.CreateCommand();
         command.CommandText = @"

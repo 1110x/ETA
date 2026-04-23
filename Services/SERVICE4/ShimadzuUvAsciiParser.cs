@@ -27,6 +27,10 @@ public static class ShimadzuUvAsciiParser
         var docInfo = new ExcelDocInfo { IsUVVIS = true };
         string itemAbbr = activeItems.FirstOrDefault() ?? "UVVIS";
 
+        // 분석조건 섹션 기본값 (시험기록부형 UI 상단 블록용)
+        docInfo.분석장비 = "Shimadzu UV-1800";
+        try { docInfo.분석일자 = File.GetLastWriteTime(path).ToString("yyyy-MM-dd"); } catch { }
+
         // 인코딩 처리 (EUC-KR 또는 UTF-8)
         string content = ReadFileWithProperEncoding(path);
         var lines = content.Split('\n', StringSplitOptions.RemoveEmptyEntries);
@@ -34,10 +38,12 @@ public static class ShimadzuUvAsciiParser
         if (lines.Length < 2)
             throw new ArgumentException("파일이 비어있거나 형식이 올바르지 않습니다.");
 
-        // 헤더 검증
+        // 헤더 검증 + 측정파장 추출 (예: "WL880.0" → "880.0 nm")
         var header = lines[0].Trim();
         if (!header.Contains("Sample ID") || !header.Contains("Conc") || !header.Contains("WL"))
             throw new ArgumentException("Shimadzu UV-1800 ASCII 형식이 아닙니다.");
+        var wlMatch = System.Text.RegularExpressions.Regex.Match(header, @"WL(\d+(?:\.\d+)?)");
+        if (wlMatch.Success) docInfo.측정파장 = $"{wlMatch.Groups[1].Value} nm";
 
         // 표준용액 및 QC 샘플 분석
         var standards = new List<(string name, double conc, double abs)>();
@@ -94,6 +100,19 @@ public static class ShimadzuUvAsciiParser
 
         // 표준곡선 정보 생성 (표준용액 기준)
         BuildCalibrationInfo(docInfo, standards);
+
+        // 각 행에 계산식 문자열 생성 (검량선 역산 형태: (Abs − b) / a = Conc)
+        if (double.TryParse(docInfo.Standard_Slope, out var a) && a != 0
+            && double.TryParse(docInfo.Standard_Intercept, out var b))
+        {
+            foreach (var r in rows)
+            {
+                if (!double.TryParse(r.D1, out var abs)) continue;
+                // 장비출력 농도와 검량선 역산값이 다를 수 있어 역산값을 명시 (시험기록부엔 장비값이 우선)
+                var calcConc = (abs - b) / a;
+                r.계산식 = $"(Abs − b) / a = ({abs:F4} − {b:F6}) / {a:F6} = {calcConc:F4}";
+            }
+        }
 
         // CCV QC 정보 저장 (기존 필드 재활용)
         if (ccvs.Any())

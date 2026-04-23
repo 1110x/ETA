@@ -7,6 +7,7 @@ using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using ClosedXML.Excel;
 using ETA.Models;
+using ETA.Services.SERVICE1;
 using ETA.Services.SERVICE2;
 using ETA.Views;
 using ETA.Views.Controls;
@@ -14,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ETA.Views.Pages.PAGE2;
 
@@ -184,6 +186,45 @@ public partial class ProcessingFacilityPage : UserControl
             tbStatus.Foreground = AppTheme.FgDanger;
             tbStatus.Text = $"조회 오류: {ex.Message}";
         }
+    }
+
+    // =========================================================================
+    // 시험기록부 출력 (선택 날짜 + 선택 시설 기준)
+    // =========================================================================
+    private async void BtnTestRecordBook_Click(object? sender, RoutedEventArgs e)
+    {
+        if (dpDate.SelectedDate == null)
+        {
+            tbStatus.Foreground = AppTheme.FgWarn;
+            tbStatus.Text = "날짜를 선택하세요";
+            return;
+        }
+        string date = dpDate.SelectedDate!.Value.ToString("yyyy-MM-dd");
+        try
+        {
+            btnTestRecordBook.IsEnabled = false;
+            tbStatus.Foreground = AppTheme.FgMuted;
+            tbStatus.Text = "BOD 시험기록부 생성 중...";
+
+            // Step 1: BOD 전용 생성 — 템플릿 기반, 검증 후 나머지 6종 확장 예정
+            var path = await Task.Run(() =>
+                TestRecordBookService.GenerateBodRecordBook(date, _selectedFacility));
+
+            tbStatus.Foreground = AppTheme.FgSuccess;
+            tbStatus.Text = $"✓ {Path.GetFileName(path)}";
+            try
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                { FileName = path, UseShellExecute = true });
+            }
+            catch { }
+        }
+        catch (Exception ex)
+        {
+            tbStatus.Foreground = AppTheme.FgDanger;
+            tbStatus.Text = $"시험기록부 오류: {ex.Message}";
+        }
+        finally { btnTestRecordBook.IsEnabled = true; }
     }
 
     // =========================================================================

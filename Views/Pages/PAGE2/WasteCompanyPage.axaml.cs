@@ -326,7 +326,7 @@ public partial class WasteCompanyPage : UserControl
         var title = isNew ? "🆕  신규 업소 등록" : $"🏭  {c.업체명} — 업소 정보";
         var root = MakeRootPanel(title);
 
-        // ── 기본 정보 ──────────────────────────────────────────────────────
+        // ── 1열: 기본 정보 ────────────────────────────────────────────────
         var grid = MakeTwoColumnGrid(6);
         AddGridRow(grid, 0, "관리번호",  c.관리번호,   isReadOnly: !isNew, isLocked: !isNew);
         AddGridRow(grid, 1, "업체명",    c.업체명);
@@ -334,55 +334,74 @@ public partial class WasteCompanyPage : UserControl
         AddGridRow(grid, 3, "프로젝트",  c.프로젝트);
         AddGridRow(grid, 4, "프로젝트명", c.프로젝트명);
         AddGridRow(grid, 5, "사업자번호", c.사업자번호);
-        root.Children.Add(grid);
 
-        // ── 허용기준 섹션 구분선 ────────────────────────────────────────────
-        root.Children.Add(new TextBlock
+        // ── 허용기준 헤더 (2,3열에 걸침) ─────────────────────────────────
+        var allowHdr = new StackPanel { Spacing = 0 };
+        allowHdr.Children.Add(new TextBlock
         {
             Text = "허용기준",
             FontSize = AppTheme.FontMD, FontFamily = Font, FontWeight = FontWeight.SemiBold,
             Foreground = AppRes("FgMuted"),
-            Margin = new Thickness(0, 10, 0, 2),
+            Margin = new Thickness(0, 0, 0, 2),
         });
-        root.Children.Add(new Border
+        allowHdr.Children.Add(new Border
         {
             Height = 1, Background = AppTheme.BorderDefault,
             Margin = new Thickness(0, 0, 0, 6),
         });
 
-        var grid2 = MakeTwoColumnGrid(9);
-        AddGridRow(grid2, 0, "BOD",          c.BOD);
-        AddGridRow(grid2, 1, "TOC",          c.TOC);
-        AddGridRow(grid2, 2, "SS",           c.SS);
-        AddGridRow(grid2, 3, "T-N",          c.TN);
-        AddGridRow(grid2, 4, "T-P",          c.TP);
-        AddGridRow(grid2, 5, "Phenols",      c.Phenols);
-        AddGridRow(grid2, 6, "N-Hexan",      c.NHexan);
-        AddGridRow(grid2, 7, "승인유량",     c.승인유량);
-        AddGridRow(grid2, 8, "기타특이사항", c.기타특이사항);
-        root.Children.Add(grid2);
+        // ── 2열: 허용기준 앞부분 (BOD, TOC, SS, T-N, T-P) ────────────────
+        var gridMid = MakeTwoColumnGrid(5);
+        AddGridRow(gridMid, 0, "BOD", c.BOD);
+        AddGridRow(gridMid, 1, "TOC", c.TOC);
+        AddGridRow(gridMid, 2, "SS",  c.SS);
+        AddGridRow(gridMid, 3, "T-N", c.TN);
+        AddGridRow(gridMid, 4, "T-P", c.TP);
+
+        // ── 3열: 허용기준 뒷부분 (Phenols, N-Hexan, 승인유량, 기타특이사항) ──
+        var gridRight = MakeTwoColumnGrid(4);
+        AddGridRow(gridRight, 0, "Phenols",      c.Phenols);
+        AddGridRow(gridRight, 1, "N-Hexan",      c.NHexan);
+        AddGridRow(gridRight, 2, "승인유량",     c.승인유량);
+        AddGridRow(gridRight, 3, "기타특이사항", c.기타특이사항);
+
+        var midCol = new StackPanel { Spacing = 0 };
+        midCol.Children.Add(allowHdr);
+        midCol.Children.Add(gridMid);
+
+        var rightCol = new StackPanel { Spacing = 0 };
+        // 3열 상단 여백(허용기준 헤더 높이만큼) 맞추기용 빈 블록
+        rightCol.Children.Add(new Border { Height = 0, Margin = new Thickness(0, 0, 0, 22) });
+        rightCol.Children.Add(gridRight);
+
+        // ── 3열 가로 배치 (동적): [기본정보 *] | gap | [허용기준-앞 *] | gap | [허용기준-뒤 *] ──
+        var threeColumns = new Grid
+        {
+            ColumnDefinitions   = new ColumnDefinitions("*,24,*,16,*"),
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+        };
+        Grid.SetColumn(grid,     0);
+        Grid.SetColumn(midCol,   2);
+        Grid.SetColumn(rightCol, 4);
+        threeColumns.Children.Add(grid);
+        threeColumns.Children.Add(midCol);
+        threeColumns.Children.Add(rightCol);
+        root.Children.Add(threeColumns);
 
         return root;
     }
 
     // =========================================================================
-    // UI → WasteCompany 동기화
+    // UI → WasteCompany 동기화 (패널 트리 전체 재귀 탐색)
     // =========================================================================
     private static void SyncPanelToCompany(StackPanel panel, WasteCompany c)
     {
-        var grid = panel.Children.OfType<Grid>().FirstOrDefault();
-        if (grid == null) return;
-
-        foreach (var child in grid.Children.OfType<StackPanel>())
+        foreach (var (labelBlock, tb) in CollectRowPairs(panel))
         {
-            if (child.Children.Count < 2) continue;
-
-            var labelBlock = child.Children[0] as TextBlock;
-            var label = (labelBlock?.Text ?? "")
+            var label = (labelBlock.Text ?? "")
                 .Replace("🔒 ", "").Replace("    ", "").Replace(" :", "").Trim();
 
-            var tb = child.Children[1] as TextBox;
-            if (tb == null || tb.IsReadOnly) continue;
+            if (tb.IsReadOnly) continue;
 
             switch (label)
             {
@@ -402,6 +421,26 @@ public partial class WasteCompanyPage : UserControl
                 case "승인유량":     c.승인유량     = tb.Text ?? ""; break;
                 case "기타특이사항": c.기타특이사항 = tb.Text ?? ""; break;
             }
+        }
+    }
+
+    /// <summary>루트에서 내려가며 (TextBlock + TextBox) 행 쌍을 전부 수집. Grid/StackPanel 모두 지원.</summary>
+    private static IEnumerable<(TextBlock Label, TextBox Input)> CollectRowPairs(Control root)
+    {
+        if (root is Panel p
+            && p.Children.Count >= 2
+            && p.Children[0] is TextBlock lbl
+            && p.Children[1] is TextBox tb)
+        {
+            yield return (lbl, tb);
+            yield break; // 행 내부는 재귀하지 않음
+        }
+
+        if (root is Panel panel)
+        {
+            foreach (var child in panel.Children.OfType<Control>())
+                foreach (var pair in CollectRowPairs(child))
+                    yield return pair;
         }
     }
 
@@ -447,40 +486,45 @@ public partial class WasteCompanyPage : UserControl
     private static void AddGridRow(Grid grid, int row, string label, string value,
                                    bool isReadOnly = false, bool isLocked = false)
     {
-        var panel = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
+        // 동적 2열: [라벨=Auto][입력=*] — 부모 너비에 따라 입력란이 늘어남
+        var panel = new Grid
+        {
+            ColumnDefinitions = new ColumnDefinitions("Auto,*"),
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+        };
 
-        panel.Children.Add(new TextBlock
+        var labelTb = new TextBlock
         {
             Text              = (isLocked ? "🔒 " : "    ") + label + " :",
-            Width             = 130,
+            MinWidth          = 60,
+            Margin            = new Thickness(0, 0, 6, 0),
             FontSize          = AppTheme.FontMD,
             FontFamily        = Font,
-            Foreground        = isLocked
-                                    ? AppTheme.FgMuted
-                                    : AppRes("FgMuted"),
+            Foreground        = isLocked ? AppTheme.FgMuted : AppRes("FgMuted"),
             VerticalAlignment = VerticalAlignment.Center,
-        });
+        };
+        Grid.SetColumn(labelTb, 0);
+        panel.Children.Add(labelTb);
 
-        panel.Children.Add(new TextBox
+        var input = new TextBox
         {
-            Text            = value ?? "",
-            Width           = 200,
-            FontSize        = AppTheme.FontMD,
-            FontFamily      = Font,
-            IsReadOnly      = isReadOnly,
-            Background      = isReadOnly
-                                  ? new SolidColorBrush(Color.Parse("#252525"))
-                                  : AppTheme.BorderSeparator,
-            Foreground      = isReadOnly
-                                  ? AppTheme.BorderMuted
-                                  : AppRes("AppFg"),
-            BorderThickness = new Thickness(1),
-            BorderBrush     = isReadOnly
-                                  ? AppTheme.BorderSubtle
-                                  : AppTheme.BorderDefault,
-            CornerRadius    = new CornerRadius(4),
-            Padding         = new Thickness(8, 4),
-        });
+            Text                = value ?? "",
+            MinWidth            = 80,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            FontSize            = AppTheme.FontMD,
+            FontFamily          = Font,
+            IsReadOnly          = isReadOnly,
+            Background          = isReadOnly
+                                      ? new SolidColorBrush(Color.Parse("#252525"))
+                                      : AppTheme.BorderSeparator,
+            Foreground          = isReadOnly ? AppTheme.BorderMuted : AppRes("AppFg"),
+            BorderThickness     = new Thickness(1),
+            BorderBrush         = isReadOnly ? AppTheme.BorderSubtle : AppTheme.BorderDefault,
+            CornerRadius        = new CornerRadius(4),
+            Padding             = new Thickness(8, 4),
+        };
+        Grid.SetColumn(input, 1);
+        panel.Children.Add(input);
 
         Grid.SetColumn(panel, 0);
         Grid.SetRow(panel, row);
@@ -529,31 +573,41 @@ public partial class WasteCompanyPage : UserControl
     // 약칭 전용 행 — 초성 자동입력 버튼 포함
     private static void AddAbbrevRow(Grid grid, int row, string value)
     {
-        var panel = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
+        var panel = new Grid
+        {
+            ColumnDefinitions = new ColumnDefinitions("Auto,*"),
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+        };
 
-        panel.Children.Add(new TextBlock
+        var labelTb = new TextBlock
         {
             Text              = "    약칭 :",
-            Width             = 130,
+            MinWidth          = 60,
+            Margin            = new Thickness(0, 0, 6, 0),
             FontSize          = AppTheme.FontMD,
             FontFamily        = Font,
             Foreground        = AppRes("FgMuted"),
             VerticalAlignment = VerticalAlignment.Center,
-        });
+        };
+        Grid.SetColumn(labelTb, 0);
+        panel.Children.Add(labelTb);
 
-        panel.Children.Add(new TextBox
+        var input = new TextBox
         {
-            Text            = value ?? "",
-            Width           = 200,
-            FontSize        = AppTheme.FontMD,
-            FontFamily      = Font,
-            Background      = AppTheme.BorderSeparator,
-            Foreground      = AppRes("AppFg"),
-            BorderThickness = new Thickness(1),
-            BorderBrush     = AppTheme.BorderDefault,
-            CornerRadius    = new CornerRadius(4),
-            Padding         = new Thickness(8, 4),
-        });
+            Text                = value ?? "",
+            MinWidth            = 80,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            FontSize            = AppTheme.FontMD,
+            FontFamily          = Font,
+            Background          = AppTheme.BorderSeparator,
+            Foreground          = AppRes("AppFg"),
+            BorderThickness     = new Thickness(1),
+            BorderBrush         = AppTheme.BorderDefault,
+            CornerRadius        = new CornerRadius(4),
+            Padding             = new Thickness(8, 4),
+        };
+        Grid.SetColumn(input, 1);
+        panel.Children.Add(input);
 
         Grid.SetColumn(panel, 0);
         Grid.SetRow(panel, row);

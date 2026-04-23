@@ -1,13 +1,17 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using ETA.Services.Common;
+using ETA.Services.SERVICE1;
 using ETA.Services.SERVICE2;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace ETA.Views.Pages.PAGE2;
 
@@ -261,6 +265,20 @@ public class WasteTestReportPage : UserControl
             trendRow.Children.Add(_txtCount);
             trendRow.Children.Add(MakeLabel("회"));
 
+            trendRow.Children.Add(new Border { Width = 16 });
+            var btnRecord = new Button
+            {
+                Content = "📕 시험기록부",
+                Height = 26, FontSize = AppTheme.FontSM, FontFamily = Font,
+                Background = new SolidColorBrush(Color.Parse("#3a1a2a")),
+                Foreground = new SolidColorBrush(Color.Parse("#ee99cc")),
+                BorderThickness = new Thickness(0),
+                CornerRadius = new CornerRadius(4),
+                Padding = new Thickness(10, 0),
+            };
+            btnRecord.Click += BtnTestRecordBook_Click;
+            trendRow.Children.Add(btnRecord);
+
             Grid.SetRow(trendRow, 1);
             _show2Root.Children.Add(trendRow);
 
@@ -276,6 +294,40 @@ public class WasteTestReportPage : UserControl
         // 부모에서 떨어졌으면 다시 연결
         if (_show2Root.Parent == null)
             ResultGridChanged?.Invoke(_show2Root);
+    }
+
+    // ── 시험기록부 출력 (선택 날짜 + 구분토글 그룹 기준) ─────────────────
+    private async void BtnTestRecordBook_Click(object? sender, RoutedEventArgs e)
+    {
+        if (string.IsNullOrEmpty(_selectedDate))
+        {
+            _statusText.Text = "날짜를 먼저 선택하세요";
+            return;
+        }
+        if (sender is not Button btn) return;
+
+        try
+        {
+            btn.IsEnabled = false;
+            _statusText.Text = "BOD 시험기록부 생성 중...";
+
+            // Step 1: BOD 전용 생성 — 템플릿 기반, 검증 후 나머지 6종 확장 예정
+            var path = await Task.Run(() =>
+                TestRecordBookService.GenerateBodRecordBook(_selectedDate!, null));
+
+            _statusText.Text = $"✓ {Path.GetFileName(path)}";
+            try
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                { FileName = path, UseShellExecute = true });
+            }
+            catch { }
+        }
+        catch (Exception ex)
+        {
+            _statusText.Text = $"시험기록부 오류: {ex.Message}";
+        }
+        finally { btn.IsEnabled = true; }
     }
 
     // ── 데이터 로드 ─────────────────────────────────────────────────────

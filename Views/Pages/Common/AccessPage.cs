@@ -25,9 +25,10 @@ namespace ETA.Views.Pages.Common;
 /// <summary>
 /// 관리자 페이지
 ///   탭 1 — 권한관리: 직원별 메뉴 접근 설정
-///   탭 2 — 분석항목 관리: 분석정보 CRUD + 시험기록부 테이블 생성
-///   탭 3 — 분석장비 관리: 측정인_분석장비 테이블 수동 CRUD
-///   탭 4 — 측정인계약: add_meas_cont_no + cmb_emis_cmpy_plc_no 스크랩
+///   탭 2 — 처리시설 매칭: 외부 시스템(WAYBLE / 측정인.kr) ↔ 처리시설_마스터 매핑
+///   탭 3 — 분석항목 관리: 분석정보 CRUD + 시험기록부 테이블 생성
+///   탭 4 — 분석장비 관리: 측정인_분석장비 테이블 수동 CRUD
+///   탭 5 — 측정인계약: add_meas_cont_no + cmb_emis_cmpy_plc_no 스크랩
 /// </summary>
 public class AccessPage
 {
@@ -43,14 +44,17 @@ public class AccessPage
     // ── 외부 연결 ─────────────────────────────────────────────────────────────
     public Control Show1 { get; }
     public Control Show2 { get; }
+    public Control Show4 { get; }
 
     // ── 공통 상태 ─────────────────────────────────────────────────────────────
     private readonly ContentControl _show2Content;
     private readonly ContentControl _show1Switcher;
-    private string _mode = "access"; // "access" | "analyte" | "equipment" | "mcontract"
+    private readonly ContentControl _show4Content;
+    private string _mode = "access"; // "access" | "facilityMatch" | "analyte" | "equipment" | "mcontract"
 
     // ── 탭 버튼 ───────────────────────────────────────────────────────────────
     private Border? _tabAccess;
+    private Border? _tabFacilityMatch;
     private Border? _tabAnalyte;
     private Border? _tabEquipment;
     private Border? _tabMeasurerContract;
@@ -81,11 +85,16 @@ public class AccessPage
     // ── 측정인계약 상태 ───────────────────────────────────────────────────────
     private readonly StackPanel _measurerContractListPanel;
 
+    // ── 처리시설 매칭 상태 ────────────────────────────────────────────────────
+    private readonly StackPanel _facilityMatchListPanel;
+    private (string 시설명, string 시료명)? _selectedFacilityPair;
+
     // ── 패널 캐시 ─────────────────────────────────────────────────────────────
     private readonly Control _employeePanelRef;
     private readonly Control _analytePanelRef;
     private readonly Control _equipmentPanelRef;
     private readonly Control _measurerContractPanelRef;
+    private readonly Control _facilityMatchPanelRef;
 
     // 표시 플래그 ── 측정인관리 메뉴에서 진입할 때 measurerOnly=true 로 호출
     private readonly bool _showAccessTab;
@@ -105,11 +114,13 @@ public class AccessPage
         AccessService.EnsureTable();
         MeasurerService.EnsureEquipmentTable();
         MeasurerService.EnsureMeasurerContractTables();
+        FacilityMappingService.EnsureTable();
 
         _treeView          = BuildEmployeeTreeView();
         _analyteTree       = BuildAnalyteTreeView();
         _equipmentListPanel = new StackPanel { Spacing = 1 };
         _measurerContractListPanel = new StackPanel { Spacing = 1 };
+        _facilityMatchListPanel    = new StackPanel { Spacing = 1 };
 
         _show2Content = new ContentControl
         {
@@ -121,14 +132,21 @@ public class AccessPage
             HorizontalAlignment = HorizontalAlignment.Stretch,
             VerticalAlignment   = VerticalAlignment.Stretch,
         };
+        _show4Content = new ContentControl
+        {
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            VerticalAlignment   = VerticalAlignment.Stretch,
+        };
 
         _employeePanelRef  = BuildEmployeePanel();
         _analytePanelRef   = BuildAnalytePanel();
         _equipmentPanelRef = BuildEquipmentPanel();
         _measurerContractPanelRef = BuildMeasurerContractPanel();
+        _facilityMatchPanelRef    = BuildFacilityMatchPanel();
 
         Show1 = BuildShow1Shell();
         Show2 = new Border { Padding = new Thickness(6), Child = _show2Content };
+        Show4 = new Border { Padding = new Thickness(6), Child = _show4Content };
 
         SwitchMode(initialMode);
         if (_showAccessTab) LoadEmployeeTree();
@@ -157,6 +175,8 @@ public class AccessPage
         {
             _tabAccess = MakeTabBtn("🔐 권한관리", active: true, () => SwitchMode("access"));
             stack.Children.Add(_tabAccess);
+            _tabFacilityMatch = MakeTabBtn("🏭 처리시설 매칭", active: false, () => SwitchMode("facilityMatch"));
+            stack.Children.Add(_tabFacilityMatch);
         }
         if (_showMeasurerTabs)
         {
@@ -203,33 +223,49 @@ public class AccessPage
     {
         _mode = mode;
         UpdateTabStyle(_tabAccess,           mode == "access");
+        UpdateTabStyle(_tabFacilityMatch,    mode == "facilityMatch");
         UpdateTabStyle(_tabAnalyte,          mode == "analyte");
         UpdateTabStyle(_tabEquipment,        mode == "equipment");
         UpdateTabStyle(_tabMeasurerContract, mode == "mcontract");
 
         switch (mode)
         {
+            case "facilityMatch":
+                _show1Switcher.Content = _facilityMatchPanelRef;
+                _show2Content.Content  = BuildFacilityMatchHint();
+                _show4Content.Content  = BuildWaybleCatalogPanel();
+                LoadFacilityMatchList();
+                break;
             case "analyte":
                 _show1Switcher.Content = _analytePanelRef;
                 _show2Content.Content  = BuildAnalyteHint();
+                _show4Content.Content  = null;
                 LoadAnalyteTree();
                 break;
             case "equipment":
                 _show1Switcher.Content = _equipmentPanelRef;
                 _show2Content.Content  = BuildEquipmentHint();
+                _show4Content.Content  = null;
                 LoadEquipmentList();
                 break;
             case "mcontract":
                 _show1Switcher.Content = _measurerContractPanelRef;
                 _show2Content.Content  = BuildMeasurerContractHint();
+                _show4Content.Content  = null;
                 LoadMeasurerContractList();
                 break;
             default:
                 _show1Switcher.Content = _employeePanelRef;
                 _show2Content.Content  = BuildEmptyHint();
+                _show4Content.Content  = null;
                 break;
         }
+
+        Show4VisibleChanged?.Invoke(mode == "facilityMatch");
     }
+
+    /// <summary>Show4 콘텐츠 가시성 변경 통지 (MainPage 가 content4Star 조절용)</summary>
+    public event Action<bool>? Show4VisibleChanged;
 
     private void UpdateTabStyle(Border? btn, bool active)
     {
@@ -1729,6 +1765,698 @@ public class AccessPage
     }
 
     // =========================================================================
+    // 탭 2 — 처리시설 매칭 Show1
+    // =========================================================================
+    private Control BuildFacilityMatchPanel()
+    {
+        var grid = new Grid();
+        grid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+        grid.RowDefinitions.Add(new RowDefinition(GridLength.Star));
+
+        var hdrTitle = new TextBlock
+        {
+            Text              = "처리시설 마스터 (시설·시료)",
+            FontSize          = AppTheme.FontBase,
+            FontWeight        = FontWeight.SemiBold,
+            Foreground        = AppRes("FgMuted"),
+            FontFamily        = Font,
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin            = new Thickness(10, 6),
+        };
+        var headerBorder = new Border { Background = AppRes("PanelBg"), Child = hdrTitle };
+        Grid.SetRow(headerBorder, 0);
+
+        var scroll = new ScrollViewer { VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Content = _facilityMatchListPanel };
+        Grid.SetRow(scroll, 1);
+        grid.Children.Add(headerBorder);
+        grid.Children.Add(scroll);
+        return grid;
+    }
+
+    private void LoadFacilityMatchList()
+    {
+        _facilityMatchListPanel.Children.Clear();
+        try
+        {
+            var pairs = FacilityMappingService.GetAllMasterPairs();
+            if (pairs.Count == 0)
+            {
+                _facilityMatchListPanel.Children.Add(new TextBlock
+                {
+                    Text         = "처리시설_마스터 에 등록된 (시설·시료) 조합이 없습니다.",
+                    FontSize     = AppTheme.FontBase,
+                    FontFamily   = Font,
+                    Foreground   = AppRes("FgMuted"),
+                    TextWrapping = TextWrapping.Wrap,
+                    Margin       = new Thickness(12, 16),
+                });
+                return;
+            }
+
+            string? curFac = null;
+            foreach (var (fac, smp) in pairs)
+            {
+                if (fac != curFac)
+                {
+                    curFac = fac;
+                    _facilityMatchListPanel.Children.Add(new TextBlock
+                    {
+                        Text       = string.IsNullOrWhiteSpace(fac) ? "(시설명 없음)" : fac,
+                        FontSize   = AppTheme.FontSM,
+                        FontWeight = FontWeight.SemiBold,
+                        FontFamily = Font,
+                        Foreground = AppRes("FgMuted"),
+                        Margin     = new Thickness(10, 8, 10, 2),
+                    });
+                }
+                _facilityMatchListPanel.Children.Add(CreateFacilityMatchRow(fac, smp));
+            }
+        }
+        catch (Exception ex) { Console.WriteLine($"[LoadFacilityMatchList] {ex.Message}"); }
+    }
+
+    private Border CreateFacilityMatchRow(string 시설명, string 시료명)
+    {
+        int mapCount = 0;
+        try { mapCount = FacilityMappingService.GetAllForMaster(시설명, 시료명).Count; } catch { }
+
+        var row = new Grid { Margin = new Thickness(16, 2, 6, 2) };
+        row.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
+        row.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
+
+        var nameBlock = new TextBlock
+        {
+            Text              = string.IsNullOrWhiteSpace(시료명) ? "(시료명 없음)" : 시료명,
+            FontSize          = AppTheme.FontBase,
+            FontFamily        = Font,
+            Foreground        = AppRes("AppFg"),
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        Grid.SetColumn(nameBlock, 0);
+        row.Children.Add(nameBlock);
+
+        var badge = new Border
+        {
+            Background      = mapCount > 0 ? AppTheme.StatusOkBg : AppTheme.StatusInfoBg,
+            BorderBrush     = mapCount > 0 ? AppTheme.StatusOkBorder : AppTheme.StatusInfoBorder,
+            BorderThickness = new Thickness(1),
+            CornerRadius    = new CornerRadius(999),
+            Padding         = new Thickness(8, 1),
+            Margin          = new Thickness(4, 0),
+            Child = new TextBlock
+            {
+                Text       = mapCount > 0 ? $"{mapCount}개 매핑" : "미매핑",
+                FontSize   = AppTheme.FontXS,
+                FontFamily = Font,
+                Foreground = mapCount > 0 ? AppTheme.StatusOkFg : AppTheme.StatusInfoFg,
+                FontWeight = FontWeight.SemiBold,
+            },
+        };
+        Grid.SetColumn(badge, 1);
+        row.Children.Add(badge);
+
+        var border = new Border
+        {
+            Padding      = new Thickness(6, 4),
+            CornerRadius = new CornerRadius(4),
+            Background   = Brushes.Transparent,
+            Cursor       = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
+            Child        = row,
+        };
+        border.PointerPressed += (_, _) =>
+        {
+            _selectedFacilityPair = (시설명, 시료명);
+            _show2Content.Content = BuildFacilityMatchEditPanel(시설명, 시료명);
+        };
+        border.PointerEntered += (_, _) => border.Background = AppTheme.BgSecondary;
+        border.PointerExited  += (_, _) => border.Background = Brushes.Transparent;
+        return border;
+    }
+
+    // =========================================================================
+    // 탭 2 — 처리시설 매칭 Show2
+    // =========================================================================
+    private Control BuildFacilityMatchEditPanel(string 시설명, string 시료명)
+    {
+        TextBox MkTb(string val, string hint) => new TextBox
+        {
+            Text = val, Watermark = hint, FontSize = AppTheme.FontBase, FontFamily = Font,
+            Height = 30, Padding = new Thickness(6, 4), Margin = new Thickness(0, 2),
+            Background = AppRes("PanelBg"), BorderBrush = AppRes("InputBorder"),
+            BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(4),
+        };
+
+        Control Labeled(string lbl, Control c)
+        {
+            var s = new StackPanel { Spacing = 0 };
+            s.Children.Add(new TextBlock { Text = lbl, FontSize = AppTheme.FontSM, FontFamily = Font, Foreground = AppRes("FgMuted"), Margin = new Thickness(0, 4, 0, 1) });
+            s.Children.Add(c);
+            return s;
+        }
+
+        var cbSystem = new ComboBox
+        {
+            FontSize = AppTheme.FontBase, FontFamily = Font,
+            Height = 30, Padding = new Thickness(6, 2), Margin = new Thickness(0, 2),
+            Background = AppRes("PanelBg"), BorderBrush = AppRes("InputBorder"),
+            BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(4),
+        };
+        cbSystem.Items.Add("WAYBLE");
+        cbSystem.Items.Add("측정인");
+        cbSystem.SelectedIndex = 0;
+
+        var tbSiteCd   = MkTb("", "외부 시설 코드 (WAYBLE siteCd / 측정인 처리시설코드)");
+        var tbSiteNm   = MkTb("", "외부 시설명");
+        var tbSampleCd = MkTb("", "외부 시료 코드 (WAYBLE sampleCategory)");
+        var tbSampleNm = MkTb("", "외부 시료명");
+
+        // WAYBLE 카탈로그 드롭다운 — 선택 시 아래 4개 필드 자동 채움
+        var cbCatalog = new ComboBox
+        {
+            FontSize = AppTheme.FontBase, FontFamily = Font,
+            Height = 30, Padding = new Thickness(6, 2), Margin = new Thickness(0, 2),
+            Background = AppRes("PanelBg"), BorderBrush = AppRes("InputBorder"),
+            BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(4),
+            PlaceholderText = "WAYBLE 카탈로그에서 선택...",
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+        };
+        var catalogEntries = new List<ExternalSiteCatalogService.Entry>();
+        void ReloadCatalog(int? preselectIndex = null)
+        {
+            cbCatalog.Items.Clear();
+            catalogEntries.Clear();
+            var all = ExternalSiteCatalogService.GetWayble();
+            // 시료명 매칭 우선 정렬 (sampleCategoryNm 에 시료명 포함 / 시료명 에 sampleCategoryNm 포함)
+            string Norm(string s) => (s ?? "").Replace(" ", "").Replace("_", "").ToLower();
+            var targetSample = Norm(시료명);
+            var targetFac    = Norm(시설명);
+            int ScoreOf(ExternalSiteCatalogService.Entry e)
+            {
+                int score = 0;
+                var ns = Norm(e.SampleCategoryNm);
+                var nf = Norm(e.SiteNm);
+                if (!string.IsNullOrEmpty(targetSample))
+                {
+                    if (ns == targetSample) score += 100;
+                    else if (ns.Contains(targetSample) || targetSample.Contains(ns)) score += 50;
+                }
+                if (!string.IsNullOrEmpty(targetFac))
+                {
+                    if (nf.Contains(targetFac) || targetFac.Contains(nf)) score += 30;
+                }
+                return score;
+            }
+            var sorted = new List<ExternalSiteCatalogService.Entry>(all);
+            sorted.Sort((a, b) => ScoreOf(b).CompareTo(ScoreOf(a)));
+            foreach (var e in sorted)
+            {
+                catalogEntries.Add(e);
+                var score = ScoreOf(e);
+                var prefix = score >= 100 ? "⭐ " : score >= 50 ? "✨ " : score >= 30 ? "· " : "  ";
+                cbCatalog.Items.Add($"{prefix}{e.OfficeCd} / {e.SiteCd} {e.SiteNm} — {e.SampleCategory} {e.SampleCategoryNm}");
+            }
+            if (preselectIndex is int pi && pi >= 0 && pi < cbCatalog.Items.Count)
+                cbCatalog.SelectedIndex = pi;
+        }
+        ReloadCatalog();
+
+        cbCatalog.SelectionChanged += (_, _) =>
+        {
+            var idx = cbCatalog.SelectedIndex;
+            if (idx < 0 || idx >= catalogEntries.Count) return;
+            var e = catalogEntries[idx];
+            cbSystem.SelectedIndex = 0; // WAYBLE
+            tbSiteCd.Text   = e.SiteCd;
+            tbSiteNm.Text   = e.SiteNm;
+            tbSampleCd.Text = e.SampleCategory;
+            tbSampleNm.Text = e.SampleCategoryNm;
+        };
+
+        var btnRefreshCat = new Button
+        {
+            Content = "🔄", FontSize = AppTheme.FontSM, FontFamily = Font,
+            Padding = new Thickness(10, 2), Margin = new Thickness(4, 2, 0, 2),
+            Background = AppTheme.StatusInfoBg, Foreground = AppTheme.StatusInfoFg,
+            BorderBrush = AppTheme.StatusInfoBorder, BorderThickness = new Thickness(1),
+            CornerRadius = new CornerRadius(999),
+        };
+        Avalonia.Controls.ToolTip.SetTip(btnRefreshCat, "xlsx에서 카탈로그 재추출 (Python 스크립트)");
+
+        var catalogRow = new Grid();
+        catalogRow.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
+        catalogRow.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
+        Grid.SetColumn(cbCatalog, 0);
+        Grid.SetColumn(btnRefreshCat, 1);
+        catalogRow.Children.Add(cbCatalog);
+        catalogRow.Children.Add(btnRefreshCat);
+
+        var form = new StackPanel { Spacing = 2, Margin = new Thickness(0, 6) };
+        form.Children.Add(Labeled("📂 WAYBLE 카탈로그 (xlsx)", catalogRow));
+        form.Children.Add(Labeled("외부 시스템", cbSystem));
+        form.Children.Add(Labeled("외부 시설 코드", tbSiteCd));
+        form.Children.Add(Labeled("외부 시설명", tbSiteNm));
+        form.Children.Add(Labeled("외부 시료 코드", tbSampleCd));
+        form.Children.Add(Labeled("외부 시료명", tbSampleNm));
+
+        var statusTb = new TextBlock { FontSize = AppTheme.FontSM, FontFamily = Font, Foreground = AppRes("FgMuted"), IsVisible = false, Margin = new Thickness(0, 4) };
+
+        btnRefreshCat.Click += (_, _) =>
+        {
+            btnRefreshCat.IsEnabled = false;
+            statusTb.Text = "xlsx 재스캔 중...";
+            statusTb.Foreground = AppRes("FgMuted");
+            statusTb.IsVisible = true;
+            var (count, err) = ExternalSiteCatalogService.RefreshFromXlsx();
+            btnRefreshCat.IsEnabled = true;
+            if (err != null)
+            {
+                statusTb.Text = $"⚠ 재스캔 실패: {err}";
+                statusTb.Foreground = Brushes.OrangeRed;
+            }
+            else
+            {
+                ReloadCatalog();
+                statusTb.Text = $"✓ {count}개 조합 갱신됨 ({ExternalSiteCatalogService.LastSource})";
+                statusTb.Foreground = Brushes.LightGreen;
+            }
+        };
+
+        var existingPanel = new StackPanel { Spacing = 1 };
+        void ReloadExisting()
+        {
+            existingPanel.Children.Clear();
+            List<FacilityMappingService.Row> rows;
+            try { rows = FacilityMappingService.GetAllForMaster(시설명, 시료명); }
+            catch (Exception ex) { Console.WriteLine($"[FacilityMapping.Reload] {ex.Message}"); return; }
+
+            if (rows.Count == 0)
+            {
+                existingPanel.Children.Add(new TextBlock
+                {
+                    Text = "등록된 매핑이 없습니다.", FontSize = AppTheme.FontSM, FontFamily = Font,
+                    Foreground = AppRes("FgMuted"), Margin = new Thickness(6, 4),
+                });
+                return;
+            }
+            foreach (var r in rows)
+            {
+                var rowGrid = new Grid { Margin = new Thickness(4, 2) };
+                rowGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
+                rowGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
+                rowGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
+
+                var sysBadge = new Border
+                {
+                    Background      = r.ExternalSystem == "WAYBLE" ? AppTheme.StatusInfoBg : AppTheme.StatusAccentBg,
+                    BorderBrush     = r.ExternalSystem == "WAYBLE" ? AppTheme.StatusInfoBorder : AppTheme.StatusAccentBorder,
+                    BorderThickness = new Thickness(1),
+                    CornerRadius    = new CornerRadius(999),
+                    Padding         = new Thickness(8, 1),
+                    Margin          = new Thickness(0, 0, 6, 0),
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Child = new TextBlock
+                    {
+                        Text       = r.ExternalSystem,
+                        FontSize   = AppTheme.FontXS,
+                        FontFamily = Font,
+                        Foreground = r.ExternalSystem == "WAYBLE" ? AppTheme.StatusInfoFg : AppTheme.StatusAccentFg,
+                        FontWeight = FontWeight.SemiBold,
+                    },
+                };
+                Grid.SetColumn(sysBadge, 0);
+                rowGrid.Children.Add(sysBadge);
+
+                var info = new StackPanel { Spacing = 1, VerticalAlignment = VerticalAlignment.Center };
+                info.Children.Add(new TextBlock
+                {
+                    Text       = $"{r.ExternalSiteCd} · {r.ExternalSiteNm}",
+                    FontSize   = AppTheme.FontSM,
+                    FontFamily = Font,
+                    Foreground = AppRes("AppFg"),
+                });
+                info.Children.Add(new TextBlock
+                {
+                    Text       = string.IsNullOrWhiteSpace(r.ExternalSampleCd)
+                                     ? $"(시료코드 없음) {r.ExternalSampleNm}"
+                                     : $"{r.ExternalSampleCd} · {r.ExternalSampleNm}",
+                    FontSize   = AppTheme.FontXS,
+                    FontFamily = Font,
+                    Foreground = AppRes("FgMuted"),
+                });
+                Grid.SetColumn(info, 1);
+                rowGrid.Children.Add(info);
+
+                var btnRowPanel = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4, VerticalAlignment = VerticalAlignment.Center };
+                var btnEdit = new Button
+                {
+                    Content = "✎", FontSize = AppTheme.FontSM, FontFamily = Font,
+                    Padding = new Thickness(8, 2), Background = AppTheme.StatusInfoBg,
+                    Foreground = AppTheme.StatusInfoFg, BorderBrush = AppTheme.StatusInfoBorder,
+                    BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(999),
+                };
+                btnEdit.Click += (_, _) =>
+                {
+                    cbSystem.SelectedIndex = r.ExternalSystem == "측정인" ? 1 : 0;
+                    tbSiteCd.Text   = r.ExternalSiteCd;
+                    tbSiteNm.Text   = r.ExternalSiteNm;
+                    tbSampleCd.Text = r.ExternalSampleCd;
+                    tbSampleNm.Text = r.ExternalSampleNm;
+                    statusTb.Text = "↑ 폼에 로드됨 — 수정 후 저장하면 UPSERT";
+                    statusTb.Foreground = AppRes("FgMuted");
+                    statusTb.IsVisible = true;
+                };
+                var btnDel = new Button
+                {
+                    Content = "🗑", FontSize = AppTheme.FontSM, FontFamily = Font,
+                    Padding = new Thickness(8, 2), Background = AppTheme.StatusBadBg,
+                    Foreground = AppTheme.StatusBadFg, BorderBrush = AppTheme.StatusBadBorder,
+                    BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(999),
+                };
+                btnDel.Click += (_, _) =>
+                {
+                    try { FacilityMappingService.Delete(r.Id); ReloadExisting(); LoadFacilityMatchList(); _show4Content.Content = BuildWaybleCatalogPanel(); }
+                    catch (Exception ex) { statusTb.Text = $"오류: {ex.Message}"; statusTb.Foreground = Brushes.Red; statusTb.IsVisible = true; }
+                };
+                btnRowPanel.Children.Add(btnEdit);
+                btnRowPanel.Children.Add(btnDel);
+                Grid.SetColumn(btnRowPanel, 2);
+                rowGrid.Children.Add(btnRowPanel);
+
+                var border = new Border
+                {
+                    Padding         = new Thickness(6, 4),
+                    CornerRadius    = new CornerRadius(4),
+                    Background      = AppRes("PanelBg"),
+                    BorderBrush     = AppTheme.BorderDefault,
+                    BorderThickness = new Thickness(1),
+                    Margin          = new Thickness(0, 2),
+                    Child           = rowGrid,
+                };
+                existingPanel.Children.Add(border);
+            }
+        }
+        ReloadExisting();
+
+        var btnSave = new Button
+        {
+            Content = "💾 저장 (UPSERT)", FontSize = AppTheme.FontBase, FontFamily = Font,
+            Padding = new Thickness(14, 6), Background = AppTheme.StatusInfoBg,
+            Foreground = AppTheme.StatusInfoFg, BorderBrush = AppTheme.StatusInfoBorder,
+            BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(999),
+            FontWeight = FontWeight.SemiBold,
+        };
+        btnSave.Click += (_, _) =>
+        {
+            var sys    = cbSystem.SelectedItem?.ToString() ?? "WAYBLE";
+            var sCd    = tbSiteCd.Text?.Trim() ?? "";
+            var sNm    = tbSiteNm.Text?.Trim() ?? "";
+            var pCd    = tbSampleCd.Text?.Trim() ?? "";
+            var pNm    = tbSampleNm.Text?.Trim() ?? "";
+            if (string.IsNullOrWhiteSpace(sCd))
+            {
+                statusTb.Text = "외부 시설 코드를 입력하세요.";
+                statusTb.Foreground = Brushes.Red;
+                statusTb.IsVisible = true;
+                return;
+            }
+            try
+            {
+                FacilityMappingService.Save(sys, sCd, sNm, pCd, pNm, 시설명, 시료명);
+                statusTb.Text = $"✓ 저장됨 — {sys} / {sCd} / {pCd}";
+                statusTb.Foreground = Brushes.LightGreen;
+                statusTb.IsVisible = true;
+                tbSiteCd.Text = ""; tbSiteNm.Text = "";
+                tbSampleCd.Text = ""; tbSampleNm.Text = "";
+                ReloadExisting();
+                LoadFacilityMatchList();
+                _show4Content.Content = BuildWaybleCatalogPanel();
+            }
+            catch (Exception ex)
+            {
+                statusTb.Text = $"오류: {ex.Message}";
+                statusTb.Foreground = Brushes.Red;
+                statusTb.IsVisible = true;
+            }
+        };
+
+        var root = new StackPanel { Spacing = 0, Margin = new Thickness(8) };
+        root.Children.Add(new TextBlock
+        {
+            Text       = $"🏭 {시설명} — {시료명}",
+            FontSize   = AppTheme.FontXL,
+            FontWeight = FontWeight.SemiBold,
+            FontFamily = Font,
+            Foreground = AppRes("AppFg"),
+            Margin     = new Thickness(0, 0, 0, 4),
+        });
+        root.Children.Add(new Border { Height = 1, Background = AppTheme.BorderDefault, Margin = new Thickness(0, 0, 0, 6) });
+        root.Children.Add(new TextBlock
+        {
+            Text         = "ETA 처리시설_마스터 의 (시설명·시료명) 과 외부 시스템의 (사이트코드·시료코드) 를 연결합니다.\n" +
+                           "WAYBLE 은 siteCd / sampleCategory, 측정인.kr 은 처리시설코드 를 사용하세요.\n" +
+                           "중복 저장 시 (external_system + external_site_cd + external_sample_cd) 기준 UPSERT 됩니다.",
+            FontSize     = AppTheme.FontSM,
+            FontFamily   = Font,
+            Foreground   = AppRes("FgMuted"),
+            TextWrapping = TextWrapping.Wrap,
+            Margin       = new Thickness(0, 0, 0, 8),
+        });
+        root.Children.Add(new TextBlock
+        {
+            Text       = "➕ 새 매핑 입력",
+            FontSize   = AppTheme.FontBase,
+            FontWeight = FontWeight.SemiBold,
+            FontFamily = Font,
+            Foreground = AppRes("FgMuted"),
+            Margin     = new Thickness(0, 4, 0, 2),
+        });
+        root.Children.Add(form);
+        var btnRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Margin = new Thickness(0, 10, 0, 4) };
+        btnRow.Children.Add(btnSave);
+        root.Children.Add(btnRow);
+        root.Children.Add(statusTb);
+
+        root.Children.Add(new Border { Height = 1, Background = AppTheme.BorderDefault, Margin = new Thickness(0, 12, 0, 6) });
+        root.Children.Add(new TextBlock
+        {
+            Text       = "📋 기존 매핑",
+            FontSize   = AppTheme.FontBase,
+            FontWeight = FontWeight.SemiBold,
+            FontFamily = Font,
+            Foreground = AppRes("FgMuted"),
+            Margin     = new Thickness(0, 0, 0, 4),
+        });
+        root.Children.Add(existingPanel);
+
+        return new ScrollViewer { VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Content = root };
+    }
+
+    // =========================================================================
+    // 탭 2 — 처리시설 매칭 Show4 (WAYBLE 카탈로그 뷰)
+    // =========================================================================
+    private Control BuildWaybleCatalogPanel()
+    {
+        var grid = new Grid();
+        grid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+        grid.RowDefinitions.Add(new RowDefinition(GridLength.Star));
+
+        var catalog = ExternalSiteCatalogService.GetWayble();
+        var allMaps = FacilityMappingService.GetAllMappings();
+        // 인덱스: (external_site_cd, external_sample_cd) → ETA (시설명, 시료명)
+        var mapIndex = new Dictionary<(string, string), (string 시설명, string 시료명)>();
+        foreach (var m in allMaps)
+        {
+            if (m.ExternalSystem != "WAYBLE") continue;
+            mapIndex[(m.ExternalSiteCd, m.ExternalSampleCd)] = (m.EtaSiseol, m.EtaSiryo);
+        }
+        int matched = catalog.Count(e => mapIndex.ContainsKey((e.SiteCd, e.SampleCategory)));
+
+        var hdrTb = new TextBlock
+        {
+            Text              = $"📂 WAYBLE 카탈로그  {matched} / {catalog.Count} 매칭됨",
+            FontSize          = AppTheme.FontBase,
+            FontWeight        = FontWeight.SemiBold,
+            FontFamily        = Font,
+            Foreground        = AppRes("FgMuted"),
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin            = new Thickness(10, 6),
+        };
+        var openXlsxBtn = new Button
+        {
+            Content = "📊 xlsx 열기", FontSize = AppTheme.FontSM, FontFamily = Font,
+            Padding = new Thickness(8, 4), Margin = new Thickness(4),
+            Background = AppTheme.StatusInfoBg, Foreground = AppTheme.StatusInfoFg,
+            BorderBrush = AppTheme.StatusInfoBorder, BorderThickness = new Thickness(1),
+            CornerRadius = new CornerRadius(999), FontWeight = FontWeight.SemiBold,
+        };
+        Avalonia.Controls.ToolTip.SetTip(openXlsxBtn, "최신 WAYBLE xlsx 를 DataGrid 뷰어로 미리보기");
+        openXlsxBtn.Click += (_, _) =>
+        {
+            try
+            {
+                var dir = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "Data", "Exports");
+                if (!System.IO.Directory.Exists(dir)) return;
+                var latest = System.IO.Directory.GetFiles(dir, "wayble_수질현황_*.xlsx")
+                    .Where(f => !System.IO.Path.GetFileName(f).StartsWith("~$"))
+                    .OrderByDescending(System.IO.File.GetLastWriteTime)
+                    .FirstOrDefault();
+                if (latest == null)
+                {
+                    Console.WriteLine("[WAYBLE xlsx] 파일 없음");
+                    return;
+                }
+                new ETA.Views.XlsxPreviewWindow(latest).Show();
+            }
+            catch (Exception ex) { Console.WriteLine($"[openXlsx] {ex.Message}"); }
+        };
+
+        var waybleLoginBtn = new Button
+        {
+            Content = ETA.Services.SERVICE2.WaybleSession.Connected ? "🔑 Wayble 연결됨" : "🔑 Wayble 로그인",
+            FontSize = AppTheme.FontSM, FontFamily = Font,
+            Padding = new Thickness(8, 4), Margin = new Thickness(4),
+            Background = AppTheme.StatusAccentBg, Foreground = AppTheme.StatusAccentFg,
+            BorderBrush = AppTheme.StatusAccentBorder, BorderThickness = new Thickness(1),
+            CornerRadius = new CornerRadius(999), FontWeight = FontWeight.SemiBold,
+        };
+        Avalonia.Controls.ToolTip.SetTip(waybleLoginBtn, "rewater.wayble.eco 세션 수립 (CDP Edge 브라우저)");
+        waybleLoginBtn.Click += async (_, _) =>
+        {
+            var parent = Avalonia.VisualTree.VisualExtensions
+                .FindAncestorOfType<Window>(waybleLoginBtn);
+            var w = new ETA.Views.WaybleLoginWindow();
+            if (parent is not null) await w.ShowDialog(parent);
+            else                    w.Show();
+            if (w.LoginSucceeded)
+                waybleLoginBtn.Content = "🔑 Wayble 연결됨";
+        };
+
+        var hdrGrid = new Grid();
+        hdrGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
+        hdrGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
+        hdrGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
+        Grid.SetColumn(hdrTb, 0);
+        Grid.SetColumn(waybleLoginBtn, 1);
+        Grid.SetColumn(openXlsxBtn, 2);
+        hdrGrid.Children.Add(hdrTb);
+        hdrGrid.Children.Add(waybleLoginBtn);
+        hdrGrid.Children.Add(openXlsxBtn);
+        var hdrBorder = new Border { Background = AppRes("PanelBg"), Child = hdrGrid };
+        Grid.SetRow(hdrBorder, 0);
+
+        var body = new StackPanel { Spacing = 1, Margin = new Thickness(0, 4, 0, 8) };
+        var bySite = catalog
+            .GroupBy(e => (e.OfficeCd, e.SiteCd, e.SiteNm))
+            .OrderBy(g => g.Key.OfficeCd).ThenBy(g => g.Key.SiteCd);
+        foreach (var grp in bySite)
+        {
+            var key = grp.Key;
+            var groupMatched = grp.Count(e => mapIndex.ContainsKey((e.SiteCd, e.SampleCategory)));
+            body.Children.Add(new TextBlock
+            {
+                Text       = $"{key.OfficeCd} / {key.SiteCd} · {key.SiteNm}   ({groupMatched}/{grp.Count()})",
+                FontSize   = AppTheme.FontSM,
+                FontWeight = FontWeight.SemiBold,
+                FontFamily = Font,
+                Foreground = AppTheme.FgInfo,
+                Margin     = new Thickness(10, 8, 10, 2),
+            });
+
+            foreach (var e in grp.OrderBy(x => x.SampleCategory))
+            {
+                bool isMatched = mapIndex.TryGetValue((e.SiteCd, e.SampleCategory), out var eta);
+
+                var rowGrid = new Grid { Margin = new Thickness(16, 1, 6, 1) };
+                rowGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
+                rowGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
+                rowGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
+
+                var cdTb = new TextBlock
+                {
+                    Text       = e.SampleCategory,
+                    FontSize   = AppTheme.FontXS,
+                    FontFamily = Font,
+                    Foreground = AppRes("FgMuted"),
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Margin     = new Thickness(0, 0, 6, 0),
+                    MinWidth   = 50,
+                };
+                Grid.SetColumn(cdTb, 0);
+
+                var nmPanel = new StackPanel { Spacing = 0, VerticalAlignment = VerticalAlignment.Center };
+                nmPanel.Children.Add(new TextBlock
+                {
+                    Text       = e.SampleCategoryNm,
+                    FontSize   = AppTheme.FontBase,
+                    FontFamily = Font,
+                    Foreground = AppRes("AppFg"),
+                });
+                if (isMatched)
+                {
+                    nmPanel.Children.Add(new TextBlock
+                    {
+                        Text       = $"→ {eta.시설명} / {eta.시료명}",
+                        FontSize   = AppTheme.FontXS,
+                        FontFamily = Font,
+                        Foreground = AppTheme.StatusOkFg,
+                    });
+                }
+                Grid.SetColumn(nmPanel, 1);
+
+                var badge = new Border
+                {
+                    Background      = isMatched ? AppTheme.StatusOkBg : AppTheme.StatusBadBg,
+                    BorderBrush     = isMatched ? AppTheme.StatusOkBorder : AppTheme.StatusBadBorder,
+                    BorderThickness = new Thickness(1),
+                    CornerRadius    = new CornerRadius(999),
+                    Padding         = new Thickness(6, 1),
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Child = new TextBlock
+                    {
+                        Text       = isMatched ? "✓" : "✗",
+                        FontSize   = AppTheme.FontXS,
+                        FontFamily = Font,
+                        Foreground = isMatched ? AppTheme.StatusOkFg : AppTheme.StatusBadFg,
+                        FontWeight = FontWeight.SemiBold,
+                    },
+                };
+                Grid.SetColumn(badge, 2);
+
+                rowGrid.Children.Add(cdTb);
+                rowGrid.Children.Add(nmPanel);
+                rowGrid.Children.Add(badge);
+
+                var border = new Border
+                {
+                    Padding      = new Thickness(6, 3),
+                    CornerRadius = new CornerRadius(4),
+                    Background   = Brushes.Transparent,
+                    Cursor       = isMatched ? new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand) : null,
+                    Child        = rowGrid,
+                };
+                if (isMatched)
+                {
+                    var etaLocal = eta;
+                    border.PointerPressed += (_, _) =>
+                    {
+                        _selectedFacilityPair = (etaLocal.시설명, etaLocal.시료명);
+                        _show2Content.Content = BuildFacilityMatchEditPanel(etaLocal.시설명, etaLocal.시료명);
+                    };
+                    border.PointerEntered += (_, _) => border.Background = AppTheme.BgSecondary;
+                    border.PointerExited  += (_, _) => border.Background = Brushes.Transparent;
+                }
+                body.Children.Add(border);
+            }
+        }
+
+        var scroll = new ScrollViewer { VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Content = body };
+        Grid.SetRow(scroll, 1);
+        grid.Children.Add(hdrBorder);
+        grid.Children.Add(scroll);
+        return grid;
+    }
+
+    // =========================================================================
     // DB 조작 — 분석항목
     // =========================================================================
     private static void SaveAnalyteToDB(AnalysisItem item, string? originalAnalyte)
@@ -1841,6 +2569,7 @@ public class AccessPage
     private static Control BuildAnalyteHint()  => MakeHint("← 항목을 클릭하면 편집할 수 있습니다.\n+ 항목 추가로 새 분석항목을 등록하세요.");
     private static Control BuildEquipmentHint()=> MakeHint("← 장비를 클릭하면 편집할 수 있습니다.\n+ 장비 추가로 새 분석장비를 등록하세요.");
     private static Control BuildMeasurerContractHint() => MakeHint("📡 스크랩 버튼으로\n측정인.kr 의뢰추가 모달의\n계약·측정대상 사업장·측정시설 목록을 가져옵니다.\n\n※ 스크랩 전 의뢰추가 모달을 먼저 열어두세요.");
+    private static Control BuildFacilityMatchHint()    => MakeHint("← 처리시설 목록에서 시설·시료를 선택하면\n외부 시스템(WAYBLE / 측정인.kr) 과의\n매핑을 등록할 수 있습니다.");
 
     // =========================================================================
     // 탭 4 — 측정인계약 Show1

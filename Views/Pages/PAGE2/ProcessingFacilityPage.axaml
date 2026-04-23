@@ -105,6 +105,17 @@
                             Click="BtnDelete_Click"/>
                 </Grid>
 
+                <!-- 시험기록부 출력 -->
+                <Button x:Name="btnTestRecordBook"
+                        Content="📕 시험기록부 (선택 날짜 기준)"
+                        Height="30" FontSize="{DynamicResource FontSizeBase}"
+                        FontFamily="avares://ETA/Assets/Fonts#Pretendard"
+                        Background="#3a1a2a" Foreground="#ee99cc"
+                        BorderThickness="0" CornerRadius="4"
+                        Margin="0,6,0,0"
+                        HorizontalAlignment="Stretch"
+                        Click="BtnTestRecordBook_Click"/>
+
                 <!-- 상태 텍스트 -->
                 <TextBlock x:Name="tbStatus"
                            FontSize="{DynamicResource FontSizeSM}"

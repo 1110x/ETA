@@ -2,20 +2,32 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="ETA.Views.Pages.PAGE2.ResultSubmitZero4Page">
 
-    <Grid RowDefinitions="Auto,*">
+    <Grid RowDefinitions="Auto,Auto,*">
 
         <Border Grid.Row="0"
                 Background="{DynamicResource PanelBg}"
                 CornerRadius="6,6,0,0"
                 Padding="10,6">
-            <TextBlock Text="결과 제출 — Zero4"
+            <TextBlock Text="결과 제출 — Wayble"
                        FontSize="{DynamicResource FontSizeBase}" FontWeight="SemiBold"
                        Foreground="{DynamicResource FgMuted}"
                        FontFamily="avares://ETA/Assets/Fonts#Pretendard"/>
         </Border>
 
-        <Border Grid.Row="1" Background="{DynamicResource PanelInnerBg}" CornerRadius="0,0,6,6" Padding="16">
-            <StackPanel x:Name="ContentPanel" Spacing="10"/>
+        <!-- 상단 시설그룹 뱃지 -->
+        <Border Grid.Row="1"
+                Background="{DynamicResource PanelInnerBg}"
+                Padding="8,8">
+            <WrapPanel x:Name="GroupBadgePanel" Orientation="Horizontal"/>
+        </Border>
+
+        <!-- 일자별 리스트 -->
+        <Border Grid.Row="2"
+                Background="{DynamicResource PanelInnerBg}"
+                CornerRadius="0,0,6,6">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="6,4">
+                <StackPanel x:Name="DateListPanel" Spacing="4"/>
+            </ScrollViewer>
         </Border>
 
     </Grid>

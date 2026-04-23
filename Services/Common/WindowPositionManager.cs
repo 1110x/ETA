@@ -262,11 +262,23 @@ public class PageLayoutInfo
     [JsonPropertyName("leftPanelWidth")]
     public double LeftPanelWidth { get; set; } = 260;
 
+    /// <summary>
+    /// 모서리 펼치기(Show2/3/4 ◣◤▼) 로 전환되는 레이아웃 모드.
+    /// "default"(기본) / "split"(Show4 풀하이트) / "expand2"(Show2 풀하이트) / "expand2top"(Show4 하단이동).
+    /// </summary>
+    [JsonPropertyName("layoutMode")]
+    public string LayoutMode { get; set; } = "default";
+
+    /// <summary>Show3 접힘(▼/▲ 토글) 상태</summary>
+    [JsonPropertyName("show3Collapsed")]
+    public bool Show3Collapsed { get; set; } = false;
+
     [JsonPropertyName("savedAt")]
     public DateTime SavedAt { get; set; } = DateTime.Now;
 
     public override string ToString() =>
         $"Window:({WindowX},{WindowY}) {WindowWidth}x{WindowHeight}, " +
         $"Content2Star={Content2Star}, Content4Star={Content4Star}, " +
-        $"UpperStar={UpperStar}, LowerStar={LowerStar}, LeftPanelWidth={LeftPanelWidth}";
+        $"UpperStar={UpperStar}, LowerStar={LowerStar}, LeftPanelWidth={LeftPanelWidth}, " +
+        $"LayoutMode={LayoutMode}, Show3Collapsed={Show3Collapsed}";
 }
