@@ -15,11 +15,11 @@ namespace ETA.Services.Common;
 public static class ErpUiAutoService
 {
     // ── 파일 경로 ────────────────────────────────────────────────────────────
-    private static readonly string LogPath = Path.GetFullPath(
-        Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "Logs", "ERP.log"));
+    private static readonly string LogPath =
+        Path.Combine(AppPaths.LogsDir, "ERP.log");
 
-    private static readonly string ExcelPath = Path.GetFullPath(
-        Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "Data", "ERP 자료", "ERP 자료입력.xlsx"));
+    private static readonly string ExcelPath =
+        Path.Combine(AppPaths.RootPath, "Data", "ERP 자료", "ERP 자료입력.xlsx");
 
     // ── 파일 로그 ────────────────────────────────────────────────────────────
     public static void Log(string msg)

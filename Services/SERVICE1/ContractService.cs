@@ -971,8 +971,7 @@ public static class ContractService
 
     private static void Log(string msg)
     {
-        var logPath = Path.GetFullPath(
-            Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "Logs", "Contract.log"));
+        var logPath = Path.Combine(ETA.Services.Common.AppPaths.LogsDir, "Contract.log");
         try
         {
             var line = $"[{DateTime.Now:HH:mm:ss}] {msg}";

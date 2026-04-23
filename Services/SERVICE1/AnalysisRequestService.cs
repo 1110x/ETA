@@ -18,8 +18,8 @@ namespace ETA.Services.SERVICE1;
 public static class AnalysisRequestService
 {
 
-    private static readonly string LogPath = Path.GetFullPath(
-        Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "Logs", "Treeview.log"));
+    private static readonly string LogPath =
+        Path.Combine(ETA.Services.Common.AppPaths.LogsDir, "Treeview.log");
 
     // field69~114 마이그레이션은 앱 세션당 1회만 실행
     private static volatile bool _fieldMigrationDone = false;

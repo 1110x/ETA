@@ -537,8 +537,7 @@ public static class TestReportPrintService
         {
             try
             {
-                var logPath = Path.GetFullPath(
-                    Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "Logs/TestReportDebug.log"));
+                var logPath = Path.Combine(AppPaths.LogsDir, "TestReportDebug.log");
                 File.AppendAllText(logPath, line + Environment.NewLine);
             }
             catch { }

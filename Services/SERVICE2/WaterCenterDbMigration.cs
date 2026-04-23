@@ -26,7 +26,7 @@ namespace ETA.Services.SERVICE2;
 public static class WaterCenterDbMigration
 {
     private static readonly string LogPath = Path.Combine(
-        AppContext.BaseDirectory, "..", "..", "..", "Logs", "FacilityMigration.log");
+        ETA.Services.Common.AppPaths.LogsDir, "FacilityMigration.log");
 
     private static void Log(string msg)
     {

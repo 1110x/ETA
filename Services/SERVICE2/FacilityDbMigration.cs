@@ -2350,8 +2350,8 @@ public static class FacilityDbMigration
         Log($"마이그레이션 완료 표시: {key}");
     }
 
-    private static readonly string LogPath = System.IO.Path.GetFullPath(
-        System.IO.Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "Logs", "FacilityMigration.log"));
+    private static readonly string LogPath =
+        System.IO.Path.Combine(ETA.Services.Common.AppPaths.LogsDir, "FacilityMigration.log");
 
     private static void Log(string msg)
     {

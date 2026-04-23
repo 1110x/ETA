@@ -34,13 +34,19 @@ public class WindowPositionManager
         if (string.IsNullOrWhiteSpace(currentUserId))
             currentUserId = "DefaultUser";
 
-        // 사용자별 로그 파일 경로: 프로젝트/Logs/Users/{UserId}/PageHW.log
-        string projectFolder = Directory.GetCurrentDirectory(); // 프로젝트 루트 디렉터리
-        string logsFolder = Path.Combine(projectFolder, "Logs");
-        string userFolder = Path.Combine(logsFolder, "Users", currentUserId);
+        // 사용자별 로그 파일 경로: <WritableDataRoot>/Logs/Users/{UserId}/PageHW.log
+        //   개발 환경: 리포 루트/Logs/...
+        //   설치 환경: %LOCALAPPDATA%/ETA/Logs/... (Program Files 는 쓰기 금지라 필수)
+        string userFolder = Path.Combine(AppPaths.WritableDataRoot, "Logs", "Users", currentUserId);
 
-        if (!Directory.Exists(userFolder))
-            Directory.CreateDirectory(userFolder);
+        try { Directory.CreateDirectory(userFolder); }
+        catch (Exception ex)
+        {
+            // 여전히 실패하면 임시 폴더로 대체 — 앱 종료만은 피함
+            userFolder = Path.Combine(Path.GetTempPath(), "ETA", "Logs", "Users", currentUserId);
+            try { Directory.CreateDirectory(userFolder); } catch { }
+            System.Diagnostics.Debug.WriteLine($"[WindowPositionManager] 로그 폴더 생성 실패 → 임시 경로로 폴백: {ex.Message}");
+        }
 
         _logFilePath = Path.Combine(userFolder, LogFileName);
         _layoutLogPath = Path.Combine(userFolder, "LAYOUT.log");

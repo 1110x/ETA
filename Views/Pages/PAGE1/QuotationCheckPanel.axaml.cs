@@ -403,8 +403,8 @@ public partial class QuotationCheckPanel : UserControl
     }
 
     // ── 로그 ─────────────────────────────────────────────────────────────
-    private static readonly string LogPath = Path.GetFullPath(
-        Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "Logs", "Quotation.log"));
+    private static readonly string LogPath =
+        Path.Combine(ETA.Services.Common.AppPaths.LogsDir, "Quotation.log");
 
     private static void Log(string msg)
     {

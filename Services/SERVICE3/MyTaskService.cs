@@ -14,8 +14,8 @@ namespace ETA.Services.SERVICE3;
 /// </summary>
 public static class MyTaskService
 {
-    private static readonly string LogPath = Path.GetFullPath(
-        Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "Logs", "MyTaskDebug.log"));
+    private static readonly string LogPath =
+        Path.Combine(AppPaths.LogsDir, "MyTaskDebug.log");
 
     private static void Log(string msg)
     {

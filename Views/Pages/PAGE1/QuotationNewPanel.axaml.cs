@@ -1004,8 +1004,8 @@ public partial class QuotationNewPanel : UserControl
     private static string GenerateNo()
         => DateTime.Now.ToString("yyyyMMdd-HHmmss");
 
-    private static readonly string LogPath = Path.GetFullPath(
-        Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "Logs", "Quotation.log"));
+    private static readonly string LogPath =
+        Path.Combine(ETA.Services.Common.AppPaths.LogsDir, "Quotation.log");
 
     private static void Log(string msg)
     {
