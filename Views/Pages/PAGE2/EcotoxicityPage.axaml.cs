@@ -1223,6 +1223,28 @@ public partial class EcotoxicityPage : UserControl
                     row++;
                 }
 
+                // ─ 용량-반응 곡선 PNG 삽입 ─
+                if (rec.Conc != null && rec.Conc.Length >= 1 && rec.TskResult != null)
+                {
+                    try
+                    {
+                        var chartBytes = ETA.Services.SERVICE2.EcotoxicityChartGenerator.Generate(
+                            rec.Conc, rec.Org, rec.Mort,
+                            rec.TskResult.EC50, rec.TskResult.LowerCI, rec.TskResult.UpperCI,
+                            rec.TskResult.TU, rec.TskResult.Method);
+
+                        using var chartStream = new System.IO.MemoryStream(chartBytes);
+                        var pic = ws.AddPicture(chartStream)
+                                    .MoveTo(ws.Cell(row + 1, 1))
+                                    .WithSize(640, 400);
+                        row += 22;  // 차트 공간 확보 (행 높이 고려)
+                    }
+                    catch (Exception chartEx)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"[차트 삽입 실패] {chartEx.Message}");
+                    }
+                }
+
                 row += 3;
             }
 

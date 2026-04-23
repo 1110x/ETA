@@ -8416,20 +8416,9 @@ public partial class WasteAnalysisInputPage : UserControl
             switch (browseMode)
             {
                 case "수질분석센터":
-                    var analysisRecords = AnalysisRequestService.GetRecentRecords(3);
-                    foreach (var record in analysisRecords.Take(20))
-                    {
-                        allSamples.Add(new
-                        {
-                            Type = "Analysis",
-                            SN = record.약칭,  // 업체명 약칭을 SN으로 사용
-                            Name = record.시료명,
-                            Source = "수질분석센터",
-                            DisplayText = $"🧪 {record.약칭} | {record.시료명}",
-                            Color = "#4A90E2"  // 더 밝은 파란색
-                        });
-                    }
-                    break;
+                    // 월별 그룹 lazy-load 패널로 직접 빌드 (flat list + 20 제한 제거)
+                    BuildWaterCenterMonthlyPanel(container);
+                    return;
 
                 case "비용부담금":
                     var wasteSamples = WasteSampleService.GetRecentSamples(3);
@@ -8618,6 +8607,165 @@ public partial class WasteAnalysisInputPage : UserControl
                 Margin = new Thickness(8)
             }));
         }
+    }
+
+    // ══════════════════════════════════════════════════════════════════════════
+    //  수질분석센터 Show1 — 월별 그룹 lazy-load 패널
+    //    현재 월: 즉시 로드 + 펼침
+    //    그 외  : 접힘 상태. 헤더 클릭 시 최초 1회 DB 조회 후 표시
+    // ══════════════════════════════════════════════════════════════════════════
+    private void BuildWaterCenterMonthlyPanel(StackPanel container)
+    {
+        // 1) 전체 월 목록 (YYYY-MM 내림차순)
+        var months = AnalysisRequestService.GetMonths();
+
+        // 헤더
+        container.Children.Add(FsSM(new TextBlock
+        {
+            Text       = $"🧪 수질분석센터 의뢰시료 ({months.Count}개월)",
+            FontWeight = FontWeight.SemiBold,
+            Foreground = AppRes("AppFg"),
+            Margin     = new Thickness(4, 0, 0, 8),
+        }));
+
+        if (months.Count == 0)
+        {
+            container.Children.Add(FsXS(new TextBlock
+            {
+                Text = "수질분석센터 의뢰시료가 없습니다.",
+                Foreground = AppRes("ThemeFgMuted"),
+                TextAlignment = TextAlignment.Center,
+                Margin = new Thickness(8),
+            }));
+            return;
+        }
+
+        string thisYM = DateTime.Today.ToString("yyyy-MM");
+
+        foreach (var ym in months)
+        {
+            bool isCurrent = ym == thisYM;
+
+            // 헤더(Border + chevron) + items 패널로 구성
+            var itemsPanel = new StackPanel { Spacing = 2, Margin = new Thickness(8, 2, 0, 2), IsVisible = isCurrent };
+            bool loaded = false;
+            var chevron = FsXS(new TextBlock
+            {
+                Text = isCurrent ? "▾" : "▸",
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(0, 0, 6, 0),
+            });
+
+            var countLabel = FsXS(new TextBlock
+            {
+                Text = "",
+                Foreground = AppRes("ThemeFgMuted"),
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(8, 0, 0, 0),
+            });
+
+            var headerGrid = new Grid
+            {
+                ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto"),
+                VerticalAlignment = VerticalAlignment.Center,
+            };
+            Grid.SetColumn(chevron, 0);   headerGrid.Children.Add(chevron);
+            var title = FsSM(new TextBlock
+            {
+                Text = $"📅 {ym} ({MonthLabelSuffix(ym, isCurrent)})",
+                Foreground = AppRes("AppFg"),
+                FontWeight = isCurrent ? FontWeight.SemiBold : FontWeight.Normal,
+                VerticalAlignment = VerticalAlignment.Center,
+            });
+            Grid.SetColumn(title, 1);     headerGrid.Children.Add(title);
+            Grid.SetColumn(countLabel, 2); headerGrid.Children.Add(countLabel);
+
+            var header = new Border
+            {
+                Background   = AppRes("ThemeBgSecondary"),
+                CornerRadius = new CornerRadius(6),
+                Padding      = new Thickness(8, 5),
+                Margin       = new Thickness(0, 2, 0, 0),
+                Cursor       = new Cursor(StandardCursorType.Hand),
+                Child        = headerGrid,
+            };
+
+            void LoadMonth()
+            {
+                if (loaded) return;
+                loaded = true;
+                var records = AnalysisRequestService.GetRecordsByMonth(ym);
+                countLabel.Text = $"{records.Count}건";
+                if (records.Count == 0)
+                {
+                    itemsPanel.Children.Add(FsXS(new TextBlock
+                    {
+                        Text = "(항목 없음)",
+                        Foreground = AppRes("ThemeFgMuted"),
+                        Margin = new Thickness(4),
+                    }));
+                    return;
+                }
+                foreach (var rec in records)
+                {
+                    itemsPanel.Children.Add(MakeWaterCenterItemBorder(rec));
+                }
+            }
+
+            header.PointerPressed += (_, _) =>
+            {
+                bool nowVisible = !itemsPanel.IsVisible;
+                itemsPanel.IsVisible = nowVisible;
+                chevron.Text = nowVisible ? "▾" : "▸";
+                if (nowVisible) LoadMonth();
+            };
+
+            container.Children.Add(header);
+            container.Children.Add(itemsPanel);
+
+            if (isCurrent) LoadMonth();
+        }
+    }
+
+    private static string MonthLabelSuffix(string ym, bool isCurrent)
+    {
+        if (isCurrent) return "이번 달";
+        var today = DateTime.Today.ToString("yyyy-MM");
+        if (ym == DateTime.Today.AddMonths(-1).ToString("yyyy-MM")) return "지난 달";
+        return ym;
+    }
+
+    /// <summary>수질분석센터 월별 아이템 Border 생성 (드래그 가능 + _matchItems 등록)</summary>
+    private Border MakeWaterCenterItemBorder(AnalysisRequestRecord rec)
+    {
+        var sample = new
+        {
+            Type        = "Analysis",
+            SN          = rec.약칭,
+            Name        = rec.시료명,
+            Source      = "수질분석센터",
+            DisplayText = $"🧪 {rec.약칭} | {rec.시료명}",
+            Color       = "#4A90E2",
+        };
+
+        var item = new Border
+        {
+            Background   = AppRes("ThemeBgInput"),
+            CornerRadius = new CornerRadius(6),
+            Padding      = new Thickness(10, 6),
+            Margin       = new Thickness(0, 2),
+            Height       = 28,
+            Cursor       = new Cursor(StandardCursorType.Hand),
+            Tag          = sample,
+            Child        = FsSM(new TextBlock
+            {
+                Text       = sample.DisplayText,
+                Foreground = AppRes("AppFg"),
+            }),
+        };
+        SetupDragSource(item, sample.Name, sample);
+        _matchItems.Add((item, sample.Name, (object?)sample));
+        return item;
     }
 
     private void SetItemTextColor(Border item, IBrush? brush)

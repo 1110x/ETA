@@ -1940,6 +1940,46 @@ public static class AnalysisRequestService
     }
 
     // =====================================================================
+    //  특정 월(YYYY-MM)의 의뢰 목록 — Show1 월별 lazy load 용
+    // =====================================================================
+    public static List<AnalysisRequestRecord> GetRecordsByMonth(string ym)
+    {
+        var list = new List<AnalysisRequestRecord>();
+        if (string.IsNullOrWhiteSpace(ym) || ym.Length < 7) return list;
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            if (!DbConnectionFactory.TableExists(conn, "수질분석센터_결과")) return list;
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = $@"
+                SELECT {DbConnectionFactory.RowId},
+                       COALESCE(`약칭`, ''),
+                       COALESCE(`시료명`, ''),
+                       COALESCE(`견적번호`, ''),
+                       COALESCE(`채취일자`, '')
+                FROM `수질분석센터_결과`
+                WHERE `채취일자` LIKE @prefix
+                ORDER BY `채취일자` DESC, {DbConnectionFactory.RowId} DESC";
+            cmd.Parameters.AddWithValue("@prefix", ym.Substring(0, 7) + "%");
+            using var rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                list.Add(new AnalysisRequestRecord
+                {
+                    Id       = Convert.ToInt32(rdr.GetValue(0)),
+                    약칭     = rdr.GetString(1),
+                    시료명   = rdr.GetString(2),
+                    접수번호 = rdr.GetString(3),
+                    채취일자 = rdr.GetString(4),
+                });
+            }
+        }
+        catch (Exception ex) { Log($"GetRecordsByMonth({ym}) 오류: {ex.Message}"); }
+        return list;
+    }
+
+    // =====================================================================
     //  최근 N개월 의뢰 목록 조회 (수동 매칭 팝업용)
     // =====================================================================
     public static List<AnalysisRequestRecord> GetRecentRecords(int months = 1)
