@@ -22,8 +22,10 @@ public static class UserPrefsService
     {
         string userId = Environment.UserName;
         if (string.IsNullOrWhiteSpace(userId)) userId = "DefaultUser";
-        string dir = Path.Combine(Directory.GetCurrentDirectory(), "Logs", "Users", userId);
-        Directory.CreateDirectory(dir);
+        string dir = Path.Combine(AppPaths.WritableDataRoot, "Logs", "Users", userId);
+        try { Directory.CreateDirectory(dir); }
+        catch { dir = Path.Combine(Path.GetTempPath(), "ETA", "Logs", "Users", userId);
+                try { Directory.CreateDirectory(dir); } catch { } }
         return Path.Combine(dir, "UserPrefs.json");
     }
 

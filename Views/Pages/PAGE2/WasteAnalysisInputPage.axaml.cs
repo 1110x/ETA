@@ -1723,11 +1723,11 @@ public partial class WasteAnalysisInputPage : UserControl
             if (App.EnableLogging)
             {
                 string logLine = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] [스칼라 TCIC] {message}";
-                string projectFolder = Directory.GetCurrentDirectory();
-                string logsFolder = System.IO.Path.Combine(projectFolder, "Logs", "Users", Environment.UserName);
+                string logsFolder = System.IO.Path.Combine(
+                    ETA.Services.Common.AppPaths.WritableDataRoot, "Logs", "Users", Environment.UserName);
 
-                if (!Directory.Exists(logsFolder))
-                    Directory.CreateDirectory(logsFolder);
+                try { Directory.CreateDirectory(logsFolder); }
+                catch { return; }  // 생성 실패 시 조용히 스킵 — 파싱 자체는 중단되면 안 됨
 
                 string logPath = System.IO.Path.Combine(logsFolder, "SCALAR_TCIC.log");
                 File.AppendAllText(logPath, logLine + "\n");

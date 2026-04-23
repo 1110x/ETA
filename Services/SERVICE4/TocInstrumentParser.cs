@@ -237,7 +237,7 @@ public static class TocInstrumentParser
         var wsAreas     = new List<double>(); // 측정 면적
 
         // 로그 파일 경로
-        string logPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Logs", "Users", Environment.UserName, "SCALAR_TCIC.log");
+        string logPath = System.IO.Path.Combine(ETA.Services.Common.AppPaths.WritableDataRoot, "Logs", "Users", Environment.UserName, "SCALAR_TCIC.log");
         void WriteLog(string message)
         {
             try

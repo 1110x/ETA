@@ -25,7 +25,7 @@ public static class ShimadzuUvPdfParser
         { "MBK", "FBK", "BK", "CCV", "DW", "BLANK" };
 
     private static readonly string LogPath = Path.Combine(
-        Directory.GetCurrentDirectory(), "Logs", "Users", Environment.UserName, "ShimadzuUV.log");
+        ETA.Services.Common.AppPaths.WritableDataRoot, "Logs", "Users", Environment.UserName, "ShimadzuUV.log");
 
     private static void Log(string msg)
     {

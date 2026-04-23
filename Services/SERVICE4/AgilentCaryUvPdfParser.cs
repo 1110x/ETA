@@ -29,7 +29,7 @@ public static class AgilentCaryUvPdfParser
         { "o", "u", "r", "n" };
 
     private static readonly string LogPath = Path.Combine(
-        Directory.GetCurrentDirectory(), "Logs", "Users", Environment.UserName, "AgilentCaryUV.log");
+        ETA.Services.Common.AppPaths.WritableDataRoot, "Logs", "Users", Environment.UserName, "AgilentCaryUV.log");
 
     private static void Log(string msg)
     {
