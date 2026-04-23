@@ -1,0 +1,71 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ETA.Rebuild.Views.QuotePage">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  Background="{DynamicResource PaperBg}">
+        <StackPanel Margin="20" Spacing="16" MaxWidth="1600">
+
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBlock Text="📋 견적" Classes="h1"/>
+                <TextBlock Text="· 견적발행내역 · 최근 발행 순"
+                           Classes="muted" VerticalAlignment="Bottom" Margin="4,0,0,5"/>
+                <Border Classes="chip ok" Margin="12,0,0,0" VerticalAlignment="Center">
+                    <TextBlock x:Name="QuoteChip" Text="DB 조회 중…"/>
+                </Border>
+            </StackPanel>
+
+            <Grid ColumnDefinitions="*,16,360">
+
+                <Border Grid.Column="0" Classes="card" Background="{DynamicResource PaperSecA}">
+                    <DockPanel>
+                        <Border DockPanel.Dock="Top" Classes="card-head" Margin="-12,-12,-12,8">
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <TextBlock Grid.Column="0" Text="🧾 발행내역 (최근 200건)" Classes="h3"/>
+                                <TextBox Grid.Column="1" Watermark="🔍 견적번호·업체·시료"
+                                         FontSize="11" Margin="10,0"/>
+                                <Button Grid.Column="2" Classes="primary" Content="+ 견적 작성"/>
+                            </Grid>
+                        </Border>
+
+                        <Grid DockPanel.Dock="Top" ColumnDefinitions="160,100,*,200,140"
+                              Margin="0,0,0,6">
+                            <TextBlock Grid.Column="0" Text="견적번호"   Classes="sub mono"/>
+                            <TextBlock Grid.Column="1" Text="발행일"    Classes="sub mono"/>
+                            <TextBlock Grid.Column="2" Text="업체명"     Classes="sub mono"/>
+                            <TextBlock Grid.Column="3" Text="시료명"     Classes="sub mono"/>
+                            <TextBlock Grid.Column="4" Text="합계금액"   Classes="sub mono"
+                                       HorizontalAlignment="Right"/>
+                        </Grid>
+                        <Border Classes="dashed" DockPanel.Dock="Top" Margin="0,0,0,4"/>
+
+                        <StackPanel x:Name="QuoteList" Spacing="2"/>
+                    </DockPanel>
+                </Border>
+
+                <StackPanel Grid.Column="2" Spacing="12">
+                    <Border Classes="card" Background="{DynamicResource PaperSecB}">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="📊 최근 30일" Classes="h3"/>
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <TextBlock x:Name="RecentCountTb"  Text="건수 -" Classes="body"/>
+                                <TextBlock x:Name="RecentAmountTb" Text="금액 -" Classes="body mono"/>
+                            </StackPanel>
+                            <Border Classes="dashed" Margin="0,4"/>
+                            <TextBlock x:Name="TopCompanyTb" Text="상위 업체: -" Classes="sub"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Classes="card" Background="{DynamicResource PaperSecD}">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="📝 발행 흐름" Classes="h3"/>
+                            <TextBlock Text="1. 계약업체 선택" Classes="sub"/>
+                            <TextBlock Text="2. 시료·항목 선택 + 단가 자동" Classes="sub"/>
+                            <TextBlock Text="3. 견적서 PDF/Excel 발행" Classes="sub"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

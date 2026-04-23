@@ -1,0 +1,74 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ETA.Rebuild.Views.StaffPage">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  Background="{DynamicResource PaperBg}">
+        <StackPanel Margin="20" Spacing="16" MaxWidth="1400">
+
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBlock Text="🛠 관리자 · 직원 · 내업무" Classes="h1"/>
+                <TextBlock Text="· 팀원 현황 · 승인 대기 · 내가 맡은 일"
+                           Classes="muted" VerticalAlignment="Bottom" Margin="4,0,0,5"/>
+                <Border Classes="chip ok" Margin="12,0,0,0" VerticalAlignment="Center">
+                    <TextBlock x:Name="StaffCountChip" Text="DB 조회 중…"/>
+                </Border>
+            </StackPanel>
+
+            <Grid ColumnDefinitions="*,16,380">
+
+                <!-- 좌 · 직원 리스트 -->
+                <Border Grid.Column="0" Classes="card" Background="{DynamicResource PaperSecA}">
+                    <DockPanel>
+                        <Border DockPanel.Dock="Top" Classes="card-head" Margin="-12,-12,-12,8">
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <TextBlock Grid.Column="0" Text="👥 직원 목록" Classes="h3"/>
+                                <TextBlock Grid.Column="1" Text="사번 · 이름 · 부서 · 상태"
+                                           Classes="sub" Margin="10,2,0,0"/>
+                                <Border Grid.Column="2" Classes="chip info"><TextBlock Text="전체"/></Border>
+                            </Grid>
+                        </Border>
+
+                        <StackPanel x:Name="StaffList" Spacing="4"/>
+                    </DockPanel>
+                </Border>
+
+                <!-- 우 · 내 업무 카드 -->
+                <StackPanel Grid.Column="2" Spacing="12">
+                    <Border Classes="card" Background="{DynamicResource PaperSecB}">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="🔔 승인 대기" Classes="h3"/>
+                            <TextBlock x:Name="PendingLine" Text="DB 조회 중…" Classes="sub"/>
+                            <Border Classes="dashed" Margin="0,4"/>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Button Classes="primary" Content="승인"/>
+                                <Button Classes="ghost"   Content="거부"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Classes="card" Background="{DynamicResource PaperSecD}">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="📌 내 업무" Classes="h3"/>
+                            <TextBlock Text="로그인 계정에 배정된 작업" Classes="sub"/>
+                            <Border Classes="dashed" Margin="0,4"/>
+                            <TextBlock Text="• 오늘 분석결과 입력 · 3건" Classes="body"/>
+                            <TextBlock Text="• 성적서 검토 · 2건" Classes="body"/>
+                            <TextBlock Text="• 시험기록부 서명 · 1건" Classes="body"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Classes="card" Background="{DynamicResource PaperSecE}">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="🕑 최근 접속" Classes="h3"/>
+                            <TextBlock Text="Agent 테이블 last_login 기준" Classes="sub"/>
+                            <Border Classes="dashed" Margin="0,4"/>
+                            <TextBlock Text="데이터 연결 예정" Classes="muted"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

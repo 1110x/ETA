@@ -1,0 +1,70 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ETA.Rebuild.Views.ClientPage">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  Background="{DynamicResource PaperBg}">
+        <StackPanel Margin="20" Spacing="16" MaxWidth="1600">
+
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBlock Text="📇 거래처 · 계약" Classes="h1"/>
+                <TextBlock Text="· 계약 DB · 업체명 · 약칭 · 유효기간"
+                           Classes="muted" VerticalAlignment="Bottom" Margin="4,0,0,5"/>
+                <Border Classes="chip ok" Margin="12,0,0,0" VerticalAlignment="Center">
+                    <TextBlock x:Name="ClientChip" Text="DB 조회 중…"/>
+                </Border>
+            </StackPanel>
+
+            <Grid ColumnDefinitions="*,16,360">
+
+                <Border Grid.Column="0" Classes="card" Background="{DynamicResource PaperSecA}">
+                    <DockPanel>
+                        <Border DockPanel.Dock="Top" Classes="card-head" Margin="-12,-12,-12,8">
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <TextBlock Grid.Column="0" Text="🏢 계약업체 목록" Classes="h3"/>
+                                <TextBox Grid.Column="1" Watermark="🔍 업체명·약칭"
+                                         FontSize="11" Margin="10,0"/>
+                                <Button Grid.Column="2" Classes="primary" Content="+ 새 계약"/>
+                            </Grid>
+                        </Border>
+
+                        <Grid DockPanel.Dock="Top" ColumnDefinitions="*,80,100,140,100,100"
+                              Margin="0,0,0,6">
+                            <TextBlock Grid.Column="0" Text="업체명"     Classes="sub mono"/>
+                            <TextBlock Grid.Column="1" Text="약칭"       Classes="sub mono"/>
+                            <TextBlock Grid.Column="2" Text="계약종류"    Classes="sub mono"/>
+                            <TextBlock Grid.Column="3" Text="유효기간"    Classes="sub mono"/>
+                            <TextBlock Grid.Column="4" Text="시설구분"    Classes="sub mono"/>
+                            <TextBlock Grid.Column="5" Text="상태"       Classes="sub mono"/>
+                        </Grid>
+                        <Border Classes="dashed" DockPanel.Dock="Top" Margin="0,0,0,4"/>
+
+                        <StackPanel x:Name="ClientList" Spacing="2"/>
+                    </DockPanel>
+                </Border>
+
+                <StackPanel Grid.Column="2" Spacing="12">
+                    <Border Classes="card" Background="{DynamicResource PaperSecB}">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="📊 요약" Classes="h3"/>
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <Border Classes="chip ok"><TextBlock x:Name="ChipActive"  Text="유효 0"/></Border>
+                                <Border Classes="chip bad"><TextBlock x:Name="ChipExpired" Text="만료 0"/></Border>
+                            </StackPanel>
+                            <TextBlock x:Name="SummaryLine" Text="-" Classes="sub"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Classes="card" Background="{DynamicResource PaperSecD}">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="💡 tip" Classes="h3"/>
+                            <TextBlock Text="• 약칭은 의뢰/견적 자동완성의 키" Classes="sub"/>
+                            <TextBlock Text="• 계약 만료일 30일 이내 업체는 별도 표기" Classes="sub"/>
+                            <TextBlock Text="• 행 클릭 → 시설/담당자 상세" Classes="sub"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

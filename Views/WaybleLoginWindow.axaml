@@ -1,0 +1,47 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="ETA.Views.WaybleLoginWindow"
+        Title="Wayble · 로그인"
+        Width="480" Height="420"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource PaperBg}">
+
+    <Border Classes="card" Margin="20">
+        <StackPanel Margin="22" Spacing="12">
+
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="🔑" FontSize="22" VerticalAlignment="Center"/>
+                <TextBlock Text="Wayble 로그인" Classes="h2" VerticalAlignment="Center"/>
+            </StackPanel>
+            <TextBlock Text="rewater.wayble.eco — 측정인과 동일하게 브라우저 세션을 파이프로 유지합니다."
+                       Classes="sub" Foreground="{DynamicResource PaperFgMuted}"
+                       TextWrapping="Wrap"/>
+
+            <StackPanel Spacing="4" Margin="0,8,0,0">
+                <TextBlock Text="아이디" Classes="sub"/>
+                <TextBox x:Name="IdBox" Watermark="예: ironuk"/>
+            </StackPanel>
+
+            <StackPanel Spacing="4">
+                <TextBlock Text="비밀번호" Classes="sub"/>
+                <TextBox x:Name="PwBox" Watermark="••••••••" PasswordChar="●"/>
+            </StackPanel>
+
+            <CheckBox x:Name="AutoCheck" Content="자동 로그인" FontSize="12"
+                      Foreground="{DynamicResource PaperFgBody}"/>
+
+            <TextBlock x:Name="StatusTb" Text="" FontSize="12"
+                       Foreground="{DynamicResource PaperFgMuted}"
+                       TextWrapping="Wrap"/>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
+                        Spacing="8" Margin="0,8,0,0">
+                <Button Content="닫기" Click="OnClose"/>
+                <Button x:Name="SubmitBtn" Classes="primary"
+                        Content="🔐 로그인 →" Padding="16,8" Click="OnSubmit"/>
+            </StackPanel>
+
+        </StackPanel>
+    </Border>
+</Window>

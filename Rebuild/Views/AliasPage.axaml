@@ -1,0 +1,83 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ETA.Rebuild.Views.AliasPage">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  Background="{DynamicResource PaperBg}">
+        <StackPanel Margin="20" Spacing="16" MaxWidth="1600">
+
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBlock Text="🛠 관리자 · 화합물별명 매칭" Classes="h1"/>
+                <TextBlock Text="· 기기 파일의 화합물 이름 → 표준 약칭 매핑"
+                           Classes="muted" VerticalAlignment="Bottom" Margin="4,0,0,5"/>
+                <Border Classes="chip ok" Margin="12,0,0,0" VerticalAlignment="Center">
+                    <TextBlock x:Name="AliasCountChip" Text="DB 조회 중…"/>
+                </Border>
+            </StackPanel>
+
+            <Grid ColumnDefinitions="300,14,*,14,340">
+
+                <!-- 좌 · 표준 항목 리스트 -->
+                <Border Grid.Column="0" Classes="card" Background="{DynamicResource PaperSecA}">
+                    <DockPanel>
+                        <Border DockPanel.Dock="Top" Classes="card-head" Margin="-12,-12,-12,8">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <Border Classes="sectag" Width="22" Height="22"><TextBlock Text="1" FontSize="11"/></Border>
+                                <TextBlock Text="표준 약칭" Classes="h3" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                        <TextBox DockPanel.Dock="Top" Watermark="🔍 약칭 검색"
+                                 FontSize="11" Margin="0,0,0,8"/>
+                        <StackPanel x:Name="AliasStdList" Spacing="3"/>
+                    </DockPanel>
+                </Border>
+
+                <!-- 가운데 · 매핑 테이블 -->
+                <Border Grid.Column="2" Classes="card" Background="{DynamicResource PaperSecB}">
+                    <DockPanel>
+                        <Border DockPanel.Dock="Top" Classes="card-head" Margin="-12,-12,-12,8">
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <TextBlock Grid.Column="0" Text="🔗 기기 이름 → 약칭" Classes="h3"/>
+                                <TextBlock Grid.Column="1" Text="중복/미매핑은 파서 오류의 주요 원인"
+                                           Classes="sub" Margin="10,2,0,0"/>
+                                <Border Grid.Column="2" Classes="chip warn"><TextBlock Text="미매핑"/></Border>
+                            </Grid>
+                        </Border>
+
+                        <Grid DockPanel.Dock="Top" ColumnDefinitions="180,*,120,Auto"
+                              Margin="0,0,0,6">
+                            <TextBlock Grid.Column="0" Text="기기 원문" Classes="sub mono"/>
+                            <TextBlock Grid.Column="1" Text="약칭 (표준)" Classes="sub mono"/>
+                            <TextBlock Grid.Column="2" Text="소스" Classes="sub mono"/>
+                            <TextBlock Grid.Column="3" Text="동작" Classes="sub mono" Margin="6,0,0,0"/>
+                        </Grid>
+
+                        <StackPanel x:Name="AliasMapList" Spacing="2"/>
+                    </DockPanel>
+                </Border>
+
+                <!-- 우 · 드롭 영역 안내 -->
+                <StackPanel Grid.Column="4" Spacing="12">
+                    <Border Classes="card" Background="{DynamicResource PaperSecD}">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="📥 드래그 앤 드랍" Classes="h3"/>
+                            <TextBlock Text="기기 원문 텍스트를 좌측 약칭 위로 끌어다 놓으면 바로 매핑됩니다." Classes="sub"/>
+                            <Border Classes="dashed" Margin="0,4"/>
+                            <TextBlock Text="파일로 일괄 가져오기: CSV 업로드" Classes="sub"/>
+                            <Button Classes="ghost" Content="CSV 업로드…"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Classes="card" Background="{DynamicResource PaperSecE}">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="💡 매핑 규칙" Classes="h3"/>
+                            <TextBlock Text="• 공백/대소문자 무시, 한영 엄격 매칭" Classes="sub"/>
+                            <TextBlock Text="• 중복 원문은 최신 수정본 우선" Classes="sub"/>
+                            <TextBlock Text="• 약칭 없는 항목은 분석정보 테이블에 먼저 등록" Classes="sub"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

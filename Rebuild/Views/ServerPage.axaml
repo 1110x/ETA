@@ -1,0 +1,82 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ETA.Rebuild.Views.ServerPage">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  Background="{DynamicResource PaperBg}">
+        <StackPanel Margin="20" Spacing="16" MaxWidth="1400">
+
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBlock Text="🛠 관리자 · 서버 · DB" Classes="h1"/>
+                <TextBlock Text="· 접속 상태 · 스키마 진단 · 백업"
+                           Classes="muted" VerticalAlignment="Bottom" Margin="4,0,0,5"/>
+                <Border Classes="chip ok" Margin="12,0,0,0" VerticalAlignment="Center">
+                    <TextBlock x:Name="ServerChip" Text="DB 조회 중…"/>
+                </Border>
+            </StackPanel>
+
+            <Grid ColumnDefinitions="*,16,380">
+
+                <!-- 좌 · 테이블 통계 -->
+                <Border Grid.Column="0" Classes="card" Background="{DynamicResource PaperSecA}">
+                    <DockPanel>
+                        <Border DockPanel.Dock="Top" Classes="card-head" Margin="-12,-12,-12,8">
+                            <TextBlock Text="🗄 주요 테이블 레코드 수" Classes="h3"/>
+                        </Border>
+
+                        <Grid DockPanel.Dock="Top" ColumnDefinitions="*,120,120" Margin="0,0,0,6">
+                            <TextBlock Grid.Column="0" Text="테이블" Classes="sub mono"/>
+                            <TextBlock Grid.Column="1" Text="레코드" Classes="sub mono" HorizontalAlignment="Right"/>
+                            <TextBlock Grid.Column="2" Text="오늘"  Classes="sub mono" HorizontalAlignment="Right"/>
+                        </Grid>
+                        <Border Classes="dashed" DockPanel.Dock="Top" Margin="0,0,0,4"/>
+
+                        <StackPanel x:Name="TableStatList" Spacing="3"/>
+                    </DockPanel>
+                </Border>
+
+                <!-- 우 · 서버 정보 + 백업 -->
+                <StackPanel Grid.Column="2" Spacing="12">
+                    <Border Classes="card" Background="{DynamicResource PaperSecB}">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="🌐 서버 정보" Classes="h3"/>
+                            <Grid ColumnDefinitions="80,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto" >
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="서버"   Classes="sub"/>
+                                <TextBlock Grid.Row="0" Grid.Column="1" x:Name="SrvHost" Text="-" Classes="body mono"/>
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="포트"   Classes="sub"/>
+                                <TextBlock Grid.Row="1" Grid.Column="1" x:Name="SrvPort" Text="-" Classes="body mono"/>
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="DB"     Classes="sub"/>
+                                <TextBlock Grid.Row="2" Grid.Column="1" x:Name="SrvDb"   Text="-" Classes="body mono"/>
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="User"   Classes="sub"/>
+                                <TextBlock Grid.Row="3" Grid.Column="1" x:Name="SrvUser" Text="-" Classes="body mono"/>
+                                <TextBlock Grid.Row="4" Grid.Column="0" Text="버전"   Classes="sub"/>
+                                <TextBlock Grid.Row="4" Grid.Column="1" x:Name="SrvVer"  Text="-" Classes="body mono"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Classes="card" Background="{DynamicResource PaperSecD}">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="💾 백업 · 내보내기" Classes="h3"/>
+                            <TextBlock Text="스키마+데이터 전체 덤프 · 엑셀 일괄 내보내기" Classes="sub"/>
+                            <Border Classes="dashed" Margin="0,4"/>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Button Classes="primary" Content="mysqldump"/>
+                                <Button Classes="ghost"   Content="엑셀 일괄"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Classes="card" Background="{DynamicResource PaperSecE}">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="🔧 진단" Classes="h3"/>
+                            <Button Classes="ghost" Content="접속 재확인"/>
+                            <Button Classes="ghost" Content="마이그레이션 상태 확인"/>
+                            <Button Classes="ghost" Content="인덱스 재구성"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

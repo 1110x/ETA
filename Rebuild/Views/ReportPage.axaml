@@ -1,0 +1,69 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ETA.Rebuild.Views.ReportPage">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  Background="{DynamicResource PaperBg}">
+        <StackPanel Margin="20" Spacing="16" MaxWidth="1600">
+
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBlock Text="📄 시험성적서" Classes="h1"/>
+                <TextBlock Text="· 견적번호 그룹 · 채취일자 최신순"
+                           Classes="muted" VerticalAlignment="Bottom" Margin="4,0,0,5"/>
+                <Border Classes="chip ok" Margin="12,0,0,0" VerticalAlignment="Center">
+                    <TextBlock x:Name="RepChip" Text="DB 조회 중…"/>
+                </Border>
+            </StackPanel>
+
+            <Grid ColumnDefinitions="*,16,360">
+
+                <Border Grid.Column="0" Classes="card" Background="{DynamicResource PaperSecA}">
+                    <DockPanel>
+                        <Border DockPanel.Dock="Top" Classes="card-head" Margin="-12,-12,-12,8">
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <TextBlock Grid.Column="0" Text="📚 성적서 후보 (견적번호 그룹)" Classes="h3"/>
+                                <TextBox Grid.Column="1" Watermark="🔍 견적번호·약칭"
+                                         FontSize="11" Margin="10,0"/>
+                                <Button Grid.Column="2" Classes="primary" Content="🖨 일괄 발행"/>
+                            </Grid>
+                        </Border>
+
+                        <Grid DockPanel.Dock="Top" ColumnDefinitions="180,120,*,80,120"
+                              Margin="0,0,0,6">
+                            <TextBlock Grid.Column="0" Text="견적번호"   Classes="sub mono"/>
+                            <TextBlock Grid.Column="1" Text="채취일자"   Classes="sub mono"/>
+                            <TextBlock Grid.Column="2" Text="약칭"      Classes="sub mono"/>
+                            <TextBlock Grid.Column="3" Text="시료수"    Classes="sub mono"
+                                       HorizontalAlignment="Right"/>
+                            <TextBlock Grid.Column="4" Text="상태"      Classes="sub mono"
+                                       HorizontalAlignment="Right"/>
+                        </Grid>
+                        <Border Classes="dashed" DockPanel.Dock="Top" Margin="0,0,0,4"/>
+
+                        <StackPanel x:Name="RepList" Spacing="2"/>
+                    </DockPanel>
+                </Border>
+
+                <StackPanel Grid.Column="2" Spacing="12">
+                    <Border Classes="card" Background="{DynamicResource PaperSecB}">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="📈 발행 요약" Classes="h3"/>
+                            <TextBlock x:Name="RepTotalTb"   Text="전체 -" Classes="body"/>
+                            <TextBlock x:Name="RepSamplesTb" Text="시료 -" Classes="body"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Classes="card" Background="{DynamicResource PaperSecD}">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="📝 발행 체크리스트" Classes="h3"/>
+                            <TextBlock Text="• 정도관리 시료 포함 여부 확인" Classes="sub"/>
+                            <TextBlock Text="• 분석항목 공란 없음" Classes="sub"/>
+                            <TextBlock Text="• 담당자 서명 · 기록부 링크" Classes="sub"/>
+                            <TextBlock Text="• PDF → 이메일/출력" Classes="sub"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -1,0 +1,69 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ETA.Rebuild.Views.RequestPage">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  Background="{DynamicResource PaperBg}">
+        <StackPanel Margin="20" Spacing="16" MaxWidth="1600">
+
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBlock Text="📨 의뢰서 · 분석" Classes="h1"/>
+                <TextBlock Text="· 수질분석센터_결과 · 최근 채취일자 순"
+                           Classes="muted" VerticalAlignment="Bottom" Margin="4,0,0,5"/>
+                <Border Classes="chip ok" Margin="12,0,0,0" VerticalAlignment="Center">
+                    <TextBlock x:Name="ReqChip" Text="DB 조회 중…"/>
+                </Border>
+            </StackPanel>
+
+            <Grid ColumnDefinitions="*,16,360">
+
+                <Border Grid.Column="0" Classes="card" Background="{DynamicResource PaperSecA}">
+                    <DockPanel>
+                        <Border DockPanel.Dock="Top" Classes="card-head" Margin="-12,-12,-12,8">
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <TextBlock Grid.Column="0" Text="📋 의뢰 목록 (최근 200건)" Classes="h3"/>
+                                <TextBox Grid.Column="1" Watermark="🔍 견적번호·시료·약칭"
+                                         FontSize="11" Margin="10,0"/>
+                                <Button Grid.Column="2" Classes="primary" Content="+ 신규 의뢰"/>
+                            </Grid>
+                        </Border>
+
+                        <Grid DockPanel.Dock="Top" ColumnDefinitions="160,100,*,80,120"
+                              Margin="0,0,0,6">
+                            <TextBlock Grid.Column="0" Text="견적번호"   Classes="sub mono"/>
+                            <TextBlock Grid.Column="1" Text="채취일자"   Classes="sub mono"/>
+                            <TextBlock Grid.Column="2" Text="시료명"     Classes="sub mono"/>
+                            <TextBlock Grid.Column="3" Text="약칭"       Classes="sub mono"/>
+                            <TextBlock Grid.Column="4" Text="정도보증"   Classes="sub mono"/>
+                        </Grid>
+                        <Border Classes="dashed" DockPanel.Dock="Top" Margin="0,0,0,4"/>
+
+                        <StackPanel x:Name="ReqList" Spacing="2"/>
+                    </DockPanel>
+                </Border>
+
+                <StackPanel Grid.Column="2" Spacing="12">
+                    <Border Classes="card" Background="{DynamicResource PaperSecB}">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="📊 요약" Classes="h3"/>
+                            <TextBlock x:Name="SumTotalTb"  Text="-" Classes="body"/>
+                            <Border Classes="dashed" Margin="0,4"/>
+                            <TextBlock x:Name="SumTodayTb"  Text="오늘 -" Classes="body"/>
+                            <TextBlock x:Name="SumWeekTb"   Text="이번 주 -" Classes="body"/>
+                            <TextBlock x:Name="SumMonthTb"  Text="이번 달 -" Classes="body"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Classes="card" Background="{DynamicResource PaperSecD}">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="🧪 정도보증 비율" Classes="h3"/>
+                            <TextBlock x:Name="QaRatioTb" Text="-" Classes="body mono"/>
+                            <TextBlock Text="BK/CCV/FBK/MBK/DW 등 정도관리 시료 비율"
+                                       Classes="sub" TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

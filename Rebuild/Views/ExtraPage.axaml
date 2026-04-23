@@ -1,0 +1,78 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ETA.Rebuild.Views.ExtraPage">
+
+    <Grid Background="{DynamicResource PaperBg}" RowDefinitions="Auto,*">
+
+        <Border Grid.Row="0"
+                Background="{DynamicResource PaperCard}"
+                BorderBrush="{DynamicResource PaperInkSoft}"
+                BorderThickness="0,0,0,1"
+                Padding="20,12">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                    <TextBlock Text="🛠 관리자 · 위험·수리·구매" Classes="h1"/>
+                    <TextBlock Text="· 위험물 · 시설수리 · 장비구매 요청"
+                               Classes="muted" VerticalAlignment="Center" Margin="6,0,0,0"/>
+                </StackPanel>
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                    <Button Classes="navtab active" x:Name="TabRisk"     Content="⚠ 위험물"   Click="OnTab" Tag="risk"/>
+                    <Button Classes="navtab"        x:Name="TabRepair"   Content="🔧 수리요청" Click="OnTab" Tag="repair"/>
+                    <Button Classes="navtab"        x:Name="TabPurchase" Content="🛒 구매요청" Click="OnTab" Tag="purchase"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <Grid Margin="20" ColumnDefinitions="*,16,360">
+
+                <Border Grid.Column="0" Classes="card" Background="{DynamicResource PaperSecA}">
+                    <DockPanel>
+                        <Border DockPanel.Dock="Top" Classes="card-head" Margin="-12,-12,-12,8">
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <TextBlock Grid.Column="0" x:Name="ExtraListTitle" Text="⚠ 위험물 관리대장" Classes="h3"/>
+                                <TextBlock Grid.Column="1" x:Name="ExtraListSub"   Text="보관·사용·폐기 기록"
+                                           Classes="sub" Margin="10,2,0,0"/>
+                                <Button Grid.Column="2" Classes="primary" Content="+ 새 항목"/>
+                            </Grid>
+                        </Border>
+
+                        <Grid DockPanel.Dock="Top" ColumnDefinitions="140,*,100,100,100"
+                              Margin="0,0,0,6">
+                            <TextBlock Grid.Column="0" Text="날짜"     Classes="sub mono"/>
+                            <TextBlock Grid.Column="1" Text="내용"     Classes="sub mono"/>
+                            <TextBlock Grid.Column="2" Text="담당"     Classes="sub mono"/>
+                            <TextBlock Grid.Column="3" Text="상태"     Classes="sub mono"/>
+                            <TextBlock Grid.Column="4" Text="비고"     Classes="sub mono"/>
+                        </Grid>
+                        <Border Classes="dashed" DockPanel.Dock="Top" Margin="0,0,0,4"/>
+
+                        <StackPanel x:Name="ExtraList" Spacing="3"/>
+                    </DockPanel>
+                </Border>
+
+                <StackPanel Grid.Column="2" Spacing="12">
+                    <Border Classes="card" Background="{DynamicResource PaperSecB}">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="📊 요약" Classes="h3"/>
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <Border Classes="chip ok"><TextBlock x:Name="ExtraChipOk"    Text="완료 0"/></Border>
+                                <Border Classes="chip warn"><TextBlock x:Name="ExtraChipWarn" Text="진행 0"/></Border>
+                                <Border Classes="chip bad"><TextBlock x:Name="ExtraChipBad"  Text="지연 0"/></Border>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Classes="card" Background="{DynamicResource PaperSecD}">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="💡 안내" Classes="h3"/>
+                            <TextBlock Text="• 위험물은 MSDS 첨부 필수" Classes="sub"/>
+                            <TextBlock Text="• 수리요청은 사진 첨부 권장" Classes="sub"/>
+                            <TextBlock Text="• 구매요청은 견적서 PDF 첨부" Classes="sub"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

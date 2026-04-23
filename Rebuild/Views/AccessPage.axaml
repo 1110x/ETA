@@ -1,0 +1,58 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ETA.Rebuild.Views.AccessPage">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  Background="{DynamicResource PaperBg}">
+        <StackPanel Margin="20" Spacing="16" MaxWidth="1400">
+
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBlock Text="🛠 관리자 · 권한 관리" Classes="h1"/>
+                <TextBlock Text="· 직원별 메뉴 접근 권한 (AgentAccess)"
+                           Classes="muted" VerticalAlignment="Bottom" Margin="4,0,0,5"/>
+                <Border Classes="chip ok" Margin="12,0,0,0" VerticalAlignment="Center">
+                    <TextBlock x:Name="AccessCountChip" Text="DB 조회 중…"/>
+                </Border>
+            </StackPanel>
+
+            <Grid ColumnDefinitions="260,14,*">
+
+                <!-- 좌 · 직원 선택 -->
+                <Border Grid.Column="0" Classes="card" Background="{DynamicResource PaperSecA}">
+                    <DockPanel>
+                        <Border DockPanel.Dock="Top" Classes="card-head" Margin="-12,-12,-12,8">
+                            <TextBlock Text="👥 직원 선택" Classes="h3"/>
+                        </Border>
+                        <StackPanel x:Name="AccessStaffList" Spacing="2"/>
+                    </DockPanel>
+                </Border>
+
+                <!-- 우 · 메뉴 매트릭스 -->
+                <Border Grid.Column="2" Classes="card" Background="{DynamicResource PaperSecB}">
+                    <DockPanel>
+                        <Border DockPanel.Dock="Top" Classes="card-head" Margin="-12,-12,-12,8">
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <TextBlock Grid.Column="0" Text="🔐 메뉴 권한 매트릭스" Classes="h3"/>
+                                <TextBlock Grid.Column="1" x:Name="SelectedStaffLabel"
+                                           Text="좌측에서 직원을 선택하세요"
+                                           Classes="sub" Margin="10,2,0,0"/>
+                                <Button Grid.Column="2" Classes="primary" Content="저장"/>
+                            </Grid>
+                        </Border>
+
+                        <StackPanel>
+                            <Grid ColumnDefinitions="*,Auto,Auto,Auto" Margin="0,0,0,6">
+                                <TextBlock Grid.Column="0" Text="메뉴" Classes="sub mono"/>
+                                <TextBlock Grid.Column="1" Text="보기"   Classes="sub mono" Margin="16,0"/>
+                                <TextBlock Grid.Column="2" Text="편집"   Classes="sub mono" Margin="16,0"/>
+                                <TextBlock Grid.Column="3" Text="삭제"   Classes="sub mono" Margin="16,0"/>
+                            </Grid>
+                            <Border Classes="dashed" Margin="0,0,0,4"/>
+                            <StackPanel x:Name="AccessMatrix" Spacing="3"/>
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -1,0 +1,142 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="ETA.Rebuild.Views.LoginWindow"
+        Title="ETA · 로그인"
+        Width="980" Height="640"
+        MinWidth="860" MinHeight="560"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource PaperBg}">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- 상단 브랜드 바 -->
+        <Border Grid.Row="0"
+                Background="{DynamicResource PaperCard}"
+                BorderBrush="{DynamicResource PaperInk}"
+                BorderThickness="0,0,0,1.5"
+                Padding="20,12">
+            <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                <TextBlock Text="ETA" Classes="h1"/>
+                <TextBlock Text="· 수질분석센터 · 로그인"
+                           Classes="muted" VerticalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <!-- 본문: 로그인 카드 -->
+        <Border Grid.Row="1"
+                HorizontalAlignment="Center" VerticalAlignment="Center"
+                Width="760" Classes="card">
+            <Grid Margin="24" ColumnDefinitions="300,20,*" RowDefinitions="Auto,*,Auto">
+
+                <!-- 타이틀 -->
+                <StackPanel Grid.Row="0" Grid.ColumnSpan="3" Spacing="4" Margin="0,0,0,16">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <TextBlock Text="🔐" FontSize="24" VerticalAlignment="Center"/>
+                        <TextBlock Text="로그인" Classes="h2" VerticalAlignment="Center"/>
+                        <Border Classes="chip info" VerticalAlignment="Center">
+                            <TextBlock Text="사번 + 비밀번호 입력 후 진입할 UI 버전 선택"/>
+                        </Border>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- 왼쪽: 계정 -->
+                <StackPanel Grid.Row="1" Grid.Column="0" Spacing="12">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="사번" Classes="sub"/>
+                        <TextBox x:Name="IdBox" Watermark="예: 3010"/>
+                    </StackPanel>
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="비밀번호" Classes="sub"/>
+                        <TextBox x:Name="PwBox" Watermark="••••••••" PasswordChar="●"/>
+                    </StackPanel>
+
+                    <CheckBox x:Name="AutoLoginCheck" Content="자동 로그인" FontSize="12"
+                              Foreground="{DynamicResource PaperFgBody}"/>
+
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="회원가입" FontSize="12" Cursor="Hand"
+                                   Foreground="{DynamicResource PaperAccent}"
+                                   PointerPressed="OnSignUp"/>
+                        <TextBlock Text="·" FontSize="12" Classes="muted"/>
+                        <TextBlock Text="비밀번호 찾기" FontSize="12" Cursor="Hand"
+                                   Foreground="{DynamicResource PaperAccent}"
+                                   PointerPressed="OnPasswordRecovery"/>
+                    </StackPanel>
+
+                    <TextBlock x:Name="ErrBlock" Text="" FontSize="12"
+                               Foreground="{DynamicResource PaperBadFg}" IsVisible="False"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+
+                <!-- 오른쪽: 진입 버전 -->
+                <StackPanel Grid.Row="1" Grid.Column="2" Spacing="8">
+                    <TextBlock Text="로그인 후 진입할 UI" Classes="sub"/>
+
+                    <!-- 버전1 (기존) -->
+                    <Border x:Name="V1Card" Classes="card-flat" Padding="12,10" Cursor="Hand"
+                            PointerPressed="OnPickV1">
+                        <Grid ColumnDefinitions="36,*,Auto">
+                            <TextBlock Grid.Column="0" Text="🗄" FontSize="22" VerticalAlignment="Center"/>
+                            <StackPanel Grid.Column="1" Spacing="2">
+                                <TextBlock Text="버전 1 · 기존 ETA (v21)" Classes="h4"/>
+                                <TextBlock Text="지금까지 쓰던 Views/MainPage 전체 메뉴"
+                                           Classes="sub"/>
+                            </StackPanel>
+                            <TextBlock x:Name="V1Dot" Grid.Column="2" Text="○" Classes="muted"
+                                       FontSize="18" VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- 버전2 (Rebuild · 기본 선택) -->
+                    <Border x:Name="V2Card" Classes="card-flat"
+                            BorderBrush="{DynamicResource PaperAccent}" BorderThickness="2"
+                            Background="{DynamicResource PaperInfoBg}"
+                            Padding="12,10" Cursor="Hand"
+                            PointerPressed="OnPickV2">
+                        <Grid ColumnDefinitions="36,*,Auto">
+                            <TextBlock Grid.Column="0" Text="📒" FontSize="22" VerticalAlignment="Center"/>
+                            <StackPanel Grid.Column="1" Spacing="2">
+                                <TextBlock Text="버전 2 · Rebuild · 페이퍼 톤" Classes="h4"/>
+                                <TextBlock Text="eta-rebuild · 상단 네비 9탭 + 관리자 드롭다운"
+                                           Classes="sub"/>
+                            </StackPanel>
+                            <TextBlock x:Name="V2Dot" Grid.Column="2" Text="●"
+                                       Foreground="{DynamicResource PaperAccent}"
+                                       FontSize="18" VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+
+                    <Border Classes="note" Margin="0,4,0,0">
+                        <TextBlock Text="버전2 완성 시점에 버전1 폐기 예정 · 당분간 투트랙"
+                                   TextWrapping="Wrap"/>
+                    </Border>
+                </StackPanel>
+
+                <!-- 하단: 로그인 버튼 -->
+                <StackPanel Grid.Row="2" Grid.ColumnSpan="3"
+                            Orientation="Horizontal" HorizontalAlignment="Right"
+                            Spacing="8" Margin="0,18,0,0">
+                    <TextBlock x:Name="PickLabel" Text="선택: 버전 2 · Rebuild"
+                               Classes="sub" VerticalAlignment="Center"/>
+                    <Button Classes="primary" Content="🔐 로그인 →" Padding="18,8" Click="OnLoginSubmit"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- 하단 푸터 -->
+        <Border Grid.Row="2"
+                Background="{DynamicResource PaperCard}"
+                BorderBrush="{DynamicResource PaperInkSoft}"
+                BorderThickness="0,1,0,0"
+                Padding="20,8">
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Grid.Column="0" Text="ETA LIMS · eta-rebuild"
+                           Classes="sub" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="1" Text="v21.0 · 2026-04-19"
+                           Classes="sub" VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+
+    </Grid>
+</Window>
