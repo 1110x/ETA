@@ -45,11 +45,11 @@ public static class TemplateConfiguration
         new("PreDbSnapshot",        "DB 저장 전 스냅샷",         "Data/Templates/PreDbSnapshot_template.xlsm",               "PreDbSnapshotService"),
     };
 
-    // 리포지토리 루트 (<exe>/../../../) — 기존 서비스들의 RootPath 패턴과 동일
-    public static string RepoRoot =>
-        Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", ".."));
+    // 개발·설치 환경 모두 대응 (AppPaths 참고)
+    public static string RepoRoot => AppPaths.RootPath;
 
-    private static string ConfigPath => Path.Combine(RepoRoot, "Data", ConfigFileName);
+    // 설정 파일은 쓰기 가능한 위치 (설치 환경에선 %LOCALAPPDATA%\ETA)
+    private static string ConfigPath => Path.Combine(AppPaths.WritableDataRoot, "Data", ConfigFileName);
 
     private static Dictionary<string, string>? _cache;
 
