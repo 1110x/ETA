@@ -5,11 +5,13 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-VERSION="${1:-1.3.0}"     # 첫 인자로 버전 지정. 기본 1.3.0
+VERSION="${1:-1.4.0}"     # 첫 인자로 버전 지정. 기본 1.4.0
 PUB="$ROOT/Build/publish"
 REL="$ROOT/Build/Releases"
 
 export PATH="$PATH:$HOME/.dotnet/tools"
+# vpk 가 .NET 9 런타임을 요구할 때 설치된 상위 버전으로 롤포워드 허용
+export DOTNET_ROLL_FORWARD="${DOTNET_ROLL_FORWARD:-LatestMajor}"
 
 echo "📦  ETA v$VERSION Windows 설치 파일 생성 (Velopack)"
 
@@ -39,12 +41,13 @@ if ! command -v vpk >/dev/null; then
 fi
 
 echo "▶  vpk pack (Windows 설치 파일 생성 중...)"
+# 참고: macOS 호스트의 vpk 는 -i 옵션에 .icns 만 허용.
+# 실행 파일·바로가기 아이콘은 ETA.csproj 의 <ApplicationIcon> 으로 이미 박혀있음.
 vpk pack \
     -u ETA \
     -v "$VERSION" \
     -p "$PUB" \
     -e ETA.exe \
-    -i "$ROOT/Assets/icons/ETA.ico" \
     -o "$REL"
 
 echo ""
