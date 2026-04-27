@@ -8,7 +8,7 @@ namespace ETA;
 
 public partial class App : Application
 {
-    public static bool EnableLogging = true;
+    public static bool EnableLogging = false;
     public static bool AnimationsEnabled = true;
 
     public override void Initialize()

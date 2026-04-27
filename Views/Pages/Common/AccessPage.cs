@@ -512,6 +512,29 @@ public class AccessPage
         {
             _selectedAnalyte = item;
             _show2Content.Content = BuildAnalyteEditPanel(item, isNew: false);
+            // Show4 — 파서 컬럼 매핑 (해당 항목의 시험기록부 컬럼 + 스키마별 기본 매핑)
+            try
+            {
+                var tableName = WaterCenterDbMigration.SafeName(item.Analyte) + "_시험기록부";
+                var dbCols = new List<string>();
+                using (var conn = DbConnectionFactory.CreateConnection())
+                {
+                    conn.Open();
+                    if (DbConnectionFactory.TableExists(conn, tableName))
+                        dbCols = DbConnectionFactory.GetColumnNames(conn, tableName);
+                }
+                _show4Content.Content = new ScrollViewer
+                {
+                    Content = BuildParserMapSection(item.Analyte, dbCols),
+                    Padding = new Thickness(8),
+                };
+                Show4VisibleChanged?.Invoke(true);
+            }
+            catch (Exception ex)
+            {
+                _show4Content.Content = new TextBlock { Text = $"파서 매핑 오류: {ex.Message}", FontFamily = Font, FontSize = AppTheme.FontSM, Foreground = Brushes.Red };
+                Show4VisibleChanged?.Invoke(true);
+            }
         }
     }
 
@@ -539,6 +562,7 @@ public class AccessPage
         var tbParts    = MkTb(item?.Parts ?? "",                       "구성 (예: 1)");
         var tbMethod   = MkTb(item?.Method ?? "",                      "시험방법 (예: 자외선/가시선분광법)");
         var tbInst     = MkTb(item?.instrument ?? "",                  "기기 (예: ICP-OES)");
+        var tbLoQ      = MkTb(item?.정량한계?.ToString("0.##########") ?? "", "정량한계 (예: 0.05) — 결과 < LoQ 면 ND 표시");
 
         // ─ 기기 선택: 체크박스 드롭다운(다중 선택) ────────────────────
         // 현장측정 분석항목이면 현장측정장비 테이블 사용, 그 외는 전체 분석장비
@@ -682,6 +706,7 @@ public class AccessPage
         form.Children.Add(Labeled("파서 별칭 (AliasX) — 쉼표 구분, 파서 키워드 자동 매핑에 사용", tbAliasX));
         form.Children.Add(TwoCol(Labeled("단위", tbUnit), Labeled("소수점 자리", tbDP)));
         form.Children.Add(TwoCol(Labeled("정렬번호 (ES)", tbES), Labeled("구성 (Parts)", tbParts)));
+        form.Children.Add(Labeled("정량한계 (LoQ) — 결과 < LoQ 면 시험기록부에 ND 표시", tbLoQ));
         form.Children.Add(Labeled("시험방법", tbMethod));
         form.Children.Add(Labeled("기기 (instrument)", instField));
 
@@ -751,6 +776,7 @@ public class AccessPage
                 ES            = tbES.Text?.Trim() ?? "",
                 Method        = tbMethod.Text?.Trim() ?? "",
                 instrument    = tbInst.Text?.Trim() ?? "",
+                정량한계      = double.TryParse(tbLoQ.Text?.Trim(), out var loq) ? loq : (double?)null,
             };
             if (string.IsNullOrWhiteSpace(updated.Analyte)) return;
             SaveAnalyteToDB(updated, isNew ? null : origAnalyte);
@@ -1267,12 +1293,252 @@ public class AccessPage
 
                 // 농도 계산 공식 빌더
                 stack.Children.Add(BuildFormulaSection(item.Analyte, cols));
+                // 파서 컬럼 매핑은 Show4 로 이동 (좁은 Show2 가독성 확보)
             }
             else
                 stack.Children.Add(new TextBlock { Text = "⚠ 시험기록부 테이블 없음 — 위 버튼으로 생성하세요", FontFamily = Font, FontSize = AppTheme.FontSM, Foreground = new SolidColorBrush(Color.Parse("#f57f17")), TextWrapping = TextWrapping.Wrap });
         }
         catch (Exception ex) { stack.Children.Add(new TextBlock { Text = $"오류: {ex.Message}", FontFamily = Font, FontSize = AppTheme.FontSM, Foreground = Brushes.Red }); }
         return stack;
+    }
+
+    /// <summary>스키마별 기본 파서→DB 매핑 — 기존 Upsert*Data 의 하드코딩 룰을 그대로 노출.
+    ///   사용자는 이 표시를 보고 잘못 매핑됐으면 우측 콤보로 바꾸면 끝.</summary>
+    private static Dictionary<string, string> GetDefaultParserMap(string schema)
+    {
+        var d = new Dictionary<string, string>(StringComparer.Ordinal);
+        switch (schema?.ToLowerInvariant())
+        {
+            case "uvvis":
+            case "metal":
+            case "cr6":
+                d["흡광도"]   = "흡광도";
+                d["시료량"]   = "시료량";
+                d["희석배수"] = "희석배수";
+                d["농도"]     = "농도";
+                d["결과"]     = "결과";
+                break;
+            case "voc":
+            case "gclc":
+                d["Area"]     = "Area";
+                d["ISTD"]     = "ISTD";
+                d["시료량"]   = "시료량";
+                d["희석배수"] = "희석배수";
+                d["농도"]     = "농도";
+                d["결과"]     = "결과";
+                break;
+            case "ss":
+                d["시료량"]   = "시료량";
+                d["전무게"]   = "전무게";
+                d["후무게"]   = "후무게";
+                d["무게차"]   = "무게차";
+                d["희석배수"] = "희석배수";
+                d["결과"]     = "결과";
+                break;
+            case "nhexan":
+                d["시료량"]   = "시료량";
+                d["전무게"]   = "전무게";
+                d["후무게"]   = "후무게";
+                d["무게차"]   = "무게차";
+                d["희석배수"] = "희석배수";
+                d["결과"]     = "결과";
+                break;
+            case "bod":
+                d["시료량"]       = "시료량";
+                d["D1"]           = "D1";
+                d["D2"]           = "D2";
+                d["희석배수"]     = "희석배수";
+                d["결과"]         = "결과";
+                d["식종시료량"]   = "식종시료량";
+                d["식종BOD"]      = "식종BOD";
+                d["15min_DO"]     = "15min_DO";
+                d["5Day_DO"]      = "5Day_DO";
+                break;
+            case "toctcic":
+                d["TCAU"]     = "TCAU";
+                d["TCcon"]    = "TCcon";
+                d["ICAU"]     = "ICAU";
+                d["ICcon"]    = "ICcon";
+                d["희석배수"] = "희석배수";
+                d["농도"]     = "농도";
+                d["결과"]     = "결과";
+                break;
+            case "ecotox":
+                d["LC50"]            = "LC50";
+                d["TU"]              = "TU";
+                d["대조군_생물수"]   = "대조군_생물수";
+                d["대조군_사망수"]   = "대조군_사망수";
+                break;
+            case "coliform":
+                d["A"]            = "A";
+                d["B"]            = "B";
+                d["시료량"]       = "시료량";
+                d["희석배수"]     = "희석배수";
+                d["사용희석배수"] = "사용희석배수";
+                d["결과"]         = "결과";
+                break;
+            default:
+                d["시료량"]   = "시료량";
+                d["희석배수"] = "희석배수";
+                d["결과"]     = "결과";
+                break;
+        }
+        return d;
+    }
+
+    // ── 파서 출력 필드 후보 (각 파서 코드에서 추출되는 대표 필드들) ────────
+    private static readonly List<string> _parserFieldCandidates = new()
+    {
+        // 공통
+        "SN","시료명","분석일",
+        // GC/GCMS/PFAS
+        "Area","Resp.","Response","ISTD","ISTD Resp.","ISTD Area","CompoundName","성분명",
+        // UV-VIS / 분광광도계
+        "흡광도","Abs","Conc.","농도","계산농도",
+        // TOC NPOC/TCIC
+        "AU","TC AU","IC AU","TC Conc.","IC Conc.","TCAU","ICAU","TCcon","ICcon",
+        // BOD
+        "D1","D2","15min_DO","5Day_DO","f(x/y)","식종시료량","식종BOD","식종함유량",
+        // SS / NHexan (중량법)
+        "전무게","후무게","무게차",
+        // 공통 측정 메타
+        "시료량","희석배수","결과","결과값",
+        // 검정곡선
+        "기울기","절편","R²","R2","검량선_a","검량선_b",
+    };
+
+    // ── 파서 컬럼 매핑 빌더 (드롭다운) ────────────────────────────────────────
+    //   좌측: 파서 필드 후보 (편집 가능)
+    //   우측: 현재 분석항목의 시험기록부 DB 컬럼 (편집 가능)
+    //   분석정보.parser_column_map (JSON) 에 저장 → UpsertRowData 가 참조.
+    private Control BuildParserMapSection(string analyte, List<string> availableCols)
+    {
+        var section = new StackPanel { Spacing = 4, Margin = new Thickness(0, 12, 0, 0) };
+        section.Children.Add(new Border { Height = 1, Background = AppRes("BorderSubtle"), Margin = new Thickness(0, 0, 0, 4) });
+
+        section.Children.Add(new TextBlock
+        {
+            Text = "파서 컬럼 매핑  (파서 필드 → DB 컬럼)",
+            FontFamily = Font, FontSize = AppTheme.FontSM,
+            Foreground = AppRes("FgMuted"),
+            Margin = new Thickness(0, 0, 0, 4),
+        });
+
+        // 후보 목록 — DB 컬럼은 항목 스키마, 파서 필드는 공통 후보
+        var dbCandidates = new List<string>(availableCols.Where(c => !string.IsNullOrWhiteSpace(c)));
+        // 누락 흔한 컬럼 보강
+        foreach (var must in new[] { "Area", "ISTD", "농도", "희석배수", "시료량", "결과", "흡광도" })
+            if (!dbCandidates.Contains(must, StringComparer.OrdinalIgnoreCase)) dbCandidates.Add(must);
+
+        var listPanel = new StackPanel { Spacing = 3 };
+        section.Children.Add(listPanel);
+
+        var saved = ETA.Services.SERVICE3.AnalysisNoteService.GetParserColumnMap(analyte)
+                    ?? new Dictionary<string, string>();
+        // 스키마별 기본 매핑 — Upsert*Data 의 기존 하드코딩 룰 그대로 노출
+        var schema = ETA.Services.SERVICE3.AnalysisNoteService.GetSchemaOverride(analyte) ?? "";
+        if (string.IsNullOrEmpty(schema))
+            schema = WaterCenterDbMigration.DetermineSchema(
+                _selectedAnalyte?.Analyte ?? analyte,
+                _selectedAnalyte?.Category ?? "",
+                _selectedAnalyte?.Method ?? "",
+                _selectedAnalyte?.instrument ?? "");
+        var defaults = GetDefaultParserMap(schema);
+        // 기본값 + 저장된 값 병합 — 저장된 값 우선
+        var current = new Dictionary<string, string>(StringComparer.Ordinal);
+        foreach (var kv in defaults) current[kv.Key] = kv.Value;
+        foreach (var kv in saved)    current[kv.Key] = kv.Value;
+
+        void SaveMap()
+        {
+            var map = new Dictionary<string, string>(StringComparer.Ordinal);
+            foreach (var child in listPanel.Children)
+            {
+                if (child is Grid g && g.Children.Count >= 2 &&
+                    g.Children[0] is ComboBox kCb && g.Children[1] is ComboBox vCb)
+                {
+                    var k = (kCb.SelectedItem?.ToString() ?? kCb.Text ?? "").Trim();
+                    var v = (vCb.SelectedItem?.ToString() ?? vCb.Text ?? "").Trim();
+                    if (!string.IsNullOrEmpty(k) && !string.IsNullOrEmpty(v))
+                        map[k] = v;
+                }
+            }
+            ETA.Services.SERVICE3.AnalysisNoteService.SaveParserColumnMap(analyte, map);
+        }
+
+        Grid AddRow(string parserField = "", string dbCol = "")
+        {
+            var rowGrid = new Grid
+            {
+                ColumnDefinitions = new ColumnDefinitions("*,Auto,*,Auto"),
+            };
+            var keyCb = new ComboBox
+            {
+                ItemsSource = _parserFieldCandidates,
+                SelectedItem = string.IsNullOrEmpty(parserField) ? null : parserField,
+                FontFamily = Font, FontSize = AppTheme.FontSM,
+                MinHeight = 28,
+                PlaceholderText = "파서 필드 선택…",
+            };
+            keyCb.SelectionChanged += (_, _) => SaveMap();
+            var arrow = new TextBlock
+            {
+                Text = " → ", FontFamily = Font, FontSize = AppTheme.FontSM,
+                Foreground = AppRes("FgMuted"),
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(4, 0),
+            };
+            var valCb = new ComboBox
+            {
+                ItemsSource = dbCandidates,
+                SelectedItem = string.IsNullOrEmpty(dbCol) ? null : dbCol,
+                FontFamily = Font, FontSize = AppTheme.FontSM,
+                MinHeight = 28,
+                PlaceholderText = "DB 컬럼 선택…",
+            };
+            valCb.SelectionChanged += (_, _) => SaveMap();
+            var delBtn = new Border
+            {
+                Background = new SolidColorBrush(Color.Parse("#4a0000")),
+                CornerRadius = new CornerRadius(4), Padding = new Thickness(8, 2),
+                Margin = new Thickness(4, 0, 0, 0),
+                Cursor = new Cursor(StandardCursorType.Hand),
+                Child = new TextBlock { Text = "✕", FontFamily = Font, FontSize = AppTheme.FontXS, Foreground = new SolidColorBrush(Color.Parse("#ef9a9a")) },
+                VerticalAlignment = VerticalAlignment.Center,
+            };
+            delBtn.PointerPressed += (_, _) => { listPanel.Children.Remove(rowGrid); SaveMap(); };
+            Grid.SetColumn(keyCb, 0); rowGrid.Children.Add(keyCb);
+            Grid.SetColumn(arrow, 1); rowGrid.Children.Add(arrow);
+            Grid.SetColumn(valCb, 2); rowGrid.Children.Add(valCb);
+            Grid.SetColumn(delBtn, 3); rowGrid.Children.Add(delBtn);
+            listPanel.Children.Add(rowGrid);
+            return rowGrid;
+        }
+
+        foreach (var kv in current) AddRow(kv.Key, kv.Value);
+
+        var addBtn = new Border
+        {
+            Background = new SolidColorBrush(Color.Parse("#1a3a5c")),
+            CornerRadius = new CornerRadius(4), Padding = new Thickness(10, 4),
+            Margin = new Thickness(0, 4, 0, 0),
+            Cursor = new Cursor(StandardCursorType.Hand),
+            HorizontalAlignment = HorizontalAlignment.Left,
+            Child = new TextBlock { Text = "＋ 매핑 추가", FontFamily = Font, FontSize = AppTheme.FontSM, Foreground = new SolidColorBrush(Color.Parse("#90caf9")) },
+        };
+        addBtn.PointerPressed += (_, _) => AddRow();
+        section.Children.Add(addBtn);
+
+        section.Children.Add(new TextBlock
+        {
+            Text = $"DB 컬럼 후보 {dbCandidates.Count}개 · 파서 필드 후보 {_parserFieldCandidates.Count}개. 양쪽에서 선택만 하면 자동 저장됩니다.",
+            FontFamily = Font, FontSize = AppTheme.FontXS,
+            Foreground = AppRes("FgDimmed"),
+            TextWrapping = TextWrapping.Wrap,
+            Margin = new Thickness(0, 6, 0, 0),
+        });
+
+        return section;
     }
 
     // ── 농도 계산 공식 빌더 ──────────────────────────────────────────────────
@@ -1461,11 +1727,71 @@ public class AccessPage
                 var inner = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 3 };
                 inner.Children.Add(new TextBlock { Text = displayLabel, FontFamily = Font, FontSize = AppTheme.FontSM, Foreground = new SolidColorBrush(Color.Parse(fg)), VerticalAlignment = VerticalAlignment.Center });
                 var del = new TextBlock { Text = "\u00d7", FontFamily = Font, FontSize = AppTheme.FontSM, Foreground = new SolidColorBrush(Color.Parse(fg)), Margin = new Thickness(3, 0, 0, 0), Cursor = new Cursor(StandardCursorType.Hand), VerticalAlignment = VerticalAlignment.Center, IsVisible = false };
-                del.PointerPressed += (_, _) => { if (idx < _formulaTokens.Count) _formulaTokens.RemoveAt(idx); RefreshFormulaDisplay(panel, analyte); };
+                del.PointerPressed += (s, e) =>
+                {
+                    e.Handled = true; // \ubd80\ubaa8\uc758 \ub4dc\ub798\uadf8 \uc2dc\uc791 \ub9c9\uae30
+                    if (idx < _formulaTokens.Count) _formulaTokens.RemoveAt(idx);
+                    RefreshFormulaDisplay(panel, analyte);
+                };
                 inner.Children.Add(del);
-                var tokenBorder = new Border { Background = new SolidColorBrush(Color.Parse(bg)), CornerRadius = new CornerRadius(4), Padding = new Thickness(6, 3), Margin = new Thickness(0, 2, 4, 2), Child = inner };
+                var tokenBorder = new Border
+                {
+                    Background = new SolidColorBrush(Color.Parse(bg)),
+                    CornerRadius = new CornerRadius(4),
+                    Padding = new Thickness(6, 3),
+                    Margin = new Thickness(0, 2, 4, 2),
+                    BorderBrush = Brushes.Transparent,
+                    BorderThickness = new Thickness(2),
+                    Cursor = new Cursor(StandardCursorType.SizeAll),
+                    Child = inner
+                };
                 tokenBorder.PointerEntered += (_, _) => del.IsVisible = true;
                 tokenBorder.PointerExited  += (_, _) => del.IsVisible = false;
+
+                // \u2500\u2500 \ub4dc\ub798\uadf8 \uc18c\uc2a4: \uc790\uae30 \uc778\ub371\uc2a4\ub97c \ub370\uc774\ud130\ub85c \ub4e4\uace0 \uc774\ub3d9 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+                tokenBorder.PointerPressed += async (s, e) =>
+                {
+                    if (!e.GetCurrentPoint(tokenBorder).Properties.IsLeftButtonPressed) return;
+                    var data = new DataObject();
+                    data.Set("formula_token_idx", idx.ToString());
+                    await DragDrop.DoDragDrop(e, data, DragDropEffects.Move);
+                };
+
+                // \u2500\u2500 \ub4dc\ub86d \ud0c0\uac9f: \ub2e4\ub978 \ud1a0\ud070 \ub4dc\ub86d \uc2dc \uadf8 \uc704\uce58 \uc55e\uc73c\ub85c \uc0bd\uc785 \u2500\u2500\u2500\u2500\u2500
+                DragDrop.SetAllowDrop(tokenBorder, true);
+                tokenBorder.AddHandler(DragDrop.DragOverEvent, (object? s, DragEventArgs e) =>
+                {
+                    if (e.Data.Contains("formula_token_idx"))
+                    {
+                        e.DragEffects = DragDropEffects.Move;
+                        tokenBorder.BorderBrush = new SolidColorBrush(Color.Parse("#4caf50"));
+                    }
+                    else e.DragEffects = DragDropEffects.None;
+                    e.Handled = true;
+                });
+                tokenBorder.AddHandler(DragDrop.DragLeaveEvent, (object? s, RoutedEventArgs e) =>
+                {
+                    tokenBorder.BorderBrush = Brushes.Transparent;
+                });
+                tokenBorder.AddHandler(DragDrop.DropEvent, (object? s, DragEventArgs e) =>
+                {
+                    tokenBorder.BorderBrush = Brushes.Transparent;
+                    if (e.Data.Contains("formula_token_idx")
+                        && e.Data.Get("formula_token_idx") is string srcStr
+                        && int.TryParse(srcStr, out var src)
+                        && src >= 0 && src < _formulaTokens.Count
+                        && src != idx)
+                    {
+                        var t = _formulaTokens[src];
+                        _formulaTokens.RemoveAt(src);
+                        int insertAt = src < idx ? idx - 1 : idx;
+                        if (insertAt < 0) insertAt = 0;
+                        if (insertAt > _formulaTokens.Count) insertAt = _formulaTokens.Count;
+                        _formulaTokens.Insert(insertAt, t);
+                        RefreshFormulaDisplay(panel, analyte);
+                    }
+                    e.Handled = true;
+                });
                 panel.Children.Add(tokenBorder);
             }
             // 유효성 검사 아이콘 — 괄호 균형 + 연산자 연속 여부
@@ -1599,7 +1925,7 @@ public class AccessPage
         try
         {
             System.IO.Directory.CreateDirectory("Logs");
-            System.IO.File.AppendAllText("Logs/MeasurerDebug.log",
+            if (ETA.App.EnableLogging) System.IO.File.AppendAllText("Logs/MeasurerDebug.log",
                 $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] [CreateEquipmentRow] name='{name}' code='{code}'\n");
         }
         catch { }
@@ -1628,7 +1954,7 @@ public class AccessPage
                 try
                 {
                     System.IO.Directory.CreateDirectory("Logs");
-                    System.IO.File.AppendAllText("Logs/MeasurerDebug.log",
+                    if (ETA.App.EnableLogging) System.IO.File.AppendAllText("Logs/MeasurerDebug.log",
                         $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] [UI:인라인체크] code='{code}' on={on}\n");
                 }
                 catch { }
@@ -1662,7 +1988,7 @@ public class AccessPage
             {
                 System.IO.Directory.CreateDirectory("Logs");
                 var src = e.Source?.GetType().Name ?? "null";
-                System.IO.File.AppendAllText("Logs/MeasurerDebug.log",
+                if (ETA.App.EnableLogging) System.IO.File.AppendAllText("Logs/MeasurerDebug.log",
                     $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] [Border.PointerPressed] code='{code}' src={src}\n");
             }
             catch { }
@@ -2478,24 +2804,26 @@ public class AccessPage
                 if (!string.Equals(originalAnalyte, item.Analyte, StringComparison.Ordinal))
                     RenameTestRecordTable(conn, originalAnalyte!, item.Analyte);
                 using var cmd = conn.CreateCommand();
-                cmd.CommandText = "UPDATE `분석정보` SET Category=@cat, Analyte=@ana, `약칭`=@alias, `AliasX`=@aliasx, Parts=@parts, DecimalPlaces=@dp, unit=@unit, ES=@es, Method=@meth, instrument=@inst WHERE Analyte=@orig";
+                cmd.CommandText = "UPDATE `분석정보` SET Category=@cat, Analyte=@ana, `약칭`=@alias, `AliasX`=@aliasx, Parts=@parts, DecimalPlaces=@dp, unit=@unit, ES=@es, Method=@meth, instrument=@inst, `정량한계`=@loq WHERE Analyte=@orig";
                 cmd.Parameters.AddWithValue("@cat",  item.Category);    cmd.Parameters.AddWithValue("@ana",  item.Analyte);
                 cmd.Parameters.AddWithValue("@alias",item.약칭);          cmd.Parameters.AddWithValue("@aliasx", item.AliasX);
                 cmd.Parameters.AddWithValue("@parts",item.Parts);        cmd.Parameters.AddWithValue("@dp",   item.DecimalPlaces);
                 cmd.Parameters.AddWithValue("@unit", item.unit);         cmd.Parameters.AddWithValue("@es",   item.ES);
                 cmd.Parameters.AddWithValue("@meth", item.Method);       cmd.Parameters.AddWithValue("@inst", item.instrument);
+                cmd.Parameters.AddWithValue("@loq",  (object?)item.정량한계 ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("@orig", originalAnalyte);
                 cmd.ExecuteNonQuery();
             }
             else
             {
                 using var cmd = conn.CreateCommand();
-                cmd.CommandText = "INSERT INTO `분석정보` (Category, Analyte, `약칭`, `AliasX`, Parts, DecimalPlaces, unit, ES, Method, instrument) VALUES (@cat, @ana, @alias, @aliasx, @parts, @dp, @unit, @es, @meth, @inst)";
+                cmd.CommandText = "INSERT INTO `분석정보` (Category, Analyte, `약칭`, `AliasX`, Parts, DecimalPlaces, unit, ES, Method, instrument, `정량한계`) VALUES (@cat, @ana, @alias, @aliasx, @parts, @dp, @unit, @es, @meth, @inst, @loq)";
                 cmd.Parameters.AddWithValue("@cat",  item.Category);    cmd.Parameters.AddWithValue("@ana",  item.Analyte);
                 cmd.Parameters.AddWithValue("@alias",item.약칭);          cmd.Parameters.AddWithValue("@aliasx", item.AliasX);
                 cmd.Parameters.AddWithValue("@parts",item.Parts);        cmd.Parameters.AddWithValue("@dp",   item.DecimalPlaces);
                 cmd.Parameters.AddWithValue("@unit", item.unit);         cmd.Parameters.AddWithValue("@es",   item.ES);
                 cmd.Parameters.AddWithValue("@meth", item.Method);       cmd.Parameters.AddWithValue("@inst", item.instrument);
+                cmd.Parameters.AddWithValue("@loq",  (object?)item.정량한계 ?? DBNull.Value);
                 cmd.ExecuteNonQuery();
             }
             AnalysisService.SyncColumnsToAssignmentTable();

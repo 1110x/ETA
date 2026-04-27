@@ -159,6 +159,42 @@ public static class WasteSampleService
         return list;
     }
 
+    // ── 비용부담금_결과 전용 연월 목록 (역순) ────────────────────────────────
+    public static List<string> GetBillingMonths()
+    {
+        var list = new List<string>();
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+            SELECT DISTINCT SUBSTR(채수일, 1, 7) AS ym
+            FROM `비용부담금_결과`
+            WHERE 채수일 IS NOT NULL AND 채수일 <> ''
+            ORDER BY ym DESC";
+        using var r = cmd.ExecuteReader();
+        while (r.Read()) list.Add(r.GetString(0));
+        return list;
+    }
+
+    // ── 월별 비용부담금 시료 목록 (Show1 lazy-load용) ─────────────────────────
+    public static List<WasteSample> GetSamplesByMonth(string yearMonth)
+    {
+        var list = new List<WasteSample>();
+        using var conn = DbConnectionFactory.CreateConnection();
+        conn.Open();
+        EnsureUvColumns(conn);
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = $@"
+            SELECT {SelectColumns}
+            FROM `비용부담금_결과`
+            WHERE SUBSTR(채수일, 1, 7) = @ym
+            ORDER BY 채수일 DESC, 순서 ASC";
+        cmd.Parameters.AddWithValue("@ym", yearMonth);
+        using var r = cmd.ExecuteReader();
+        while (r.Read()) list.Add(Map(r));
+        return list;
+    }
+
     // ── 최근 N개월 시료 목록 조회 (수동 매칭 팝업용) ────────────────────────
     public static List<WasteSample> GetRecentSamples(int months = 1)
     {
@@ -687,6 +723,7 @@ public static class WasteSampleService
 
     /// <summary>SS_DATA 전용 UPSERT (전무게/후무게/무게차/희석배수 포함)</summary>
     public static void UpsertSsData(
+        string tableName,
         string 채수일, string sn, string 업체명, string 구분,
         string 시료량, string 전무게, string 후무게, string 무게차, string 희석배수, string 결과,
         string 소스구분 = "폐수배출업소", string 비고 = "", string 시료명 = "")
@@ -699,16 +736,16 @@ public static class WasteSampleService
             // 컬럼 존재 확인 및 추가
             foreach (var col in new[] { "전무게", "후무게", "무게차", "희석배수", "시료명" })
             {
-                if (!DbConnectionFactory.ColumnExists(conn, "SS_시험기록부", col))
+                if (!DbConnectionFactory.ColumnExists(conn, tableName, col))
                 {
                     using var alt = conn.CreateCommand();
-                    alt.CommandText = $"ALTER TABLE `SS_시험기록부` ADD COLUMN `{col}` TEXT DEFAULT ''";
+                    alt.CommandText = $"ALTER TABLE `{tableName}` ADD COLUMN `{col}` TEXT DEFAULT ''";
                     alt.ExecuteNonQuery();
                 }
             }
 
             using var chk = conn.CreateCommand();
-            chk.CommandText = "SELECT COUNT(*) FROM `SS_시험기록부` WHERE LEFT(분석일,10)=@d AND SN=@sn AND 시료명=@nm2";
+            chk.CommandText = $"SELECT COUNT(*) FROM `{tableName}` WHERE LEFT(분석일,10)=@d AND SN=@sn AND 시료명=@nm2";
             chk.Parameters.AddWithValue("@d", 채수일);
             chk.Parameters.AddWithValue("@sn", sn);
             chk.Parameters.AddWithValue("@nm2", 시료명);
@@ -717,14 +754,14 @@ public static class WasteSampleService
             using var cmd = conn.CreateCommand();
             if (exists)
             {
-                cmd.CommandText = $@"UPDATE `SS_시험기록부`
+                cmd.CommandText = $@"UPDATE `{tableName}`
                     SET 시료량=@vol, `전무게`=@pre, `후무게`=@post, `무게차`=@diff, `희석배수`=@dil, `결과`=@r,
                         비고=@remark, 등록일시={DbConnectionFactory.NowExpr}
                     WHERE LEFT(분석일,10)=@d AND SN=@sn AND 시료명=@nm2";
             }
             else
             {
-                cmd.CommandText = $@"INSERT INTO `SS_시험기록부`
+                cmd.CommandText = $@"INSERT INTO `{tableName}`
                     (분석일, SN, 업체명, 구분, 소스구분, 시료명, 시료량, `전무게`, `후무게`, `무게차`, `희석배수`, `결과`, 비고, 등록일시)
                     VALUES (@d, @sn, @nm, @gu, @src, @nm2, @vol, @pre, @post, @diff, @dil, @r, @remark, {DbConnectionFactory.NowExpr})";
                 cmd.Parameters.AddWithValue("@nm", 업체명);
@@ -750,6 +787,7 @@ public static class WasteSampleService
 
     /// <summary>NHexan_DATA 전용 UPSERT (전무게/후무게/무게차/희석배수 포함)</summary>
     public static void UpsertNHexanData(
+        string tableName,
         string 채수일, string sn, string 업체명, string 구분,
         string 시료량, string 전무게, string 후무게, string 무게차, string 희석배수, string 결과,
         string 소스구분 = "폐수배출업소", string 비고 = "", string 시료명 = "")
@@ -760,15 +798,15 @@ public static class WasteSampleService
             conn.Open();
 
             foreach (var col in new[] { "전무게", "후무게", "무게차", "희석배수", "시료명" })
-                if (!DbConnectionFactory.ColumnExists(conn, "NHexan_시험기록부", col))
+                if (!DbConnectionFactory.ColumnExists(conn, tableName, col))
                 {
                     using var alt = conn.CreateCommand();
-                    alt.CommandText = $"ALTER TABLE `NHexan_시험기록부` ADD COLUMN `{col}` TEXT DEFAULT ''";
+                    alt.CommandText = $"ALTER TABLE `{tableName}` ADD COLUMN `{col}` TEXT DEFAULT ''";
                     alt.ExecuteNonQuery();
                 }
 
             using var chk = conn.CreateCommand();
-            chk.CommandText = "SELECT COUNT(*) FROM `NHexan_시험기록부` WHERE LEFT(분석일,10)=@d AND SN=@sn AND 시료명=@nm2";
+            chk.CommandText = $"SELECT COUNT(*) FROM `{tableName}` WHERE LEFT(분석일,10)=@d AND SN=@sn AND 시료명=@nm2";
             chk.Parameters.AddWithValue("@d", 채수일);
             chk.Parameters.AddWithValue("@sn", sn);
             chk.Parameters.AddWithValue("@nm2", 시료명);
@@ -777,14 +815,14 @@ public static class WasteSampleService
             using var cmd = conn.CreateCommand();
             if (exists)
             {
-                cmd.CommandText = $@"UPDATE `NHexan_시험기록부`
+                cmd.CommandText = $@"UPDATE `{tableName}`
                     SET 시료량=@vol, 전무게=@pre, 후무게=@post, 무게차=@diff, 희석배수=@dil, 결과=@r,
                         비고=@remark, 등록일시={DbConnectionFactory.NowExpr}
                     WHERE LEFT(분석일,10)=@d AND SN=@sn AND 시료명=@nm2";
             }
             else
             {
-                cmd.CommandText = $@"INSERT INTO `NHexan_시험기록부`
+                cmd.CommandText = $@"INSERT INTO `{tableName}`
                     (분석일, SN, 업체명, 구분, 소스구분, 시료명, 시료량, 전무게, 후무게, 무게차, 희석배수, 결과, 비고, 등록일시)
                     VALUES (@d, @sn, @nm, @gu, @src, @nm2, @vol, @pre, @post, @diff, @dil, @r, @remark, {DbConnectionFactory.NowExpr})";
                 cmd.Parameters.AddWithValue("@nm", 업체명);
@@ -879,23 +917,25 @@ public static class WasteSampleService
         }
     }
 
-    /// <summary>TOC UPSERT — method: "NPOC"|"TCIC", 엑셀/기기파일 공용</summary>
+    /// <summary>TOC UPSERT — 호출부에서 정확한 테이블명 전달 (총_유기탄소_NPOC_시험기록부 등). 시료량/AU/희석배수/농도/결과 모두 보존.</summary>
     public static void UpsertTocData(
-        string method, string 분석일, string sn, string 업체명, string 구분,
+        string tableName, string 분석일, string sn, string 업체명, string 구분,
         string 흡광도, string 희석배수, string 검량선a, string 측정농도, string 결과,
-        string 소스구분 = "폐수배출업소", string 비고 = "", string 시료명 = "")
+        string 소스구분 = "폐수배출업소", string 비고 = "", string 시료명 = "", string 시료량 = "")
     {
-        string tableName = method.Equals("TCIC", StringComparison.OrdinalIgnoreCase)
-            ? "TOC_TCIC_시험기록부" : "TOC_NPOC_시험기록부";
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
-            if (!DbConnectionFactory.ColumnExists(conn, tableName, "시료명"))
+            // 누락 컬럼 자동 보강
+            foreach (var col in new[] { "시료명", "시료량", "AU" })
             {
-                using var alt = conn.CreateCommand();
-                alt.CommandText = $"ALTER TABLE `{tableName}` ADD COLUMN `시료명` TEXT DEFAULT ''";
-                alt.ExecuteNonQuery();
+                if (!DbConnectionFactory.ColumnExists(conn, tableName, col))
+                {
+                    using var alt = conn.CreateCommand();
+                    alt.CommandText = $"ALTER TABLE `{tableName}` ADD COLUMN `{col}` TEXT DEFAULT ''";
+                    alt.ExecuteNonQuery();
+                }
             }
             using var chk = conn.CreateCommand();
             chk.CommandText = $"SELECT COUNT(*) FROM `{tableName}` WHERE LEFT(분석일,10)=@d AND SN=@sn AND 시료명=@nm2";
@@ -908,15 +948,15 @@ public static class WasteSampleService
             if (exists)
             {
                 cmd.CommandText = $@"UPDATE `{tableName}`
-                    SET 흡광도=@abs, 희석배수=@dil, 검량선_a=@slope, 농도=@r,
+                    SET 시료량=@vol, AU=@abs, 희석배수=@dil, 농도=@r,
                         비고=@remark, 등록일시={DbConnectionFactory.NowExpr}
                     WHERE LEFT(분석일,10)=@d AND SN=@sn AND 시료명=@nm2";
             }
             else
             {
                 cmd.CommandText = $@"INSERT INTO `{tableName}`
-                    (분석일, SN, 업체명, 구분, 소스구분, 시료명, 흡광도, 희석배수, 검량선_a, 농도, 비고, 등록일시)
-                    VALUES (@d, @sn, @nm, @gu, @src, @nm2, @abs, @dil, @slope, @r, @remark, {DbConnectionFactory.NowExpr})";
+                    (분석일, SN, 업체명, 구분, 소스구분, 시료명, 시료량, AU, 희석배수, 농도, 비고, 등록일시)
+                    VALUES (@d, @sn, @nm, @gu, @src, @nm2, @vol, @abs, @dil, @r, @remark, {DbConnectionFactory.NowExpr})";
                 cmd.Parameters.AddWithValue("@nm", 업체명);
                 cmd.Parameters.AddWithValue("@gu", 구분);
                 cmd.Parameters.AddWithValue("@src", 소스구분);
@@ -924,15 +964,126 @@ public static class WasteSampleService
             cmd.Parameters.AddWithValue("@d",     분석일);
             cmd.Parameters.AddWithValue("@sn",    sn);
             cmd.Parameters.AddWithValue("@nm2",   시료명);
+            cmd.Parameters.AddWithValue("@vol",   시료량);
             cmd.Parameters.AddWithValue("@abs",   흡광도);
             cmd.Parameters.AddWithValue("@dil",   string.IsNullOrEmpty(희석배수) ? "1" : 희석배수);
-            cmd.Parameters.AddWithValue("@slope", 검량선a);
             cmd.Parameters.AddWithValue("@r",     string.IsNullOrEmpty(결과) ? 측정농도 : 결과);
             cmd.Parameters.AddWithValue("@remark", 비고);
             cmd.ExecuteNonQuery();
         }
         catch (Exception ex)
         {
+            try
+            {
+                var dir = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Logs");
+                if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+                if (ETA.App.EnableLogging) File.AppendAllText(System.IO.Path.Combine(dir, "ImportDebug.log"),
+                    $"[{DateTime.Now:HH:mm:ss}] ❌ UpsertTocData FAIL: tbl={tableName} sn={sn} 시료명={시료명}\n   {ex.GetType().Name}: {ex.Message}\n");
+            } catch { }
+            Debug.WriteLine($"[UpsertTocData] {ex.Message}");
+        }
+    }
+
+    /// <summary>범용 UPSERT — 파서가 (DB 컬럼명 → 값) 사전을 직접 전달.
+    ///   keyCols: 매칭 키 컬럼 (예: ["분석일","SN","시료명"]). 일치 행이 있으면 UPDATE, 없으면 INSERT.
+    ///   누락 컬럼은 자동 ALTER ADD COLUMN (TEXT DEFAULT '').
+    ///   분석일은 LEFT(분석일,10) 매칭으로 시간 부분 무시.</summary>
+    public static void UpsertRowData(string tableName,
+                                      Dictionary<string, string> values,
+                                      string[] keyCols,
+                                      string? analyte = null)
+    {
+        if (string.IsNullOrWhiteSpace(tableName) || values.Count == 0 || keyCols.Length == 0) return;
+        // 분석정보.parser_column_map 적용 — 파서 출력 키 → DB 컬럼명 번역
+        if (!string.IsNullOrWhiteSpace(analyte))
+        {
+            var map = ETA.Services.SERVICE3.AnalysisNoteService.GetParserColumnMap(analyte);
+            if (map != null && map.Count > 0)
+            {
+                var translated = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var kv in values)
+                {
+                    var dbCol = map.TryGetValue(kv.Key, out var mapped) && !string.IsNullOrWhiteSpace(mapped)
+                        ? mapped : kv.Key;
+                    translated[dbCol] = kv.Value;
+                }
+                values = translated;
+            }
+        }
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+
+            // 1) 누락 컬럼 자동 ADD
+            foreach (var col in values.Keys)
+            {
+                if (!DbConnectionFactory.ColumnExists(conn, tableName, col))
+                {
+                    using var alt = conn.CreateCommand();
+                    alt.CommandText = $"ALTER TABLE `{tableName}` ADD COLUMN `{col}` TEXT DEFAULT ''";
+                    alt.ExecuteNonQuery();
+                }
+            }
+
+            // 2) 키 매칭으로 EXISTS 확인
+            var keyWhere = string.Join(" AND ", keyCols.Select(k =>
+                k.Equals("분석일", StringComparison.OrdinalIgnoreCase)
+                    ? $"LEFT(`{k}`,10)=@k_{k}"
+                    : $"`{k}`=@k_{k}"));
+
+            using (var chk = conn.CreateCommand())
+            {
+                chk.CommandText = $"SELECT COUNT(*) FROM `{tableName}` WHERE {keyWhere}";
+                foreach (var k in keyCols)
+                    chk.Parameters.AddWithValue($"@k_{k}", values.TryGetValue(k, out var v) ? v : "");
+                bool exists = Convert.ToInt32(chk.ExecuteScalar()) > 0;
+
+                using var cmd = conn.CreateCommand();
+                if (exists)
+                {
+                    var setCols = string.Join(", ", values.Keys
+                        .Where(c => !keyCols.Contains(c, StringComparer.OrdinalIgnoreCase))
+                        .Select(c => $"`{c}`=@v_{c}"));
+                    cmd.CommandText = $@"UPDATE `{tableName}`
+                        SET {setCols}, 등록일시={DbConnectionFactory.NowExpr}
+                        WHERE {keyWhere}";
+                }
+                else
+                {
+                    var allCols = values.Keys.ToList();
+                    var colList  = string.Join(", ", allCols.Select(c => $"`{c}`"));
+                    var paramList = string.Join(", ", allCols.Select(c => $"@v_{c}"));
+                    cmd.CommandText = $@"INSERT INTO `{tableName}` ({colList}, 등록일시)
+                                         VALUES ({paramList}, {DbConnectionFactory.NowExpr})";
+                }
+
+                foreach (var kv in values)
+                    cmd.Parameters.AddWithValue($"@v_{kv.Key}", kv.Value ?? "");
+                foreach (var k in keyCols)
+                    cmd.Parameters.AddWithValue($"@k_{k}", values.TryGetValue(k, out var v) ? v : "");
+
+                cmd.ExecuteNonQuery();
+            }
+
+            try
+            {
+                var dir = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Logs");
+                if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+                if (ETA.App.EnableLogging) File.AppendAllText(System.IO.Path.Combine(dir, "ImportDebug.log"),
+                    $"[{DateTime.Now:HH:mm:ss}] UpsertRowData OK: tbl={tableName} keys=[{string.Join(",", keyCols)}] cols={values.Count}\n");
+            } catch { }
+        }
+        catch (Exception ex)
+        {
+            try
+            {
+                var dir = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Logs");
+                if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+                if (ETA.App.EnableLogging) File.AppendAllText(System.IO.Path.Combine(dir, "ImportDebug.log"),
+                    $"[{DateTime.Now:HH:mm:ss}] ❌ UpsertRowData FAIL: tbl={tableName}\n   {ex.GetType().Name}: {ex.Message}\n");
+            } catch { }
+            Debug.WriteLine($"[UpsertRowData] {ex.Message}");
         }
     }
 
@@ -941,23 +1092,22 @@ public static class WasteSampleService
         string tableName, string 분석일, string sn, string 업체명, string 구분,
         string 농도, string ISTD, ExcelDocInfo? 검량선정보,
         GcCompoundCalInfo? compoundCal = null,
-        string 비고 = "", string 시료명 = "", string 흡광도 = "")
+        string 비고 = "", string 시료명 = "", string 흡광도 = "", string 희석배수 = "",
+        string 시료량 = "", string 결과 = "")
     {
         try
         {
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
-            if (!DbConnectionFactory.ColumnExists(conn, tableName, "시료명"))
+            // GC 표준 컬럼 — 응답값은 'Area' (흡광도가 아닌 chromatogram peak area)
+            foreach (var col in new[] { "시료명", "Area", "희석배수", "시료량", "결과" })
             {
-                using var alt = conn.CreateCommand();
-                alt.CommandText = $"ALTER TABLE `{tableName}` ADD COLUMN `시료명` TEXT DEFAULT ''";
-                alt.ExecuteNonQuery();
-            }
-            if (!DbConnectionFactory.ColumnExists(conn, tableName, "흡광도"))
-            {
-                using var alt = conn.CreateCommand();
-                alt.CommandText = $"ALTER TABLE `{tableName}` ADD COLUMN `흡광도` TEXT DEFAULT ''";
-                alt.ExecuteNonQuery();
+                if (!DbConnectionFactory.ColumnExists(conn, tableName, col))
+                {
+                    using var alt = conn.CreateCommand();
+                    alt.CommandText = $"ALTER TABLE `{tableName}` ADD COLUMN `{col}` TEXT DEFAULT ''";
+                    alt.ExecuteNonQuery();
+                }
             }
             using var chk = conn.CreateCommand();
             chk.CommandText = $"SELECT COUNT(*) FROM `{tableName}` WHERE LEFT(분석일,10)=@d AND SN=@sn AND 시료명=@nm2";
@@ -984,7 +1134,7 @@ public static class WasteSampleService
             if (exists)
             {
                 cmd.CommandText = $@"UPDATE `{tableName}`
-                    SET 농도=@conc, ISTD=@istd, 흡광도=@abs,
+                    SET 농도=@conc, ISTD=@istd, Area=@area, 희석배수=@dil, 시료량=@vol, 결과=@res,
                         ST1_농도=@st1c, ST1_값=@st1v, ST1_ISTD=@st1i,
                         ST2_농도=@st2c, ST2_값=@st2v, ST2_ISTD=@st2i,
                         ST3_농도=@st3c, ST3_값=@st3v, ST3_ISTD=@st3i,
@@ -999,12 +1149,12 @@ public static class WasteSampleService
             else
             {
                 cmd.CommandText = $@"INSERT INTO `{tableName}`
-                    (분석일, SN, 업체명, 구분, 시료명, 농도, ISTD, 흡광도,
+                    (분석일, SN, 업체명, 구분, 시료명, 농도, ISTD, Area, 희석배수, 시료량, 결과,
                      ST1_농도, ST1_값, ST1_ISTD, ST2_농도, ST2_값, ST2_ISTD,
                      ST3_농도, ST3_값, ST3_ISTD, ST4_농도, ST4_값, ST4_ISTD,
                      ST5_농도, ST5_값, ST5_ISTD, ST6_농도, ST6_값, ST6_ISTD,
                      ST7_농도, ST7_값, ST7_ISTD, 기울기, 절편, R값, 비고, 등록일시)
-                    VALUES (@d, @sn, @nm, @gu, @nm2, @conc, @istd, @abs,
+                    VALUES (@d, @sn, @nm, @gu, @nm2, @conc, @istd, @area, @dil, @vol, @res,
                             @st1c, @st1v, @st1i, @st2c, @st2v, @st2i,
                             @st3c, @st3v, @st3i, @st4c, @st4v, @st4i,
                             @st5c, @st5v, @st5i, @st6c, @st6v, @st6i,
@@ -1018,7 +1168,10 @@ public static class WasteSampleService
             cmd.Parameters.AddWithValue("@nm2", 시료명);
             cmd.Parameters.AddWithValue("@conc", 농도);
             cmd.Parameters.AddWithValue("@istd", ISTD);
-            cmd.Parameters.AddWithValue("@abs", 흡광도);
+            cmd.Parameters.AddWithValue("@area", 흡광도);  // 호출부의 흡광도 인자 = chromatogram Area 값
+            cmd.Parameters.AddWithValue("@dil", string.IsNullOrWhiteSpace(희석배수) ? "1" : 희석배수);
+            cmd.Parameters.AddWithValue("@vol", 시료량);
+            cmd.Parameters.AddWithValue("@res", 결과);
 
             // ST 데이터 파라미터 추가
             for (int i = 0; i < 7; i++)
@@ -1034,9 +1187,24 @@ public static class WasteSampleService
             cmd.Parameters.AddWithValue("@remark", 비고);
 
             cmd.ExecuteNonQuery();
+            try
+            {
+                var dir = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Logs");
+                if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+                if (ETA.App.EnableLogging) File.AppendAllText(System.IO.Path.Combine(dir, "ImportDebug.log"),
+                    $"[{DateTime.Now:HH:mm:ss}] UpsertGcData OK: tbl={tableName} sn={sn} 시료명={시료명} 농도={농도} {(exists ? "UPDATE" : "INSERT")}\n");
+            } catch { }
         }
         catch (Exception ex)
         {
+            try
+            {
+                var dir = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Logs");
+                if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+                if (ETA.App.EnableLogging) File.AppendAllText(System.IO.Path.Combine(dir, "ImportDebug.log"),
+                    $"[{DateTime.Now:HH:mm:ss}] ❌ UpsertGcData FAIL: tbl={tableName} sn={sn} 시료명={시료명} 농도={농도}\n   {ex.GetType().Name}: {ex.Message}\n");
+            } catch { }
+            Debug.WriteLine($"[UpsertGcData] {ex.Message}");
         }
     }
 

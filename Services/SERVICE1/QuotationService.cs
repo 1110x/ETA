@@ -25,6 +25,11 @@ public static class QuotationService
         }
     }
 
+    // 단가/소계/수량 + 숫자(또는 단독) 형태의 메타 컬럼 여부 판정
+    // 예: "수량", "수량2", "단가3", "소계4" → true / "수은", "수소이온농도" → false
+    private static readonly Regex _metaBareCol = new(@"^(수량|단가|소계)\d*$", RegexOptions.Compiled);
+    private static bool IsMetaBareCol(string col) => _metaBareCol.IsMatch(col);
+
     // ── 계약업체 조회 ─────────────────────────────────────────────────────
     public static List<Contract> GetContractCompanies(bool activeOnly)
     {
@@ -70,7 +75,14 @@ public static class QuotationService
             if (DateTime.TryParse(S(r, 4), out var e)) c.C_ContractEnd   = e;
             list.Add(c);
         }
-        return list;
+
+        // 같은 (업체명, 약칭) 조합은 가장 최근 계약 하나만 유지
+        return list
+            .GroupBy(c => (c.C_CompanyName ?? "", c.C_Abbreviation ?? ""),
+                     EqualityComparer<(string, string)>.Default)
+            .Select(g => g.OrderByDescending(c => c.C_ContractStart).First())
+            .OrderBy(c => c.C_CompanyName)
+            .ToList();
     }
 
     // ── 테이블 초기화 ─────────────────────────────────────────────────────
@@ -842,6 +854,7 @@ public static class QuotationService
                 var col = kv.Key.Trim();
                 if (fixedCols.Contains(col)) continue;
                 if (col.EndsWith("단가") || col.EndsWith("소계")) continue;
+                if (IsMetaBareCol(col)) continue; // 단가/소계/수량 + 숫자 단독컬럼 제외
                 if (!decimal.TryParse(kv.Value.Replace(",",""), out var qty) || qty == 0) continue;
 
                 decimal up = 0;
@@ -856,6 +869,168 @@ public static class QuotationService
             }
         }
         return map;
+    }
+
+    /// <summary>견적+의뢰 행 혼합 선택분의 업체별 집계 결과.</summary>
+    public class IssuingCompanyAggregate
+    {
+        public string 업체명 = "";
+        public string 약칭 = "";
+        public List<string> 견적번호들 = new();
+        public List<int> 견적Ids = new();
+        public List<int> 의뢰RowIds = new();
+        public string 담당자 = "";
+        public string 담당자연락처 = "";
+        public string 담당자이메일 = "";
+        public string 시료명들 = "";
+        public Dictionary<string, (decimal qty, decimal unitPrice, decimal subtotal)> ItemMap = new(StringComparer.OrdinalIgnoreCase);
+        public int 건수 => 견적Ids.Count + 의뢰RowIds.Count;
+        public decimal Supply => ItemMap.Values.Sum(v => v.subtotal);
+    }
+
+    /// <summary>
+    /// 견적(QuotationIssue)과 의뢰 행(수질분석센터_결과 rowid) 혼합 선택을 업체별로 집계.
+    /// 의뢰 행은 행별 'O'/결과값 있는 항목의 (qty=1, 단가) 누적.
+    /// </summary>
+    public static List<IssuingCompanyAggregate> AggregateIssuingSelection(
+        IEnumerable<QuotationIssue> issues, IEnumerable<int> requestRowIds)
+    {
+        var byComp = new Dictionary<string, IssuingCompanyAggregate>(StringComparer.OrdinalIgnoreCase);
+
+        IssuingCompanyAggregate GetOrCreate(string comp)
+        {
+            if (!byComp.TryGetValue(comp, out var agg))
+            {
+                agg = new IssuingCompanyAggregate { 업체명 = comp };
+                byComp[comp] = agg;
+            }
+            return agg;
+        }
+
+        // ── 견적들 ────────────────────────────────────────────────
+        foreach (var g in issues.GroupBy(i => i.업체명 ?? ""))
+        {
+            var list = g.ToList();
+            var agg = GetOrCreate(g.Key);
+            agg.약칭 = list.First().약칭 ?? "";
+            agg.담당자 = list.First().담당자 ?? "";
+            agg.담당자연락처 = list.First().담당자연락처 ?? "";
+            agg.담당자이메일 = list.First().담당자이메일 ?? "";
+            foreach (var i in list)
+            {
+                agg.견적Ids.Add(i.Id);
+                if (!agg.견적번호들.Contains(i.견적번호)) agg.견적번호들.Add(i.견적번호);
+            }
+            var sampleSet = list.Select(i => i.시료명).Where(s => !string.IsNullOrWhiteSpace(s)).Distinct();
+            agg.시료명들 = string.Join(", ", new[] { agg.시료명들, string.Join(", ", sampleSet) }
+                .Where(s => !string.IsNullOrWhiteSpace(s)));
+
+            var itemMap = BuildTradeStatementItemData(list);
+            foreach (var kv in itemMap)
+            {
+                if (agg.ItemMap.TryGetValue(kv.Key, out var old))
+                    agg.ItemMap[kv.Key] = (old.qty + kv.Value.qty, kv.Value.unitPrice, old.subtotal + kv.Value.subtotal);
+                else
+                    agg.ItemMap[kv.Key] = kv.Value;
+            }
+        }
+
+        // ── 의뢰 행들 ─────────────────────────────────────────────
+        foreach (var reqId in requestRowIds)
+        {
+            var bd = ComputeRequestRowBreakdown(reqId);
+            if (string.IsNullOrWhiteSpace(bd.업체명) && bd.Items.Count == 0) continue;
+            string comp = string.IsNullOrWhiteSpace(bd.업체명) ? bd.약칭 : bd.업체명;
+            var agg = GetOrCreate(comp);
+            if (string.IsNullOrWhiteSpace(agg.약칭)) agg.약칭 = bd.약칭;
+            agg.의뢰RowIds.Add(reqId);
+            if (!string.IsNullOrWhiteSpace(bd.견적번호) && !agg.견적번호들.Contains(bd.견적번호))
+                agg.견적번호들.Add(bd.견적번호);
+
+            // 담당자/연락처/이메일이 비어있으면 parent 견적에서 끌어옴
+            if (string.IsNullOrWhiteSpace(agg.담당자) && !string.IsNullOrWhiteSpace(bd.견적번호))
+            {
+                var parent = GetAllIssues().FirstOrDefault(i =>
+                    string.Equals(i.견적번호, bd.견적번호, StringComparison.OrdinalIgnoreCase));
+                if (parent != null)
+                {
+                    agg.담당자 = parent.담당자 ?? "";
+                    agg.담당자연락처 = parent.담당자연락처 ?? "";
+                    agg.담당자이메일 = parent.담당자이메일 ?? "";
+                    if (!string.IsNullOrWhiteSpace(parent.시료명))
+                    {
+                        agg.시료명들 = string.Join(", ", new[] { agg.시료명들, parent.시료명 }
+                            .Where(s => !string.IsNullOrWhiteSpace(s)).Distinct());
+                    }
+                }
+            }
+
+            foreach (var (항목, qty, up) in bd.Items)
+            {
+                decimal sub = qty * up;
+                if (agg.ItemMap.TryGetValue(항목, out var old))
+                    agg.ItemMap[항목] = (old.qty + qty, old.unitPrice == 0 ? up : old.unitPrice, old.subtotal + sub);
+                else
+                    agg.ItemMap[항목] = (qty, up, sub);
+            }
+        }
+
+        return byComp.Values.OrderBy(a => a.업체명).ToList();
+    }
+
+    public record RequestRowBreakdown(
+        string 업체명,
+        string 약칭,
+        string 견적번호,
+        List<(string 항목, decimal 수량, decimal 단가)> Items);
+
+    /// <summary>
+    /// 수질분석센터_결과의 한 행(의뢰 row)에서 값이 있는 분석항목들을 읽어
+    /// 업체명/약칭/견적번호 및 (항목, qty=1, 단가) 리스트 반환.
+    /// 단가는 같은 견적번호 견적발행내역에서 조회. 결과값/O 모두 billable 판정.
+    /// </summary>
+    public static RequestRowBreakdown ComputeRequestRowBreakdown(int requestRowId)
+    {
+        var empty = new RequestRowBreakdown("", "", "", new());
+
+        var reqRow = ETA.Services.SERVICE1.AnalysisRequestService.GetRecordRow(requestRowId);
+        if (reqRow.Count == 0) return empty;
+
+        if (!reqRow.TryGetValue("견적번호", out var quotNo) || string.IsNullOrWhiteSpace(quotNo))
+            return empty;
+
+        Dictionary<string, string>? quotRow = null;
+        using (var conn = DbConnectionFactory.CreateConnection())
+        {
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = $"SELECT {DbConnectionFactory.RowId} FROM `견적발행내역` WHERE `견적번호` = @no LIMIT 1";
+            cmd.Parameters.AddWithValue("@no", quotNo);
+            var scalar = cmd.ExecuteScalar();
+            if (scalar == null || scalar == DBNull.Value) return empty;
+            int quotId = Convert.ToInt32(scalar);
+            quotRow = GetIssueRow(quotId);
+        }
+        if (quotRow == null || quotRow.Count == 0) return empty;
+
+        string 업체 = quotRow.TryGetValue("업체명", out var c) ? c : "";
+        string 약칭 = quotRow.TryGetValue("약칭",   out var a) ? a : "";
+
+        var items = new List<(string, decimal, decimal)>();
+        foreach (var kv in reqRow)
+        {
+            var col = kv.Key.Trim();
+            var val = (kv.Value ?? "").Trim();
+            if (string.IsNullOrWhiteSpace(val)) continue;
+            if (col.EndsWith("단가") || col.EndsWith("소계")) continue;
+            if (IsMetaBareCol(col)) continue;
+
+            if (!quotRow.TryGetValue(col + "단가", out var upStr)) continue;
+            if (!decimal.TryParse((upStr ?? "").Replace(",", ""), out var up)) up = 0;
+
+            items.Add((col, 1m, up));
+        }
+        return new RequestRowBreakdown(업체, 약칭, quotNo, items);
     }
 
     /// <summary>선택된 견적들의 항목별 합산 수량/금액 목록을 반환한다 (Show2 미리보기용).</summary>
@@ -881,6 +1056,7 @@ public static class QuotationService
                 var col = kv.Key.Trim();
                 if (fixedCols.Contains(col)) continue;
                 if (col.EndsWith("단가") || col.EndsWith("소계")) continue;
+                if (IsMetaBareCol(col)) continue; // 단가/소계/수량 + 숫자 단독컬럼 제외
 
                 if (!decimal.TryParse(kv.Value.Replace(",",""), out var qty) || qty == 0) continue;
 
@@ -925,6 +1101,7 @@ public static class QuotationService
                 var col = kv.Key.Trim();
                 if (fixedCols.Contains(col)) continue;
                 if (col.EndsWith("단가") || col.EndsWith("소계")) continue;
+                if (IsMetaBareCol(col)) continue; // 단가/소계/수량 + 숫자 단독컬럼 제외
                 if (!decimal.TryParse(kv.Value.Replace(",",""), out var qty) || qty == 0) continue;
                 decimal up = 0;
                 if (row.TryGetValue(col + "단가", out var upStr))
@@ -942,27 +1119,73 @@ public static class QuotationService
             using var wb = new XLWorkbook(tplPath);
             var ws = wb.Worksheet("견적서");
 
+            // issue 모델엔 담당자연락처/이메일이 누락될 수 있어 DB 행에서 보완
+            string 담당자     = !string.IsNullOrWhiteSpace(issue.담당자)       ? issue.담당자       : (row.TryGetValue("담당자", out var v1) ? v1 : "");
+            string 연락처     = !string.IsNullOrWhiteSpace(issue.담당자연락처) ? issue.담당자연락처 : (row.TryGetValue("담당자연락처", out var v2) ? v2 : "");
+            string 이메일     = !string.IsNullOrWhiteSpace(issue.담당자이메일) ? issue.담당자이메일 : (row.TryGetValue("담당자 e-Mail", out var v3) ? v3 : (row.TryGetValue("담당자e-Mail", out var v4) ? v4 : ""));
+
+            // 고객사 대표자 — 계약 DB 에서 조회
+            string 대표자 = ETA.Services.SERVICE1.ContractService.GetRepresentativeByCompany(issue.업체명 ?? "");
+
+            // 로그인 사용자(견적담당자) 정보 — Agent 테이블에서 성명/Email 조회
+            string 견적담당자성명 = "", 견적담당자이메일 = "";
+            try
+            {
+                var uid = CurrentUserManager.Instance.CurrentUserId;
+                if (!string.IsNullOrWhiteSpace(uid))
+                {
+                    using var c = DbConnectionFactory.CreateConnection();
+                    c.Open();
+                    using var cmd2 = c.CreateCommand();
+                    cmd2.CommandText = "SELECT COALESCE(`성명`,''), COALESCE(`Email`,'') FROM `Agent` WHERE `사번`=@id LIMIT 1";
+                    cmd2.Parameters.AddWithValue("@id", uid);
+                    using var rdr = cmd2.ExecuteReader();
+                    if (rdr.Read())
+                    {
+                        견적담당자성명   = rdr.IsDBNull(0) ? "" : rdr.GetString(0);
+                        견적담당자이메일 = rdr.IsDBNull(1) ? "" : rdr.GetString(1);
+                    }
+                }
+            }
+            catch { }
+
             // ── 헤더 입력 ────────────────────────────────────────────────
             ws.Cell(3, 3).Value = issue.업체명;
-            ws.Cell(4, 3).Value = "";
-            ws.Cell(5, 3).Value = issue.담당자;
-            ws.Cell(6, 3).Value = issue.담당자연락처;
-            ws.Cell(7, 3).Value = issue.담당자이메일;
+            ws.Cell(4, 3).Value = 대표자;            // 고객사 대표자 (계약 DB)
+            ws.Cell(5, 3).Value = 담당자;
+            ws.Cell(6, 3).Value = 연락처;
+            ws.Cell(7, 3).Value = 이메일;
             ws.Cell(8, 3).Value = issue.시료명;
             ws.Cell(3, 8).Value = issue.견적번호;
             ws.Cell(4, 8).Value = issue.발행일;
+            ws.Cell(6, 8).Value = 견적담당자성명;   // 우측 견적담당자 (로그인 사용자)
+            ws.Cell(7, 8).Value = 견적담당자이메일; // 우측 담당자 E-Mail (로그인 사용자)
 
             // ── 항목 입력 ────────────────────────────────────────────────
+            var meta = LoadAnalyteMetaMap();
+            (string category, string es) LookupMeta(string name)
+                => !string.IsNullOrWhiteSpace(name) && meta.TryGetValue(name.Trim(), out var v) ? v : ("", "");
+
+            decimal grandTotal = 0;
+
             if (!useTemplate2)
             {
                 for (int i = 0; i < Math.Min(items.Count, 33); i++)
                 {
                     int r = 11 + i;
+                    var (cat, es) = LookupMeta(items[i].name);
+                    decimal sub = items[i].qty * items[i].unitPrice;
+                    grandTotal += sub;
                     ws.Cell(r, 1).Value = i + 1;
+                    ws.Cell(r, 2).Value = cat;
                     ws.Cell(r, 4).Value = items[i].name;
-                    ws.Cell(r, 8).Value = (double)items[i].qty;
-                    ws.Cell(r, 9).Value = (double)items[i].unitPrice;
+                    ws.Cell(r, 6).Value = es;
+                    ws.Cell(r, 8).Value  = (double)items[i].qty;
+                    ws.Cell(r, 9).Value  = (double)items[i].unitPrice;
+                    ws.Cell(r, 10).Value = (double)sub;   // J 소계금액
                 }
+                // 합계금액 — 항목 영역 아래(44행, J열)
+                ws.Cell(44, 10).Value = (double)grandTotal;
             }
             else
             {
@@ -971,19 +1194,33 @@ public static class QuotationService
                 for (int i = 0; i < leftCount; i++)
                 {
                     int r = 11 + i;
+                    var (cat, es) = LookupMeta(items[i].name);
+                    decimal sub = items[i].qty * items[i].unitPrice;
+                    grandTotal += sub;
                     ws.Cell(r, 1).Value = i + 1;
+                    ws.Cell(r, 2).Value = cat;
                     ws.Cell(r, 4).Value = items[i].name;
-                    ws.Cell(r, 8).Value = (double)items[i].qty;
-                    ws.Cell(r, 9).Value = (double)items[i].unitPrice;
+                    ws.Cell(r, 6).Value = es;
+                    ws.Cell(r, 8).Value  = (double)items[i].qty;
+                    ws.Cell(r, 9).Value  = (double)items[i].unitPrice;
+                    ws.Cell(r, 10).Value = (double)sub;   // J 좌측 소계
                 }
                 for (int i = 0; i < rightCount; i++)
                 {
                     int r = 4 + i;
+                    var (cat, es) = LookupMeta(items[leftCount + i].name);
+                    decimal sub = items[leftCount + i].qty * items[leftCount + i].unitPrice;
+                    grandTotal += sub;
                     ws.Cell(r, 11).Value = leftCount + i + 1;
+                    ws.Cell(r, 12).Value = cat;
                     ws.Cell(r, 14).Value = items[leftCount + i].name;
+                    ws.Cell(r, 16).Value = es;
                     ws.Cell(r, 18).Value = (double)items[leftCount + i].qty;
                     ws.Cell(r, 19).Value = (double)items[leftCount + i].unitPrice;
+                    ws.Cell(r, 20).Value = (double)sub;   // T 우측 소계
                 }
+                // 합계금액 — 우측 항목 영역 아래(40행, T열)
+                ws.Cell(40, 20).Value = (double)grandTotal;
             }
 
             wb.SaveAs(savePath);
@@ -1020,27 +1257,64 @@ public static class QuotationService
         var issueList = issues.ToList();
         if (issueList.Count == 0) return (false, "선택된 견적이 없습니다.", 0, 0, 0);
 
+        var itemMap = BuildTradeStatementItemData(issueList);
+        var items = itemMap
+            .Where(kv => kv.Value.qty > 0)
+            .OrderBy(kv => kv.Key)
+            .Select(kv => (kv.Key, kv.Value.qty, kv.Value.unitPrice))
+            .ToList();
+
+        var first = issueList.First();
+        string sampleNames = string.Join(", ", issueList.Select(i => i.시료명).Where(s => !string.IsNullOrEmpty(s)).Distinct());
+        string quotNos     = string.Join(", ", issueList.Select(i => i.견적번호));
+        return ExportTradingStatementFromItems(
+            first.업체명, first.약칭, first.담당자, first.담당자연락처, first.담당자이메일,
+            sampleNames, quotNos, items, savePath);
+    }
+
+    /// <summary>
+    /// 사전 집계된 항목 리스트(항목, 수량, 단가)와 헤더 정보로 거래명세서 엑셀 발행.
+    /// 의뢰 행별 집계처럼 견적과 섞인 경우에 사용.
+    /// </summary>
+    /// <summary>분석정보 테이블에서 Analyte → (Category=항목구분, ES=시험방법) 맵을 조회.</summary>
+    private static Dictionary<string, (string Category, string ES)> LoadAnalyteMetaMap()
+    {
+        var map = new Dictionary<string, (string, string)>(StringComparer.OrdinalIgnoreCase);
         try
         {
-            // ── 항목 집계 ────────────────────────────────────────────────────
-            var itemMap = BuildTradeStatementItemData(issueList);
-            var items   = itemMap
-                .Where(kv => kv.Value.qty > 0)
-                .OrderBy(kv => kv.Key)
-                .ToList();
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            if (!TableExists(conn, "분석정보")) return map;
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT `Analyte`, COALESCE(`Category`, ''), COALESCE(`ES`, '') FROM `분석정보`";
+            using var rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                var a  = rdr.IsDBNull(0) ? "" : rdr.GetString(0).Trim();
+                if (string.IsNullOrWhiteSpace(a)) continue;
+                var c  = rdr.IsDBNull(1) ? "" : rdr.GetString(1).Trim();
+                var es = rdr.IsDBNull(2) ? "" : rdr.GetString(2).Trim();
+                if (!map.ContainsKey(a)) map[a] = (c, es);
+            }
+        }
+        catch (Exception ex) { Log($"LoadAnalyteMetaMap 오류: {ex.Message}"); }
+        return map;
+    }
 
-            decimal supply     = items.Sum(kv => kv.Value.subtotal);
+    public static (bool ok, string msg, decimal supply, decimal vat, decimal total) ExportTradingStatementFromItems(
+        string companyName, string abbr, string manager, string phone, string email,
+        string sampleNames, string quotNos,
+        List<(string name, decimal qty, decimal unitPrice)> items,
+        string savePath)
+    {
+        if (items.Count == 0) return (false, "항목이 없습니다.", 0, 0, 0);
+
+        try
+        {
+            decimal supply     = items.Sum(i => i.qty * i.unitPrice);
             decimal vat        = Math.Round(supply * 0.1m, 0);
             decimal grandTotal = supply + vat;
-
-            var first = issueList.First();
-            string companyName = first.업체명;
-            string abbr        = first.약칭;
-            string manager     = first.담당자;
-            string phone       = first.담당자연락처;
-            string email       = first.담당자이메일;
-            string sampleNames = string.Join(", ", issueList.Select(i => i.시료명).Where(s => !string.IsNullOrEmpty(s)).Distinct());
-            string quotNos     = string.Join(", ", issueList.Select(i => i.견적번호));
+            var meta = LoadAnalyteMetaMap();
 
             // ── 템플릿 선택 ──────────────────────────────────────────────────
             // 템플릿1: 항목 33개 이하 (항목행 11~43, J열 소계)
@@ -1068,17 +1342,28 @@ public static class QuotationService
             ws.Cell(4, 8).Value = DateTime.Today.ToString("yyyy-MM-dd"); // 발행일자
 
             // ── 항목 입력 ────────────────────────────────────────────────────
+            (string category, string es) LookupMeta(string name)
+            {
+                if (!string.IsNullOrWhiteSpace(name) && meta.TryGetValue(name.Trim(), out var v))
+                    return v;
+                return ("", "");
+            }
+
             if (!useTemplate2)
             {
-                // 템플릿1: 행 11~43 (최대 33행), H=수량, I=단가, J=수식(소계)
+                // 템플릿1: 행 11~43 (최대 33행)
+                //   A=번호, B=항목구분, D=시험항목, F=적용시험방법, H=수량, I=단가, J=소계(수식)
                 for (int i = 0; i < Math.Min(items.Count, 33); i++)
                 {
                     int row = 11 + i;
-                    var (name, (qty, up, _)) = items[i];
-                    ws.Cell(row, 1).Value = i + 1;   // 번호
-                    ws.Cell(row, 4).Value = name;     // 시험항목 (D열, D:E 병합)
-                    ws.Cell(row, 8).Value = (double)qty;  // H 수량
-                    ws.Cell(row, 9).Value = (double)up;   // I 단가
+                    var (name, qty, up) = items[i];
+                    var (cat, es) = LookupMeta(name);
+                    ws.Cell(row, 1).Value = i + 1;        // 번호
+                    ws.Cell(row, 2).Value = cat;           // 항목구분
+                    ws.Cell(row, 4).Value = name;          // 시험항목
+                    ws.Cell(row, 6).Value = es;            // 적용시험방법
+                    ws.Cell(row, 8).Value = (double)qty;   // 수량
+                    ws.Cell(row, 9).Value = (double)up;    // 단가
                 }
             }
             else
@@ -1090,18 +1375,24 @@ public static class QuotationService
                 for (int i = 0; i < leftCount; i++)
                 {
                     int row = 11 + i;
-                    var (name, (qty, up, _)) = items[i];
+                    var (name, qty, up) = items[i];
+                    var (cat, es) = LookupMeta(name);
                     ws.Cell(row, 1).Value = i + 1;
+                    ws.Cell(row, 2).Value = cat;
                     ws.Cell(row, 4).Value = name;
+                    ws.Cell(row, 6).Value = es;
                     ws.Cell(row, 8).Value = (double)qty;
                     ws.Cell(row, 9).Value = (double)up;
                 }
                 for (int i = 0; i < rightCount; i++)
                 {
                     int row = 4 + i;
-                    var (name, (qty, up, _)) = items[leftCount + i];
+                    var (name, qty, up) = items[leftCount + i];
+                    var (cat, es) = LookupMeta(name);
                     ws.Cell(row, 11).Value = leftCount + i + 1;  // K 번호
-                    ws.Cell(row, 14).Value = name;                // N 시험항목 (N:O 병합)
+                    ws.Cell(row, 12).Value = cat;                 // L 항목구분
+                    ws.Cell(row, 14).Value = name;                // N 시험항목
+                    ws.Cell(row, 16).Value = es;                  // P 적용시험방법
                     ws.Cell(row, 18).Value = (double)qty;         // R 수량
                     ws.Cell(row, 19).Value = (double)up;          // S 단가
                 }

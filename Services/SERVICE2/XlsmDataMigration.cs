@@ -24,6 +24,7 @@ public static class XlsmDataMigration
     private static void Log(string msg)
     {
         Debug.WriteLine($"[XlsmDataMigration] {msg}");
+        if (!ETA.App.EnableLogging) return;
 
         // BOD.log 파일에도 기록
         try
@@ -78,6 +79,8 @@ public static class XlsmDataMigration
                             D2          TEXT DEFAULT '',
                             희석배수    TEXT DEFAULT '',
                             결과        TEXT DEFAULT '',
+                            식종여부    TEXT DEFAULT '',
+                            F_xy        TEXT DEFAULT '',
                             식종시료량  TEXT DEFAULT '',
                             식종D1      TEXT DEFAULT '',
                             식종D2      TEXT DEFAULT '',

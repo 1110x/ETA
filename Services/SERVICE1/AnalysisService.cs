@@ -52,7 +52,8 @@ public static class AnalysisService
             unit,
             ES,
             Method,
-            instrument
+            instrument,
+            `정량한계`
             FROM `분석정보`
             ORDER BY ES ASC";
 
@@ -60,6 +61,7 @@ public static class AnalysisService
 
         while (reader.Read())
         {
+            int loqOrd = reader.GetOrdinal("정량한계");
             var item = new AnalysisItem
             {
                 Category      = reader.GetStringOrEmpty("Category"),
@@ -71,7 +73,8 @@ public static class AnalysisService
                 ES            = reader.GetStringOrEmpty("ES"),
                 Method        = reader.GetStringOrEmpty("Method"),
                 instrument    = reader.GetStringOrEmpty("instrument"),
-                AliasX        = reader.GetStringOrEmpty("AliasX")
+                AliasX        = reader.GetStringOrEmpty("AliasX"),
+                정량한계      = reader.IsDBNull(loqOrd) ? (double?)null : Convert.ToDouble(reader.GetValue(loqOrd))
             };
             items.Add(item);
             Console.WriteLine($"[GetAllItems] 아이템: {item.Analyte} ({item.Category})");
@@ -247,12 +250,18 @@ public static class AnalysisService
                 DbConnectionFactory.GetColumnNames(conn, "견적발행내역"),
                 StringComparer.OrdinalIgnoreCase);
 
+            // Analyte 본체 + 단가 + 소계 3쌍 모두 보장 — 이게 빠지면 Insert(QuotationIssue)
+            // 에서 validItems 필터가 해당 항목을 제외해 견적 단가/소계가 0으로 저장됨 (#1).
             foreach (var analyte in analytes)
             {
-                if (existing.Contains(analyte)) continue;
-                using var alt = conn.CreateCommand();
-                alt.CommandText = $"ALTER TABLE `견적발행내역` ADD COLUMN `{analyte.Replace("`", "")}` TEXT DEFAULT NULL";
-                try { alt.ExecuteNonQuery(); } catch { }
+                var safe = analyte.Replace("`", "");
+                foreach (var col in new[] { safe, safe + "단가", safe + "소계" })
+                {
+                    if (existing.Contains(col)) continue;
+                    using var alt = conn.CreateCommand();
+                    alt.CommandText = $"ALTER TABLE `견적발행내역` ADD COLUMN `{col}` TEXT DEFAULT NULL";
+                    try { alt.ExecuteNonQuery(); existing.Add(col); } catch { }
+                }
             }
         }
         catch (Exception ex) { Console.WriteLine($"[SyncColumnsToQuotationTable] 오류: {ex.Message}"); }
@@ -281,12 +290,17 @@ public static class AnalysisService
                 DbConnectionFactory.GetColumnNames(conn, "거래명세서발행내역"),
                 StringComparer.OrdinalIgnoreCase);
 
+            // Analyte 본체 + 단가 + 소계 3쌍 모두 보장 (#1 와 동일 이슈 방지)
             foreach (var analyte in analytes)
             {
-                if (existing.Contains(analyte)) continue;
-                using var alt = conn.CreateCommand();
-                alt.CommandText = $"ALTER TABLE `거래명세서발행내역` ADD COLUMN `{analyte.Replace("`", "")}` TEXT DEFAULT NULL";
-                try { alt.ExecuteNonQuery(); } catch { }
+                var safe = analyte.Replace("`", "");
+                foreach (var col in new[] { safe, safe + "단가", safe + "소계" })
+                {
+                    if (existing.Contains(col)) continue;
+                    using var alt = conn.CreateCommand();
+                    alt.CommandText = $"ALTER TABLE `거래명세서발행내역` ADD COLUMN `{col}` TEXT DEFAULT NULL";
+                    try { alt.ExecuteNonQuery(); existing.Add(col); } catch { }
+                }
             }
         }
         catch (Exception ex) { Console.WriteLine($"[SyncColumnsToStatementTable] 오류: {ex.Message}"); }
@@ -306,6 +320,23 @@ public static class AnalysisService
             cmd.Parameters.AddWithValue("@a", analyte);
             var result = cmd.ExecuteScalar();
             return result is string s && !string.IsNullOrWhiteSpace(s) ? s : null;
+        }
+        catch { return null; }
+    }
+
+    /// <summary>분석정보.정량한계 (LoQ) 조회 — null 이면 LoQ 미설정</summary>
+    public static double? GetLoQ(string analyte)
+    {
+        if (string.IsNullOrWhiteSpace(analyte)) return null;
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT `정량한계` FROM `분석정보` WHERE `Analyte` = @a LIMIT 1";
+            cmd.Parameters.AddWithValue("@a", analyte);
+            var v = cmd.ExecuteScalar();
+            return (v == null || v == DBNull.Value) ? (double?)null : Convert.ToDouble(v);
         }
         catch { return null; }
     }

@@ -25,6 +25,7 @@ public partial class EcotoxicityPage : UserControl
     public event Action<Control?>? StatsPanelChanged;   // Show1
     public event Action<Control?>? ListPanelChanged;   // Show2
     public event Action<Control?>? EditPanelChanged;   // Show3
+    public event Action<Control?>? RecordsPanelChanged; // Show4 — 시험기록부 저장 항목 리스트
 
     private static Brush AppRes(string key, string fallback = "#888888")
     {
@@ -111,6 +112,128 @@ public partial class EcotoxicityPage : UserControl
         BuildRequestTree();
         ShowInputForm();
         ShowHistoryPanel();
+        RefreshRecordsPanel();
+    }
+
+    /// <summary>Show4 — 생태독성_시험기록부 DB 항목 리스트. 클릭 시 폼에 로드.</summary>
+    public void RefreshRecordsPanel()
+    {
+        var root = new StackPanel { Spacing = 4, Margin = new Thickness(8) };
+        root.Children.Add(new TextBlock
+        {
+            Text = "📋 시험기록부 저장 항목",
+            FontSize = AppTheme.FontMD, FontWeight = FontWeight.SemiBold,
+            Foreground = AppTheme.FgInfo,
+            Margin = new Thickness(0, 0, 0, 6),
+        });
+
+        List<(int id, string 분석일, string 시료명, string 시험번호, string LC50, string TU)> rows = new();
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            if (DbConnectionFactory.TableExists(conn, "생태독성_시험기록부"))
+            {
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = @"SELECT id, COALESCE(분석일,''), COALESCE(시료명,''),
+                                           COALESCE(시험번호,''), COALESCE(LC50,''), COALESCE(TU,'')
+                                    FROM `생태독성_시험기록부`
+                                    ORDER BY 분석일 DESC, id DESC";
+                using var r = cmd.ExecuteReader();
+                while (r.Read())
+                    rows.Add((r.GetInt32(0), r.GetString(1), r.GetString(2),
+                              r.GetString(3), r.GetString(4), r.GetString(5)));
+            }
+        }
+        catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"[Ecotox.Show4] {ex.Message}"); }
+
+        if (rows.Count == 0)
+        {
+            root.Children.Add(new TextBlock
+            {
+                Text = "저장된 항목이 없습니다.",
+                FontSize = AppTheme.FontSM, Foreground = AppTheme.FgDimmed,
+            });
+        }
+        else
+        {
+            foreach (var rec in rows)
+            {
+                var stack = new StackPanel { Spacing = 2 };
+                stack.Children.Add(new TextBlock
+                {
+                    Text = $"📅 {rec.분석일}  ·  {rec.시료명}",
+                    FontSize = AppTheme.FontSM, FontWeight = FontWeight.Medium,
+                });
+                if (!string.IsNullOrWhiteSpace(rec.시험번호) || !string.IsNullOrWhiteSpace(rec.LC50))
+                    stack.Children.Add(new TextBlock
+                    {
+                        Text = $"#{rec.시험번호}   LC50={rec.LC50}   TU={rec.TU}",
+                        FontSize = AppTheme.FontXS, Foreground = AppTheme.FgDimmed,
+                    });
+                var border = new Border
+                {
+                    Padding = new Thickness(8, 6),
+                    Margin = new Thickness(0, 0, 0, 4),
+                    Background = AppRes("PanelBg", "#1f1f28"),
+                    CornerRadius = new CornerRadius(4),
+                    Cursor = new Cursor(StandardCursorType.Hand),
+                    Child = stack,
+                };
+                int idCopy = rec.id;
+                border.PointerEntered += (_, _) => border.Background = AppRes("BgHover", "#2a2a35");
+                border.PointerExited  += (_, _) => border.Background = AppRes("PanelBg", "#1f1f28");
+                border.PointerPressed += (_, _) => LoadRecordToForm(idCopy);
+                root.Children.Add(border);
+            }
+        }
+
+        RecordsPanelChanged?.Invoke(new ScrollViewer { Content = root });
+    }
+
+    /// <summary>DB 행 → 폼 입력 필드 복원</summary>
+    private void LoadRecordToForm(int id)
+    {
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT * FROM `생태독성_시험기록부` WHERE id=@id LIMIT 1";
+            cmd.Parameters.AddWithValue("@id", id);
+            using var r = cmd.ExecuteReader();
+            if (!r.Read()) return;
+
+            var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            for (int i = 0; i < r.FieldCount; i++)
+                dict[r.GetName(i)] = r.IsDBNull(i) ? "" : r.GetValue(i)?.ToString() ?? "";
+
+            string Get(string key) => dict.TryGetValue(key, out var v) ? v : "";
+
+            _testDate    = Get("분석일");
+            _testNumber  = Get("시험번호");
+            _species     = Get("시험종");
+            _toxicant    = Get("시료명");
+            _duration    = Get("시험시간");
+            _durUnit     = Get("시험시간단위");
+
+            int.TryParse(Get("대조군_생물수"), out _controlOrganisms);
+            int.TryParse(Get("대조군_사망수"), out _controlMortalities);
+
+            for (int i = 0; i < 8 && i < _concentrations.Length; i++)
+            {
+                double.TryParse(Get($"농도_{i+1}"), out var conc);
+                int.TryParse(Get($"생물수_{i+1}"), out var org);
+                int.TryParse(Get($"사망수_{i+1}"), out var mort);
+                _concentrations[i] = conc;
+                _organisms[i] = org;
+                _mortalities[i] = mort;
+            }
+
+            ShowInputForm();
+            ShowHistoryPanel();
+        }
+        catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"[Ecotox.LoadRecord] {ex.Message}"); }
     }
 
     // ══════════════════════════════════════════════════════════════════════════
@@ -570,6 +693,21 @@ public partial class EcotoxicityPage : UserControl
             catch (Exception ex) { resultTb.Text = $"Probit 오류: {ex.Message}"; }
         }
 
+        void DoCalcGraphical()
+        {
+            var (vc, vo, vm) = CollectValid();
+            if (vc.Count < 2) { resultTb.Text = "최소 2개 유효 농도가 필요합니다."; return; }
+            try
+            {
+                _tskResult = EcotoxicityService.CalculateGraphical(vc.ToArray(), vo.ToArray(), vm.ToArray(), _controlOrganisms, _controlMortalities);
+                resultTb.Text = $"그래프법  {_endpoint}:  {_tskResult.EC50}     TU = {_tskResult.TU}  (100/{_tskResult.EC50})";
+                detailTb.Text = (string.IsNullOrEmpty(_tskResult.Warning) ? "" : $"ℹ {_tskResult.Warning}");
+                compareTb.Text = "";
+                _probitResult = null;
+            }
+            catch (Exception ex) { resultTb.Text = $"그래프법 오류: {ex.Message}"; }
+        }
+
         void DoCalcBoth()
         {
             var (vc, vo, vm) = CollectValid();
@@ -606,12 +744,14 @@ public partial class EcotoxicityPage : UserControl
             };
         }
 
-        var tskBtn    = MakeActionBtn("TSK 계산",     BadgeStatus.Info);
-        var probitBtn = MakeActionBtn("Probit 계산",  BadgeStatus.Info);
-        var bothBtn   = MakeActionBtn("TSK + Probit", BadgeStatus.Accent);
-        var saveBtn   = MakeActionBtn("💾 DB 저장",   BadgeStatus.Ok);
+        var tskBtn     = MakeActionBtn("TSK 계산",     BadgeStatus.Info);
+        var probitBtn  = MakeActionBtn("Probit 계산",  BadgeStatus.Info);
+        var graphBtn   = MakeActionBtn("그래프법 계산", BadgeStatus.Info);
+        var bothBtn    = MakeActionBtn("TSK + Probit", BadgeStatus.Accent);
+        var saveBtn    = MakeActionBtn("💾 DB 저장",   BadgeStatus.Ok);
         tskBtn.Click    += (_, _) => DoCalcTSK();
         probitBtn.Click += (_, _) => DoCalcProbit();
+        graphBtn.Click  += (_, _) => DoCalcGraphical();
         bothBtn.Click   += (_, _) => DoCalcBoth();
         saveBtn.Click += (_, _) =>
         {
@@ -730,6 +870,7 @@ public partial class EcotoxicityPage : UserControl
         leftActions.Children.Add(FsSM(new TextBlock { Text = "▶ 분석", FontFamily = Font, Foreground = AppRes("FgMuted"), VerticalAlignment = VerticalAlignment.Center }));
         leftActions.Children.Add(tskBtn);
         leftActions.Children.Add(probitBtn);
+        leftActions.Children.Add(graphBtn);
         leftActions.Children.Add(bothBtn);
         Grid.SetColumn(leftActions, 0); actionGrid.Children.Add(leftActions);
 
@@ -1256,6 +1397,8 @@ public partial class EcotoxicityPage : UserControl
 
             wb.SaveAs(savePath);
             System.Diagnostics.Debug.WriteLine($"시험기록부 저장: {savePath}");
+            // 출력 후 Show4 (저장 항목 리스트) 새로고침
+            RefreshRecordsPanel();
             await Task.CompletedTask;
         }
         catch (Exception ex)

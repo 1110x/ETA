@@ -88,6 +88,10 @@ public static class DataToMeasurerService
             var analyte = kv.Key;
             var result  = kv.Value;
             if (string.IsNullOrWhiteSpace(result)) continue;
+            // 현장측정 및 시료채취는 측정인 제출 대상이 아니므로 제외
+            if (analyte.Replace(" ", "").Contains("현장측정") ||
+                analyte.Replace(" ", "").Contains("시료채취"))
+                continue;
 
             meta.TryGetValue(analyte, out var m);
 

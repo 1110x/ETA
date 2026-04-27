@@ -90,7 +90,7 @@ public class OrderRequestEditPanel : UserControl
 
         var info = new TextBlock
         {
-            Text = $"시료 {_samples.Count}건  ·  견적항목 {_quotedItems.Count}개 기본 체크  ·  체크 해제로 제외 가능",
+            Text = $"시료 {_samples.Count}건  ·  견적항목 {_quotedItems.Count}개 (녹색 표시)  ·  체크하여 의뢰 항목 선택",
             FontSize = AppTheme.FontXS, FontFamily = Font, Foreground = AppTheme.FgDimmed,
             Margin = new Thickness(0, 4, 0, 6),
         };
@@ -198,7 +198,8 @@ public class OrderRequestEditPanel : UserControl
                 var sName = _samples[ci];
                 var cb = new CheckBox
                 {
-                    IsChecked           = _quotedItems.Contains(colName),
+                    // #3: 기본값을 모두 체크해제로 시작 — 필요한 항목만 사용자가 체크
+                    IsChecked           = false,
                     HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment   = VerticalAlignment.Center,
                 };

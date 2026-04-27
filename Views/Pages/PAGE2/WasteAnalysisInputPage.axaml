@@ -70,6 +70,19 @@
                         Foreground="{DynamicResource FgMuted}"
                         BorderThickness="1"
                         BorderBrush="{DynamicResource InputBorder}"/>
+                <!-- 입력 이력 — Data/Attachments/{입력모드}/ 의 보존 파일 리스트 팝업 -->
+                <Button x:Name="BtnInputHistory"
+                        Content="📜 입력 History"
+                        Click="BtnInputHistory_Click"
+                        FontSize="{DynamicResource FontSizeSM}"
+                        FontFamily="avares://ETA/Assets/Fonts#Pretendard"
+                        Padding="8,3"
+                        Margin="12,0,0,0"
+                        CornerRadius="10"
+                        Background="{DynamicResource SubBtnBg}"
+                        Foreground="{DynamicResource FgMuted}"
+                        BorderThickness="1"
+                        BorderBrush="{DynamicResource InputBorder}"/>
             </StackPanel>
         </Border>
 

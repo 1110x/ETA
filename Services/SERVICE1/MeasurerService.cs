@@ -195,7 +195,7 @@ public static class MeasurerService
         try
         {
             Directory.CreateDirectory("Logs");
-            File.AppendAllText("Logs/MeasurerDebug.log",
+            if (ETA.App.EnableLogging) File.AppendAllText("Logs/MeasurerDebug.log",
                 $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] [SetFieldMeasFlag] code='{code}' set={(on?1:0)} → saved={saved}\n");
         }
         catch { }
@@ -236,7 +236,7 @@ public static class MeasurerService
         try
         {
             Directory.CreateDirectory("Logs");
-            File.AppendAllText("Logs/MeasurerDebug.log",
+            if (ETA.App.EnableLogging) File.AppendAllText("Logs/MeasurerDebug.log",
                 $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] [SaveFieldMeasEquipments] {count}건 저장\n");
         }
         catch { }
@@ -257,7 +257,7 @@ public static class MeasurerService
         try
         {
             Directory.CreateDirectory("Logs");
-            File.AppendAllText("Logs/MeasurerDebug.log",
+            if (ETA.App.EnableLogging) File.AppendAllText("Logs/MeasurerDebug.log",
                 $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] [GetFieldMeasEquipment] {list.Count}건 → [{string.Join(";", list.Select(x=>x.Item1))}]\n");
         }
         catch { }
@@ -287,7 +287,7 @@ public static class MeasurerService
         try
         {
             Directory.CreateDirectory("Logs");
-            File.AppendAllText("Logs/MeasurerDebug.log",
+            if (ETA.App.EnableLogging) File.AppendAllText("Logs/MeasurerDebug.log",
                 $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] [GetFieldMeasEquipmentCodes] 현장측정=1 {list.Count}건 / 전체 {total}건 → [{string.Join(",", list)}]\n");
         }
         catch { }
@@ -1293,7 +1293,7 @@ public static class MeasurerService
         try
         {
             Directory.CreateDirectory("Logs");
-            File.AppendAllText("Logs/MeasurerDebug.log",
+            if (ETA.App.EnableLogging) File.AppendAllText("Logs/MeasurerDebug.log",
                 $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [ImportFacilitiesFromXlsx] file='{Path.GetFileName(xlsxPath)}' " +
                 $"rows={r.TotalRows} contracts={r.ContractsUpsert} points={r.PointsUpsert} skipped={r.Skipped}{Environment.NewLine}");
         }

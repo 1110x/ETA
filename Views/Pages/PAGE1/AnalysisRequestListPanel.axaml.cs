@@ -736,6 +736,7 @@ public class AnalysisRequestListPanel : UserControl
     private static readonly object _logLock = new();
     private static void Log(string msg)
     {
+        if (!ETA.App.EnableLogging) return;
         try
         {
             Directory.CreateDirectory("Logs");

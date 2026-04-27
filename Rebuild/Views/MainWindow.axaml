@@ -19,7 +19,7 @@
             <Grid ColumnDefinitions="Auto,*,Auto">
                 <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
                     <TextBlock Text="ETA" Classes="h1"/>
-                    <TextBlock Text="· 수질분석센터 · v21" Classes="muted" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="BrandTag" Text="· 수질분석센터" Classes="muted" VerticalAlignment="Center"/>
                 </StackPanel>
 
                 <Border Grid.Column="1"

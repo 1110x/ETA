@@ -13,6 +13,8 @@ namespace ETA.Services.Common;
 public static class UserPrefsService
 {
     public const string KeyTestRecordBookTemplateFolder = "TestRecordBookTemplateFolder";
+    public const string KeyTradeStatementFolder = "TradeStatementFolder";
+    public const string KeyQuotationExportFolder = "QuotationExportFolder";
 
     private static readonly object _lock = new();
     private static Dictionary<string, string> _cache = new();
@@ -78,5 +80,17 @@ public static class UserPrefsService
     {
         get => Get(KeyTestRecordBookTemplateFolder);
         set => Set(KeyTestRecordBookTemplateFolder, value);
+    }
+
+    public static string TradeStatementFolder
+    {
+        get => Get(KeyTradeStatementFolder);
+        set => Set(KeyTradeStatementFolder, value);
+    }
+
+    public static string QuotationExportFolder
+    {
+        get => Get(KeyQuotationExportFolder);
+        set => Set(KeyQuotationExportFolder, value);
     }
 }

@@ -8,7 +8,7 @@
     <Nullable>enable</Nullable>
     <ApplicationManifest Condition="$([MSBuild]::IsOSPlatform('Windows'))">app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-    <Version>1.4.0</Version>
+    <Version>1.4.1</Version>
     <!-- 설치형 배포용 메타/아이콘 — Windows 게시 시 exe에 포함 -->
     <ApplicationIcon>Assets/icons/ETA.ico</ApplicationIcon>
     <AssemblyName>ETA</AssemblyName>
@@ -17,7 +17,7 @@
     <AssemblyTitle>ETA - 수질분석 LIMS</AssemblyTitle>
     <Copyright>Copyright © ETA</Copyright>
     <PublishReadyToRun Condition="'$(Configuration)' == 'Release'">true</PublishReadyToRun>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <!-- AssemblyInformationalVersion 등 자동 속성 생성 (UI 에서 버전 노출) — TargetFrameworkAttribute 만 별도 비활성 유지 -->
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
     <EnableNETAnalyzers>false</EnableNETAnalyzers>

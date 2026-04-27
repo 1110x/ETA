@@ -15,12 +15,11 @@ public static class AccessService
     public static readonly List<(string Key, string Label, string Category)> AllMenus = new()
     {
         // 수질분석센터
-        ("Agent",               "직원정보",           "수질분석센터"),
+        ("Agent",               "직원정보",            "수질분석센터"),
         ("Contract",            "계약업체",            "수질분석센터"),
         ("Quotation",           "견적/의뢰서",         "수질분석센터"),
         ("QuotationIssue",      "거래명세발행",        "수질분석센터"),
         ("TestReport",          "시험성적서",          "수질분석센터"),
-        ("DbMigration",         "DB Migration",        "수질분석센터"),
         // 비용부담금
         ("WasteCompany",        "폐수배출업소",        "비용부담금"),
         ("WasteSampleList",     "분석의뢰리스트",      "비용부담금"),
@@ -30,6 +29,8 @@ public static class AccessService
         // 분석결과입력
         ("WasteAnalysisInputWater",   "분석결과입력(수질)",    "분석결과입력"),
         ("WasteAnalysisInputWaste",   "분석결과입력(비용)",    "분석결과입력"),
+        // 시험기록부
+        ("TestRecordBookViewer", "시험기록부 조회",    "시험기록부"),
         // 결과 제출
         ("ResultSubmitMeasure", "결과제출(측정인)",    "결과 제출"),
         ("ResultSubmitErp",     "결과제출(ERP)",       "결과 제출"),
@@ -40,10 +41,23 @@ public static class AccessService
         // 리스크관리
         ("Reagent",             "시약관리",            "리스크관리"),
         // 권한관리
-        ("WaterQualityNameReconcile", "센터명칭",            "권한관리"),
-        ("WasteNameReconcile",        "폐수배출업소명칭",    "권한관리"),
-        ("Access",                    "접근관리",            "권한관리"),
-        ("ServerManagement",          "서버관리",            "권한관리"),
+        ("Access",                    "접근관리",      "권한관리"),
+        ("ServerManagement",          "서버관리",      "권한관리"),
+        // AI 학습
+        ("AiDocClassification",       "AI 문서분류",   "AI 학습"),
+        ("ParserGenerator",           "파서 생성기",   "AI 학습"),
+        // 설정
+        ("MeasurerContract",          "계약·측정시설",         "설정"),
+        ("MeasurerAnalyte",           "분석항목",              "설정"),
+        ("MeasurerCondition",         "분석조건",              "설정"),
+        ("MeasurerEquipment",         "분석장비",              "설정"),
+        ("TemplateFolder",            "양식폴더",              "설정"),
+        ("TestRecordBookFolder",      "시험기록부 템플릿 폴더","설정"),
+        ("WaterQualityNameReconcile", "수질분석센터 의뢰명칭 및 방류기준", "설정"),
+        ("WasteNameReconcile",        "폐수배출업소명칭",      "설정"),
+        ("DbMigration",               "DB Migration",          "설정"),
+        // 사용자메뉴얼
+        ("UserManual",                "사용자메뉴얼",          "사용자메뉴얼"),
     };
 
     // ── DB 마이그레이션 ──────────────────────────────────────────────────────

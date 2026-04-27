@@ -46,6 +46,7 @@ public sealed class WaterQualityNameReconcilePage
 
     public WaterQualityNameReconcilePage()
     {
+        ETA.Services.Common.SampleDischargeStandardService.EnsureTable();
         LeftPanel   = BuildAbbrPanel();
         CenterPanel = BuildMappingPanel();
         BottomPanel = BuildBottomPanel();
@@ -564,23 +565,63 @@ public sealed class WaterQualityNameReconcilePage
                 _sampleStatus.Foreground = AppTheme.FgDimmed;
                 _sampleStatus.Text = $"{_abbr} — {names.Count}개";
             }
+            // 방류기준 후보 + 현재 약칭의 매핑 로드
+            var dischargeNames = new List<string> { "" };  // "" = 미지정
+            try { dischargeNames.AddRange(AnalysisRequestService.GetDischargeStandardNames()); }
+            catch { }
+            var currentMap = ETA.Services.Common.SampleDischargeStandardService
+                .GetByAbbr(_abbr)
+                .ToDictionary(x => x.시료명, x => x.방류기준, StringComparer.OrdinalIgnoreCase);
+
             foreach (var name in names)
             {
                 var capturedName = name;
+                var nameText = new TextBlock
+                {
+                    Text       = capturedName, FontSize = AppTheme.FontBase, FontFamily = Font,
+                    FontWeight = FontWeight.Regular,
+                    Foreground = AppRes("AppFg"),
+                    VerticalAlignment = VerticalAlignment.Center,
+                };
+                Grid.SetColumn(nameText, 0);
+
+                var cmb = new ComboBox
+                {
+                    Width = 160,
+                    FontSize = AppTheme.FontSM, FontFamily = Font,
+                    ItemsSource = dischargeNames,
+                    SelectedItem = currentMap.TryGetValue(capturedName, out var cur) ? cur : "",
+                    VerticalAlignment = VerticalAlignment.Center,
+                    HorizontalAlignment = HorizontalAlignment.Right,
+                };
+                Grid.SetColumn(cmb, 1);
+                cmb.SelectionChanged += (_, _) =>
+                {
+                    var sel = (cmb.SelectedItem as string) ?? "";
+                    if (string.IsNullOrWhiteSpace(sel))
+                        ETA.Services.Common.SampleDischargeStandardService.Remove(_abbr, capturedName);
+                    else
+                        ETA.Services.Common.SampleDischargeStandardService.AddOrUpdate(_abbr, capturedName, sel);
+                };
+                // ComboBox 클릭이 TreeViewItem 의 드래그/선택으로 전파되지 않도록
+                cmb.PointerPressed += (_, e) => e.Handled = true;
+
+                var headerGrid = new Grid
+                {
+                    ColumnDefinitions = new ColumnDefinitions("*,Auto"),
+                };
+                headerGrid.Children.Add(nameText);
+                headerGrid.Children.Add(cmb);
+
                 var tvi = new TreeViewItem
                 {
                     Tag    = capturedName,
-                    Header = new TextBlock
-                    {
-                        Text       = capturedName, FontSize = AppTheme.FontBase, FontFamily = Font,
-                        FontWeight = FontWeight.Regular,
-                        Foreground = AppRes("AppFg"),
-                    }
+                    Header = headerGrid,
                 };
-                // 드래그 시작
-                tvi.PointerPressed += async (s, e) =>
+                // 드래그 시작 — 이름 영역 클릭에서만
+                nameText.PointerPressed += async (s, e) =>
                 {
-                    if (e.GetCurrentPoint(tvi).Properties.IsLeftButtonPressed)
+                    if (e.GetCurrentPoint(nameText).Properties.IsLeftButtonPressed)
                     {
                         var data = new Avalonia.Input.DataObject();
                         data.Set(Avalonia.Input.DataFormats.Text, capturedName);

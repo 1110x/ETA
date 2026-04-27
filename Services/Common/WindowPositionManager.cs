@@ -210,6 +210,7 @@ public class WindowPositionManager
     /// </summary>
     private void LogLayout(string message)
     {
+        if (!ETA.App.EnableLogging) return;
         try
         {
             string logLine = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] {message}";

@@ -34,6 +34,26 @@
             <Setter Property="Foreground" Value="{DynamicResource TreeFg}" />
         </Style>
 
+        <!-- 탭 버튼 -->
+        <Style Selector="Button.tab-btn">
+            <Setter Property="Height"          Value="24" />
+            <Setter Property="CornerRadius"    Value="4" />
+            <Setter Property="Background"      Value="{DynamicResource SubBtnBg}" />
+            <Setter Property="Foreground"      Value="{DynamicResource FgMuted}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding"         Value="10,0" />
+            <Setter Property="FontSize"        Value="{DynamicResource FontSizeBase}" />
+            <Setter Property="FontFamily"      Value="avares://ETA/Assets/Fonts#Pretendard" />
+        </Style>
+        <Style Selector="Button.tab-btn:pointerover">
+            <Setter Property="Background" Value="{DynamicResource TreeHoverBg}" />
+        </Style>
+        <Style Selector="Button.tab-btn.active">
+            <Setter Property="Background" Value="{DynamicResource TreeSelBg}" />
+            <Setter Property="Foreground" Value="{DynamicResource AppFg}" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+
         <!-- TreeViewItem -->
         <Style Selector="TreeViewItem">
             <Setter Property="Padding"       Value="1,0" />
@@ -84,15 +104,24 @@
                 Margin="0,0,0,0">
             <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto">
 
-                <!-- 토글 스위치: Off=견적발행내역 / On=분석의뢰내역 -->
-                <ToggleSwitch Grid.Column="0"
-                              x:Name="tglTab"
-                              IsChecked="False"
-                              OffContent="견적발행내역"
-                              OnContent="분석의뢰내역"
-                              HorizontalAlignment="Left"
-                              VerticalAlignment="Center"
-                              IsCheckedChanged="TglTab_Changed" />
+                <!-- 탭 버튼: 견적발행내역 / 분석의뢰내역 / 거래명세발행내역 -->
+                <StackPanel Grid.Column="0"
+                            Orientation="Horizontal"
+                            Spacing="4"
+                            VerticalAlignment="Center">
+                    <Button x:Name="btnTabQuotation"
+                            Classes="tab-btn active"
+                            Content="견적발행내역"
+                            Click="BtnTabQuotation_Click" />
+                    <Button x:Name="btnTabAnalysis"
+                            Classes="tab-btn"
+                            Content="분석의뢰내역"
+                            Click="BtnTabAnalysis_Click" />
+                    <Button x:Name="btnTabStatement"
+                            Classes="tab-btn"
+                            Content="거래명세발행내역"
+                            Click="BtnTabStatement_Click" />
+                </StackPanel>
 
                 <!-- 검색창 -->
                 <TextBox Grid.Column="1"

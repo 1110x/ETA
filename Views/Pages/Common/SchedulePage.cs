@@ -47,7 +47,10 @@ public class SchedulePage
     private string?  _focusDate;   // 의뢰목록 채수담당자 배정 날짜 포커스
     private string   _selCat   = "채수";
     private string   _selSite  = "여수";
-    private bool     _showCon  = false;      // false=직원, true=의뢰목록
+    // 트리 내용은 _selCat 가 결정. 단, 채수 흐름 내에서 의뢰 선택 후 직원 픽 단계는
+    // _showAgentInSampling 으로 전환 (분류는 채수 그대로).
+    private bool _showAgentInSampling = false;
+    private bool ShowRequests => _selCat == "채수" && !_showAgentInSampling;
     private string   _agtName  = "";
     private string   _agtId    = "";
     private string   _selCompanyAbbr = "";
@@ -74,25 +77,38 @@ public class SchedulePage
     private Button?     _btnSave;
     private Button?     _btnDelete;
 
-    private Button?     _btnAgents;
-    private Button?     _btnContracts;
+    private TextBlock?  _treeHeaderLbl;     // 분류별 동적 안내 (의뢰 선택 / 대상자 선택)
     private StackPanel? _progressPanel;
+    private Button?     _btnLeaveGroup;     // 휴가 묶음 버튼
+    private StackPanel? _leaveRadioPanel;   // 연차/주말/반차/공가 라디오
+    private readonly Dictionary<string, RadioButton> _leaveRadios = new();
     private readonly Dictionary<string, Button> _catBtns  = new();
     private readonly Dictionary<string, Button> _siteBtns = new();
     private bool _lastClickCtrl = false;
 
     // ── 분류별 색상 + 아이콘 ─────────────────────────────────────────────────
-    // 출장: 사용자1 + 계약업체 → 즉시 등록
-    // 휴일근무/반차/공가/기타: 사용자1 → 즉시 등록
+    // 채수: 의뢰 다중 + 직원 → 즉시 등록
+    // 휴가류(연차/휴일근무/반차/공가): 단일 직원 → 즉시 등록
+    // 기타: 단일 직원 → 즉시 등록
     private static readonly Dictionary<string, (string Bg, string Fg, string Bd, string Icon)> CatStyle = new()
     {
         ["채수"]    = ("#1a2a4a", "#88aaee", "#336699", "🌊"),
         ["연차"]    = ("#1a3a3a", "#66cccc", "#226666", "🏖"),
-        ["휴일근무"] = ("#3a2a1a", "#ddaa66", "#996633", "🏢"),
+        ["휴일근무"] = ("#3a2a1a", "#ddaa66", "#996633", "🏢"),  // 표기는 "주말"
         ["반차"]    = ("#1a4a2a", "#66bb66", "#2a6633", "🌿"),
         ["공가"]    = ("#3a1a4a", "#cc88ee", "#663399", "🎖"),
         ["기타"]    = ("#2a2a2a", "#aaaaaa", "#555555", "📌"),
     };
+
+    // 휴가 그룹 — 내부 _selCat 값 (DB 컬럼값) → UI 표기
+    private static readonly (string Key, string Label)[] LeaveOptions = new[]
+    {
+        ("연차",   "연차"),
+        ("휴일근무","주말"),
+        ("반차",   "반차"),
+        ("공가",   "공가"),
+    };
+    private static bool IsLeave(string cat) => LeaveOptions.Any(o => o.Key == cat);
 
     // ── 사이트별 색상 ────────────────────────────────────────────────────────
     private static readonly Dictionary<string, (string Bg, string Fg, string Bd)> SiteStyle = new()
@@ -122,71 +138,126 @@ public class SchedulePage
     {
         var root = new Grid { RowDefinitions = new RowDefinitions("Auto,Auto,Auto,Auto,Auto,*") };
 
-        // 헤더: 제목 + 탭 버튼
-        var hdr = new Grid
+        // 헤더: 분류별 동적 안내 라벨 (탭 버튼 제거 — 분류가 대상 리스트를 결정)
+        _treeHeaderLbl = new TextBlock
         {
-            ColumnDefinitions = new ColumnDefinitions("*,Auto,Auto"),
-            Margin = new Thickness(0, 0, 0, 6),
-        };
-        hdr.Children.Add(new TextBlock
-        {
-            Text = "구성원", FontSize = AppTheme.FontLG, FontWeight = FontWeight.SemiBold,
+            FontSize = AppTheme.FontLG, FontWeight = FontWeight.SemiBold,
             FontFamily = Font, Foreground = AppRes("FgMuted"),
             VerticalAlignment = VerticalAlignment.Center,
-            [Grid.ColumnProperty] = 0,
-        });
-
-        _btnAgents = MakeTabBtn("👤 직원", active: true);
-        _btnAgents.Margin = new Thickness(0, 0, 2, 0);
-        _btnAgents.Click += (_, _) => { _showCon = false; ApplyTabStyles(); LoadTree(); };
-        Grid.SetColumn(_btnAgents, 1);
-
-        _btnContracts = MakeTabBtn("📋 의뢰목록", active: false);
-        _btnContracts.Click += (_, _) => { _showCon = true; ApplyTabStyles(); LoadTree(); };
-        Grid.SetColumn(_btnContracts, 2);
-
-        hdr.Children.Add(_btnAgents);
-        hdr.Children.Add(_btnContracts);
-        Grid.SetRow(hdr, 0);
-        root.Children.Add(hdr);
+            Margin = new Thickness(0, 0, 0, 6),
+        };
+        Grid.SetRow(_treeHeaderLbl, 0);
+        root.Children.Add(_treeHeaderLbl);
+        UpdateTreeHeader();
 
         // 구분선
         var sep = new Border { Height = 1, Background = AppRes("InputBorder"), Margin = new Thickness(0, 0, 0, 4) };
         Grid.SetRow(sep, 1);
         root.Children.Add(sep);
 
-        // ── 분류 토글 버튼 (Row 2) ──
-        var catRow = new WrapPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 0, 0, 4) };
-        foreach (var kv in CatStyle)
+        // ── 분류 영역 (Row 2): 채수 / 휴가 / 기타 3개 + 휴가 라디오 ──
+        var catContainer = new StackPanel { Spacing = 4, Margin = new Thickness(0, 0, 0, 4) };
+
+        // 1) 채수 — 큰 버튼
+        var btnSampl = MakeBigCatButton("채수");
+        btnSampl.Click += (_, _) =>
         {
-            var btn = new Button
+            _selCat = "채수";
+            _showAgentInSampling = false;
+            _lastSaved = false;
+            if (_leaveRadioPanel != null) _leaveRadioPanel.IsVisible = false;
+            ClearLeaveRadioSelection();
+            ApplyCatStyles();
+            UpdateLeaveButtonContent();
+            UpdateTreeHeader();
+            LoadTree();
+            RefreshProgress();
+        };
+        _catBtns["채수"] = btnSampl;
+        catContainer.Children.Add(btnSampl);
+
+        // 2) 휴가 — 큰 버튼 (클릭 시 라디오 패널 표시 + 기본값 연차)
+        var leaveCs = GetCat("연차");
+        var btnLeave = new Button
+        {
+            Content = $"{leaveCs.Icon}  휴가",
+            FontFamily = Font, FontSize = AppTheme.FontMD, FontWeight = FontWeight.SemiBold,
+            Padding = new Thickness(12, 6),
+            CornerRadius = new CornerRadius(8), BorderThickness = new Thickness(1),
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            HorizontalContentAlignment = HorizontalAlignment.Left,
+        };
+        _btnLeaveGroup = btnLeave;
+        catContainer.Children.Add(btnLeave);
+
+        // 휴가 라디오 패널 (기본 숨김)
+        _leaveRadioPanel = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            Spacing = 6,
+            IsVisible = false,
+            Margin = new Thickness(8, 0, 0, 2),
+        };
+        _leaveRadios.Clear();
+        foreach (var (key, label) in LeaveOptions)
+        {
+            var cs = GetCat(key);
+            var rb = new RadioButton
             {
-                Content = $"{kv.Value.Icon} {kv.Key}",
+                Content    = $"{cs.Icon} {label}",
                 FontFamily = Font, FontSize = AppTheme.FontSM,
-                Padding = new Thickness(8, 3), Margin = new Thickness(0, 0, 3, 3),
-                CornerRadius = new CornerRadius(10), BorderThickness = new Thickness(1),
+                GroupName  = "leaveGroup",
+                Foreground = AppTheme.FgPrimary,
             };
-            var k = kv.Key;
-            btn.Click += (_, _) =>
+            var k = key;
+            rb.IsCheckedChanged += (_, _) =>
             {
+                if (_suppressLeaveRadio) return;
+                if (rb.IsChecked != true) return;
                 _selCat = k;
+                _showAgentInSampling = false;
                 _lastSaved = false;
                 ApplyCatStyles();
+                UpdateLeaveButtonContent();
+                UpdateTreeHeader();
+                LoadTree();
                 RefreshProgress();
-                if (_selCat == "채수")
-                {
-                    // 채수 선택 → 의뢰목록 탭으로 자동 전환
-                    _showCon = true;
-                    ApplyTabStyles();
-                    LoadTree();
-                }
             };
-            _catBtns[kv.Key] = btn;
-            catRow.Children.Add(btn);
+            _leaveRadios[key] = rb;
+            _leaveRadioPanel.Children.Add(rb);
         }
+        catContainer.Children.Add(_leaveRadioPanel);
+
+        btnLeave.Click += (_, _) =>
+        {
+            // 휴가 그룹 선택 → 라디오 표시 + 기본값(연차)으로 진입
+            string nextCat = IsLeave(_selCat) ? _selCat : "연차";
+            _leaveRadioPanel.IsVisible = true;
+            if (_leaveRadios.TryGetValue(nextCat, out var rb)) rb.IsChecked = true;
+        };
+
+        // 3) 기타 — 큰 버튼
+        var btnEtc = MakeBigCatButton("기타");
+        btnEtc.Click += (_, _) =>
+        {
+            _selCat = "기타";
+            _showAgentInSampling = false;
+            _lastSaved = false;
+            _leaveRadioPanel.IsVisible = false;
+            ClearLeaveRadioSelection();
+            ApplyCatStyles();
+            UpdateLeaveButtonContent();
+            UpdateTreeHeader();
+            LoadTree();
+            RefreshProgress();
+        };
+        _catBtns["기타"] = btnEtc;
+        catContainer.Children.Add(btnEtc);
+
         ApplyCatStyles();
-        Grid.SetRow(catRow, 2);
-        root.Children.Add(catRow);
+        UpdateLeaveButtonContent();
+        Grid.SetRow(catContainer, 2);
+        root.Children.Add(catContainer);
 
         // ── 진행 상태 표시 (Row 3) ──
         _progressPanel = new StackPanel
@@ -222,28 +293,60 @@ public class SchedulePage
         return root;
     }
 
-    private static Button MakeTabBtn(string text, bool active) => new()
+    /// <summary>분류 + 진행단계에 맞춰 트리 위 안내 라벨 갱신.</summary>
+    private void UpdateTreeHeader()
     {
-        Content = text, FontFamily = Font, FontSize = AppTheme.FontSM,
-        Padding = new Thickness(8, 3), CornerRadius = new CornerRadius(10),
-        BorderThickness = new Thickness(1),
-        Background  = active ? AppTheme.BgActiveBlue : AppTheme.BgSecondary,
-        Foreground  = active ? AppTheme.FgInfo : AppTheme.FgDimmed,
-        BorderBrush = active ? AppTheme.BorderInfo : AppTheme.BorderMuted,
-    };
-
-    private void ApplyTabStyles()
-    {
-        SetTab(_btnAgents,   !_showCon);
-        SetTab(_btnContracts, _showCon);
+        if (_treeHeaderLbl == null) return;
+        _treeHeaderLbl.Text = _selCat switch
+        {
+            "채수" when !_showAgentInSampling
+                => $"📋 의뢰 선택  ({_selReqs.Count}건)",
+            "채수"
+                => "👤 채수 담당자 선택",
+            _   => "👤 대상자 선택",
+        };
     }
 
-    private static void SetTab(Button? btn, bool active)
+    /// <summary>채수/기타 같은 큰 버튼 1개 생성.</summary>
+    private static Button MakeBigCatButton(string key)
     {
-        if (btn == null) return;
-        btn.Background  = active ? AppTheme.BgActiveBlue : AppTheme.BgSecondary;
-        btn.Foreground  = active ? AppTheme.FgInfo : AppTheme.FgDimmed;
-        btn.BorderBrush = active ? AppTheme.BorderInfo : AppTheme.BorderMuted;
+        var cs = GetCat(key);
+        return new Button
+        {
+            Content = $"{cs.Icon}  {key}",
+            FontFamily = Font, FontSize = AppTheme.FontMD, FontWeight = FontWeight.SemiBold,
+            Padding = new Thickness(12, 6),
+            CornerRadius = new CornerRadius(8), BorderThickness = new Thickness(1),
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            HorizontalContentAlignment = HorizontalAlignment.Left,
+        };
+    }
+
+    /// <summary>휴가 라디오 4개 모두 해제 (체크 변경 이벤트 무시 플래그로 보호).</summary>
+    private bool _suppressLeaveRadio;
+    private void ClearLeaveRadioSelection()
+    {
+        _suppressLeaveRadio = true;
+        foreach (var rb in _leaveRadios.Values)
+            rb.IsChecked = false;
+        _suppressLeaveRadio = false;
+    }
+
+    /// <summary>휴가 묶음 버튼의 표기를 현재 선택된 휴가 종류로 갱신.</summary>
+    private void UpdateLeaveButtonContent()
+    {
+        if (_btnLeaveGroup == null) return;
+        if (IsLeave(_selCat))
+        {
+            var label = LeaveOptions.First(o => o.Key == _selCat).Label;
+            var cs    = GetCat(_selCat);
+            _btnLeaveGroup.Content = $"{cs.Icon}  휴가 · {label}";
+        }
+        else
+        {
+            var cs = GetCat("연차");
+            _btnLeaveGroup.Content = $"{cs.Icon}  휴가";
+        }
     }
 
     public void LoadTree()
@@ -252,7 +355,7 @@ public class SchedulePage
         _tree.Items.Clear();
         var q = _searchBox?.Text?.Trim() ?? "";
 
-        if (!_showCon)
+        if (!ShowRequests)
         {
             // 직원 트리
             var agents = AgentService.GetAllItems()
@@ -503,33 +606,22 @@ public class SchedulePage
                 return;
             }
 
-            // ── 담당자 미배정: 채수 시퀀스 시작 ──
+            // ── 담당자 미배정: 채수 시퀀스 (클릭만으로 토글, 자동 전환 안 함) ──
             _selCat = "채수";
             ApplyCatStyles();
             _focusDate = null;
 
-            if (_lastClickCtrl)
-            {
-                int idx = _selReqs.FindIndex(r => r.Id == reqId);
-                if (idx >= 0) _selReqs.RemoveAt(idx);
-                else          _selReqs.Add((reqId, reqAbbr));
-                _suppressSelection = true;
-                LoadTree();
-                _suppressSelection = false;
-            }
-            else
-            {
-                _selReqs.Clear();
-                _selReqs.Add((reqId, reqAbbr));
-                _showCon = false;
-                ApplyTabStyles();
-                _suppressSelection = true;
-                LoadTree();
-                _suppressSelection = false;
-            }
+            int idx = _selReqs.FindIndex(r => r.Id == reqId);
+            if (idx >= 0) _selReqs.RemoveAt(idx);
+            else          _selReqs.Add((reqId, reqAbbr));
+
+            _suppressSelection = true;
+            LoadTree();
+            _suppressSelection = false;
 
             _selCompanyAbbr = string.Join(",", _selReqs.Select(r => r.Abbr).Distinct());
             RefreshCompanyBadge();
+            UpdateTreeHeader();
             RefreshProgress();
             return;
         }
@@ -808,6 +900,8 @@ public class SchedulePage
                         직원id   = name,  // id 없음 → 이름으로 대체
                         분류     = "채수",
                         업체약칭 = !string.IsNullOrWhiteSpace(r.약칭) ? r.약칭 : r.시료명,
+                        // 의뢰 유래 식별자 — RefreshEntries 에서 Id==0 + 첨부파일 prefix 로 분기
+                        첨부파일 = $"REQ:{r.Id}",
                     });
                 }
             }
@@ -876,7 +970,7 @@ public class SchedulePage
             BorderThickness = new Thickness(isFocused || selected ? 2 : 0.5),
             Margin    = new Thickness(0),  // ← Grid spacing으로 처리
             Padding   = new Thickness(0),  // ← Padding 제거 (bar가 cell 전체를 차지)
-            MinHeight = 94,
+            MinHeight = 150,                // 7줄 항목 + 헤더 수용
             Cursor    = valid ? new Cursor(StandardCursorType.Hand) : Cursor.Default,
         };
 
@@ -923,7 +1017,7 @@ public class SchedulePage
             }.BindSM());
             sp.Children.Add(hdrRow);
 
-            var all = BuildEntryColumn(dayEntries, 4, dateStr, spans);
+            var all = BuildEntryColumn(dayEntries, 7, dateStr, spans);
             sp.Children.Add(all);
 
             // 클릭 → 날짜 선택
@@ -1206,6 +1300,16 @@ public class SchedulePage
             btn.Foreground  = a ? Brush.Parse(cs.Fg) : AppTheme.FgDimmed;
             btn.BorderBrush = a ? Brush.Parse(cs.Bd) : AppTheme.BorderMuted;
         }
+
+        // 휴가 묶음 버튼: _selCat 가 휴가류면 해당 색 적용
+        if (_btnLeaveGroup != null)
+        {
+            bool leaveActive = IsLeave(_selCat);
+            var cs = GetCat(leaveActive ? _selCat : "연차");
+            _btnLeaveGroup.Background  = leaveActive ? Brush.Parse(cs.Bg) : AppTheme.BgSecondary;
+            _btnLeaveGroup.Foreground  = leaveActive ? Brush.Parse(cs.Fg) : AppTheme.FgDimmed;
+            _btnLeaveGroup.BorderBrush = leaveActive ? Brush.Parse(cs.Bd) : AppTheme.BorderMuted;
+        }
     }
 
     private void ApplySiteStyles()
@@ -1300,6 +1404,9 @@ public class SchedulePage
         _selReqs.Clear();
         _selCompanyAbbr = "";
         _lastSaved      = false;
+        _showAgentInSampling = false;
+        UpdateTreeHeader();
+        LoadTree();
         if (_contentBox != null) _contentBox.Text = "";
         _agtName = ""; _agtId = "";
         _selectedAgents.Clear();
@@ -1331,6 +1438,21 @@ public class SchedulePage
         }
 
         var list = ScheduleService.GetByDate(_selDate);
+        // 캘린더와 동일하게 의뢰 유래 채수 항목도 머지 (선택 날짜 기준 필터)
+        try
+        {
+            DateTime.TryParse(_selDate, out var selDt);
+            var monthReqs = GetRequestEntriesForMonth(selDt.Year, selDt.Month)
+                .Where(e => e.날짜 == _selDate);
+            foreach (var re in monthReqs)
+            {
+                bool dup = list.Any(e =>
+                    e.날짜 == re.날짜 && e.직원명 == re.직원명 && e.업체약칭 == re.업체약칭);
+                if (!dup) list.Add(re);
+            }
+        }
+        catch { }
+
         if (list.Count == 0)
         {
             _entryList.Children.Add(new TextBlock
@@ -1345,6 +1467,9 @@ public class SchedulePage
 
         foreach (var en in list)
         {
+            // 의뢰 유래 항목 식별 (Id==0 + 첨부파일 "REQ:{reqId}")
+            bool isFromRequest = en.Id == 0 && en.첨부파일.StartsWith("REQ:");
+            int  reqId         = isFromRequest && int.TryParse(en.첨부파일.AsSpan(4), out var rid) ? rid : -1;
             var cs = GetCat(en.분류);
             var card = new Border
             {
@@ -1358,7 +1483,7 @@ public class SchedulePage
             var grid = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto,Auto") };
             var info = new StackPanel { Spacing = 2 };
 
-            // 첫 줄: 아이콘 + 분류 + 업체약칭/직원명
+            // 첫 줄: 아이콘 + 분류 + 업체약칭/직원명 + (의뢰 유래 시 출처 배지)
             var firstLine = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
             firstLine.Children.Add(new TextBlock
             {
@@ -1367,6 +1492,24 @@ public class SchedulePage
                 Foreground = Brush.Parse(cs.Fg),
                 VerticalAlignment = VerticalAlignment.Center,
             });
+            if (isFromRequest)
+            {
+                firstLine.Children.Add(new Border
+                {
+                    Background      = AppTheme.BorderSubtle,
+                    BorderBrush     = AppTheme.BorderMuted,
+                    BorderThickness = new Thickness(1),
+                    CornerRadius    = new CornerRadius(3),
+                    Padding         = new Thickness(4, 0),
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Child = new TextBlock
+                    {
+                        Text       = "📋 의뢰 배정",
+                        FontSize   = AppTheme.FontXS, FontFamily = Font,
+                        Foreground = AppTheme.FgMuted,
+                    },
+                });
+            }
             var displayName = !string.IsNullOrEmpty(en.업체약칭) ? $"🏢 {en.업체약칭}" : "";
             if (!string.IsNullOrEmpty(en.직원명))
                 displayName += (displayName.Length > 0 ? " · " : "") + $"👤 {en.직원명}";
@@ -1399,28 +1542,33 @@ public class SchedulePage
 
             grid.Children.Add(info);
 
-            // 수정 버튼
-            var capture = en;
-            var edit = new Button
+            // 수정 버튼 — 의뢰 유래 항목은 비표시 (의뢰 페이지에서 편집)
+            if (!isFromRequest)
             {
-                Content = "✏️", Width = 28, Height = 28, Padding = new Thickness(0),
-                Background = AppTheme.BorderSubtle, Foreground = AppTheme.FgInfo,
-                BorderThickness = new Thickness(1), BorderBrush = AppTheme.BorderInfo,
-                CornerRadius = new CornerRadius(4),
-                VerticalAlignment = VerticalAlignment.Center,
-                Margin = new Thickness(4, 0, 2, 0),
-                Cursor = new Cursor(StandardCursorType.Hand),
-                [Grid.ColumnProperty] = 1,
-            };
-            edit.Click += (_, e2) =>
-            {
-                e2.Handled = true;
-                LoadEntryToForm(capture);
-            };
-            grid.Children.Add(edit);
+                var capture = en;
+                var edit = new Button
+                {
+                    Content = "✏️", Width = 28, Height = 28, Padding = new Thickness(0),
+                    Background = AppTheme.BorderSubtle, Foreground = AppTheme.FgInfo,
+                    BorderThickness = new Thickness(1), BorderBrush = AppTheme.BorderInfo,
+                    CornerRadius = new CornerRadius(4),
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Margin = new Thickness(4, 0, 2, 0),
+                    Cursor = new Cursor(StandardCursorType.Hand),
+                    [Grid.ColumnProperty] = 1,
+                };
+                edit.Click += (_, e2) =>
+                {
+                    e2.Handled = true;
+                    LoadEntryToForm(capture);
+                };
+                grid.Children.Add(edit);
+            }
 
             // 삭제 버튼
-            var entryId = en.Id;
+            var entryId      = en.Id;
+            var samplerName  = en.직원명;
+            var capturedReq  = reqId;
             var del = new Button
             {
                 Content = "🗑", Width = 28, Height = 28, Padding = new Thickness(0),
@@ -1434,9 +1582,30 @@ public class SchedulePage
             del.Click += (_, e2) =>
             {
                 e2.Handled = true;
-                ScheduleService.Delete(entryId);
+                if (isFromRequest && capturedReq > 0)
+                {
+                    // 의뢰 유래 — 해당 직원만 채수담당자에서 제거
+                    try
+                    {
+                        var req = AnalysisRequestService.GetAllRecords().FirstOrDefault(r => r.Id == capturedReq);
+                        if (req != null && !string.IsNullOrWhiteSpace(req.채수담당자))
+                        {
+                            var remaining = req.채수담당자
+                                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                                .Where(n => n != samplerName)
+                                .ToList();
+                            AnalysisRequestService.UpdateSamplers(capturedReq, remaining);
+                        }
+                    }
+                    catch { }
+                }
+                else
+                {
+                    ScheduleService.Delete(entryId);
+                }
                 RefreshEntries();
                 RefreshCalendar();
+                LoadTree();
             };
             grid.Children.Add(del);
             card.Child = grid;
@@ -1505,15 +1674,19 @@ public class SchedulePage
         bool reqOk   = _selReqs.Count > 0;
         bool agentOk = _selectedAgents.Count > 0;
 
+        // Nav: 클릭 시 트리 표시 전환 (의뢰↔직원 양방향). null = 비클릭
+        Action? navToReq   = isSampl ? () => { _showAgentInSampling = false; UpdateTreeHeader(); LoadTree(); } : null;
+        Action? navToAgent = isSampl ? () => { _showAgentInSampling = true;  UpdateTreeHeader(); LoadTree(); } : null;
+
         var stages = isSampl
-            ? new (string Icon, string Label, bool Done, string? Extra)[]
+            ? new (string Icon, string Label, bool Done, Action? Nav)[]
               {
                 ("📅", "날짜",                        dateOk,  null),
-                ("📋", $"의뢰({_selReqs.Count}건)",   reqOk,   null),
-                ("👤", $"직원({_selectedAgents.Count}명)", agentOk, null),
+                ("📋", $"의뢰({_selReqs.Count}건)",   reqOk,   navToReq),
+                ("👤", $"직원({_selectedAgents.Count}명)", agentOk, navToAgent),
                 ("✅", "완료",                         _lastSaved, null),
               }
-            : new (string Icon, string Label, bool Done, string? Extra)[]
+            : new (string Icon, string Label, bool Done, Action? Nav)[]
               {
                 ("📅", "날짜",                        dateOk,  null),
                 ("👤", $"직원({_selectedAgents.Count}명)", agentOk, null),
@@ -1535,7 +1708,7 @@ public class SchedulePage
                     VerticalAlignment = VerticalAlignment.Center,
                 });
 
-            var (icon, label, done, _) = stages[i];
+            var (icon, label, done, nav) = stages[i];
             bool isFinal  = i == stages.Length - 1;
             bool current  = !done && (i == 0 || stages[i - 1].Done);
 
@@ -1577,6 +1750,7 @@ public class SchedulePage
                     BorderThickness = new Thickness(1),
                     CornerRadius    = new CornerRadius(8),
                     Padding         = new Thickness(5, 2),
+                    Cursor          = nav != null ? new Cursor(StandardCursorType.Hand) : Cursor.Default,
                 };
                 step.Child = new TextBlock
                 {
@@ -1585,6 +1759,11 @@ public class SchedulePage
                     Foreground = Brush.Parse(fg),
                     FontWeight = current ? FontWeight.SemiBold : FontWeight.Normal,
                 };
+                if (nav != null)
+                {
+                    var capturedNav = nav;
+                    step.PointerPressed += (_, _) => capturedNav();
+                }
                 _progressPanel.Children.Add(step);
             }
         }

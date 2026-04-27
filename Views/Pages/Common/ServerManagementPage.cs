@@ -480,7 +480,10 @@ public sealed class ServerManagementPage
     private void Log(string msg)
     {
         var line = $"[{DateTime.Now:HH:mm:ss}] {msg}";
-        try { File.AppendAllText("Logs/ServerMgmtDebug.log", $"[{DateTime.Now:HH:mm:ss}] [ServerMgmt] {msg}" + Environment.NewLine); } catch { }
+        if (ETA.App.EnableLogging)
+        {
+            try { File.AppendAllText("Logs/ServerMgmtDebug.log", $"[{DateTime.Now:HH:mm:ss}] [ServerMgmt] {msg}" + Environment.NewLine); } catch { }
+        }
         if (_logBox == null) return;
         Avalonia.Threading.Dispatcher.UIThread.Post(() =>
         {

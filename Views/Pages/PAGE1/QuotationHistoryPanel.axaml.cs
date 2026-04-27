@@ -33,6 +33,20 @@ public class AnalysisRequestRecord
     public string 채수담당자 { get; set; } = "";
 }
 
+public class TradeStatementRecord
+{
+    public int     Id             { get; set; }
+    public string  발행일         { get; set; } = "";
+    public string  업체명         { get; set; } = "";
+    public string  약칭           { get; set; } = "";
+    public string  거래명세서번호 { get; set; } = "";
+    public decimal 공급가액       { get; set; }
+    public decimal 부가세         { get; set; }
+    public decimal 합계금액       { get; set; }
+    public string  연도 { get; set; } = "";
+    public string  월   { get; set; } = "";
+}
+
 public partial class QuotationHistoryPanel : UserControl
 {
     // ── 로그 ─────────────────────────────────────────────────────────────
@@ -54,6 +68,8 @@ public partial class QuotationHistoryPanel : UserControl
     public event Action<QuotationIssue>?        IssueSelected;
     public event Action<QuotationIssue>?        IssueAddedToList;   // 발행 모드: 노드 클릭 시
     public event Action<AnalysisRequestRecord>? AnalysisRequestSelected;
+    public event Action<AnalysisRequestRecord>? AnalysisRequestAddedToList; // 발행 모드: 의뢰 노드 클릭 시
+    public event Action<TradeStatementRecord>? TradeStatementSelected;
     public event Action?                        AnalysisTabActivated;
     public event Action?                        QuotationTabActivated;
     public event Action?                        StatementTabActivated;
@@ -74,9 +90,15 @@ public partial class QuotationHistoryPanel : UserControl
         separatorBorder.Background = Brush.Parse(blue ? "#2a3a5a" : "#3a2a5a");
         treeHostBorder.Background  = Brush.Parse(blue ? "#0e1322" : "#130e1e");
         this.Resources["TreeItemSelectedBg"] = Brush.Parse(blue ? "#1a2a4a" : "#2a1a4a");
+
+        // 거래명세발행내역 탭은 발행모드에서만 노출
+        if (btnTabStatement != null)
+            btnTabStatement.IsVisible = blue;
     }
 
-    private bool _isAnalysisTab = false;
+    private enum TabKind { Quotation, Analysis, Statement }
+    private TabKind _currentTab = TabKind.Quotation;
+    private bool _isAnalysisTab => _currentTab == TabKind.Analysis;
 
     // 검색 디바운스 타이머 (한글 IME 조합 완료 후 검색)
     private readonly DispatcherTimer _searchTimer = new() { Interval = TimeSpan.FromMilliseconds(250) };
@@ -92,6 +114,7 @@ public partial class QuotationHistoryPanel : UserControl
 
     private readonly TreeView _treeQuotation;
     private readonly TreeView _treeAnalysis;
+    private readonly TreeView _treeStatement;
 
     public QuotationHistoryPanel()
     {
@@ -121,8 +144,20 @@ public partial class QuotationHistoryPanel : UserControl
         _treeAnalysis.SelectionChanged += OnAnalysisNodeSelected;
         _treeAnalysis.KeyDown          += (_, e) => HandleTreeKeyDown(_treeAnalysis, e);
 
+        _treeStatement = new TreeView
+        {
+            Background = Brushes.Transparent,
+            BorderThickness = new Thickness(0),
+            IsVisible = false,
+            SelectionMode = SelectionMode.Single,
+            ClipToBounds = false,
+        };
+        _treeStatement.KeyDown += (_, e) => HandleTreeKeyDown(_treeStatement, e);
+        _treeStatement.SelectionChanged += OnStatementNodeSelected;
+
         treeHost.Children.Add(_treeQuotation);
         treeHost.Children.Add(_treeAnalysis);
+        treeHost.Children.Add(_treeStatement);
 
         _searchTimer.Tick += (_, _) =>
         {
@@ -134,23 +169,43 @@ public partial class QuotationHistoryPanel : UserControl
     }
 
     // ══════════════════════════════════════════════════════════════════════
-    //  [1] 토글 스위치 이벤트
+    //  [1] 탭 버튼 이벤트
     // ══════════════════════════════════════════════════════════════════════
-    private void TglTab_Changed(object? sender, RoutedEventArgs e)
-        => SwitchTab(tglTab.IsChecked == true);
+    private void BtnTabQuotation_Click(object? sender, RoutedEventArgs e) => SwitchTab(TabKind.Quotation);
+    private void BtnTabAnalysis_Click(object? sender, RoutedEventArgs e)  => SwitchTab(TabKind.Analysis);
+    private void BtnTabStatement_Click(object? sender, RoutedEventArgs e) => SwitchTab(TabKind.Statement);
 
-    private void SwitchTab(bool toAnalysis)
+    private void SwitchTab(TabKind kind)
     {
-        _isAnalysisTab           = toAnalysis;
-        _treeQuotation.IsVisible = !toAnalysis;
-        _treeAnalysis.IsVisible  =  toAnalysis;
-        txbTabLabel.Text         = "";   // ToggleSwitch 자체에 레이블 있으므로 빈값
-        txbInfo.Text             = "";
+        _currentTab = kind;
+        _treeQuotation.IsVisible = kind == TabKind.Quotation;
+        _treeAnalysis.IsVisible  = kind == TabKind.Analysis;
+        if (_treeStatement != null) _treeStatement.IsVisible = kind == TabKind.Statement;
 
-        Log($"탭 전환 → {(toAnalysis ? "분석의뢰내역" : "견적발행내역")}");
+        UpdateTabButtonStyles();
+        txbTabLabel.Text = "";
+        txbInfo.Text     = "";
 
-        if (toAnalysis) { AnalysisTabActivated?.Invoke(); _ = LoadAnalysisTreeAsync(); }
-        else            { QuotationTabActivated?.Invoke(); }
+        Log($"탭 전환 → {kind}");
+
+        switch (kind)
+        {
+            case TabKind.Quotation: QuotationTabActivated?.Invoke(); break;
+            case TabKind.Analysis:  AnalysisTabActivated?.Invoke();  _ = LoadAnalysisTreeAsync(); break;
+            case TabKind.Statement: StatementTabActivated?.Invoke(); _ = LoadStatementTreeAsync(); break;
+        }
+    }
+
+    private void UpdateTabButtonStyles()
+    {
+        void Set(Button b, bool active)
+        {
+            if (active) { if (!b.Classes.Contains("active")) b.Classes.Add("active"); }
+            else        { b.Classes.Remove("active"); }
+        }
+        Set(btnTabQuotation, _currentTab == TabKind.Quotation);
+        Set(btnTabAnalysis,  _currentTab == TabKind.Analysis);
+        Set(btnTabStatement, _currentTab == TabKind.Statement);
     }
 
     // ══════════════════════════════════════════════════════════════════════
@@ -638,9 +693,211 @@ public partial class QuotationHistoryPanel : UserControl
         Log($"트리 완료 — 년노드={_treeAnalysis.Items.Count}");
     }
 
+    // ══════════════════════════════════════════════════════════════════════
+    //  거래명세서발행내역 로드 — 년/월 2단계
+    // ══════════════════════════════════════════════════════════════════════
+    private async Task LoadStatementTreeAsync()
+    {
+        _treeStatement.Items.Clear();
+        txbInfo.Text = "로딩 중...";
+        Log("LoadStatementTreeAsync() 시작");
+
+        List<TradeStatementRecord> records;
+        try
+        {
+            records = await Task.Run(GetAllTradeStatements);
+            Log($"DB 조회 완료: {records.Count}건");
+        }
+        catch (Exception ex)
+        {
+            Log($"DB 오류: {ex.Message}"); txbInfo.Text = "로드 실패"; return;
+        }
+
+        if (records.Count == 0) { txbInfo.Text = "발행된 거래명세서 없음"; return; }
+
+        var today     = DateTime.Today;
+        var thisYear  = today.Year.ToString();
+        var thisMonth = today.Month.ToString("D2");
+
+        var byYear = records.GroupBy(r => r.연도).OrderByDescending(g => g.Key).ToList();
+        foreach (var yearGroup in byYear)
+        {
+            string year = yearGroup.Key;
+            var yearNode = MakeParentNode($"📅  {year}년");
+            yearNode.IsExpanded = year == thisYear;
+
+            var byMonth = yearGroup.GroupBy(r => r.월).OrderByDescending(g => g.Key);
+            foreach (var monthGroup in byMonth)
+            {
+                var monthNode = MakeParentNode($"  {monthGroup.Key}월  ({monthGroup.Count()}건)");
+                monthNode.IsExpanded = year == thisYear && monthGroup.Key == thisMonth;
+
+                foreach (var rec in monthGroup.OrderByDescending(r => r.발행일))
+                    monthNode.Items.Add(MakeStatementLeaf(rec));
+
+                yearNode.Items.Add(monthNode);
+            }
+
+            _treeStatement.Items.Add(yearNode);
+        }
+
+        txbInfo.Text = $"총 {records.Count}건";
+        Log($"트리 완료 — 년노드={_treeStatement.Items.Count}");
+    }
+
+    private static List<TradeStatementRecord> GetAllTradeStatements()
+    {
+        var list = new List<TradeStatementRecord>();
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            if (!DbConnectionFactory.TableExists(conn, "거래명세서발행내역"))
+            {
+                Log("GetAllTradeStatements: 테이블 없음");
+                return list;
+            }
+
+            bool hasId = DbConnectionFactory.ColumnExists(conn, "거래명세서발행내역", DbConnectionFactory.RowId);
+            string idExpr = hasId ? $"`{DbConnectionFactory.RowId}`" : "0";
+
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = $@"
+                SELECT {idExpr},
+                       COALESCE(`발행일`, ''),
+                       COALESCE(`업체명`, ''),
+                       COALESCE(`약칭`,   ''),
+                       COALESCE(`거래명세서번호`, ''),
+                       COALESCE(`공급가액`, 0),
+                       COALESCE(`부가세`,   0),
+                       COALESCE(`합계금액`, 0)
+                FROM   `거래명세서발행내역`
+                ORDER  BY `발행일` DESC";
+            Log($"GetAllTradeStatements 쿼리: hasId={hasId}");
+
+            using var rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                string date = rdr.IsDBNull(1) ? "" : rdr.GetString(1);
+                string y = "", m = "";
+                if (date.Length >= 10 && (date[4] == '-' || date[4] == '/'))
+                { y = date[..4]; m = date[5..7]; }
+                else if (date.Length >= 8 && int.TryParse(date[..4], out _))
+                { y = date[..4]; m = date[4..6]; }
+                else if (date.Length >= 4) { y = date[..4]; }
+
+                list.Add(new TradeStatementRecord
+                {
+                    Id             = rdr.IsDBNull(0) ? 0 : Convert.ToInt32(rdr.GetValue(0)),
+                    발행일         = date,
+                    업체명         = rdr.IsDBNull(2) ? "" : rdr.GetString(2),
+                    약칭           = rdr.IsDBNull(3) ? "" : rdr.GetString(3),
+                    거래명세서번호 = rdr.IsDBNull(4) ? "" : rdr.GetString(4),
+                    공급가액       = rdr.IsDBNull(5) ? 0 : Convert.ToDecimal(rdr.GetValue(5)),
+                    부가세         = rdr.IsDBNull(6) ? 0 : Convert.ToDecimal(rdr.GetValue(6)),
+                    합계금액       = rdr.IsDBNull(7) ? 0 : Convert.ToDecimal(rdr.GetValue(7)),
+                    연도 = y, 월 = m,
+                });
+            }
+            Log($"GetAllTradeStatements: {list.Count}건 로드");
+        }
+        catch (Exception ex)
+        {
+            Log($"GetAllTradeStatements 오류: {ex.Message}");
+        }
+        return list;
+    }
+
+    private void OnStatementNodeSelected(object? sender, SelectionChangedEventArgs e)
+    {
+        if (_treeStatement.SelectedItem is TreeViewItem item &&
+            item.Tag is TradeStatementRecord rec)
+        {
+            txbInfo.Text = $"{rec.업체명}  |  {rec.거래명세서번호}  |  {rec.합계금액:N0}원";
+            Log($"거래명세서 선택: {rec.거래명세서번호}");
+            TradeStatementSelected?.Invoke(rec);
+        }
+    }
+
+    private TreeViewItem MakeStatementLeaf(TradeStatementRecord rec)
+    {
+        var (bg, fg) = BadgeColorHelper.GetBadgeColor(rec.약칭);
+        var sp = new StackPanel { Spacing = 1, Margin = new Thickness(4, 2) };
+
+        // 1줄: [약칭 뱃지]  업체명
+        var topRow = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*") };
+        topRow.Children.Add(new Border
+        {
+            Background = Brush.Parse(bg), CornerRadius = new CornerRadius(3),
+            Padding = new Thickness(4, 1), Margin = new Thickness(0, 0, 5, 0),
+            [Grid.ColumnProperty] = 0,
+            Child = Fs(new TextBlock { Text = rec.약칭, FontFamily = Font,
+                                       Foreground = Brush.Parse(fg) }, "FontSizeXS"),
+        });
+        topRow.Children.Add(Fs(new TextBlock
+        {
+            Text = rec.업체명, FontFamily = Font,
+            Foreground = AppTheme.FgPrimary,
+            TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
+            VerticalAlignment = VerticalAlignment.Center,
+            [Grid.ColumnProperty] = 1,
+        }, "FontSizeBase"));
+        sp.Children.Add(topRow);
+
+        // 2줄: 거래명세서번호  ·  (MM/DD)  ·  합계금액
+        string mmdd = rec.발행일.Length >= 10 ? $"({rec.발행일[5..10].Replace("-","/")})" : "";
+        var bottomRow = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto,Auto") };
+        bottomRow.Children.Add(Fs(new TextBlock
+        {
+            Text = rec.거래명세서번호, FontFamily = Font,
+            Foreground = AppTheme.FgDimmed,
+            VerticalAlignment = VerticalAlignment.Center,
+            [Grid.ColumnProperty] = 0,
+        }, "FontSizeXS"));
+        bottomRow.Children.Add(Fs(new TextBlock
+        {
+            Text = mmdd, FontFamily = Font,
+            Foreground = AppTheme.FgDimmed,
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin = new Thickness(4, 0, 0, 0),
+            [Grid.ColumnProperty] = 1,
+        }, "FontSizeXS"));
+        bottomRow.Children.Add(Fs(new TextBlock
+        {
+            Text = $"{rec.합계금액:N0}원", FontFamily = Font,
+            Foreground = AppTheme.FgMuted,
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin = new Thickness(6, 0, 0, 0),
+            [Grid.ColumnProperty] = 2,
+        }, "FontSizeXS"));
+        sp.Children.Add(bottomRow);
+
+        return new TreeViewItem { Header = sp, Tag = rec };
+    }
+
 
     private void OnAnalysisNodeSelected(object? sender, SelectionChangedEventArgs e)
     {
+        // 발행 모드: 추가된 항목마다 이벤트 발생 (다중선택 지원)
+        if (IssuingMode)
+        {
+            int added = 0;
+            foreach (var obj in e.AddedItems)
+            {
+                if (obj is TreeViewItem tvi && tvi.Tag is AnalysisRequestRecord rec)
+                {
+                    AnalysisRequestAddedToList?.Invoke(rec);
+                    added++;
+                }
+            }
+            if (added > 0)
+            {
+                var all = GetSelectedAnalysisRecords();
+                txbInfo.Text = $"{all.Count}건 선택 ({added}건 추가)";
+            }
+            return;
+        }
+
         var selected = GetSelectedAnalysisRecords();
 
         if (selected.Count == 1)

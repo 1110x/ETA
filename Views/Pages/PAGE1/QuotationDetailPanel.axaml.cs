@@ -145,10 +145,24 @@ public partial class QuotationDetailPanel : UserControl
             }
         }
 
-        // 담당자 정보 설정
-        // (LoadCompanyManagers에서 자동 설정됨)
-        txbManagerPhone.Text = row.TryGetValue("담당자연락처",  out var ph) ? ph : issue.담당자연락처;
-        txbManagerEmail.Text = row.TryGetValue("담당자 e-Mail", out var em) ? em : issue.담당자이메일;
+        // 담당자 연락처/이메일 — 행 → issue → (빈값이면) GetManagerContactInfo로 업체+담당자 룩업 (#2)
+        string phoneFromRow = row.TryGetValue("담당자연락처",  out var ph) ? ph : "";
+        string emailFromRow = row.TryGetValue("담당자 e-Mail", out var em) ? em : "";
+        if (string.IsNullOrWhiteSpace(phoneFromRow)) phoneFromRow = issue.담당자연락처;
+        if (string.IsNullOrWhiteSpace(emailFromRow)) emailFromRow = issue.담당자이메일;
+        if ((string.IsNullOrWhiteSpace(phoneFromRow) || string.IsNullOrWhiteSpace(emailFromRow))
+            && !string.IsNullOrWhiteSpace(issue.업체명) && !string.IsNullOrWhiteSpace(issue.담당자))
+        {
+            try
+            {
+                var (pBack, eBack) = QuotationService.GetManagerContactInfo(issue.업체명, issue.담당자);
+                if (string.IsNullOrWhiteSpace(phoneFromRow)) phoneFromRow = pBack ?? "";
+                if (string.IsNullOrWhiteSpace(emailFromRow)) emailFromRow = eBack ?? "";
+            }
+            catch { }
+        }
+        txbManagerPhone.Text = phoneFromRow;
+        txbManagerEmail.Text = emailFromRow;
 
         BuildItemLines(_cachedRow);
 

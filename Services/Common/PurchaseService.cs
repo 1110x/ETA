@@ -12,6 +12,7 @@ public static class PurchaseService
     private static readonly string LogFile = System.IO.Path.Combine("Logs", "Purchase.log");
     private static void Log(string msg)
     {
+        if (!ETA.App.EnableLogging) return;
         try
         {
             System.IO.Directory.CreateDirectory("Logs");

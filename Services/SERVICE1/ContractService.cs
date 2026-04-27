@@ -166,49 +166,67 @@ public static class ContractService
         {
         }
 
-        using var conn = DbConnectionFactory.CreateConnection();
-        conn.Open();
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            EnsureSoftDeleteColumns(conn);
 
-        using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"
-            UPDATE `계약 DB` SET
-                C_CompanyName=@name, C_ContractStart=@start, C_ContractEnd=@end,
-                C_ContractDays=@days, C_ContractAmountVATExcluded=@amount,
-                C_Abbreviation=@abbr, C_ContractType=@type, C_Address=@addr,
-                C_Representative=@rep, C_FacilityType=@ftype, C_CategoryType=@ctype,
-                C_MainProduct=@prod, C_ContactPerson=@contact,
-                C_PhoneNumber=@phone, C_Email=@email, C_BasisContractNumber=@basisContractNo,
-                C_PlaceName=@place
-            WHERE C_CompanyName=@original";
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"
+                UPDATE `계약 DB` SET
+                    C_CompanyName=@name, C_ContractStart=@start, C_ContractEnd=@end,
+                    C_ContractDays=@days, C_ContractAmountVATExcluded=@amount,
+                    C_Abbreviation=@abbr, C_ContractType=@type, C_Address=@addr,
+                    C_Representative=@rep, C_FacilityType=@ftype, C_CategoryType=@ctype,
+                    C_MainProduct=@prod, C_ContactPerson=@contact,
+                    C_PhoneNumber=@phone, C_Email=@email, C_BasisContractNumber=@basisContractNo,
+                    C_PlaceName=@place
+                WHERE C_CompanyName=@original";
 
-        SetParams(cmd, contract);
-        cmd.Parameters.AddWithValue("@original", contract.OriginalCompanyName);
+            SetParams(cmd, contract);
+            cmd.Parameters.AddWithValue("@original", contract.OriginalCompanyName);
 
-        int rows = cmd.ExecuteNonQuery();
-        if (rows > 0) { contract.OriginalCompanyName = contract.C_CompanyName; return true; }
-        return false;
+            int rows = cmd.ExecuteNonQuery();
+            if (rows > 0) { contract.OriginalCompanyName = contract.C_CompanyName; return true; }
+            return false;
+        }
+        catch (Exception ex)
+        {
+            Log($"❌ Contract Update 실패 ({contract.C_CompanyName}): {ex.Message}");
+            return false;
+        }
     }
 
     // ── 추가 ─────────────────────────────────────────────────────────────────
     public static bool Insert(Contract contract)
     {
-        using var conn = DbConnectionFactory.CreateConnection();
-        conn.Open();
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            EnsureSoftDeleteColumns(conn);
 
-        using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"
-            INSERT INTO `계약 DB`
-                (C_CompanyName, C_ContractStart, C_ContractEnd, C_ContractDays,
-                 C_ContractAmountVATExcluded, C_Abbreviation, C_ContractType,
-                 C_Address, C_Representative, C_FacilityType, C_CategoryType,
-                 C_MainProduct, C_ContactPerson, C_PhoneNumber, C_Email, C_BasisContractNumber, C_PlaceName)
-            VALUES
-                (@name, @start, @end, @days, @amount, @abbr, @type, @addr,
-                 @rep, @ftype, @ctype, @prod, @contact, @phone, @email, @basisContractNo, @place)";
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"
+                INSERT INTO `계약 DB`
+                    (C_CompanyName, C_ContractStart, C_ContractEnd, C_ContractDays,
+                     C_ContractAmountVATExcluded, C_Abbreviation, C_ContractType,
+                     C_Address, C_Representative, C_FacilityType, C_CategoryType,
+                     C_MainProduct, C_ContactPerson, C_PhoneNumber, C_Email, C_BasisContractNumber, C_PlaceName)
+                VALUES
+                    (@name, @start, @end, @days, @amount, @abbr, @type, @addr,
+                     @rep, @ftype, @ctype, @prod, @contact, @phone, @email, @basisContractNo, @place)";
 
-        SetParams(cmd, contract);
-        int rows = cmd.ExecuteNonQuery();
-        return rows > 0;
+            SetParams(cmd, contract);
+            int rows = cmd.ExecuteNonQuery();
+            return rows > 0;
+        }
+        catch (Exception ex)
+        {
+            Log($"❌ Contract Insert 실패 ({contract.C_CompanyName}): {ex.Message}");
+            return false;
+        }
     }
 
     // ── 업체명으로 대표자 조회 ────────────────────────────────────────────────
@@ -893,34 +911,28 @@ public static class ContractService
     // ── 소프트 삭제 컬럼 마이그레이션 ──────────────────────────────────────────
     private static void EnsureSoftDeleteColumns(DbConnection conn)
     {
-        try
+        // INSERT/UPDATE 에서 참조하는 컬럼 자가치유. 신규 추가 크래시(#7) 방지.
+        (string Name, string Def)[] cols =
         {
-            if (!DbConnectionFactory.ColumnExists(conn, "계약 DB", "C_IsDeleted"))
+            ("C_IsDeleted",           "TINYINT DEFAULT 0"),
+            ("C_DeletedAt",           "DATETIME NULL"),
+            ("C_ContractType",        "TEXT DEFAULT ''"),
+            ("C_PlaceName",           "TEXT DEFAULT ''"),
+            ("C_BasisContractNumber", "TEXT DEFAULT ''"),
+        };
+        foreach (var (name, def) in cols)
+        {
+            try
             {
-                using var cmd = conn.CreateCommand();
-                cmd.CommandText = "ALTER TABLE `계약 DB` ADD COLUMN `C_IsDeleted` TINYINT DEFAULT 0";
-                cmd.ExecuteNonQuery();
+                if (!DbConnectionFactory.ColumnExists(conn, "계약 DB", name))
+                {
+                    using var cmd = conn.CreateCommand();
+                    cmd.CommandText = $"ALTER TABLE `계약 DB` ADD COLUMN `{name}` {def}";
+                    cmd.ExecuteNonQuery();
+                }
             }
-            if (!DbConnectionFactory.ColumnExists(conn, "계약 DB", "C_DeletedAt"))
-            {
-                using var cmd = conn.CreateCommand();
-                cmd.CommandText = "ALTER TABLE `계약 DB` ADD COLUMN `C_DeletedAt` DATETIME NULL";
-                cmd.ExecuteNonQuery();
-            }
-            if (!DbConnectionFactory.ColumnExists(conn, "계약 DB", "C_ContractType"))
-            {
-                using var cmd = conn.CreateCommand();
-                cmd.CommandText = "ALTER TABLE `계약 DB` ADD COLUMN `C_ContractType` TEXT DEFAULT ''";
-                cmd.ExecuteNonQuery();
-            }
-            if (!DbConnectionFactory.ColumnExists(conn, "계약 DB", "C_PlaceName"))
-            {
-                using var cmd = conn.CreateCommand();
-                cmd.CommandText = "ALTER TABLE `계약 DB` ADD COLUMN `C_PlaceName` TEXT DEFAULT ''";
-                cmd.ExecuteNonQuery();
-            }
+            catch { }
         }
-        catch { }
     }
 
     // ── 국도화학 자동 추가 (초기화) ───────────────────────────────────────────

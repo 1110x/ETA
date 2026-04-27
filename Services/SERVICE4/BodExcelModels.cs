@@ -44,6 +44,12 @@ public class ExcelRow
     public bool IsSelectedForFinalResult { get; set; }
     /// <summary>생태독성 시험 데이터 (ECO 카테고리 전용)</summary>
     public EcotoxTestData? EcotoxData { get; set; }
+
+    /// <summary>파서가 채우는 (DB 컬럼명 → 값) 직접 매핑.
+    ///   기존 D1/D2/Fxy/P 같은 추상 슬롯과 별개로,
+    ///   파서가 "Area", "ISTD", "농도", "희석배수" 같은 실제 DB 컬럼명으로 값을 직접 등록할 수 있다.
+    ///   범용 UpsertRowData 가 이 딕셔너리를 그대로 INSERT/UPDATE 한다.</summary>
+    public Dictionary<string, string> Cols { get; set; } = new();
 }
 
 /// <summary>생태독성 물벼룩 급성독성시험 데이터</summary>

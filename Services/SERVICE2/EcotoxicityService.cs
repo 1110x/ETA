@@ -214,6 +214,76 @@ public static class EcotoxicityService
     }
 
     // ══════════════════════════════════════════════════════════════════════════
+    //  그래프법 (ES 04704.1c 7.6조)
+    //  상용로그-유영저해율 관계 그래프에서 50% 반응점 선형보간
+    // ══════════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// 그래프법 EC50 산출 (ES 04704.1c 7.6조 후단)
+    /// - 시험농도 상용로그 vs 유영저해율 관계에서 50% 교점을 선형보간으로 산출
+    /// - 95% 신뢰구간은 제공하지 않음
+    /// - TSK/Probit 적용 불가 또는 담당자 판단에 따라 사용
+    /// </summary>
+    public static EcotoxResult CalculateGraphical(
+        double[] concentrations, int[] organisms, int[] mortalities,
+        int controlOrganisms, int controlMortalities)
+    {
+        int n = concentrations.Length;
+        if (n < 2) throw new ArgumentException("최소 2개 농도가 필요합니다 (그래프법).");
+        if (organisms.Length != n || mortalities.Length != n)
+            throw new ArgumentException("농도, 생물수, 사망수 배열 길이가 일치해야 합니다.");
+
+        var ctrlWarn = ValidateControl(controlOrganisms, controlMortalities);
+
+        // 반응 비율 + Abbott 보정
+        double pc = controlOrganisms > 0 ? (double)controlMortalities / controlOrganisms : 0;
+        var props = new double[n];
+        for (int i = 0; i < n; i++)
+        {
+            double p = organisms[i] > 0 ? (double)mortalities[i] / organisms[i] : 0;
+            if (pc > 0) p = (p - pc) / (1 - pc);
+            props[i] = Math.Clamp(p, 0, 1);
+        }
+
+        // 최저농도에서 이미 50% 초과 → ES 8.1.2.4 (TU > 100/최저농도)
+        if (props[0] >= 0.5)
+        {
+            double tuMin = concentrations[0] > 0 ? 100.0 / concentrations[0] : 0;
+            return new EcotoxResult(0, 0, 0, 0, "그래프법", 0, false,
+                $"최저농도 {concentrations[0]}%에서 이미 {props[0] * 100:F1}% 영향 → EC50 < {concentrations[0]}% (TU > {tuMin:F1})");
+        }
+
+        // 50% 반응이 걸치는 구간 찾기 (낮은 농도 → 높은 농도 순)
+        int idx = -1;
+        for (int i = 0; i < n - 1; i++)
+        {
+            if (props[i] < 0.5 && props[i + 1] >= 0.5) { idx = i; break; }
+        }
+
+        // 최고농도에서도 50% 미달 → ES 8.1.2 직접산출 규칙으로 폴백
+        if (idx < 0)
+            return CalculateFallbackTU(organisms[n - 1], mortalities[n - 1]);
+
+        // 상용로그 - 반응율 선형보간
+        double logCLo = Math.Log10(Math.Max(concentrations[idx], 1e-10));
+        double logCHi = Math.Log10(Math.Max(concentrations[idx + 1], 1e-10));
+        double pLo = props[idx];
+        double pHi = props[idx + 1];
+        double logEC50 = logCLo + (0.5 - pLo) / (pHi - pLo) * (logCHi - logCLo);
+        double ec50 = Math.Pow(10, logEC50);
+        double tu = ec50 > 0 ? Math.Round(100.0 / ec50, 1) : 0;
+
+        string msg = $"상용로그-유영저해율 그래프법 선형보간: "
+                   + $"{concentrations[idx]}%({pLo * 100:F1}%) ↔ {concentrations[idx + 1]}%({pHi * 100:F1}%)"
+                   + " | 95% CI 산출 불가";
+        if (!string.IsNullOrEmpty(ctrlWarn)) msg += $"\n{ctrlWarn}";
+
+        return new EcotoxResult(
+            Math.Round(ec50, 2), 0, 0,
+            tu, "그래프법", 0, false, msg);
+    }
+
+    // ══════════════════════════════════════════════════════════════════════════
     //  Probit 분석
     // ══════════════════════════════════════════════════════════════════════════
 

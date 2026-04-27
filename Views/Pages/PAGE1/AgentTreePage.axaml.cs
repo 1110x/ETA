@@ -4324,6 +4324,7 @@ public partial class AgentTreePage : UserControl
             };
 
             // 라벨: 약칭 배지 + 전체명 (Grid로 구성 — 긴 이름이 트랙 영역으로 넘치지 않도록 * 컬럼에서 ellipsis 트리밍)
+            // 트랙 바보다 앞에 그려지도록 ZIndex=1, 솔리드 배경으로 뒤편 가림 방지
             var (lbBg, lbFg) = BadgeColorHelper.GetBadgeColor(shortName);
             var labelPanel = new Grid
             {
@@ -4332,6 +4333,8 @@ public partial class AgentTreePage : UserControl
                 ClipToBounds = true,
                 VerticalAlignment = VerticalAlignment.Center,
                 Margin = new Thickness(2, 0),
+                Background = AppTheme.BgPrimary,
+                ZIndex = 1,
             };
             var badge = new Border
             {
@@ -4352,14 +4355,13 @@ public partial class AgentTreePage : UserControl
             var nameTb = new TextBlock
             {
                 Text = fullName, FontSize = AppTheme.FontXS, FontFamily = kbFont,
-                Foreground = AppTheme.FgMuted,
+                Foreground = AppTheme.FgSecondary,
                 VerticalAlignment = VerticalAlignment.Center,
                 TextTrimming = TextTrimming.CharacterEllipsis,
             };
             Grid.SetColumn(nameTb, 2);
             labelPanel.Children.Add(nameTb);
             Grid.SetColumn(labelPanel, 0);
-            rowGrid.Children.Add(labelPanel);
 
             // 트랙 캔버스
             var track = new Canvas { Width = trackW, Height = GC_ROW_H, ClipToBounds = true, UseLayoutRounding = true };
@@ -4569,6 +4571,8 @@ public partial class AgentTreePage : UserControl
             }
 
             rowGrid.Children.Add(track);
+            // 라벨 패널을 마지막에 추가 → 트랙(바)보다 앞에 렌더링되어 가려지지 않음
+            rowGrid.Children.Add(labelPanel);
             body.Children.Add(rowGrid);
         }
     }

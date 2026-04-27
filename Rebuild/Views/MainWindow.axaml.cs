@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
 using Avalonia.Markup.Xaml;
+using ETA.Rebuild.Services;
 
 namespace ETA.Rebuild.Views;
 
@@ -10,6 +11,9 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        Title = $"ETA · 수질분석센터 · {AppVersion.Display}";
+        var brand = this.FindControl<TextBlock>("BrandTag");
+        if (brand is not null) brand.Text = $"· 수질분석센터 · {AppVersion.Display}";
     }
 
     private void InitializeComponent()

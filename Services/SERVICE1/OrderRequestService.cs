@@ -209,6 +209,17 @@ public static class OrderRequestService
                 paramList.Add($"@a_{ToParam(col)}");
             }
 
+            // 시료별 방류기준 자동 채움 — 매핑이 있고 컬럼이 존재할 때만
+            var dischargeStd = ETA.Services.Common.SampleDischargeStandardService
+                .Resolve(issue.약칭 ?? "", sampleName);
+            bool hasDischargeCol = tableCols.Any(c =>
+                c.Equals("방류허용기준 적용유무", StringComparison.OrdinalIgnoreCase));
+            if (!string.IsNullOrWhiteSpace(dischargeStd) && hasDischargeCol)
+            {
+                colList.Add("`방류허용기준 적용유무`");
+                paramList.Add("@discharge");
+            }
+
             using var cmd = conn.CreateCommand();
             cmd.CommandText = $@"INSERT INTO `수질분석센터_결과` ({string.Join(",", colList)}) VALUES ({string.Join(",", paramList)})";
 
@@ -224,6 +235,9 @@ public static class OrderRequestService
                 object val = checkedItems.Contains(col) ? (object)"O" : DBNull.Value;
                 cmd.Parameters.AddWithValue($"@a_{ToParam(col)}", val);
             }
+
+            if (!string.IsNullOrWhiteSpace(dischargeStd) && hasDischargeCol)
+                cmd.Parameters.AddWithValue("@discharge", dischargeStd);
 
             int rows = cmd.ExecuteNonQuery();
             return rows > 0;

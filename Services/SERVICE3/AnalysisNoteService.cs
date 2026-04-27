@@ -25,6 +25,7 @@ public static class AnalysisNoteService
         EnsureSchemaOverrideColumn();
         EnsureVolumeConstantColumn();
         EnsureParserColumnMapColumn();
+        EnsureLoQColumn();
         BulkEnsureSchemaOverrides();  // 앱 시작 시 schema_override 일괄 초기화
     }
 
@@ -353,6 +354,26 @@ public static class AnalysisNoteService
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"[AnalysisNoteService] EnsureParserColumnMap 오류: {ex.Message}");
+        }
+    }
+
+    // ── 정량한계 (LoQ) 컬럼 보장 ────────────────────────────────────────────
+    private static void EnsureLoQColumn()
+    {
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            if (!DbConnectionFactory.ColumnExists(conn, "분석정보", "정량한계"))
+            {
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = "ALTER TABLE `분석정보` ADD COLUMN `정량한계` DECIMAL(20,10) NULL";
+                cmd.ExecuteNonQuery();
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[AnalysisNoteService] EnsureLoQ 오류: {ex.Message}");
         }
     }
 

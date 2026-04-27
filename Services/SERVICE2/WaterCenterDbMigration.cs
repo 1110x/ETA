@@ -196,6 +196,9 @@ public static class WaterCenterDbMigration
         if (analyte.Contains("페놀류") || analyte.Contains("페놀")) return "Phenol";
         if (analyte.Equals("N-Hexan", StringComparison.OrdinalIgnoreCase) ||
             analyte.Contains("노말헥산") || analyte.Contains("노르말헥산")) return "NHexan";
+        // TOC: NPOC=UvVis, TCIC=TocTcic — 분리 항목 없을 땐 UvVis 가 안전 (NHexan보다 정합)
+        if (analyte.Contains("유기탄소") || analyte.Equals("TOC", StringComparison.OrdinalIgnoreCase))
+            return method.Contains("TCIC") || method.Contains("TC-IC") ? "TocTcic" : "UvVis";
 
         // 2. Method 매칭
         var m = method.ToUpperInvariant();
@@ -459,6 +462,8 @@ public static class WaterCenterDbMigration
                     D1          TEXT DEFAULT '',
                     D2          TEXT DEFAULT '',
                     희석배수    TEXT DEFAULT '',
+                    식종여부    TEXT DEFAULT '',
+                    F_xy        TEXT DEFAULT '',
                     식종시료량  TEXT DEFAULT '',
                     식종D1      TEXT DEFAULT '',
                     식종D2      TEXT DEFAULT '',

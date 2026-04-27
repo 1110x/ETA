@@ -293,16 +293,24 @@ public static class AnalysisRecordService
             var cols = DbConnectionFactory.GetColumnNames(conn, "방류기준표");
             if (cols.Count < 2) return map;
 
+            // 구분 컬럼 인덱스 찾기 (보통 _id 다음, 첫 번째 컬럼이 _id 인 경우 대비)
+            int 구분Idx = cols.FindIndex(c => c.Equals("구분", StringComparison.OrdinalIgnoreCase));
+            if (구분Idx < 0) return map;
+
             using var cmd = conn.CreateCommand();
             cmd.CommandText = "SELECT * FROM `방류기준표`";
             using var rdr = cmd.ExecuteReader();
             while (rdr.Read())
             {
-                var 구분 = rdr.IsDBNull(0) ? "" : rdr.GetValue(0)?.ToString()?.Trim() ?? "";
+                var 구분 = rdr.IsDBNull(구분Idx) ? "" : rdr.GetValue(구분Idx)?.ToString()?.Trim() ?? "";
                 if (string.IsNullOrEmpty(구분)) continue;
                 var inner = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-                for (int i = 1; i < cols.Count; i++)
+                for (int i = 0; i < cols.Count; i++)
+                {
+                    if (i == 구분Idx) continue; // 구분은 키이므로 inner 에서 제외
+                    if (cols[i].Equals("_id", StringComparison.OrdinalIgnoreCase)) continue;
                     inner[cols[i]] = rdr.IsDBNull(i) ? "" : rdr.GetValue(i)?.ToString()?.Trim() ?? "";
+                }
                 map[구분] = inner;
             }
         }
