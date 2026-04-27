@@ -120,22 +120,39 @@ public static class GsReportService
 
         var codeMap = LoadCodeMap();
         var codeNames = codeMap.Keys.ToList();
+        Log($"시작: 시료 {samples.Count}건, GS_CODE {codeMap.Count}건 로드");
+        if (codeMap.Count == 0)
+            Log("⚠️  GS_CODE 테이블이 비어있거나 로드 실패 — 매칭 0건 예상");
 
         using var wb = new XLWorkbook(TemplatePath);
         var ws = wb.Worksheet("GS 발송양식");
 
         int row = 3;
+        int totalAnalyses = 0, matched = 0, unmatchedNames = 0;
+        var unmatchedSamples = new List<string>();
+
         foreach (var sample in samples)
         {
             var wellNo = ExtractWellNo(sample.시료명);
             var stdMap = LoadStandardMap(wellNo);
+            Log($"시료: '{sample.시료명}' → wellNo='{wellNo}', 분석결과 {sample.분석결과.Count}건, 허가기준 {stdMap.Count}건");
+
+            if (sample.분석결과.Count == 0)
+                unmatchedSamples.Add(sample.시료명);
 
             foreach (var (항목, 값) in sample.분석결과)
             {
+                totalAnalyses++;
                 if (string.IsNullOrWhiteSpace(값)) continue;
 
                 var matchedName = MatchCodeName(항목, codeNames);
-                if (matchedName == null) continue;  // GS_CODE에 없는 항목은 스킵
+                if (matchedName == null)
+                {
+                    unmatchedNames++;
+                    Log($"  ✗ GS_CODE 미매칭: '{항목}'");
+                    continue;
+                }
+                matched++;
 
                 var (code, name) = codeMap[matchedName];
 
@@ -160,12 +177,31 @@ public static class GsReportService
             }
         }
 
-        // 결과 저장 경로
-        var outDir = Path.Combine("Data", "Exports");
+        Log($"결과: 매칭 {matched}/{totalAnalyses}건 (미매칭 {unmatchedNames}건, 분석결과 비어있는 시료 {unmatchedSamples.Count}건)");
+        if (unmatchedSamples.Count > 0)
+            Log($"  비어있는 시료: {string.Join(", ", unmatchedSamples)}");
+
+        // 결과 저장 경로 (절대경로 — cwd 무관)
+        var outDir = Path.Combine(AppPaths.RootPath, "Data", "Exports");
         Directory.CreateDirectory(outDir);
         var ts = DateTime.Now.ToString("yyyyMMdd_HHmmss");
         var outPath = Path.Combine(outDir, $"GS_발송양식_{ts}.xlsx");
         wb.SaveAs(outPath);
+        Log($"저장: {outPath}");
         return outPath;
+    }
+
+    private static void Log(string msg)
+    {
+        Debug.WriteLine($"[GS] {msg}");
+        if (!App.EnableLogging) return;
+        try
+        {
+            var line = $"[{DateTime.Now:HH:mm:ss}] [GS] {msg}";
+            File.AppendAllText(
+                Path.Combine(AppPaths.LogsDir, "GsReportDebug.log"),
+                line + Environment.NewLine);
+        }
+        catch { }
     }
 }

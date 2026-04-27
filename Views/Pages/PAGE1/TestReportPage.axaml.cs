@@ -585,15 +585,12 @@ public partial class TestReportPage : UserControl
         var btnTR   = MkBtn("📄 시험성적서",   "#1a3a1a", "#7cd87c", OnPrintTestReport);
         var btnWMR  = MkBtn("📋 수질측정기록부", "#1a2a3a", "#7aaae8", OnPrintWaterRecord);
         var btnBoth = MkBtn("📄+📋 둘다",        "#2a2a1a", "#e8d87a", OnPrintBoth);
-        var btnTRB  = MkBtn("📕 시험기록부",     "#3a1a2a", "#ee99cc", OnPrintTestRecordBook);
         btnTR.Margin   = new Thickness(20, 0, 0, 0);
         btnWMR.Margin  = new Thickness(4, 0, 0, 0);
         btnBoth.Margin = new Thickness(4, 0, 0, 0);
-        btnTRB.Margin  = new Thickness(4, 0, 0, 0);
         togglePanel.Children.Add(btnTR);
         togglePanel.Children.Add(btnWMR);
         togglePanel.Children.Add(btnBoth);
-        togglePanel.Children.Add(btnTRB);
 
         // GS 발송양식 버튼
         var btnGsExport = MkBtn("📤 GS 발송양식", "#2a1a3a", "#cc99ee", OnGsExportClick);
@@ -792,36 +789,6 @@ public partial class TestReportPage : UserControl
         OnPrintWaterRecord(sender, e);
         await Task.Delay(500);
         OpenPrintWindow();
-    }
-
-    /// <summary>📕 시험기록부 Excel 생성 (스캐폴드 단계: 자료 시트 덤프 + 포맷 시트 placeholder)</summary>
-    private async void OnPrintTestRecordBook(object? sender, RoutedEventArgs e)
-    {
-        if (_selectedSample == null) { ShowToast("시료를 먼저 선택하세요."); return; }
-        if (!TestRecordBookService.TemplatesExist())
-        {
-            ShowToast("시험기록부 템플릿 없음");
-            return;
-        }
-        try
-        {
-            var rows = BuildResultRowsForSample(_selectedSample);
-            var path = await Task.Run(() =>
-                TestRecordBookService.Generate(_selectedSample, rows, _meta));
-            Log($"[시험기록부] 생성: {path}");
-            ShowToast($"✅ 저장 완료: {System.IO.Path.GetFileName(path)}");
-            try
-            {
-                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-                { FileName = path, UseShellExecute = true });
-            }
-            catch { }
-        }
-        catch (Exception ex)
-        {
-            Log($"[시험기록부] 오류: {ex.Message}");
-            ShowToast($"❌ 오류: {ex.Message}");
-        }
     }
 
     /// <summary>GS 발송양식 버튼 클릭
@@ -2274,22 +2241,17 @@ public partial class TestReportPage : UserControl
     public void OpenPrintWindow()
     {
         if (_selectedSample == null) { ShowToast("시료를 먼저 선택하세요."); return; }
-        if (!TestReportPrintService.TemplateExists())
-        {
-            ShowToast("템플릿 없음\nData/Templates/ 폴더에 템플릿 파일을 넣어주세요.");
-            TestReportPrintService.OpenTemplateFolder();
-            return;
-        }
         try
         {
             var rows = BuildResultRowsForSample(_selectedSample);
-            var path = TestReportPrintService.FillAndSave(
+            var path = TestReportWordPrintService.FillAndSave(
                 sample: _selectedSample, rows: rows, meta: _meta,
-                toPdf: false, openAfter: true);
-            Log($"✅ 시험성적서 엑셀 저장: {path}");
+                includeStandard: _showDischargeStd,
+                openAfter: true);
+            Log($"✅ 시험성적서 Word 저장: {path}");
             ShowToast($"✅ 저장 완료\n{System.IO.Path.GetFileName(path)}");
         }
-        catch (Exception ex) { Log($"❌ 엑셀 오류: {ex.Message}"); ShowToast($"❌ 오류: {ex.Message}"); }
+        catch (Exception ex) { Log($"❌ Word 오류: {ex.Message}"); ShowToast($"❌ 오류: {ex.Message}"); }
     }
 
     /// BT2 — CSV 저장

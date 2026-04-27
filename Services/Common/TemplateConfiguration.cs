@@ -28,6 +28,9 @@ public static class TemplateConfiguration
         new("TestReport1",          "시험성적서 (1장)",          "Data/Templates/시험성적서/시험성적서1_template.xlsx",       "TestReportPrintService"),
         new("TestReport2",          "시험성적서 (2장)",          "Data/Templates/시험성적서/시험성적서2_template.xlsx",       "TestReportPrintService"),
         new("TestReportIntegrated", "시험성적서 통합(배치)",     "Data/Templates/시험성적서/시험성적서통합.xlsm",            "TestReportPrintService"),
+        new("TestReportWord",       "시험성적서 (Word, 레거시)", "Data/Templates/시험성적서/시험성적서_template.docx",       "TestReportWordPrintService"),
+        new("TestReportWord1Page",  "시험성적서 Word 단일페이지","Data/Templates/시험성적서/시험성적서_1page_template.docx", "TestReportWordPrintService"),
+        new("TestReportWordMulti",  "시험성적서 Word 다중페이지","Data/Templates/시험성적서/시험성적서_multi_template.docx", "TestReportWordPrintService"),
         new("WaterRecord1",         "수질측정기록부 (1장)",      "Data/Templates/시험성적서/수질측정기록부1_template.xlsx",  "WaterMeasurementRecordService"),
         new("WaterRecord2",         "수질측정기록부 (2장)",      "Data/Templates/시험성적서/수질측정기록부2_template.xlsx",  "WaterMeasurementRecordService"),
         // GS 발송양식
