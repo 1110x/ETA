@@ -846,14 +846,16 @@ public static class WasteSampleService
         }
     }
 
-    /// <summary>TN_DATA / TP_DATA / Phenols_DATA 등 UV VIS 기반 테이블 UPSERT</summary>
+    /// <summary>TN_DATA / TP_DATA / Phenols_DATA 등 UV VIS 기반 테이블 UPSERT.
+    /// 농도(중간 계산농도) 와 결과(시료량/희석 적용된 최종값) 는 다른 의미라 별도 저장.</summary>
     public static void UpsertUvvisData(string tableName,
         string 채수일, string sn, string 업체명, string 구분,
         string 시료량, string 흡광도, string 희석배수, string 검량선a, string 농도,
         string st01mgl = "", string st02mgl = "", string st03mgl = "", string st04mgl = "", string st05mgl = "",
         string st01abs = "", string st02abs = "", string st03abs = "", string st04abs = "", string st05abs = "",
         string 기울기 = "", string 절편 = "", string R2 = "",
-        string 비고 = "", string 시료명 = "", string 소스구분 = "")
+        string 비고 = "", string 시료명 = "", string 소스구분 = "",
+        string 결과 = "")
     {
         try
         {
@@ -870,7 +872,7 @@ public static class WasteSampleService
             if (exists)
             {
                 cmd.CommandText = $@"UPDATE `{tableName}`
-                    SET 소스구분=@src, 시료량=@vol, 흡광도=@abs, 희석배수=@dil, 검량선_a=@slope, 농도=@r,
+                    SET 소스구분=@src, 시료량=@vol, 흡광도=@abs, 희석배수=@dil, 검량선_a=@slope, 농도=@r, 결과=@res,
                         ST01_mgL=@s1c, ST02_mgL=@s2c, ST03_mgL=@s3c, ST04_mgL=@s4c, ST05_mgL=@s5c,
                         ST01_abs=@s1a, ST02_abs=@s2a, ST03_abs=@s3a, ST04_abs=@s4a, ST05_abs=@s5a,
                         기울기=@slope2, 절편=@intercept, R2=@r2,
@@ -880,11 +882,11 @@ public static class WasteSampleService
             else
             {
                 cmd.CommandText = $@"INSERT INTO `{tableName}`
-                    (분석일, SN, 업체명, 구분, 시료명, 소스구분, 시료량, 흡광도, 희석배수, 검량선_a, 농도,
+                    (분석일, SN, 업체명, 구분, 시료명, 소스구분, 시료량, 흡광도, 희석배수, 검량선_a, 농도, 결과,
                      ST01_mgL, ST02_mgL, ST03_mgL, ST04_mgL, ST05_mgL,
                      ST01_abs, ST02_abs, ST03_abs, ST04_abs, ST05_abs,
                      기울기, 절편, R2, 비고, 등록일시)
-                    VALUES (@d, @sn, @nm, @gu, @nm2, @src, @vol, @abs, @dil, @slope, @r,
+                    VALUES (@d, @sn, @nm, @gu, @nm2, @src, @vol, @abs, @dil, @slope, @r, @res,
                             @s1c, @s2c, @s3c, @s4c, @s5c,
                             @s1a, @s2a, @s3a, @s4a, @s5a,
                             @slope2, @intercept, @r2, @remark, {DbConnectionFactory.NowExpr})";
@@ -900,6 +902,7 @@ public static class WasteSampleService
             cmd.Parameters.AddWithValue("@dil",       희석배수);
             cmd.Parameters.AddWithValue("@slope",     검량선a);
             cmd.Parameters.AddWithValue("@r",         농도);
+            cmd.Parameters.AddWithValue("@res",       결과);
             cmd.Parameters.AddWithValue("@s1c", st01mgl); cmd.Parameters.AddWithValue("@s2c", st02mgl);
             cmd.Parameters.AddWithValue("@s3c", st03mgl); cmd.Parameters.AddWithValue("@s4c", st04mgl);
             cmd.Parameters.AddWithValue("@s5c", st05mgl);
@@ -944,19 +947,27 @@ public static class WasteSampleService
             chk.Parameters.AddWithValue("@nm2", 시료명);
             bool exists = Convert.ToInt32(chk.ExecuteScalar()) > 0;
 
+            // 결과 컬럼이 누락된 옛 테이블 보강 (1.x → 2.x 마이그레이션)
+            if (!DbConnectionFactory.ColumnExists(conn, tableName, "결과"))
+            {
+                using var alt = conn.CreateCommand();
+                alt.CommandText = $"ALTER TABLE `{tableName}` ADD COLUMN `결과` TEXT DEFAULT ''";
+                alt.ExecuteNonQuery();
+            }
+
             using var cmd = conn.CreateCommand();
             if (exists)
             {
                 cmd.CommandText = $@"UPDATE `{tableName}`
-                    SET 시료량=@vol, AU=@abs, 희석배수=@dil, 농도=@r,
+                    SET 시료량=@vol, AU=@abs, 희석배수=@dil, 농도=@r, 결과=@res,
                         비고=@remark, 등록일시={DbConnectionFactory.NowExpr}
                     WHERE LEFT(분석일,10)=@d AND SN=@sn AND 시료명=@nm2";
             }
             else
             {
                 cmd.CommandText = $@"INSERT INTO `{tableName}`
-                    (분석일, SN, 업체명, 구분, 소스구분, 시료명, 시료량, AU, 희석배수, 농도, 비고, 등록일시)
-                    VALUES (@d, @sn, @nm, @gu, @src, @nm2, @vol, @abs, @dil, @r, @remark, {DbConnectionFactory.NowExpr})";
+                    (분석일, SN, 업체명, 구분, 소스구분, 시료명, 시료량, AU, 희석배수, 농도, 결과, 비고, 등록일시)
+                    VALUES (@d, @sn, @nm, @gu, @src, @nm2, @vol, @abs, @dil, @r, @res, @remark, {DbConnectionFactory.NowExpr})";
                 cmd.Parameters.AddWithValue("@nm", 업체명);
                 cmd.Parameters.AddWithValue("@gu", 구분);
                 cmd.Parameters.AddWithValue("@src", 소스구분);
@@ -967,7 +978,9 @@ public static class WasteSampleService
             cmd.Parameters.AddWithValue("@vol",   시료량);
             cmd.Parameters.AddWithValue("@abs",   흡광도);
             cmd.Parameters.AddWithValue("@dil",   string.IsNullOrEmpty(희석배수) ? "1" : 희석배수);
-            cmd.Parameters.AddWithValue("@r",     string.IsNullOrEmpty(결과) ? 측정농도 : 결과);
+            // 농도 = 중간 계산농도 (시료량/희석 적용 전), 결과 = 최종값 (적용 후) — 둘 다 별도 저장
+            cmd.Parameters.AddWithValue("@r",     측정농도);
+            cmd.Parameters.AddWithValue("@res",   결과);
             cmd.Parameters.AddWithValue("@remark", 비고);
             cmd.ExecuteNonQuery();
         }

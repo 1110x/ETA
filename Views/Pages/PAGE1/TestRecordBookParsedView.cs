@@ -27,6 +27,11 @@ public static class TestRecordBookParsedView
         public string ES             = "";   // 분석정보.ES (시험방법코드)
         public string Instrument     = "";   // 분석정보.instrument (분석장비)
         public string Method         = "";   // 분석정보.Method (시험법명)
+        public string Analyte        = "";   // 분석항목 — 일반 수식/조건 lookup 키
+        public string ResultFormula  = "";   // 분석정보.concentration_formula (Analyte 기준 일반 수식)
+
+        // 설정 → 분석조건 (Key/Value 목록 — 분석정보 아래에 표시)
+        public List<(string Key, string Value)> AnalysisConditions = new();
 
         public List<int>    StandardKeys = new();
         public List<string> StandardConc = new();
@@ -108,22 +113,18 @@ public static class TestRecordBookParsedView
         // 1) 타이틀: "{Analyte} 시험기록부"
         root.Children.Add(BuildTitle(m));
 
-        // 2) 분석정보 (분석일·표준·기기·방법·비고) + 분석조건 토글
+        // 2) 분석정보 (분석일·표준·기기·방법·비고)
         bool hasMethodLine = !string.IsNullOrWhiteSpace(m.AnalysisMethod) || !string.IsNullOrWhiteSpace(m.Memo)
                           || !string.IsNullOrWhiteSpace(m.ES) || !string.IsNullOrWhiteSpace(m.Instrument)
                           || !string.IsNullOrWhiteSpace(m.Method);
-        var methodHost = new ContentControl();
-        root.Children.Add(BuildSectionTitleWithToggle("분석정보", _showMethod, isOn =>
-        {
-            _showMethod = isOn;
-            methodHost.Content = (_showMethod && hasMethodLine) ? BuildMethodLine(m) : null;
-        }));
+        root.Children.Add(BuildSectionTitle("분석정보"));
         root.Children.Add(BuildHeader(m));
         if (hasMethodLine)
-        {
-            methodHost.Content = _showMethod ? BuildMethodLine(m) : null;
-            root.Children.Add(methodHost);
-        }
+            root.Children.Add(BuildMethodLine(m));
+
+        // 2-1) 분석조건 (설정→분석조건 의 Key/Value 항목) — 분석정보 아래
+        //      비어있으면 "해당없음" 으로 표시
+        root.Children.Add(BuildAnalysisConditions(m));
 
         // 3) 검정곡선 (단일 또는 TCIC 듀얼)
         if (m.IsTcic || m.StandardKeys.Count > 0)
@@ -138,8 +139,7 @@ public static class TestRecordBookParsedView
         else if (m.StandardKeys.Count > 0)
             root.Children.Add(BuildCalibrationTable(m));
 
-        // 4) 검정곡선의 보증 (또는 BOD 식종 정보) — QC 호스트 (계산식 토글로 재빌드)
-        var qcHost = new ContentControl();
+        // 4) 검정곡선의 보증 (또는 BOD 식종 정보)
         if (m.IsBod)
         {
             if (m.SeedRows.Count > 0)
@@ -147,22 +147,14 @@ public static class TestRecordBookParsedView
         }
         else
         {
-            qcHost.Content = BuildQcSection(m);
-            root.Children.Add(qcHost);
+            root.Children.Add(BuildQcSection(m));
         }
 
-        // 5) 시료분석결과 (+ 계산식 표시 토글) — 토글 변경 시 QC 와 시료 둘 다 재빌드
+        // 5) 시료분석결과 (계산식 항상 표시)
         if (m.SampleRows.Count > 0)
         {
-            var sampleHost = new ContentControl();
-            root.Children.Add(BuildSectionTitleWithToggle("시료분석결과", _showFormula, isOn =>
-            {
-                _showFormula = isOn;
-                sampleHost.Content = BuildSampleGrid(m);
-                if (!m.IsBod) qcHost.Content = BuildQcSection(m);
-            }));
-            sampleHost.Content = BuildSampleGrid(m);
-            root.Children.Add(sampleHost);
+            root.Children.Add(BuildSectionTitle("시료분석결과"));
+            root.Children.Add(BuildSampleGrid(m));
         }
 
         // 6) 서명란
@@ -179,41 +171,8 @@ public static class TestRecordBookParsedView
         };
     }
 
-    // ── 토글 상태 (정적 — 페이지 단위 유지) ───────────────────
-    private static bool _showFormula = true;   // 계산식 컬럼
-    private static bool _showMethod  = true;   // 분석조건 라인
-    public  static bool IsPrintMode  = false;  // true 이면 토글 UI 빼고 plain 타이틀만
-
-    // ── 섹션 타이틀 + 우측 토글 스위치 ───────────────────────
-    private static Control BuildSectionTitleWithToggle(string text, bool initial, System.Action<bool> onChanged)
-    {
-        // 인쇄 모드에서는 토글 제거 — 종이에 UI 컨트롤 안 찍히게
-        if (IsPrintMode) return BuildSectionTitle(text);
-
-        var grid = new Grid
-        {
-            ColumnDefinitions = new ColumnDefinitions("*,Auto"),
-            Margin = new Thickness(0, 8, 0, 4),
-        };
-        var title = (StackPanel)BuildSectionTitle(text);
-        title.Margin = new Thickness(0);
-        Grid.SetColumn(title, 0);
-        grid.Children.Add(title);
-
-        var toggle = new ToggleSwitch
-        {
-            IsChecked = initial,
-            OnContent = "표시", OffContent = "숨김",
-            FontFamily = Font, FontSize = 11,
-            VerticalAlignment = VerticalAlignment.Center,
-            HorizontalAlignment = HorizontalAlignment.Right,
-            MinHeight = 22,
-        };
-        toggle.IsCheckedChanged += (_, _) => onChanged(toggle.IsChecked == true);
-        Grid.SetColumn(toggle, 1);
-        grid.Children.Add(toggle);
-        return grid;
-    }
+    // ── 인쇄 모드 (워드 캡처 시 ScrollViewer 래핑 안 함) ──────
+    public  static bool IsPrintMode  = false;
 
     // ── 시험기록부 타이틀 ─────────────────────────────────────
     private static Control BuildTitle(Model m)
@@ -398,6 +357,68 @@ public static class TestRecordBookParsedView
                 Foreground = AppRes("FgDimmed", "#555566"),
                 TextWrapping = TextWrapping.Wrap,
             });
+        return sp;
+    }
+
+    // ── 분석조건 (설정→분석조건 의 Key/Value 항목들). 비어있으면 "해당없음" ──
+    private static Control BuildAnalysisConditions(Model m)
+    {
+        var sp = new StackPanel { Spacing = 2, Margin = new Thickness(0, 4, 0, 0) };
+
+        var title = new StackPanel
+        {
+            Orientation = Orientation.Horizontal, Spacing = 6,
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin = new Thickness(0, 0, 0, 4),
+        };
+        title.Children.Add(new Border
+        {
+            Width = 4, Height = 12,
+            Background = AppRes("StatusAccentFg", "#ffaa66"),
+            VerticalAlignment = VerticalAlignment.Center,
+        });
+        title.Children.Add(new TextBlock
+        {
+            Text = "분석조건",
+            FontFamily = Font, FontSize = 12, FontWeight = FontWeight.Bold,
+            Foreground = AppRes("AppFg", "#ffffff"),
+            VerticalAlignment = VerticalAlignment.Center,
+        });
+        sp.Children.Add(title);
+
+        if (m.AnalysisConditions.Count == 0)
+        {
+            sp.Children.Add(new TextBlock
+            {
+                Text = "해당없음",
+                FontFamily = Font, FontSize = 11,
+                Foreground = AppRes("FgDimmed", "#555566"),
+                Margin = new Thickness(20, 0, 0, 4),
+            });
+            return sp;
+        }
+
+        // Key/Value 칩을 줄바꿈 가능한 가로 배치로
+        var wrap = new WrapPanel { Margin = new Thickness(20, 0, 0, 4), };
+        foreach (var (k, v) in m.AnalysisConditions)
+        {
+            wrap.Children.Add(new TextBlock
+            {
+                Text = k, FontFamily = Font, FontSize = 11,
+                Foreground = AppRes("FgDimmed", "#555566"),
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(0, 0, 4, 2),
+            });
+            wrap.Children.Add(new TextBlock
+            {
+                Text = string.IsNullOrWhiteSpace(v) ? "—" : v,
+                FontFamily = Font, FontSize = 11, FontWeight = FontWeight.SemiBold,
+                Foreground = AppRes("AppFg", "#ffffff"),
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(0, 0, 14, 2),
+            });
+        }
+        sp.Children.Add(wrap);
         return sp;
     }
 
@@ -793,29 +814,32 @@ public static class TestRecordBookParsedView
             return sp;
         }
 
-        // 헤더와 데이터 그리드를 시료 그리드와 동일 스타일로 구성
-        // 계산식 토글 OFF 면 QC 도 동일하게 헤더/셀 제외
-        var qcHeaders = _showFormula
-            ? m.SampleHeaders
-            : m.SampleHeaders.Where(h => h != "계산식").ToList();
-        var qcRows = _showFormula ? m.QcRows : m.QcRows.ConvertAll(r =>
-        {
-            int idx = m.SampleHeaders.IndexOf("계산식");
-            if (idx < 0 || idx >= r.Count) return r;
-            var copy = new List<string>(r); copy.RemoveAt(idx); return copy;
-        });
-        sp.Children.Add(BuildRowsBlock(qcHeaders, qcRows, m.QcClassByRow));
+        // QC 도 시료 그리드와 동일 — BuildRowsBlock 이 계산식 컬럼 제거 + alt-row 처리
+        sp.Children.Add(BuildRowsBlock(m.SampleHeaders, m.QcRows, m.QcClassByRow));
         return sp;
     }
 
-    // 시료 그리드와 QC 그리드 모두에서 사용하는 행렬 빌더
-    private static Control BuildRowsBlock(List<string> headers, List<List<string>> rows, List<string> rowClasses)
+    // 시료 그리드와 QC 그리드 모두에서 사용하는 행렬 빌더.
+    // 계산식 컬럼은 항상 컬럼에서 빼고, 시료 다음 alt-row 로 (토글 ON 시) 표시 — Excel 출력과 동일 패턴
+    private static Control BuildRowsBlock(List<string> srcHeaders, List<List<string>> srcRows, List<string> rowClasses)
     {
+        // 계산식 인덱스 (원본 헤더 기준) — alt-row 텍스트 추출용
+        int formulaIdx = srcHeaders.IndexOf("계산식");
+
+        // 화면용 헤더/행 — 계산식 컬럼 제거
+        var headers = srcHeaders.Where(h => h != "계산식").ToList();
+        var rows = srcRows.ConvertAll(r =>
+        {
+            if (formulaIdx < 0 || formulaIdx >= r.Count) return r;
+            var copy = new List<string>(r); copy.RemoveAt(formulaIdx); return copy;
+        });
+
         var sp = new StackPanel { Spacing = 0 };
 
         var widths = headers.ConvertAll(ColWidthFor);
         string colDef = string.Join(",", widths);
         if (!widths.Contains("*")) colDef += ",*";
+        int totalCols = headers.Count + (widths.Contains("*") ? 0 : 1);
 
         var hdrGrid = new Grid
         {
@@ -829,8 +853,8 @@ public static class TestRecordBookParsedView
             var h = headers[i];
             string label = (isVocLabel && h == "흡광도") ? "Area" : h;
             HorizontalAlignment ha = HorizontalAlignment.Center;
-            if (h == "시료명" || h == "계산식") ha = HorizontalAlignment.Left;
-            else if (NumericHeaders.Contains(h))  ha = HorizontalAlignment.Right;
+            if (h == "시료명") ha = HorizontalAlignment.Left;
+            else if (NumericHeaders.Contains(h)) ha = HorizontalAlignment.Right;
             var t = new TextBlock
             {
                 Text = label, FontFamily = Font, FontSize = 11,
@@ -871,6 +895,36 @@ public static class TestRecordBookParsedView
                 BorderBrush = AppRes("ThemeBorderSubtle", "#333344"),
                 BorderThickness = new Thickness(0, 0, 0, 1),
             });
+
+            // 계산식 alt-row — 식이 비어있지 않을 때 항상 표시
+            if (formulaIdx >= 0)
+            {
+                var srcRow = srcRows[r];
+                string formula = (formulaIdx < srcRow.Count) ? (srcRow[formulaIdx] ?? "") : "";
+                if (!string.IsNullOrWhiteSpace(formula))
+                {
+                    var altBg = r % 2 == 0
+                        ? AppRes("GridRowAltBg", "#26262e")
+                        : AppRes("GridRowBg", "#202028");
+                    var altRow = new Border
+                    {
+                        Background = altBg,
+                        BorderBrush = AppRes("ThemeBorderSubtle", "#333344"),
+                        BorderThickness = new Thickness(0, 0, 0, 1),
+                        Padding = new Thickness(20, 4),
+                        Child = new TextBlock
+                        {
+                            Text = "  ↳  " + formula,
+                            FontFamily = Font, FontSize = 10,
+                            FontStyle = FontStyle.Italic,
+                            Foreground = AppRes("FgDimmed", "#7a7a88"),
+                            TextWrapping = TextWrapping.Wrap,
+                            VerticalAlignment = VerticalAlignment.Center,
+                        },
+                    };
+                    sp.Children.Add(altRow);
+                }
+            }
         }
 
         return new Border
@@ -884,87 +938,8 @@ public static class TestRecordBookParsedView
 
     private static Control BuildSampleGrid(Model m)
     {
-        var sp = new StackPanel { Spacing = 0, Margin = new Thickness(0, 4, 0, 0) };
-
-        // 계산식 토글 OFF 면 해당 헤더 제외해서 BuildSampleGrid 동작
-        var headers = _showFormula
-            ? m.SampleHeaders
-            : m.SampleHeaders.Where(h => h != "계산식").ToList();
-        var rows = _showFormula ? m.SampleRows : m.SampleRows.ConvertAll(r =>
-        {
-            int idx = m.SampleHeaders.IndexOf("계산식");
-            if (idx < 0 || idx >= r.Count) return r;
-            var copy = new List<string>(r); copy.RemoveAt(idx); return copy;
-        });
-        // 헤더에 계산식이 이미 *인 경우 추가 스페이서 불필요. 없으면 우측 여백용 * 추가.
-        var widths = headers.ConvertAll(ColWidthFor);
-        string colDef = string.Join(",", widths);
-        if (!widths.Contains("*")) colDef += ",*";
-
-        var hdrGrid = new Grid
-        {
-            ColumnDefinitions = new ColumnDefinitions(colDef),
-            MinHeight = 28, Background = AppRes("GridHeaderBg", "#2a2a3a"),
-        };
-        // VOC/GC: 흡광도 컬럼은 실제로 chromatogram Area 값. 라벨만 "Area" 로 표시
-        bool isVocLabel = headers.Contains("ISTD");
-        for (int i = 0; i < headers.Count; i++)
-        {
-            var h = headers[i];
-            string label = (isVocLabel && h == "흡광도") ? "Area" : h;
-            HorizontalAlignment ha = HorizontalAlignment.Center;
-            if (h == "시료명" || h == "계산식") ha = HorizontalAlignment.Left;
-            else if (NumericHeaders.Contains(h))  ha = HorizontalAlignment.Right;
-
-            var t = new TextBlock
-            {
-                Text = label, FontFamily = Font, FontSize = 11,
-                FontWeight = FontWeight.SemiBold,
-                Foreground = AppRes("FgMuted", "#888899"),
-                VerticalAlignment = VerticalAlignment.Center,
-                HorizontalAlignment = ha,
-                Margin = new Thickness(8, 3),
-            };
-            Grid.SetColumn(t, i); hdrGrid.Children.Add(t);
-        }
-        sp.Children.Add(new Border
-        {
-            Child = hdrGrid,
-            BorderBrush = AppRes("ThemeBorderSubtle", "#333344"),
-            BorderThickness = new Thickness(0, 0, 0, 1),
-        });
-
-        for (int r = 0; r < rows.Count; r++)
-        {
-            var bg = r % 2 == 0
-                ? AppRes("GridRowBg", "#202028")
-                : AppRes("GridRowAltBg", "#26262e");
-            var rg = new Grid
-            {
-                ColumnDefinitions = new ColumnDefinitions(colDef),
-                MinHeight = 26, Background = bg,
-            };
-            for (int c = 0; c < headers.Count; c++)
-            {
-                var hdr = headers[c];
-                var val = c < rows[r].Count ? rows[r][c] : "";
-                rg.Children.Add(BuildSampleCell(hdr, val, c, r < m.SampleClassByRow.Count ? m.SampleClassByRow[r] : ""));
-            }
-            sp.Children.Add(new Border
-            {
-                Child = rg,
-                BorderBrush = AppRes("ThemeBorderSubtle", "#333344"),
-                BorderThickness = new Thickness(0, 0, 0, 1),
-            });
-        }
-
-        return new Border
-        {
-            Child = sp,
-            BorderBrush = AppRes("ThemeBorderSubtle", "#333344"),
-            BorderThickness = new Thickness(1),
-            CornerRadius = new CornerRadius(4),
-        };
+        // 계산식 컬럼은 시료 행 사이의 alt-row 로 빠짐 — Excel 출력과 동일 패턴
+        return BuildRowsBlock(m.SampleHeaders, m.SampleRows, m.SampleClassByRow);
     }
 
     private static Control BuildSampleCell(string header, string val, int col, string sampleClass)
@@ -1025,6 +1000,34 @@ public static class TestRecordBookParsedView
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Right,
                 Margin = new Thickness(8, 3),
+            };
+        }
+        else if (header == "시료명" && !empty && val.Contains('\n'))
+        {
+            // 매칭된 시료명: "원본\n↳ 매칭명" 두 줄로 표시
+            var parts = val.Replace("\r\n", "\n").Split('\n');
+            var sp = new StackPanel { Spacing = 0, VerticalAlignment = VerticalAlignment.Center };
+            for (int li = 0; li < parts.Length; li++)
+            {
+                var line = parts[li].TrimEnd();
+                if (string.IsNullOrEmpty(line)) continue;
+                bool isMatchedLine = line.TrimStart().StartsWith("↳");
+                sp.Children.Add(new TextBlock
+                {
+                    Text = line, FontFamily = Font, FontSize = 12,
+                    Foreground = isMatchedLine
+                        ? AppRes("FgMuted", "#888899")
+                        : AppRes("AppFg", "#ffffff"),
+                    FontStyle = isMatchedLine ? FontStyle.Italic : FontStyle.Normal,
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                });
+            }
+            inner = new Border
+            {
+                Child = sp,
+                Padding = new Thickness(8, 2),
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                VerticalAlignment = VerticalAlignment.Center,
             };
         }
         else

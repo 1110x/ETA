@@ -113,23 +113,43 @@ public class TestRecordBookViewerPage : UserControl
             Margin = new Thickness(12, 8, 12, 4),
             Text = "날짜를 선택하세요",
         };
+        // Excel 출력은 계획에서 제외 — 코드는 보존하되 버튼만 숨김
         var printBtn = new Button
         {
-            Content = "🖨 인쇄",
+            Content = "🖨 Excel",
             FontFamily = Font, FontSize = AppTheme.FontSM,
             Padding = new Thickness(10, 4),
-            Margin = new Thickness(8, 4, 12, 4),
+            Margin = new Thickness(8, 4, 4, 4),
             Background = new SolidColorBrush(Color.Parse("#1a3a5c")),
             Foreground = new SolidColorBrush(Color.Parse("#90caf9")),
             BorderThickness = new Thickness(0),
             CornerRadius = new CornerRadius(4),
             Cursor = new Cursor(StandardCursorType.Hand),
+            IsVisible = false,
         };
         printBtn.Click += async (_, _) => await PrintShow2Async();
 
+        var wordBtn = new Button
+        {
+            Content = "📝 Word",
+            FontFamily = Font, FontSize = AppTheme.FontSM,
+            Padding = new Thickness(10, 4),
+            Margin = new Thickness(8, 4, 12, 4),
+            Background = new SolidColorBrush(Color.Parse("#2a3e5c")),
+            Foreground = new SolidColorBrush(Color.Parse("#aac7e8")),
+            BorderThickness = new Thickness(0),
+            CornerRadius = new CornerRadius(4),
+            Cursor = new Cursor(StandardCursorType.Hand),
+        };
+        wordBtn.Click += async (_, _) => await ExportWordAsync();
+
+        var btnRow = new StackPanel { Orientation = Orientation.Horizontal };
+        btnRow.Children.Add(printBtn);
+        btnRow.Children.Add(wordBtn);
+
         var statusRow = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
         Grid.SetColumn(_rowsStatus, 0); statusRow.Children.Add(_rowsStatus);
-        Grid.SetColumn(printBtn, 1);    statusRow.Children.Add(printBtn);
+        Grid.SetColumn(btnRow, 1);     statusRow.Children.Add(btnRow);
 
         _rowsHost = new Border
         {
@@ -514,6 +534,53 @@ public class TestRecordBookViewerPage : UserControl
         catch (System.Exception ex)
         {
             _rowsStatus.Text = $"인쇄 오류: {ex.Message}";
+        }
+    }
+
+    /// <summary>Show2 모델을 Word(.docx) 로 출력 — 프로토타입.</summary>
+    public async System.Threading.Tasks.Task ExportWordAsync()
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(_selectedTable) || string.IsNullOrEmpty(_selectedDate))
+            {
+                _rowsStatus.Text = "테이블/날짜 선택 후 출력하세요";
+                return;
+            }
+            var abbr = _tableMeta.TryGetValue(_selectedTable, out var mm) ? mm.약칭 : "";
+            var model = TestRecordBookViewerService.BuildParsedModel(_selectedTable, _selectedDate, abbr, _selectedCompany);
+            var docxPath = await System.Threading.Tasks.Task.Run(() =>
+                TestRecordBookWordExporter.Export(model));
+
+            await System.Threading.Tasks.Task.Run(() =>
+            {
+                try
+                {
+                    if (System.OperatingSystem.IsMacOS())
+                    {
+                        var psi = new System.Diagnostics.ProcessStartInfo { FileName = "open", UseShellExecute = false };
+                        psi.ArgumentList.Add(docxPath);
+                        System.Diagnostics.Process.Start(psi);
+                    }
+                    else if (System.OperatingSystem.IsWindows())
+                    {
+                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                        {
+                            FileName = docxPath, UseShellExecute = true,
+                        });
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[Word Open] {ex.Message}");
+                }
+            });
+
+            _rowsStatus.Text = $"📝 Word 출력 완료: {System.IO.Path.GetFileName(docxPath)}";
+        }
+        catch (System.Exception ex)
+        {
+            _rowsStatus.Text = $"Word 출력 오류: {ex.Message}";
         }
     }
 }

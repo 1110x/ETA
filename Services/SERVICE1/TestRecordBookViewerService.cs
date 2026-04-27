@@ -569,6 +569,22 @@ public static class TestRecordBookViewerService
         int decimalPlaces = GetDecimalPlaces(analyte);
         double? loq = AnalysisService.GetLoQ(analyte);
 
+        // 모델에 보존 — 결과표시(출력) 등에서 시료별 식 대신 일반 수식 사용
+        m.Analyte       = analyte ?? "";
+        m.ResultFormula = formula ?? "";
+
+        // 설정 → 분석조건 (오븐온도/유량 등 Key/Value) 로드 — 분석정보 아래 표시용
+        try
+        {
+            var conds = ETA.Services.SERVICE1.AnalysisConditionService.Load(analyte);
+            foreach (var c in conds)
+            {
+                if (!string.IsNullOrWhiteSpace(c.Key))
+                    m.AnalysisConditions.Add((c.Key, c.Value ?? ""));
+            }
+        }
+        catch { /* 분석조건 부재는 치명 X */ }
+
         // 처리시설_마스터.id 기반 정렬 매핑 (시료구분=시설명, 시료명)
         var orderMap = LoadFacilityOrderMap();
 
@@ -664,19 +680,18 @@ public static class TestRecordBookViewerService
         int snColIdx = m.SampleHeaders.IndexOf("SN");
         foreach (var item in sortable)
         {
+            // 모든 행을 시료분석결과(SampleRows) 에 포함 — CCV/MBK/DW/FBK 등 QC 도 함께 표시 (실험담당자 요청)
+            m.SampleRows.Add(item.values);
+            m.SampleClassByRow.Add(item.sampleClass);
+
+            // QC 행은 검정곡선의 보증(QcRows) 에 별도 추가 — 검토용으로 두 군데 노출
             string sn = (snColIdx >= 0 && snColIdx < item.values.Count)
                         ? (item.values[snColIdx] ?? "").Trim()
                         : "";
-            bool isQc = sn.Equals("QC", System.StringComparison.OrdinalIgnoreCase);
-            if (isQc)
+            if (sn.Equals("QC", System.StringComparison.OrdinalIgnoreCase))
             {
                 m.QcRows.Add(item.values);
                 m.QcClassByRow.Add(item.sampleClass);
-            }
-            else
-            {
-                m.SampleRows.Add(item.values);
-                m.SampleClassByRow.Add(item.sampleClass);
             }
         }
 

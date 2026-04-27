@@ -477,7 +477,12 @@ public class AccessPage
         try
         {
             var items  = AnalysisService.GetAllItems();
-            var groups = items.GroupBy(a => string.IsNullOrWhiteSpace(a.Category) ? "기타" : a.Category).OrderBy(g => g.Key);
+            // 그룹: 그룹 내 최소 ES 기준 → ES 번호 빠른 그룹부터.
+            // 항목: 그룹 내에서 ES 번호 숫자 정렬 (자릿수/소수점 분리).
+            var groups = items
+                .GroupBy(a => string.IsNullOrWhiteSpace(a.Category) ? "기타" : a.Category)
+                .OrderBy(g => g.Min(i => EsSortKey(i.ES)), StringComparer.Ordinal)
+                .ThenBy(g => g.Key, StringComparer.CurrentCulture);
             foreach (var grp in groups)
             {
                 var groupNode = new TreeViewItem
@@ -485,12 +490,23 @@ public class AccessPage
                     Header = new TextBlock { Text = grp.Key, FontSize = AppTheme.FontMD, FontWeight = FontWeight.SemiBold, FontFamily = Font, Foreground = AppTheme.FgInfo, Margin = new Thickness(2, 2) },
                     IsExpanded = true,
                 };
-                foreach (var item in grp.OrderBy(i => i.ES))
+                foreach (var item in grp.OrderBy(i => EsSortKey(i.ES), StringComparer.Ordinal))
                     groupNode.Items.Add(CreateAnalyteTreeItem(item));
                 _analyteTree.Items.Add(groupNode);
             }
         }
         catch (Exception ex) { Console.WriteLine($"[LoadAnalyteTree] {ex.Message}"); }
+    }
+
+    /// <summary>"ES 04311.1d" 같은 ES 코드를 숫자 우선 정렬용 키로 변환 — 자릿수/소수점 분리, 빈 값 뒤로.</summary>
+    private static string EsSortKey(string es)
+    {
+        if (string.IsNullOrWhiteSpace(es)) return "zzzz_";
+        var m = System.Text.RegularExpressions.Regex.Match(es, @"(\d{4,5})(?:\.(\d+))?");
+        if (!m.Success) return "zzz_" + es;
+        var main = m.Groups[1].Value.PadLeft(5, '0');
+        var sub  = (m.Groups[2].Success ? m.Groups[2].Value : "").PadLeft(3, '0');
+        return $"{main}.{sub}_{es}";
     }
 
     private static TreeViewItem CreateAnalyteTreeItem(AnalysisItem item)

@@ -149,38 +149,38 @@ public static class TestRecordBookExcelExporter
         if (isBod)
         {
             schema  = "BOD";
-            headers = new[] { "시료명", "시료량(mL)", "D1(15min DO)", "D2(5Day DO)", "f(x/y)", "희석배수", "Result(mg/L)", "비고", "시료번호" };
-            widths  = new[] { 24, 12, 14, 14, 10, 10, 14, 12, 12 };
+            headers = new[] { "시료번호", "시료명", "시료량(mL)", "D1(15min DO)", "D2(5Day DO)", "f(x/y)", "희석배수", "Result(mg/L)", "비고" };
+            widths  = new[] { 12, 24, 12, 14, 14, 10, 10, 14, 12 };
         }
         else if (hasColiform)
         {
             schema  = "Coliform";
-            headers = new[] { "시료명", "시료량(mL)", "A", "B", "희석배수", "Result(개/mL)", "비고", "시료번호" };
-            widths  = new[] { 26, 12, 10, 10, 10, 16, 12, 12 };
+            headers = new[] { "시료번호", "시료명", "시료량(mL)", "A", "B", "희석배수", "Result(개/mL)", "비고" };
+            widths  = new[] { 12, 26, 12, 10, 10, 10, 16, 12 };
         }
         else if (hasGravimetric)
         {
             schema  = "Gravimetric";
-            headers = new[] { "시료명", "시료량(mL)", "전무게(g)", "후무게(g)", "무게차(g)", "희석배수", "Result(mg/L)", "비고", "시료번호" };
-            widths  = new[] { 24, 12, 12, 12, 12, 10, 14, 12, 12 };
+            headers = new[] { "시료번호", "시료명", "시료량(mL)", "전무게(g)", "후무게(g)", "무게차(g)", "희석배수", "Result(mg/L)", "비고" };
+            widths  = new[] { 12, 24, 12, 12, 12, 12, 10, 14, 12 };
         }
         else if (hasTcic)
         {
             schema  = "TCIC";
-            headers = new[] { "시료명", "TCAU", "TC con(mg/L)", "ICAU", "IC con(mg/L)", "희석배수", "Result(mg/L)", "비고", "시료번호" };
-            widths  = new[] { 24, 11, 13, 11, 13, 10, 14, 12, 12 };
+            headers = new[] { "시료번호", "시료명", "TCAU", "TC con(mg/L)", "ICAU", "IC con(mg/L)", "희석배수", "Result(mg/L)", "비고" };
+            widths  = new[] { 12, 24, 11, 13, 11, 13, 10, 14, 12 };
         }
         else if (hasIstd)
         {
             schema  = "VOC";
-            headers = new[] { "시료명", "Area", "ISTD Resp.", "희석배수", "Result(mg/L)", "비고", "시료번호" };
-            widths  = new[] { 26, 14, 14, 10, 16, 12, 12 };
+            headers = new[] { "시료번호", "시료명", "Area", "ISTD Resp.", "희석배수", "Result(mg/L)", "비고" };
+            widths  = new[] { 12, 26, 14, 14, 10, 16, 12 };
         }
         else
         {
             schema  = "UvVis";
-            headers = new[] { "시료명", "시료량(mL)", "흡광도", "희석배수", "Result(mg/L)", "비고", "시료번호" };
-            widths  = new[] { 28, 12, 14, 10, 16, 14, 12 };
+            headers = new[] { "시료번호", "시료명", "시료량(mL)", "흡광도", "희석배수", "Result(mg/L)", "비고" };
+            widths  = new[] { 12, 28, 12, 14, 10, 16, 14 };
         }
         return new SampleMeta(schema, headers, widths);
     }
@@ -225,7 +225,7 @@ public static class TestRecordBookExcelExporter
                               .Where(s => !string.IsNullOrWhiteSpace(s))));
         string formulaText = ExtractFormulaTemplate(m);
         WriteMetaRow(ws, row++, nCols, "결과표시", formulaText);
-        WriteMetaRow(ws, row++, nCols, "관련근거", LegalRef);
+        // 관련근거 행은 출력물에서 제외 — 사용자 요청
         return row;
     }
 
@@ -253,6 +253,10 @@ public static class TestRecordBookExcelExporter
 
     private static string ExtractFormulaTemplate(TestRecordBookParsedView.Model m)
     {
+        // 1순위: 분석정보(설정→분석항목)에 등록된 일반 수식 — 시료별 값 치환 X
+        if (!string.IsNullOrWhiteSpace(m.ResultFormula)) return m.ResultFormula.Trim();
+
+        // 폴백: 첫 시료의 계산식에서 '=' 좌측만 (구버전 데이터 호환)
         if (m.SampleRows.Count == 0) return "";
         int idx = m.SampleHeaders.FindIndex(h => h.Equals("계산식", StringComparison.OrdinalIgnoreCase));
         if (idx < 0) return "";

@@ -197,6 +197,50 @@ public partial class WasteAnalysisInputPage : UserControl
         int dp = GetDecimalPlaces(itemAbbr);
         return v.ToString($"F{dp}");
     }
+
+    // null = 시료량 인자 없음 (스케일링 안 함). double = 분석정보의 K 값 (분자).
+    private static Dictionary<string, double?>? _volNumeratorCache;
+    /// <summary>UV-VIS 결과 계산에서 (K / 시료량) 의 K 값을 항목별로 조회.
+    /// `GetDecimalPlaces` 와 동일 패턴: AnalysisService.GetAllItems() 전체 순회로
+    /// 항목별 K 값을 캐시(약칭+풀네임 둘 다 키로). 우선순위:
+    /// (1) 분석정보.volume_constant DB 컬럼  →  (2) concentration_formula regex 추출.
+    /// 둘 다 없으면 null 반환 — 호출자가 시료량 스케일링을 적용하지 않음 (수식에 그 항이 없는 경우).</summary>
+    private static double? ResolveVolumeNumerator(string analyteKey)
+    {
+        if (string.IsNullOrWhiteSpace(analyteKey)) return null;
+        if (_volNumeratorCache == null)
+        {
+            _volNumeratorCache = new Dictionary<string, double?>(StringComparer.OrdinalIgnoreCase);
+            try
+            {
+                var shortNames = AnalysisRequestService.GetShortNames(); // 풀네임→약칭
+                var items = AnalysisService.GetAllItems();
+                var rxVol = new System.Text.RegularExpressions.Regex(@"\(\s*(\d+(?:\.\d+)?)\s*/\s*시료량\s*\)");
+                foreach (var item in items)
+                {
+                    double? k = null;
+                    // 1) volume_constant 컬럼 (관리자가 명시)
+                    double dbK = ETA.Services.SERVICE3.AnalysisNoteService.GetVolumeConstant(item.Analyte, fallback: 0);
+                    if (dbK > 0) k = dbK;
+                    else
+                    {
+                        // 2) concentration_formula 에서 (K / 시료량) 패턴 추출
+                        string formula = ETA.Services.SERVICE3.AnalysisNoteService.GetFormula(item.Analyte) ?? "";
+                        var m = rxVol.Match(formula);
+                        if (m.Success && double.TryParse(m.Groups[1].Value, out var n)) k = n;
+                    }
+                    // null 도 의도적 캐싱 (수식에 시료량 항이 없는 항목 표시)
+                    _volNumeratorCache[item.Analyte] = k;
+                    if (shortNames.TryGetValue(item.Analyte, out var abbr) && !string.IsNullOrEmpty(abbr))
+                        _volNumeratorCache[abbr] = k;
+                }
+            }
+            catch { }
+        }
+        if (_volNumeratorCache.TryGetValue(analyteKey, out var hit)) return hit;
+        if (_itemAliases.TryGetValue(analyteKey, out var alias) && _volNumeratorCache.TryGetValue(alias, out hit)) return hit;
+        return null;
+    }
     private string _inputMode = "처리시설"; // 수질분석센터 / 처리시설 / 비용부담금 (기본 = 처리시설, 탑레벨 메뉴로만 전환)
     private bool IsBillingMode  => _inputMode == "비용부담금";
     private bool IsFacilityMode => _inputMode == "처리시설";
@@ -4415,7 +4459,11 @@ public partial class WasteAnalysisInputPage : UserControl
                 {
                     double.TryParse(row.시료량, System.Globalization.NumberStyles.Float,
                         System.Globalization.CultureInfo.InvariantCulture, out var uvVol);
-                    double uvCalcConc = ((uvAbs - uvI) / uvS) * (uvVol > 0 ? 60.0 / uvVol : 1.0);
+                    // (K / 시료량) 의 K — 분석정보 수식에서 추출. 수식에 그 항이 없는 항목은 스케일링 안 함.
+                    string analyteKey = _activeItems.FirstOrDefault() ?? _activeCategory ?? "";
+                    double? volK = ResolveVolumeNumerator(analyteKey);
+                    double uvVolFactor = (volK.HasValue && uvVol > 0) ? volK.Value / uvVol : 1.0;
+                    double uvCalcConc = ((uvAbs - uvI) / uvS) * uvVolFactor;
                     row.Fxy = uvCalcConc.ToString("F4");
                     // 결과값 항상 재계산 (PDF 기기 농도값 → ETA 공식으로 덮어쓰기)
                     double.TryParse(string.IsNullOrEmpty(row.D2) ? "1" : row.D2,
@@ -4481,8 +4529,10 @@ public partial class WasteAnalysisInputPage : UserControl
                             System.Globalization.CultureInfo.InvariantCulture, out var abs);
                         double.TryParse(capturedUvRow.시료량, System.Globalization.NumberStyles.Float,
                             System.Globalization.CultureInfo.InvariantCulture, out var vol);
+                        double? volK = ResolveVolumeNumerator(_activeItems.FirstOrDefault() ?? _activeCategory ?? "");
+                        double vFactor = (volK.HasValue && vol > 0) ? volK.Value / vol : 1.0;
                         double calcConc = uvSlope > 0
-                            ? ((abs - uvIntercept) / uvSlope) * (vol > 0 ? 60.0 / vol : 1.0)
+                            ? ((abs - uvIntercept) / uvSlope) * vFactor
                             : 0;
                         capturedUvRow.Fxy = calcConc.ToString("F4");
                         return (calcConc * dil).ToString($"F{uvDp}");
@@ -8336,7 +8386,7 @@ public partial class WasteAnalysisInputPage : UserControl
                         흡광도:  row.D1,
                         희석배수: row.P,
                         검량선a: docInfo?.Standard_Slope ?? "",
-                        농도:    row.Result,
+                        농도:    row.Fxy,         // 중간 계산농도 (시료량/희석 적용 전)
                         st01mgl: docInfo?.Standard_Points?.ElementAtOrDefault(0) ?? "",
                         st02mgl: docInfo?.Standard_Points?.ElementAtOrDefault(1) ?? "",
                         st03mgl: docInfo?.Standard_Points?.ElementAtOrDefault(2) ?? "",
@@ -8352,7 +8402,8 @@ public partial class WasteAnalysisInputPage : UserControl
                         R2:      docInfo?.Abs_R2 ?? "",
                         비고: QcSeq(tblName),
                         시료명: 시료명Full,
-                        소스구분: 소스구분);
+                        소스구분: 소스구분,
+                        결과:    row.Result);     // 시료량/희석 적용된 최종값
                 }
                 break;
 
@@ -8374,7 +8425,7 @@ public partial class WasteAnalysisInputPage : UserControl
                     흡광도:  row.D1,
                     희석배수: string.IsNullOrEmpty(row.P) ? "1" : row.P,
                     검량선a: icpCal?.Intercept ?? "",
-                    농도:    row.Result,
+                    농도:    row.Fxy,         // 중간 계산농도
                     st01mgl: icpCal?.StdConcs.ElementAtOrDefault(0) ?? "",
                     st02mgl: icpCal?.StdConcs.ElementAtOrDefault(1) ?? "",
                     st03mgl: icpCal?.StdConcs.ElementAtOrDefault(2) ?? "",
@@ -8390,7 +8441,8 @@ public partial class WasteAnalysisInputPage : UserControl
                     R2:      icpCal?.R ?? "",
                     비고: QcSeq(icpTable),
                     시료명: 시료명Full,
-                    소스구분: 소스구분);
+                    소스구분: 소스구분,
+                    결과:    row.Result);     // 시료량/희석 적용된 최종값
                 break;
             }
 
@@ -8438,7 +8490,8 @@ public partial class WasteAnalysisInputPage : UserControl
                 // 측정값 (Cols 미설정 시 슬롯 fallback)
                 if (!cols.ContainsKey("Area"))      cols["Area"]      = row.D1 ?? "";
                 if (!cols.ContainsKey("ISTD"))      cols["ISTD"]      = row.D2 ?? "";
-                if (!cols.ContainsKey("농도"))      cols["농도"]      = row.Result ?? "";
+                // 농도 = 중간 계산농도(시료량/희석 적용 전), 결과 = 최종값(적용 후)
+                if (!cols.ContainsKey("농도"))      cols["농도"]      = row.Fxy ?? "";
                 if (!cols.ContainsKey("희석배수"))  cols["희석배수"]  = string.IsNullOrWhiteSpace(row.P) ? "1" : row.P;
                 if (!cols.ContainsKey("시료량"))    cols["시료량"]    = row.시료량 ?? "";
                 if (!cols.ContainsKey("결과"))      cols["결과"]      = row.Result ?? "";
@@ -8477,7 +8530,7 @@ public partial class WasteAnalysisInputPage : UserControl
                         흡광도:  row.D1,
                         희석배수: row.P,
                         검량선a: docInfo?.Standard_Slope ?? "",
-                        농도:    row.Result,
+                        농도:    row.Fxy,         // 중간 계산농도
                         st01mgl: docInfo?.Standard_Points?.ElementAtOrDefault(0) ?? "",
                         st02mgl: docInfo?.Standard_Points?.ElementAtOrDefault(1) ?? "",
                         st03mgl: docInfo?.Standard_Points?.ElementAtOrDefault(2) ?? "",
@@ -8493,7 +8546,8 @@ public partial class WasteAnalysisInputPage : UserControl
                         R2:      docInfo?.Abs_R2 ?? "",
                         비고: QcSeq(tblName),
                         시료명: 시료명Full,
-                        소스구분: 소스구분);
+                        소스구분: 소스구분,
+                        결과:    row.Result);     // 시료량/희석 적용된 최종값
                 }
                 break;
 
@@ -8649,13 +8703,16 @@ public partial class WasteAnalysisInputPage : UserControl
                 }
                 else
                 {
-                    // 공식 없음 — 기본 UvVis 계산 (60/시료량)
+                    // 공식 없음 — 기본 UvVis 계산. (K/시료량) 의 K 는 분석정보에서 동적 추출.
+                    // 수식에 시료량 항이 없는 항목은 스케일링 안 함.
+                    double? volK = ResolveVolumeNumerator(_activeItems.FirstOrDefault() ?? _activeCategory ?? "");
+                    double vFactor = (volK.HasValue && vol > 0) ? volK.Value / vol : 1.0;
                     calcConc = slope > 0
-                        ? ((abs - intercept) / slope) * (vol > 0 ? 60.0 / vol : 1.0)
+                        ? ((abs - intercept) / slope) * vFactor
                         : 0;
                     result = calcConc * dil;
-                    string volFactor = vol > 0 ? $" × (60/{vol})" : "";
-                    calcTb.Text   = $"계산농도 = ({abs} - {intercept:G6}) / {slope:G6}{volFactor}  =  {calcConc:F4}";
+                    string volNote = (volK.HasValue && vol > 0) ? $" × ({volK.Value:G3}/{vol})" : "";
+                    calcTb.Text   = $"계산농도 = ({abs} - {intercept:G6}) / {slope:G6}{volNote}  =  {calcConc:F4}";
                     resultTb.Text = $"결과값  =  {calcConc:F4} × {dil}  =  {result.ToString($"F{dp}")} mg/L";
                 }
 
