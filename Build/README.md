@@ -33,6 +33,22 @@ git push origin v1.3.0
 Releases 페이지의 `ETA-Setup-1.3.0.exe` 링크 공유.
 사용자는 더블클릭 → 설치 마법사 따라가기 → 바탕화면 아이콘으로 실행.
 
+### 4. (선택) Microsoft To Do 자동 알림
+태그 푸시 직후 `Build/notify-release-todo.sh` 를 백그라운드로 실행해두면,
+빌드가 끝나는 시점에 **"ETA 개발"** 리스트에 작업이 자동 등록됩니다.
+작업 메모에는 인스톨러 직접 다운로드 URL · 파일명 · 크기, 릴리즈/워크플로 링크가 포함됩니다.
+
+```bash
+# 최신 태그 자동 사용
+nohup ./Build/notify-release-todo.sh > /tmp/eta-todo.log 2>&1 &
+
+# 특정 태그 지정
+nohup ./Build/notify-release-todo.sh v1.4.3 > /tmp/eta-todo.log 2>&1 &
+```
+
+자격증명은 `Services/SERVICE1/TodoService.cs` 의 `ClientId` / `RefreshToken` 을 자동 추출합니다.
+환경변수 `ETA_TODO_CLIENT_ID` / `ETA_TODO_REFRESH_TOKEN` 으로 덮어쓸 수도 있습니다.
+
 ## 🧪 수동 실행 (태그 없이 테스트 빌드)
 GitHub 리포지토리 → Actions 탭 → **"Release Windows Installer"** → **Run workflow** → version 입력 (예: `1.3.0-rc1`).
 이 경우 Release 는 생성되지 않고, **Artifacts** 에만 Setup.exe 가 올라갑니다 (30일 보존). 테스트용으로 다운로드만.
