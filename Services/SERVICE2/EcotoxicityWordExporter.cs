@@ -92,6 +92,11 @@ public static class EcotoxicityWordExporter
                 body.Append(BuildResultsTable(rec));
                 body.Append(SmallSpacer());
 
+                // 5-1) 분석법 적용 근거 — 왜 이 방법으로 EC50 을 계산했는가
+                body.Append(BuildSectionTitle("분석법 적용 근거"));
+                body.Append(BuildRationaleTable(rec));
+                body.Append(SmallSpacer());
+
                 // 6) 용량-반응 곡선 PNG (TSK 결과가 있을 때만)
                 if (rec.TskResult != null && rec.Conc != null && rec.Conc.Length > 0)
                 {
@@ -469,52 +474,128 @@ public static class EcotoxicityWordExporter
         return t;
     }
 
+    /// <summary>
+    /// 어째서 이 분석법으로 EC50 을 계산했는지 — 데이터 상태 기반 자동 설명.
+    /// 농도점 수, 부분치사 점 개수, 양 끝(0%/100%) 분포, Probit/TSK 산출 여부를 조합해
+    /// 표준 ES 04704.1c 가이드에 맞는 근거를 본문에 그대로 출력.
+    /// </summary>
+    private static Table BuildRationaleTable(Record r)
+    {
+        var t = NewBorderedTable();
+        AddColumnGrid(t, 2200, 8200);
+
+        // 데이터 통계 — 농도점 / 부분치사(0<m<100) / 0% / 100%
+        int totalPts = r.Conc?.Length ?? 0;
+        int partial  = 0, allDead = 0, allLive = 0;
+        for (int i = 0; i < totalPts; i++)
+        {
+            int org = i < r.Org.Length ? r.Org[i] : 0;
+            int mort = i < r.Mort.Length ? r.Mort[i] : 0;
+            if (org <= 0) continue;
+            double pct = mort * 100.0 / org;
+            if (pct <= 0)        allLive++;
+            else if (pct >= 100) allDead++;
+            else                 partial++;
+        }
+
+        bool hasTsk = r.TskResult != null;
+        bool hasProbit = r.ProbitResult != null;
+        string used = !string.IsNullOrWhiteSpace(r.EcCalculationMethod)
+            ? r.EcCalculationMethod
+            : (hasProbit ? "Probit" : (hasTsk ? "TSK (Spearman-Kärber)" : "—"));
+
+        // 데이터 요약 라인
+        t.Append(MakeKvRowWide("측정 농도점",
+            $"{totalPts}개 (부분치사 {partial}개, 100% 사망 {allDead}개, 사망 0% {allLive}개)"));
+        t.Append(MakeKvRowWide("적용 분석법", used));
+
+        // 사유: 부분치사 ≥ 2 → Probit 가능 / 그 외 → TSK 우선
+        string reason;
+        if (hasProbit && partial >= 2)
+        {
+            reason =
+                "ES 04704.1c 부속서 — 부분치사(0% < 사망률 < 100%) 농도점이 2개 이상이고 " +
+                "농도-반응 관계가 정규분포 가정에 부합해 Probit 회귀로 EC50 산출. " +
+                "Probit 는 95% 신뢰구간을 좁게 추정할 수 있어 부분치사 데이터가 충분할 때 우선 적용.";
+        }
+        else if (hasTsk)
+        {
+            reason =
+                "ES 04704.1c 부속서 — Probit 회귀의 정규분포·균질분산 가정을 만족하지 못하거나 " +
+                "부분치사 농도점이 부족(< 2개) 하여 비매개적 추정법인 Spearman-Kärber(TSK) 적용. " +
+                "TSK 는 농도-반응 형태에 대한 가정 없이 양 끝 농도(0%·100%)를 포함해 EC50 을 산출하며, " +
+                "Trim% > 0 인 경우 극단치를 잘라낸 trimmed 추정.";
+            if (r.TskResult != null && r.TskResult.TrimPercent > 0)
+                reason += $" 본 시험은 Trim {r.TskResult.TrimPercent:F0}% 적용.";
+        }
+        else
+        {
+            reason = "분석법이 산출되지 않음. 부분치사 농도점이 없거나 데이터 부족.";
+        }
+        t.Append(MakeKvRowWide("선택 사유", reason));
+
+        // 보조 — 두 결과가 모두 있으면 비교 의견
+        if (hasTsk && hasProbit)
+        {
+            double tskCi = (r.TskResult!.UpperCI - r.TskResult.LowerCI);
+            double prbCi = (r.ProbitResult!.UpperCI - r.ProbitResult.LowerCI);
+            string note;
+            if (prbCi > 0 && tskCi > 0 && prbCi <= tskCi)
+                note = "Probit 의 95% 신뢰구간 폭이 TSK 보다 좁아 Probit 결과를 대표값으로 권장.";
+            else if (prbCi > 0 && tskCi > 0)
+                note = "TSK 의 95% 신뢰구간 폭이 Probit 보다 좁아 TSK 결과를 대표값으로 권장.";
+            else
+                note = "두 분석 결과를 함께 보고. 시료 특성에 따라 보고자 판단으로 대표값 선정.";
+            t.Append(MakeKvRowWide("비교 의견", note));
+        }
+
+        return t;
+    }
+
     private static Paragraph BuildChartParagraph(MainDocumentPart main, byte[] png)
     {
         var imgPart = main.AddImagePart(ImagePartType.Png);
         using (var ms = new MemoryStream(png)) imgPart.FeedData(ms);
         string relId = main.GetIdOfPart(imgPart);
 
-        // 640x400 → EMU (1 px ≈ 9525 EMU). 페이지 폭 맞춤(약 425pt = 5398313 EMU 폭, 비율 유지 → 높이 3373945)
-        // 이미지 비율 640:400 = 1.6:1 → 폭 425pt 이면 height 265pt
-        long cx = 5400000; // ≈ 425pt = 6"
-        long cy = (long)(cx * 400.0 / 640.0); // 비율 유지
+        // 640x400 PNG — 페이지 폭 맞춤, 비율 1.6:1 유지.
+        long cx = 5400000;                          // ≈ 425pt = 6"
+        long cy = (long)(cx * 400.0 / 640.0);
 
-        string xml =
-$@"<w:p xmlns:w=""http://schemas.openxmlformats.org/wordprocessingml/2006/main""
-        xmlns:r=""http://schemas.openxmlformats.org/officeDocument/2006/relationships""
-        xmlns:wp=""http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing""
-        xmlns:a=""http://schemas.openxmlformats.org/drawingml/2006/main""
-        xmlns:pic=""http://schemas.openxmlformats.org/drawingml/2006/picture"">
-  <w:pPr><w:jc w:val=""center""/></w:pPr>
-  <w:r>
-    <w:rPr><w:noProof/></w:rPr>
-    <w:drawing>
-      <wp:inline distT=""0"" distB=""0"" distL=""0"" distR=""0"">
-        <wp:extent cx=""{cx}"" cy=""{cy}""/>
-        <wp:effectExtent l=""0"" t=""0"" r=""0"" b=""0""/>
-        <wp:docPr id=""100"" name=""Chart""/>
-        <wp:cNvGraphicFramePr><a:graphicFrameLocks noChangeAspect=""1""/></wp:cNvGraphicFramePr>
-        <a:graphic>
-          <a:graphicData uri=""http://schemas.openxmlformats.org/drawingml/2006/picture"">
-            <pic:pic>
-              <pic:nvPicPr><pic:cNvPr id=""100"" name=""Chart""/><pic:cNvPicPr/></pic:nvPicPr>
-              <pic:blipFill>
-                <a:blip r:embed=""{relId}""/>
-                <a:stretch><a:fillRect/></a:stretch>
-              </pic:blipFill>
-              <pic:spPr>
-                <a:xfrm><a:off x=""0"" y=""0""/><a:ext cx=""{cx}"" cy=""{cy}""/></a:xfrm>
-                <a:prstGeom prst=""rect""><a:avLst/></a:prstGeom>
-              </pic:spPr>
-            </pic:pic>
-          </a:graphicData>
-        </a:graphic>
-      </wp:inline>
-    </w:drawing>
-  </w:r>
-</w:p>";
-        return new Paragraph(new DocumentFormat.OpenXml.OpenXmlUnknownElement(xml));
+        // <w:drawing> 의 자식(<wp:inline>) 만 raw XML 로 주입.
+        // 네임스페이스 prefix(wp/a/pic/r) 는 inline 요소에 직접 선언해 안전 처리.
+        string inlineXml =
+$@"<wp:inline distT=""0"" distB=""0"" distL=""0"" distR=""0""
+            xmlns:wp=""http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing""
+            xmlns:a=""http://schemas.openxmlformats.org/drawingml/2006/main""
+            xmlns:pic=""http://schemas.openxmlformats.org/drawingml/2006/picture""
+            xmlns:r=""http://schemas.openxmlformats.org/officeDocument/2006/relationships"">
+  <wp:extent cx=""{cx}"" cy=""{cy}""/>
+  <wp:effectExtent l=""0"" t=""0"" r=""0"" b=""0""/>
+  <wp:docPr id=""100"" name=""Chart""/>
+  <wp:cNvGraphicFramePr><a:graphicFrameLocks noChangeAspect=""1""/></wp:cNvGraphicFramePr>
+  <a:graphic>
+    <a:graphicData uri=""http://schemas.openxmlformats.org/drawingml/2006/picture"">
+      <pic:pic>
+        <pic:nvPicPr><pic:cNvPr id=""100"" name=""Chart""/><pic:cNvPicPr/></pic:nvPicPr>
+        <pic:blipFill>
+          <a:blip r:embed=""{relId}""/>
+          <a:stretch><a:fillRect/></a:stretch>
+        </pic:blipFill>
+        <pic:spPr>
+          <a:xfrm><a:off x=""0"" y=""0""/><a:ext cx=""{cx}"" cy=""{cy}""/></a:xfrm>
+          <a:prstGeom prst=""rect""><a:avLst/></a:prstGeom>
+        </pic:spPr>
+      </pic:pic>
+    </a:graphicData>
+  </a:graphic>
+</wp:inline>";
+
+        var drawing = new Drawing { InnerXml = inlineXml };
+        var run = new Run(new RunProperties(new NoProof()), drawing);
+        return new Paragraph(
+            new ParagraphProperties(new Justification { Val = JustificationValues.Center }),
+            run);
     }
 
     // ─── 서명 표 (페이지 하단 anchor) ───────────────────────────────────────

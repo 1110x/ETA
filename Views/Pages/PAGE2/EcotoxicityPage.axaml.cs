@@ -119,13 +119,34 @@ public partial class EcotoxicityPage : UserControl
     public void RefreshRecordsPanel()
     {
         var root = new StackPanel { Spacing = 4, Margin = new Thickness(8) };
-        root.Children.Add(new TextBlock
+
+        // 헤더 행 — 좌측 라벨 + 우측 "저장 폴더 열기" 버튼
+        var headerRow = new Grid
+        {
+            ColumnDefinitions = new ColumnDefinitions("*,Auto"),
+            Margin = new Thickness(0, 0, 0, 6),
+        };
+        var headerLabel = new TextBlock
         {
             Text = "📋 시험기록부 저장 항목",
             FontSize = AppTheme.FontMD, FontWeight = FontWeight.SemiBold,
             Foreground = AppTheme.FgInfo,
-            Margin = new Thickness(0, 0, 0, 6),
-        });
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        Grid.SetColumn(headerLabel, 0);
+        headerRow.Children.Add(headerLabel);
+
+        var openFolderBtn = new Button
+        {
+            Content = "📂 저장 폴더 열기",
+            FontSize = AppTheme.FontXS,
+            Padding = new Thickness(8, 3),
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        openFolderBtn.Click += (_, _) => OpenSavedRecordsFolder();
+        Grid.SetColumn(openFolderBtn, 1);
+        headerRow.Children.Add(openFolderBtn);
+        root.Children.Add(headerRow);
 
         List<(int id, string 분석일, string 시료명, string 시험번호, string LC50, string TU)> rows = new();
         try
@@ -1165,6 +1186,21 @@ public partial class EcotoxicityPage : UserControl
             File.Copy(tmpPath, savePath, overwrite: true);
 
             System.Diagnostics.Debug.WriteLine($"[생태독성 시험기록부] 저장: {savePath}");
+
+            // 저장된 docx 자동 열기 — 버튼이 작동했음을 즉시 보여주는 피드백
+            try
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = savePath,
+                    UseShellExecute = true,
+                });
+            }
+            catch (Exception openEx)
+            {
+                System.Diagnostics.Debug.WriteLine($"[생태독성 시험기록부 열기 오류] {openEx.Message}");
+            }
+
             RefreshRecordsPanel();
             await Task.CompletedTask;
             return;
@@ -1174,5 +1210,24 @@ public partial class EcotoxicityPage : UserControl
             System.Diagnostics.Debug.WriteLine($"[생태독성 시험기록부 출력 오류] {wex.Message}");
         }
         await Task.CompletedTask;
+    }
+
+    /// <summary>저장된 시험기록부 docx 가 모인 PrintCache 폴더를 OS 파일탐색기로 연다.</summary>
+    public void OpenSavedRecordsFolder()
+    {
+        try
+        {
+            string folder = Path.Combine(AppPaths.WritableDataRoot, "PrintCache");
+            Directory.CreateDirectory(folder);
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = folder,
+                UseShellExecute = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[생태독성 시험기록부 폴더 열기 오류] {ex.Message}");
+        }
     }
 }
