@@ -11,7 +11,7 @@
 
 #define MyAppName         "ETA"
 #define MyAppNameFull     "ETA LIMS"
-#define MyAppVersion      "1.4.4"
+#define MyAppVersion      "1.4.5"
 #define MyAppPublisher    "ETA"
 #define MyAppExeName      "ETA.exe"
 #define MyPublishDir      "publish"

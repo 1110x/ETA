@@ -1178,11 +1178,14 @@ public partial class EcotoxicityPage : UserControl
 
             string tmpPath = EcotoxicityWordExporter.Export(dtos);
 
-            // 데스크톱으로 복사 (사용자 가시 위치)
-            string filename = $"생태독성_시험기록부_{DateTime.Now:yyyyMMdd_HHmmss}.docx";
-            string savePath = Path.Combine(
+            // 데스크톱 아래 전용 서브폴더로 복사. 데스크톱 직하 / PrintCache 누적은
+            // 익스플로러가 떠도 인덱싱이 오래 걸려 "빙빙 도는" 현상을 유발 → 전용 폴더로 분리.
+            string saveDir = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-                filename);
+                "ETA 시험기록부");
+            Directory.CreateDirectory(saveDir);
+            string filename = $"생태독성_시험기록부_{DateTime.Now:yyyyMMdd_HHmmss}.docx";
+            string savePath = Path.Combine(saveDir, filename);
             File.Copy(tmpPath, savePath, overwrite: true);
 
             System.Diagnostics.Debug.WriteLine($"[생태독성 시험기록부] 저장: {savePath}");
@@ -1212,12 +1215,14 @@ public partial class EcotoxicityPage : UserControl
         await Task.CompletedTask;
     }
 
-    /// <summary>저장된 시험기록부 docx 가 모인 PrintCache 폴더를 OS 파일탐색기로 연다.</summary>
+    /// <summary>출력된 docx 가 모이는 "Desktop\ETA 시험기록부" 폴더를 OS 파일탐색기로 연다.</summary>
     public void OpenSavedRecordsFolder()
     {
         try
         {
-            string folder = Path.Combine(AppPaths.WritableDataRoot, "PrintCache");
+            string folder = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                "ETA 시험기록부");
             Directory.CreateDirectory(folder);
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
             {
