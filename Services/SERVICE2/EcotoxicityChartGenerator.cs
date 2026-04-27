@@ -53,9 +53,13 @@ public static class EcotoxicityChartGenerator
         using var gridPaint = new SKPaint { Color = new SKColor(230, 230, 230), StrokeWidth = 1, IsStroke = true };
         using var axisPaint = new SKPaint { Color = SKColors.Black, StrokeWidth = 1.5f, IsStroke = true };
         using var labelPaint = new SKPaint { Color = SKColors.Black, IsAntialias = true };
-        using var labelFont = new SKFont { Size = 11 };
-        using var titleFont = new SKFont { Size = 14, Embolden = true };
-        using var axisFont = new SKFont { Size = 12 };
+
+        // 한글 글리프 지원 typeface — 미지정 시 □(tofu) 로 깨짐.
+        // FontManager 의 character match 로 한글이 들어있는 face 탐색 후 fallback 체인.
+        SKTypeface korTf = ResolveKoreanTypeface();
+        using var labelFont = new SKFont(korTf, 11);
+        using var titleFont = new SKFont(korTf, 14) { Embolden = true };
+        using var axisFont  = new SKFont(korTf, 12);
 
         // 수평 그리드 + Y 눈금 (0, 25, 50, 75, 100%)
         foreach (var ytick in new[] { 0, 25, 50, 75, 100 })
@@ -166,5 +170,29 @@ public static class EcotoxicityChartGenerator
         using var ms = new MemoryStream();
         data.SaveTo(ms);
         return ms.ToArray();
+    }
+
+    /// <summary>한글 글리프를 지원하는 typeface 를 OS 폰트에서 탐색.
+    /// MatchCharacter 가 가장 신뢰성 있고, 실패 시 후보 패밀리명 순회.</summary>
+    private static SKTypeface ResolveKoreanTypeface()
+    {
+        try
+        {
+            var tf = SKFontManager.Default.MatchCharacter('가');
+            if (tf != null) return tf;
+        }
+        catch { }
+        foreach (var name in new[]
+        {
+            "맑은 고딕", "Malgun Gothic",
+            "Apple SD Gothic Neo", "AppleGothic",
+            "Noto Sans CJK KR", "Noto Sans KR",
+            "NanumGothic", "Nanum Gothic",
+        })
+        {
+            var tf = SKTypeface.FromFamilyName(name);
+            if (tf != null) return tf;
+        }
+        return SKTypeface.Default;
     }
 }

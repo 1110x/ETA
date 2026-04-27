@@ -104,6 +104,13 @@ public static class TestRecordBookWordExporter
             // 6) 서명
             body.Append(BuildSignatureTable());
 
+            // SectionProperties 는 body 의 마지막 자식이어야 함
+            if (_pendingSectionProps != null)
+            {
+                body.Append(_pendingSectionProps);
+                _pendingSectionProps = null;
+            }
+
             main.Document.Save();
         }
         return path;
@@ -152,7 +159,9 @@ public static class TestRecordBookWordExporter
             sw.Write(headerXml);
         var headerRef = new HeaderReference { Type = HeaderFooterValues.Default, Id = main.GetIdOfPart(headerPart) };
 
-        var sectionProps = new SectionProperties(
+        // SectionProperties 는 body 의 LAST child 여야 함 (스키마).
+        // 만들어 두기만 하고, Export() 끝에서 body.Append.
+        _pendingSectionProps = new SectionProperties(
             headerRef,
             new PageSize { Width = 11906U, Height = 16838U },     // A4 portrait
             new PageMargin
@@ -165,8 +174,9 @@ public static class TestRecordBookWordExporter
                 Footer = 360,
                 Gutter = 0,
             });
-        body.Append(sectionProps);
     }
+
+    [ThreadStatic] private static SectionProperties? _pendingSectionProps;
 
     /// <summary>로고 PNG 임베드 워터마크 — behindDoc=1, alphaModFix 로 40% 불투명.</summary>
     private static string BuildImageWatermarkHeaderXml(string relId)
@@ -693,10 +703,11 @@ public static class TestRecordBookWordExporter
     {
         var table = NewBorderedTable();
 
-        // tblPr 끝에 framePr 추가 — 페이지 마진 기준 하단 고정 (마지막 페이지 하단 anchor)
+        // 스키마: tblpPr 는 tblBorders 보다 앞에 와야 함 → tblW 다음에 삽입
         var tp = table.GetFirstChild<TableProperties>();
         if (tp != null)
-            tp.Append(new TablePositionProperties
+        {
+            var pos = new TablePositionProperties
             {
                 LeftFromText  = 0, RightFromText = 0,
                 TopFromText   = 0, BottomFromText = 0,
@@ -704,7 +715,10 @@ public static class TestRecordBookWordExporter
                 HorizontalAnchor = HorizontalAnchorValues.Margin,
                 TablePositionXAlignment = HorizontalAlignmentValues.Center,
                 TablePositionYAlignment = VerticalAlignmentValues.Bottom,
-            });
+            };
+            // tblpPr 는 tblPr 의 가장 앞 (스키마: tblpPr > tblW > tblBorders ...)
+            tp.InsertAt(pos, 0);
+        }
 
         AddColumnGrid(table, 3467, 3467, 3466);
         var hdr = new TableRow(new TableRowProperties(new TableRowHeight { Val = 280U, HeightType = HeightRuleValues.AtLeast }));
@@ -729,10 +743,11 @@ public static class TestRecordBookWordExporter
         return new Table(
             new TableProperties(
                 new TableWidth { Type = TableWidthUnitValues.Pct, Width = "5000" }, // 100%
+                // 스키마 자식 순서: top → left → bottom → right → insideH → insideV
                 new TableBorders(
                     new TopBorder    { Val = BorderValues.Single, Size = 6U, Color = "555555" },
-                    new BottomBorder { Val = BorderValues.Single, Size = 6U, Color = "555555" },
                     new LeftBorder   { Val = BorderValues.None },
+                    new BottomBorder { Val = BorderValues.Single, Size = 6U, Color = "555555" },
                     new RightBorder  { Val = BorderValues.None },
                     new InsideHorizontalBorder { Val = BorderValues.Single, Size = 4U, Color = "BBBBBB" },
                     new InsideVerticalBorder   { Val = BorderValues.None }
@@ -757,16 +772,16 @@ public static class TestRecordBookWordExporter
         bool isLabel = false, bool alignRight = false, bool alignCenter = false,
         bool alignLeft = false, bool noWrap = false, bool decimalAlign = false)
     {
+        // 스키마 자식 순서: tcW → tcBorders → noWrap → vAlign
         var cellProps = new TableCellProperties();
         if (width.HasValue)
             cellProps.Append(new TableCellWidth { Type = TableWidthUnitValues.Dxa, Width = width.Value.ToString() });
-        // 라벨 셀 — 채우기 색 제거. 굵은 글씨만으로 라벨 구분 → 워터마크가 그대로 비침.
-        cellProps.Append(new TableCellVerticalAlignment { Val = TableVerticalAlignmentValues.Center });
-        if (noWrap) cellProps.Append(new NoWrap());
         // 셀 좌/우 테두리 명시 제거 — 표 자체의 수평선만 보이도록
         cellProps.Append(new TableCellBorders(
             new LeftBorder  { Val = BorderValues.None },
             new RightBorder { Val = BorderValues.None }));
+        if (noWrap) cellProps.Append(new NoWrap());
+        cellProps.Append(new TableCellVerticalAlignment { Val = TableVerticalAlignmentValues.Center });
 
         var paraProps = new ParagraphProperties();
 

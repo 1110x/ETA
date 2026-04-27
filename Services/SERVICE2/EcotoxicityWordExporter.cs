@@ -6,46 +6,48 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using ETA.Services.Common;
+using A   = DocumentFormat.OpenXml.Drawing;
+using DW  = DocumentFormat.OpenXml.Drawing.Wordprocessing;
+using PIC = DocumentFormat.OpenXml.Drawing.Pictures;
 
 namespace ETA.Services.SERVICE2;
 
 /// <summary>
 /// 생태독성 (물벼룩 급성독성) 시험기록부 Word(.docx) 출력.
-/// TestRecordBookWordExporter 와 동일한 시각언어 (가로선 표 / 8pt 본문 / 9pt 섹션 / renewus 워터마크).
+/// 시각언어: 가로선 표, 8pt 본문, 9pt 섹션, renewus 워터마크.
+/// 시료 1건 = 1 페이지.
 /// </summary>
 public static class EcotoxicityWordExporter
 {
     private const string FontFamily = "맑은 고딕";
 
+    // 페이지 폭 = A4 8.27" - 좌우 0.5"*2 = 7.27" ≈ 10400 dxa
+    private const int PageDxa        = 10400;
+    private const int MinColWidth    = 700;
+    private const int MaxColWidth    = 6000;
+    private const int CellPaddingDxa = 200;
+    private const int AsciiCharDxa   = 110;
+    private const int CjkCharDxa     = 175;
+
     public sealed record Record(
-        string Date,
-        string TestNo,
-        string Species,
-        string Toxicant,
-        string SampleName,
+        string Date, string TestNo, string Species, string Toxicant, string SampleName,
         EcotoxicityService.EcotoxResult? TskResult,
         EcotoxicityService.EcotoxResult? ProbitResult,
-        double[] Conc,
-        int[] Org,
-        int[] Mort,
-        int CtrlOrg,
-        int CtrlMort,
-        double TestTemperature,
-        double TestPH,
-        double SampleTemperature,
-        double SamplePH,
-        double SampleDO,
-        string Duration,
-        string EcCalculationMethod,
-        string Observations,
-        string AnalystName);
+        double[] Conc, int[] Org, int[] Mort,
+        int CtrlOrg, int CtrlMort,
+        double TestTemperature, double TestPH,
+        double SampleTemperature, double SamplePH, double SampleDO,
+        string Duration, string EcCalculationMethod,
+        string Observations, string AnalystName);
+
+    [ThreadStatic] private static SectionProperties? _sectPr;
 
     public static string Export(IList<Record> records)
     {
+        Log($"Export 시작 — {records.Count}건");
         var dir = Path.Combine(AppPaths.WritableDataRoot, "PrintCache");
         Directory.CreateDirectory(dir);
-        var stamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-        var path = Path.Combine(dir, $"생태독성_시험기록부_{stamp}.docx");
+        var path = Path.Combine(dir, $"생태독성_시험기록부_{DateTime.Now:yyyyMMdd_HHmmss}.docx");
 
         using (var doc = WordprocessingDocument.Create(path, WordprocessingDocumentType.Document))
         {
@@ -53,51 +55,41 @@ public static class EcotoxicityWordExporter
             main.Document = new Document(new Body());
             var body = main.Document.Body!;
 
-            ApplyDocDefaults(main);
-            ApplyPageSetup(main, body);
+            BuildStyles(main);
+            BuildHeaderWithWatermark(main);
 
-            // ── 타이틀 ───────────────────────────────────────────────────────
-            body.Append(BuildTitle());
-
-            for (int idx = 0; idx < records.Count; idx++)
+            for (int i = 0; i < records.Count; i++)
             {
-                var rec = records[idx];
+                var rec = records[i];
+                Log($"record[{i}] sample={rec.SampleName}");
 
-                // 시험 식별 (시험번호) — 다건일 때 구분
-                if (records.Count > 1)
-                    body.Append(BuildRecordHeader(idx + 1, rec));
+                if (i == 0) body.Append(BuildTitle());
+                else        body.Append(PageBreak());
 
-                // 1) 시험기본정보
-                body.Append(BuildSectionTitle("시험기본정보"));
-                body.Append(BuildBasicInfoTable(rec));
-                body.Append(SmallSpacer());
+                Section(body, "시험기본정보");
+                body.Append(BuildBasicInfo(rec));
+                body.Append(Spacer());
 
-                // 2) 시험조건
-                body.Append(BuildSectionTitle("시험조건 (ES 04704.1c 기준)"));
-                body.Append(BuildConditionTable(rec));
-                body.Append(SmallSpacer());
+                Section(body, "시험조건 (ES 04704.1c 기준)");
+                body.Append(BuildConditions(rec));
+                body.Append(Spacer());
 
-                // 3) 대조군 정보
-                body.Append(BuildSectionTitle("대조군 정보"));
-                body.Append(BuildControlTable(rec));
-                body.Append(SmallSpacer());
+                Section(body, "대조군 정보");
+                body.Append(BuildControl(rec));
+                body.Append(Spacer());
 
-                // 4) 농도별 시험 데이터
-                body.Append(BuildSectionTitle("농도별 독성 시험 데이터"));
-                body.Append(BuildConcentrationTable(rec));
-                body.Append(SmallSpacer());
+                Section(body, "농도별 독성 시험 데이터");
+                body.Append(BuildConcentration(rec));
+                body.Append(Spacer());
 
-                // 5) 분석 결과 (TSK / Probit)
-                body.Append(BuildSectionTitle("독성 분석 결과"));
-                body.Append(BuildResultsTable(rec));
-                body.Append(SmallSpacer());
+                Section(body, "독성 분석 결과");
+                body.Append(BuildResults(rec));
+                body.Append(Spacer());
 
-                // 5-1) 분석법 적용 근거 — 왜 이 방법으로 EC50 을 계산했는가
-                body.Append(BuildSectionTitle("분석법 적용 근거"));
-                body.Append(BuildRationaleTable(rec));
-                body.Append(SmallSpacer());
+                Section(body, "분석법 적용 근거");
+                body.Append(BuildRationale(rec));
+                body.Append(Spacer());
 
-                // 6) 용량-반응 곡선 PNG (TSK 결과가 있을 때만)
                 if (rec.TskResult != null && rec.Conc != null && rec.Conc.Length > 0)
                 {
                     try
@@ -106,560 +98,551 @@ public static class EcotoxicityWordExporter
                             rec.Conc, rec.Org, rec.Mort,
                             rec.TskResult.EC50, rec.TskResult.LowerCI, rec.TskResult.UpperCI,
                             rec.TskResult.TU, rec.TskResult.Method);
-                        body.Append(BuildSectionTitle("용량-반응 곡선"));
-                        body.Append(BuildChartParagraph(main, png));
-                        body.Append(SmallSpacer());
+                        Section(body, "용량-반응 곡선");
+                        body.Append(BuildChart(main, png));
                     }
-                    catch { /* 차트 실패 시 본문만 */ }
+                    catch (Exception cex) { Log($"  ✗ 차트 실패: {cex.Message}"); }
                 }
 
-                // 7) 비고 / 분석자
                 if (!string.IsNullOrWhiteSpace(rec.Observations))
                 {
-                    body.Append(BuildSectionTitle("시험 중 관찰사항"));
-                    body.Append(MakeParagraph(rec.Observations, fontSize: 9));
-                    body.Append(SmallSpacer());
+                    Section(body, "시험 중 관찰사항");
+                    body.Append(P(rec.Observations, 9));
                 }
-
-                // 다건일 때 페이지 분리 (마지막 제외)
-                if (records.Count > 1 && idx < records.Count - 1)
-                    body.Append(PageBreakParagraph());
             }
 
-            // 8) 서명 — 마지막 페이지 하단
-            body.Append(BuildSignatureTable());
+            body.Append(BuildSignature());
+            if (_sectPr != null) { body.Append(_sectPr); _sectPr = null; }
 
             main.Document.Save();
         }
+        Log($"Export 완료 — {new FileInfo(path).Length} bytes");
         return path;
     }
 
-    // ─── 페이지 + 워터마크 ─────────────────────────────────────────────────
-    private static void ApplyPageSetup(MainDocumentPart main, Body body)
+    // ─── 스타일 / 헤더 ──────────────────────────────────────────────────────
+    private static void BuildStyles(MainDocumentPart main)
     {
-        var headerPart = main.AddNewPart<HeaderPart>();
+        var sp = main.AddNewPart<StyleDefinitionsPart>();
+        sp.Styles = new Styles(
+            new DocDefaults(
+                new RunPropertiesDefault(
+                    new RunPropertiesBaseStyle(
+                        new RunFonts { Ascii = FontFamily, EastAsia = FontFamily, HighAnsi = FontFamily },
+                        new FontSize { Val = "16" })),
+                new ParagraphPropertiesDefault(
+                    new ParagraphPropertiesBaseStyle(
+                        new SpacingBetweenLines { After = "0", Before = "0", Line = "240", LineRule = LineSpacingRuleValues.Auto }))));
+        sp.Styles.Save();
+    }
 
-        string? logoRelId = null;
+    private static void BuildHeaderWithWatermark(MainDocumentPart main)
+    {
+        var hp = main.AddNewPart<HeaderPart>();
+        string? relId = null;
         try
         {
-            Stream? logoStream = null;
-            try
-            {
-                var uri = new Uri("avares://ETA/Assets/icons/renewus_vertical_black.png");
-                logoStream = Avalonia.Platform.AssetLoader.Open(uri);
-            }
+            Stream? logo = null;
+            try { logo = Avalonia.Platform.AssetLoader.Open(new Uri("avares://ETA/Assets/icons/renewus_vertical_black.png")); }
             catch
             {
-                var logoPath = Path.Combine(AppPaths.RootPath, "Assets", "icons", "renewus_vertical_black.png");
-                if (File.Exists(logoPath)) logoStream = File.OpenRead(logoPath);
+                var p = Path.Combine(AppPaths.RootPath, "Assets", "icons", "renewus_vertical_black.png");
+                if (File.Exists(p)) logo = File.OpenRead(p);
             }
-            if (logoStream != null)
+            if (logo != null)
             {
-                using (logoStream)
+                using (logo)
                 {
-                    var imagePart = headerPart.AddImagePart(ImagePartType.Png);
-                    imagePart.FeedData(logoStream);
-                    logoRelId = headerPart.GetIdOfPart(imagePart);
+                    var img = hp.AddImagePart(ImagePartType.Png);
+                    img.FeedData(logo);
+                    relId = hp.GetIdOfPart(img);
                 }
             }
         }
         catch { }
 
-        string headerXml = !string.IsNullOrEmpty(logoRelId)
-            ? BuildImageWatermarkHeaderXml(logoRelId!)
-            : BuildTextWatermarkHeaderXml("ETA");
+        string xml = relId != null ? WatermarkImageXml(relId) : WatermarkTextXml("ETA");
+        using (var s = hp.GetStream(FileMode.Create, FileAccess.Write))
+        using (var sw = new StreamWriter(s, new System.Text.UTF8Encoding(false))) sw.Write(xml);
 
-        using (var s = headerPart.GetStream(System.IO.FileMode.Create, System.IO.FileAccess.Write))
-        using (var sw = new System.IO.StreamWriter(s, new System.Text.UTF8Encoding(false)))
-            sw.Write(headerXml);
-        var headerRef = new HeaderReference { Type = HeaderFooterValues.Default, Id = main.GetIdOfPart(headerPart) };
-
-        var sectionProps = new SectionProperties(
-            headerRef,
+        _sectPr = new SectionProperties(
+            new HeaderReference { Type = HeaderFooterValues.Default, Id = main.GetIdOfPart(hp) },
             new PageSize { Width = 11906U, Height = 16838U },
-            new PageMargin
-            {
-                Top = 720, Right = 720, Bottom = 720, Left = 720,
-                Header = 360, Footer = 360, Gutter = 0,
-            });
-        body.Append(sectionProps);
+            new PageMargin { Top = 720, Right = 720, Bottom = 720, Left = 720, Header = 360, Footer = 360, Gutter = 0 });
     }
 
-    private static string BuildImageWatermarkHeaderXml(string relId) =>
+    private static string WatermarkImageXml(string relId) =>
 @"<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes""?>
 <w:hdr xmlns:w=""http://schemas.openxmlformats.org/wordprocessingml/2006/main""
        xmlns:r=""http://schemas.openxmlformats.org/officeDocument/2006/relationships""
        xmlns:wp=""http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing""
        xmlns:a=""http://schemas.openxmlformats.org/drawingml/2006/main""
-       xmlns:pic=""http://schemas.openxmlformats.org/drawingml/2006/picture""
-       xmlns:mc=""http://schemas.openxmlformats.org/markup-compatibility/2006"">
-  <w:p>
-    <w:r>
-      <w:rPr><w:noProof/></w:rPr>
-      <w:drawing>
-        <wp:anchor distT=""0"" distB=""0"" distL=""0"" distR=""0"" simplePos=""0""
-                   relativeHeight=""251658240"" behindDoc=""1"" locked=""0"" layoutInCell=""1"" allowOverlap=""1"">
-          <wp:simplePos x=""0"" y=""0""/>
-          <wp:positionH relativeFrom=""page""><wp:align>center</wp:align></wp:positionH>
-          <wp:positionV relativeFrom=""page""><wp:align>center</wp:align></wp:positionV>
-          <wp:extent cx=""2197100"" cy=""1524000""/>
-          <wp:effectExtent l=""0"" t=""0"" r=""0"" b=""0""/>
-          <wp:wrapNone/>
-          <wp:docPr id=""1"" name=""WatermarkLogo""/>
-          <wp:cNvGraphicFramePr><a:graphicFrameLocks noChangeAspect=""1""/></wp:cNvGraphicFramePr>
-          <a:graphic>
-            <a:graphicData uri=""http://schemas.openxmlformats.org/drawingml/2006/picture"">
-              <pic:pic>
-                <pic:nvPicPr>
-                  <pic:cNvPr id=""1"" name=""renewus""/>
-                  <pic:cNvPicPr/>
-                </pic:nvPicPr>
-                <pic:blipFill>
-                  <a:blip r:embed=""" + relId + @""">
-                    <a:alphaModFix amt=""40000""/>
-                  </a:blip>
-                  <a:stretch><a:fillRect/></a:stretch>
-                </pic:blipFill>
-                <pic:spPr>
-                  <a:xfrm><a:off x=""0"" y=""0""/><a:ext cx=""2197100"" cy=""1524000""/></a:xfrm>
-                  <a:prstGeom prst=""rect""><a:avLst/></a:prstGeom>
-                </pic:spPr>
-              </pic:pic>
-            </a:graphicData>
-          </a:graphic>
-        </wp:anchor>
-      </w:drawing>
-    </w:r>
-  </w:p>
+       xmlns:pic=""http://schemas.openxmlformats.org/drawingml/2006/picture"">
+  <w:p><w:r><w:rPr><w:noProof/></w:rPr><w:drawing>
+    <wp:anchor distT=""0"" distB=""0"" distL=""0"" distR=""0"" simplePos=""0""
+               relativeHeight=""251658240"" behindDoc=""1"" locked=""0"" layoutInCell=""1"" allowOverlap=""1"">
+      <wp:simplePos x=""0"" y=""0""/>
+      <wp:positionH relativeFrom=""page""><wp:align>center</wp:align></wp:positionH>
+      <wp:positionV relativeFrom=""page""><wp:align>center</wp:align></wp:positionV>
+      <wp:extent cx=""2197100"" cy=""1524000""/>
+      <wp:effectExtent l=""0"" t=""0"" r=""0"" b=""0""/>
+      <wp:wrapNone/>
+      <wp:docPr id=""1"" name=""WatermarkLogo""/>
+      <wp:cNvGraphicFramePr><a:graphicFrameLocks noChangeAspect=""1""/></wp:cNvGraphicFramePr>
+      <a:graphic><a:graphicData uri=""http://schemas.openxmlformats.org/drawingml/2006/picture"">
+        <pic:pic>
+          <pic:nvPicPr><pic:cNvPr id=""1"" name=""renewus""/><pic:cNvPicPr/></pic:nvPicPr>
+          <pic:blipFill><a:blip r:embed=""" + relId + @"""><a:alphaModFix amt=""40000""/></a:blip><a:stretch><a:fillRect/></a:stretch></pic:blipFill>
+          <pic:spPr><a:xfrm><a:off x=""0"" y=""0""/><a:ext cx=""2197100"" cy=""1524000""/></a:xfrm><a:prstGeom prst=""rect""><a:avLst/></a:prstGeom></pic:spPr>
+        </pic:pic>
+      </a:graphicData></a:graphic>
+    </wp:anchor>
+  </w:drawing></w:r></w:p>
 </w:hdr>";
 
-    private static string BuildTextWatermarkHeaderXml(string text) =>
+    private static string WatermarkTextXml(string text) =>
 @"<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes""?>
 <w:hdr xmlns:w=""http://schemas.openxmlformats.org/wordprocessingml/2006/main""
        xmlns:v=""urn:schemas-microsoft-com:vml""
        xmlns:o=""urn:schemas-microsoft-com:office:office"">
-  <w:p>
-    <w:r>
-      <w:rPr><w:noProof/></w:rPr>
-      <w:pict>
-        <v:shape id=""WMText"" type=""#_x0000_t136""
-                 style=""position:absolute;margin-left:0;margin-top:0;width:173pt;height:86pt;rotation:-45;z-index:-251658240;mso-position-horizontal:center;mso-position-horizontal-relative:page;mso-position-vertical:center;mso-position-vertical-relative:page""
-                 fillcolor=""#808080"" stroked=""f"">
-          <v:fill opacity="".4""/>
-          <v:textpath style=""font-family:&quot;맑은 고딕&quot;;font-size:1pt;v-text-kern:t""
-                      fitpath=""t"" string=""" + System.Net.WebUtility.HtmlEncode(text) + @"""/>
-        </v:shape>
-      </w:pict>
-    </w:r>
-  </w:p>
+  <w:p><w:r><w:rPr><w:noProof/></w:rPr>
+    <w:pict><v:shape type=""#_x0000_t136""
+        style=""position:absolute;margin-left:0;margin-top:0;width:173pt;height:86pt;rotation:-45;z-index:-251658240;mso-position-horizontal:center;mso-position-horizontal-relative:page;mso-position-vertical:center;mso-position-vertical-relative:page""
+        fillcolor=""#808080"" stroked=""f"">
+      <v:fill opacity="".4""/>
+      <v:textpath style=""font-family:&quot;맑은 고딕&quot;;font-size:1pt"" fitpath=""t"" string=""" + System.Net.WebUtility.HtmlEncode(text) + @"""/>
+    </v:shape></w:pict>
+  </w:r></w:p>
 </w:hdr>";
 
-    private static void ApplyDocDefaults(MainDocumentPart main)
-    {
-        var stylePart = main.AddNewPart<StyleDefinitionsPart>();
-        var styles = new Styles(
-            new DocDefaults(
-                new RunPropertiesDefault(
-                    new RunPropertiesBaseStyle(
-                        new RunFonts { Ascii = FontFamily, EastAsia = FontFamily, HighAnsi = FontFamily },
-                        new FontSize { Val = "16" } // 8pt
-                    )
-                ),
-                new ParagraphPropertiesDefault(
-                    new ParagraphPropertiesBaseStyle(
-                        new SpacingBetweenLines { After = "0", Before = "0", Line = "240", LineRule = LineSpacingRuleValues.Auto }
-                    )
-                )
-            )
-        );
-        stylePart.Styles = styles;
-        stylePart.Styles.Save();
-    }
-
-    // ─── 타이틀 / 섹션 ────────────────────────────────────────────────────
+    // ─── 타이틀 / 섹션 / 단락 ───────────────────────────────────────────────
     private static Paragraph BuildTitle() =>
         new Paragraph(
             new ParagraphProperties(
                 new Justification { Val = JustificationValues.Center },
-                new SpacingBetweenLines { After = "60", Before = "120" }
-            ),
-            new Run(
-                new RunProperties(
-                    new Bold(),
-                    new FontSize { Val = "36" }, // 18pt
-                    new RunFonts { Ascii = FontFamily, EastAsia = FontFamily, HighAnsi = FontFamily }
-                ),
-                new Text("물벼룩을 이용한 급성 독성 시험 기록부")
-            ),
-            new Run(
-                new RunProperties(
-                    new FontSize { Val = "18" }, // 9pt
-                    new Italic(),
-                    new Color { Val = "555555" }
-                ),
-                new Break(),
-                new Text("ES 04704.1c (수질오염공정시험기준)")
-            )
-        );
+                new SpacingBetweenLines { Before = "120", After = "60" }),
+            new Run(new RunProperties(new Bold(), new FontSize { Val = "32" }),
+                new Text("물벼룩을 이용한 급성 독성 시험 기록부")),
+            new Run(new RunProperties(new Italic(), new FontSize { Val = "18" }, new Color { Val = "555555" }),
+                new Break(), new Text("ES 04704.1c (수질오염공정시험기준)")));
 
-    private static Paragraph BuildRecordHeader(int seq, Record rec) =>
-        new Paragraph(
-            new ParagraphProperties(new SpacingBetweenLines { Before = "120", After = "60" }),
-            new Run(
-                new RunProperties(
-                    new Bold(),
-                    new FontSize { Val = "20" }, // 10pt
-                    new Color { Val = "1F3A5F" }
-                ),
-                new Text($"[{seq}] 시험번호: {rec.TestNo}    시험일자: {rec.Date}") { Space = SpaceProcessingModeValues.Preserve }
-            )
-        );
+    private static void Section(Body body, string title) =>
+        body.Append(new Paragraph(
+            new ParagraphProperties(new SpacingBetweenLines { Before = "100", After = "40" }),
+            new Run(new RunProperties(new Bold(), new FontSize { Val = "18" }, new Color { Val = "1F3A5F" }),
+                new Text("■ " + title))));
 
-    private static Paragraph BuildSectionTitle(string title) =>
-        new Paragraph(
-            new ParagraphProperties(new SpacingBetweenLines { Before = "160", After = "60" }),
-            new Run(
-                new RunProperties(
-                    new Bold(),
-                    new FontSize { Val = "18" }, // 9pt
-                    new RunFonts { Ascii = FontFamily, EastAsia = FontFamily, HighAnsi = FontFamily },
-                    new Color { Val = "1F3A5F" }
-                ),
-                new Text("■ " + title)
-            )
-        );
+    private static Paragraph Spacer() =>
+        new Paragraph(new ParagraphProperties(new SpacingBetweenLines { Before = "20", After = "20" }));
 
-    private static Paragraph SmallSpacer() =>
-        new Paragraph(new ParagraphProperties(new SpacingBetweenLines { Before = "40", After = "40" }));
-
-    private static Paragraph PageBreakParagraph() =>
+    private static Paragraph PageBreak() =>
         new Paragraph(new Run(new Break { Type = BreakValues.Page }));
 
-    // ─── 표 빌더 ───────────────────────────────────────────────────────────
-    private static Table BuildBasicInfoTable(Record r)
+    private static Paragraph P(string text, int pt) =>
+        new Paragraph(new Run(
+            new RunProperties(new FontSize { Val = (pt * 2).ToString() }),
+            new Text(text ?? "") { Space = SpaceProcessingModeValues.Preserve }));
+
+    // ─── 시험기본정보 ───────────────────────────────────────────────────────
+    private static Table BuildBasicInfo(Record r)
     {
-        var t = NewBorderedTable();
-        AddColumnGrid(t, 1700, 3500, 1700, 3500);
-        t.Append(MakeKvRow(("시험일자", r.Date), ("시험번호", r.TestNo)));
-        t.Append(MakeKvRow(("시험생물", string.IsNullOrWhiteSpace(r.Species) ? "Daphnia magna Straus" : r.Species),
-                           ("시험기간", r.Duration)));
-        t.Append(MakeKvRow(("시료명", r.SampleName), ("오염물질", r.Toxicant)));
-        return t;
+        var row1 = new[] {
+            ("시험일자", r.Date),
+            ("시험번호", r.TestNo),
+            ("시험기간", r.Duration),
+        };
+        var row2 = new[] {
+            ("시험생물", string.IsNullOrWhiteSpace(r.Species) ? "Daphnia magna Straus" : r.Species),
+            ("시료명",   r.SampleName),
+            ("오염물질", r.Toxicant),
+        };
+        return BuildPackedTable(new[] { row1, row2 });
     }
 
-    private static Table BuildConditionTable(Record r)
+    // ─── 시험조건 ────────────────────────────────────────────────────────────
+    private static Table BuildConditions(Record r)
     {
-        var t = NewBorderedTable();
-        AddColumnGrid(t, 1700, 1700, 1700, 1700, 1700, 1900);
-        // 시험온도 / 기준 / pH / 기준
-        t.Append(MakeRow(
-            ("시험온도(°C)", true), (FmtNum(r.TestTemperature), false),
-            ("기준 20±2",  true), ("시험 pH",     true),
-            (FmtNum(r.TestPH), false), ("기준 7.6~8.0", true)));
-        t.Append(MakeRow(
-            ("시료온도(°C)", true), (FmtNum(r.SampleTemperature), false),
-            ("시료 pH",     true), (FmtNum(r.SamplePH), false),
-            ("용존산소(mg/L)", true), (FmtNum(r.SampleDO), false)));
-        t.Append(MakeKvRowWide("EC50 계산방법", string.IsNullOrWhiteSpace(r.EcCalculationMethod) ? "—" : r.EcCalculationMethod));
+        string method = string.IsNullOrWhiteSpace(r.EcCalculationMethod) ? "—" : r.EcCalculationMethod;
+        var row1 = new[] {
+            ("시험온도(°C)", $"{Fmt(r.TestTemperature)} (기준 20±2)"),
+            ("시험 pH",      $"{Fmt(r.TestPH)} (기준 7.6~8.0)"),
+            ("EC50 계산방법", method),
+        };
+        var row2 = new[] {
+            ("시료온도(°C)",   Fmt(r.SampleTemperature)),
+            ("시료 pH",        Fmt(r.SamplePH)),
+            ("용존산소(mg/L)", Fmt(r.SampleDO)),
+        };
+        var t = BuildPackedTable(new[] { row1, row2 });
         if (!string.IsNullOrWhiteSpace(r.AnalystName))
-            t.Append(MakeKvRowWide("분석자", r.AnalystName));
+        {
+            var single = new[] { ("분석자", r.AnalystName) };
+            int[] w = PackedColWidths(new[] { single });
+            AddPackedRow(t, single, w);
+        }
         return t;
     }
 
-    private static Table BuildControlTable(Record r)
+    // ─── 대조군 ─────────────────────────────────────────────────────────────
+    private static Table BuildControl(Record r)
     {
-        var t = NewBorderedTable();
-        AddColumnGrid(t, 1700, 1700, 1700, 1700, 1700, 1900);
         double rate = r.CtrlOrg > 0 ? (r.CtrlMort * 100.0 / r.CtrlOrg) : 0;
-        bool over = rate > 15;
-        var row = new TableRow();
-        row.Append(MakeCell("대조생물수", isLabel: true, alignCenter: true, width: 1700));
-        row.Append(MakeCell(r.CtrlOrg.ToString(), alignRight: true, width: 1700));
-        row.Append(MakeCell("대조 치사수", isLabel: true, alignCenter: true, width: 1700));
-        row.Append(MakeCell(r.CtrlMort.ToString(), alignRight: true, width: 1700));
-        row.Append(MakeCell("치사율(%)",  isLabel: true, alignCenter: true, width: 1700));
-        // 치사율 15% 초과면 셀 강조 (옅은 빨강)
-        var rateCell = MakeCell(rate.ToString("F1"), alignRight: true, width: 1900,
-            shadingFill: over ? "FBE2E2" : null);
-        row.Append(rateCell);
-        t.Append(row);
-        return t;
+        var cells = new[] {
+            ("대조생물수",  r.CtrlOrg.ToString()),
+            ("대조 치사수", r.CtrlMort.ToString()),
+            ("치사율",      $"{rate:F1}%"),
+        };
+        return BuildPackedTable(new[] { cells });
     }
 
-    private static Table BuildConcentrationTable(Record r)
+    // ─── 농도별 시험 데이터 ─────────────────────────────────────────────────
+    private static Table BuildConcentration(Record r)
     {
-        var t = NewBorderedTable();
-        AddColumnGrid(t, 2000, 1400, 2000, 2000, 3000);
-        var hdr = new TableRow();
-        hdr.Append(MakeCell("농도",     isLabel: true, alignCenter: true, width: 2000));
-        hdr.Append(MakeCell("단위",     isLabel: true, alignCenter: true, width: 1400));
-        hdr.Append(MakeCell("생물수",    isLabel: true, alignCenter: true, width: 2000));
-        hdr.Append(MakeCell("사망수",    isLabel: true, alignCenter: true, width: 2000));
-        hdr.Append(MakeCell("치사율(%)", isLabel: true, alignCenter: true, width: 3000));
-        t.Append(hdr);
-
+        var headers = new[] { "농도(%)", "생물수", "사망수", "치사율(%)" };
+        var rows = new List<string[]> { headers };
         for (int i = 0; i < r.Conc.Length; i++)
         {
-            var conc = r.Conc[i];
-            var org = i < r.Org.Length ? r.Org[i] : 0;
-            var mort = i < r.Mort.Length ? r.Mort[i] : 0;
-            var rate = org > 0 ? (mort * 100.0 / org) : 0;
-
-            var row = new TableRow();
-            row.Append(MakeCell(FmtNum(conc), alignRight: true, width: 2000));
-            row.Append(MakeCell("%",            alignCenter: true, width: 1400));
-            row.Append(MakeCell(org.ToString(), alignRight: true, width: 2000));
-            row.Append(MakeCell(mort.ToString(),alignRight: true, width: 2000));
-            row.Append(MakeCell(rate.ToString("F1"), alignRight: true, width: 3000));
-            t.Append(row);
+            int org  = i < r.Org.Length  ? r.Org[i]  : 0;
+            int mort = i < r.Mort.Length ? r.Mort[i] : 0;
+            double rate = org > 0 ? (mort * 100.0 / org) : 0;
+            rows.Add(new[] { Fmt(r.Conc[i]), org.ToString(), mort.ToString(), rate.ToString("F1") });
         }
-        return t;
-    }
 
-    private static Table BuildResultsTable(Record r)
-    {
-        var t = NewBorderedTable();
-        AddColumnGrid(t, 2000, 2200, 2200, 2000, 2000);
+        int[] widths = ColWidths(rows.ToArray());
+        var t = NewTable();
+        AddGrid(t, widths);
+
         // 헤더
         var hdr = new TableRow();
-        hdr.Append(MakeCell("분석법",      isLabel: true, alignCenter: true, width: 2000));
-        hdr.Append(MakeCell("EC50",        isLabel: true, alignCenter: true, width: 2200));
-        hdr.Append(MakeCell("TU",          isLabel: true, alignCenter: true, width: 2200));
-        hdr.Append(MakeCell("95% CI 하한", isLabel: true, alignCenter: true, width: 2000));
-        hdr.Append(MakeCell("95% CI 상한", isLabel: true, alignCenter: true, width: 2000));
+        for (int i = 0; i < headers.Length; i++)
+            hdr.Append(Cell(headers[i], widths[i], isLabel: true, align: Align.Center));
         t.Append(hdr);
 
-        if (r.TskResult != null)
+        // 데이터 — 모두 우측 정렬
+        for (int rIdx = 1; rIdx < rows.Count; rIdx++)
         {
-            var row = new TableRow();
-            row.Append(MakeCell("TSK", isLabel: true, alignCenter: true, width: 2000));
-            row.Append(MakeCell(FmtNum(r.TskResult.EC50),   alignRight: true, width: 2200));
-            row.Append(MakeCell(FmtNum(r.TskResult.TU),     alignRight: true, width: 2200));
-            row.Append(MakeCell(FmtNum(r.TskResult.LowerCI),alignRight: true, width: 2000));
-            row.Append(MakeCell(FmtNum(r.TskResult.UpperCI),alignRight: true, width: 2000));
-            t.Append(row);
-
-            if (r.TskResult.TrimPercent >= 0)
-                t.Append(MakeKvRowWide("Trim %", r.TskResult.TrimPercent.ToString("F1")));
-            if (!string.IsNullOrEmpty(r.TskResult.Warning))
-                t.Append(MakeKvRowWide("⚠ TSK 주의", r.TskResult.Warning, valueShading: "FFF6D6"));
-
-            // TU 기준 독성 분류 한 줄
-            string cls = r.TskResult.TU > 16 ? "높은 독성"
-                       : r.TskResult.TU > 8  ? "중간 독성"
-                       : r.TskResult.TU > 1  ? "낮은 독성"
-                                              : "매우 낮은 독성";
-            string clsShade = r.TskResult.TU > 16 ? "FBE2E2"
-                            : r.TskResult.TU > 8  ? "FFF6D6"
-                                                  : null!;
-            t.Append(MakeKvRowWide("독성 분류 (TU 기준)", cls, valueShading: clsShade));
+            var tr = new TableRow();
+            for (int c = 0; c < headers.Length; c++)
+                tr.Append(Cell(rows[rIdx][c], widths[c], align: Align.Right));
+            t.Append(tr);
         }
-
-        if (r.ProbitResult != null)
-        {
-            var row = new TableRow();
-            row.Append(MakeCell("Probit", isLabel: true, alignCenter: true, width: 2000));
-            row.Append(MakeCell(FmtNum(r.ProbitResult.EC50),   alignRight: true, width: 2200));
-            row.Append(MakeCell(FmtNum(r.ProbitResult.TU),     alignRight: true, width: 2200));
-            row.Append(MakeCell(FmtNum(r.ProbitResult.LowerCI),alignRight: true, width: 2000));
-            row.Append(MakeCell(FmtNum(r.ProbitResult.UpperCI),alignRight: true, width: 2000));
-            t.Append(row);
-
-            if (!string.IsNullOrEmpty(r.ProbitResult.Warning))
-                t.Append(MakeKvRowWide("⚠ Probit 주의", r.ProbitResult.Warning, valueShading: "FFF6D6"));
-        }
-
-        if (r.TskResult == null && r.ProbitResult == null)
-            t.Append(MakeKvRowWide("결과", "분석 결과 없음"));
         return t;
     }
 
-    /// <summary>
-    /// 어째서 이 분석법으로 EC50 을 계산했는지 — 데이터 상태 기반 자동 설명.
-    /// 농도점 수, 부분치사 점 개수, 양 끝(0%/100%) 분포, Probit/TSK 산출 여부를 조합해
-    /// 표준 ES 04704.1c 가이드에 맞는 근거를 본문에 그대로 출력.
-    /// </summary>
-    private static Table BuildRationaleTable(Record r)
+    // ─── 독성 분석 결과 ─────────────────────────────────────────────────────
+    private static Table BuildResults(Record r)
     {
-        var t = NewBorderedTable();
-        AddColumnGrid(t, 2200, 8200);
+        // 헤더 1 + 데이터 1~2 행. 95% CI 합치고 Trim% 가 있을 때만 컬럼 추가.
+        bool showTrim = (r.TskResult?.TrimPercent ?? -1) >= 0
+                     || (r.ProbitResult?.TrimPercent ?? -1) >= 0;
+        var headers = showTrim
+            ? new[] { "분석법", "EC50", "TU", "95% CI", "Trim%" }
+            : new[] { "분석법", "EC50", "TU", "95% CI" };
 
-        // 데이터 통계 — 농도점 / 부분치사(0<m<100) / 0% / 100%
-        int totalPts = r.Conc?.Length ?? 0;
-        int partial  = 0, allDead = 0, allLive = 0;
-        for (int i = 0; i < totalPts; i++)
+        var data = new List<string[]>();
+        if (r.TskResult    != null) data.Add(ResultRow("TSK",    r.TskResult,    showTrim));
+        if (r.ProbitResult != null) data.Add(ResultRow("Probit", r.ProbitResult, showTrim));
+        if (data.Count == 0)
         {
-            int org = i < r.Org.Length ? r.Org[i] : 0;
+            var row = new string[headers.Length];
+            row[0] = "—"; row[1] = "분석 결과 없음";
+            for (int i = 2; i < row.Length; i++) row[i] = "";
+            data.Add(row);
+        }
+
+        var allRows = new List<string[]> { headers };
+        allRows.AddRange(data);
+        int[] widths = ColWidths(allRows.ToArray());
+
+        var t = NewTable();
+        AddGrid(t, widths);
+
+        var hdr = new TableRow();
+        for (int i = 0; i < headers.Length; i++)
+            hdr.Append(Cell(headers[i], widths[i], isLabel: true, align: Align.Center));
+        t.Append(hdr);
+
+        foreach (var d in data)
+        {
+            var tr = new TableRow();
+            for (int i = 0; i < headers.Length; i++)
+            {
+                bool firstCol = i == 0;
+                tr.Append(Cell(d[i], widths[i],
+                    isLabel: firstCol,
+                    align: firstCol ? Align.Center : Align.Right));
+            }
+            t.Append(tr);
+        }
+        return t;
+    }
+
+    private static string[] ResultRow(string method, EcotoxicityService.EcotoxResult res, bool showTrim)
+    {
+        string ci = $"[{Fmt(res.LowerCI)} ~ {Fmt(res.UpperCI)}]";
+        string trim = res.TrimPercent >= 0 ? $"{res.TrimPercent:F0}%" : "—";
+        return showTrim
+            ? new[] { method, Fmt(res.EC50), Fmt(res.TU), ci, trim }
+            : new[] { method, Fmt(res.EC50), Fmt(res.TU), ci };
+    }
+
+    // ─── 분석법 적용 근거 ───────────────────────────────────────────────────
+    private static Table BuildRationale(Record r)
+    {
+        int total = r.Conc?.Length ?? 0;
+        int partial = 0, allDead = 0, allLive = 0;
+        for (int i = 0; i < total; i++)
+        {
+            int org  = i < r.Org.Length  ? r.Org[i]  : 0;
             int mort = i < r.Mort.Length ? r.Mort[i] : 0;
             if (org <= 0) continue;
             double pct = mort * 100.0 / org;
-            if (pct <= 0)        allLive++;
+            if      (pct <= 0)   allLive++;
             else if (pct >= 100) allDead++;
             else                 partial++;
         }
 
-        bool hasTsk = r.TskResult != null;
+        bool hasTsk    = r.TskResult    != null;
         bool hasProbit = r.ProbitResult != null;
         string used = !string.IsNullOrWhiteSpace(r.EcCalculationMethod)
             ? r.EcCalculationMethod
-            : (hasProbit ? "Probit" : (hasTsk ? "TSK (Spearman-Kärber)" : "—"));
+            : (hasProbit ? "Probit" : (hasTsk ? "TSK" : "—"));
 
-        // 데이터 요약 라인
-        t.Append(MakeKvRowWide("측정 농도점",
-            $"{totalPts}개 (부분치사 {partial}개, 100% 사망 {allDead}개, 사망 0% {allLive}개)"));
-        t.Append(MakeKvRowWide("적용 분석법", used));
+        bool isProbit = used.Contains("Probit", StringComparison.OrdinalIgnoreCase);
+        bool isTsk    = used.Contains("TSK", StringComparison.OrdinalIgnoreCase)
+                     || used.Contains("Spearman", StringComparison.OrdinalIgnoreCase);
+        string reason = isProbit
+            ? (partial >= 2 ? "부분치사 농도점 2개 이상 → Probit 회귀 적용." : "사용자 지정으로 Probit 회귀 적용.")
+            : isTsk
+                ? (partial >= 2 ? "비매개적 Spearman-Kärber(TSK) 적용." : "부분치사 농도점 부족 → 비매개적 Spearman-Kärber(TSK) 적용.")
+                : "데이터 부족으로 EC50 산출 불가.";
+        if (isTsk && r.TskResult != null && r.TskResult.TrimPercent > 0)
+            reason += $" Trim {r.TskResult.TrimPercent:F0}%.";
 
-        // 사유: 부분치사 ≥ 2 → Probit 가능 / 그 외 → TSK 우선
-        string reason;
-        if (hasProbit && partial >= 2)
-        {
-            reason =
-                "ES 04704.1c 부속서 — 부분치사(0% < 사망률 < 100%) 농도점이 2개 이상이고 " +
-                "농도-반응 관계가 정규분포 가정에 부합해 Probit 회귀로 EC50 산출. " +
-                "Probit 는 95% 신뢰구간을 좁게 추정할 수 있어 부분치사 데이터가 충분할 때 우선 적용.";
-        }
-        else if (hasTsk)
-        {
-            reason =
-                "ES 04704.1c 부속서 — Probit 회귀의 정규분포·균질분산 가정을 만족하지 못하거나 " +
-                "부분치사 농도점이 부족(< 2개) 하여 비매개적 추정법인 Spearman-Kärber(TSK) 적용. " +
-                "TSK 는 농도-반응 형태에 대한 가정 없이 양 끝 농도(0%·100%)를 포함해 EC50 을 산출하며, " +
-                "Trim% > 0 인 경우 극단치를 잘라낸 trimmed 추정.";
-            if (r.TskResult != null && r.TskResult.TrimPercent > 0)
-                reason += $" 본 시험은 Trim {r.TskResult.TrimPercent:F0}% 적용.";
-        }
-        else
-        {
-            reason = "분석법이 산출되지 않음. 부분치사 농도점이 없거나 데이터 부족.";
-        }
-        t.Append(MakeKvRowWide("선택 사유", reason));
-
-        // 보조 — 두 결과가 모두 있으면 비교 의견
-        if (hasTsk && hasProbit)
-        {
-            double tskCi = (r.TskResult!.UpperCI - r.TskResult.LowerCI);
-            double prbCi = (r.ProbitResult!.UpperCI - r.ProbitResult.LowerCI);
-            string note;
-            if (prbCi > 0 && tskCi > 0 && prbCi <= tskCi)
-                note = "Probit 의 95% 신뢰구간 폭이 TSK 보다 좁아 Probit 결과를 대표값으로 권장.";
-            else if (prbCi > 0 && tskCi > 0)
-                note = "TSK 의 95% 신뢰구간 폭이 Probit 보다 좁아 TSK 결과를 대표값으로 권장.";
-            else
-                note = "두 분석 결과를 함께 보고. 시료 특성에 따라 보고자 판단으로 대표값 선정.";
-            t.Append(MakeKvRowWide("비교 의견", note));
-        }
-
-        return t;
+        var row1 = new[] { ("측정 농도점", $"{total}개 (부분치사 {partial}, 100% 사망 {allDead}, 사망 0% {allLive})") };
+        var row2 = new[] { ("적용 분석법", $"{used} — {reason}") };
+        return BuildPackedTable(new[] { row1, row2 });
     }
 
-    private static Paragraph BuildChartParagraph(MainDocumentPart main, byte[] png)
+    // ─── 차트 PNG 임베드 ────────────────────────────────────────────────────
+    private static Paragraph BuildChart(MainDocumentPart main, byte[] png)
     {
         var imgPart = main.AddImagePart(ImagePartType.Png);
         using (var ms = new MemoryStream(png)) imgPart.FeedData(ms);
         string relId = main.GetIdOfPart(imgPart);
 
-        // 640x400 PNG — 페이지 폭 맞춤, 비율 1.6:1 유지.
-        long cx = 5400000;                          // ≈ 425pt = 6"
-        long cy = (long)(cx * 400.0 / 640.0);
+        long cx = 4400000;                      // ≈ 347pt 폭
+        long cy = (long)(cx * 280.0 / 640.0);   // 비율 압축 (640:280)
 
-        // <w:drawing> 의 자식(<wp:inline>) 만 raw XML 로 주입.
-        // 네임스페이스 prefix(wp/a/pic/r) 는 inline 요소에 직접 선언해 안전 처리.
-        string inlineXml =
-$@"<wp:inline distT=""0"" distB=""0"" distL=""0"" distR=""0""
-            xmlns:wp=""http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing""
-            xmlns:a=""http://schemas.openxmlformats.org/drawingml/2006/main""
-            xmlns:pic=""http://schemas.openxmlformats.org/drawingml/2006/picture""
-            xmlns:r=""http://schemas.openxmlformats.org/officeDocument/2006/relationships"">
-  <wp:extent cx=""{cx}"" cy=""{cy}""/>
-  <wp:effectExtent l=""0"" t=""0"" r=""0"" b=""0""/>
-  <wp:docPr id=""100"" name=""Chart""/>
-  <wp:cNvGraphicFramePr><a:graphicFrameLocks noChangeAspect=""1""/></wp:cNvGraphicFramePr>
-  <a:graphic>
-    <a:graphicData uri=""http://schemas.openxmlformats.org/drawingml/2006/picture"">
-      <pic:pic>
-        <pic:nvPicPr><pic:cNvPr id=""100"" name=""Chart""/><pic:cNvPicPr/></pic:nvPicPr>
-        <pic:blipFill>
-          <a:blip r:embed=""{relId}""/>
-          <a:stretch><a:fillRect/></a:stretch>
-        </pic:blipFill>
-        <pic:spPr>
-          <a:xfrm><a:off x=""0"" y=""0""/><a:ext cx=""{cx}"" cy=""{cy}""/></a:xfrm>
-          <a:prstGeom prst=""rect""><a:avLst/></a:prstGeom>
-        </pic:spPr>
-      </pic:pic>
-    </a:graphicData>
-  </a:graphic>
-</wp:inline>";
+        var inline = new DW.Inline(
+            new DW.Extent { Cx = cx, Cy = cy },
+            new DW.EffectExtent { LeftEdge = 0L, TopEdge = 0L, RightEdge = 0L, BottomEdge = 0L },
+            new DW.DocProperties { Id = 100U, Name = "Chart" },
+            new DW.NonVisualGraphicFrameDrawingProperties(new A.GraphicFrameLocks { NoChangeAspect = true }),
+            new A.Graphic(
+                new A.GraphicData(
+                    new PIC.Picture(
+                        new PIC.NonVisualPictureProperties(
+                            new PIC.NonVisualDrawingProperties { Id = 100U, Name = "Chart" },
+                            new PIC.NonVisualPictureDrawingProperties()),
+                        new PIC.BlipFill(
+                            new A.Blip { Embed = relId, CompressionState = A.BlipCompressionValues.Print },
+                            new A.Stretch(new A.FillRectangle())),
+                        new PIC.ShapeProperties(
+                            new A.Transform2D(new A.Offset { X = 0L, Y = 0L }, new A.Extents { Cx = cx, Cy = cy }),
+                            new A.PresetGeometry(new A.AdjustValueList()) { Preset = A.ShapeTypeValues.Rectangle })))
+                { Uri = "http://schemas.openxmlformats.org/drawingml/2006/picture" }))
+        { DistanceFromTop = 0U, DistanceFromBottom = 0U, DistanceFromLeft = 0U, DistanceFromRight = 0U };
 
-        var drawing = new Drawing { InnerXml = inlineXml };
-        var run = new Run(new RunProperties(new NoProof()), drawing);
         return new Paragraph(
             new ParagraphProperties(new Justification { Val = JustificationValues.Center }),
-            run);
+            new Run(new RunProperties(new NoProof()), new Drawing(inline)));
     }
 
-    // ─── 서명 표 (페이지 하단 anchor) ───────────────────────────────────────
-    private static Table BuildSignatureTable()
+    // ─── 서명 (페이지 하단 고정) ────────────────────────────────────────────
+    private static Table BuildSignature()
     {
-        var t = NewBorderedTable();
+        var t = NewTable();
         var tp = t.GetFirstChild<TableProperties>();
         if (tp != null)
-            tp.Append(new TablePositionProperties
+            tp.InsertAt(new TablePositionProperties
             {
-                LeftFromText = 0, RightFromText = 0,
-                TopFromText = 0, BottomFromText = 0,
                 VerticalAnchor = VerticalAnchorValues.Margin,
                 HorizontalAnchor = HorizontalAnchorValues.Margin,
                 TablePositionXAlignment = HorizontalAlignmentValues.Center,
                 TablePositionYAlignment = VerticalAlignmentValues.Bottom,
-            });
-
-        AddColumnGrid(t, 3467, 3467, 3466);
+            }, 0);
+        AddGrid(t, 3467, 3467, 3466);
         var hdr = new TableRow(new TableRowProperties(new TableRowHeight { Val = 280U, HeightType = HeightRuleValues.AtLeast }));
-        hdr.Append(MakeCell("작성자", width: 3467, isLabel: true, alignCenter: true));
-        hdr.Append(MakeCell("검토자", width: 3467, isLabel: true, alignCenter: true));
-        hdr.Append(MakeCell("승인자", width: 3466, isLabel: true, alignCenter: true));
+        hdr.Append(Cell("작성자", 3467, isLabel: true, align: Align.Center));
+        hdr.Append(Cell("검토자", 3467, isLabel: true, align: Align.Center));
+        hdr.Append(Cell("승인자", 3466, isLabel: true, align: Align.Center));
         t.Append(hdr);
-
         var sig = new TableRow(new TableRowProperties(new TableRowHeight { Val = 500U, HeightType = HeightRuleValues.AtLeast }));
-        sig.Append(MakeCell("", width: 3467, alignCenter: true));
-        sig.Append(MakeCell("", width: 3467, alignCenter: true));
-        sig.Append(MakeCell("", width: 3466, alignCenter: true));
+        sig.Append(Cell("", 3467, align: Align.Center));
+        sig.Append(Cell("", 3467, align: Align.Center));
+        sig.Append(Cell("", 3466, align: Align.Center));
         t.Append(sig);
         return t;
     }
 
-    // ─── 헬퍼 ──────────────────────────────────────────────────────────────
-    private static TableRow MakeRow(params (string text, bool isLabel)[] cells)
+    // ─── 공통 빌드 유틸 ─────────────────────────────────────────────────────
+
+    /// <summary>(라벨, 값) 페어들로 구성된 가로선 표.
+    /// 셀 안에서 라벨은 굵게, 값은 일반 — 한 셀 안에서 시각 구분.</summary>
+    private static Table BuildPackedTable((string label, string value)[][] rows)
     {
-        var row = new TableRow();
-        foreach (var (text, isLabel) in cells)
+        int[] widths = PackedColWidths(rows);
+        var t = NewTable();
+        AddGrid(t, widths);
+        foreach (var r in rows) AddPackedRow(t, r, widths);
+        return t;
+    }
+
+    private static void AddPackedRow(Table t, (string label, string value)[] cells, int[] widths)
+    {
+        var tr = new TableRow();
+        for (int i = 0; i < cells.Length; i++)
         {
-            if (isLabel) row.Append(MakeCell(text, isLabel: true, alignCenter: true));
-            else         row.Append(MakeCell(text, alignRight: true));
+            int w = i < widths.Length ? widths[i] : MinColWidth;
+            tr.Append(PackedCell(cells[i].label, cells[i].value, w));
         }
-        return row;
+        t.Append(tr);
     }
 
-    private static TableRow MakeKvRow((string k, string v) a, (string k, string v) b)
+    /// <summary>(라벨, 값) row 들의 컬럼별 max 폭 측정 → 페이지 폭 비례 분배.</summary>
+    private static int[] PackedColWidths((string label, string value)[][] rows)
     {
-        var row = new TableRow();
-        row.Append(MakeCell(a.k, isLabel: true, alignCenter: true, width: 1700));
-        row.Append(MakeCell(string.IsNullOrWhiteSpace(a.v) ? "—" : a.v, alignLeft: true, width: 3500));
-        row.Append(MakeCell(b.k, isLabel: true, alignCenter: true, width: 1700));
-        row.Append(MakeCell(string.IsNullOrWhiteSpace(b.v) ? "—" : b.v, alignLeft: true, width: 3500));
-        return row;
+        var asText = rows.Select(r => r.Select(c => $"{c.label}: {c.value}").ToArray()).ToArray();
+        return ColWidths(asText);
     }
 
-    private static TableRow MakeKvRowWide(string k, string v, string? valueShading = null)
+    /// <summary>한 셀 안에 굵은 라벨 + 일반 값. 좌측 정렬.</summary>
+    private static TableCell PackedCell(string label, string value, int width)
     {
-        var row = new TableRow();
-        row.Append(MakeCell(k, isLabel: true, alignCenter: true, width: 2200));
-        row.Append(MakeCell(string.IsNullOrWhiteSpace(v) ? "—" : v, alignLeft: true, width: 8200, shadingFill: valueShading));
-        return row;
+        var cp = new TableCellProperties();
+        cp.Append(new TableCellWidth { Type = TableWidthUnitValues.Dxa, Width = width.ToString() });
+        cp.Append(new TableCellBorders(new LeftBorder { Val = BorderValues.None }, new RightBorder { Val = BorderValues.None }));
+        // 셀 좌우 안쪽 여백 — 텍스트가 셀 경계에 붙어 답답해 보이지 않도록
+        cp.Append(new TableCellMargin(
+            new LeftMargin   { Width = "120", Type = TableWidthUnitValues.Dxa },
+            new RightMargin  { Width = "120", Type = TableWidthUnitValues.Dxa }));
+        cp.Append(new TableCellVerticalAlignment { Val = TableVerticalAlignmentValues.Center });
+
+        var pp = new ParagraphProperties();
+        pp.Append(new Justification { Val = JustificationValues.Left });
+
+        var labelRun = new Run(
+            new RunProperties(new Bold(), new FontSize { Val = "16" }),
+            new Text(label + " ") { Space = SpaceProcessingModeValues.Preserve });
+        var valueRun = new Run(
+            new RunProperties(new FontSize { Val = "16" }),
+            new Text(value ?? "") { Space = SpaceProcessingModeValues.Preserve });
+
+        return new TableCell(cp, new Paragraph(pp, labelRun, valueRun));
     }
 
-    private static string FmtNum(double v)
+    /// <summary>각 컬럼의 max 글자 폭 측정 + 페이지 폭에 비례 분배.</summary>
+    private static int[] ColWidths(string[][] rows)
+    {
+        if (rows.Length == 0 || rows[0].Length == 0) return Array.Empty<int>();
+        int n = rows.Max(r => r.Length);
+
+        var measured = new int[n];
+        for (int c = 0; c < n; c++)
+        {
+            int w = 0;
+            foreach (var r in rows)
+                if (c < r.Length) w = Math.Max(w, MeasureCharWidth(r[c] ?? ""));
+            measured[c] = Math.Clamp(w + CellPaddingDxa, MinColWidth, MaxColWidth);
+        }
+
+        int sum = measured.Sum();
+        var widths = new int[n];
+        if (sum == 0)
+        {
+            for (int i = 0; i < n; i++) widths[i] = PageDxa / n;
+            return widths;
+        }
+        double ratio = (double)PageDxa / sum;
+        int used = 0;
+        for (int i = 0; i < n - 1; i++)
+        {
+            widths[i] = Math.Max(MinColWidth, (int)Math.Round(measured[i] * ratio));
+            used += widths[i];
+        }
+        widths[n - 1] = Math.Max(MinColWidth, PageDxa - used);
+        return widths;
+    }
+
+    private static int MeasureCharWidth(string s)
+    {
+        if (string.IsNullOrEmpty(s)) return 0;
+        if (s.Contains('\n') || s.Contains('\r'))
+            return s.Replace("\r\n", "\n").Split('\n').Max(MeasureCharWidth);
+        int w = 0;
+        foreach (var ch in s)
+        {
+            if ((ch >= 0xAC00 && ch <= 0xD7A3) || (ch >= 0x4E00 && ch <= 0x9FFF)
+             || (ch >= 0x3040 && ch <= 0x30FF) || (ch >= 0xFF00 && ch <= 0xFFEF))
+                w += CjkCharDxa;
+            else
+                w += AsciiCharDxa;
+        }
+        return w;
+    }
+
+    private static Table NewTable() =>
+        new Table(
+            new TableProperties(
+                new TableWidth { Type = TableWidthUnitValues.Pct, Width = "5000" },
+                new TableBorders(
+                    new TopBorder    { Val = BorderValues.Single, Size = 6U, Color = "555555" },
+                    new LeftBorder   { Val = BorderValues.None },
+                    new BottomBorder { Val = BorderValues.Single, Size = 6U, Color = "555555" },
+                    new RightBorder  { Val = BorderValues.None },
+                    new InsideHorizontalBorder { Val = BorderValues.Single, Size = 4U, Color = "BBBBBB" },
+                    new InsideVerticalBorder   { Val = BorderValues.None }),
+                new TableLayout { Type = TableLayoutValues.Fixed }));
+
+    private static void AddGrid(Table t, params int[] widths)
+    {
+        var grid = new TableGrid();
+        foreach (var w in widths) grid.Append(new GridColumn { Width = w.ToString() });
+        t.Append(grid);
+    }
+
+    private enum Align { Left, Center, Right }
+
+    /// <summary>표준 셀 — 가운데 수직정렬, 좌/우 테두리 없음, 폰트 8pt.
+    /// 정렬은 Align 으로 단일 지정. 라벨인 경우 굵게.</summary>
+    private static TableCell Cell(string text, int width, bool isLabel = false,
+        Align align = Align.Left, string? shadingFill = null)
+    {
+        var cp = new TableCellProperties();
+        cp.Append(new TableCellWidth { Type = TableWidthUnitValues.Dxa, Width = width.ToString() });
+        cp.Append(new TableCellBorders(new LeftBorder { Val = BorderValues.None }, new RightBorder { Val = BorderValues.None }));
+        if (!string.IsNullOrEmpty(shadingFill))
+            cp.Append(new Shading { Val = ShadingPatternValues.Clear, Color = "auto", Fill = shadingFill });
+        cp.Append(new TableCellVerticalAlignment { Val = TableVerticalAlignmentValues.Center });
+
+        var pp = new ParagraphProperties();
+        pp.Append(new Justification { Val = align switch
+        {
+            Align.Right  => JustificationValues.Right,
+            Align.Center => JustificationValues.Center,
+            _            => JustificationValues.Left,
+        } });
+
+        var rp = new RunProperties();
+        if (isLabel) rp.Append(new Bold());
+        rp.Append(new FontSize { Val = "16" });
+
+        return new TableCell(cp, new Paragraph(pp,
+            new Run(rp, new Text(text ?? "") { Space = SpaceProcessingModeValues.Preserve })));
+    }
+
+    private static string Fmt(double v)
     {
         if (double.IsNaN(v) || double.IsInfinity(v)) return "—";
         if (v == 0) return "0";
@@ -668,65 +651,11 @@ $@"<wp:inline distT=""0"" distB=""0"" distL=""0"" distR=""0""
         return v.ToString("F3");
     }
 
-    private static TableCell MakeCell(string text, int? width = null,
-        bool isLabel = false, bool alignRight = false, bool alignCenter = false,
-        bool alignLeft = false, string? shadingFill = null)
+    private static void Log(string msg)
     {
-        var cellProps = new TableCellProperties();
-        if (width.HasValue)
-            cellProps.Append(new TableCellWidth { Type = TableWidthUnitValues.Dxa, Width = width.Value.ToString() });
-        cellProps.Append(new TableCellVerticalAlignment { Val = TableVerticalAlignmentValues.Center });
-        if (!string.IsNullOrEmpty(shadingFill))
-            cellProps.Append(new Shading { Val = ShadingPatternValues.Clear, Color = "auto", Fill = shadingFill });
-        cellProps.Append(new TableCellBorders(
-            new LeftBorder  { Val = BorderValues.None },
-            new RightBorder { Val = BorderValues.None }));
-
-        var paraProps = new ParagraphProperties();
-        if (alignRight)  paraProps.Append(new Justification { Val = JustificationValues.Right });
-        else if (alignLeft)   paraProps.Append(new Justification { Val = JustificationValues.Left });
-        else if (alignCenter || isLabel) paraProps.Append(new Justification { Val = JustificationValues.Center });
-
-        var runProps = new RunProperties();
-        if (isLabel) runProps.Append(new Bold());
-        runProps.Append(new FontSize { Val = "16" });
-
-        var run = new Run(runProps, new Text(text ?? "") { Space = SpaceProcessingModeValues.Preserve });
-        return new TableCell(cellProps, new Paragraph(paraProps, run));
-    }
-
-    private static Paragraph MakeParagraph(string text, int fontSize = 9) =>
-        new Paragraph(
-            new Run(
-                new RunProperties(
-                    new FontSize { Val = (fontSize * 2).ToString() },
-                    new RunFonts { Ascii = FontFamily, EastAsia = FontFamily, HighAnsi = FontFamily }
-                ),
-                new Text(text ?? "") { Space = SpaceProcessingModeValues.Preserve }
-            )
-        );
-
-    private static Table NewBorderedTable() =>
-        new Table(
-            new TableProperties(
-                new TableWidth { Type = TableWidthUnitValues.Pct, Width = "5000" },
-                new TableBorders(
-                    new TopBorder    { Val = BorderValues.Single, Size = 6U, Color = "555555" },
-                    new BottomBorder { Val = BorderValues.Single, Size = 6U, Color = "555555" },
-                    new LeftBorder   { Val = BorderValues.None },
-                    new RightBorder  { Val = BorderValues.None },
-                    new InsideHorizontalBorder { Val = BorderValues.Single, Size = 4U, Color = "BBBBBB" },
-                    new InsideVerticalBorder   { Val = BorderValues.None }
-                ),
-                new TableLayout { Type = TableLayoutValues.Fixed }
-            )
-        );
-
-    private static void AddColumnGrid(Table table, params int[] widths)
-    {
-        var grid = new TableGrid();
-        foreach (var w in widths)
-            grid.Append(new GridColumn { Width = w.ToString() });
-        table.Append(grid);
+        var line = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] [EcotoxExporter] {msg}";
+        try { File.AppendAllText(Path.Combine(AppPaths.LogsDir, "EcotoxExport.log"), line + Environment.NewLine); }
+        catch { }
+        System.Diagnostics.Debug.WriteLine(line);
     }
 }

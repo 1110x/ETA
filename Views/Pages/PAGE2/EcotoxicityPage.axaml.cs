@@ -94,6 +94,10 @@ public partial class EcotoxicityPage : UserControl
     // ── 시험 이력 ───────────────────────────────────────────────────────────
     private readonly List<TestRecord> _records = new();
 
+    // 마지막 시험기록부 출력 상태 — Show4 헤더에 표시 (성공/실패 사유 가시화).
+    private string _lastExportStatus = "";
+    private bool   _lastExportOk     = true;
+
     private sealed record TestRecord(
         string Date, string TestNo, string Species, string Toxicant,
         string SampleName, EcotoxicityService.EcotoxResult TskResult,
@@ -250,6 +254,44 @@ public partial class EcotoxicityPage : UserControl
                 _organisms[i] = org;
                 _mortalities[i] = mort;
             }
+
+            // EC50/TU 결과 — 시험기록부 출력 시 필요 (이전엔 누락 → 출력 무반응의 원인)
+            double.TryParse(Get("LC50"), out var ec50);
+            double.TryParse(Get("TU"),  out var tu);
+            double.TryParse(Get("LC50_lower"), out var ciLow);
+            double.TryParse(Get("LC50_upper"), out var ciHigh);
+            string method = !string.IsNullOrWhiteSpace(Get("분석법")) ? Get("분석법") : "TSK";
+            double.TryParse(Get("Trim_percent"), out var trim);
+            string warn = Get("비고");
+            var loadedResult = new EcotoxicityService.EcotoxResult(
+                ec50, ciLow, ciHigh, tu, method, trim < 0 ? 0 : trim, false,
+                string.IsNullOrWhiteSpace(warn) ? null : warn);
+            if (method.Contains("Probit", StringComparison.OrdinalIgnoreCase))
+            {
+                _probitResult = loadedResult;
+                _tskResult = null;
+            }
+            else
+            {
+                _tskResult = loadedResult;
+                _probitResult = null;
+            }
+
+            // _records 에도 추가 — 시험기록부 출력이 _records.Any() 분기 통과하도록
+            _records.Clear();
+            int validCnt = _concentrations.Count(c => c > 0);
+            _records.Add(new TestRecord(
+                _testDate, _testNumber, _species, _toxicant,
+                Get("시료명"),
+                _tskResult ?? _probitResult ?? loadedResult,
+                _probitResult,
+                _concentrations.Where(c => c > 0).ToArray(),
+                _organisms.Take(validCnt).ToArray(),
+                _mortalities.Take(validCnt).ToArray(),
+                _controlOrganisms, _controlMortalities,
+                _testTemperature, _testPH, _sampleTemperature, _samplePH, _sampleDO,
+                $"{_duration} {_durUnit}", _ecCalculationMethod,
+                _analysisObservations, _analystName));
 
             ShowInputForm();
             ShowHistoryPanel();
@@ -1141,19 +1183,40 @@ public partial class EcotoxicityPage : UserControl
     // ══════════════════════════════════════════════════════════════════════════
     //  시험기록부 출력 (Word .docx) — 다른 시험기록부와 동일한 시각언어
     // ══════════════════════════════════════════════════════════════════════════
+
+    /// <summary>EcotoxExport.log 에 한 줄 추가 — 출력 단계 추적용. AppPaths.LogsDir 기준.</summary>
+    private static void ExportLog(string msg)
+    {
+        var line = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] [EcotoxExport] {msg}";
+        try
+        {
+            string path = Path.Combine(AppPaths.LogsDir, "EcotoxExport.log");
+            File.AppendAllText(path, line + Environment.NewLine);
+        }
+        catch { }
+        System.Diagnostics.Debug.WriteLine(line);
+    }
+
     public async Task ExportTestReportAsync()
     {
+        ExportLog("══════ ExportTestReportAsync 진입 ══════");
+        ExportLog($"_records.Count = {_records.Count}");
+        SetExportStatus("출력 중…", ok: true);
+
         // 저장된 기록이 없으면 현재 입력된 데이터로 임시 기록 생성
         if (!_records.Any())
         {
+            ExportLog($"기록 없음 → 임시생성 분기. _tskResult={(_tskResult==null?"null":"OK")}, _probitResult={(_probitResult==null?"null":"OK")}");
             if (_tskResult == null && _probitResult == null)
             {
-                System.Diagnostics.Debug.WriteLine("[시험기록부 출력] 저장된 시험 기록이 없습니다. 먼저 계산을 수행하세요.");
+                ExportLog("⚠ 계산 결과 없음 — 출력 종료");
+                SetExportStatus("출력 실패: 계산 결과 없음. 먼저 EC50 계산을 수행하거나 저장된 기록을 선택하세요.", ok: false);
                 return;
             }
 
             // 현재 입력된 데이터를 임시 기록으로 생성
             var validCnt = _concentrations.Count(c => c > 0);
+            ExportLog($"임시 record 생성: validCnt={validCnt}, sampleName={_selectedTreeNameTb?.Text ?? "미지정"}");
             _records.Insert(0, new TestRecord(
                 _testDate, _testNumber, _species, _toxicant, _selectedTreeNameTb?.Text ?? "미지정",
                 _tskResult ?? new EcotoxicityService.EcotoxResult(0, 0, 0, 0, "TSK", -1, false, "계산 결과 없음"),
@@ -1166,53 +1229,69 @@ public partial class EcotoxicityPage : UserControl
                 $"{_duration} {_durUnit}", _ecCalculationMethod, _analysisObservations, _analystName));
         }
 
+        string? savePath = null;
         try
         {
-            // 내부 record → 공용 DTO 로 1:1 매핑
+            ExportLog($"DTO 변환 시작 — records={_records.Count}");
             var dtos = _records.Select(r => new EcotoxicityWordExporter.Record(
                 r.Date, r.TestNo, r.Species, r.Toxicant, r.SampleName,
                 r.TskResult, r.ProbitResult,
                 r.Conc, r.Org, r.Mort, r.CtrlOrg, r.CtrlMort,
                 r.TestTemperature, r.TestPH, r.SampleTemperature, r.SamplePH, r.SampleDO,
                 r.Duration, r.EcCalculationMethod, r.Observations, r.AnalystName)).ToList();
+            ExportLog($"DTO 변환 완료 — {dtos.Count}건");
 
+            ExportLog("EcotoxicityWordExporter.Export 호출");
             string tmpPath = EcotoxicityWordExporter.Export(dtos);
+            ExportLog($"Export 완료 — tmpPath={tmpPath}, exists={File.Exists(tmpPath)}, size={(File.Exists(tmpPath)?new FileInfo(tmpPath).Length:0)}");
 
-            // 데스크톱 아래 전용 서브폴더로 복사. 데스크톱 직하 / PrintCache 누적은
-            // 익스플로러가 떠도 인덱싱이 오래 걸려 "빙빙 도는" 현상을 유발 → 전용 폴더로 분리.
+            // 데스크톱 아래 전용 서브폴더로 복사
             string saveDir = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
                 "ETA 시험기록부");
             Directory.CreateDirectory(saveDir);
             string filename = $"생태독성_시험기록부_{DateTime.Now:yyyyMMdd_HHmmss}.docx";
-            string savePath = Path.Combine(saveDir, filename);
+            savePath = Path.Combine(saveDir, filename);
+            ExportLog($"복사 시작 → {savePath}");
             File.Copy(tmpPath, savePath, overwrite: true);
+            ExportLog($"복사 완료 — exists={File.Exists(savePath)}, size={new FileInfo(savePath).Length}");
 
-            System.Diagnostics.Debug.WriteLine($"[생태독성 시험기록부] 저장: {savePath}");
-
-            // 저장된 docx 자동 열기 — 버튼이 작동했음을 즉시 보여주는 피드백
+            // 자동 열기
             try
             {
+                ExportLog($"Process.Start (UseShellExecute) 호출 — {savePath}");
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                 {
                     FileName = savePath,
                     UseShellExecute = true,
                 });
+                ExportLog("Process.Start 완료 — 시스템 기본앱이 docx 를 열어야 함");
             }
             catch (Exception openEx)
             {
-                System.Diagnostics.Debug.WriteLine($"[생태독성 시험기록부 열기 오류] {openEx.Message}");
+                ExportLog($"❌ 자동 열기 실패: {openEx.GetType().Name}: {openEx.Message}");
             }
 
+            SetExportStatus($"✅ 출력 완료: {filename}", ok: true);
             RefreshRecordsPanel();
-            await Task.CompletedTask;
-            return;
+            ExportLog("══════ ExportTestReportAsync 정상 종료 ══════");
         }
         catch (Exception wex)
         {
-            System.Diagnostics.Debug.WriteLine($"[생태독성 시험기록부 출력 오류] {wex.Message}");
+            ExportLog($"❌ EXPORT 예외: {wex.GetType().FullName}: {wex.Message}");
+            ExportLog($"   StackTrace: {wex.StackTrace}");
+            if (wex.InnerException != null)
+                ExportLog($"   Inner: {wex.InnerException.GetType().FullName}: {wex.InnerException.Message}");
+            SetExportStatus($"❌ 출력 실패: {wex.GetType().Name}: {wex.Message}", ok: false);
         }
         await Task.CompletedTask;
+    }
+
+    private void SetExportStatus(string msg, bool ok)
+    {
+        _lastExportStatus = msg;
+        _lastExportOk     = ok;
+        try { Avalonia.Threading.Dispatcher.UIThread.Post(() => RefreshRecordsPanel()); } catch { }
     }
 
     /// <summary>출력된 docx 가 모이는 "Desktop\ETA 시험기록부" 폴더를 OS 파일탐색기로 연다.</summary>
