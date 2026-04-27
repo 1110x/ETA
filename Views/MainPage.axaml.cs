@@ -66,6 +66,7 @@ public partial class MainPage : Window
     private AiDocClassificationPage?     _aiDocClassificationPage;
     private ParserGeneratorPage?          _parserGeneratorPage;
     private ResultSubmitZero4Page?       _resultSubmitZero4Page;
+    private ETA.Views.Pages.PAGE1.TestRecordBookViewerPage? _testRecordBookViewerPage;
     private PurchasePage?      _purchasePage;
     private RepairPage?       _repairPage;
     private RiskManagePage?   _riskPage;
@@ -122,6 +123,7 @@ public partial class MainPage : Window
     public MainPage()
     {
         InitializeComponent();
+        Title = $"ETA Water Analysis Center · {ETA.Rebuild.Services.AppVersion.Display}";
         DataContext = new MainWindowViewModel();
         ApplyTheme(0);
 
@@ -2919,6 +2921,11 @@ public partial class MainPage : Window
                 Show3.Content = panel;
                 LogContentChange("Show3", panel);
             };
+            _ecotoxicityPage.RecordsPanelChanged += panel =>
+            {
+                Show4.Content = panel;
+                LogContentChange("Show4", panel);
+            };
         }
 
         Show1.Content = null;
@@ -5272,6 +5279,47 @@ public partial class MainPage : Window
             Avalonia.Threading.DispatcherPriority.Render);
     }
 
+    private void TestRecordBookViewer_Click(object? sender, RoutedEventArgs e)
+    {
+        _currentMode = "TestRecordBookViewer";
+
+        if (_testRecordBookViewerPage == null)
+        {
+            _testRecordBookViewerPage = new ETA.Views.Pages.PAGE1.TestRecordBookViewerPage();
+            _testRecordBookViewerPage.DateListChanged += panel =>
+            {
+                Show4.Content = panel;
+                LogContentChange("Show4", panel);
+            };
+            _testRecordBookViewerPage.RowsGridChanged += panel =>
+            {
+                Show2.Content = panel;
+                LogContentChange("Show2", panel);
+            };
+            _testRecordBookViewerPage.CompanyListChanged += panel =>
+            {
+                Show3.Content = panel;
+                LogContentChange("Show3", panel);
+            };
+        }
+
+        Show1.Content = _testRecordBookViewerPage.TableListControl;
+        Show2.Content = _testRecordBookViewerPage.RowsGridControl;
+        Show3.Content = null;
+        Show4.Content = _testRecordBookViewerPage.DateListControl;
+        LogContentChange("Show1", _testRecordBookViewerPage.TableListControl);
+
+        SetSubMenu("새로고침", "", "", "", "", "", "");
+        _bt1SaveAction = () => _testRecordBookViewerPage.LoadTables();
+        SetLeftPanelWidth(260);
+        SetContentLayout(content2Star: 7, content4Star: 3, upperStar: 9, lowerStar: 1);
+        RestoreModeLayout("TestRecordBookViewer");
+
+        _testRecordBookViewerPage.LoadTables();
+    }
+
+    private void UserManual_Click(object? sender, RoutedEventArgs e) { }
+
     /// <summary>시험기록부 양식 템플릿 폴더 선택 — 폴더 피커 → UserPrefs 저장</summary>
     private async void TestRecordBookFolder_Click(object? sender, RoutedEventArgs e)
     {
@@ -5584,10 +5632,14 @@ public partial class MainPage : Window
     {
         _currentMode = "Measurer";
         _measurerPage = new AccessPage(initialMode, showAccessTab: false, showMeasurerTabs: true);
+        // 분석항목 트리에서 항목 선택 시 Show4 (파서 컬럼 매핑) 활성화
+        _measurerPage.Show4VisibleChanged += on =>
+            SetContentLayout(content2Star: on ? 2 : 2, content4Star: on ? 1 : 0, upperStar: 1, lowerStar: 0);
+
         Show1.Content = _measurerPage.Show1;
         Show2.Content = _measurerPage.Show2;
         Show3.Content = null;
-        Show4.Content = null;
+        Show4.Content = _measurerPage.Show4;
         _bt1SaveAction = null;
 
         SetSubMenu("새로고침", "", "", "", "", "", "");

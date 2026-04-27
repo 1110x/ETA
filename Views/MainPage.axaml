@@ -574,8 +574,6 @@
                         <MenuItem Header="견적/의뢰서" x:Name="MenuItemQuotation"     Click="Quotation_Click"/>
                         <MenuItem Header="거래명세발행"    x:Name="MenuItemQuotationIssue" Click="QuotationIssuing_Click"/>
                         <MenuItem Header="시험성적서"  x:Name="MenuItemTestReport"     Click="TestReport_Click"/>
-                        <MenuItem Header="시험기록부 템플릿 폴더..." x:Name="MenuItemTestRecordBookFolder" Click="TestRecordBookFolder_Click"/>
-                        <MenuItem Header="DB Migration" x:Name="MenuItemDbMigration" Click="DbMigration_Click"/>
                     </MenuItem>
 
                     <MenuItem Header="비용부담금" x:Name="MenuItemWaste">
@@ -598,6 +596,10 @@
                               x:Name="MenuItemEcotoxicity"
                               Click="Ecotoxicity_Click"/>
 
+                    <MenuItem Header="시험기록부"
+                              x:Name="MenuItemTestRecordBookViewer"
+                              Click="TestRecordBookViewer_Click"/>
+
                     <MenuItem Header="결과 제출" x:Name="MenuItemResultSubmit">
                         <MenuItem Header="측정인" x:Name="MenuItemResultSubmitMeasure" Click="ResultSubmitMeasure_Click"/>
                         <MenuItem Header="ERP"    x:Name="MenuItemResultSubmitErp"     Click="ResultSubmitErp_Click"/>
@@ -617,8 +619,6 @@
                     </MenuItem>
 
                     <MenuItem Header="권한관리" x:Name="PermissionMenu">
-                        <MenuItem Header="센터명칭"         x:Name="MenuItemWaterQualityNameReconcile" Click="WaterQualityNameReconcile_Click"/>
-                        <MenuItem Header="폐수배출업소명칭"  x:Name="MenuItemWasteNameReconcile"          Click="WasteNameReconcile_Click"/>
                         <MenuItem Header="접근관리"         Click="Access_Click" x:Name="MenuItemAccess"/>
                         <MenuItem Header="서버관리"         Click="ServerManagement_Click" x:Name="MenuItemServerManagement"/>
                     </MenuItem>
@@ -634,7 +634,13 @@
                         <MenuItem Header="분석조건"       x:Name="MenuItemMeasurerCondition" Click="MeasurerCondition_Click"/>
                         <MenuItem Header="분석장비"       x:Name="MenuItemMeasurerEquipment" Click="MeasurerEquipment_Click"/>
                         <MenuItem Header="양식폴더"       x:Name="MenuItemTemplateFolder"    Click="TemplateFolder_Click"/>
+                        <MenuItem Header="시험기록부 템플릿 폴더..." x:Name="MenuItemTestRecordBookFolder" Click="TestRecordBookFolder_Click"/>
+                        <MenuItem Header="수질분석센터 의뢰명칭 및 방류기준" x:Name="MenuItemWaterQualityNameReconcile" Click="WaterQualityNameReconcile_Click"/>
+                        <MenuItem Header="폐수배출업소명칭"  x:Name="MenuItemWasteNameReconcile"          Click="WasteNameReconcile_Click"/>
+                        <MenuItem Header="DB Migration"   x:Name="MenuItemDbMigration"       Click="DbMigration_Click"/>
                     </MenuItem>
+
+                    <MenuItem Header="📚 사용자메뉴얼" x:Name="MenuItemUserManual" Click="UserManual_Click" IsVisible="False"/>
                 </Menu>
 
                 <!-- 오른쪽: 레이아웃 저장 버튼 -->

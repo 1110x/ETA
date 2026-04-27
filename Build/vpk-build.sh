@@ -5,7 +5,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-VERSION="${1:-1.4.1}"     # 첫 인자로 버전 지정. 기본 1.4.1
+VERSION="${1:-1.4.2}"     # 첫 인자로 버전 지정. 기본 1.4.2
 PUB="$ROOT/Build/publish"
 REL="$ROOT/Build/Releases"
 
