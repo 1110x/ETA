@@ -64,6 +64,10 @@ public static class TestReportPrintService
             ? $"WAC-{DateTime.Now:yyyyMMdd}-{sample.약칭}"
             : reportNo;
 
+        // 시험성적서 서명란 — 호출자 미지정 시 사용자 결재정보(설정→결재정보) 사용 (풀텍스트 그대로)
+        if (string.IsNullOrWhiteSpace(qualityMgr))
+            qualityMgr = UserPrefsService.TestReportSignerQualityMgr;
+
         var (companyName, representative) = GetContractInfo(sample.약칭);
         var standardMap    = BuildStandardMap(rows, sample.방류허용기준);
 
@@ -178,9 +182,10 @@ public static class TestReportPrintService
                  || sample.정도보증.Trim() == "정도보증 적용"
                  || sample.정도보증.Trim() == "Y";
         S(ws, "F7", isQC ? "정도보증 적용" : "참고용");
+        // 비고문구는 결재정보(설정→결재정보) 에서 사용자가 편집 가능
         S(ws, "A44", isQC
-            ? "▩ 이 시험성적서는 ES 04001.b(정도보증/관리) 등 국립환경과학원고시 『수질오염공정시험기준』을 적용한 분석결과 입니다."
-            : "▩ 이 시험성적서는 ES 04001.b/04130.1e 등 일부가 적용되지 않는 참고용 분석결과입니다.");
+            ? UserPrefsService.TestReportRemarkQc
+            : UserPrefsService.TestReportRemarkRef);
 
         // 우측 헤더 (2페이지 템플릿)
         if (hasRight)
@@ -195,8 +200,8 @@ public static class TestReportPrintService
             S(ws, "K7", sample.시료명);
             S(ws, "N7", isQC ? "정도보증 적용" : "참고용");
             S(ws, "I44", isQC
-                ? "▩ 이 시험성적서는 ES 04001.b(정도보증/관리) 등 국립환경과학원고시 『수질오염공정시험기준』을 적용한 분석결과 입니다."
-                : "▩ 이 시험성적서는 ES 04001.b/04130.1e 등 일부가 적용되지 않는 참고용 분석결과입니다.");
+                ? UserPrefsService.TestReportRemarkQc
+                : UserPrefsService.TestReportRemarkRef);
         }
 
         // 좌측 항목: A=번호, B=구분, D=항목, E=ES번호, F=결과, G=단위, H=방류기준
@@ -246,10 +251,10 @@ public static class TestReportPrintService
             }
         }
 
-        // 서명
+        // 서명 — 결재정보(설정→결재정보) 풀텍스트 + "(서명)" 만 합침
         if (!string.IsNullOrEmpty(qualityMgr))
         {
-            var sig = $"품질책임 수질분야 환경측정분석사       {qualityMgr}       (서명)";
+            var sig = $"{qualityMgr}       (서명)";
             ws.Cell(43, 1).Value = sig;
             if (hasRight) ws.Cell(43, 9).Value = sig;
         }

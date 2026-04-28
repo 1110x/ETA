@@ -15,7 +15,7 @@ namespace ETA.Services.SERVICE1;
 ///
 /// 헤더 치환자(문서 어디서나 단일 치환):
 ///   {{성적서번호}} {{회사명}} {{대표자}} {{시료명}} {{채취일자}} {{채취자}}
-///   {{입회자}}    {{분석종료일}} {{용도}} {{비고문구}} {{서명}}
+///   {{입회자}}    {{분석종료일}} {{용도}} {{비고문구}} {{시험성적서서명}}
 ///
 /// 항목 행 치환자(`{{번호}}` 가 들어있는 표 행 1개를 반복 복제):
 ///   {{번호}} {{구분}} {{항목}} {{ES}} {{결과}} {{단위}} {{기준}}
@@ -23,13 +23,22 @@ namespace ETA.Services.SERVICE1;
 public static class TestReportWordPrintService
 {
     /// <summary>분석 항목 수가 이 값 이하면 단일페이지 양식, 초과면 다중페이지 양식 사용.</summary>
-    private const int SinglePageRowThreshold = 28;
+    private const int SinglePageRowThreshold = 32;
 
     public static string TemplatePath1Page => TemplateConfiguration.Resolve("TestReportWord1Page");
     public static string TemplatePathMulti => TemplateConfiguration.Resolve("TestReportWordMulti");
 
-    private static string OutputDir =>
-        Path.Combine(AppPaths.RootPath, "Data", "Reports");
+    /// <summary>출력 폴더 — 출력보관함(ReportsPanel) 이 보는 위치와 동일하게 `Data/Reports`.
+    /// 출력 즉시 Show4 출력보관함 패널에 표시되도록 통일.</summary>
+    private static string OutputDir
+    {
+        get
+        {
+            var dir = Path.Combine(AppPaths.RootPath, "Data", "Reports");
+            Directory.CreateDirectory(dir);
+            return dir;
+        }
+    }
 
     public static bool TemplateExists() =>
         File.Exists(TemplatePath1Page) && File.Exists(TemplatePathMulti);
@@ -43,9 +52,182 @@ public static class TestReportWordPrintService
         return TemplatePath1Page;
     }
 
+    /// <summary>옛 스키마가 들어있는 구버전 템플릿이면 true. 다음 마커 중 하나라도 해당.
+    ///   1) 본문에 `{{시험성적서서명}}` 치환자가 없음 (신버전 필수 마커)
+    ///   2) 본문에 옛 `{{품질책임자}}` 치환자가 살아있음
+    ///   3) 본문에 `{{성적서번호}}` 가 있음 — 신버전은 헤더로 이동
+    ///   4) 헤더에 PAGE 필드가 없음 — 신버전은 헤더에 페이지번호 표시
+    ///   5) 결재라인 anchored 표의 TablePositionY 가 옛 값(13200) — 신버전은 14000</summary>
+    private static bool IsLegacyTemplate(string path)
+    {
+        try
+        {
+            using var doc = WordprocessingDocument.Open(path, isEditable: false);
+            var body = doc.MainDocumentPart?.Document?.Body;
+            if (body == null) return false;
+            var bodyText = string.Concat(body.Descendants<Text>().Select(t => t.Text));
+            if (!bodyText.Contains("{{시험성적서서명}}")) return true;
+            if (bodyText.Contains("{{품질책임자}}"))     return true;
+            if (bodyText.Contains("{{성적서번호}}"))     return true;
+
+            // 헤더에 PAGE 필드(자동 페이지번호) 가 없으면 옛버전.
+            bool hdrHasPage = doc.MainDocumentPart!.HeaderParts.Any(hp =>
+                hp.Header?.Descendants<FieldCode>().Any(f => f.Text.Contains("PAGE")) == true);
+            if (!hdrHasPage) return true;
+
+            if (!bodyText.Contains("용도") || !bodyText.Contains("입회자")) return true;
+
+            // 메타 표 행 수 검사 — 신버전은 3행, 옛버전은 4행.
+            // 본문 첫 번째 표 = BuildHeaderTable() (메타 표).
+            var firstTable = body.Descendants<Table>().FirstOrDefault();
+            int metaRows = firstTable?.Elements<TableRow>().Count() ?? 0;
+            if (metaRows == 4) return true;
+
+            // 결재라인 anchored 표의 TablePositionY 가 옛 값(13200) 이면 옛버전.
+            var oldAnchorY = body.Descendants<TablePositionProperties>()
+                .Any(tp => tp.TablePositionY?.Value == 13200);
+            if (oldAnchorY) return true;
+
+            // 페이지 상단 마진이 옛 값(1701, 3cm) 이면 옛버전.
+            // 신버전(1134, 2cm) 은 32항목 + 결재라인 한 페이지 수용.
+            var oldTopMargin = body.Descendants<PageMargin>()
+                .Any(pm => pm.Top?.Value == 1701);
+            if (oldTopMargin) return true;
+
+            return false;
+        }
+        catch { return false; }
+    }
+
+    /// <summary>레거시 템플릿이 디스크에 있으면 자동 재생성. 결재정보 변경이 즉시 반영되도록 보장.</summary>
+    private static void AutoMigrateTemplates()
+    {
+        bool needRegen = false;
+        if (File.Exists(TemplatePath1Page) && IsLegacyTemplate(TemplatePath1Page)) needRegen = true;
+        if (File.Exists(TemplatePathMulti) && IsLegacyTemplate(TemplatePathMulti)) needRegen = true;
+        if (needRegen)
+        {
+            Log("레거시 템플릿 감지 → 자동 재생성");
+            GenerateDefaultTemplate();
+        }
+    }
+
     /// <summary>분석 항목 수에 따라 적절한 양식 경로 선택.</summary>
     private static string PickTemplate(int rowCount) =>
         rowCount <= SinglePageRowThreshold ? TemplatePath1Page : TemplatePathMulti;
+
+    /// <summary>분석항목 _meta 의 Parts 컬럼에 "특정32종" 라벨이 들어 있으면 32종 항목으로 분류.
+    /// "특정32종 13", "특정32종13", "특정32종 13" 등 공백/포맷 변형 허용.
+    /// 끝 숫자를 자연정렬 키로 사용. 메타 매칭 실패해도 항목명 자체로 한번 더 시도.</summary>
+    private static readonly System.Text.RegularExpressions.Regex SpecialRe =
+        new(@"특정\s*32\s*종\s*(\d+)?", System.Text.RegularExpressions.RegexOptions.Compiled);
+
+    private static (bool isSpecial, int order) ClassifySpecial(
+        AnalysisResultRow row, Dictionary<string, AnalysisItem> meta)
+    {
+        if (row?.항목명 == null) return (false, int.MaxValue);
+
+        string parts = "";
+        if (meta.TryGetValue(row.항목명, out var item) && item != null)
+            parts = item.Parts ?? "";
+
+        // 1차: meta.Parts. 2차: meta.Category, AliasX 폴백 (사용자가 다른 컬럼에 입력했을 수 있음).
+        string[] candidates = item == null
+            ? new[] { "" }
+            : new[] { parts, item.Category ?? "", item.AliasX ?? "" };
+
+        foreach (var c in candidates)
+        {
+            if (string.IsNullOrEmpty(c)) continue;
+            var m = SpecialRe.Match(c);
+            if (!m.Success) continue;
+            int n = m.Groups[1].Success && int.TryParse(m.Groups[1].Value, out var v)
+                ? v : int.MaxValue;
+            return (true, n);
+        }
+        return (false, int.MaxValue);
+    }
+
+    /// <summary>분류 결과 카운트만 반환 — UI 토스트 표시용.</summary>
+    public static (int special, int standard) CountClassification(
+        List<AnalysisResultRow> rows, Dictionary<string, AnalysisItem> meta)
+    {
+        int s = 0, t = 0;
+        foreach (var r in rows)
+            if (ClassifySpecial(r, meta).isSpecial) s++; else t++;
+        return (s, t);
+    }
+
+    /// <summary>모드별 정렬/필터 적용. ES 번호 정렬은 문자열 자연정렬.</summary>
+    private static List<AnalysisResultRow> ApplySortMode(
+        List<AnalysisResultRow> rows,
+        Dictionary<string, AnalysisItem> meta,
+        SortMode mode)
+    {
+        var classified = rows
+            .Select(r => (row: r, cls: ClassifySpecial(r, meta)))
+            .ToList();
+
+        int specialCnt = classified.Count(x => x.cls.isSpecial);
+        int unmatched  = classified.Count(x => !meta.ContainsKey(x.row.항목명 ?? ""));
+        Log($"[정렬] mode={mode}, total={rows.Count}, 특정32종={specialCnt}, 나머지={rows.Count - specialCnt}, _meta매칭실패={unmatched}");
+
+        // 진단: 매칭 실패 항목 일부 + Parts 비교 출력 (32종 0건일 때 원인 추적)
+        if (specialCnt == 0 && (mode == SortMode.SpecialFirst || mode == SortMode.SpecialOnly))
+        {
+            Log("⚠ 특정32종 0건 — 진단:");
+            foreach (var c in classified.Take(8))
+            {
+                bool inMeta = meta.TryGetValue(c.row.항목명 ?? "", out var it);
+                Log($"  - 항목명='{c.row.항목명}' _meta매칭={inMeta}, Parts='{(it?.Parts ?? "")}', Category='{(it?.Category ?? "")}'");
+            }
+        }
+
+        IEnumerable<(AnalysisResultRow row, (bool isSpecial, int order) cls)> filtered = mode switch
+        {
+            SortMode.SpecialOnly  => classified.Where(x => x.cls.isSpecial),
+            SortMode.StandardOnly => classified.Where(x => !x.cls.isSpecial),
+            _                     => classified,
+        };
+
+        var result = mode switch
+        {
+            // ES 기준 — ES 문자열 자연정렬 (없으면 항목명).
+            SortMode.ByEs =>
+                filtered.OrderBy(x => x.row.ES ?? "", StringComparer.Ordinal)
+                        .ThenBy(x => x.row.항목명 ?? "", StringComparer.Ordinal),
+            // 32종 먼저 (order 순) → 일반 (ES 순)
+            SortMode.SpecialFirst =>
+                filtered.OrderBy(x => x.cls.isSpecial ? 0 : 1)
+                        .ThenBy(x => x.cls.order)
+                        .ThenBy(x => x.row.ES ?? "", StringComparer.Ordinal),
+            // SpecialOnly: 32종 order 순
+            SortMode.SpecialOnly =>
+                filtered.OrderBy(x => x.cls.order),
+            // StandardOnly: ES 순
+            SortMode.StandardOnly =>
+                filtered.OrderBy(x => x.row.ES ?? "", StringComparer.Ordinal)
+                        .ThenBy(x => x.row.항목명 ?? "", StringComparer.Ordinal),
+            _ => filtered,
+        };
+
+        return result.Select(x => x.row).ToList();
+    }
+
+    /// <summary>시험성적서 항목 정렬/필터 모드.</summary>
+    public enum SortMode
+    {
+        /// <summary>ES 번호 기준 (기본).</summary>
+        ByEs,
+        /// <summary>분석항목.Parts 가 "특정32종" 으로 시작하는 항목을 앞으로(번호순), 나머지는 ES 기준.</summary>
+        SpecialFirst,
+        /// <summary>특정32종 항목만 출력.</summary>
+        SpecialOnly,
+        /// <summary>특정32종 외 나머지 항목만 출력.</summary>
+        StandardOnly,
+    }
+
+    private const string SpecialPartsPrefix = "특정32종";
 
     public static string FillAndSave(
         SampleRequest                    sample,
@@ -54,24 +236,34 @@ public static class TestReportWordPrintService
         string reportNo       = "",
         string qualityMgr     = "",
         bool   includeStandard = true,
-        bool   openAfter       = true)
+        bool   openAfter       = true,
+        SortMode sortMode     = SortMode.ByEs,
+        string fileNameSuffix = "")
     {
         // 템플릿이 없으면 시험기록부 시각언어로 기본 템플릿 자동 생성
         if (!TemplateExists()) GenerateDefaultTemplate();
+        // 옛 스키마 템플릿이면 자동으로 새 양식으로 마이그레이션 (사용자 조작 불필요)
+        else AutoMigrateTemplates();
+
+        // 정렬/필터 적용 — 원본 rows 는 보존
+        rows = ApplySortMode(rows, meta, sortMode);
 
         Directory.CreateDirectory(OutputDir);
 
-        // 출력 파일명: 채취일자_시료명.docx
+        // 출력 파일명: 채취일자_시료명[_접미사].docx
         var dateStr  = sample.채취일자.Replace("-", "").Replace("/", "");
         var safeName = string.IsNullOrWhiteSpace(sample.시료명) ? sample.약칭 : sample.시료명;
         foreach (var c in Path.GetInvalidFileNameChars())
             safeName = safeName.Replace(c.ToString(), "");
         safeName = safeName.Trim();
         if (safeName.Length > 60) safeName = safeName[..60];
+        var fileName = string.IsNullOrEmpty(fileNameSuffix)
+            ? $"{dateStr}_{safeName}.docx"
+            : $"{dateStr}_{safeName}_{fileNameSuffix}.docx";
 
-        var outPath = Path.Combine(OutputDir, $"{dateStr}_{safeName}.docx");
+        var outPath = Path.Combine(OutputDir, fileName);
         var templatePath = PickTemplate(rows.Count);
-        Log($"양식 선택: {(rows.Count <= SinglePageRowThreshold ? "단일페이지" : "다중페이지")} ({rows.Count}건) → {templatePath}");
+        Log($"양식 선택: {(rows.Count <= SinglePageRowThreshold ? "단일페이지" : "다중페이지")} ({rows.Count}건, mode={sortMode}) → {templatePath}");
         File.Copy(templatePath, outPath, overwrite: true);
 
         var no = string.IsNullOrEmpty(reportNo)
@@ -85,7 +277,10 @@ public static class TestReportWordPrintService
                  || sample.정도보증.Trim() == "정도보증 적용"
                  || sample.정도보증.Trim() == "Y";
 
-        // 품질책임자 — 호출자가 지정 안 했으면 Agent 테이블에서 직급 '품책' 보유자 자동 조회
+        // 시험성적서 서명란 텍스트 — 호출자 지정 우선 → 사용자 결재정보(설정→결재정보) → Agent 테이블 자동조회.
+        // 결재정보에는 "품질책임 수질분야 환경측정분석사 박은지" 같은 풀텍스트를 자유롭게 입력.
+        if (string.IsNullOrWhiteSpace(qualityMgr))
+            qualityMgr = UserPrefsService.TestReportSignerQualityMgr;
         if (string.IsNullOrWhiteSpace(qualityMgr))
             qualityMgr = GetQualityManagerName();
 
@@ -100,10 +295,11 @@ public static class TestReportWordPrintService
             ["입회자"]     = sample.입회자 ?? "",
             ["분석종료일"] = FormatDate(sample.분석종료일),
             ["용도"]       = isQC ? "정도보증 적용" : "참고용",
+            // 비고문구는 결재정보(설정→결재정보) 에서 사용자가 편집 가능. 미설정이면 기본 문구.
             ["비고문구"]   = isQC
-                ? "▩ 이 시험성적서는 ES 04001.b(정도보증/관리) 등 국립환경과학원고시 『수질오염공정시험기준』을 적용한 분석결과 입니다."
-                : "▩ 이 시험성적서는 ES 04001.b/04130.1e 등 일부가 적용되지 않는 참고용 분석결과입니다.",
-            ["품질책임자"] = qualityMgr ?? "",
+                ? UserPrefsService.TestReportRemarkQc
+                : UserPrefsService.TestReportRemarkRef,
+            ["시험성적서서명"] = qualityMgr ?? "",
         };
 
         using (var doc = WordprocessingDocument.Open(outPath, isEditable: true))
@@ -122,9 +318,19 @@ public static class TestReportWordPrintService
             // 2) 항목 행 반복 — `{{번호}}` 포함 행이 있는 첫 표를 찾아 복제
             ExpandItemRows(body, rows, standardMap);
 
-            // 3) 헤더 등 문서 전체 치환자 채우기 (반복 후에 실행 — 복제된 행도 같이 처리)
+            // 3) 본문 치환자 채우기 (반복 후에 실행 — 복제된 행도 같이 처리)
             foreach (var p in body.Descendants<Paragraph>().ToList())
                 ReplacePlaceholders(p, headerMap);
+
+            // 3-1) 헤더 파트(들) 도 치환 — {{성적서번호}} 등 헤더 영역 치환자 처리
+            foreach (var hp in doc.MainDocumentPart!.HeaderParts)
+            {
+                var hdrRoot = hp.Header;
+                if (hdrRoot == null) continue;
+                foreach (var p in hdrRoot.Descendants<Paragraph>().ToList())
+                    ReplacePlaceholders(p, headerMap);
+                hp.Header.Save();
+            }
 
             doc.MainDocumentPart!.Document!.Save();
         }

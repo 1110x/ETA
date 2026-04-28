@@ -340,23 +340,14 @@ public static class WasteRequestService
             del.ExecuteNonQuery();
         }
 
-        // 3. 처리시설_결과에 오늘 행이 있고 + 오늘 분석계획에도 있는 시설만 작업 등록
-        if (planItems.Count > 0 && DbConnectionFactory.TableExists(conn, "처리시설_결과"))
+        // 3. 분석계획 + 마스터 만으로 작업 자동생성 — 처리시설_결과 행 의존 제거.
+        //    오늘 요일 분석계획에 (시설명, 시료명) 가 있고 마스터에도 같은 (시설명, 시료명) 행이 있으면 작업 등록.
+        //    동일 (시설명, 시료명) 에 마스터가 여러 건이면 각각 별도 작업으로 INSERT.
+        if (planItems.Count > 0)
         {
-            var measuredRows = new List<(int 마스터Id, string 시설명, string 시료명)>();
-            using (var cmd = conn.CreateCommand())
+            foreach (var (mid, info) in masterById)
             {
-                cmd.CommandText = "SELECT DISTINCT 마스터_id, 시설명, 시료명 FROM `처리시설_결과` WHERE LEFT(채취일자,10) = @d";
-                cmd.Parameters.AddWithValue("@d", date);
-                using var rdr = cmd.ExecuteReader();
-                while (rdr.Read())
-                    measuredRows.Add((Convert.ToInt32(rdr.GetValue(0)), S(rdr,1), S(rdr,2)));
-            }
-
-            foreach (var (mid, 시설명, 시료명) in measuredRows)
-            {
-                // 오늘 요일 분석계획에 없는 시설/시료는 제외
-                if (!planItems.TryGetValue((시설명, 시료명), out var 항목목록)) continue;
+                if (!planItems.TryGetValue((info.시설명, info.시료명), out var 항목목록)) continue;
 
                 using var ins = conn.CreateCommand();
                 ins.CommandText = @"INSERT IGNORE INTO `처리시설_작업`
@@ -364,8 +355,8 @@ public static class WasteRequestService
                         VALUES (@mid, @d, @f, @s, @h, '미담')";
                 ins.Parameters.AddWithValue("@mid", mid);
                 ins.Parameters.AddWithValue("@d",   date);
-                ins.Parameters.AddWithValue("@f",   시설명);
-                ins.Parameters.AddWithValue("@s",   시료명);
+                ins.Parameters.AddWithValue("@f",   info.시설명);
+                ins.Parameters.AddWithValue("@s",   info.시료명);
                 ins.Parameters.AddWithValue("@h",   항목목록);
                 ins.ExecuteNonQuery();
             }

@@ -5,6 +5,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Threading;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -43,10 +44,73 @@ public class ReportsPanel : UserControl
     // 전체선택 체크박스 참조 (삭제 후 해제용)
     private CheckBox? _chkAll;
 
+    // 폴더 변경 감시 — 시험성적서 출력 직후 자동 갱신
+    private FileSystemWatcher? _watcher;
+    private DispatcherTimer? _refreshTimer;
+
     public ReportsPanel()
     {
         BuildUI();
         LoadFiles();
+        StartWatching();
+        DetachedFromVisualTree += (_, _) => StopWatching();
+    }
+
+    private void StartWatching()
+    {
+        try
+        {
+            Directory.CreateDirectory(ReportsDir);
+
+            // 다중 이벤트(쓰기 중 Created→Changed×N) 디바운스용 타이머
+            _refreshTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(300) };
+            _refreshTimer.Tick += (_, _) =>
+            {
+                _refreshTimer!.Stop();
+                LoadFiles();
+            };
+
+            _watcher = new FileSystemWatcher(ReportsDir)
+            {
+                NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite | NotifyFilters.Size,
+                IncludeSubdirectories = false,
+                EnableRaisingEvents = true,
+            };
+            _watcher.Created += OnDirChanged;
+            _watcher.Deleted += OnDirChanged;
+            _watcher.Renamed += OnDirChanged;
+            _watcher.Changed += OnDirChanged;
+        }
+        catch { }
+    }
+
+    private void StopWatching()
+    {
+        try
+        {
+            if (_watcher != null)
+            {
+                _watcher.EnableRaisingEvents = false;
+                _watcher.Created -= OnDirChanged;
+                _watcher.Deleted -= OnDirChanged;
+                _watcher.Renamed -= OnDirChanged;
+                _watcher.Changed -= OnDirChanged;
+                _watcher.Dispose();
+                _watcher = null;
+            }
+            _refreshTimer?.Stop();
+        }
+        catch { }
+    }
+
+    private void OnDirChanged(object? sender, FileSystemEventArgs e)
+    {
+        // FSW 이벤트는 백그라운드 스레드 → UI 스레드로 마샬링 후 디바운스 재시작
+        Dispatcher.UIThread.Post(() =>
+        {
+            _refreshTimer?.Stop();
+            _refreshTimer?.Start();
+        });
     }
 
     // ── UI 구성 ───────────────────────────────────────────────────────────

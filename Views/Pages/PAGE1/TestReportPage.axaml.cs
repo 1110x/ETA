@@ -102,6 +102,7 @@ public partial class TestReportPage : UserControl
     private ProgressBar?                 _infoLoadProgress;
     private Dictionary<string, string>   _standardValueCache = new();
     private ToggleSwitch?                _dischargeStdToggle;
+    private ComboBox?                    _sortModeCombo;
     private bool                         _showDischargeStd = true;
 
     public TestReportPage()
@@ -446,12 +447,14 @@ public partial class TestReportPage : UserControl
             _stdToggle = new ToggleSwitch
             {
                 IsChecked  = _showImportPanel,
-                OnContent  = "📎 Excel 불러오기",
-                OffContent = "📋 시험성적서",
+                OnContent  = "📎 Excel 불러오기 모드 (ON)",
+                OffContent = "📎 Excel 불러오기 모드 (OFF)",
                 FontFamily = Font, FontSize = AppTheme.FontBase,
                 HorizontalAlignment = HorizontalAlignment.Left,
                 Margin = new Thickness(8, 2),
             };
+            ToolTip.SetTip(_stdToggle,
+                "외부 Excel 파일에서 분석결과를 일괄 불러오는 모드. ON 으로 켜면 오른쪽 패널(Show3) 에서 파일 선택해 불러옵니다.");
             _stdToggle.IsCheckedChanged += (_, _) =>
             {
                 _showImportPanel = _stdToggle.IsChecked == true;
@@ -474,7 +477,9 @@ public partial class TestReportPage : UserControl
         {
             _persistentGrid = null; _listTCC = null;
 
+            // _stdToggle 이 이전 부모(ContentControl 또는 Panel)에 붙어있으면 제거 — 두 부모 동시 attach 방지
             if (_stdToggle.Parent is ContentControl oldC2) oldC2.Content = null;
+            else if (_stdToggle.Parent is Panel oldP2) oldP2.Children.Remove(_stdToggle);
             _stdToggleContainer = new ContentControl { Content = _stdToggle };
 
             // Content3 = 액션 패널 (파일 선택, 저장 등)
@@ -582,10 +587,24 @@ public partial class TestReportPage : UserControl
             return b;
         }
 
+        // 시험성적서 출력 정렬 모드 — 시험성적서 버튼 앞에 배치
+        _sortModeCombo = new ComboBox
+        {
+            FontFamily = Font, FontSize = AppTheme.FontSM,
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin = new Thickness(20, 0, 0, 0),
+            MinWidth = 130,
+        };
+        _sortModeCombo.Items.Add(new ComboBoxItem { Content = "ES번호 순" });
+        _sortModeCombo.Items.Add(new ComboBoxItem { Content = "32종 우선" });
+        _sortModeCombo.Items.Add(new ComboBoxItem { Content = "32종/일반 분리" });
+        _sortModeCombo.SelectedIndex = 0;
+        togglePanel.Children.Add(_sortModeCombo);
+
         var btnTR   = MkBtn("📄 시험성적서",   "#1a3a1a", "#7cd87c", OnPrintTestReport);
         var btnWMR  = MkBtn("📋 수질측정기록부", "#1a2a3a", "#7aaae8", OnPrintWaterRecord);
         var btnBoth = MkBtn("📄+📋 둘다",        "#2a2a1a", "#e8d87a", OnPrintBoth);
-        btnTR.Margin   = new Thickness(20, 0, 0, 0);
+        btnTR.Margin   = new Thickness(4, 0, 0, 0);
         btnWMR.Margin  = new Thickness(4, 0, 0, 0);
         btnBoth.Margin = new Thickness(4, 0, 0, 0);
         togglePanel.Children.Add(btnTR);
@@ -753,7 +772,7 @@ public partial class TestReportPage : UserControl
         OpenPrintWindow();
     }
 
-    /// <summary>📋 수질측정기록부 Excel 생성</summary>
+    /// <summary>📋 수질측정기록부 Excel 생성 — 항목 수에 따라 1page/2page 자동(템플릿 분기).</summary>
     private async void OnPrintWaterRecord(object? sender, RoutedEventArgs e)
     {
         if (_selectedSample == null) { ShowToast("시료를 먼저 선택하세요."); return; }
@@ -2244,12 +2263,49 @@ public partial class TestReportPage : UserControl
         try
         {
             var rows = BuildResultRowsForSample(_selectedSample);
-            var path = TestReportWordPrintService.FillAndSave(
-                sample: _selectedSample, rows: rows, meta: _meta,
-                includeStandard: _showDischargeStd,
-                openAfter: true);
-            Log($"✅ 시험성적서 Word 저장: {path}");
-            ShowToast($"✅ 저장 완료\n{System.IO.Path.GetFileName(path)}");
+            int modeIdx = _sortModeCombo?.SelectedIndex ?? 0;
+
+            // 분류 결과 진단 — 32종 0건이면 Parts 컬럼 입력 확인 안내
+            var (special, standard) = TestReportWordPrintService.CountClassification(rows, _meta);
+            int unmatched = rows.Count(r => !_meta.ContainsKey(r.항목명 ?? ""));
+            Log($"[분류] 특정32종 {special}건 / 나머지 {standard}건 / _meta매칭실패 {unmatched}건");
+
+            if (modeIdx == 2)
+            {
+                if (special == 0)
+                {
+                    var msg = $"⚠ 특정32종 0건\n시료 항목 {rows.Count}개, _meta매칭실패 {unmatched}개";
+                    ShowToast(msg);
+                    return;
+                }
+                // 32종/일반 분리 — 두 개의 docx 생성
+                var p1 = TestReportWordPrintService.FillAndSave(
+                    sample: _selectedSample, rows: rows, meta: _meta,
+                    includeStandard: _showDischargeStd, openAfter: false,
+                    sortMode: TestReportWordPrintService.SortMode.SpecialOnly,
+                    fileNameSuffix: "특정32종");
+                var p2 = TestReportWordPrintService.FillAndSave(
+                    sample: _selectedSample, rows: rows, meta: _meta,
+                    includeStandard: _showDischargeStd, openAfter: true,
+                    sortMode: TestReportWordPrintService.SortMode.StandardOnly,
+                    fileNameSuffix: "일반항목");
+                Log($"✅ 32종/일반 분리: {p1} | {p2}");
+                ShowToast($"✅ 2개 파일 (32종 {special}건 + 나머지 {standard}건)\n{System.IO.Path.GetFileName(p1)}\n{System.IO.Path.GetFileName(p2)}");
+            }
+            else
+            {
+                var sortMode = modeIdx == 1
+                    ? TestReportWordPrintService.SortMode.SpecialFirst
+                    : TestReportWordPrintService.SortMode.ByEs;
+                var path = TestReportWordPrintService.FillAndSave(
+                    sample: _selectedSample, rows: rows, meta: _meta,
+                    includeStandard: _showDischargeStd, openAfter: true,
+                    sortMode: sortMode);
+                Log($"✅ 시험성적서 Word 저장 (mode={sortMode}): {path}");
+                string suffix = sortMode == TestReportWordPrintService.SortMode.SpecialFirst
+                    ? $" (32종 {special}건 우선)" : "";
+                ShowToast($"✅ 저장 완료{suffix}\n{System.IO.Path.GetFileName(path)}");
+            }
         }
         catch (Exception ex) { Log($"❌ Word 오류: {ex.Message}"); ShowToast($"❌ 오류: {ex.Message}"); }
     }
