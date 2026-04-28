@@ -169,27 +169,45 @@ public static class EcotoxicityService
         for (int i = 0; i < n; i++)
             logConc[i] = Math.Log10(Math.Max(concentrations[i], 1e-10));
 
-        // 6. Trimmed 비율 조정
-        var adj = new double[n];
+        // 6. LC50/EC50 산출 — EPA TSK 표준 방식.
+        //    PAVA 평활값(props) 을 그대로 사용해 p=0.5 의 선형보간(log-농도 공간)으로 LC50 추정.
+        //    이전 구현은 trim 보정을 [trim, 1-trim] → [0, 1] 로 선형 재스케일한 뒤 SK 사다리꼴 적분을
+        //    적용했는데, 표준 EPA TSK.exe (Hamilton 1977) 와 결과가 달라 EC50 이 과소추정됨.
+        //    trim 은 외삽 / 신뢰구간용으로만 사용하고 LC50 자체는 PAVA 평활값으로 직접 보간.
+        string? warning = ctrlWarn;
+
+        double logEC50;
+        int idx = -1;
         for (int i = 0; i < n; i++)
         {
-            adj[i] = props[i];
-            if (adj[i] < trim) adj[i] = 0;
-            else if (adj[i] > 1 - trim) adj[i] = 1;
-            else adj[i] = (adj[i] - trim) / (1 - 2 * trim);
+            if (props[i] >= 0.5) { idx = i; break; }
         }
 
-        // 7. Spearman-Karber 추정
-        double m = 0;
-        for (int i = 0; i < n - 1; i++)
+        if (idx == -1)
         {
-            double dx = logConc[i + 1] - logConc[i];
-            double pMid = (adj[i + 1] + adj[i]) / 2.0;
-            m += dx * pMid;
+            // 모든 농도에서 p < 0.5 — LC50 가 시험농도 최고치 초과 (외삽)
+            logEC50 = logConc[n - 1];
+            warning = (warning ?? "") + " LC50 가 시험농도 최고치 초과 (외삽).";
         }
-        double logEC50 = logConc[n - 1] - m;
+        else if (idx == 0)
+        {
+            // 최저농도에서 이미 p ≥ 0.5 — LC50 가 시험농도 최저치 미만 (외삽)
+            logEC50 = logConc[0];
+            warning = (warning ?? "") + " LC50 가 시험농도 최저치 미만 (외삽).";
+        }
+        else
+        {
+            double pLow  = props[idx - 1];
+            double pHigh = props[idx];
+            double xLow  = logConc[idx - 1];
+            double xHigh = logConc[idx];
+            if (pHigh - pLow < 1e-12)
+                logEC50 = xHigh;
+            else
+                logEC50 = xLow + (0.5 - pLow) / (pHigh - pLow) * (xHigh - xLow);
+        }
 
-        // 8. 분산 계산
+        // 7. 분산 계산 — PAVA 평활값(props) 기준
         double variance = 0;
         for (int i = 0; i < n; i++)
         {
@@ -200,13 +218,11 @@ public static class EcotoxicityService
         }
         double se = Math.Sqrt(variance);
 
-        // 9. 결과
+        // 8. 결과
         double ec50 = Math.Pow(10, logEC50);
         double lower = Math.Pow(10, logEC50 - 1.96 * se);
         double upper = Math.Pow(10, logEC50 + 1.96 * se);
         double tu = ec50 > 0 ? Math.Round(100.0 / ec50, 1) : 0;
-
-        string? warning = ctrlWarn;
 
         return new EcotoxResult(
             Math.Round(ec50, 2), Math.Round(lower, 2), Math.Round(upper, 2),
