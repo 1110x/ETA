@@ -71,6 +71,10 @@ public partial class EcotoxicityPage : UserControl
     private TextBlock? _selectedTreeNameTb;  // Show1 선택된 시료명 TextBlock
     private string _selectedSn = "";          // Show1 선택된 접수번호(또는 약칭) — DB SN 식별자로 사용
     private string _selectedAlias = "";       // Show1 선택된 약칭
+    private int    _selectedRecId = -1;       // Show1 선택된 수질분석센터_결과 rowid — 현장측정 조회용
+
+    // 생태독성 담당자 입력 3개 (염분/암모니아/경도) TextBox 참조
+    private TextBox? _tbSalinity, _tbAmmonia, _tbHardness;
 
     // ── 추가 시험조건 데이터 (ES 04704.1c 기준) ────────────────────────────
     private double _testTemperature = 20.0;  // (20±2)°C
@@ -119,7 +123,13 @@ public partial class EcotoxicityPage : UserControl
         RefreshRecordsPanel();
     }
 
-    /// <summary>Show4 — 생태독성_시험기록부 DB 항목 리스트. 클릭 시 폼에 로드.</summary>
+    /// <summary>생태독성 전용 출력 폴더 — 시험기록부/법정양식 docx 모두 여기에 저장</summary>
+    private static string EcotoxOutputDir =>
+        System.IO.Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+            "ETA 생태독성 시험기록부");
+
+    /// <summary>Show4 — 생태독성 출력 폴더의 docx 파일 리스트. 클릭 시 Word 로 열림.</summary>
     public void RefreshRecordsPanel()
     {
         var root = new StackPanel { Spacing = 4, Margin = new Thickness(8) };
@@ -132,7 +142,7 @@ public partial class EcotoxicityPage : UserControl
         };
         var headerLabel = new TextBlock
         {
-            Text = "📋 시험기록부 저장 항목",
+            Text = "📋 생태독성 시험기록부",
             FontSize = AppTheme.FontMD, FontWeight = FontWeight.SemiBold,
             Foreground = AppTheme.FgInfo,
             VerticalAlignment = VerticalAlignment.Center,
@@ -142,7 +152,7 @@ public partial class EcotoxicityPage : UserControl
 
         var openFolderBtn = new Button
         {
-            Content = "📂 저장 폴더 열기",
+            Content = "📂 폴더 열기",
             FontSize = AppTheme.FontXS,
             Padding = new Thickness(8, 3),
             VerticalAlignment = VerticalAlignment.Center,
@@ -152,50 +162,47 @@ public partial class EcotoxicityPage : UserControl
         headerRow.Children.Add(openFolderBtn);
         root.Children.Add(headerRow);
 
-        List<(int id, string 분석일, string 시료명, string 시험번호, string LC50, string TU)> rows = new();
+        // 폴더 파일 스캔 (mtime 내림차순)
+        var files = new List<System.IO.FileInfo>();
         try
         {
-            using var conn = DbConnectionFactory.CreateConnection();
-            conn.Open();
-            if (DbConnectionFactory.TableExists(conn, "생태독성_시험기록부"))
-            {
-                using var cmd = conn.CreateCommand();
-                cmd.CommandText = @"SELECT id, COALESCE(분석일,''), COALESCE(시료명,''),
-                                           COALESCE(시험번호,''), COALESCE(LC50,''), COALESCE(TU,'')
-                                    FROM `생태독성_시험기록부`
-                                    ORDER BY 분석일 DESC, id DESC";
-                using var r = cmd.ExecuteReader();
-                while (r.Read())
-                    rows.Add((r.GetInt32(0), r.GetString(1), r.GetString(2),
-                              r.GetString(3), r.GetString(4), r.GetString(5)));
-            }
+            System.IO.Directory.CreateDirectory(EcotoxOutputDir);
+            files = new System.IO.DirectoryInfo(EcotoxOutputDir)
+                .GetFiles("*.docx")
+                .Where(fi => !fi.Name.StartsWith("~$"))   // Word 임시파일 제외
+                .OrderByDescending(fi => fi.LastWriteTime)
+                .ToList();
         }
         catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"[Ecotox.Show4] {ex.Message}"); }
 
-        if (rows.Count == 0)
+        if (files.Count == 0)
         {
             root.Children.Add(new TextBlock
             {
-                Text = "저장된 항목이 없습니다.",
+                Text = "출력된 시험기록부 / 법정양식이 없습니다.",
                 FontSize = AppTheme.FontSM, Foreground = AppTheme.FgDimmed,
             });
         }
         else
         {
-            foreach (var rec in rows)
+            foreach (var fi in files)
             {
+                bool isLegal = fi.Name.Contains("법정양식", StringComparison.OrdinalIgnoreCase);
+                string icon  = isLegal ? "📜" : "🧪";
+
                 var stack = new StackPanel { Spacing = 2 };
                 stack.Children.Add(new TextBlock
                 {
-                    Text = $"📅 {rec.분석일}  ·  {rec.시료명}",
+                    Text = $"{icon}  {System.IO.Path.GetFileNameWithoutExtension(fi.Name)}",
                     FontSize = AppTheme.FontSM, FontWeight = FontWeight.Medium,
+                    TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
                 });
-                if (!string.IsNullOrWhiteSpace(rec.시험번호) || !string.IsNullOrWhiteSpace(rec.LC50))
-                    stack.Children.Add(new TextBlock
-                    {
-                        Text = $"#{rec.시험번호}   LC50={rec.LC50}   TU={rec.TU}",
-                        FontSize = AppTheme.FontXS, Foreground = AppTheme.FgDimmed,
-                    });
+                stack.Children.Add(new TextBlock
+                {
+                    Text = $"   {fi.LastWriteTime:yyyy-MM-dd HH:mm}    ({fi.Length / 1024.0:N1} KB)",
+                    FontSize = AppTheme.FontXS, Foreground = AppTheme.FgDimmed,
+                });
+
                 var border = new Border
                 {
                     Padding = new Thickness(8, 6),
@@ -205,10 +212,21 @@ public partial class EcotoxicityPage : UserControl
                     Cursor = new Cursor(StandardCursorType.Hand),
                     Child = stack,
                 };
-                int idCopy = rec.id;
+                string capturedPath = fi.FullName;
                 border.PointerEntered += (_, _) => border.Background = AppRes("BgHover", "#2a2a35");
                 border.PointerExited  += (_, _) => border.Background = AppRes("PanelBg", "#1f1f28");
-                border.PointerPressed += (_, _) => LoadRecordToForm(idCopy);
+                border.PointerPressed += (_, _) =>
+                {
+                    try
+                    {
+                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                        {
+                            FileName = capturedPath,
+                            UseShellExecute = true,
+                        });
+                    }
+                    catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"[Ecotox.OpenFile] {ex.Message}"); }
+                };
                 root.Children.Add(border);
             }
         }
@@ -217,6 +235,66 @@ public partial class EcotoxicityPage : UserControl
     }
 
     /// <summary>DB 행 → 폼 입력 필드 복원</summary>
+    /// <summary>Windows/Unix 양쪽 금지문자 제거 — 파일명 안전화</summary>
+    private static string SanitizeFileName(string raw)
+    {
+        if (string.IsNullOrWhiteSpace(raw)) return "시료";
+        var invalid = System.IO.Path.GetInvalidFileNameChars();
+        var s = raw.Trim();
+        foreach (var c in invalid) s = s.Replace(c, '_');
+        // 공백 정리 — 연속 공백 1개로
+        while (s.Contains("  ")) s = s.Replace("  ", " ");
+        return s.Length == 0 ? "시료" : s;
+    }
+
+    /// <summary>SN 으로 생태독성_시험기록부에서 가장 최근 기록 id 검색 (없으면 -1)</summary>
+    private int FindEcotoxRecordIdBySn(string sn)
+    {
+        if (string.IsNullOrWhiteSpace(sn)) return -1;
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            if (!DbConnectionFactory.TableExists(conn, "생태독성_시험기록부")) return -1;
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT id FROM `생태독성_시험기록부` WHERE SN=@sn ORDER BY 분석일 DESC, id DESC LIMIT 1";
+            cmd.Parameters.AddWithValue("@sn", sn);
+            var v = cmd.ExecuteScalar();
+            if (v != null && int.TryParse(v.ToString(), out var id)) return id;
+        }
+        catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"[FindEcotoxRecordIdBySn] {ex.Message}"); }
+        return -1;
+    }
+
+    /// <summary>새 시료 선택 시 입력값 초기화 — 이전 시료 분석 데이터 잔존 방지</summary>
+    private void ResetAnalysisState()
+    {
+        _controlOrganisms   = 20;
+        _controlMortalities = 0;
+        _tskResult    = null;
+        _probitResult = null;
+        _records.Clear();
+        _testNumber = "1";
+        _endpoint = "EC50";
+        _concUnit = "%";
+        _duration = "24";
+        _durUnit  = "H";
+        // 표준농도(6.25/12.5/25/50/100)를 디폴트로 자동 적용
+        ApplyStandardConcentrations();
+    }
+
+    /// <summary>표준농도 자동 입력 — 6.25/12.5/25/50/100% × 생물수 20 균등</summary>
+    private void ApplyStandardConcentrations()
+    {
+        _numConcentrations = 5;
+        _concentrations = (double[])EcotoxicityService.StandardConcentrations.Clone();
+        _organisms      = new int[5];
+        _mortalities    = new int[5];
+        for (int i = 0; i < 5; i++) _organisms[i] = EcotoxicityService.StandardOrganismsPerConc;
+        _equalOrganisms   = true;
+        _organismsPerConc = EcotoxicityService.StandardOrganismsPerConc;
+    }
+
     private void LoadRecordToForm(int id)
     {
         try
@@ -258,9 +336,12 @@ public partial class EcotoxicityPage : UserControl
             // EC50/TU 결과 — 시험기록부 출력 시 필요 (이전엔 누락 → 출력 무반응의 원인)
             double.TryParse(Get("LC50"), out var ec50);
             double.TryParse(Get("TU"),  out var tu);
-            double.TryParse(Get("LC50_lower"), out var ciLow);
-            double.TryParse(Get("LC50_upper"), out var ciHigh);
-            string method = !string.IsNullOrWhiteSpace(Get("분석법")) ? Get("분석법") : "TSK";
+            double.TryParse(Get("LC50_하한"), out var ciLow);
+            double.TryParse(Get("LC50_상한"), out var ciHigh);
+            // DB 컬럼은 `분석방법` — 옛버전 호환: `분석법` 도 fallback 으로 시도
+            string method = !string.IsNullOrWhiteSpace(Get("분석방법")) ? Get("분석방법")
+                          : !string.IsNullOrWhiteSpace(Get("분석법"))   ? Get("분석법")
+                          : "TSK";
             double.TryParse(Get("Trim_percent"), out var trim);
             string warn = Get("비고");
             var loadedResult = new EcotoxicityService.EcotoxResult(
@@ -281,7 +362,9 @@ public partial class EcotoxicityPage : UserControl
             _records.Clear();
             int validCnt = _concentrations.Count(c => c > 0);
             _records.Add(new TestRecord(
-                _testDate, _testNumber, _species, _toxicant,
+                _testDate,
+                !string.IsNullOrWhiteSpace(_selectedSn) ? _selectedSn : _testNumber,
+                _species, _toxicant,
                 Get("시료명"),
                 _tskResult ?? _probitResult ?? loadedResult,
                 _probitResult,
@@ -400,7 +483,19 @@ public partial class EcotoxicityPage : UserControl
                         ? capturedRec.접수번호
                         : capturedRec.약칭;
                     _selectedAlias = capturedRec.약칭;
-                    ShowInputForm();
+                    _selectedRecId = capturedRec.Id;
+
+                    // SN 기준 생태독성_시험기록부에서 기존 분석 기록 조회 — 있으면 폼에 로드, 없으면 입력값 초기화
+                    int existingRecId = FindEcotoxRecordIdBySn(_selectedSn);
+                    if (existingRecId > 0)
+                    {
+                        LoadRecordToForm(existingRecId);
+                    }
+                    else
+                    {
+                        ResetAnalysisState();
+                        ShowInputForm();
+                    }
                 };
 
                 root.Children.Add(item);
@@ -410,11 +505,34 @@ public partial class EcotoxicityPage : UserControl
         StatsPanelChanged?.Invoke(new ScrollViewer { Content = root });
     }
 
+    // 생태독성 담당자 입력(염분/암모니아/경도) 저장
+    private void SaveEcotoxFields()
+    {
+        if (_selectedRecId < 0) { Log("생태측정 저장 스킵: 선택된 시료 없음"); return; }
+        var values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["생태_염분"]     = _tbSalinity?.Text ?? "",
+            ["생태_암모니아"] = _tbAmmonia?.Text  ?? "",
+            ["생태_경도"]     = _tbHardness?.Text ?? "",
+        };
+        int rowId = _selectedRecId;
+        _ = System.Threading.Tasks.Task.Run(() =>
+            ETA.Services.SERVICE1.AnalysisRequestService.UpdateEcotoxFields(rowId, values));
+        Log($"생태측정 저장: rowId={rowId} 염분={values["생태_염분"]} 암모니아={values["생태_암모니아"]} 경도={values["생태_경도"]}");
+    }
+
     // ══════════════════════════════════════════════════════════════════════════
     //  Show2: 단계별 입력 폼 (DOS TSK 프로그램 재현)
     // ══════════════════════════════════════════════════════════════════════════
     private void ShowInputForm()
     {
+        // 농도가 비어있거나 모두 0이면 표준농도 자동 적용 (사용자가 버튼 안 눌러도)
+        if (_concentrations == null || _concentrations.Length == 0 ||
+            _concentrations.All(c => c <= 0))
+        {
+            ApplyStandardConcentrations();
+        }
+
         var root = new StackPanel { Spacing = 12, Margin = new Thickness(14) };
 
         // ── 헤더 바 ─────────────────────────────────────────────────────────
@@ -479,6 +597,140 @@ public partial class EcotoxicityPage : UserControl
         constSp.Children.Add(MakeReadOnlyItem("시험시간", $"{_duration} {_durUnit}"));
         constStrip.Child = constSp;
         infoStack.Children.Add(constStrip);
+
+        // 현장측정항목 read-only 스트립 — 분석의뢰내역에서 입력된 값을 그대로 표시
+        // 그리고 생태독성 담당자가 입력하는 3개 항목(염분/암모니아/경도) 입력란 추가
+        if (_selectedRecId >= 0)
+        {
+            try
+            {
+                var row = ETA.Services.SERVICE1.AnalysisRequestService.GetRecordRow(_selectedRecId);
+                string V(string col) => row.TryGetValue(col, out var s) && !string.IsNullOrWhiteSpace(s) ? s : "—";
+
+                var fieldStrip = new Border
+                {
+                    Background = AppRes("Panel4Bg"),
+                    CornerRadius = new CornerRadius(4),
+                    Padding = new Thickness(10, 6),
+                };
+                var fsp = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 14 };
+                fsp.Children.Add(new TextBlock
+                {
+                    Text = "📍 현장측정",
+                    FontSize = AppTheme.FontSM, FontFamily = Font,
+                    Foreground = AppRes("FgMuted"),
+                    VerticalAlignment = VerticalAlignment.Center,
+                });
+                fsp.Children.Add(new Border { Width = 1, Background = AppRes("ThemeBorderSubtle") });
+                fsp.Children.Add(MakeReadOnlyItem("온도",       V("현장_온도")       + " ℃"));
+                fsp.Children.Add(new Border { Width = 1, Background = AppRes("ThemeBorderSubtle") });
+                fsp.Children.Add(MakeReadOnlyItem("pH",         V("현장_pH")));
+                fsp.Children.Add(new Border { Width = 1, Background = AppRes("ThemeBorderSubtle") });
+                fsp.Children.Add(MakeReadOnlyItem("용존산소",   V("현장_용존산소")   + " mg/L"));
+                fsp.Children.Add(new Border { Width = 1, Background = AppRes("ThemeBorderSubtle") });
+                fsp.Children.Add(MakeReadOnlyItem("전기전도도", V("현장_전기전도도") + " μS/cm"));
+                fsp.Children.Add(new Border { Width = 1, Background = AppRes("ThemeBorderSubtle") });
+                fsp.Children.Add(MakeReadOnlyItem("잔류염소",   V("현장_잔류염소")   + " mg/L"));
+                fieldStrip.Child = fsp;
+                // root 레벨에 추가 — twoCol(시험정보·대조군 좌, 농도설정·데이터 우) 다음에 위치 = 대조군 아래 풀 폭
+                fieldStrip.Margin = new Thickness(0, 8, 0, 0);
+                root.Children.Add(fieldStrip);
+
+                // 생태독성 담당자 입력 — 염분 / 암모니아 / 경도 + 저장 버튼
+                var ecoStrip = new Border
+                {
+                    Background = AppRes("Panel4Bg"),
+                    CornerRadius = new CornerRadius(4),
+                    Padding = new Thickness(10, 6),
+                };
+                TextBox MkInput(string initial)
+                {
+                    return new TextBox
+                    {
+                        Text       = initial,
+                        FontFamily = Font, FontSize = AppTheme.FontSM,
+                        Height     = 26, Padding = new Thickness(4, 2),
+                        Width      = 72,                // 명시 Width — 라벨/단위와 겹치지 않도록
+                        VerticalAlignment = VerticalAlignment.Center,
+                        VerticalContentAlignment = VerticalAlignment.Center,
+                        TextAlignment = Avalonia.Media.TextAlignment.Right,
+                    };
+                }
+                TextBlock MkLbl(string text) => new TextBlock
+                {
+                    Text       = text,
+                    FontFamily = Font, FontSize = AppTheme.FontSM,
+                    Foreground = AppRes("FgMuted"),
+                    VerticalAlignment = VerticalAlignment.Center,
+                };
+                TextBlock MkUnit(string text) => new TextBlock
+                {
+                    Text       = text,
+                    FontFamily = Font, FontSize = AppTheme.FontXS,
+                    Foreground = AppRes("FgMuted"),
+                    VerticalAlignment = VerticalAlignment.Center,
+                };
+                Border MkDivider() => new Border
+                {
+                    Width = 1, Background = AppRes("ThemeBorderSubtle"),
+                    Margin = new Thickness(0, 2),
+                };
+
+                _tbSalinity = MkInput(V("생태_염분") == "—" ? "" : V("생태_염분"));
+                _tbAmmonia  = MkInput(V("생태_암모니아") == "—" ? "" : V("생태_암모니아"));
+                _tbHardness = MkInput(V("생태_경도") == "—" ? "" : V("생태_경도"));
+
+                var btnSaveEco = new Button
+                {
+                    Content    = "💾  저장",
+                    FontFamily = Font, FontSize = AppTheme.FontSM,
+                    Padding    = new Thickness(10, 4),
+                    Background = AppRes("BtnPrimaryBg"),
+                    Foreground = AppRes("BtnPrimaryFg"),
+                    BorderBrush = AppRes("BtnPrimaryBorder"),
+                    BorderThickness = new Thickness(1),
+                    CornerRadius    = new CornerRadius(4),
+                    Margin     = new Thickness(8, 0, 0, 0),
+                    Cursor     = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
+                };
+                btnSaveEco.Click += (_, _) => SaveEcotoxFields();
+
+                // 가로 StackPanel — 라벨/입력란/단위가 자연스럽게 쌓이도록
+                var ecoSp = new StackPanel
+                {
+                    Orientation = Orientation.Horizontal,
+                    Spacing     = 6,
+                    VerticalAlignment = VerticalAlignment.Center,
+                };
+                ecoSp.Children.Add(new TextBlock
+                {
+                    Text = "🐟 생태측정",
+                    FontFamily = Font, FontSize = AppTheme.FontSM,
+                    Foreground = AppRes("FgMuted"),
+                    VerticalAlignment = VerticalAlignment.Center,
+                });
+                ecoSp.Children.Add(MkDivider());
+                ecoSp.Children.Add(MkLbl("염분"));    ecoSp.Children.Add(_tbSalinity); ecoSp.Children.Add(MkUnit("‰"));
+                ecoSp.Children.Add(MkDivider());
+                ecoSp.Children.Add(MkLbl("암모니아")); ecoSp.Children.Add(_tbAmmonia);  ecoSp.Children.Add(MkUnit("mg/L"));
+                ecoSp.Children.Add(MkDivider());
+                ecoSp.Children.Add(MkLbl("경도"));    ecoSp.Children.Add(_tbHardness); ecoSp.Children.Add(MkUnit("mg/L"));
+                ecoSp.Children.Add(btnSaveEco);
+
+                // 좁은 폭에서도 가로 스크롤로 잘리지 않도록
+                var ecoScroll = new ScrollViewer
+                {
+                    Content = ecoSp,
+                    HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+                    VerticalScrollBarVisibility   = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
+                };
+                ecoStrip.Child = ecoScroll;
+                // 현장측정 strip 바로 아래 풀 폭 — 라벨/입력란 겹침 방지
+                ecoStrip.Margin = new Thickness(0, 4, 0, 0);
+                root.Children.Add(ecoStrip);
+            }
+            catch { }
+        }
 
         // 편집 필드: 단일 컬럼 (라벨 좁게, 입력 넓게 stretch)
         var fieldGrid = new Grid { ColumnSpacing = 10, RowSpacing = 8 };
@@ -579,13 +831,7 @@ public partial class EcotoxicityPage : UserControl
         };
         stdBtn.Click += (_, _) =>
         {
-            _numConcentrations = 5;
-            _concentrations = (double[])EcotoxicityService.StandardConcentrations.Clone();
-            _organisms = new int[5];
-            _mortalities = new int[5];
-            for (int si = 0; si < 5; si++) _organisms[si] = EcotoxicityService.StandardOrganismsPerConc;
-            _equalOrganisms = true;
-            _organismsPerConc = EcotoxicityService.StandardOrganismsPerConc;
+            ApplyStandardConcentrations();
             ShowInputForm();
         };
         rightCol.Children.Add(MakeCard("⚗️", "농도 설정", concSetStack));
@@ -756,21 +1002,6 @@ public partial class EcotoxicityPage : UserControl
             catch (Exception ex) { resultTb.Text = $"Probit 오류: {ex.Message}"; }
         }
 
-        void DoCalcGraphical()
-        {
-            var (vc, vo, vm) = CollectValid();
-            if (vc.Count < 2) { resultTb.Text = "최소 2개 유효 농도가 필요합니다."; return; }
-            try
-            {
-                _tskResult = EcotoxicityService.CalculateGraphical(vc.ToArray(), vo.ToArray(), vm.ToArray(), _controlOrganisms, _controlMortalities);
-                resultTb.Text = $"그래프법  {_endpoint}:  {_tskResult.EC50}     TU = {_tskResult.TU}  (100/{_tskResult.EC50})";
-                detailTb.Text = (string.IsNullOrEmpty(_tskResult.Warning) ? "" : $"ℹ {_tskResult.Warning}");
-                compareTb.Text = "";
-                _probitResult = null;
-            }
-            catch (Exception ex) { resultTb.Text = $"그래프법 오류: {ex.Message}"; }
-        }
-
         void DoCalcBoth()
         {
             var (vc, vo, vm) = CollectValid();
@@ -809,12 +1040,10 @@ public partial class EcotoxicityPage : UserControl
 
         var tskBtn     = MakeActionBtn("TSK 계산",     BadgeStatus.Info);
         var probitBtn  = MakeActionBtn("Probit 계산",  BadgeStatus.Info);
-        var graphBtn   = MakeActionBtn("그래프법 계산", BadgeStatus.Info);
         var bothBtn    = MakeActionBtn("TSK + Probit", BadgeStatus.Accent);
         var saveBtn    = MakeActionBtn("💾 DB 저장",   BadgeStatus.Ok);
         tskBtn.Click    += (_, _) => DoCalcTSK();
         probitBtn.Click += (_, _) => DoCalcProbit();
-        graphBtn.Click  += (_, _) => DoCalcGraphical();
         bothBtn.Click   += (_, _) => DoCalcBoth();
         saveBtn.Click += (_, _) =>
         {
@@ -933,7 +1162,6 @@ public partial class EcotoxicityPage : UserControl
         leftActions.Children.Add(FsSM(new TextBlock { Text = "▶ 분석", FontFamily = Font, Foreground = AppRes("FgMuted"), VerticalAlignment = VerticalAlignment.Center }));
         leftActions.Children.Add(tskBtn);
         leftActions.Children.Add(probitBtn);
-        leftActions.Children.Add(graphBtn);
         leftActions.Children.Add(bothBtn);
         Grid.SetColumn(leftActions, 0); actionGrid.Children.Add(leftActions);
 
@@ -1197,6 +1425,133 @@ public partial class EcotoxicityPage : UserControl
         System.Diagnostics.Debug.WriteLine(line);
     }
 
+    /// <summary>법정양식(원수 시료 결과 기록부 — ES 04704.1c 별지 1) Word 출력</summary>
+    public async Task ExportLegalReportAsync()
+    {
+        try
+        {
+            ExportLog("══════ ExportLegalReportAsync 진입 ══════");
+            if (_selectedRecId < 0)
+            {
+                SetExportStatus("출력 실패: Show1에서 시료를 먼저 선택하세요.", ok: false);
+                return;
+            }
+
+            // 시료 row + 현장/생태측정값
+            var row = ETA.Services.SERVICE1.AnalysisRequestService.GetRecordRow(_selectedRecId);
+            string V(string col) => row.TryGetValue(col, out var s) && !string.IsNullOrWhiteSpace(s) ? s : "";
+
+            // 분장표준처리에서 오늘 자(=작성일) 생태독성 담당자 조회
+            string today = DateTime.Today.ToString("yyyy-MM-dd");
+            string 기입자 = "";
+            try
+            {
+                var managers = ETA.Services.SERVICE1.AnalysisRequestService.GetManagersByDate(today);
+                foreach (var kv in managers)
+                {
+                    if (kv.Key.Contains("생태독성", StringComparison.OrdinalIgnoreCase) ||
+                        kv.Key.Contains("물벼룩",   StringComparison.OrdinalIgnoreCase))
+                    {
+                        기입자 = kv.Value;
+                        break;
+                    }
+                }
+            }
+            catch { }
+
+            // 독성결과 6×5 매트릭스 — Control 행은 _controlOrganisms / _controlMortalities 1열만, 나머지 5개 농도는
+            // _concentrations[i] 와 _mortalities[i] 사용 (반복 1회만 입력되는 구조라 1번 열에만 채움)
+            string[][] tox = new string[6][];
+            // Row 0: Control
+            tox[0] = new[]
+            {
+                _controlOrganisms > 0 ? _controlMortalities.ToString() : "",
+                "", "", "", _controlOrganisms > 0
+                    ? (_controlMortalities * 100.0 / Math.Max(1, _controlOrganisms)).ToString("0.#")
+                    : ""
+            };
+            // Row 1~5: 6.25, 12.5, 25, 50, 100
+            double[] stdConc = { 6.25, 12.5, 25, 50, 100 };
+            for (int r = 0; r < 5; r++)
+            {
+                int idx = -1;
+                for (int i = 0; i < _concentrations.Length; i++)
+                    if (Math.Abs(_concentrations[i] - stdConc[r]) < 0.001) { idx = i; break; }
+
+                if (idx < 0)
+                {
+                    tox[r + 1] = new[] { "", "", "", "", "" };
+                    continue;
+                }
+                int org = _organisms[idx];
+                int mort = _mortalities[idx];
+                double rate = org > 0 ? mort * 100.0 / org : 0;
+                tox[r + 1] = new[] { mort.ToString(), "", "", "", org > 0 ? rate.ToString("0.#") : "" };
+            }
+
+            // 결과값 EC50 / TU
+            var ecResult = _tskResult ?? _probitResult;
+            string ec50 = ecResult != null && ecResult.EC50 > 0 ? ecResult.EC50.ToString("0.##") : "";
+            string tu   = ecResult != null && ecResult.TU > 0 ? ecResult.TU.ToString("0.##") : "";
+
+            var data = new ETA.Services.SERVICE2.EcotoxicityLegalReportExporter.FormData(
+                배출시설:    row.TryGetValue("업체명", out var c) ? c : (row.TryGetValue("약칭", out var ab) ? ab : ""),
+                시료채취장소: row.TryGetValue("시료명", out var s2) ? s2 : "",
+                시료번호:    row.TryGetValue("접수번호", out var sn) ? sn : "",
+                채취일자:    row.TryGetValue("채취일자", out var cd) ? cd : "",
+                온도:        V("현장_온도"),
+                pH:          V("현장_pH"),
+                용존산소:    V("현장_용존산소"),
+                유입수량:    "",
+                전기전도도:  V("현장_전기전도도"),
+                염분:        V("생태_염분"),
+                잔류염소:    V("현장_잔류염소"),
+                암모니아:    V("생태_암모니아"),
+                경도:        V("생태_경도"),
+                독성결과:    tox,
+                EC50:        ec50,
+                TU:          tu,
+                통계분석법:  _ecCalculationMethod,
+                작성일:      today,
+                기입자성명:  기입자);
+
+            // 데스크톱\ETA 생태독성 시험기록부\ (시험기록부/법정양식 통합 폴더)
+            string saveDir = EcotoxOutputDir;
+            System.IO.Directory.CreateDirectory(saveDir);
+            // 파일명: MM-DD {시료명} - 법정양식.docx (Windows 금지문자 제거)
+            string mmdd = DateTime.Now.ToString("MM-dd");
+            string sampleSafe = SanitizeFileName(data.시료채취장소);
+            string filename = $"{mmdd} {sampleSafe} - 법정양식.docx";
+            string savePath = System.IO.Path.Combine(saveDir, filename);
+
+            var (ok, msg) = await Task.Run(() =>
+                ETA.Services.SERVICE2.EcotoxicityLegalReportExporter.Export(data, savePath));
+
+            if (!ok)
+            {
+                SetExportStatus($"법정기록부 출력 실패: {msg}", ok: false);
+                return;
+            }
+
+            SetExportStatus($"✅ 법정기록부 출력 완료 → {savePath}", ok: true);
+
+            try
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName        = savePath,
+                    UseShellExecute = true,
+                });
+            }
+            catch (Exception ex) { ExportLog($"  자동 열기 실패: {ex.Message}"); }
+        }
+        catch (Exception ex)
+        {
+            ExportLog($"법정기록부 예외: {ex.Message}");
+            SetExportStatus($"법정기록부 출력 예외: {ex.Message}", ok: false);
+        }
+    }
+
     public async Task ExportTestReportAsync()
     {
         ExportLog("══════ ExportTestReportAsync 진입 ══════");
@@ -1245,12 +1600,13 @@ public partial class EcotoxicityPage : UserControl
             string tmpPath = EcotoxicityWordExporter.Export(dtos);
             ExportLog($"Export 완료 — tmpPath={tmpPath}, exists={File.Exists(tmpPath)}, size={(File.Exists(tmpPath)?new FileInfo(tmpPath).Length:0)}");
 
-            // 데스크톱 아래 전용 서브폴더로 복사
-            string saveDir = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-                "ETA 시험기록부");
+            // 데스크톱\ETA 생태독성 시험기록부\ (Show4 와 동일 폴더)
+            string saveDir = EcotoxOutputDir;
             Directory.CreateDirectory(saveDir);
-            string filename = $"생태독성_시험기록부_{DateTime.Now:yyyyMMdd_HHmmss}.docx";
+            // 파일명: MM-DD {시료명} - 시험기록부.docx (Windows 금지문자 제거)
+            string mmddT = DateTime.Now.ToString("MM-dd");
+            string sampleT = SanitizeFileName(_toxicant ?? "시료");
+            string filename = $"{mmddT} {sampleT} - 시험기록부.docx";
             savePath = Path.Combine(saveDir, filename);
             ExportLog($"복사 시작 → {savePath}");
             File.Copy(tmpPath, savePath, overwrite: true);
@@ -1294,14 +1650,12 @@ public partial class EcotoxicityPage : UserControl
         try { Avalonia.Threading.Dispatcher.UIThread.Post(() => RefreshRecordsPanel()); } catch { }
     }
 
-    /// <summary>출력된 docx 가 모이는 "Desktop\ETA 시험기록부" 폴더를 OS 파일탐색기로 연다.</summary>
+    /// <summary>출력된 docx 가 모이는 "Desktop\ETA 생태독성 시험기록부" 폴더를 OS 파일탐색기로 연다.</summary>
     public void OpenSavedRecordsFolder()
     {
         try
         {
-            string folder = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-                "ETA 시험기록부");
+            string folder = EcotoxOutputDir;
             Directory.CreateDirectory(folder);
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
             {

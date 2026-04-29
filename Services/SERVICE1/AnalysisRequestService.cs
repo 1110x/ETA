@@ -110,6 +110,7 @@ public static class AnalysisRequestService
 
         using var conn = DbConnectionFactory.CreateConnection();
         conn.Open();
+        EnsureFieldMeasurementColumns(conn);
 
         using var cmd = conn.CreateCommand();
         cmd.CommandText = $"SELECT * FROM `수질분석센터_결과` WHERE {DbConnectionFactory.RowId} = @id";
@@ -336,6 +337,89 @@ public static class AnalysisRequestService
             catch { }
         }
         return list;
+    }
+
+    // =====================================================================
+    //  현장측정항목 — 채수 후 입력하는 5개 측정값
+    //  (온도, pH, 용존산소, 전기전도도, 잔류염소)
+    // =====================================================================
+    public static readonly string[] FieldMeasurementCols =
+        new[] { "현장_온도", "현장_pH", "현장_용존산소", "현장_전기전도도", "현장_잔류염소" };
+
+    /// <summary>생태독성 담당자가 입력하는 추가 측정값 (염분/암모니아/경도)</summary>
+    public static readonly string[] EcotoxFieldCols =
+        new[] { "생태_염분", "생태_암모니아", "생태_경도" };
+
+    /// <summary>수질분석센터_결과 테이블에 현장측정 + 생태독성 입력 컬럼 자가치유</summary>
+    public static void EnsureFieldMeasurementColumns(DbConnection conn)
+    {
+        try
+        {
+            var existing = new HashSet<string>(
+                DbConnectionFactory.GetColumnNames(conn, "수질분석센터_결과"),
+                StringComparer.OrdinalIgnoreCase);
+            foreach (var col in FieldMeasurementCols.Concat(EcotoxFieldCols))
+            {
+                if (existing.Contains(col)) continue;
+                using var alt = conn.CreateCommand();
+                alt.CommandText = $"ALTER TABLE `수질분석센터_결과` ADD COLUMN `{col}` TEXT DEFAULT NULL";
+                try { alt.ExecuteNonQuery(); existing.Add(col); }
+                catch (Exception ex) { Log($"FieldMeasurement {col} 추가 실패: {ex.Message}"); }
+            }
+        }
+        catch (Exception ex) { Log($"EnsureFieldMeasurementColumns 오류: {ex.Message}"); }
+    }
+
+    /// <summary>현장측정 5개 항목 일괄 저장</summary>
+    public static bool UpdateFieldMeasurements(int rowId, Dictionary<string, string> values)
+    {
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            EnsureFieldMeasurementColumns(conn);
+
+            using var cmd = conn.CreateCommand();
+            var setParts = FieldMeasurementCols.Select((c, i) => $"`{c}` = @v{i}").ToList();
+            cmd.CommandText =
+                $"UPDATE `수질분석센터_결과` SET {string.Join(", ", setParts)} " +
+                $"WHERE {DbConnectionFactory.RowId} = @id";
+            for (int i = 0; i < FieldMeasurementCols.Length; i++)
+            {
+                values.TryGetValue(FieldMeasurementCols[i], out var v);
+                cmd.Parameters.AddWithValue($"@v{i}",
+                    string.IsNullOrWhiteSpace(v) ? (object)DBNull.Value : v.Trim());
+            }
+            cmd.Parameters.AddWithValue("@id", rowId);
+            return cmd.ExecuteNonQuery() > 0;
+        }
+        catch (Exception ex) { Log($"UpdateFieldMeasurements 오류: {ex.Message}"); return false; }
+    }
+
+    /// <summary>생태독성 담당자 입력 3개 항목(염분/암모니아/경도) 일괄 저장</summary>
+    public static bool UpdateEcotoxFields(int rowId, Dictionary<string, string> values)
+    {
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            EnsureFieldMeasurementColumns(conn);
+
+            using var cmd = conn.CreateCommand();
+            var setParts = EcotoxFieldCols.Select((c, i) => $"`{c}` = @v{i}").ToList();
+            cmd.CommandText =
+                $"UPDATE `수질분석센터_결과` SET {string.Join(", ", setParts)} " +
+                $"WHERE {DbConnectionFactory.RowId} = @id";
+            for (int i = 0; i < EcotoxFieldCols.Length; i++)
+            {
+                values.TryGetValue(EcotoxFieldCols[i], out var v);
+                cmd.Parameters.AddWithValue($"@v{i}",
+                    string.IsNullOrWhiteSpace(v) ? (object)DBNull.Value : v.Trim());
+            }
+            cmd.Parameters.AddWithValue("@id", rowId);
+            return cmd.ExecuteNonQuery() > 0;
+        }
+        catch (Exception ex) { Log($"UpdateEcotoxFields 오류: {ex.Message}"); return false; }
     }
 
     /// <summary>수질분석센터_결과의 방류허용기준 적용유무 업데이트</summary>

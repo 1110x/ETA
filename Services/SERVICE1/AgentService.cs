@@ -107,6 +107,77 @@ public static class AgentService
         return false;
     }
 
+    // ── DB BLOB → 로컬 캐시 일괄 다운로드 (캐시 없는 사번만 1회 쿼리로) ─────
+    /// <summary>여러 직원의 사진을 한 번의 SELECT IN 쿼리로 캐시. 트리 빌드 전 1회 호출.</summary>
+    public static void EnsurePhotosLocalBatch(IEnumerable<Agent> agents)
+    {
+        var dir = GetPhotoDirectory();
+        var missing = new List<(string 사번, string cachePath)>();
+
+        foreach (var a in agents)
+        {
+            if (string.IsNullOrEmpty(a.사번) || string.IsNullOrEmpty(a.PhotoPath)) continue;
+            var fileName = NormalizePhotoPath(a.PhotoPath);
+            if (string.IsNullOrEmpty(fileName)) continue;
+            var cachePath = Path.Combine(dir, fileName);
+            if (File.Exists(cachePath)) continue;
+
+            var legacyPath = ResolveLegacyPhotoPath(a.PhotoPath);
+            if (!string.IsNullOrEmpty(legacyPath) && File.Exists(legacyPath))
+            {
+                try
+                {
+                    Directory.CreateDirectory(dir);
+                    if (!string.Equals(legacyPath, cachePath, StringComparison.OrdinalIgnoreCase))
+                        File.Copy(legacyPath, cachePath, overwrite: true);
+                }
+                catch { }
+                continue;
+            }
+
+            missing.Add((a.사번, cachePath));
+        }
+
+        if (missing.Count == 0) return;
+
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            EnsurePhotoDataColumn(conn);
+
+            using var cmd = conn.CreateCommand();
+            var paramNames = new List<string>(missing.Count);
+            for (int i = 0; i < missing.Count; i++)
+            {
+                var p = $"@id{i}";
+                paramNames.Add(p);
+                cmd.Parameters.AddWithValue(p, missing[i].사번);
+            }
+            cmd.CommandText = $"SELECT 사번, PhotoData FROM `Agent` WHERE 사번 IN ({string.Join(",", paramNames)})";
+
+            var byId = new Dictionary<string, byte[]>(StringComparer.Ordinal);
+            using (var rdr = cmd.ExecuteReader())
+            {
+                while (rdr.Read())
+                {
+                    if (rdr.IsDBNull(1)) continue;
+                    var id = rdr.GetString(0);
+                    var data = (byte[])rdr.GetValue(1);
+                    if (data.Length > 0) byId[id] = data;
+                }
+            }
+
+            Directory.CreateDirectory(dir);
+            foreach (var (사번, cachePath) in missing)
+            {
+                if (!byId.TryGetValue(사번, out var data)) continue;
+                try { File.WriteAllBytes(cachePath, data); } catch { }
+            }
+        }
+        catch { }
+    }
+
     // ── 로컬 사진 → DB 일괄 동기화 (PhotoData가 비어있는 행만) ──────────────
     public static void SyncAllPhotosToDb()
     {

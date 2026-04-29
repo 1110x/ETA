@@ -46,7 +46,8 @@ public static class QuotationService
                 SELECT C_CompanyName, C_Abbreviation, C_ContractType,
                        C_ContractStart, C_ContractEnd, C_FacilityType, C_CategoryType
                 FROM `계약 DB`
-                WHERE date(C_ContractStart) <= @today
+                WHERE IFNULL(C_IsDeleted, 0) = 0
+                  AND date(C_ContractStart) <= @today
                   AND date(C_ContractEnd)   >= @today
                 ORDER BY C_CompanyName ASC";
             cmd.Parameters.AddWithValue("@today", today);
@@ -57,6 +58,7 @@ public static class QuotationService
                 SELECT C_CompanyName, C_Abbreviation, C_ContractType,
                        C_ContractStart, C_ContractEnd, C_FacilityType, C_CategoryType
                 FROM `계약 DB`
+                WHERE IFNULL(C_IsDeleted, 0) = 0
                 ORDER BY C_CompanyName ASC";
         }
 
@@ -133,9 +135,15 @@ public static class QuotationService
         conn.Open();
         if (!TableExists(conn, "견적발행내역")) return list;
 
-        // 거래명세서번호 컬럼 존재 여부 확인
+        // 컬럼 자가치유 — 담당자/담당자연락처/담당자 e-Mail 등이 누락된 DB에서 보강
+        MigrateIssueColumns(conn);
+
+        // 거래명세서번호/담당자연락처/담당자이메일 컬럼 존재 여부 확인
         var cols = DbConnectionFactory.GetColumnNames(conn, "견적발행내역");
         bool hasTrade = cols.Contains("거래명세서번호");
+        bool hasPhone = cols.Contains("담당자연락처");
+        bool hasEmail = cols.Contains("담당자 e-Mail") || cols.Contains("담당자e-Mail");
+        string emailCol = cols.Contains("담당자 e-Mail") ? "담당자 e-Mail" : "담당자e-Mail";
 
         using var cmd = conn.CreateCommand();
         cmd.CommandText = $@"
@@ -149,12 +157,18 @@ public static class QuotationService
                    `담당자`,
                    `합계 금액`
                    {(hasTrade ? ", `거래명세서번호`" : "")}
+                   {(hasPhone ? ", `담당자연락처`" : "")}
+                   {(hasEmail ? $", `{emailCol}`" : "")}
             FROM `견적발행내역`
             ORDER BY `견적발행일자` DESC, {DbConnectionFactory.RowId} DESC";
 
         using var r = cmd.ExecuteReader();
         while (r.Read())
         {
+            int idx = 9;
+            string trade = hasTrade ? S(r, idx++) : "";
+            string phone = hasPhone ? S(r, idx++) : "";
+            string email = hasEmail ? S(r, idx++) : "";
             list.Add(new QuotationIssue
             {
                 Id            = r.IsDBNull(0) ? 0 : Convert.ToInt32(r.GetValue(0)),
@@ -166,7 +180,9 @@ public static class QuotationService
                 견적구분      = S(r, 6),
                 담당자        = S(r, 7),
                 총금액        = Dec(r, 8),
-                거래명세서번호 = hasTrade ? S(r, 9) : "",
+                거래명세서번호 = trade,
+                담당자연락처   = phone,
+                담당자이메일   = email,
             });
         }
         return list;
@@ -208,17 +224,34 @@ public static class QuotationService
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
 
-            // 견적요청담당 컬럼에서 담당자 조회
+            // 담당자 컬럼에서 조회 (Insert/마이그레이션 경로와 일치)
             if (TableExists(conn, "견적발행내역"))
             {
                 using var cmd = conn.CreateCommand();
                 cmd.CommandText = @"
-                    SELECT DISTINCT `견적요청담당`
+                    SELECT DISTINCT `담당자`
                     FROM `견적발행내역`
                     WHERE `업체명` = @company
-                      AND `견적요청담당` IS NOT NULL
-                      AND TRIM(`견적요청담당`) != ''
-                    ORDER BY `견적요청담당` ASC";
+                      AND `담당자` IS NOT NULL
+                      AND TRIM(`담당자`) != ''
+                    ORDER BY `담당자` ASC";
+                cmd.Parameters.AddWithValue("@company", companyName);
+                using var r = cmd.ExecuteReader();
+                while (r.Read()) list.Add(S(r, 0));
+            }
+
+            // 발행 이력이 없으면 계약 DB의 담당자(C_ContactPerson)를 폴백으로 추가
+            if (list.Count == 0 && TableExists(conn, "계약 DB"))
+            {
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = @"
+                    SELECT DISTINCT `C_ContactPerson`
+                    FROM `계약 DB`
+                    WHERE `C_CompanyName` = @company
+                      AND IFNULL(`C_IsDeleted`, 0) = 0
+                      AND `C_ContactPerson` IS NOT NULL
+                      AND TRIM(`C_ContactPerson`) != ''
+                    ORDER BY `C_ContactPerson` ASC";
                 cmd.Parameters.AddWithValue("@company", companyName);
                 using var r = cmd.ExecuteReader();
                 while (r.Read()) list.Add(S(r, 0));
@@ -228,7 +261,7 @@ public static class QuotationService
         return list;
     }
 
-    // ── 업체+담당자명으로 연락처/이메일 조회 (견적요청담당 기준) ────────────
+    // ── 업체+담당자명으로 연락처/이메일 조회 (담당자 기준) ────────────
     public static (string Phone, string Email) GetManagerContactInfo(string companyName, string managerName)
     {
         try
@@ -236,7 +269,7 @@ public static class QuotationService
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
 
-            // 견적요청담당으로 담당자연락처/담당자 e-Mail 조회
+            // 담당자 매칭으로 담당자연락처/담당자 e-Mail 조회
             if (TableExists(conn, "견적발행내역"))
             {
                 using var cmd = conn.CreateCommand();
@@ -244,10 +277,27 @@ public static class QuotationService
                     SELECT `담당자연락처`, `담당자 e-Mail`
                     FROM `견적발행내역`
                     WHERE `업체명` = @company
-                      AND `견적요청담당` = @manager
+                      AND `담당자` = @manager
                       AND (`담당자연락처` IS NOT NULL AND TRIM(`담당자연락처`) != ''
                         OR `담당자 e-Mail` IS NOT NULL AND TRIM(`담당자 e-Mail`) != '')
                     ORDER BY `견적발행일자` DESC
+                    LIMIT 1";
+                cmd.Parameters.AddWithValue("@company", companyName);
+                cmd.Parameters.AddWithValue("@manager", managerName);
+                using var r = cmd.ExecuteReader();
+                if (r.Read()) return (S(r, 0), S(r, 1));
+            }
+
+            // 발행 이력에 없으면 계약 DB의 C_PhoneNumber/C_Email 폴백
+            if (TableExists(conn, "계약 DB"))
+            {
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = @"
+                    SELECT IFNULL(`C_PhoneNumber`,''), IFNULL(`C_Email`,'')
+                    FROM `계약 DB`
+                    WHERE `C_CompanyName` = @company
+                      AND `C_ContactPerson` = @manager
+                      AND IFNULL(`C_IsDeleted`, 0) = 0
                     LIMIT 1";
                 cmd.Parameters.AddWithValue("@company", companyName);
                 cmd.Parameters.AddWithValue("@manager", managerName);

@@ -786,6 +786,14 @@ public partial class MyTaskPage : UserControl
 
         try
         {
+            // 컬럼명 → 분석정보.Analyte 매칭키 (analyte_alias 우선, 없으면 항목명)
+            var colToMatchKey = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var info in FacilityResultService.GetAnalysisItems())
+            {
+                var key = string.IsNullOrWhiteSpace(info.AnalyteAlias) ? info.항목명.Trim() : info.AnalyteAlias.Trim();
+                colToMatchKey[info.컬럼명.Trim('`').Trim()] = key;
+            }
+
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var cmd = conn.CreateCommand();
@@ -806,14 +814,16 @@ public partial class MyTaskPage : UserControl
 
                 for (int i = 0; i < cols.Length; i++)
                 {
-                    var colName = cols[i];
+                    var colName = cols[i].Trim('`').Trim();
                     if (string.IsNullOrEmpty(colName)) continue;
                     int ordinal = i + 2;
                     if (ordinal >= rdr.FieldCount) continue;
                     if (rdr.IsDBNull(ordinal)) continue;
                     string val = rdr.GetValue(ordinal)?.ToString()?.Trim() ?? "";
                     if (!val.StartsWith("O", StringComparison.OrdinalIgnoreCase)) continue;
-                    if (assignedAnalytes.Contains(colName))
+
+                    string matchKey = colToMatchKey.TryGetValue(colName, out var mk) ? mk : colName;
+                    if (assignedAnalytes.Contains(matchKey) || assignedAnalytes.Contains(colName))
                     {
                         result.Add((facility, sample));
                         break;
@@ -1719,16 +1729,14 @@ public partial class MyTaskPage : UserControl
                 grid.Children.Add(analystTb);
             }
 
-            // +/check 표시 (마킹 모드가 아닐 때)
-            if (!hasMarks)
+            // check 표시 (마킹 모드가 아닐 때, borrowed인 경우만)
+            if (!hasMarks && isBorrowed)
             {
                 var indicator = new TextBlock
                 {
-                    Text = isBorrowed ? "✓" : "+",
+                    Text = "✓",
                     FontFamily = Font, FontSize = AppTheme.FontBase,
-                    Foreground = isBorrowed
-                        ? new SolidColorBrush(Color.Parse("#88ccaa"))
-                        : AppRes("FgMuted"),
+                    Foreground = new SolidColorBrush(Color.Parse("#88ccaa")),
                     VerticalAlignment = VerticalAlignment.Center,
                     Margin = new Thickness(6, 0, 0, 0)
                 };

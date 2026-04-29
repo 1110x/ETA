@@ -223,10 +223,14 @@ public partial class QuotationDetailPanel : UserControl
             foreach (var manager in managers)
                 cmbManagerName.Items.Add(manager);
 
-            // 현재 담당자 설정
+            // 현재 담당자 설정 — _settingManagerName 가드를 다음 디스패처 사이클까지 유지
+            // (Avalonia ComboBox SelectionChanged 가 비동기로 큐잉되는 케이스 방지)
             _settingManagerName = true;
             cmbManagerName.Text = _current?.담당자 ?? "";
-            cmbManagerName.IsDropDownOpen = false;  // 초기에는 드롭다운 닫기
+            cmbManagerName.IsDropDownOpen = false;
+            await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(
+                () => { },
+                Avalonia.Threading.DispatcherPriority.Background);
             _settingManagerName = false;
         }
         catch (Exception ex)
@@ -299,9 +303,12 @@ public partial class QuotationDetailPanel : UserControl
             var (phone, email) = await Task.Run(() =>
                 QuotationService.GetManagerContactInfo(_currentCompany, selectedName));
 
-            txbManagerPhone.Text = phone ?? "";
-            txbManagerEmail.Text = email ?? "";
-            Log($"담당자 선택: {selectedName} ({_currentCompany})");
+            // DB 조회 결과가 비어 있으면 ShowIssue가 미리 채워둔 값을 보존(덮어쓰지 않음)
+            // - LoadCompanyManagers 비동기 완료 후 ComboBox.SelectionChanged 가 큐로 늦게 발생해
+            //   _settingManagerName 가드가 풀린 뒤 실행되는 케이스가 있어 phone/email 이 사라지는 버그 방지
+            if (!string.IsNullOrWhiteSpace(phone)) txbManagerPhone.Text = phone;
+            if (!string.IsNullOrWhiteSpace(email)) txbManagerEmail.Text = email;
+            Log($"담당자 선택: {selectedName} ({_currentCompany}) phone={(string.IsNullOrEmpty(phone)?"(유지)":phone)} email={(string.IsNullOrEmpty(email)?"(유지)":email)}");
         }
         catch (Exception ex)
         {
@@ -979,6 +986,48 @@ public partial class QuotationDetailPanel : UserControl
     }
 
     private void BtnPrint_Click(object? sender, RoutedEventArgs e)
-        => Log($"인쇄 → {_current?.견적번호}");
+    {
+        if (_current == null)
+        {
+            Log("⚠ 인쇄: 선택된 견적이 없습니다.");
+            return;
+        }
 
+        try
+        {
+            // 데스크톱\ETA 견적서 폴더에 docx 로 저장 후 자동 열기.
+            string saveDir = System.IO.Path.Combine(
+                System.Environment.GetFolderPath(System.Environment.SpecialFolder.Desktop),
+                "ETA 견적서");
+            System.IO.Directory.CreateDirectory(saveDir);
+            string filename = $"견적서_{_current.약칭}_{_current.견적번호}_{System.DateTime.Now:yyyyMMdd_HHmmss}.docx";
+            string savePath = System.IO.Path.Combine(saveDir, filename);
+
+            var (ok, msg) = QuotationWordExporter.ExportWord(_current, savePath);
+            if (!ok)
+            {
+                Log($"❌ 인쇄 실패: {msg}");
+                return;
+            }
+            Log($"🖨 인쇄 → {savePath}");
+
+            // 시스템 기본앱으로 docx 자동 열기
+            try
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = savePath,
+                    UseShellExecute = true,
+                });
+            }
+            catch (System.Exception openEx)
+            {
+                Log($"  자동 열기 실패: {openEx.Message}");
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Log($"❌ 인쇄 예외: {ex.Message}");
+        }
+    }
 }

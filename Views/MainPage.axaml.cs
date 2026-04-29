@@ -127,6 +127,9 @@ public partial class MainPage : Window
         DataContext = new MainWindowViewModel();
         ApplyTheme(0);
 
+        // 현장 측정값 + 시료 사진 스키마 자가치유 (모바일/API 와 공유)
+        Task.Run(() => ETA.Services.Common.FieldMeasurementMigration.EnsureSchema());
+
         // 애니메이션 비활성화 처리 (토글 UI는 제거됐지만 내부 상태는 유지)
         Dispatcher.UIThread.Post(() =>
         {
@@ -2930,7 +2933,7 @@ public partial class MainPage : Window
 
         Show1.Content = null;
         Show2.Content = null; Show3.Content = null; Show4.Content = null;
-        SetSubMenu("새로고침", "시험기록부 출력", "", "", "", "", "");
+        SetSubMenu("새로고침", "시험기록부 출력", "법정기록부", "", "", "", "");
         SetLeftPanelWidth(250);
         SetContentLayout(content2Star: 6, content4Star: 4, upperStar: 9, lowerStar: 1);
         RestoreModeLayout("Ecotoxicity");
@@ -4658,7 +4661,7 @@ public partial class MainPage : Window
         _contractPage.LoadData();
         _bt1SaveAction = _contractPage.SaveSelected;
 
-        SetSubMenu("저장", "새로고침", "업체 추가", "선택 삭제", "Excel 가져오기", "인쇄", "설정");
+        SetSubMenu("저장", "새로고침", "업체 추가", "선택 삭제", "", "인쇄", "🗑 휴지통");
         SetLeftPanelWidth(350);
         SetContentLayout(content2Star: 1, content4Star: 1, upperStar: 7, lowerStar: 3);
         // Show3: 단가표, Show4: 단가 편집폼
@@ -4976,7 +4979,7 @@ public partial class MainPage : Window
 
         _issuingHistoryPanel.LoadData();
 
-        SetSubMenu("새로고침", "", "", "", "", "거래명세서 발행", "");
+        SetSubMenu("새로고침", "거래명세서 (Word)", "📂 발행폴더 열기", "", "", "거래명세서 (Excel)", "");
         SetLeftPanelWidth(430);
         SetContentLayout(content2Star: 7, content4Star: 3, upperStar: 13, lowerStar: 4);
         RestoreModeLayout("QuotationIssue", minLowerStar: 4);
@@ -5669,6 +5672,23 @@ public partial class MainPage : Window
         SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 1, lowerStar: 0);
     }
 
+    private ETA.Views.Pages.Common.ApprovalSettingsPage? _approvalSettingsPage;
+
+    /// <summary>설정 → 결재정보: Show2에 시험성적서·시험기록부 서명 설정 페이지 로드</summary>
+    private void ApprovalSettings_Click(object? sender, RoutedEventArgs e)
+    {
+        _currentMode = "ApprovalSettings";
+        _approvalSettingsPage ??= new ETA.Views.Pages.Common.ApprovalSettingsPage();
+        Show1.Content = null;
+        Show2.Content = _approvalSettingsPage.View;
+        Show3.Content = null;
+        Show4.Content = null;
+        _bt1SaveAction = null;
+
+        SetSubMenu("", "", "", "", "", "", "");
+        SetContentLayout(content2Star: 1, content4Star: 0, upperStar: 1, lowerStar: 0);
+    }
+
     private ETA.Views.Pages.Common.AnalysisConditionPage? _analysisConditionPage;
     private void MeasurerCondition_Click(object? sender, RoutedEventArgs e)
     {
@@ -5847,6 +5867,7 @@ public partial class MainPage : Window
                 }
                 break;
             case "MyTask":          _myTaskPage?.LoadData();             break;
+            case "Ecotoxicity":     _ecotoxicityPage?.RefreshRecordsPanel(); break;
             case "Access":
                 _accessPage = new AccessPage();
                 Show1.Content = _accessPage.Show1;
@@ -5900,6 +5921,7 @@ public partial class MainPage : Window
             case "AiDocClassification": AiDocClassification_Click(null, null!); break;
             case "Ecotoxicity":     _ = _ecotoxicityPage?.ExportTestReportAsync(); break;
             case "ServerManagement": _ = BackupDatabaseAsync(); break;
+            case "QuotationIssue":  IssueTradeStatementFromChecklist(useWord: true); break;
             default: break;
         }
     }
@@ -5953,12 +5975,34 @@ public partial class MainPage : Window
                 }
                 break;
             case "Quotation":  _quotationPage?.LoadData(); _quotationHistoryPanel?.LoadData(); break;
+            case "Ecotoxicity": _ = _ecotoxicityPage?.ExportLegalReportAsync(); break;
             case "TestReport": _ = _testReportPage?.DeleteSampleAsync(); break;
             case "WasteAnalysisInput": _ = _wasteAnalysisInputPage?.ImportData(); break;
             case "Repair":          _repairPage?.RejectSelected();           break;
             case "RiskManage":      _riskPage?.NewItem();                    break;
             case "AnalysisPlan":    SetAnalysisPlanDay(1); break; // 화
+            case "QuotationIssue":  OpenIssuedFolder(); break;
             default: break;
+        }
+    }
+
+    /// <summary>거래명세서 Word 발행물이 모이는 Desktop\ETA 거래명세서 폴더를 OS 탐색기로 연다.</summary>
+    private void OpenIssuedFolder()
+    {
+        try
+        {
+            string folder = System.IO.Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                "ETA 거래명세서");
+            System.IO.Directory.CreateDirectory(folder);
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = folder, UseShellExecute = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[발행폴더 열기 오류] {ex.Message}");
         }
     }
 
@@ -5987,7 +6031,6 @@ public partial class MainPage : Window
             case "Purchase":      _purchasePage?.CompleteSelected();  break;
             case "TestReport":    _testReportPage?.OpenPrintWindow();   break;
             case "Repair":        _repairPage?.DeleteSelected();      break;
-            case "Contract":      _ = ImportContractFromExcelAsync(); break;
             case "WasteAnalysisInput": _wasteAnalysisInputPage?.AttachExcel(); break;
             case "AnalysisPlan":  SetAnalysisPlanDay(3); break; // 목
             default: break;
@@ -6086,14 +6129,22 @@ public partial class MainPage : Window
             FileTypeChoices   = new[]
             {
                 new Avalonia.Platform.Storage.FilePickerFileType("Excel")
-                    { Patterns = new[] { "*.xlsx" } }
+                    { Patterns = new[] { "*.xlsx" } },
+                new Avalonia.Platform.Storage.FilePickerFileType("Word (테스트)")
+                    { Patterns = new[] { "*.docx" } },
             }
         };
         var file = window != null ? await window.StorageProvider.SaveFilePickerAsync(picker) : null;
         if (file == null) return;
 
+        // 확장자에 따라 Excel / Word 분기
         var (ok, msg) = await Task.Run(() =>
-            ETA.Services.SERVICE1.QuotationService.ExportQuotation(issue, file.Path.LocalPath));
+        {
+            string path = file.Path.LocalPath;
+            return path.EndsWith(".docx", StringComparison.OrdinalIgnoreCase)
+                ? ETA.Services.SERVICE1.QuotationWordExporter.ExportWord(issue, path)
+                : ETA.Services.SERVICE1.QuotationService.ExportQuotation(issue, path);
+        });
 
         Show2.Content = new TextBlock
         {
@@ -6105,7 +6156,7 @@ public partial class MainPage : Window
         };
     }
 
-    private async void IssueTradeStatementFromChecklist()
+    private async void IssueTradeStatementFromChecklist(bool useWord = false)
     {
         var checkedIssues = _issuingChecklistPanel?.Children
             .OfType<CheckBox>()
@@ -6137,8 +6188,8 @@ public partial class MainPage : Window
             if (!proceed) return;
         }
 
-        // 기존 거래명세서 발행 플로우 재사용
-        _ = IssueTradeStatementAsync(checkedIssues);
+        // 기존 거래명세서 발행 플로우 재사용 — useWord 로 Excel/Word 분기
+        _ = IssueTradeStatementAsync(checkedIssues, useWord);
     }
 
     private async Task<bool> ShowIncompleteWarningAsync(List<(string 시료명, string 항목)> items)
@@ -6235,26 +6286,39 @@ public partial class MainPage : Window
         return proceed;
     }
 
-    private async Task IssueTradeStatementAsync(List<ETA.Models.QuotationIssue> issues)
+    private async Task IssueTradeStatementAsync(List<ETA.Models.QuotationIssue> issues, bool useWord = false)
     {
-        var window = TopLevel.GetTopLevel(this) as Window;
-        var picker = new Avalonia.Platform.Storage.FilePickerSaveOptions
+        string path;
+        if (useWord)
         {
-            Title           = "거래명세서 저장",
-            SuggestedFileName = $"거래명세서_{DateTime.Today:yyyyMMdd}",
-            FileTypeChoices = new[]
+            // Word 는 file picker 우회 — Desktop\ETA 거래명세서\ 에 자동 저장 후 열기
+            string saveDir = System.IO.Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                "ETA 거래명세서");
+            System.IO.Directory.CreateDirectory(saveDir);
+            string company = issues.FirstOrDefault()?.업체명 ?? "거래명세서";
+            string filename = $"거래명세서_{company}_{DateTime.Now:yyyyMMdd_HHmmss}.docx";
+            path = System.IO.Path.Combine(saveDir, filename);
+        }
+        else
+        {
+            var window = TopLevel.GetTopLevel(this) as Window;
+            var picker = new Avalonia.Platform.Storage.FilePickerSaveOptions
             {
-                new Avalonia.Platform.Storage.FilePickerFileType("Excel")
-                    { Patterns = new[] { "*.xlsx" } }
-            }
-        };
-
-        var file = window != null
-            ? await window.StorageProvider.SaveFilePickerAsync(picker)
-            : null;
-        if (file == null) return;
-
-        string path = file.Path.LocalPath;
+                Title             = "거래명세서 Excel 저장",
+                SuggestedFileName = $"거래명세서_{DateTime.Today:yyyyMMdd}.xlsx",
+                DefaultExtension  = "xlsx",
+                FileTypeChoices   = new[]
+                {
+                    new Avalonia.Platform.Storage.FilePickerFileType("Excel") { Patterns = new[] { "*.xlsx" } },
+                }
+            };
+            var file = window != null
+                ? await window.StorageProvider.SaveFilePickerAsync(picker)
+                : null;
+            if (file == null) return;
+            path = file.Path.LocalPath;
+        }
 
         Show2.Content = new TextBlock
         {
@@ -6267,7 +6331,25 @@ public partial class MainPage : Window
 
         var captured = issues;
         var (ok, msg, supply, vat, total) = await Task.Run(() =>
-            ETA.Services.SERVICE1.QuotationService.ExportTradingStatement(captured, path));
+        {
+            // 확장자에 따라 Excel 템플릿 / Word docx 분기
+            if (path.EndsWith(".docx", StringComparison.OrdinalIgnoreCase))
+            {
+                var first = captured.First();
+                var itemMap = ETA.Services.SERVICE1.QuotationService.BuildTradeStatementItemData(captured);
+                var items = itemMap
+                    .Where(kv => kv.Value.qty > 0)
+                    .OrderBy(kv => kv.Key)
+                    .Select(kv => (kv.Key, kv.Value.qty, kv.Value.unitPrice))
+                    .ToList();
+                string sampleNames = string.Join(", ", captured.Select(i => i.시료명).Where(s => !string.IsNullOrEmpty(s)).Distinct());
+                string quotNos     = string.Join(", ", captured.Select(i => i.견적번호));
+                return ETA.Services.SERVICE1.TradingStatementWordExporter.ExportWord(
+                    first.업체명, first.약칭, first.담당자, first.담당자연락처, first.담당자이메일,
+                    sampleNames, quotNos, items, path);
+            }
+            return ETA.Services.SERVICE1.QuotationService.ExportTradingStatement(captured, path);
+        });
 
         if (!ok)
         {
@@ -6280,6 +6362,22 @@ public partial class MainPage : Window
                 Margin = new Thickness(16),
             };
             return;
+        }
+
+        // Word 발행은 자동 열기 — file picker 가 없으니 사용자에게 즉시 결과 보여주기
+        if (useWord)
+        {
+            try
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = path, UseShellExecute = true,
+                });
+            }
+            catch (Exception openEx)
+            {
+                System.Diagnostics.Debug.WriteLine($"[Word 자동 열기 오류] {openEx.Message}");
+            }
         }
 
         // DB 저장
@@ -6467,19 +6565,35 @@ public partial class MainPage : Window
         };
         root.Children.Add(scroll);
 
-        // 발행 버튼
-        var btnIssue = new Button
+        // 발행 버튼 — Excel / Word 두 개 나란히
+        var issueRow = new StackPanel
         {
-            Content = "🖨  발행 (Excel + DB 저장)",
-            Height = 38, Margin = new Thickness(8, 6),
+            Orientation = Orientation.Horizontal, Spacing = 8,
+            Margin = new Thickness(8, 6), [Grid.RowProperty] = 2,
+        };
+        var btnIssueExcel = new Button
+        {
+            Content = "🖨  발행 (Excel)",
+            Height = 38, MinWidth = 180,
             FontSize = AppTheme.FontMD, FontFamily = _tradeFont,
             Background = Res("SubBtnBg"),
             Foreground = Res("AppFg"),
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
-            [Grid.RowProperty] = 2,
         };
-        btnIssue.Click += (_, _) => _ = IssueTradeStatementAsync(checkBoxes);
-        root.Children.Add(btnIssue);
+        btnIssueExcel.Click += (_, _) => _ = IssueTradeStatementAsync(checkBoxes, useWord: false);
+        var btnIssueWord = new Button
+        {
+            Content = "📝  발행 (Word)",
+            Height = 38, MinWidth = 180,
+            FontSize = AppTheme.FontMD, FontFamily = _tradeFont,
+            Background = new SolidColorBrush(Color.Parse("#FF6A3D")),
+            Foreground = Brushes.White,
+            BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(4),
+        };
+        btnIssueWord.Click += (_, _) => _ = IssueTradeStatementAsync(checkBoxes, useWord: true);
+        issueRow.Children.Add(btnIssueExcel);
+        issueRow.Children.Add(btnIssueWord);
+        root.Children.Add(issueRow);
 
         Show4.Content = root;
         // Show4 영역 표시
@@ -6490,7 +6604,7 @@ public partial class MainPage : Window
     }
 
     private async Task IssueTradeStatementAsync(
-        List<(ETA.Models.QuotationIssue Issue, CheckBox CB)> checkBoxes)
+        List<(ETA.Models.QuotationIssue Issue, CheckBox CB)> checkBoxes, bool useWord = false)
     {
         var checkedIssues = checkBoxes
             .Where(x => x.CB.IsChecked == true)
@@ -6521,14 +6635,18 @@ public partial class MainPage : Window
         string companyName = checkedIssues.First().업체명;
         string statementNo = $"TS-{companyName[..Math.Min(4, companyName.Length)]}-{DateTime.Today:yyyyMMdd}-{DateTime.Now:HHmm}";
 
-        // 파일 저장 경로 선택
+        // 파일 저장 경로 선택 — 클릭한 버튼에 따라 형식 고정
+        string ext = useWord ? "docx" : "xlsx";
         var dialog = new Avalonia.Platform.Storage.FilePickerSaveOptions
         {
-            Title             = "거래명세서 Excel 저장",
-            SuggestedFileName = $"거래명세서_{companyName}_{DateTime.Today:yyyyMMdd}.xlsx",
+            Title             = useWord ? "거래명세서 Word 저장" : "거래명세서 Excel 저장",
+            SuggestedFileName = $"거래명세서_{companyName}_{DateTime.Today:yyyyMMdd}.{ext}",
+            DefaultExtension  = ext,
             FileTypeChoices   = new[]
             {
-                new Avalonia.Platform.Storage.FilePickerFileType("Excel") { Patterns = new[] { "*.xlsx" } }
+                useWord
+                    ? new Avalonia.Platform.Storage.FilePickerFileType("Word") { Patterns = new[] { "*.docx" } }
+                    : new Avalonia.Platform.Storage.FilePickerFileType("Excel") { Patterns = new[] { "*.xlsx" } },
             }
         };
         var topLevel = TopLevel.GetTopLevel(this);
@@ -6546,8 +6664,25 @@ public partial class MainPage : Window
         };
 
         var captured = checkedIssues.ToList();
-        var (ok, msg, supply, vat, total) = await Task.Run(
-            () => ETA.Services.SERVICE1.QuotationService.ExportTradingStatement(captured, savePath));
+        var (ok, msg, supply, vat, total) = await Task.Run(() =>
+        {
+            if (savePath.EndsWith(".docx", StringComparison.OrdinalIgnoreCase))
+            {
+                var first = captured.First();
+                var itemMap = ETA.Services.SERVICE1.QuotationService.BuildTradeStatementItemData(captured);
+                var items = itemMap
+                    .Where(kv => kv.Value.qty > 0)
+                    .OrderBy(kv => kv.Key)
+                    .Select(kv => (kv.Key, kv.Value.qty, kv.Value.unitPrice))
+                    .ToList();
+                string sampleNames = string.Join(", ", captured.Select(i => i.시료명).Where(s => !string.IsNullOrEmpty(s)).Distinct());
+                string quotNos     = string.Join(", ", captured.Select(i => i.견적번호));
+                return ETA.Services.SERVICE1.TradingStatementWordExporter.ExportWord(
+                    first.업체명, first.약칭, first.담당자, first.담당자연락처, first.담당자이메일,
+                    sampleNames, quotNos, items, savePath);
+            }
+            return ETA.Services.SERVICE1.QuotationService.ExportTradingStatement(captured, savePath);
+        });
 
         if (ok)
         {
@@ -6594,6 +6729,9 @@ public partial class MainPage : Window
             case "Agent":
                 if (_agentTreePage != null)
                     Show2.Content = _agentTreePage.BuildAssignmentChart();
+                break;
+            case "Contract":
+                _contractPage?.ToggleTrashMode();
                 break;
             case "Purchase":
                 if (_purchasePage != null)

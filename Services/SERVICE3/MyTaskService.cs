@@ -323,6 +323,64 @@ public static class MyTaskService
     public record AnalyteAssignment(string FullName, string ShortName, string AssignedAnalyst);
 
     // =========================================================================
+    //  ES(환경부 분석법 시험번호) 기준 순위 — 모든 분석항목 표시 순서를 통일
+    // =========================================================================
+    private static Dictionary<string, int> GetEsOrderMap()
+    {
+        var map = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT `Analyte` FROM `분석정보` WHERE `Analyte` IS NOT NULL AND `Analyte` <> '' ORDER BY `ES` ASC, `Analyte` ASC";
+            using var rdr = cmd.ExecuteReader();
+            int rank = 0;
+            while (rdr.Read())
+            {
+                string a = rdr.IsDBNull(0) ? "" : rdr.GetString(0).Trim();
+                if (string.IsNullOrEmpty(a) || map.ContainsKey(a)) continue;
+                map[a] = rank++;
+            }
+        }
+        catch (Exception ex) { Log($"GetEsOrderMap 오류: {ex.Message}"); }
+        return map;
+    }
+
+    // =========================================================================
+    //  분석정보.약칭 → 뱃지 표시용 ShortName (분장표준처리는 폴백)
+    // =========================================================================
+    private static Dictionary<string, string> GetShortNameMap()
+    {
+        var map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT `Analyte`, COALESCE(`약칭`,'') FROM `분석정보` WHERE `Analyte` IS NOT NULL AND `Analyte` <> ''";
+            using var rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                string a = rdr.IsDBNull(0) ? "" : rdr.GetString(0).Trim();
+                string s = rdr.IsDBNull(1) ? "" : rdr.GetString(1).Trim();
+                if (string.IsNullOrEmpty(a) || string.IsNullOrEmpty(s)) continue;
+                map[a] = s;
+            }
+        }
+        catch (Exception ex) { Log($"GetShortNameMap 오류: {ex.Message}"); }
+        return map;
+    }
+
+    // 풀네임 → 약칭 변환 (분석정보.약칭 우선, 분장표준처리 폴백, 둘 다 없으면 풀네임)
+    private static string ResolveShortName(string fullName, Dictionary<string, string> shortMap, Dictionary<string, (int days, string shortName)> info)
+    {
+        if (shortMap.TryGetValue(fullName, out var s) && !string.IsNullOrEmpty(s)) return s;
+        if (info.TryGetValue(fullName, out var meta) && !string.IsNullOrEmpty(meta.shortName)) return meta.shortName;
+        return fullName;
+    }
+
+    // =========================================================================
     //  비용부담금 — 특정 비용부담금_결과 행의 분석항목 + 담당자
     // =========================================================================
     public static List<AnalyteAssignment> GetAnalytesForWasteRow(int id, string dateStr)
@@ -333,7 +391,8 @@ public static class MyTaskService
             if (DateTime.TryParse(dateStr, out var dt))
                 dateStr = dt.ToString("yyyy-MM-dd");
 
-            var info = AnalysisRequestService.GetStandardDaysInfo();
+            var info     = AnalysisRequestService.GetStandardDaysInfo();
+            var shortMap = GetShortNameMap();
 
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
@@ -370,11 +429,17 @@ public static class MyTaskService
                 {
                     string col = rdr.GetName(i).Trim();
                     if (metaCols.Contains(col)) continue;
-                    string shortName = info.TryGetValue(col, out var meta) ? meta.shortName : col;
+                    string shortName = ResolveShortName(col, shortMap, info);
                     string analyst = analystMap.TryGetValue(col, out var a) ? a : "";
                     result.Add(new AnalyteAssignment(col, shortName, analyst));
                 }
             }
+
+            // ES 기준 정렬 (분석정보에 없으면 끝으로)
+            var esOrder = GetEsOrderMap();
+            result = result.OrderBy(x => esOrder.TryGetValue(x.FullName, out var r) ? r : int.MaxValue)
+                           .ThenBy(x => x.FullName)
+                           .ToList();
             Log($"GetAnalytesForWasteRow({id}, {dateStr}): {result.Count}항목");
         }
         catch (Exception ex) { Log($"GetAnalytesForWasteRow 오류: {ex.Message}"); }
@@ -400,7 +465,7 @@ public static class MyTaskService
             try
             {
                 using var cmd = conn.CreateCommand();
-                cmd.CommandText = $"SELECT `Analyte` FROM `분석정보` ORDER BY `Category`, `{DbConnectionFactory.RowId}`";
+                cmd.CommandText = "SELECT `Analyte` FROM `분석정보` WHERE `Analyte` IS NOT NULL AND `Analyte` <> '' ORDER BY `ES` ASC, `Analyte` ASC";
                 using var rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -411,13 +476,14 @@ public static class MyTaskService
             }
             catch (Exception ex2) { Log($"분석정보 쿼리 오류: {ex2.Message}"); }
 
-            // 약식명 + 날짜별 담당자
+            // 약식명(분석정보.약칭 우선) + 날짜별 담당자
+            var shortMap = GetShortNameMap();
             var info     = AnalysisRequestService.GetStandardDaysInfo();
             var managers = AnalysisRequestService.GetManagersByDate(dateStr);
 
             foreach (var fullName in analyteList)
             {
-                string shortName = info.TryGetValue(fullName, out var meta) ? meta.shortName : "";
+                string shortName = ResolveShortName(fullName, shortMap, info);
                 string analyst   = managers.TryGetValue(fullName, out var a) ? a : "";
                 result.Add(new AnalyteAssignment(fullName, shortName, analyst));
             }
@@ -464,7 +530,8 @@ public static class MyTaskService
             if (DateTime.TryParse(dateStr, out var dt))
                 dateStr = dt.ToString("yyyy-MM-dd");
 
-            var info = AnalysisRequestService.GetStandardDaysInfo();
+            var info     = AnalysisRequestService.GetStandardDaysInfo();
+            var shortMap = GetShortNameMap();
 
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
@@ -499,12 +566,18 @@ public static class MyTaskService
                         string col = rdr.GetName(i).Trim();
                         string val = rdr.IsDBNull(i) ? "" : rdr.GetValue(i)?.ToString()?.Trim() ?? "";
                         if (!val.Equals("O", StringComparison.OrdinalIgnoreCase)) continue;
-                        string shortName = info.TryGetValue(col, out var meta) ? meta.shortName : col;
+                        string shortName = ResolveShortName(col, shortMap, info);
                         string analyst = analystMap.TryGetValue(col, out var a) ? a : "";
                         result.Add(new AnalyteAssignment(col, shortName, analyst));
                     }
                 }
             }
+
+            // ES 기준 정렬 (분석정보에 없으면 끝으로)
+            var esOrder = GetEsOrderMap();
+            result = result.OrderBy(x => esOrder.TryGetValue(x.FullName, out var r) ? r : int.MaxValue)
+                           .ThenBy(x => x.FullName)
+                           .ToList();
             Log($"GetAnalytesForSampleRow({rowId}, {dateStr}): {result.Count}항목");
         }
         catch (Exception ex) { Log($"GetAnalytesForSampleRow 오류: {ex.Message}"); }
@@ -548,13 +621,16 @@ public static class MyTaskService
             using var conn = DbConnectionFactory.CreateConnection();
             conn.Open();
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = $"SELECT `Analyte`, `Category`, `unit`, `ES`, `Method`, `instrument` FROM `분석정보` ORDER BY `Category`, `{DbConnectionFactory.RowId}`";
+            cmd.CommandText = "SELECT `Analyte`, `Category`, `unit`, `ES`, `Method`, `instrument`, COALESCE(`약칭`,'') FROM `분석정보` WHERE `Analyte` IS NOT NULL AND `Analyte` <> '' ORDER BY `ES` ASC, `Analyte` ASC";
             using var rdr = cmd.ExecuteReader();
             while (rdr.Read())
             {
                 string analyte = rdr.IsDBNull(0) ? "" : rdr.GetString(0).Trim();
                 if (string.IsNullOrEmpty(analyte) || !assignedItems.Contains(analyte)) continue;
-                string shortName = info.TryGetValue(analyte, out var meta) ? meta.shortName : analyte;
+                string colShort = rdr.IsDBNull(6) ? "" : rdr.GetString(6).Trim();
+                string shortName = !string.IsNullOrEmpty(colShort)
+                    ? colShort
+                    : (info.TryGetValue(analyte, out var meta) && !string.IsNullOrEmpty(meta.shortName) ? meta.shortName : analyte);
                 result.Add(new UserAssignedItem(
                     analyte,
                     shortName,

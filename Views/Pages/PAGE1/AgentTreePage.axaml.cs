@@ -204,6 +204,9 @@ public partial class AgentTreePage : UserControl
                 ? allItems
                 : allItems.Where(a => a.부서 == dept).ToList();
 
+            // 캐시 없는 사진을 한 번의 IN 쿼리로 일괄 다운로드 (per-agent 호출 제거)
+            AgentService.EnsurePhotosLocalBatch(items);
+
             foreach (var item in items)
                 AgentTreeView.Items.Add(CreateTreeItem(item));
             Log($"로드 완료 → {items.Count}명 (부서필터: {(CanEdit ? "전체" : dept)})");
@@ -285,9 +288,6 @@ public partial class AgentTreePage : UserControl
         var photoDir = AgentService.GetPhotoDirectory();
         if (!string.IsNullOrEmpty(agent.PhotoPath))
         {
-            // 로컬 파일 없으면 DB에서 가져와 캐시
-            AgentService.EnsurePhotoLocal(agent.사번, agent.PhotoPath);
-
             var fullPath = Path.IsPathRooted(agent.PhotoPath)
                 ? agent.PhotoPath
                 : Path.Combine(photoDir, agent.PhotoPath);

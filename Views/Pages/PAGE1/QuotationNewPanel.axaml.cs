@@ -470,48 +470,36 @@ public partial class QuotationNewPanel : UserControl
             contentGrid.Children.Add(nameBlock);
             Grid.SetColumn(nameBlock, 1);
 
-            // Column 2: 수량 인라인 편집 셀
-            var qtyPanel = new Grid();
-            Grid.SetColumn(qtyPanel, 2);
-            var qtyBtn = new Button
-            {
-                Content = qty.ToString(),
-                FontSize = AppFonts.MD,
-                FontFamily = Font,
-                Foreground = Brush.Parse(qty > 1 ? "#88d888" : "#888888"),
-                Background = Brushes.Transparent,
-                BorderThickness = new Thickness(0),
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-                Padding = new Thickness(0),
-                IsVisible = true,
-            };
+            // Column 2: 수량 — 항상 편집 가능한 TextBox로 노출 (직접 입력)
             var qtyInput = new TextBox
             {
                 Text = qty.ToString(),
                 FontSize = AppFonts.MD,
                 FontFamily = Font,
-                Foreground = AppTheme.FgSecondary,
+                Foreground = qty > 1
+                    ? Brush.Parse("#88d888")
+                    : AppTheme.FgSecondary,
                 Background = AppRes("InputBg"),
                 BorderBrush = AppRes("InputBorder"),
                 BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(3),
                 HorizontalContentAlignment = HorizontalAlignment.Center,
                 VerticalContentAlignment = VerticalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
-                Width = 50,
-                IsVisible = false,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Width = 56,
+                Padding = new Thickness(2, 1),
             };
-            qtyPanel.Children.Add(qtyBtn);
-            qtyPanel.Children.Add(qtyInput);
-            contentGrid.Children.Add(qtyPanel);
+            Grid.SetColumn(qtyInput, 2);
+            contentGrid.Children.Add(qtyInput);
 
             while (_rowQtyButtons.Count <= idx) _rowQtyButtons.Add(null);
             while (_rowQtyInputs.Count <= idx) _rowQtyInputs.Add(null);
-            _rowQtyButtons[idx] = qtyBtn;
-            _rowQtyInputs[idx] = qtyInput;
+            // 호환을 위해 버튼 슬롯은 남겨두되 실제로는 TextBox만 사용
+            _rowQtyButtons[idx] = null;
+            _rowQtyInputs[idx]  = qtyInput;
 
-            qtyBtn.Click += (_, _) => OpenQtyInput(idx);
-            qtyBtn.IsTabStop = false;
+            qtyInput.GotFocus += (_, _) => qtyInput.SelectAll();
             qtyInput.LostFocus += (_, _) => CommitQty(idx);
             qtyInput.AddHandler(TextBox.KeyDownEvent, (object? _, KeyEventArgs ke) =>
             {
@@ -519,11 +507,10 @@ public partial class QuotationNewPanel : UserControl
                 {
                     ke.Handled = true;
                     CommitQty(idx);
-                    if (idx < _rowQtyButtons.Count - 1)
-                        MoveQtyFocus(idx, +1);
+                    if (idx < _rowQtyInputs.Count - 1) MoveQtyFocus(idx, +1);
                 }
-                else if (ke.Key == Key.Up)                     { ke.Handled = true; CommitQty(idx); MoveQtyFocus(idx, -1); }
-                else if (ke.Key == Key.Escape)                 { ke.Handled = true; qtyInput.IsVisible = false; qtyBtn.IsVisible = true; }
+                else if (ke.Key == Key.Up)     { ke.Handled = true; CommitQty(idx); MoveQtyFocus(idx, -1); }
+                else if (ke.Key == Key.Escape) { ke.Handled = true; qtyInput.Text = qty.ToString(); }
             }, Avalonia.Interactivity.RoutingStrategies.Tunnel);
 
             // Column 3: 단가
@@ -572,40 +559,29 @@ public partial class QuotationNewPanel : UserControl
             ? $"{totalAmount:#,0} 원  ({_analyteMap.Count}항목)"
             : "—";
     }
-    // 네비/인라인 편집 로직 복구 (Show2만)
+    // 네비/인라인 편집 로직 — TextBox만 사용 (버튼 토글 제거됨)
     private void OpenQtyInput(int idx)
     {
-        if (idx < 0 || idx >= _rowQtyButtons.Count || _rowQtyButtons[idx] == null || _rowQtyInputs[idx] == null) return;
-        // 모든 행의 TextBox를 닫고 버튼을 보이게 (이전 편집 셀 원복)
-        for (int i = 0; i < _rowQtyButtons.Count; i++)
-        {
-            var btnX = _rowQtyButtons[i];
-            var tbX = _rowQtyInputs[i];
-            if (btnX != null) btnX.IsVisible = true;
-            if (tbX != null) tbX.IsVisible = false;
-        }
+        if (idx < 0 || idx >= _rowQtyInputs.Count || _rowQtyInputs[idx] == null) return;
         _selectedRowIndex = idx;
-        var btn = _rowQtyButtons[idx]!;
         var tb = _rowQtyInputs[idx]!;
-        btn.IsVisible = false;
-        tb.IsVisible = true;
-        tb.Text = btn.Content?.ToString() ?? "1";
         tb.Focus();
         tb.SelectAll();
     }
 
     private void CommitQty(int idx)
     {
-        if (idx < 0 || idx >= _rowQtyInputs.Count || _rowQtyInputs[idx] == null || _rowQtyButtons[idx] == null) return;
+        if (idx < 0 || idx >= _rowQtyInputs.Count || _rowQtyInputs[idx] == null) return;
         var tb = _rowQtyInputs[idx]!;
-        var btn = _rowQtyButtons[idx]!;
         if (!int.TryParse(tb.Text, out int qty) || qty < 1) qty = 1;
-        tb.Text = qty.ToString();
-        btn.Content = qty.ToString();
-        btn.IsVisible = true;
-        tb.IsVisible = false;
-        // 실제 데이터 반영
         var key = _analyteMap.Keys.ElementAtOrDefault(idx);
+        // 변경 없으면 재빌드 회피 (포커스 빈번한 LostFocus에서 깜빡임 방지)
+        if (key != null && _itemData.TryGetValue(key, out var cur) && cur.Qty == qty)
+        {
+            tb.Text = qty.ToString();
+            return;
+        }
+        tb.Text = qty.ToString();
         if (key != null && _itemData.ContainsKey(key))
             _itemData[key] = (qty, _itemData[key].Price);
         RebuildItemList();
@@ -615,7 +591,7 @@ public partial class QuotationNewPanel : UserControl
     private void MoveQtyFocus(int idx, int delta)
     {
         int next = idx + delta;
-        if (next >= 0 && next < _rowQtyButtons.Count && _rowQtyButtons[next] != null)
+        if (next >= 0 && next < _rowQtyInputs.Count && _rowQtyInputs[next] != null)
             OpenQtyInput(next);
     }
 

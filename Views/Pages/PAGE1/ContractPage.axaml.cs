@@ -183,6 +183,8 @@ public partial class ContractPage : UserControl
             if (window != null)
                 window.KeyDown += OnWindowKeyDown;
         };
+        // Show1 계약업체 리스트 전체에 패널 호버 shimmer 적용
+        TextShimmer.AttachPanelHover(ContractTreeView);
     }
 
     private void OnWindowKeyDown(object? sender, KeyEventArgs e)
@@ -224,7 +226,10 @@ public partial class ContractPage : UserControl
         ContractTreeView.Items.Clear();
         _selectedContract = null;
         _isAddMode        = false;
+        // Show2/3/4 모두 비워서 stale 패널 잔존 방지 (새로고침이 시각적으로 동작하도록)
         DetailPanelChanged?.Invoke(null);
+        EditPanelChanged?.Invoke(null);
+        StatsPanelChanged?.Invoke(null);
         PricePanelChanged?.Invoke(null);
 
         try
@@ -300,6 +305,13 @@ public partial class ContractPage : UserControl
         if (sender is not ToggleSwitch ts) return;
         _showActive = ts.IsChecked == true;
         _trashMode = false;
+        LoadData();
+    }
+
+    /// <summary>외부(서브메뉴 휴지통 버튼)에서 휴지통 모드 토글</summary>
+    public void ToggleTrashMode()
+    {
+        _trashMode = !_trashMode;
         LoadData();
     }
 
@@ -615,7 +627,7 @@ public partial class ContractPage : UserControl
             if (isChecked)
             {
                 if (_show4PriceTextBoxes.TryGetValue(analyte, out var pb))
-                    _pendingPrices[analyte] = pb.Text ?? "";
+                    _pendingPrices[analyte] = (pb.Text ?? "").Replace(",", "").Trim();
                 if (_show4QtyTextBoxes.TryGetValue(analyte, out var qb))
                     _pendingQuantities[analyte] = qb.Text ?? "";
             }
@@ -1051,7 +1063,7 @@ public partial class ContractPage : UserControl
                 if (_show4CheckBoxes.TryGetValue(analyte, out var chk))
                     chk.IsChecked = !uncheckedByDefault && hasRealPrice;
                 if (_show4PriceTextBoxes.TryGetValue(analyte, out var priceBox))
-                    priceBox.Text = priceValue > 0 ? ((long)priceValue).ToString() : "";
+                    priceBox.Text = priceValue > 0 ? ((long)priceValue).ToString("N0") : "";
                 if (_show4QtyTextBoxes.TryGetValue(analyte, out var qtyBox))
                     qtyBox.Text = contractQty > 0 ? contractQty.ToString() : "";
                 if (_show4SubtotalTbs.TryGetValue(analyte, out var stb))
@@ -1130,7 +1142,8 @@ public partial class ContractPage : UserControl
         _show4PriceTextBoxes.Clear();
         _show4QtyTextBoxes.Clear();
 
-        var root = new StackPanel { Spacing = 0, Margin = new Thickness(8) };
+        // 상단(헤더/컨트롤/컬럼헤더/합계)은 고정, 항목 리스트만 스크롤되도록 DockPanel 사용
+        var root = new DockPanel { Margin = new Thickness(8), LastChildFill = true };
 
         // ─── 비교 계약 드롭다운 ─────────────────────────────────────────────────
         var allContracts = _cachedAllContracts ??= ContractService.GetAllContracts();
@@ -1259,6 +1272,7 @@ public partial class ContractPage : UserControl
         };
         headerLine.Children.Add(_show4HeaderAbbrBorder);
         UpdateShow4AbbrBadge(abbr);
+        DockPanel.SetDock(headerLine, Dock.Top);
         root.Children.Add(headerLine);
 
         _show4ItemCountTb = new TextBlock
@@ -1268,6 +1282,7 @@ public partial class ContractPage : UserControl
             Foreground = AppTheme.FgDimmed,
             Margin     = new Thickness(0, 0, 0, 8),
         };
+        DockPanel.SetDock(_show4ItemCountTb, Dock.Top);
         root.Children.Add(_show4ItemCountTb);
 
         // ─── 상단 컨트롤 (모두 선택 | 전체 해제 | 비교 계약) ───────────────────
@@ -1308,12 +1323,14 @@ public partial class ContractPage : UserControl
         topControlPanel.Children.Add(leftGroup);  Grid.SetColumn(leftGroup, 0);
         topControlPanel.Children.Add(lblCompare); Grid.SetColumn(lblCompare, 2);
         topControlPanel.Children.Add(cbContract); Grid.SetColumn(cbContract, 3);
+        DockPanel.SetDock(topControlPanel, Dock.Top);
         root.Children.Add(topControlPanel);
 
         // ─── 컬럼 헤더 ──────────────────────────────────────────────────────────
+        // 수량 컬럼은 기존 70 → 50로 축소 (단가/수량 박스 겹침 방지를 위해 너무 좁히지 않음)
         var headerGrid = new Grid
         {
-            ColumnDefinitions = new ColumnDefinitions("Auto,*,90,70,90"),
+            ColumnDefinitions = new ColumnDefinitions("Auto,*,90,50,90"),
             ColumnSpacing     = 8,
         };
         var hdrDefs = new[] { ("", 0), ("항목명", 1), ("단가", 2), ("수량", 3), ("소계", 4) };
@@ -1324,12 +1341,14 @@ public partial class ContractPage : UserControl
             Grid.SetColumn(hdr, col);
             headerGrid.Children.Add(hdr);
         }
-        root.Children.Add(new Border
+        var colHeaderBorder = new Border
         {
             Background = AppTheme.BgSecondary ?? AppTheme.BgPrimary,
             Padding    = new Thickness(8, 4),
             Child      = headerGrid,
-        });
+        };
+        DockPanel.SetDock(colHeaderBorder, Dock.Top);
+        root.Children.Add(colHeaderBorder);
 
         // ─── 합계 ──────────────────────────────────────────────────────────────
         _show4TotalSummaryTb = new TextBlock
@@ -1338,6 +1357,7 @@ public partial class ContractPage : UserControl
             Foreground = AppTheme.FgSuccess,
             Margin     = new Thickness(0, 4, 0, 4),
         };
+        DockPanel.SetDock(_show4TotalSummaryTb, Dock.Top);
         root.Children.Add(_show4TotalSummaryTb);
 
         // ─── 카테고리/항목 행 ──────────────────────────────────────────────────
@@ -1454,7 +1474,7 @@ public partial class ContractPage : UserControl
 
                 var rowGrid = new Grid
                 {
-                    ColumnDefinitions = new ColumnDefinitions("Auto,*,90,70,90"),
+                    ColumnDefinitions = new ColumnDefinitions("Auto,*,90,50,90"),
                     ColumnSpacing     = 8,
                 };
 
@@ -1508,14 +1528,16 @@ public partial class ContractPage : UserControl
 
                 var priceBox = new TextBox
                 {
-                    Text              = priceValue > 0 ? ((long)priceValue).ToString() : "",
-                    FontSize          = AppTheme.FontSM, FontFamily = Font,
-                    Foreground        = AppTheme.FgSuccess,
-                    FontWeight        = FontWeight.SemiBold,
-                    TextAlignment     = Avalonia.Media.TextAlignment.Right,
-                    Height            = 28,
-                    Padding           = new Thickness(4, 2),
-                    VerticalAlignment = VerticalAlignment.Center,
+                    Text                 = priceValue > 0 ? ((long)priceValue).ToString("N0") : "",
+                    FontSize             = AppTheme.FontSM, FontFamily = Font,
+                    Foreground           = AppTheme.FgSuccess,
+                    FontWeight           = FontWeight.SemiBold,
+                    TextAlignment        = Avalonia.Media.TextAlignment.Right,
+                    Height               = 28,
+                    Padding              = new Thickness(4, 2),
+                    MinWidth             = 0,
+                    HorizontalAlignment  = Avalonia.Layout.HorizontalAlignment.Stretch,
+                    VerticalAlignment    = VerticalAlignment.Center,
                 };
                 Grid.SetColumn(priceBox, 2);
                 rowGrid.Children.Add(priceBox);
@@ -1523,12 +1545,14 @@ public partial class ContractPage : UserControl
 
                 var qtyBox = new TextBox
                 {
-                    Text              = contractQty > 0 ? contractQty.ToString() : "",
-                    FontSize          = AppTheme.FontSM, FontFamily = Font,
-                    TextAlignment     = Avalonia.Media.TextAlignment.Right,
-                    Height            = 28,
-                    Padding           = new Thickness(4, 2),
-                    VerticalAlignment = VerticalAlignment.Center,
+                    Text                 = contractQty > 0 ? contractQty.ToString() : "",
+                    FontSize             = AppTheme.FontSM, FontFamily = Font,
+                    TextAlignment        = Avalonia.Media.TextAlignment.Right,
+                    Height               = 28,
+                    Padding              = new Thickness(4, 2),
+                    MinWidth             = 0,
+                    HorizontalAlignment  = Avalonia.Layout.HorizontalAlignment.Stretch,
+                    VerticalAlignment    = VerticalAlignment.Center,
                 };
                 _show4QtyTextBoxes[analyte] = qtyBox;
                 Grid.SetColumn(qtyBox, 3);
@@ -1547,16 +1571,37 @@ public partial class ContractPage : UserControl
                 rowGrid.Children.Add(subtotalTb);
                 _show4SubtotalTbs[analyte] = subtotalTb;
 
+                bool priceReformatting = false;
                 priceBox.TextChanged += (_, _) =>
                 {
-                    if (_suppressTotalUpdate) return;
+                    if (_suppressTotalUpdate || priceReformatting) return;
+
+                    // 천단위 쉼표 라이브 포맷 (숫자만 추출 → N0)
+                    var raw    = priceBox.Text ?? "";
+                    var digits = new string(raw.Where(char.IsDigit).ToArray());
                     decimal pv = 0m;
-                    if (decimal.TryParse(priceBox.Text, out decimal np))
+                    if (long.TryParse(digits, out long lv) && lv > 0)
                     {
-                        pv = np;
-                        _pendingPrices[analyte] = np.ToString();
-                        if (np > 0) chk.IsChecked = true;
+                        var formatted = lv.ToString("N0");
+                        if (raw != formatted)
+                        {
+                            priceReformatting = true;
+                            try
+                            {
+                                priceBox.Text      = formatted;
+                                priceBox.CaretIndex = formatted.Length;
+                            }
+                            finally { priceReformatting = false; }
+                        }
+                        pv = lv;
+                        _pendingPrices[analyte] = lv.ToString();
+                        chk.IsChecked = true;
                     }
+                    else
+                    {
+                        _pendingPrices[analyte] = "";
+                    }
+
                     if (int.TryParse(qtyBox.Text, out int nq) && nq > 0)
                     {
                         var sub = pv * nq;
@@ -1574,7 +1619,7 @@ public partial class ContractPage : UserControl
                 {
                     if (_suppressTotalUpdate) return;
                     _pendingQuantities[analyte] = qtyBox.Text ?? "";
-                    decimal pv = decimal.TryParse(priceBox.Text, out var p) ? p : 0m;
+                    decimal pv = decimal.TryParse((priceBox.Text ?? "").Replace(",", ""), out var p) ? p : 0m;
                     if (int.TryParse(qtyBox.Text, out int nq) && nq > 0)
                     {
                         var sub = pv * nq;
@@ -1653,6 +1698,7 @@ public partial class ContractPage : UserControl
 
         _show4KnownAnalytes = builtAnalytes;
 
+        // 항목 리스트만 스크롤 (DockPanel LastChildFill — 남은 영역 모두 차지)
         var scroll = new ScrollViewer
         {
             Content = itemsPanel,
@@ -1662,12 +1708,8 @@ public partial class ContractPage : UserControl
         };
         root.Children.Add(scroll);
 
-        return new ScrollViewer
-        {
-            Content = root,
-            HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
-            VerticalScrollBarVisibility   = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
-        };
+        // 상단(헤더/컨트롤/컬럼헤더/합계) 고정 + 항목 영역만 스크롤 — outer ScrollViewer 제거됨
+        return root;
     }
 
     // =========================================================================
@@ -3016,13 +3058,22 @@ public partial class ContractPage : UserControl
     {
         try
         {
+            // 별도 분석방법(분석항목 아님) — 단가 항목에서 제외
+            var excludedAnalytes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "총 유기탄소 NPOC", "총유기탄소 NPOC", "TOC NPOC",
+                "페놀류 추출법", "페놀류추출법",
+            };
+
             var templatePrices = ContractService.GetContractPrices(templateCompanyName);
             var priceDict      = templatePrices
-                .Where(p => !string.IsNullOrWhiteSpace(p.Price))
+                .Where(p => !string.IsNullOrWhiteSpace(p.Price) && !excludedAnalytes.Contains(p.Analyte.Trim()))
                 .ToDictionary(p => p.Analyte, p => p.Price, StringComparer.OrdinalIgnoreCase);
 
             var aliasMap = ContractService.GetAnalyteAliasMap();
-            var allItems = AnalysisService.GetAllItems();
+            var allItems = AnalysisService.GetAllItems()
+                .Where(a => !excludedAnalytes.Contains(a.Analyte?.Trim() ?? ""))
+                .ToList();
 
             var root = new StackPanel { Spacing = 0, Margin = new Thickness(12) };
 
@@ -3050,7 +3101,7 @@ public partial class ContractPage : UserControl
                 VerticalAlignment = VerticalAlignment.Center,
                 Margin     = new Thickness(0, 0, 0, 8),
             };
-            var chkSelectAll = new CheckBox { Content = "모두 선택", FontSize = AppTheme.FontMD, FontFamily = Font, IsChecked = true };
+            var chkSelectAll = new CheckBox { Content = "모두 선택", FontSize = AppTheme.FontMD, FontFamily = Font, IsChecked = false };
             topControlPanel.Children.Add(chkSelectAll);
             var btnConfirm = new Button
             {
@@ -3100,12 +3151,16 @@ public partial class ContractPage : UserControl
                 .Select(k => new AnalysisItem { Analyte = k, Category = "기타", 약칭 = "", ES = "zzz" })
                 .ToList();
 
+            // 전체 분석항목을 표시하고, 계약된 항목만 체크되도록 함 (Show4)
             var itemMeta = allItems
-                .Where(a => priceDict.ContainsKey(a.Analyte))
                 .GroupBy(a => string.IsNullOrEmpty(a.Category) ? "기타" : a.Category)
-                .ToDictionary(g => g.Key);
-            if (unknownItems.Count > 0 && !itemMeta.ContainsKey("기타"))
-                catOrder.Add("기타");
+                .ToDictionary(g => g.Key, g => g.ToList());
+            if (unknownItems.Count > 0)
+            {
+                if (!itemMeta.TryGetValue("기타", out var etcList)) { etcList = new List<AnalysisItem>(); itemMeta["기타"] = etcList; }
+                etcList.AddRange(unknownItems);
+                if (!catOrder.Contains("기타")) catOrder.Add("기타");
+            }
 
             // analyte → (CheckBox, TextBox) 맵 (확정 시 사용)
             var chkMap = new Dictionary<string, CheckBox>(StringComparer.OrdinalIgnoreCase);
@@ -3131,14 +3186,14 @@ public partial class ContractPage : UserControl
             foreach (var catKey in catOrder)
             {
                 var groupItems = (itemMeta.TryGetValue(catKey, out var grp) ? grp.OrderBy(a => a.ES).ToList() : new List<AnalysisItem>());
-                if (catKey == "기타") groupItems.AddRange(unknownItems);
-                groupItems = groupItems.Where(a => priceDict.ContainsKey(a.Analyte)).ToList();
                 if (groupItems.Count == 0) continue;
+                int contractedInGroup = groupItems.Count(a => priceDict.ContainsKey(a.Analyte));
 
-                // 카테고리 헤더
+                // 카테고리 헤더 — 계약된 항목 수 / 전체 항목 수 표시, 모두 계약된 카테고리만 기본 체크
+                bool catAllContracted = contractedInGroup == groupItems.Count && contractedInGroup > 0;
                 var catChk = new CheckBox
                 {
-                    Content = $"전체 ({groupItems.Count})", IsChecked = true,
+                    Content = $"전체 ({contractedInGroup}/{groupItems.Count})", IsChecked = catAllContracted,
                     FontSize = AppTheme.FontXS, FontFamily = Font,
                     Foreground = Brush.Parse("#88bb88"),
                     Padding = new Thickness(2, 0), Margin = new Thickness(0), MinHeight = 18,
@@ -3172,10 +3227,11 @@ public partial class ContractPage : UserControl
                 foreach (var item in groupItems)
                 {
                     var analyte = item.Analyte;
-                    if (!priceDict.TryGetValue(analyte, out var price)) continue;
+                    bool isContracted = priceDict.TryGetValue(analyte, out var price);
+                    if (!isContracted) price = "";
                     decimal.TryParse(price, out decimal priceValue);
 
-                    var chk    = new CheckBox { IsChecked = true, VerticalAlignment = VerticalAlignment.Center };
+                    var chk    = new CheckBox { IsChecked = isContracted, VerticalAlignment = VerticalAlignment.Center };
                     var qtyBox = new TextBox
                     {
                         Text = "1", FontSize = AppTheme.FontSM, FontFamily = Font,
@@ -3447,7 +3503,7 @@ public partial class ContractPage : UserControl
         };
         btnApply.Click += (_, _) =>
         {
-            var newPrice = priceBox.Text?.Trim() ?? "";
+            var newPrice = (priceBox.Text ?? "").Replace(",", "").Trim();
             _pendingPrices[analyte] = newPrice;
 
             // Show2 단가 표시 즉시 업데이트

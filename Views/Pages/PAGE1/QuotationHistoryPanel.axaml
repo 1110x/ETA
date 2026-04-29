@@ -93,7 +93,7 @@
         </Style>
     </UserControl.Styles>
 
-    <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
+    <Grid RowDefinitions="Auto,Auto,Auto,*,Auto,Auto">
 
         <!-- ① 헤더 영역: ToggleSwitch + 검색창 + 툴바 -->
         <Border Grid.Row="0"
@@ -176,8 +176,35 @@
             <Grid x:Name="treeHost" Background="Transparent" ClipToBounds="False" />
         </Border>
 
-        <!-- ⑤ 하단 정보 -->
-        <TextBlock Grid.Row="4"
+        <!-- ⑤ 아이콘 범례 -->
+        <StackPanel Grid.Row="4"
+                    Orientation="Horizontal"
+                    Spacing="12"
+                    Margin="2,4,0,0">
+            <StackPanel Orientation="Horizontal" Spacing="3" VerticalAlignment="Center">
+                <TextBlock Text="🔴"
+                           FontSize="{DynamicResource FontSizeSM}"
+                           VerticalAlignment="Center" />
+                <TextBlock Text="거래명세서 미발행"
+                           FontSize="{DynamicResource FontSizeSM}"
+                           Foreground="{DynamicResource FgMuted}"
+                           FontFamily="avares://ETA/Assets/Fonts#Pretendard"
+                           VerticalAlignment="Center" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="3" VerticalAlignment="Center">
+                <TextBlock Text="🔵"
+                           FontSize="{DynamicResource FontSizeSM}"
+                           VerticalAlignment="Center" />
+                <TextBlock Text="거래명세서 발행됨"
+                           FontSize="{DynamicResource FontSizeSM}"
+                           Foreground="{DynamicResource FgMuted}"
+                           FontFamily="avares://ETA/Assets/Fonts#Pretendard"
+                           VerticalAlignment="Center" />
+            </StackPanel>
+        </StackPanel>
+
+        <!-- ⑥ 하단 정보 -->
+        <TextBlock Grid.Row="5"
                    x:Name="txbInfo"
                    Text=""
                    FontSize="{DynamicResource FontSizeSM}" Foreground="{DynamicResource FgMuted}"

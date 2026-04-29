@@ -87,10 +87,10 @@ public class OrderRequestWindow : Window
             }
         };
 
-        // 측정인 토글
+        // 측정인 토글 — 기본값을 "기존 목록"(=수질분석센터_결과 업체별)으로 변경
         _tglMeasurer = new ToggleSwitch
         {
-            IsChecked   = true,
+            IsChecked   = false,
             OnContent   = "측정인 채취지점",
             OffContent  = "기존 목록",
             FontSize    = AppTheme.FontSM, FontFamily = Font,
@@ -246,10 +246,33 @@ public class OrderRequestWindow : Window
 
     private void LoadOrderRequestList()
     {
+        // ── 1차 데이터 소스: 수질분석센터_결과 의 약칭별 고유 시료명 ──
+        //    (설정 → 수질분석센터 의뢰명칭 및 방류기준의 Show4 와 동일 소스)
+        var distinctNames = string.IsNullOrWhiteSpace(_issue.약칭)
+            ? new List<string>()
+            : ETA.Services.SERVICE1.AnalysisRequestService
+                .GetDistinctSampleNames(_issue.약칭)
+                .OrderBy(n => n, StringComparer.CurrentCulture)
+                .ToList();
+
+        if (distinctNames.Count > 0)
+        {
+            _matchedColumn = OrderRequestService.FindColumnByCompany(_issue.업체명);
+            _txbInfo.Text       = $"✅ {_issue.약칭} — 기존 시료명 {distinctNames.Count}개";
+            _txbInfo.Foreground = AppTheme.FgSuccess;
+            _cbPanel.Children.Clear();
+            bool odd = false;
+            foreach (var name in distinctNames)
+                _cbPanel.Children.Add(MakeCbRow(name, ref odd));
+            UpdateNextButton();
+            return;
+        }
+
+        // ── 폴백: 시료명칭 테이블 — 약칭 매칭 없을 때 ──
         _matchedColumn = OrderRequestService.FindColumnByCompany(_issue.업체명);
         if (_matchedColumn == null)
         {
-            _txbInfo.Text       = $"ℹ️ '{_issue.업체명}' 컬럼이 없습니다. 하단에서 시료명을 추가하면 자동 생성됩니다.";
+            _txbInfo.Text       = $"ℹ️ '{_issue.업체명}' 시료 이력이 없습니다. 하단에서 시료명을 추가하면 자동 생성됩니다.";
             _txbInfo.Foreground = AppTheme.FgInfo;
             _cbPanel.Children.Clear();
             UpdateNextButton();

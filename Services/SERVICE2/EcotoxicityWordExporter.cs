@@ -132,7 +132,7 @@ public static class EcotoxicityWordExporter
                         new FontSize { Val = "16" })),
                 new ParagraphPropertiesDefault(
                     new ParagraphPropertiesBaseStyle(
-                        new SpacingBetweenLines { After = "0", Before = "0", Line = "240", LineRule = LineSpacingRuleValues.Auto }))));
+                        new SpacingBetweenLines { After = "0", Before = "0", Line = "200", LineRule = LineSpacingRuleValues.Auto }))));
         sp.Styles.Save();
     }
 
@@ -168,7 +168,7 @@ public static class EcotoxicityWordExporter
         _sectPr = new SectionProperties(
             new HeaderReference { Type = HeaderFooterValues.Default, Id = main.GetIdOfPart(hp) },
             new PageSize { Width = 11906U, Height = 16838U },
-            new PageMargin { Top = 720, Right = 720, Bottom = 720, Left = 720, Header = 360, Footer = 360, Gutter = 0 });
+            new PageMargin { Top = 540, Right = 540, Bottom = 540, Left = 540, Header = 280, Footer = 280, Gutter = 0 });
     }
 
     private static string WatermarkImageXml(string relId) =>
@@ -220,20 +220,63 @@ public static class EcotoxicityWordExporter
         new Paragraph(
             new ParagraphProperties(
                 new Justification { Val = JustificationValues.Center },
-                new SpacingBetweenLines { Before = "120", After = "60" }),
-            new Run(new RunProperties(new Bold(), new FontSize { Val = "32" }),
-                new Text("물벼룩을 이용한 급성 독성 시험 기록부")),
-            new Run(new RunProperties(new Italic(), new FontSize { Val = "18" }, new Color { Val = "555555" }),
+                new SpacingBetweenLines { Before = "0", After = "40" }),
+            new Run(new RunProperties(new Bold(), new FontSize { Val = "26" }),
+                new Text("물벼룩을 이용한 급성 독성 시험기록부")),
+            new Run(new RunProperties(new Italic(), new FontSize { Val = "14" }, new Color { Val = "555555" }),
                 new Break(), new Text("ES 04704.1c (수질오염공정시험기준)")));
 
-    private static void Section(Body body, string title) =>
-        body.Append(new Paragraph(
-            new ParagraphProperties(new SpacingBetweenLines { Before = "100", After = "40" }),
-            new Run(new RunProperties(new Bold(), new FontSize { Val = "18" }, new Color { Val = "1F3A5F" }),
-                new Text("■ " + title))));
+    /// <summary>1행 표 — 좁은 파란 셀(액센트바) + 텍스트 셀. 막대 길이 = 텍스트 행 높이.</summary>
+    private static void Section(Body body, string title)
+    {
+        var t = new Table(
+            new TableProperties(
+                new TableWidth { Type = TableWidthUnitValues.Auto, Width = "0" },
+                new TableBorders(
+                    new TopBorder    { Val = BorderValues.None },
+                    new LeftBorder   { Val = BorderValues.None },
+                    new BottomBorder { Val = BorderValues.None },
+                    new RightBorder  { Val = BorderValues.None },
+                    new InsideHorizontalBorder { Val = BorderValues.None },
+                    new InsideVerticalBorder   { Val = BorderValues.None }),
+                new TableLayout { Type = TableLayoutValues.Fixed }));
+        var grid = new TableGrid();
+        grid.Append(new GridColumn { Width = "60" });
+        grid.Append(new GridColumn { Width = "10340" });
+        t.Append(grid);
+
+        var barCp = new TableCellProperties(
+            new TableCellWidth { Type = TableWidthUnitValues.Dxa, Width = "60" },
+            new Shading { Val = ShadingPatternValues.Clear, Color = "auto", Fill = "1F4E79" },
+            new TableCellMargin(
+                new LeftMargin  { Width = "0", Type = TableWidthUnitValues.Dxa },
+                new RightMargin { Width = "0", Type = TableWidthUnitValues.Dxa }));
+        var barCell = new TableCell(barCp, new Paragraph(
+            new ParagraphProperties(new SpacingBetweenLines { Before = "0", After = "0" }),
+            new Run(new Text(""))));
+
+        var txtCp = new TableCellProperties(
+            new TableCellWidth { Type = TableWidthUnitValues.Dxa, Width = "10340" },
+            new TableCellMargin(
+                new LeftMargin  { Width = "120", Type = TableWidthUnitValues.Dxa },
+                new RightMargin { Width = "0",   Type = TableWidthUnitValues.Dxa }),
+            new TableCellVerticalAlignment { Val = TableVerticalAlignmentValues.Center });
+        var txtCell = new TableCell(txtCp, new Paragraph(
+            new ParagraphProperties(new SpacingBetweenLines { Before = "0", After = "0" }),
+            new Run(new RunProperties(new Bold(), new FontSize { Val = "16" }, new Color { Val = "1F4E79" }),
+                new Text(title))));
+
+        t.Append(new TableRow(
+            new TableRowProperties(new TableRowHeight { Val = 160U, HeightType = HeightRuleValues.AtLeast }),
+            barCell, txtCell));
+
+        body.Append(new Paragraph(new ParagraphProperties(new SpacingBetweenLines { Before = "20", After = "0" })));
+        body.Append(t);
+        body.Append(new Paragraph(new ParagraphProperties(new SpacingBetweenLines { Before = "0", After = "10" })));
+    }
 
     private static Paragraph Spacer() =>
-        new Paragraph(new ParagraphProperties(new SpacingBetweenLines { Before = "20", After = "20" }));
+        new Paragraph(new ParagraphProperties(new SpacingBetweenLines { Before = "0", After = "0" }));
 
     private static Paragraph PageBreak() =>
         new Paragraph(new Run(new Break { Type = BreakValues.Page }));
@@ -243,26 +286,45 @@ public static class EcotoxicityWordExporter
             new RunProperties(new FontSize { Val = (pt * 2).ToString() }),
             new Text(text ?? "") { Space = SpaceProcessingModeValues.Preserve }));
 
+    // ─── 시험일자 포맷 — 채취일 + 1일 = 시작일, +duration 시간 = 종료일.
+    //     예: collection=2026-04-22, duration="24 H" → "2026-04-23~24(24hr)" ───
+    private static string FormatTestDateSpan(string collectionDate, string duration)
+    {
+        if (!DateTime.TryParse(collectionDate, out var dt))
+            return collectionDate ?? "";
+        int hours = ParseHours(duration);
+        var start = dt.AddDays(1);
+        var end   = start.AddHours(hours);
+        return start.Date == end.Date
+            ? $"{start:yyyy-MM-dd}({hours}hr)"
+            : $"{start:yyyy-MM-dd}~{end:dd}({hours}hr)";
+    }
+
+    private static int ParseHours(string duration)
+    {
+        if (string.IsNullOrWhiteSpace(duration)) return 24;
+        var m = System.Text.RegularExpressions.Regex.Match(duration, @"(\d+)");
+        return m.Success && int.TryParse(m.Groups[1].Value, out var n) ? n : 24;
+    }
+
     // ─── 시험기본정보 ───────────────────────────────────────────────────────
     private static Table BuildBasicInfo(Record r)
     {
-        var row1 = new[] {
-            ("시험일자", r.Date),
+        var row = new[] {
+            ("시험일자", FormatTestDateSpan(r.Date, r.Duration)),
             ("시험번호", r.TestNo),
-            ("시험기간", r.Duration),
-        };
-        var row2 = new[] {
-            ("시험생물", string.IsNullOrWhiteSpace(r.Species) ? "Daphnia magna Straus" : r.Species),
             ("시료명",   r.SampleName),
-            ("오염물질", r.Toxicant),
         };
-        return BuildPackedTable(new[] { row1, row2 });
+        return BuildPackedTable(new[] { row });
     }
 
     // ─── 시험조건 ────────────────────────────────────────────────────────────
     private static Table BuildConditions(Record r)
     {
-        string method = string.IsNullOrWhiteSpace(r.EcCalculationMethod) ? "—" : r.EcCalculationMethod;
+        // 실제 계산된 결과의 Method 를 우선 (EcCalculationMethod 는 폼 기본값 "Probit" 잔존 가능)
+        string method = !string.IsNullOrWhiteSpace(r.TskResult?.Method) ? r.TskResult!.Method
+                      : !string.IsNullOrWhiteSpace(r.EcCalculationMethod) ? r.EcCalculationMethod
+                      : "—";
         var row1 = new[] {
             ("시험온도(°C)", $"{Fmt(r.TestTemperature)} (기준 20±2)"),
             ("시험 pH",      $"{Fmt(r.TestPH)} (기준 7.6~8.0)"),
@@ -292,13 +354,13 @@ public static class EcotoxicityWordExporter
             ("대조 치사수", r.CtrlMort.ToString()),
             ("치사율",      $"{rate:F1}%"),
         };
-        return BuildPackedTable(new[] { cells });
+        return BuildPackedTable(new[] { cells }, Align.Center);
     }
 
     // ─── 농도별 시험 데이터 ─────────────────────────────────────────────────
     private static Table BuildConcentration(Record r)
     {
-        var headers = new[] { "농도(%)", "생물수", "사망수", "치사율(%)" };
+        var headers = new[] { "농도(%)", "생물수", "유영저해 및 치사", "치사율(%)" };
         var rows = new List<string[]> { headers };
         for (int i = 0; i < r.Conc.Length; i++)
         {
@@ -318,12 +380,12 @@ public static class EcotoxicityWordExporter
             hdr.Append(Cell(headers[i], widths[i], isLabel: true, align: Align.Center));
         t.Append(hdr);
 
-        // 데이터 — 모두 우측 정렬
+        // 데이터 — 가운데 정렬
         for (int rIdx = 1; rIdx < rows.Count; rIdx++)
         {
             var tr = new TableRow();
             for (int c = 0; c < headers.Length; c++)
-                tr.Append(Cell(rows[rIdx][c], widths[c], align: Align.Right));
+                tr.Append(Cell(rows[rIdx][c], widths[c], align: Align.Center));
             t.Append(tr);
         }
         return t;
@@ -368,9 +430,7 @@ public static class EcotoxicityWordExporter
             for (int i = 0; i < headers.Length; i++)
             {
                 bool firstCol = i == 0;
-                tr.Append(Cell(d[i], widths[i],
-                    isLabel: firstCol,
-                    align: firstCol ? Align.Center : Align.Right));
+                tr.Append(Cell(d[i], widths[i], isLabel: firstCol, align: Align.Center));
             }
             t.Append(tr);
         }
@@ -404,9 +464,12 @@ public static class EcotoxicityWordExporter
 
         bool hasTsk    = r.TskResult    != null;
         bool hasProbit = r.ProbitResult != null;
-        string used = !string.IsNullOrWhiteSpace(r.EcCalculationMethod)
-            ? r.EcCalculationMethod
-            : (hasProbit ? "Probit" : (hasTsk ? "TSK" : "—"));
+        // 실제 계산된 결과의 Method 우선 (TSK/Probit). 폴백: EcCalculationMethod, 그 다음 가용 결과 추정.
+        string used = !string.IsNullOrWhiteSpace(r.TskResult?.Method)
+            ? r.TskResult!.Method
+            : !string.IsNullOrWhiteSpace(r.EcCalculationMethod)
+                ? r.EcCalculationMethod
+                : (hasProbit ? "Probit" : (hasTsk ? "TSK" : "—"));
 
         bool isProbit = used.Contains("Probit", StringComparison.OrdinalIgnoreCase);
         bool isTsk    = used.Contains("TSK", StringComparison.OrdinalIgnoreCase)
@@ -431,7 +494,7 @@ public static class EcotoxicityWordExporter
         using (var ms = new MemoryStream(png)) imgPart.FeedData(ms);
         string relId = main.GetIdOfPart(imgPart);
 
-        long cx = 4400000;                      // ≈ 347pt 폭
+        long cx = 6000000;                      // ≈ 472pt 폭 (≈ 6.56" — A4 본문 폭 거의 전체)
         long cy = (long)(cx * 280.0 / 640.0);   // 비율 압축 (640:280)
 
         var inline = new DW.Inline(
@@ -455,7 +518,9 @@ public static class EcotoxicityWordExporter
         { DistanceFromTop = 0U, DistanceFromBottom = 0U, DistanceFromLeft = 0U, DistanceFromRight = 0U };
 
         return new Paragraph(
-            new ParagraphProperties(new Justification { Val = JustificationValues.Center }),
+            new ParagraphProperties(
+                new Justification { Val = JustificationValues.Center },
+                new SpacingBetweenLines { Before = "0", After = "0", Line = "200", LineRule = LineSpacingRuleValues.Auto }),
             new Run(new RunProperties(new NoProof()), new Drawing(inline)));
     }
 
@@ -489,23 +554,24 @@ public static class EcotoxicityWordExporter
     // ─── 공통 빌드 유틸 ─────────────────────────────────────────────────────
 
     /// <summary>(라벨, 값) 페어들로 구성된 가로선 표.
-    /// 셀 안에서 라벨은 굵게, 값은 일반 — 한 셀 안에서 시각 구분.</summary>
-    private static Table BuildPackedTable((string label, string value)[][] rows)
+    /// 셀 안에서 라벨은 굵게, 값은 일반 — 한 셀 안에서 시각 구분.
+    /// 기본 좌측 정렬, 가운데 정렬은 align 파라미터로.</summary>
+    private static Table BuildPackedTable((string label, string value)[][] rows, Align align = Align.Left)
     {
         int[] widths = PackedColWidths(rows);
         var t = NewTable();
         AddGrid(t, widths);
-        foreach (var r in rows) AddPackedRow(t, r, widths);
+        foreach (var r in rows) AddPackedRow(t, r, widths, align);
         return t;
     }
 
-    private static void AddPackedRow(Table t, (string label, string value)[] cells, int[] widths)
+    private static void AddPackedRow(Table t, (string label, string value)[] cells, int[] widths, Align align = Align.Left)
     {
         var tr = new TableRow();
         for (int i = 0; i < cells.Length; i++)
         {
             int w = i < widths.Length ? widths[i] : MinColWidth;
-            tr.Append(PackedCell(cells[i].label, cells[i].value, w));
+            tr.Append(PackedCell(cells[i].label, cells[i].value, w, align));
         }
         t.Append(tr);
     }
@@ -517,20 +583,24 @@ public static class EcotoxicityWordExporter
         return ColWidths(asText);
     }
 
-    /// <summary>한 셀 안에 굵은 라벨 + 일반 값. 좌측 정렬.</summary>
-    private static TableCell PackedCell(string label, string value, int width)
+    /// <summary>한 셀 안에 굵은 라벨 + 일반 값. align 으로 정렬 지정.</summary>
+    private static TableCell PackedCell(string label, string value, int width, Align align = Align.Left)
     {
         var cp = new TableCellProperties();
         cp.Append(new TableCellWidth { Type = TableWidthUnitValues.Dxa, Width = width.ToString() });
         cp.Append(new TableCellBorders(new LeftBorder { Val = BorderValues.None }, new RightBorder { Val = BorderValues.None }));
-        // 셀 좌우 안쪽 여백 — 텍스트가 셀 경계에 붙어 답답해 보이지 않도록
         cp.Append(new TableCellMargin(
-            new LeftMargin   { Width = "120", Type = TableWidthUnitValues.Dxa },
-            new RightMargin  { Width = "120", Type = TableWidthUnitValues.Dxa }));
+            new LeftMargin  { Width = "120", Type = TableWidthUnitValues.Dxa },
+            new RightMargin { Width = "120", Type = TableWidthUnitValues.Dxa }));
         cp.Append(new TableCellVerticalAlignment { Val = TableVerticalAlignmentValues.Center });
 
         var pp = new ParagraphProperties();
-        pp.Append(new Justification { Val = JustificationValues.Left });
+        pp.Append(new Justification { Val = align switch
+        {
+            Align.Right  => JustificationValues.Right,
+            Align.Center => JustificationValues.Center,
+            _            => JustificationValues.Left,
+        } });
 
         var labelRun = new Run(
             new RunProperties(new Bold(), new FontSize { Val = "16" }),

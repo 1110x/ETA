@@ -73,7 +73,7 @@ public partial class WasteAnalysisInputPage : UserControl
         ("ICP",   "ICP",     "⚡", Array.Empty<string>()),
         ("IC",    "IC",      "🧬", Array.Empty<string>()),
         ("PFAS",  "과불화화합물", "💊", new[] { "PFOA", "PFOS", "PFBS" }),
-        ("AAS",   "AAS",     "🔥", Array.Empty<string>()),
+        ("AAS",   "AAS",     "🔥", new[] { "수은" }),
         ("ECO",   "생태독성", "🐟", Array.Empty<string>()),
         ("ECOLI", "대장균",   "🦠", new[] { "총대장균군" }),
     };
@@ -106,6 +106,8 @@ public partial class WasteAnalysisInputPage : UserControl
         ["UV_Cary_CSV"]       = "Agilent_Cary",
         ["ICP"]               = "ICP_PDF",
         ["LCMS"]              = "LCMS_PFAS",
+        ["AA_HG_CSV"]         = "AA_HG_CSV",
+        ["AA_HG_PDF"]         = "AA_HG_PDF",
         // 구형 ONNX 레이블 호환
         ["TOC"]               = "TOC_Shimadzu",
     };
@@ -122,6 +124,7 @@ public partial class WasteAnalysisInputPage : UserControl
         ["UV_Shimadzu_PDF"] = "TN", ["UV_Shimadzu_ASCII"] = "TN",
         ["UV_Cary_PDF"] = "TN", ["UV_Cary_CSV"] = "TN",
         ["ICP"] = "ICP", ["LCMS"] = "PFAS",
+        ["AA_HG_CSV"] = "AAS", ["AA_HG_PDF"] = "AAS",
     };
 
     // Items값 → DB약칭 별명 매핑 (분장표준처리 약칭과 다른 경우)
@@ -785,6 +788,8 @@ public partial class WasteAnalysisInputPage : UserControl
             case "Agilent_Cary":
             case "ICP_PDF":
             case "LCMS_PFAS":
+            case "AA_HG_CSV":
+            case "AA_HG_PDF":
             {
                 var pdfPath = preloadedPath ?? await OpenSingleFilePicker(selectedParser, categoryLabel);
                 if (string.IsNullOrEmpty(pdfPath)) return;
@@ -794,6 +799,8 @@ public partial class WasteAnalysisInputPage : UserControl
                     case "Agilent_Cary": await ParseAgilentCaryUvFileAsync(pdfPath); break;
                     case "ICP_PDF":      await ParseIcpPdfFileAsync(pdfPath);       break;
                     case "LCMS_PFAS":    await ParseLcmsPfasFileAsync(pdfPath);     break;
+                    case "AA_HG_CSV":
+                    case "AA_HG_PDF":    await ParseAasHgFileAsync(pdfPath);        break;
                 }
                 break;
             }
@@ -11107,6 +11114,48 @@ public partial class WasteAnalysisInputPage : UserControl
             ShowMessage($"✅ ICP 파싱 완료 ({parseResult.DetectedFormat}) - {parseResult.Rows.Count}건", false);
         }
         catch (Exception ex) { ShowMessage($"❌ ICP 파싱 오류: {ex.Message}", true); }
+    }
+
+    // ═════════════════════════════════════════════════════════════════════════
+    //  Thermo iCE 3000 AA — 수은(Hg) CSV/PDF 처리
+    // ═════════════════════════════════════════════════════════════════════════
+    private async System.Threading.Tasks.Task ParseAasHgFileAsync(string path)
+    {
+        try
+        {
+            string ext = System.IO.Path.GetExtension(path).ToLowerInvariant();
+            ShowMessage("AA 수은 파일 파싱 중...", false);
+            const string aasCategory = "AAS";
+            // CompoundName이 "Hg"로 들어가도록 활성 항목은 ["Hg"], 표시용은 Categories Items["수은"] 유지
+            string[] hgItems = new[] { "Hg" };
+
+            IcpPdfParser.ParseResult parseResult;
+            if (ext == ".csv")
+            {
+                var r = await System.Threading.Tasks.Task.Run(() =>
+                    IcpAaCsvParser.Parse(path, hgItems, FormatResult));
+                parseResult = new IcpPdfParser.ParseResult(r.Rows, r.DocInfo, r.DocDate, r.DetectedFormat);
+            }
+            else
+            {
+                var r = await System.Threading.Tasks.Task.Run(() =>
+                    AasHgPdfParser.Parse(path, hgItems, FormatResult));
+                parseResult = new IcpPdfParser.ParseResult(r.Rows, r.DocInfo, r.DocDate, r.DetectedFormat);
+            }
+
+            _categoryDocInfo[aasCategory]   = parseResult.DocInfo;
+            _categoryExcelData[aasCategory] = parseResult.Rows;
+            _categoryFilePaths[aasCategory] = path;
+            _activeCategory                 = aasCategory;
+            _activeItems                    = new[] { "수은" };
+            _categorySelected               = true;
+            _currentExcelRows               = parseResult.Rows;
+            UpdateCategoryButtonStyles();
+            LoadVerifiedGrid();
+            BuildStatsPanel();
+            ShowMessage($"✅ AA 수은 파싱 완료 ({parseResult.DetectedFormat}) - {parseResult.Rows.Count}건", false);
+        }
+        catch (Exception ex) { ShowMessage($"❌ AA 수은 파싱 오류: {ex.Message}", true); }
     }
 
     private async System.Threading.Tasks.Task ParseLcmsPfasFileAsync(string path)

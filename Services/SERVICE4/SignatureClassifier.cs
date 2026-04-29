@@ -50,6 +50,8 @@ public static class SignatureClassifier
         ("UV-Cary (CSV)",        "UV_Cary_CSV"),
         ("ICP",                  "ICP"),
         ("LCMS",                 "LCMS"),
+        ("AA-수은 (CSV)",        "AA_HG_CSV"),
+        ("AA-수은 (PDF)",        "AA_HG_PDF"),
     ];
 
     // ── DB 초기화 ─────────────────────────────────────────────────────

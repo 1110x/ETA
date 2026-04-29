@@ -1,6 +1,7 @@
 using Avalonia;
 using ETA.Views;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Media.Immutable;
@@ -52,7 +53,19 @@ public class AnalysisRequestDetailPanel : UserControl
             "채취일자","채취시간","의뢰사업장","입회자",
             "시료채취자-1","시료채취자-2","방류허용기준 적용유무",
             "정도보증유무","분석완료일자","견적구분",
+            // 현장측정 5개 — 별도 입력란에 표시되므로 항목 라인에서 제외
+            "현장_온도","현장_pH","현장_용존산소","현장_전기전도도","현장_잔류염소",
         };
+
+    // 현장측정 입력란 — 라벨, 컬럼명, 단위
+    private static readonly (string Label, string Col, string Unit)[] FieldMeasurementDefs =
+    {
+        ("온도",      "현장_온도",       "℃"),
+        ("pH",        "현장_pH",         ""),
+        ("용존산소",   "현장_용존산소",   "mg/L"),
+        ("전기전도도", "현장_전기전도도", "μS/cm"),
+        ("잔류염소",   "현장_잔류염소",   "mg/L"),
+    };
 
     private TextBlock  _txbAbbr    = new();
     private TextBlock  _txbSample  = new();
@@ -72,6 +85,11 @@ public class AnalysisRequestDetailPanel : UserControl
     private ComboBox _cmbDischarge = new();
     private int      _currentRecId = -1;
     private bool     _suppressDischargeEvent = false;
+
+    // -- 현장측정 입력란 (컬럼명 → TextBox) -----------------------------
+    private readonly Dictionary<string, TextBox> _fieldTextBoxes =
+        new(StringComparer.OrdinalIgnoreCase);
+    private bool _suppressFieldEvent = false;
 
     public AnalysisRequestDetailPanel()
     {
@@ -118,8 +136,8 @@ public class AnalysisRequestDetailPanel : UserControl
 
         var colHeader = new Grid
         {
-            ColumnDefinitions = new ColumnDefinitions("64,*,80"),
-            Margin = new Avalonia.Thickness(0, 0, 0, 2),
+            ColumnDefinitions = new ColumnDefinitions("Auto,*,80"),
+            Margin = new Avalonia.Thickness(0, 0, 0, 4),
         };
         colHeader.Children.Add(ColLbl("",        0));
         colHeader.Children.Add(ColLbl("항목명",   1));
@@ -158,6 +176,92 @@ public class AnalysisRequestDetailPanel : UserControl
         });
 
         _spItems   = new StackPanel { Spacing = 0 };
+
+        // ── 현장측정항목 입력 영역 ────────────────────────────────────────
+        // 헤더 + 우측 저장 버튼
+        var fieldHeaderRow = new Grid
+        {
+            ColumnDefinitions = new ColumnDefinitions("*,Auto"),
+            Margin = new Avalonia.Thickness(0, 4, 0, 4),
+        };
+        fieldHeaderRow.Children.Add(new TextBlock
+        {
+            Text       = "📍  현장측정항목",
+            FontSize   = AppTheme.FontMD, FontWeight = FontWeight.SemiBold,
+            FontFamily = Font, Foreground = AppRes("AppFg"),
+            VerticalAlignment = VerticalAlignment.Center,
+            [Grid.ColumnProperty] = 0,
+        });
+        var btnSaveField = new Button
+        {
+            Content    = "💾  저장",
+            FontFamily = Font, FontSize = AppTheme.FontSM,
+            Padding    = new Avalonia.Thickness(10, 4),
+            Background = AppRes("BtnPrimaryBg"),
+            Foreground = AppRes("BtnPrimaryFg"),
+            BorderBrush = AppRes("BtnPrimaryBorder"),
+            BorderThickness = new Avalonia.Thickness(1),
+            CornerRadius = new Avalonia.CornerRadius(4),
+            Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
+            [Grid.ColumnProperty] = 1,
+        };
+        btnSaveField.Click += OnFieldMeasurementCommit;
+        fieldHeaderRow.Children.Add(btnSaveField);
+
+        // 5개 항목을 한 줄에 균등 배치 — 컬럼 패턴: [라벨 | TextBox(*) | 단위] × 5
+        var fieldColDefs = string.Join(",", System.Linq.Enumerable.Repeat("Auto,*,Auto", 5));
+        var fieldGrid = new Grid
+        {
+            ColumnDefinitions = new ColumnDefinitions(fieldColDefs),
+            ColumnSpacing     = 6,
+            Margin            = new Avalonia.Thickness(0, 0, 0, 6),
+        };
+        for (int i = 0; i < FieldMeasurementDefs.Length; i++)
+        {
+            var (label, col, unit) = FieldMeasurementDefs[i];
+            int colOffset = i * 3;
+
+            var lbl = new TextBlock
+            {
+                Text = label,
+                FontFamily = Font, FontSize = AppTheme.FontSM,
+                Foreground = AppRes("FgMuted"),
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Avalonia.Thickness(0, 0, 4, 0),
+            };
+            Grid.SetColumn(lbl, colOffset + 0);
+            fieldGrid.Children.Add(lbl);
+
+            var tb = new TextBox
+            {
+                FontFamily = Font, FontSize = AppTheme.FontSM,
+                Height = 26, Padding = new Avalonia.Thickness(4, 2),
+                MinWidth = 0,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                VerticalContentAlignment = VerticalAlignment.Center,
+            };
+            // Enter 키만 즉시 저장 — 실시간 LostFocus 저장은 느려 사용자 요청으로 제거.
+            // 일괄 저장은 헤더 우측 [💾 저장] 버튼 사용.
+            tb.KeyDown += (_, ke) =>
+            {
+                if (ke.Key == Avalonia.Input.Key.Enter) OnFieldMeasurementCommit(tb, null);
+            };
+            Grid.SetColumn(tb, colOffset + 1);
+            fieldGrid.Children.Add(tb);
+            _fieldTextBoxes[col] = tb;
+
+            var unitTb = new TextBlock
+            {
+                Text = unit,
+                FontFamily = Font, FontSize = AppTheme.FontXS,
+                Foreground = AppRes("FgMuted"),
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Avalonia.Thickness(2, 0, 0, 0),
+            };
+            Grid.SetColumn(unitTb, colOffset + 2);
+            fieldGrid.Children.Add(unitTb);
+        }
+
         _spContent = new StackPanel
         {
             Spacing = 0,
@@ -165,6 +269,10 @@ public class AnalysisRequestDetailPanel : UserControl
             {
                 metaGrid,
                 dischargeRow,
+                new Border { Height=1, Background=AppRes("InputBorder"),
+                             Margin=new Avalonia.Thickness(0,6,0,6) },
+                fieldHeaderRow,
+                fieldGrid,
                 new Border { Height=1, Background=AppRes("InputBorder"),
                              Margin=new Avalonia.Thickness(0,6,0,6) },
                 colHeader,
@@ -248,6 +356,12 @@ public class AnalysisRequestDetailPanel : UserControl
             n => string.Equals(n, currentStd, StringComparison.OrdinalIgnoreCase));
         _suppressDischargeEvent = false;
 
+        // [1-2] 현장측정 5개 입력란 값 채우기
+        _suppressFieldEvent = true;
+        foreach (var (col, tb) in _fieldTextBoxes)
+            tb.Text = row.TryGetValue(col, out var fv) ? fv ?? "" : "";
+        _suppressFieldEvent = false;
+
         // [2] 항목 라인 갱신 (행 풀 재사용)
         BuildItemLines(row);
 
@@ -263,6 +377,18 @@ public class AnalysisRequestDetailPanel : UserControl
         var selected = _cmbDischarge.SelectedItem as string;
         if (selected == null) return;
         _ = Task.Run(() => AnalysisRequestService.UpdateDischargeStandard(_currentRecId, selected));
+    }
+
+    // 현장측정 5개 — LostFocus / Enter 시 일괄 저장
+    private void OnFieldMeasurementCommit(object? sender, RoutedEventArgs? e)
+    {
+        if (_suppressFieldEvent || _currentRecId < 0) return;
+        var values = _fieldTextBoxes.ToDictionary(
+            kv => kv.Key,
+            kv => kv.Value.Text ?? "",
+            StringComparer.OrdinalIgnoreCase);
+        int rowId = _currentRecId;
+        _ = Task.Run(() => AnalysisRequestService.UpdateFieldMeasurements(rowId, values));
     }
 
     public void Clear()
@@ -325,20 +451,22 @@ public class AnalysisRequestDetailPanel : UserControl
 
             var grid = new Grid
             {
-                ColumnDefinitions = new ColumnDefinitions("64,*,80"),
+                // 뱃지 컬럼은 Auto — 글자 길이에 맞춰 늘어나도록 (고정 64 → Auto)
+                ColumnDefinitions = new ColumnDefinitions("Auto,*,80"),
                 Background        = AppRes(odd ? "GridRowBg" : "GridRowAltBg"),
             };
 
-            // Col 0 — 배지 (QuotationCheckPanel과 동일)
+            // Col 0 — 배지 (HorizontalAlignment.Left + Auto 컬럼)
             grid.Children.Add(new Border
             {
                 Background        = new SolidColorBrush(Color.Parse(bg)),
                 BorderBrush       = new SolidColorBrush(Color.Parse(fg)),
                 BorderThickness   = new Avalonia.Thickness(1),
                 CornerRadius      = new Avalonia.CornerRadius(10),
-                Padding           = new Avalonia.Thickness(6, 1, 8, 1),
-                Margin            = new Avalonia.Thickness(0, 0, 4, 0),
-                VerticalAlignment = VerticalAlignment.Center,
+                Padding           = new Avalonia.Thickness(8, 2, 10, 2),
+                Margin            = new Avalonia.Thickness(0, 0, 6, 0),
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment   = VerticalAlignment.Center,
                 [Grid.ColumnProperty] = 0,
                 Child = new TextBlock
                 {
@@ -351,13 +479,13 @@ public class AnalysisRequestDetailPanel : UserControl
                 },
             });
 
-            // Col 1 — 항목명
+            // Col 1 — 항목명 (위·아래 여백 키워서 가독성 향상)
             grid.Children.Add(new TextBlock
             {
                 Text              = col,
                 FontSize          = AppTheme.FontBase, FontFamily = Font,
                 Foreground        = AppRes("AppFg"),
-                Margin            = new Avalonia.Thickness(4, 3),
+                Margin            = new Avalonia.Thickness(4, 7),
                 VerticalAlignment = VerticalAlignment.Center,
                 TextTrimming      = Avalonia.Media.TextTrimming.CharacterEllipsis,
                 [Grid.ColumnProperty] = 1,
@@ -371,7 +499,7 @@ public class AnalysisRequestDetailPanel : UserControl
                 Foreground          = analyzing ? BrushAnalyzing : BrushResult,
                 HorizontalAlignment = HorizontalAlignment.Right,
                 VerticalAlignment   = VerticalAlignment.Center,
-                Margin              = new Avalonia.Thickness(6, 3),
+                Margin              = new Avalonia.Thickness(6, 7),
                 [Grid.ColumnProperty] = 2,
             });
 
