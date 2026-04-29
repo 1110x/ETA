@@ -1489,29 +1489,29 @@ public partial class EcotoxicityPage : UserControl
                 tox[r + 1] = new[] { mort.ToString(), "", "", "", org > 0 ? rate.ToString("0.#") : "" };
             }
 
-            // 결과값 EC50 / TU
-            var ecResult = _tskResult ?? _probitResult;
-            string ec50 = ecResult != null && ecResult.EC50 > 0 ? ecResult.EC50.ToString("0.##") : "";
-            string tu   = ecResult != null && ecResult.TU > 0 ? ecResult.TU.ToString("0.##") : "";
-
+            // 수질 측정항목 / 독성시험결과 / 독성시험항목은 인쇄 후 수기 작성하도록 공란 처리
             var data = new ETA.Services.SERVICE2.EcotoxicityLegalReportExporter.FormData(
                 배출시설:    row.TryGetValue("업체명", out var c) ? c : (row.TryGetValue("약칭", out var ab) ? ab : ""),
                 시료채취장소: row.TryGetValue("시료명", out var s2) ? s2 : "",
                 시료번호:    row.TryGetValue("접수번호", out var sn) ? sn : "",
                 채취일자:    row.TryGetValue("채취일자", out var cd) ? cd : "",
+                // 현장 측정항목 — 자동 채움 유지
                 온도:        V("현장_온도"),
                 pH:          V("현장_pH"),
                 용존산소:    V("현장_용존산소"),
                 유입수량:    "",
                 전기전도도:  V("현장_전기전도도"),
                 염분:        V("생태_염분"),
-                잔류염소:    V("현장_잔류염소"),
-                암모니아:    V("생태_암모니아"),
-                경도:        V("생태_경도"),
+                // 수질 측정항목 — 공란
+                잔류염소:    "",
+                암모니아:    "",
+                경도:        "",
+                // 독성시험결과 매트릭스 — 공란
                 독성결과:    tox,
-                EC50:        ec50,
-                TU:          tu,
-                통계분석법:  _ecCalculationMethod,
+                // 독성시험항목 — 공란
+                EC50:        "",
+                TU:          "",
+                통계분석법:  "",
                 작성일:      today,
                 기입자성명:  기입자);
 

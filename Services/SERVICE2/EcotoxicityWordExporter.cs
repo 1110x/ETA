@@ -326,16 +326,22 @@ public static class EcotoxicityWordExporter
                       : !string.IsNullOrWhiteSpace(r.EcCalculationMethod) ? r.EcCalculationMethod
                       : "—";
         var row1 = new[] {
-            ("시험온도(°C)", $"{Fmt(r.TestTemperature)} (기준 20±2)"),
-            ("시험 pH",      $"{Fmt(r.TestPH)} (기준 7.6~8.0)"),
-            ("EC50 계산방법", method),
+            ("시험온도(°C)",   $"{Fmt(r.TestTemperature)} (기준 20±2)"),
+            ("시험 pH",        $"{Fmt(r.TestPH)} (기준 7.6~8.0)"),
+            ("적용통계적기법", method),
         };
         var row2 = new[] {
             ("시료온도(°C)",   Fmt(r.SampleTemperature)),
             ("시료 pH",        Fmt(r.SamplePH)),
             ("용존산소(mg/L)", Fmt(r.SampleDO)),
         };
-        var t = BuildPackedTable(new[] { row1, row2 });
+        // ES 04704.1c 표준 시험조건 (고정값)
+        var row3 = new[] {
+            ("시험부피(시험용기)",  "50mL (50mL 유리비커)"),
+            ("반복수/컵당생물수",    "4반복 / 5마리"),
+            ("최종측정 시",          "유영저해율"),
+        };
+        var t = BuildPackedTable(new[] { row1, row2, row3 });
         if (!string.IsNullOrWhiteSpace(r.AnalystName))
         {
             var single = new[] { ("분석자", r.AnalystName) };
@@ -495,7 +501,7 @@ public static class EcotoxicityWordExporter
         string relId = main.GetIdOfPart(imgPart);
 
         long cx = 6000000;                      // ≈ 472pt 폭 (≈ 6.56" — A4 본문 폭 거의 전체)
-        long cy = (long)(cx * 280.0 / 640.0);   // 비율 압축 (640:280)
+        long cy = (long)(cx * 220.0 / 640.0);   // 1페이지 안에 들어가도록 높이 추가 압축 (280→220)
 
         var inline = new DW.Inline(
             new DW.Extent { Cx = cx, Cy = cy },
