@@ -5,6 +5,8 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using Avalonia.Threading;
 using System;
 using System.Collections.Generic;
@@ -247,14 +249,6 @@ public class ReportsPanel : UserControl
     // ── 파일 행 빌드 ──────────────────────────────────────────────────────
     private Border MakeFileRow(FileInfo file)
     {
-        var icon = file.Extension.ToLower() switch
-        {
-            ".xlsx" or ".xls" => "📊",
-            ".pdf"            => "📄",
-            ".csv"            => "📋",
-            _                 => "📎",
-        };
-
         // 체크박스
         var chk = new CheckBox
         {
@@ -271,14 +265,12 @@ public class ReportsPanel : UserControl
         };
         row.Children.Add(chk);
 
-        // 아이콘
-        row.Children.Add(new TextBlock
-        {
-            Text = icon, FontSize = AppTheme.FontLG,
-            VerticalAlignment = VerticalAlignment.Center,
-            Margin = new Avalonia.Thickness(0, 0, 6, 0),
-            [Grid.ColumnProperty] = 1,
-        });
+        // 아이콘 — Excel/Word 는 PNG, 그 외는 이모지
+        var iconCtrl = BuildFileIcon(file.Extension);
+        iconCtrl.VerticalAlignment = VerticalAlignment.Center;
+        iconCtrl.Margin = new Avalonia.Thickness(0, 0, 6, 0);
+        Grid.SetColumn(iconCtrl, 1);
+        row.Children.Add(iconCtrl);
 
         // 파일명
         row.Children.Add(new TextBlock
@@ -452,6 +444,41 @@ public class ReportsPanel : UserControl
         if (owner != null) await dlg.ShowDialog(owner);
         else dlg.Show();
         return result;
+    }
+
+    // ── 파일 아이콘 (Excel/Word PNG · 그 외 이모지) ───────────────────────
+    private static Bitmap? _excelIcon;
+    private static Bitmap? _excelMacroIcon;
+    private static Bitmap? _wordIcon;
+
+    private static Bitmap LoadIcon(string assetName)
+    {
+        using var s = AssetLoader.Open(new Uri($"avares://ETA/Assets/icons/{assetName}"));
+        return new Bitmap(s);
+    }
+
+    private static Control BuildFileIcon(string ext)
+    {
+        switch (ext.ToLower())
+        {
+            case ".xlsm":
+                _excelMacroIcon ??= LoadIcon("excel_macro.png");
+                return new Image { Source = _excelMacroIcon, Width = 18, Height = 18 };
+            case ".xlsx":
+            case ".xls":
+                _excelIcon ??= LoadIcon("excel.png");
+                return new Image { Source = _excelIcon, Width = 18, Height = 18 };
+            case ".docx":
+            case ".doc":
+                _wordIcon ??= LoadIcon("word.png");
+                return new Image { Source = _wordIcon, Width = 18, Height = 18 };
+            case ".pdf":
+                return new TextBlock { Text = "📄", FontSize = AppTheme.FontLG };
+            case ".csv":
+                return new TextBlock { Text = "📋", FontSize = AppTheme.FontLG };
+            default:
+                return new TextBlock { Text = "📎", FontSize = AppTheme.FontLG };
+        }
     }
 
     // ── 헬퍼 ─────────────────────────────────────────────────────────────
