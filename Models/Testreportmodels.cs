@@ -23,6 +23,12 @@ public class SampleRequest
     public string 분석종료일 { get; set; } = "";
     public string 견적구분     { get; set; } = "";
 
+    // ── 시료유형 분기 (접수/채수) — 시험성적서 양식 라벨 분기용 ─────────────
+    public string 시료유형     { get; set; } = "";   // "접수" | "채수" | ""(미지정 → 채수 취급)
+    public string 접수일자     { get; set; } = "";
+    public string 접수담당자   { get; set; } = "";
+    public string 업체담당자   { get; set; } = "";
+
     // ── 분석결과: 항목명 → 결과값 (NULL 컬럼은 포함 안 됨) ─────────────────
     public Dictionary<string, string> 분석결과 { get; set; } = new();
 

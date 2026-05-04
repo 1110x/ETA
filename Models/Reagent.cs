@@ -24,4 +24,11 @@ public class Reagent
     public string 비고           { get; set; } = "";
     public string 등록일         { get; set; } = "";   // yyyy-MM-dd
     public string 상태           { get; set; } = "정상"; // 정상/주의/폐기
+
+    // ── 화학물질관리법 분류 (다중 선택) ──────────────────────────────────────
+    public bool   유독물질       { get; set; } = false;
+    public bool   허가물질       { get; set; } = false;
+    public bool   제한물질       { get; set; } = false;
+    public bool   금지물질       { get; set; } = false;
+    public bool   사고대비물질   { get; set; } = false;
 }

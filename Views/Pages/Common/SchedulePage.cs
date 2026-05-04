@@ -1057,12 +1057,15 @@ public class SchedulePage
                     .Select(e => !string.IsNullOrEmpty(e.직원명) ? e.직원명 : e.제목)
                     .Where(n => !string.IsNullOrEmpty(n))
                     .Distinct()),
+                // 채수 시료 수 — 의뢰 유래 엔트리(REQ:{Id})의 distinct count
+                SampleCount: g.Where(e => !string.IsNullOrEmpty(e.첨부파일) && e.첨부파일.StartsWith("REQ:"))
+                              .Select(e => e.첨부파일).Distinct().Count(),
                 // 스팬은 그룹 내 첫 엔트리 기준 (같은 분류+약칭이면 스팬 동일)
                 SpanKey: $"{g.First().직원id}|{g.First().분류}|{g.First().업체약칭}"
             ))
             .ToList();
 
-        foreach (var (en, names, spanKey) in grouped.Take(maxShow))
+        foreach (var (en, names, sampleCount, spanKey) in grouped.Take(maxShow))
         {
             var cs = GetCat(en.분류);
 
@@ -1077,17 +1080,22 @@ public class SchedulePage
                 { pos = p; break; }
             }
 
-            string label = en.분류 == "채수" && !string.IsNullOrEmpty(en.업체약칭)
-                ? en.업체약칭 : en.분류;
+            // 채수: "업체약칭 nEA" / 그 외: 분류명
+            string label;
+            if (en.분류 == "채수" && !string.IsNullOrEmpty(en.업체약칭))
+                label = sampleCount > 0 ? $"{en.업체약칭} {sampleCount}EA" : en.업체약칭;
+            else
+                label = en.분류;
 
-            // 스팬 위치별 텍스트
+            // 스팬 위치별 텍스트 — 채수는 인원을 콤마로 연결, 그 외는 공백
             string chipText;
+            string nameSep = en.분류 == "채수" ? ", " : " ";
             if (pos == SpanPos.Middle)
                 chipText = "━━";
             else if (pos == SpanPos.End)
                 chipText = string.IsNullOrEmpty(names) ? $"▸{label}" : $"▸{names}";
             else
-                chipText = string.IsNullOrEmpty(names) ? $"{cs.Icon} {label}" : $"{cs.Icon} {label} {names}";
+                chipText = string.IsNullOrEmpty(names) ? $"{cs.Icon} {label}" : $"{cs.Icon} {label}{nameSep}{names}";
 
             var radius = pos switch
             {
@@ -1265,6 +1273,10 @@ public class SchedulePage
         {
             if (_editId >= 0)
             {
+                // 채수 분류는 분석의뢰 채수담당자도 함께 정리해야 Show1 의뢰목록 동기화됨
+                var loaded = ScheduleService.GetByDate(_selDate ?? "")
+                    .FirstOrDefault(x => x.Id == _editId);
+                if (loaded != null) PropagateScheduleDeletion(loaded);
                 ScheduleService.Delete(_editId);
                 ClearForm();
                 RefreshEntries();
@@ -1418,6 +1430,34 @@ public class SchedulePage
         if (_btnSave   != null) _btnSave.Content  = "💾 저장";
         if (_btnDelete != null) _btnDelete.IsVisible = false;
         if (_tree      != null) _tree.SelectedItem   = null;
+    }
+
+    /// <summary>채수 ScheduleEntry 삭제 시 분석의뢰의 채수담당자에서도 해당 직원을 제거 — Show1 의뢰목록 동기화</summary>
+    private static void PropagateScheduleDeletion(ScheduleEntry en)
+    {
+        if (en.분류 != "채수") return;
+        if (string.IsNullOrEmpty(en.업체약칭) || string.IsNullOrEmpty(en.직원명)) return;
+
+        try
+        {
+            var abbrs = en.업체약칭
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var affected = AnalysisRequestService.GetAllRecords()
+                .Where(r => abbrs.Contains(r.약칭)
+                         && NormalizeDate(r.채취일자) == en.날짜
+                         && !string.IsNullOrEmpty(r.채수담당자))
+                .ToList();
+            foreach (var req in affected)
+            {
+                var remaining = req.채수담당자
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                    .Where(n => n != en.직원명)
+                    .ToList();
+                AnalysisRequestService.UpdateSamplers(req.Id, remaining);
+            }
+        }
+        catch { }
     }
 
     private void RefreshEntries()
@@ -1601,6 +1641,7 @@ public class SchedulePage
                 }
                 else
                 {
+                    PropagateScheduleDeletion(en);
                     ScheduleService.Delete(entryId);
                 }
                 RefreshEntries();
@@ -1794,6 +1835,9 @@ public class SchedulePage
         raw = raw.Trim().Replace("/", "-");
         if (raw.Length == 8 && !raw.Contains('-') && int.TryParse(raw, out _))
             return $"{raw[..4]}-{raw[4..6]}-{raw[6..8]}";
+        // "2026-04-30 00:00:00" 같이 시간 포함된 경우 → 앞 10자만
+        if (raw.Length >= 10 && raw[4] == '-' && raw[7] == '-')
+            return raw[..10];
         return raw;
     }
 

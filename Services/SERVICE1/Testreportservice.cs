@@ -18,8 +18,34 @@ public static class TestReportService
         {
             "_id", "Id", "채취일자", "채취시간", "의뢰사업장", "약칭", "시료명",
             "견적번호", "입회자", "시료채취자-1", "시료채취자-2",
-            "방류허용기준 적용유무", "정도보증유무", "분석완료일자", "분석완료일자", "견적구분"
+            "방류허용기준 적용유무", "정도보증유무", "분석완료일자", "분석완료일자", "견적구분",
+            // 시료유형 분기 (접수/채수)
+            "시료유형", "접수일자", "접수담당자", "업체담당자",
         };
+
+    /// <summary>시료유형 분기에 사용되는 4개 컬럼 — 자가치유 대상</summary>
+    public static readonly string[] SampleTypeCols =
+        new[] { "시료유형", "접수일자", "접수담당자", "업체담당자" };
+
+    public static void EnsureSampleTypeColumns(System.Data.Common.DbConnection conn)
+    {
+        try
+        {
+            if (!DbConnectionFactory.TableExists(conn, TableName)) return;
+            var existing = new HashSet<string>(
+                DbConnectionFactory.GetColumnNames(conn, TableName),
+                StringComparer.OrdinalIgnoreCase);
+            foreach (var col in SampleTypeCols)
+            {
+                if (existing.Contains(col)) continue;
+                using var alt = conn.CreateCommand();
+                alt.CommandText = $"ALTER TABLE `{TableName}` ADD COLUMN `{col}` TEXT DEFAULT NULL";
+                try { alt.ExecuteNonQuery(); existing.Add(col); }
+                catch { /* 컬럼 충돌 등은 무시 */ }
+            }
+        }
+        catch { }
+    }
 
     public static List<string> GetAnalyteColumns()
     {
@@ -49,16 +75,18 @@ public static class TestReportService
     public static List<SampleRequest> GetSamplesByCompany(string 약칭)
     {
         var list   = new List<SampleRequest>();
-        var analyteCols = GetAnalyteColumns();
-        var colSelect   = analyteCols.Count > 0 ? "," + string.Join(",", analyteCols.Select(c => $"`{c}`")) : "";
         using var conn  = DbConnectionFactory.CreateConnection();
         conn.Open();
+        EnsureSampleTypeColumns(conn);
+        var analyteCols = GetAnalyteColumns();
+        var colSelect   = analyteCols.Count > 0 ? "," + string.Join(",", analyteCols.Select(c => $"`{c}`")) : "";
         using var cmd = conn.CreateCommand();
         var rid = DbConnectionFactory.RowId;
         cmd.CommandText = $@"SELECT {rid} AS Id,
                 `채취일자`,`채취시간`,`의뢰사업장`,`약칭`,`시료명`,
                 `견적번호`,`입회자`,`시료채취자-1`,`시료채취자-2`,
-                `방류허용기준 적용유무`,`정도보증유무`,`분석완료일자`,`견적구분`
+                `방류허용기준 적용유무`,`정도보증유무`,`분석완료일자`,`견적구분`,
+                `시료유형`,`접수일자`,`접수담당자`,`업체담당자`
                 {colSelect}
             FROM `{TableName}` WHERE `약칭` = @약칭 ORDER BY `채취일자` DESC, {rid} DESC";
         cmd.Parameters.AddWithValue("@약칭", 약칭);
@@ -81,10 +109,15 @@ public static class TestReportService
                 정도보증     = S(r, 11),
                 분석종료일 = S(r, 12),
                 견적구분     = S(r, 13),
+                시료유형     = S(r, 14),
+                접수일자     = S(r, 15),
+                접수담당자   = S(r, 16),
+                업체담당자   = S(r, 17),
             };
+            int analyteOffset = 18;
             for (int i = 0; i < analyteCols.Count; i++)
             {
-                int idx = 14 + i;
+                int idx = analyteOffset + i;
                 if (!r.IsDBNull(idx))
                 {
                     var val = r.GetValue(idx)?.ToString() ?? "";

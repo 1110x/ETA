@@ -574,6 +574,7 @@
                         <MenuItem Header="견적/의뢰서" x:Name="MenuItemQuotation"     Click="Quotation_Click"/>
                         <MenuItem Header="거래명세발행"    x:Name="MenuItemQuotationIssue" Click="QuotationIssuing_Click"/>
                         <MenuItem Header="시험성적서"  x:Name="MenuItemTestReport"     Click="TestReport_Click"/>
+                        <MenuItem Header="접수발송대장" x:Name="MenuItemReceiptDispatch" Click="ReceiptDispatch_Click"/>
                     </MenuItem>
 
                     <MenuItem Header="비용부담금" x:Name="MenuItemWaste">

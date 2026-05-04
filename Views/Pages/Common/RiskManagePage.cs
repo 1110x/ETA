@@ -85,7 +85,7 @@ public class RiskManagePage
     private readonly TextBox  _rFormula  = MakeTxb("화학식");
     private readonly TextBox  _rCas      = MakeTxb("CAS NO.");
     private readonly TextBox  _rSpec     = MakeTxb("규격 (예: 500mL, 1kg)");
-    private readonly TextBox  _rUnit     = MakeTxb("단위 (예: mL, g, L)");
+    private readonly ComboBox _rUnit     = MakeCombo(new[] { "g", "kg", "mg", "mL", "L" });
     private readonly ComboBox _rRisk     = MakeCombo(new[] { "일반", "주의", "위험" });
     private readonly TextBox  _rGhs      = MakeTxb("GHS 분류 (예: GHS02,GHS06)");
     private readonly TextBox  _rStorage  = MakeTxb("보관조건 (예: 냉장, 차광)");
@@ -93,11 +93,38 @@ public class RiskManagePage
     private readonly TextBox  _rExpiry   = MakeTxb("만료일 (yyyy-MM-dd)");
     private readonly TextBox  _rNote     = MakeTxb("비고");
     private readonly ComboBox _rStatus   = MakeCombo(new[] { "정상", "주의", "폐기" });
-    private readonly TextBox  _rStock    = MakeTxb("재고량");
-    private readonly TextBox  _rOptUse   = MakeTxb("적정사용량");
-    private readonly TextBox  _rMaxStock = MakeTxb("최대 적정보유량");
-    private readonly TextBox  _rCurrUse  = MakeTxb("당월사용량");
-    private readonly TextBox  _rPrevUse  = MakeTxb("전월사용량");
+    private readonly TextBox  _rStock    = MakeTxb("재고량 (EA)");
+    private readonly TextBox  _rOptUse   = MakeTxb("적정사용량 (g)");
+    private readonly TextBox  _rMaxStock = MakeTxb("최대 적정보유량 (g)");
+    private readonly TextBox  _rCurrUse  = MakeTxb("당월사용량 (g)");
+    private readonly TextBox  _rPrevUse  = MakeTxb("전월사용량 (g)");
+
+    // ── 화학물질관리법 분류 체크박스 (다중 선택) — 폼 재생성마다 새로 만듦 ───
+    private readonly Dictionary<string, CheckBox> _classBoxes =
+        new(StringComparer.Ordinal);
+    private static readonly string[] ClassCatalog =
+        { "유독물질", "허가물질", "제한물질", "금지물질", "사고대비물질" };
+
+    // ── GHS 픽토그램 9종 체크박스 (UN GHS 표준) ─────────────────────────────
+    private readonly Dictionary<string, CheckBox> _ghsBoxes =
+        new(StringComparer.OrdinalIgnoreCase);
+
+    // GHS 코드 → (이모지, 한글 라벨)
+    private static readonly (string Code, string Symbol, string Kor)[] GhsCatalog =
+    {
+        ("GHS01", "💥", "폭발성"),
+        ("GHS02", "🔥", "인화성"),
+        ("GHS03", "🟠", "산화성"),
+        ("GHS04", "🛢️", "고압가스"),
+        ("GHS05", "⚗️", "금속부식성·피부부식성"),
+        ("GHS06", "☠️", "급성독성"),
+        ("GHS07", "❗", "경고·자극성"),
+        ("GHS08", "🫁", "건강유해성"),
+        ("GHS09", "🐟", "환경유해성"),
+    };
+
+    // ── Show1 분류 필터 (체크된 분류만 표시, 모두 미체크 시 전체) ─────────────
+    private readonly HashSet<string> _classFilter = new(StringComparer.Ordinal);
     private Reagent? _editingReagent;
 
     // ── 초자 폼 필드 ───────────────────────────────────────────────────────
@@ -390,15 +417,57 @@ public class RiskManagePage
             HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
         };
 
+        // 화학물질관리법 분류 필터 — 토글 칩 5개 (다중 선택, 모두 OFF면 전체)
+        var classFilterRow = new WrapPanel
+        {
+            Orientation = Orientation.Horizontal,
+            Margin = new Thickness(0, 0, 0, 6),
+        };
+        foreach (var key in new[] { "유독물질", "허가물질", "제한물질", "금지물질", "사고대비물질" })
+        {
+            var capturedKey = key;
+            var chip = new ToggleButton
+            {
+                Content = key,
+                FontSize = AppTheme.FontXS, FontFamily = FontR,
+                Padding = new Thickness(8, 2),
+                Margin = new Thickness(0, 0, 4, 4),
+                CornerRadius = new CornerRadius(10),
+                BorderBrush = AppTheme.BorderSubtle,
+                BorderThickness = new Thickness(1),
+                Background = AppTheme.BgPrimary,
+                Foreground = AppTheme.FgMuted,
+                Cursor = new Cursor(StandardCursorType.Hand),
+            };
+            chip.IsCheckedChanged += (_, _) =>
+            {
+                if (chip.IsChecked == true)
+                {
+                    _classFilter.Add(capturedKey);
+                    chip.Background = new SolidColorBrush(Color.Parse("#664422"));
+                    chip.Foreground = new SolidColorBrush(Color.Parse("#ffaa66"));
+                }
+                else
+                {
+                    _classFilter.Remove(capturedKey);
+                    chip.Background = AppTheme.BgPrimary;
+                    chip.Foreground = AppTheme.FgMuted;
+                }
+                RenderList();
+            };
+            classFilterRow.Children.Add(chip);
+        }
+
         var root = new Grid
         {
-            RowDefinitions = new RowDefinitions("Auto,Auto,Auto,*"),
+            RowDefinitions = new RowDefinitions("Auto,Auto,Auto,Auto,*"),
             Margin = new Thickness(10, 12, 10, 4),
         };
-        Grid.SetRow(titleRow,    0); root.Children.Add(titleRow);
-        Grid.SetRow(_searchBox,  1); root.Children.Add(_searchBox);
-        Grid.SetRow(_listCount,  2); root.Children.Add(_listCount);
-        Grid.SetRow(_listScroll, 3); root.Children.Add(_listScroll);
+        Grid.SetRow(titleRow,        0); root.Children.Add(titleRow);
+        Grid.SetRow(_searchBox,      1); root.Children.Add(_searchBox);
+        Grid.SetRow(classFilterRow,  2); root.Children.Add(classFilterRow);
+        Grid.SetRow(_listCount,      3); root.Children.Add(_listCount);
+        Grid.SetRow(_listScroll,     4); root.Children.Add(_listScroll);
 
         // 키보드 네비게이션: ↑/↓ 이동, Home/End 처음/끝, Enter 선택 액션
         var container = new Border { Child = root, Focusable = true };
@@ -489,6 +558,17 @@ public class RiskManagePage
         {
             var allowedIds = ReagentAnalyteService.GetReagentIdsByAnalyte(_analyteFilter);
             source = source.Where(r => allowedIds.Contains(r.Id));
+        }
+
+        // 화학물질관리법 분류 필터 (다중 OR — 체크된 분류 중 하나라도 해당하면 표시)
+        if (_classFilter.Count > 0)
+        {
+            source = source.Where(r =>
+                (_classFilter.Contains("유독물질")     && r.유독물질) ||
+                (_classFilter.Contains("허가물질")     && r.허가물질) ||
+                (_classFilter.Contains("제한물질")     && r.제한물질) ||
+                (_classFilter.Contains("금지물질")     && r.금지물질) ||
+                (_classFilter.Contains("사고대비물질") && r.사고대비물질));
         }
 
         var filtered = string.IsNullOrEmpty(query)
@@ -583,19 +663,21 @@ public class RiskManagePage
                 TextTrimming = TextTrimming.CharacterEllipsis,
             });
 
-        var qtyBlock = new TextBlock
-        {
-            Text = item.재고량 > 0 ? $"재고 {item.재고량}" : "",
-            FontSize = AppTheme.FontXS, FontFamily = FontR,
-            Foreground = AppTheme.FgMuted,
-            VerticalAlignment = VerticalAlignment.Center,
-            Margin = new Thickness(4, 0, 0, 0),
-        };
+        // 재고 표시 (Show1 카드의 GHS 픽토그램은 Show2 로 이동)
+        var rightStack = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 3, VerticalAlignment = VerticalAlignment.Center };
+        if (item.재고량 > 0)
+            rightStack.Children.Add(new TextBlock
+            {
+                Text = $"재고 {item.재고량}EA",
+                FontSize = AppTheme.FontXS, FontFamily = FontR,
+                Foreground = AppTheme.FgMuted,
+                VerticalAlignment = VerticalAlignment.Center,
+            });
 
         var row = new Grid { ColumnDefinitions = new ColumnDefinitions("56,*,Auto") };
         row.Children.Add(badge);
         row.Children.Add(nameStack); nameStack.SetValue(Grid.ColumnProperty, 1);
-        row.Children.Add(qtyBlock);  qtyBlock.SetValue(Grid.ColumnProperty, 2);
+        row.Children.Add(rightStack); rightStack.SetValue(Grid.ColumnProperty, 2);
 
         string darkBg = DarkenColor(color, 0.85);
         var card = new Border
@@ -770,10 +852,33 @@ public class RiskManagePage
                 Text = item.영문명, FontSize = AppTheme.FontSM, FontFamily = FontR,
                 Foreground = new SolidColorBrush(Color.Parse("#667788")),
                 TextWrapping = TextWrapping.Wrap,
-                Margin = new Thickness(0, 0, 0, 14),
+                Margin = new Thickness(0, 0, 0, 6),
             });
+
+        // GHS 픽토그램 — 시약 GHS 코드별 PNG 표시 (Show1 카드에서 이동)
+        var ghsCodes = (item.GHS ?? "")
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        if (ghsCodes.Length > 0)
+        {
+            var ghsRow = new WrapPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 0, 0, 12) };
+            foreach (var code in ghsCodes)
+            {
+                var info = GhsCatalog.FirstOrDefault(g =>
+                    string.Equals(g.Code, code, StringComparison.OrdinalIgnoreCase));
+                if (info.Code == null) continue;
+                var img = LoadGhsImage(info.Code, size: 48);
+                if (img == null) continue;
+                ToolTip.SetTip(img, $"{info.Code} {info.Kor}");
+                img.Margin = new Thickness(0, 0, 6, 0);
+                ghsRow.Children.Add(img);
+            }
+            if (ghsRow.Children.Count > 0)
+                _usagePanel.Children.Add(ghsRow);
+        }
         else
+        {
             _usagePanel.Children.Add(new Border { Height = 10 }); // spacer
+        }
 
         int max = item.최대적정보유량;
 
@@ -1007,18 +1112,31 @@ public class RiskManagePage
                 new SolidColorBrush(Color.Parse("#ffaa44")), FontWeight.Bold);
             _analytePanel.Children.Add(sumGrid);
 
-            // 재고 대비 안내
+            // 재고 대비 안내 — 재고(EA) × 규격(g/EA) → g 환산 후 적정사용량(g)과 비교
+            double gPerEA = ParseGramsPerEA(item.규격);
             string status;
             IBrush statusColor;
-            if (item.재고량 >= totalEstimate)
+            if (gPerEA <= 0)
             {
-                status = $"재고({item.재고량}) >= 적정({totalEstimate}) — 충분";
-                statusColor = new SolidColorBrush(Color.Parse("#44cc88"));
+                // 규격 미입력/파싱불가 — 비교 불가, 단위 분리 표기만
+                status = $"재고({item.재고량}EA) · 적정({totalEstimate}g) — 규격 미입력으로 비교 불가";
+                statusColor = AppTheme.FgMuted;
             }
             else
             {
-                status = $"재고({item.재고량}) < 적정({totalEstimate}) — 부족 ({totalEstimate - item.재고량} 추가 필요)";
-                statusColor = new SolidColorBrush(Color.Parse("#ff6666"));
+                double stockG = item.재고량 * gPerEA;
+                if (stockG >= totalEstimate)
+                {
+                    status = $"재고({item.재고량}EA = {stockG:N0}g) >= 적정({totalEstimate}g) — 충분";
+                    statusColor = new SolidColorBrush(Color.Parse("#44cc88"));
+                }
+                else
+                {
+                    int shortageG  = totalEstimate - (int)stockG;
+                    int shortageEA = (int)Math.Ceiling(shortageG / gPerEA);
+                    status = $"재고({item.재고량}EA = {stockG:N0}g) < 적정({totalEstimate}g) — 부족 ({shortageG}g, {shortageEA}EA 추가 필요)";
+                    statusColor = new SolidColorBrush(Color.Parse("#ff6666"));
+                }
             }
             _analytePanel.Children.Add(new TextBlock
             {
@@ -1028,6 +1146,98 @@ public class RiskManagePage
                 Margin = new Thickness(0, 6, 0, 0),
             });
         }
+    }
+
+    // ── GHS 픽토그램 캐시 (PNG 1회 로드) ─────────────────────────────────────
+    private static readonly Dictionary<string, Avalonia.Media.Imaging.Bitmap?> _ghsBitmapCache
+        = new(StringComparer.OrdinalIgnoreCase);
+
+    private static Avalonia.Media.Imaging.Bitmap? GetGhsBitmap(string code)
+    {
+        if (_ghsBitmapCache.TryGetValue(code, out var cached)) return cached;
+        try
+        {
+            var uri = new Uri($"avares://ETA/Assets/icons/ghs/{code}.png");
+            using var s = Avalonia.Platform.AssetLoader.Open(uri);
+            var bmp = new Avalonia.Media.Imaging.Bitmap(s);
+            _ghsBitmapCache[code] = bmp;
+            return bmp;
+        }
+        catch { _ghsBitmapCache[code] = null; return null; }
+    }
+
+    private static Avalonia.Controls.Image? LoadGhsImage(string code, double size)
+    {
+        var bmp = GetGhsBitmap(code);
+        if (bmp == null) return null;
+        return new Avalonia.Controls.Image
+        {
+            Source = bmp,
+            Width = size,
+            Height = size * 1.39, // 90:125 비율 유지
+            Stretch = Stretch.Uniform,
+        };
+    }
+
+    /// <summary>KOSHA MSDS 검색 페이지를 시스템 브라우저로 오픈 —
+    ///   CAS 번호 있으면 casNo 검색, 없으면 chemName 검색.
+    ///   form 파라미터: searchCondition=chemName|casNo, searchKeyword=...</summary>
+    private static void OpenKoshaMsdsSearch(Reagent item)
+    {
+        string condition;
+        string keyword;
+        if (!string.IsNullOrWhiteSpace(item.CAS번호))
+        {
+            condition = "casNo";
+            keyword = item.CAS번호.Trim();
+        }
+        else
+        {
+            condition = "chemName";
+            // CAS 없으면 한글명 우선 (KOSHA 는 한글 검색 정확도 더 높음), 없으면 영문명
+            keyword = !string.IsNullOrWhiteSpace(item.품목명)
+                ? item.품목명.Trim()
+                : item.영문명.Trim();
+        }
+        if (string.IsNullOrEmpty(keyword)) return;
+
+        var url = "https://msds.kosha.or.kr/MSDSInfo/kcic/chemIList.do"
+                + $"?searchCondition={condition}"
+                + $"&searchKeyword={Uri.EscapeDataString(keyword)}"
+                + "&chkAgree=Y";   // 이용 동의 자동 체크
+        try
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = url, UseShellExecute = true,
+            });
+        }
+        catch { /* 브라우저 열기 실패 — 무시 */ }
+    }
+
+    /// <summary>규격 문자열(예 "500g", "1kg", "500mL", "1L")을 EA 당 그램으로 환산.
+    /// 액체(mL/L)는 물 기준 밀도 1g/mL 가정. 파싱 실패 시 0 반환.</summary>
+    private static double ParseGramsPerEA(string spec)
+    {
+        if (string.IsNullOrWhiteSpace(spec)) return 0;
+        var s = spec.Trim().ToLowerInvariant().Replace(",", "");
+        var m = System.Text.RegularExpressions.Regex.Match(
+            s, @"([0-9]+(?:\.[0-9]+)?)\s*(kg|mg|g|ml|l|㎏|㎎|㎖|㎕)");
+        if (!m.Success) return 0;
+        if (!double.TryParse(m.Groups[1].Value,
+            System.Globalization.NumberStyles.Float,
+            System.Globalization.CultureInfo.InvariantCulture,
+            out var n)) return 0;
+        return m.Groups[2].Value switch
+        {
+            "kg" or "㎏" => n * 1000.0,
+            "g"          => n,
+            "mg" or "㎎" => n / 1000.0,
+            "l"          => n * 1000.0,   // 1L ≈ 1000g (물 밀도 가정)
+            "ml" or "㎖" => n,            // 1mL ≈ 1g
+            "㎕"          => n / 1000.0,
+            _            => 0,
+        };
     }
 
     private static void AddColText(Grid grid, string text, int col, IBrush fg, FontWeight weight)
@@ -1141,6 +1351,91 @@ public class RiskManagePage
             ("당월 사용량",    _rCurrUse,  v("당월사용량")),
             ("전월 사용량",    _rPrevUse,  v("전월사용량")),
         }));
+
+        // ── 화학물질관리법 분류 (다중 체크) ─────────────────────────────────
+        AddSectionHeader("화학물질관리법 분류");
+        _classBoxes.Clear();
+        var classRow = new WrapPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 0, 0, 8) };
+        foreach (var key in ClassCatalog)
+        {
+            bool ck = key switch
+            {
+                "유독물질"     => !isNew && item!.유독물질,
+                "허가물질"     => !isNew && item!.허가물질,
+                "제한물질"     => !isNew && item!.제한물질,
+                "금지물질"     => !isNew && item!.금지물질,
+                "사고대비물질" => !isNew && item!.사고대비물질,
+                _              => false,
+            };
+            var cb = new CheckBox
+            {
+                Content = key,
+                FontFamily = FontR, FontSize = AppTheme.FontMD,
+                Foreground = AppTheme.FgPrimary,
+                Margin = new Thickness(0, 0, 16, 0),
+                IsChecked = ck,
+            };
+            _classBoxes[key] = cb;
+            classRow.Children.Add(cb);
+        }
+        _formPanel.Children.Add(classRow);
+
+        // ── GHS 픽토그램 (9종 다중 선택) ────────────────────────────────────
+        AddSectionHeader("GHS 픽토그램 / 유해성·위험성");
+        var ghsCodes = (item?.GHS ?? "")
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        _ghsBoxes.Clear();
+        var ghsRow = new WrapPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 0, 0, 8) };
+        foreach (var (code, sym, kor) in GhsCatalog)
+        {
+            // 픽토그램 이미지 + 체크박스(코드+한글) 가로 묶음
+            var img = LoadGhsImage(code, size: 36);
+            var label = new TextBlock
+            {
+                Text = $"{code}\n{kor}",
+                FontFamily = FontR, FontSize = AppTheme.FontXS,
+                Foreground = AppTheme.FgPrimary,
+                TextAlignment = TextAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(2, 0, 0, 0),
+            };
+            var inner = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 2 };
+            if (img != null) inner.Children.Add(img);
+            inner.Children.Add(label);
+            var cb = new CheckBox
+            {
+                Content = inner,
+                FontFamily = FontR, FontSize = AppTheme.FontSM,
+                Foreground = AppTheme.FgPrimary,
+                Margin = new Thickness(0, 0, 8, 4),
+                IsChecked = ghsCodes.Contains(code),
+            };
+            _ghsBoxes[code] = cb;
+            ghsRow.Children.Add(cb);
+        }
+        _formPanel.Children.Add(ghsRow);
+
+        // KOSHA MSDS 조회 버튼 — 품목명/영문명/CAS 로 검색 페이지 오픈
+        if (!isNew && item != null)
+        {
+            var btnMsds = new Button
+            {
+                Content = "🔍  KOSHA MSDS 검색",
+                FontFamily = FontM, FontSize = AppTheme.FontSM,
+                Padding = new Thickness(10, 4),
+                Background = new SolidColorBrush(Color.Parse("#1a3a5a")),
+                Foreground = new SolidColorBrush(Color.Parse("#88ccff")),
+                BorderBrush = new SolidColorBrush(Color.Parse("#446688")),
+                BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(4),
+                Cursor = new Cursor(StandardCursorType.Hand),
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Margin = new Thickness(0, 0, 0, 8),
+            };
+            btnMsds.Click += (_, _) => OpenKoshaMsdsSearch(item);
+            _formPanel.Children.Add(btnMsds);
+        }
 
         // ── 분석항목 연결 (기존 시약 수정 시만) ──────────────────────────
         if (!isNew)
@@ -1346,9 +1641,16 @@ public class RiskManagePage
         item.화학식       = _rFormula.Text?.Trim()  ?? "";
         item.CAS번호      = _rCas.Text?.Trim()      ?? "";
         item.규격         = _rSpec.Text?.Trim()     ?? "";
-        item.단위         = _rUnit.Text?.Trim()     ?? "";
+        item.단위         = ComboVal(_rUnit)         ?? "";
         item.위험등급     = ComboVal(_rRisk)        ?? "일반";
-        item.GHS          = _rGhs.Text?.Trim()      ?? "";
+        // GHS 체크박스 우선 — 미사용 시 옛 텍스트박스 값 유지
+        var ghsChecked = _ghsBoxes
+            .Where(kv => kv.Value.IsChecked == true)
+            .Select(kv => kv.Key)
+            .ToList();
+        item.GHS = ghsChecked.Count > 0
+            ? string.Join(",", ghsChecked)
+            : (_rGhs.Text?.Trim() ?? "");
         item.보관조건     = _rStorage.Text?.Trim()  ?? "";
         item.제조사       = _rMaker.Text?.Trim()    ?? "";
         item.만료일       = _rExpiry.Text?.Trim()   ?? "";
@@ -1359,6 +1661,11 @@ public class RiskManagePage
         item.최대적정보유량 = IntVal(_rMaxStock);
         item.당월사용량    = IntVal(_rCurrUse);
         item.전월사용량    = IntVal(_rPrevUse);
+        item.유독물질     = _classBoxes.TryGetValue("유독물질",     out var cb1) && cb1.IsChecked == true;
+        item.허가물질     = _classBoxes.TryGetValue("허가물질",     out var cb2) && cb2.IsChecked == true;
+        item.제한물질     = _classBoxes.TryGetValue("제한물질",     out var cb3) && cb3.IsChecked == true;
+        item.금지물질     = _classBoxes.TryGetValue("금지물질",     out var cb4) && cb4.IsChecked == true;
+        item.사고대비물질 = _classBoxes.TryGetValue("사고대비물질", out var cb5) && cb5.IsChecked == true;
 
         if (_editingReagent == null) ReagentService.Insert(item);
         else                         ReagentService.Update(item);

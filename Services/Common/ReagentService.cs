@@ -49,6 +49,12 @@ public static class ReagentService
             "전월사용량 INTEGER DEFAULT 0",
             "적정사용량 INTEGER DEFAULT 0",
             "최대적정보유량 INTEGER DEFAULT 0",
+            // 화학물질관리법 분류 — 0/1 플래그
+            "유독물질 INTEGER DEFAULT 0",
+            "허가물질 INTEGER DEFAULT 0",
+            "제한물질 INTEGER DEFAULT 0",
+            "금지물질 INTEGER DEFAULT 0",
+            "사고대비물질 INTEGER DEFAULT 0",
         })
         {
             try
@@ -77,7 +83,8 @@ public static class ReagentService
         cmd.CommandText = $@"
             SELECT Id,ITEM_NO,품목명,영문명,CAS번호,화학식,규격,단위,제조사,위험등급,
                    GHS,보관조건,재고량,당월사용량,전월사용량,적정사용량,최대적정보유량,
-                   만료일,비고,등록일,상태
+                   만료일,비고,등록일,상태,
+                   유독물질,허가물질,제한물질,금지물질,사고대비물질
             FROM `시약` {where} ORDER BY 품목명 ASC";
         using var r = cmd.ExecuteReader();
         while (r.Read()) list.Add(Map(r));
@@ -104,11 +111,13 @@ public static class ReagentService
             INSERT INTO `시약`
                 (ITEM_NO,품목명,영문명,CAS번호,화학식,규격,단위,제조사,위험등급,
                  GHS,보관조건,재고량,당월사용량,전월사용량,적정사용량,최대적정보유량,
-                 만료일,비고,등록일,상태)
+                 만료일,비고,등록일,상태,
+                 유독물질,허가물질,제한물질,금지물질,사고대비물질)
             VALUES
                 (@ITEM_NO,@품목명,@영문명,@CAS번호,@화학식,@규격,@단위,@제조사,@위험등급,
                  @GHS,@보관조건,@재고량,@당월사용량,@전월사용량,@적정사용량,@최대적정보유량,
-                 @만료일,@비고,@등록일,@상태)";
+                 @만료일,@비고,@등록일,@상태,
+                 @유독물질,@허가물질,@제한물질,@금지물질,@사고대비물질)";
         SetParams(cmd, item);
         int rows = cmd.ExecuteNonQuery();
         if (rows > 0)
@@ -131,7 +140,9 @@ public static class ReagentService
                 화학식=@화학식, 규격=@규격, 단위=@단위, 제조사=@제조사, 위험등급=@위험등급,
                 GHS=@GHS, 보관조건=@보관조건, 재고량=@재고량, 당월사용량=@당월사용량,
                 전월사용량=@전월사용량, 적정사용량=@적정사용량, 최대적정보유량=@최대적정보유량,
-                만료일=@만료일, 비고=@비고, 등록일=@등록일, 상태=@상태
+                만료일=@만료일, 비고=@비고, 등록일=@등록일, 상태=@상태,
+                유독물질=@유독물질, 허가물질=@허가물질, 제한물질=@제한물질,
+                금지물질=@금지물질, 사고대비물질=@사고대비물질
             WHERE Id=@id";
         SetParams(cmd, item);
         cmd.Parameters.AddWithValue("@id", item.Id);
@@ -182,6 +193,11 @@ public static class ReagentService
         cmd.Parameters.AddWithValue("@비고",         item.비고           ?? "");
         cmd.Parameters.AddWithValue("@등록일",       item.등록일         ?? "");
         cmd.Parameters.AddWithValue("@상태",         item.상태           ?? "정상");
+        cmd.Parameters.AddWithValue("@유독물질",     item.유독물질     ? 1 : 0);
+        cmd.Parameters.AddWithValue("@허가물질",     item.허가물질     ? 1 : 0);
+        cmd.Parameters.AddWithValue("@제한물질",     item.제한물질     ? 1 : 0);
+        cmd.Parameters.AddWithValue("@금지물질",     item.금지물질     ? 1 : 0);
+        cmd.Parameters.AddWithValue("@사고대비물질", item.사고대비물질 ? 1 : 0);
     }
 
     private static Reagent Map(DbDataReader r) => new()
@@ -207,6 +223,11 @@ public static class ReagentService
         비고         = S(r, 18),
         등록일       = S(r, 19),
         상태         = S(r, 20),
+        유독물질     = N(r, 21) == 1,
+        허가물질     = N(r, 22) == 1,
+        제한물질     = N(r, 23) == 1,
+        금지물질     = N(r, 24) == 1,
+        사고대비물질 = N(r, 25) == 1,
     };
 
     private static string S(DbDataReader r, int i) =>

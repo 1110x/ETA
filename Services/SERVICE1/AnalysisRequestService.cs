@@ -370,6 +370,30 @@ public static class AnalysisRequestService
         catch (Exception ex) { Log($"EnsureFieldMeasurementColumns 오류: {ex.Message}"); }
     }
 
+    /// <summary>시료유형 분기 4컬럼 (시료유형/접수일자/접수담당자/업체담당자) 일괄 저장</summary>
+    public static bool UpdateSampleType(int rowId, string 시료유형, string 접수일자, string 접수담당자, string 업체담당자)
+    {
+        try
+        {
+            using var conn = DbConnectionFactory.CreateConnection();
+            conn.Open();
+            TestReportService.EnsureSampleTypeColumns(conn);
+
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText =
+                "UPDATE `수질분석센터_결과` SET " +
+                "`시료유형` = @t, `접수일자` = @d, `접수담당자` = @s, `업체담당자` = @c " +
+                $"WHERE {DbConnectionFactory.RowId} = @id";
+            cmd.Parameters.AddWithValue("@t", string.IsNullOrWhiteSpace(시료유형) ? (object)DBNull.Value : 시료유형.Trim());
+            cmd.Parameters.AddWithValue("@d", string.IsNullOrWhiteSpace(접수일자) ? (object)DBNull.Value : 접수일자.Trim());
+            cmd.Parameters.AddWithValue("@s", string.IsNullOrWhiteSpace(접수담당자) ? (object)DBNull.Value : 접수담당자.Trim());
+            cmd.Parameters.AddWithValue("@c", string.IsNullOrWhiteSpace(업체담당자) ? (object)DBNull.Value : 업체담당자.Trim());
+            cmd.Parameters.AddWithValue("@id", rowId);
+            return cmd.ExecuteNonQuery() > 0;
+        }
+        catch (Exception ex) { Log($"UpdateSampleType 오류: {ex.Message}"); return false; }
+    }
+
     /// <summary>현장측정 5개 항목 일괄 저장</summary>
     public static bool UpdateFieldMeasurements(int rowId, Dictionary<string, string> values)
     {

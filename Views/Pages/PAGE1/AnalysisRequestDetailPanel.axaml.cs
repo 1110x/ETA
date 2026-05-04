@@ -55,6 +55,8 @@ public class AnalysisRequestDetailPanel : UserControl
             "정도보증유무","분석완료일자","견적구분",
             // 현장측정 5개 — 별도 입력란에 표시되므로 항목 라인에서 제외
             "현장_온도","현장_pH","현장_용존산소","현장_전기전도도","현장_잔류염소",
+            // 시료유형 분기 4개 — 별도 입력란
+            "시료유형","접수일자","접수담당자","업체담당자",
         };
 
     // 현장측정 입력란 — 라벨, 컬럼명, 단위
@@ -90,6 +92,14 @@ public class AnalysisRequestDetailPanel : UserControl
     private readonly Dictionary<string, TextBox> _fieldTextBoxes =
         new(StringComparer.OrdinalIgnoreCase);
     private bool _suppressFieldEvent = false;
+
+    // -- 시료유형 분기 입력 (접수/채수) ---------------------------------
+    private readonly RadioButton _rbCollect = new() { Content = "채수", GroupName = "SampleType" };
+    private readonly RadioButton _rbIntake  = new() { Content = "접수", GroupName = "SampleType" };
+    private readonly TextBox     _tbIntakeDate  = new();
+    private readonly TextBox     _tbIntakeStaff = new();
+    private readonly TextBox     _tbCompanyStaff = new();
+    private bool _suppressSampleTypeEvent = false;
 
     public AnalysisRequestDetailPanel()
     {
@@ -275,6 +285,9 @@ public class AnalysisRequestDetailPanel : UserControl
                 fieldGrid,
                 new Border { Height=1, Background=AppRes("InputBorder"),
                              Margin=new Avalonia.Thickness(0,6,0,6) },
+                BuildSampleTypeStrip(),
+                new Border { Height=1, Background=AppRes("InputBorder"),
+                             Margin=new Avalonia.Thickness(0,6,0,6) },
                 colHeader,
                 _spItems,
             },
@@ -318,6 +331,116 @@ public class AnalysisRequestDetailPanel : UserControl
     // ══════════════════════════════════════════════════════════════════════
     //  외부 API — async로 DB + UI 분리
     // ══════════════════════════════════════════════════════════════════════
+    // ── 시료유형 분기 strip — 시험성적서 양식의 접수/채수 라벨을 결정 ───────
+    private Control BuildSampleTypeStrip()
+    {
+        // Row 1: 헤더 + 라디오(채수/접수) + 저장 버튼
+        var hdr = new Grid
+        {
+            ColumnDefinitions = new ColumnDefinitions("*,Auto,Auto,Auto,Auto"),
+            Margin = new Avalonia.Thickness(0, 4, 0, 4),
+        };
+        hdr.Children.Add(new TextBlock
+        {
+            Text       = "🏷️  시료유형",
+            FontSize   = AppTheme.FontMD, FontWeight = FontWeight.SemiBold,
+            FontFamily = Font, Foreground = AppRes("AppFg"),
+            VerticalAlignment = VerticalAlignment.Center,
+            [Grid.ColumnProperty] = 0,
+        });
+        _rbCollect.FontFamily = Font; _rbCollect.FontSize = AppTheme.FontSM;
+        _rbCollect.Margin = new Avalonia.Thickness(0, 0, 8, 0);
+        _rbCollect.Foreground = AppRes("AppFg");
+        Grid.SetColumn(_rbCollect, 1);
+        _rbIntake.FontFamily  = Font; _rbIntake.FontSize  = AppTheme.FontSM;
+        _rbIntake.Margin = new Avalonia.Thickness(0, 0, 8, 0);
+        _rbIntake.Foreground  = AppRes("AppFg");
+        Grid.SetColumn(_rbIntake, 2);
+        _rbCollect.IsCheckedChanged += OnSampleTypeChanged;
+        _rbIntake.IsCheckedChanged  += OnSampleTypeChanged;
+        hdr.Children.Add(_rbCollect);
+        hdr.Children.Add(_rbIntake);
+
+        var btnSaveType = new Button
+        {
+            Content    = "💾  저장",
+            FontFamily = Font, FontSize = AppTheme.FontSM,
+            Padding    = new Avalonia.Thickness(10, 4),
+            Background = AppRes("BtnPrimaryBg"),
+            Foreground = AppRes("BtnPrimaryFg"),
+            BorderBrush = AppRes("BtnPrimaryBorder"),
+            BorderThickness = new Avalonia.Thickness(1),
+            CornerRadius = new Avalonia.CornerRadius(4),
+            Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
+            [Grid.ColumnProperty] = 4,
+        };
+        btnSaveType.Click += OnSampleTypeCommit;
+        hdr.Children.Add(btnSaveType);
+
+        // Row 2: 접수일자 / 접수담당자 / 업체담당자 (접수 모드에서만 활성)
+        var inputs = new Grid
+        {
+            ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto,*,Auto,*"),
+            ColumnSpacing = 6,
+            Margin = new Avalonia.Thickness(0, 0, 0, 6),
+        };
+        AddLabeledTextBox(inputs, 0, "접수일자",   _tbIntakeDate);
+        AddLabeledTextBox(inputs, 2, "접수담당자", _tbIntakeStaff);
+        AddLabeledTextBox(inputs, 4, "업체담당자", _tbCompanyStaff);
+
+        return new StackPanel
+        {
+            Spacing = 0,
+            Children = { hdr, inputs },
+        };
+    }
+
+    private void AddLabeledTextBox(Grid grid, int colOffset, string label, TextBox tb)
+    {
+        var lbl = new TextBlock
+        {
+            Text = label,
+            FontFamily = Font, FontSize = AppTheme.FontSM,
+            Foreground = AppRes("FgMuted"),
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin = new Avalonia.Thickness(0, 0, 4, 0),
+        };
+        Grid.SetColumn(lbl, colOffset);
+        grid.Children.Add(lbl);
+
+        tb.FontFamily = Font; tb.FontSize = AppTheme.FontSM;
+        tb.Height = 26; tb.Padding = new Avalonia.Thickness(4, 2);
+        tb.MinWidth = 0;
+        tb.HorizontalAlignment = HorizontalAlignment.Stretch;
+        tb.VerticalContentAlignment = VerticalAlignment.Center;
+        tb.KeyDown += (_, ke) =>
+        {
+            if (ke.Key == Avalonia.Input.Key.Enter) OnSampleTypeCommit(tb, null);
+        };
+        Grid.SetColumn(tb, colOffset + 1);
+        grid.Children.Add(tb);
+    }
+
+    private void OnSampleTypeChanged(object? sender, RoutedEventArgs e)
+    {
+        if (_suppressSampleTypeEvent) return;
+        bool intake = _rbIntake.IsChecked == true;
+        _tbIntakeDate.IsEnabled   = intake;
+        _tbIntakeStaff.IsEnabled  = intake;
+        _tbCompanyStaff.IsEnabled = intake;
+    }
+
+    private void OnSampleTypeCommit(object? sender, RoutedEventArgs? e)
+    {
+        if (_suppressSampleTypeEvent || _currentRecId < 0) return;
+        string type = _rbIntake.IsChecked == true ? "접수" : "채수";
+        string date = _tbIntakeDate.Text   ?? "";
+        string staff = _tbIntakeStaff.Text  ?? "";
+        string comp = _tbCompanyStaff.Text ?? "";
+        int rowId = _currentRecId;
+        _ = Task.Run(() => AnalysisRequestService.UpdateSampleType(rowId, type, date, staff, comp));
+    }
+
     public async void ShowRecord(AnalysisRequestRecord rec)
     {
         _currentRecId = rec.Id;
@@ -361,6 +484,20 @@ public class AnalysisRequestDetailPanel : UserControl
         foreach (var (col, tb) in _fieldTextBoxes)
             tb.Text = row.TryGetValue(col, out var fv) ? fv ?? "" : "";
         _suppressFieldEvent = false;
+
+        // [1-3] 시료유형 분기 입력란 값 채우기
+        _suppressSampleTypeEvent = true;
+        row.TryGetValue("시료유형", out var sType);
+        bool isIntake = string.Equals((sType ?? "").Trim(), "접수", StringComparison.Ordinal);
+        _rbIntake.IsChecked  = isIntake;
+        _rbCollect.IsChecked = !isIntake;
+        _tbIntakeDate.Text   = row.TryGetValue("접수일자",   out var sDate)  ? sDate  ?? "" : "";
+        _tbIntakeStaff.Text  = row.TryGetValue("접수담당자", out var sStaff) ? sStaff ?? "" : "";
+        _tbCompanyStaff.Text = row.TryGetValue("업체담당자", out var sComp)  ? sComp  ?? "" : "";
+        _tbIntakeDate.IsEnabled   = isIntake;
+        _tbIntakeStaff.IsEnabled  = isIntake;
+        _tbCompanyStaff.IsEnabled = isIntake;
+        _suppressSampleTypeEvent = false;
 
         // [2] 항목 라인 갱신 (행 풀 재사용)
         BuildItemLines(row);

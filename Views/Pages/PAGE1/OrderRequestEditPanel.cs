@@ -198,8 +198,8 @@ public class OrderRequestEditPanel : UserControl
                 var sName = _samples[ci];
                 var cb = new CheckBox
                 {
-                    // #3: 기본값을 모두 체크해제로 시작 — 필요한 항목만 사용자가 체크
-                    IsChecked           = false,
+                    // 견적서에 기재된 항목은 자동 체크 — 사용자가 필요시 수정
+                    IsChecked           = isQ,
                     HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment   = VerticalAlignment.Center,
                 };

@@ -77,6 +77,9 @@ public static class TestReportWordPrintService
 
             if (!bodyText.Contains("용도") || !bodyText.Contains("입회자")) return true;
 
+            // 시료유형 분기 placeholder 부재 — 신버전 메타 표 3행은 동적 라벨 사용
+            if (!bodyText.Contains("{{라벨_일자}}")) return true;
+
             // 메타 표 행 수 검사 — 신버전은 3행, 옛버전은 4행.
             // 본문 첫 번째 표 = BuildHeaderTable() (메타 표).
             var firstTable = body.Descendants<Table>().FirstOrDefault();
@@ -284,12 +287,29 @@ public static class TestReportWordPrintService
         if (string.IsNullOrWhiteSpace(qualityMgr))
             qualityMgr = GetQualityManagerName();
 
+        // 시료유형 분기 — "접수" / "채수" / "" (미지정 → 채수 취급)
+        bool isIntake = string.Equals(sample.시료유형?.Trim(), "접수", StringComparison.Ordinal);
+        // 채수 모드 기본 매핑 (기존 채취일자/시료채취자/견적번호 재사용)
+        string sampleDate    = isIntake
+            ? FormatDate(sample.접수일자)
+            : FormatDate(sample.채취일자);
+        string samplePerson  = isIntake
+            ? (sample.접수담당자 ?? "")
+            : $"{sample.시료채취자1} {sample.시료채취자2}".Trim();
+        string sampleExtra   = isIntake
+            ? (sample.업체담당자 ?? "")
+            : (sample.견적번호 ?? "");
+        string labelDate    = isIntake ? "접수일자"    : "채수일자";
+        string labelPerson  = isIntake ? "담당자"      : "채수담당자";
+        string labelExtra   = isIntake ? "업체담당자"  : "채수의뢰서";
+
         var headerMap = new Dictionary<string, string>(StringComparer.Ordinal)
         {
             ["성적서번호"] = no,
             ["회사명"]     = string.IsNullOrEmpty(companyName) ? sample.의뢰사업장 : companyName,
             ["대표자"]     = representative,
             ["시료명"]     = sample.시료명 ?? "",
+            // 기존 placeholder — 채수 기본 (구버전 템플릿 호환)
             ["채취일자"]   = FormatDate(sample.채취일자),
             ["채취자"]     = $"{sample.시료채취자1} {sample.시료채취자2}".Trim(),
             ["입회자"]     = sample.입회자 ?? "",
@@ -300,6 +320,21 @@ public static class TestReportWordPrintService
                 ? UserPrefsService.TestReportRemarkQc
                 : UserPrefsService.TestReportRemarkRef,
             ["시험성적서서명"] = qualityMgr ?? "",
+            // 시료유형 분기 placeholder (신버전 템플릿 — 라벨/값을 동적으로 출력)
+            ["시료유형"]    = isIntake ? "접수" : "채수",
+            ["라벨_일자"]   = labelDate,
+            ["값_일자"]     = sampleDate,
+            ["라벨_담당"]   = labelPerson,
+            ["값_담당"]     = samplePerson,
+            ["라벨_추가"]   = labelExtra,
+            ["값_추가"]     = sampleExtra,
+            // 직접 사용 가능한 모드별 placeholder (사용자 커스텀 양식용)
+            ["접수일자"]    = FormatDate(sample.접수일자),
+            ["접수담당자"]  = sample.접수담당자 ?? "",
+            ["업체담당자"]  = sample.업체담당자 ?? "",
+            ["채수일자"]    = FormatDate(sample.채취일자),
+            ["채수담당자"]  = $"{sample.시료채취자1} {sample.시료채취자2}".Trim(),
+            ["채수의뢰서"]  = sample.견적번호 ?? "",
         };
 
         using (var doc = WordprocessingDocument.Open(outPath, isEditable: true))

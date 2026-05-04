@@ -176,11 +176,21 @@ public class XlsxPreviewWindow : Window
             for (int i = 0; i < headers.Count; i++)
             {
                 int colIdx = i;
-                _grid.Columns.Add(new DataGridTextColumn
+                // Avalonia 11.3 의 인덱서 binding parser 가 "[0]" 형식을 거부하므로
+                // FuncDataTemplate 으로 우회 — 데이터 행(string?[]) 의 colIdx 셀을 직접 표시.
+                _grid.Columns.Add(new DataGridTemplateColumn
                 {
                     Header  = headers[i],
-                    Binding = new Avalonia.Data.Binding($"[{colIdx}]"),
                     Width   = new DataGridLength(120),
+                    CellTemplate = new Avalonia.Controls.Templates.FuncDataTemplate<string?[]>(
+                        (row, _) => new TextBlock
+                        {
+                            Text = row != null && colIdx < row.Length ? (row[colIdx] ?? "") : "",
+                            FontFamily = Font,
+                            FontSize = AppTheme.FontSM,
+                            VerticalAlignment = VerticalAlignment.Center,
+                            Margin = new Thickness(4, 2),
+                        }),
                 });
             }
 

@@ -5282,6 +5282,25 @@ public partial class MainPage : Window
             Avalonia.Threading.DispatcherPriority.Render);
     }
 
+    private ETA.Views.Pages.PAGE1.ReceiptDispatchPage? _receiptDispatchPage;
+
+    private void ReceiptDispatch_Click(object? sender, RoutedEventArgs e)
+    {
+        _currentMode = "ReceiptDispatch";
+        _receiptDispatchPage ??= new ETA.Views.Pages.PAGE1.ReceiptDispatchPage();
+
+        Show1.Content = _receiptDispatchPage.RequestListControl;
+        LogContentChange("Show1", _receiptDispatchPage.RequestListControl);
+        Show2.Content = _receiptDispatchPage;
+        LogContentChange("Show2", _receiptDispatchPage);
+        Show3.Content = null; LogContentChange("Show3", null);
+        Show4.Content = null; LogContentChange("Show4", null);
+        _bt1SaveAction = null;
+
+        SetSubMenu("", "", "", "", "", "");
+        SetContentLayout(content2Star: 8, content4Star: 0, upperStar: 10, lowerStar: 0);
+    }
+
     private void TestRecordBookViewer_Click(object? sender, RoutedEventArgs e)
     {
         _currentMode = "TestRecordBookViewer";
