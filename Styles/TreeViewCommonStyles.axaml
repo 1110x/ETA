@@ -1,0 +1,26 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ETA 전용 TreeView 좌측 여백 통일.
+         leaf-위주 사용 패턴이라 펼치기 토글 영역(약 22px)을 항상 제거하고,
+         헤더 콘텐츠를 그만큼 왼쪽으로 당겨 사진/배지/이름이 패널 라인에 붙도록 함. -->
+
+    <Style Selector="TreeViewItem">
+        <Setter Property="Padding"   Value="2,4" />
+        <Setter Property="Margin"    Value="0,1" />
+        <Setter Property="MinHeight" Value="0" />
+    </Style>
+
+    <Style Selector="TreeViewItem /template/ ToggleButton">
+        <Setter Property="IsVisible" Value="False" />
+        <Setter Property="Width"     Value="0" />
+        <Setter Property="MinWidth"  Value="0" />
+        <Setter Property="Margin"    Value="0" />
+        <Setter Property="Padding"   Value="0" />
+    </Style>
+
+    <Style Selector="TreeViewItem /template/ ContentPresenter#PART_HeaderPresenter">
+        <Setter Property="Padding" Value="2,1" />
+    </Style>
+
+</Styles>

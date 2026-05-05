@@ -77,6 +77,7 @@
         <StyleInclude Source="avares://Avalonia.Controls.TreeDataGrid/Themes/Fluent.axaml"/>
         <StyleInclude Source="/Styles/DataGridCommonStyles.axaml"/>  <!-- 프로젝트 내 경로 -->
         <StyleInclude Source="/Styles/SectionStyles.axaml"/>           <!-- wireframe v0.1 섹션 스타일 -->
+        <StyleInclude Source="/Styles/TreeViewCommonStyles.axaml"/>    <!-- TreeView 좌측 여백 통일 -->
         <StyleInclude Source="avares://ETA/Styles/Paper.axaml"/>       <!-- Rebuild (v2) Paper 톤 -->
 
         <!-- ══════════════════════════════════════════════════════════════

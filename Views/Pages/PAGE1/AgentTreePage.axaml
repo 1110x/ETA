@@ -3,18 +3,11 @@
              x:Class="ETA.Views.Pages.PAGE1.AgentTreePage">
 
     <UserControl.Styles>
-        <!-- TreeViewItem -->
+        <!-- TreeViewItem 폰트/색상 (좌측 여백 / 토글 제거는 전역 스타일 TreeViewCommonStyles 에서 처리) -->
         <Style Selector="TreeViewItem">
-            <Setter Property="Padding"    Value="1,4" />
-            <Setter Property="Margin"     Value="0,1" />
-            <Setter Property="MinHeight"  Value="0" />
             <Setter Property="FontSize"   Value="{DynamicResource FontSizeBase}" />
             <Setter Property="Foreground" Value="{DynamicResource TreeFg}" />
             <Setter Property="FontFamily" Value="avares://ETA/Assets/Fonts#Pretendard" />
-            <Setter Property="Background" Value="Transparent" />
-        </Style>
-        <Style Selector="TreeViewItem /template/ ContentPresenter#PART_HeaderPresenter">
-            <Setter Property="Padding"    Value="2,1" />
             <Setter Property="Background" Value="Transparent" />
         </Style>
         <Style Selector="TreeViewItem:selected /template/ ContentPresenter#PART_HeaderPresenter">
@@ -32,7 +25,7 @@
                 Background="{DynamicResource PanelBg}"
                 CornerRadius="6,6,0,0"
                 Padding="10,6">
-            <TextBlock Text="\uc9c1\uc6d0 \ubaa9\ub85d"
+            <TextBlock Text="직원 목록"
                        FontSize="{DynamicResource FontSizeBase}" FontWeight="SemiBold"
                        Foreground="{DynamicResource FgMuted}"
                        FontFamily="avares://ETA/Assets/Fonts#Pretendard"
@@ -62,7 +55,8 @@
                   SelectionChanged="DeptFilter_SelectionChanged"/>
         <TreeView Grid.Row="3"
                   x:Name="AgentTreeView"
-                  Margin="5"
+                  Margin="0,5"
+                  Padding="0"
                   HorizontalAlignment="Stretch"
                   VerticalAlignment="Stretch"
                   SelectionChanged="AgentTreeView_SelectionChanged" />

@@ -39,6 +39,10 @@ public partial class ResultSubmitErpPage : UserControl
     private List<ErpUiAutoService.ExcelRow> _excelRows = [];
     private List<Border>                    _rowBorders = [];
     private Button?                        _btnRun;
+    private DatePicker?                    _monthPicker;
+    private RadioButton?                   _rbYeosu;
+    private RadioButton?                   _rbYulchon;
+    private RadioButton?                   _rbSepoong;
     private Button?                        _btnStop;
     private bool                           _stopRequested;
     private ProgressBar?                   _progressBar;
@@ -59,10 +63,46 @@ public partial class ResultSubmitErpPage : UserControl
     // =========================================================================
     public void RefreshShow2()
     {
-        Show2ContentRequest?.Invoke(BuildExcelTableControl());
+        Show2ContentRequest?.Invoke(WrapWithFilterBar(BuildExcelTableControl()));
         // 1행 자동 선택
         if (_excelRows.Count > 0 && _rowBorders.Count > 0)
             SelectExcelRow(_excelRows[0], _rowBorders[0]);
+    }
+
+    /// <summary>Show2 콘텐츠 위에 [여수][율촌][세풍] 라디오 바를 얹어 묶음.
+    /// 라디오는 클래스 필드라 이전 부모에서 detach 후 새 부모에 attach.</summary>
+    private Control WrapWithFilterBar(Control content)
+    {
+        // 이전 부모에서 분리
+        DetachFromParent(_rbYeosu);
+        DetachFromParent(_rbYulchon);
+        DetachFromParent(_rbSepoong);
+
+        var topBar = new Border
+        {
+            Background = Brush.Parse("#0e1820"),
+            BorderBrush = AppTheme.BorderSubtle,
+            BorderThickness = new Thickness(0, 0, 0, 1),
+            Padding = new Thickness(10, 6),
+            Child = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Spacing = 16,
+                VerticalAlignment = VerticalAlignment.Center,
+                Children = { _rbYeosu!, _rbYulchon!, _rbSepoong! },
+            },
+        };
+        var grid = new Grid { RowDefinitions = new RowDefinitions("Auto,*") };
+        Grid.SetRow(topBar, 0);
+        grid.Children.Add(topBar);
+        Grid.SetRow(content, 1);
+        grid.Children.Add(content);
+        return grid;
+    }
+
+    private static void DetachFromParent(Control? c)
+    {
+        if (c?.Parent is Panel p) p.Children.Remove(c);
     }
 
     private Control BuildExcelTableControl()
@@ -80,10 +120,34 @@ public partial class ResultSubmitErpPage : UserControl
                 Margin = new Thickness(16, 20),
             };
         }
+        if (!System.IO.File.Exists(_loadedExcelPath))
+        {
+            _excelRows = []; _rowBorders = []; _checkIcons = [];
+            _loadedExcelPath = null;
+            return new TextBlock
+            {
+                Text = "⚠️  이전 Excel 파일을 찾을 수 없습니다 — 다시 가져와 주세요.",
+                FontFamily = Font, FontSize = AppTheme.FontBase,
+                Foreground = Brush.Parse("#ee8866"),
+                Margin = new Thickness(16, 20),
+            };
+        }
 
         _excelRows = ErpUiAutoService.LoadAllExcelData(_loadedExcelPath);
         _rowBorders = [];
         _checkIcons = [];
+
+        // Excel 파일은 있으나 데이터 행이 0개
+        if (_excelRows.Count == 0)
+        {
+            return new TextBlock
+            {
+                Text = "📭  Excel 파일에 데이터 행이 없습니다 (자료입력 시트 2행부터 비어있음).",
+                FontFamily = Font, FontSize = AppTheme.FontBase,
+                Foreground = Brush.Parse("#ddaa66"),
+                Margin = new Thickness(16, 20),
+            };
+        }
 
         var sp = new StackPanel { Spacing = 0 };
 
@@ -137,15 +201,15 @@ public partial class ResultSubmitErpPage : UserControl
                 {
                     MakeCell("",     24, "#778899", FontWeight.SemiBold),
                     MakeCell("번호", 36, "#778899", FontWeight.SemiBold),
-                    MakeCell("S/N",  100, "#778899", FontWeight.SemiBold),
-                    MakeCell("시료명", 200, "#778899", FontWeight.SemiBold),
-                    MakeCell("BOD",  44, "#778899", FontWeight.SemiBold),
-                    MakeCell("TOC",  44, "#778899", FontWeight.SemiBold),
-                    MakeCell("SS",   44, "#778899", FontWeight.SemiBold),
-                    MakeCell("NH",   44, "#778899", FontWeight.SemiBold),
-                    MakeCell("PN",   44, "#778899", FontWeight.SemiBold),
-                    MakeCell("TN",   44, "#778899", FontWeight.SemiBold),
-                    MakeCell("TP",   44, "#778899", FontWeight.SemiBold),
+                    MakeCell("S/N",  90, "#778899", FontWeight.SemiBold),
+                    MakeCell("시료명", 220, "#778899", FontWeight.SemiBold),
+                    MakeCell("BOD",  68, "#778899", FontWeight.SemiBold),
+                    MakeCell("TOC",  68, "#778899", FontWeight.SemiBold),
+                    MakeCell("SS",   68, "#778899", FontWeight.SemiBold),
+                    MakeCell("NH",   68, "#778899", FontWeight.SemiBold),
+                    MakeCell("PN",   68, "#778899", FontWeight.SemiBold),
+                    MakeCell("TN",   68, "#778899", FontWeight.SemiBold),
+                    MakeCell("TP",   68, "#778899", FontWeight.SemiBold),
                 },
             },
         };
@@ -179,15 +243,15 @@ public partial class ResultSubmitErpPage : UserControl
                 {
                     checkIcon,
                     MakeCell(row.번호.ToString(), 36, "#6688aa"),
-                    MakeCell(row.SN,              72, "#aaccff"),
-                    MakeCell(row.시료명,          200, "#99aabb"),
-                    MakeCell(row.Values.Length > 0 ? row.Values[0] : "", 44, "#88cc99"),
-                    MakeCell(row.Values.Length > 1 ? row.Values[1] : "", 44, "#88cc99"),
-                    MakeCell(row.Values.Length > 2 ? row.Values[2] : "", 44, "#88cc99"),
-                    MakeCell(row.Values.Length > 3 ? row.Values[3] : "", 44, "#88cc99"),
-                    MakeCell(row.Values.Length > 4 ? row.Values[4] : "", 44, "#88cc99"),
-                    MakeCell(row.Values.Length > 5 ? row.Values[5] : "", 44, "#88cc99"),
-                    MakeCell(row.Values.Length > 6 ? row.Values[6] : "", 44, "#88cc99"),
+                    MakeCell(row.SN,              90, "#aaccff"),
+                    MakeCell(row.시료명,          220, "#99aabb"),
+                    MakeCell(row.Values.Length > 0 ? row.Values[0] : "", 68, "#88cc99"),
+                    MakeCell(row.Values.Length > 1 ? row.Values[1] : "", 68, "#88cc99"),
+                    MakeCell(row.Values.Length > 2 ? row.Values[2] : "", 68, "#88cc99"),
+                    MakeCell(row.Values.Length > 3 ? row.Values[3] : "", 68, "#88cc99"),
+                    MakeCell(row.Values.Length > 4 ? row.Values[4] : "", 68, "#88cc99"),
+                    MakeCell(row.Values.Length > 5 ? row.Values[5] : "", 68, "#88cc99"),
+                    MakeCell(row.Values.Length > 6 ? row.Values[6] : "", 68, "#88cc99"),
                 },
             },
         };
@@ -272,7 +336,7 @@ public partial class ResultSubmitErpPage : UserControl
                     Foreground = AppTheme.FgMuted,
                     TextWrapping = TextWrapping.Wrap,
                 },
-                new StackPanel { Orientation = Orientation.Horizontal, Spacing = 16, Children =
+                new WrapPanel { Orientation = Orientation.Horizontal, ItemSpacing = 16, LineSpacing = 4, Children =
                 {
                     MakeInfoItem("대상 프로세스", "neoweb.exe"),
                     MakeInfoItem("입력 순서", "BOD·TOC·SS·NH·PN·TN·TP"),
@@ -280,52 +344,11 @@ public partial class ResultSubmitErpPage : UserControl
             }},
         });
 
-        // ── 권한 경고 배너 ────────────────────────────────────────────────
-        bool isAdmin = ErpUiAutoService.IsAdmin();
-        if (!isAdmin)
-        {
-            var btnElevate = new Button
-            {
-                Content = "🛡️  관리자로 재실행",
-                FontFamily = FontM, FontSize = AppTheme.FontBase,
-                Padding = new Thickness(12, 6),
-                Background = Brush.Parse("#3a1a00"),
-                Foreground = AppTheme.FgWarn,
-                BorderBrush = AppTheme.BorderWarn,
-                BorderThickness = new Thickness(1),
-                CornerRadius = new CornerRadius(4),
-            };
-            btnElevate.Click += (_, _) =>
-            {
-                if (ErpUiAutoService.RestartAsAdmin())
-                    Environment.Exit(0);
-            };
-            root.Children.Add(new Border
-            {
-                Background = Brush.Parse("#1e1000"),
-                BorderBrush = AppTheme.BorderWarn,
-                BorderThickness = new Thickness(1),
-                CornerRadius = new CornerRadius(5),
-                Padding = new Thickness(12, 8),
-                Child = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 12,
-                    VerticalAlignment = VerticalAlignment.Center, Children =
-                {
-                    new TextBlock
-                    {
-                        Text = "⚠️  관리자 권한 필요 (neoweb.exe가 관리자로 실행 중).",
-                        FontFamily = Font, FontSize = AppTheme.FontBase,
-                        Foreground = AppTheme.FgWarn,
-                        VerticalAlignment = VerticalAlignment.Center,
-                    },
-                    btnElevate,
-                }},
-            });
-        }
-
         // ── 상태 배지 + 버튼 행 ──────────────────────────────────────────
+        // ETA 는 항상 관리자 권한으로 실행되므로 "관리자로 재실행" 배너/버튼 제거
         _statusBadge = new TextBlock
         {
-            Text = isAdmin ? "대기 (관리자)" : "대기",
+            Text = "대기",
             FontFamily = FontM, FontSize = AppTheme.FontBase,
             Foreground = AppTheme.FgMuted,
             VerticalAlignment = VerticalAlignment.Center,
@@ -343,6 +366,30 @@ public partial class ResultSubmitErpPage : UserControl
             CornerRadius = new CornerRadius(5),
         };
         btnLoad.Click += async (_, _) => await LoadExcelFileAsync(btnLoad);
+
+        // DB 월별 불러오기 — 캘린더로 월 선택 (일자는 무시) + 지역 라디오
+        var now = DateTime.Today;
+        _monthPicker = new DatePicker
+        {
+            SelectedDate     = new DateTimeOffset(now.Year, now.Month, 1, 0, 0, 0, TimeSpan.Zero),
+            DayVisible       = false,
+            FontFamily       = FontM,
+            FontSize         = AppTheme.FontMD,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        _rbYeosu   = new RadioButton { Content = "여수", GroupName = "ErpRegion", IsChecked = true,
+            FontFamily = FontM, FontSize = AppTheme.FontMD, VerticalAlignment = VerticalAlignment.Center };
+        _rbYulchon = new RadioButton { Content = "율촌", GroupName = "ErpRegion",
+            FontFamily = FontM, FontSize = AppTheme.FontMD, VerticalAlignment = VerticalAlignment.Center };
+        _rbSepoong = new RadioButton { Content = "세풍", GroupName = "ErpRegion",
+            FontFamily = FontM, FontSize = AppTheme.FontMD, VerticalAlignment = VerticalAlignment.Center };
+
+        // 캘린더 선택 시 자동 로드
+        _monthPicker.SelectedDateChanged += (_, _) => TriggerDbLoad();
+        // 라디오 변경 시 SENDER 기준으로 지역 결정 (그룹 IsChecked 동시 변경 race 회피)
+        _rbYeosu.IsCheckedChanged   += (_, _) => { if (_rbYeosu.IsChecked   == true) TriggerDbLoad("여수"); };
+        _rbYulchon.IsCheckedChanged += (_, _) => { if (_rbYulchon.IsChecked == true) TriggerDbLoad("율촌"); };
+        _rbSepoong.IsCheckedChanged += (_, _) => { if (_rbSepoong.IsChecked == true) TriggerDbLoad("세풍"); };
 
         var btnProbe = new Button
         {
@@ -370,11 +417,35 @@ public partial class ResultSubmitErpPage : UserControl
         };
         btnVerify.Click += async (_, _) => await VerifyDataAsync(btnVerify);
 
+        // 좁은 Show1 폭 대응 — 모든 요소를 Stretch 로 깔고 WrapPanel 로 자동 줄바꿈
+        btnLoad.HorizontalAlignment   = HorizontalAlignment.Stretch;
+        btnVerify.HorizontalAlignment = HorizontalAlignment.Stretch;
+        btnProbe.HorizontalAlignment  = HorizontalAlignment.Stretch;
+
+        var rowLoaders = new WrapPanel { Orientation = Orientation.Horizontal, ItemSpacing = 6, LineSpacing = 4 };
+        rowLoaders.Children.Add(btnLoad);
+
+        // 캘린더 별도 행 (전체 폭)
+        _monthPicker.HorizontalAlignment = HorizontalAlignment.Stretch;
+
+        // 라디오는 Show2 상단으로 이동 (BuildExcelTableFromCurrentRows / BuildExcelTableControl 에서 합침)
+
+        // 검증/프로브 행
+        var rowActions = new WrapPanel { Orientation = Orientation.Horizontal, ItemSpacing = 6, LineSpacing = 4, Margin = new Thickness(0, 6, 0, 0) };
+        rowActions.Children.Add(btnVerify);
+        rowActions.Children.Add(btnProbe);
+
         root.Children.Add(new StackPanel
         {
-            Orientation = Orientation.Horizontal,
-            Spacing = 8,
-            Children = { btnLoad, btnVerify, btnProbe, _statusBadge },
+            Orientation = Orientation.Vertical,
+            Spacing = 4,
+            Children =
+            {
+                rowLoaders,
+                _monthPicker,
+                rowActions,
+                _statusBadge,
+            },
         });
 
         // ── 선택된 시료명 표시 ─────────────────────────────────────────────
@@ -598,6 +669,78 @@ public partial class ResultSubmitErpPage : UserControl
 
 
     // =========================================================================
+    // DB 월별 불러오기 — 비용부담금_결과 에서 해당 월 전체 의뢰일자×업체 행 로드
+    // =========================================================================
+    private void TriggerDbLoad(string? regionOverride = null)
+    {
+        if (_monthPicker == null) return;
+        try
+        {
+            var picked = _monthPicker?.SelectedDate?.DateTime ?? DateTime.Today;
+            int year  = picked.Year;
+            int month = picked.Month;
+            string region = regionOverride ?? (
+                _rbYulchon?.IsChecked == true ? "율촌" :
+                _rbSepoong?.IsChecked == true ? "세풍" :
+                                                "여수");
+
+            // 외부 Excel 경로 끊고 DB 직접 사용
+            _loadedExcelPath = null;
+            _excelRows = ErpUiAutoService.LoadFromDb(year, month, region);
+
+            // 기존 RefreshShow2 는 _loadedExcelPath 의존이라, 직접 컨트롤 빌드 후 푸시
+            Show2ContentRequest?.Invoke(WrapWithFilterBar(BuildExcelTableFromCurrentRows()));
+
+            if (_excelRows.Count > 0 && _rowBorders.Count > 0)
+                SelectExcelRow(_excelRows[0], _rowBorders[0]);
+
+            AddLog("✅", $"DB 로드 {year:D4}-{month:D2} [{region}]: {_excelRows.Count}건");
+            SetStatus($"📅 {year:D4}-{month:D2} {region}  {_excelRows.Count}건 로드", "#88ccff");
+            if (_btnRun != null) _btnRun.IsEnabled = _excelRows.Count > 0;
+        }
+        catch (Exception ex)
+        {
+            AddLog("❌", $"DB 로드 실패: {ex.Message}");
+            SetStatus("오류", "#ee6666");
+        }
+    }
+
+    /// <summary>이미 로드된 _excelRows 로 테이블만 빌드 (DB 로드 후 사용)</summary>
+    private Control BuildExcelTableFromCurrentRows()
+    {
+        _rowBorders = [];
+        _checkIcons = [];
+
+        if (_excelRows.Count == 0)
+            return new TextBlock
+            {
+                Text = "📭  해당 월에 분석결과가 없습니다.",
+                FontFamily = Font, FontSize = AppTheme.FontBase,
+                Foreground = Brush.Parse("#ddaa66"),
+                Margin = new Thickness(16, 20),
+            };
+
+        var sp = new StackPanel { Spacing = 0 };
+        sp.Children.Add(MakeTableHeader());
+        foreach (var row in _excelRows)
+        {
+            var bdr = MakeTableRow(row);
+            sp.Children.Add(bdr);
+            _rowBorders.Add(bdr);
+        }
+        return new Border
+        {
+            Background = Brush.Parse("#0d1520"),
+            Child = new ScrollViewer
+            {
+                Content = sp,
+                VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+                HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+            },
+        };
+    }
+
+    // =========================================================================
     // 분석결과 가져오기 — Excel 파일 선택 → Show2에 로드
     // =========================================================================
     private async Task LoadExcelFileAsync(Button btn)
@@ -732,6 +875,8 @@ public partial class ResultSubmitErpPage : UserControl
 
             for (int i = 0; i < _excelRows.Count; i++)
             {
+                if (_stopRequested) break;   // 중단 즉시 반응
+
                 var row = _excelRows[i];
                 bool ok = erpSnSet.Contains(row.SN);
 
@@ -749,7 +894,8 @@ public partial class ResultSubmitErpPage : UserControl
                 int idx = i;
                 int curMatch = matchCount;
                 int curTotal = i + 1;
-                double curRate = erpSnList.Count > 0 ? (double)curMatch / erpSnList.Count * 100 : 0;
+                // 매칭률 = 검증한 Excel 행 중 매칭된 비율 (사용자 직관에 맞춤)
+                double curRate = curTotal > 0 ? (double)curMatch / curTotal * 100 : 0;
 
                 Dispatcher.UIThread.Post(() =>
                 {

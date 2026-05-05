@@ -217,6 +217,43 @@ public partial class AgentTreePage : UserControl
     // =========================================================================
     // TreeViewItem 생성
     // =========================================================================
+    /// <summary>TextBlock 의 글자 폭이 cap 을 넘으면 좌우 왕복 marquee 애니메이션 시작</summary>
+    private static void StartMarqueeIfOverflow(TextBlock tb, double cap)
+    {
+        try
+        {
+            tb.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+            double textW = tb.DesiredSize.Width;
+            if (textW <= cap) return;
+
+            double overflow = textW - cap + 4;  // 살짝 여유
+            tb.RenderTransform = new Avalonia.Media.TranslateTransform();
+
+            var anim = new Avalonia.Animation.Animation
+            {
+                Duration = TimeSpan.FromSeconds(Math.Max(2.0, overflow / 12.0)),
+                IterationCount = Avalonia.Animation.IterationCount.Infinite,
+                PlaybackDirection = Avalonia.Animation.PlaybackDirection.Alternate,
+                Easing = new Avalonia.Animation.Easings.SineEaseInOut(),
+                Children =
+                {
+                    new Avalonia.Animation.KeyFrame
+                    {
+                        Cue = new Avalonia.Animation.Cue(0.0),
+                        Setters = { new Avalonia.Styling.Setter(Avalonia.Media.TranslateTransform.XProperty, 0.0) },
+                    },
+                    new Avalonia.Animation.KeyFrame
+                    {
+                        Cue = new Avalonia.Animation.Cue(1.0),
+                        Setters = { new Avalonia.Styling.Setter(Avalonia.Media.TranslateTransform.XProperty, -overflow) },
+                    },
+                },
+            };
+            _ = anim.RunAsync(tb);
+        }
+        catch { }
+    }
+
     private TreeViewItem CreateTreeItem(Agent agent)
     {
         var headerPanel = new StackPanel
@@ -224,30 +261,38 @@ public partial class AgentTreePage : UserControl
             Orientation       = Orientation.Horizontal,
             Spacing           = 9,
             VerticalAlignment = VerticalAlignment.Center,
+            // 토글 영역만큼 좌측으로 당김 — 사진이 패널 좌측 라인에 붙도록
+            Margin            = new Thickness(-22, 0, 0, 0),
         };
 
         // 원형 사진 (또는 이니셜 원)
         headerPanel.Children.Add(MakePhotoCircle(agent, 30));
 
-        // 직급 배지 — 이름 앞에 배치
+        // 직급 배지 — 박스는 고정, 안의 텍스트만 좌우로 살짝 움직이게
         if (!string.IsNullOrWhiteSpace(agent.직급))
         {
             var (bg, fg) = BadgeColorHelper.GetBadgeColor(agent.직급);
+            var tb = new TextBlock
+            {
+                Text                = agent.직급,
+                FontSize            = AppTheme.FontSM * 0.8,    // 기존 대비 80%
+                Foreground          = new SolidColorBrush(Color.Parse(fg)),
+                FontFamily          = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
+                VerticalAlignment   = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                TextAlignment       = TextAlignment.Center,
+            };
             headerPanel.Children.Add(new Border
             {
                 Background        = new SolidColorBrush(Color.Parse(bg)),
+                BorderBrush       = new SolidColorBrush(Color.Parse(fg)),
+                BorderThickness   = new Thickness(1),
                 CornerRadius      = new CornerRadius(3),
                 Padding           = new Thickness(5, 2),
                 VerticalAlignment = VerticalAlignment.Center,
-                Child             = new TextBlock
-                {
-                    Text              = agent.직급,
-                    FontSize          = AppTheme.FontSM,
-                    Foreground        = new SolidColorBrush(Color.Parse(fg)),
-                    FontFamily        = new FontFamily("avares://ETA/Assets/Fonts#Pretendard"),
-                    VerticalAlignment = VerticalAlignment.Center,
-                }
+                Child             = tb,
             });
+
         }
 
         // 이름

@@ -165,6 +165,52 @@ public static class ErpUiAutoService
     /// <summary>Excel 전체 데이터 로드 (한 번에 열기)</summary>
     public static List<ExcelRow> LoadAllExcelData() => LoadAllExcelData(ExcelPath);
 
+    /// <summary>DB 비용부담금_결과 에서 해당 연도+월+지역(구분)의 의뢰일자×업체 행을 ExcelRow 형식으로 로드.
+    /// region 이 빈 문자열이면 전체. ERP 입력 순서: BOD, TOC, SS, NH(암모니아), PN(Phenols), T-N, T-P.
+    /// SN 은 DB 컬럼 그대로 사용 ([율촌]/[세풍] 접두 포함, 여수는 접두 없음).</summary>
+    public static List<ExcelRow> LoadFromDb(int year, int month, string region = "")
+    {
+        var result = new List<ExcelRow>();
+        try
+        {
+            using var conn = ETA.Services.Common.DbConnectionFactory.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            string regionFilter = string.IsNullOrEmpty(region) ? "" : "AND 구분 = @region";
+            cmd.CommandText = $@"
+                SELECT 채수일, COALESCE(SN,'') AS SN, COALESCE(업체명,'') AS 업체명,
+                       COALESCE(BOD,'') AS BOD, COALESCE(`TOC`,'') AS `TOC`, COALESCE(SS,'') AS SS,
+                       COALESCE(`T-N`,'') AS `T-N`, COALESCE(`T-P`,'') AS `T-P`,
+                       COALESCE(`N-Hexan`,'') AS `N-Hexan`, COALESCE(Phenols,'') AS Phenols
+                FROM `비용부담금_결과`
+                WHERE 채수일 LIKE @prefix {regionFilter}
+                ORDER BY 채수일 ASC, 구분 ASC, 순서 ASC, Id ASC";
+            cmd.Parameters.AddWithValue("@prefix", $"{year:D4}-{month:D2}-%");
+            if (!string.IsNullOrEmpty(region))
+                cmd.Parameters.AddWithValue("@region", region);
+
+            int n = 1;
+            using var rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                string sn   = rdr.GetValue(1)?.ToString() ?? "";
+                string name = rdr.GetValue(2)?.ToString() ?? "";
+                string bod  = rdr.GetValue(3)?.ToString() ?? "";
+                string toc  = rdr.GetValue(4)?.ToString() ?? "";
+                string ss   = rdr.GetValue(5)?.ToString() ?? "";
+                string tn   = rdr.GetValue(6)?.ToString() ?? "";
+                string tp   = rdr.GetValue(7)?.ToString() ?? "";
+                string nh   = rdr.GetValue(8)?.ToString() ?? "";   // NH = N-Hexan(노말헥산)
+                string pn   = rdr.GetValue(9)?.ToString() ?? "";   // PN = Phenols
+                // ERP 입력 순서: BOD, TOC, SS, NH, PN, TN, TP
+                result.Add(new ExcelRow(n++, sn, name, [bod, toc, ss, nh, pn, tn, tp]));
+            }
+            Log($"[LoadFromDb {year:D4}-{month:D2}] {result.Count}행 로드");
+        }
+        catch (Exception ex) { Log($"[LoadFromDb] 오류: {ex.Message}"); }
+        return result;
+    }
+
     /// <summary>지정된 경로의 Excel 데이터 로드</summary>
     public static List<ExcelRow> LoadAllExcelData(string path)
     {

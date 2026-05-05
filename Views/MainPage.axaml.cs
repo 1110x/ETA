@@ -2851,6 +2851,13 @@ public partial class MainPage : Window
         SetContentLayout(content2Star: 1, content4Star: 1, upperStar: 6, lowerStar: 4);
 
         RestoreModeLayout("ProcessingFacility");
+
+        // 페이지 진입 시 누락된 날짜의 처리시설 측정결과 자동 백필 (Login init 보완)
+        _ = System.Threading.Tasks.Task.Run(() =>
+        {
+            try { ETA.Services.SERVICE2.FacilityResultService.EnsureTodayMeasurementResults(); }
+            catch { }
+        });
     }
 
     private void WasteAnalysisInput_Click(object? sender, RoutedEventArgs e)
@@ -2993,7 +3000,7 @@ public partial class MainPage : Window
         LogContentChange("Show1", _resultSubmitErpPage);
         Show3.Content = null; Show4.Content = null;
         _resultSubmitErpPage.RefreshShow2();         // Excel 테이블 → Show2
-        SetSubMenu("저장", "새로고침", "", "", "", "", "");
+        SetSubMenu("", "", "", "", "", "", "");
         SetLeftPanelWidth(260);
         SetContentLayout(content2Star: 5, content4Star: 0, upperStar: 8, lowerStar: 2);
         RestoreModeLayout("ResultSubmitErp");
